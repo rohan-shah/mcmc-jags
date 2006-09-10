@@ -1,1 +1,1 @@
-SUBDIRS = include lib modules terminal
+SUBDIRS = include lib jrmath modules terminal
