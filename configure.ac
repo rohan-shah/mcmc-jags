@@ -1,5 +1,5 @@
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT([JAGS], [0.97.1], [jags@iarc.fr], [JAGS])
+AC_INIT([JAGS], [0.98.0], [jags@iarc.fr], [JAGS])
 AC_CONFIG_SRCDIR(src/lib/Console.cc)
 AM_INIT_AUTOMAKE(AC_PACKAGE_NAME, AC_PACKAGE_VERSION)
 
