@@ -2,7 +2,7 @@
 #include <sarray/SArray.h>
 #include "Probit.h"
 
-#include <Rmath.h>
+#include <JRmath.h>
 
 using std::vector;
 

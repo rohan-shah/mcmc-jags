@@ -8,7 +8,7 @@
 #include <algorithm>
 #include <cmath>
 
-#include <Rmath.h>
+#include <JRmath.h>
 #include <rng/RNG.h>
 
 using std::min;

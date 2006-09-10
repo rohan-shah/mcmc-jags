@@ -2,7 +2,7 @@
 #include <sarray/SArray.h>
 #include "DChisqr.h"
 
-#include <Rmath.h>
+#include <JRmath.h>
 
 using std::vector;
 

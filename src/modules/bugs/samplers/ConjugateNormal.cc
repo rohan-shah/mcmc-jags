@@ -14,7 +14,7 @@
 #include "ConjugateNormal.h"
 #include "ConjugateSampler.h"
 
-#include <Rmath.h>
+#include <JRmath.h>
 
 using std::vector;
 using std::set;

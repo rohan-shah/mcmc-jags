@@ -6,7 +6,7 @@
 #include <stdexcept>
 #include <cmath>
 
-#include <Rmath.h>
+#include <JRmath.h>
 
 using std::vector;
 using std::length_error;

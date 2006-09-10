@@ -58,7 +58,8 @@ am__installdirs = "$(DESTDIR)$(jagsmoddir)"
 jagsmodLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(jagsmod_LTLIBRARIES)
 bugs_la_DEPENDENCIES = distributions/bugsdist.la functions/bugsfunc.la \
-	samplers/bugssampler.la matrix/bugsmatrix.la rmath/rmath.la \
+	samplers/bugssampler.la matrix/bugsmatrix.la \
+	$(top_builddir)/src/jrmath/libjrmath.la \
 	$(top_builddir)/src/lib/libjags.la
 am_bugs_la_OBJECTS = bugs.lo
 bugs_la_OBJECTS = $(am_bugs_la_OBJECTS)
@@ -199,7 +200,7 @@ sharedstatedir = @sharedstatedir@
 subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
-SUBDIRS = distributions functions samplers matrix rmath
+SUBDIRS = distributions functions samplers matrix 
 INCLUDES = -I $(top_srcdir)/src/include
 jagsmod_LTLIBRARIES = bugs.la
 bugs_la_SOURCES = bugs.cc
@@ -207,7 +208,7 @@ bugs_la_LIBADD = distributions/bugsdist.la               \
         functions/bugsfunc.la                           \
         samplers/bugssampler.la                         \
         matrix/bugsmatrix.la                            \
-        rmath/rmath.la                                  \
+        $(top_builddir)/src/jrmath/libjrmath.la		\
         $(top_builddir)/src/lib/libjags.la 
 
 bugs_la_LDFLAGS = -no-undefined -module -avoid-version

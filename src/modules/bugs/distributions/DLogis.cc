@@ -2,7 +2,7 @@
 #include <sarray/SArray.h>
 #include "DLogis.h"
 
-#include <Rmath.h>
+#include <JRmath.h>
 
 using std::vector;
 

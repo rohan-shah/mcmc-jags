@@ -2,7 +2,7 @@
 #include <sarray/SArray.h>
 #include "DGamma.h"
 
-#include <Rmath.h>
+#include <JRmath.h>
 
 using std::vector;
 

@@ -5,7 +5,7 @@
 #include <cmath>
 #include <cfloat>
 
-#include <Rmath.h>
+#include <JRmath.h>
 
 using std::vector;
 

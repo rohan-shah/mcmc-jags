@@ -13,7 +13,7 @@
 #include <cmath>
 #include <vector>
 
-#include <Rmath.h>
+#include <JRmath.h>
 
 using std::vector;
 using std::logic_error;

@@ -4,7 +4,7 @@
 
 #include <algorithm>
 
-#include <Rmath.h>
+#include <JRmath.h>
 
 using std::vector;
 using std::max;

@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <cmath>
 
-#include <Rmath.h>
+#include <JRmath.h>
 
 using std::min;
 using std::max;

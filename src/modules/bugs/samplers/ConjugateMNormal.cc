@@ -17,7 +17,7 @@
 #include "ConjugateSampler.h"
 #include "DMNorm.h"
 
-#include <Rmath.h>
+#include <JRmath.h>
 
 using std::string;
 using std::vector;
