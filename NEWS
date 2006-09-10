@@ -1,3 +1,9 @@
+0.98.0
+
+INTERNAL CHANGES
+* The private copy of libRmath in JAGS is now installed as a shared library 
+  libjrmath.
+
 0.97.1
 
 Various bug fixes from 0.97
