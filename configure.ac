@@ -94,6 +94,7 @@ AC_CONFIG_FILES([
   src/lib/model/Makefile
   src/lib/compiler/Makefile
   src/lib/rng/Makefile
+  src/jrmath/Makefile	
   src/include/Makefile
   src/include/sarray/Makefile
   src/include/function/Makefile
@@ -111,7 +112,6 @@ AC_CONFIG_FILES([
   src/modules/bugs/functions/Makefile	
   src/modules/bugs/distributions/Makefile	
   src/modules/bugs/samplers/Makefile	
-  src/modules/bugs/rmath/Makefile	
   src/modules/bugs/matrix/Makefile	
   src/terminal/Makefile
 ])

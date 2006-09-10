@@ -23716,7 +23716,7 @@ jagsmoddir=${jagshomedir}/modules
 
           ac_config_headers="$ac_config_headers src/include/config.h"
 
-                                                                                                                                                                                                                                                                                                                                                    ac_config_files="$ac_config_files Makefile m4/Makefile etc/Makefile etc/Makeconf src/Makefile src/lib/Makefile src/lib/sarray/Makefile src/lib/function/Makefile src/lib/distribution/Makefile src/lib/graph/Makefile src/lib/sampler/Makefile src/lib/model/Makefile src/lib/compiler/Makefile src/lib/rng/Makefile src/include/Makefile src/include/sarray/Makefile src/include/function/Makefile src/include/distribution/Makefile src/include/graph/Makefile src/include/sampler/Makefile src/include/model/Makefile src/include/compiler/Makefile src/include/rng/Makefile src/modules/Makefile src/modules/basefunctions/Makefile src/modules/baserngs/Makefile src/modules/basesamplers/Makefile src/modules/bugs/Makefile src/modules/bugs/functions/Makefile src/modules/bugs/distributions/Makefile src/modules/bugs/samplers/Makefile src/modules/bugs/rmath/Makefile src/modules/bugs/matrix/Makefile src/terminal/Makefile"
+                                                                                                                                                                                                                                                                                                                                                    ac_config_files="$ac_config_files Makefile m4/Makefile etc/Makefile etc/Makeconf src/Makefile src/lib/Makefile src/lib/sarray/Makefile src/lib/function/Makefile src/lib/distribution/Makefile src/lib/graph/Makefile src/lib/sampler/Makefile src/lib/model/Makefile src/lib/compiler/Makefile src/lib/rng/Makefile src/jrmath/Makefile src/include/Makefile src/include/sarray/Makefile src/include/function/Makefile src/include/distribution/Makefile src/include/graph/Makefile src/include/sampler/Makefile src/include/model/Makefile src/include/compiler/Makefile src/include/rng/Makefile src/modules/Makefile src/modules/basefunctions/Makefile src/modules/baserngs/Makefile src/modules/basesamplers/Makefile src/modules/bugs/Makefile src/modules/bugs/functions/Makefile src/modules/bugs/distributions/Makefile src/modules/bugs/samplers/Makefile src/modules/bugs/matrix/Makefile src/terminal/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -24288,6 +24288,7 @@ do
   "src/lib/model/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/lib/model/Makefile" ;;
   "src/lib/compiler/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/lib/compiler/Makefile" ;;
   "src/lib/rng/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/lib/rng/Makefile" ;;
+  "src/jrmath/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/jrmath/Makefile" ;;
   "src/include/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/include/Makefile" ;;
   "src/include/sarray/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/include/sarray/Makefile" ;;
   "src/include/function/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/include/function/Makefile" ;;
@@ -24305,7 +24306,6 @@ do
   "src/modules/bugs/functions/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/modules/bugs/functions/Makefile" ;;
   "src/modules/bugs/distributions/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/modules/bugs/distributions/Makefile" ;;
   "src/modules/bugs/samplers/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/modules/bugs/samplers/Makefile" ;;
-  "src/modules/bugs/rmath/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/modules/bugs/rmath/Makefile" ;;
   "src/modules/bugs/matrix/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/modules/bugs/matrix/Makefile" ;;
   "src/terminal/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/terminal/Makefile" ;;
   "depfiles" ) CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;

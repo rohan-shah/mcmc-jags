@@ -173,7 +173,7 @@ sharedstatedir = @sharedstatedir@
 subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
-SUBDIRS = include lib modules terminal
+SUBDIRS = include lib jrmath modules terminal
 all: all-recursive
 
 .SUFFIXES:
