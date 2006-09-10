@@ -184,7 +184,7 @@ sharedstatedir = @sharedstatedir@
 subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
-jagsinclude_HEADERS = Console.h Module.h
+jagsinclude_HEADERS = Console.h Module.h JRmath.h
 SUBDIRS = compiler distribution function graph model sampler sarray rng
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
