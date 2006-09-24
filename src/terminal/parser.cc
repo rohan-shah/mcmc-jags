@@ -2226,7 +2226,7 @@ static Range getRange(ParseTree const *var)
   */
   unsigned int size = var->parameters().size();
 
-  Index ind_lower(size), ind_upper(size);
+  Index ind_lower(size,1), ind_upper(size,1);
   for (unsigned int i = 0; i < size; ++i) {
     ParseTree const *range_element = var->parameters()[i];
     switch(range_element->parameters().size()) {

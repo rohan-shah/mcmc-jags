@@ -47,10 +47,10 @@ static Index makeDim(Index const &lower, Index const &upper, bool drop)
 
   if (drop && size == 0) {
     delete [] dim;
-    return Index(1); //FIXME: Why?
+    return Index(1,1); //FIXME: Why?
   }
   else {
-    Index index(size);
+    Index index(size,1);
     for (int j = 0; j < size; j++) {
       index[j] = dim[j];
     }

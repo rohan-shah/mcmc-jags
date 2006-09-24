@@ -189,9 +189,7 @@ sharedstatedir = @sharedstatedir@
 subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
-INCLUDES = -I $(top_srcdir)/src/include -I$(top_srcdir)/src/modules/bugs/matrix \
-           -I$(top_srcdir)/src/modules/bugs/rmath
-
+INCLUDES = -I $(top_srcdir)/src/include -I$(top_srcdir)/src/modules/bugs/matrix 
 noinst_LTLIBRARIES = bugsdist.la
 bugsdist_la_LDFLAGS = -no-undefined -module -avoid-version
 bugsdist_la_SOURCES = DBern.cc DCat.cc DDirch.cc DHyper.cc DLogis.cc	\

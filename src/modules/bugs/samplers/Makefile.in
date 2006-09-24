@@ -190,8 +190,7 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 INCLUDES = -I $(top_srcdir)/src/include \
 -I$(top_srcdir)/src/modules/bugs/distributions \
--I$(top_srcdir)/src/modules/bugs/matrix \
--I$(top_srcdir)/src/modules/bugs/rmath 
+-I$(top_srcdir)/src/modules/bugs/matrix 
 
 noinst_LTLIBRARIES = bugssampler.la
 bugssampler_la_LDFLAGS = -no-undefined -module -avoid-version

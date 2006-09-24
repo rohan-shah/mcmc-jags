@@ -85,7 +85,7 @@ bool readRData(std::vector<ParseTree*> const *array_list,
 	  }
 
 	  /* Get the dimensions of the array */
-	  Index dim(ndim);
+	  Index dim(ndim,1);
 	  if (pdim) {
 	    for (int i = 0; i < ndim; ++i) {
 	      dim[i] = (long) (pdim->parameters()[i]->value() + 1.0E-6);

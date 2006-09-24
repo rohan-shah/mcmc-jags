@@ -30,7 +30,7 @@ class Compiler {
   CounterTab _countertab;
   std::map<std::string, SArray> const &_data_table;
   std::map<std::string, std::vector<bool> > _constant_mask;
-  unsigned long _n_resolved, _n_relations;
+  unsigned int _n_resolved, _n_relations;
   bool *_is_resolved;
   bool _strict_resolution;
   ConstantFactory _constantfactory;
@@ -69,7 +69,7 @@ class Compiler {
   void addDevianceNode();
 public:
   Graph &graph() const;
-  bool indexExpression(ParseTree const *t, long &value);
+  bool indexExpression(ParseTree const *t, int &value);
   MixtureFactory &mixtureFactory();
   SymTab &symTab() const;
   Node* getParameter(ParseTree const *t);

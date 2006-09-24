@@ -10,7 +10,7 @@ using std::logic_error;
 using std::length_error;
 
 SArray::SArray(Index const &dim)
-  : _range(Index(dim.size()), dim)
+  : _range(Index(dim.size(), 1), dim)
 {
   unsigned long n = _range.length();
   _value = new double[n];

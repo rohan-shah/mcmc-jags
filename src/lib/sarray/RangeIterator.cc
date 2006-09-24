@@ -32,7 +32,7 @@ RangeIterator &RangeIterator::nextLeft()
     int n = _range.ndim(false);
     int i = 0;
     for (; i < n; ++i) {
-	long &ind = operator[](i);
+	int &ind = operator[](i);
 	if (ind < _range.upper()[i]) {
 	    ++ind;
 	    break;
@@ -51,7 +51,7 @@ RangeIterator &RangeIterator::nextRight()
 {
     int i = _range.ndim(false) - 1;
     for ( ; i >= 0; --i) {
-	long &ind = operator[](i);
+	int &ind = operator[](i);
 	if (ind < _range.upper()[i]) {
 	    ++ind;
 	    break;

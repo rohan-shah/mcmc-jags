@@ -1,7 +1,6 @@
 INCLUDES = -I $(top_srcdir)/src/include \
 -I$(top_srcdir)/src/modules/bugs/distributions \
--I$(top_srcdir)/src/modules/bugs/matrix \
--I$(top_srcdir)/src/modules/bugs/rmath 
+-I$(top_srcdir)/src/modules/bugs/matrix 
 
 noinst_LTLIBRARIES = bugssampler.la
 

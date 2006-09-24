@@ -511,7 +511,7 @@ bool Console::dumpState(map<string,SArray> &data_table,
       if (_model->rng(chain - 1)) {
 	_model->rng(chain - 1)->getState(rngstate);
 	
-	Index dimrng(1);
+	Index dimrng(1,1);
 	dimrng[0] = rngstate.size();
 	SArray rngsarray(dimrng);
 	rngsarray.setDiscreteValued(true);
@@ -605,7 +605,7 @@ bool Console::getMonitoredValues(map<string,SArray> &data_table,
 	//iterations. We put the extra dimension first.
 	unsigned int niter = monitor->size();
 	unsigned int ndim = node->dim(false).size();
-	Index dim(ndim + 1);
+	Index dim(ndim + 1, 1);
 	dim[0] = niter;
 	unsigned long length = 1;
 	for (unsigned int i = 1; i <= ndim; ++i) {

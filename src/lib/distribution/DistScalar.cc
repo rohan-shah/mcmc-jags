@@ -59,7 +59,7 @@ DistScalar::upperSupport(unsigned long i,
 
 Index DistScalar::dim(vector<Index> const &parameters) const
 {
-    static const Index ScalarIndex(1);
+    static const Index ScalarIndex(1, 1);
     return ScalarIndex;
 }
 

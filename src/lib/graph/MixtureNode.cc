@@ -82,7 +82,7 @@ MixtureNode::~MixtureNode()
 #include <sarray/SArray.h>
 void MixtureNode::deterministicSample(unsigned int chain)
 {
-  Index i(_Nindex);
+  Index i(_Nindex, 1);
   vector <Node*> const &parents = this->parents();
   for (unsigned int j = 0; j < _Nindex; ++j) {
     i[j] = static_cast<long>(parents[j]->value(chain)[0]);

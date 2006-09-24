@@ -240,7 +240,7 @@ bool Compiler::constantExpression(ParseTree const *p, double &value)
   }
 }
 
-bool Compiler::indexExpression(ParseTree const *p, long &value)
+bool Compiler::indexExpression(ParseTree const *p, int &value)
 {
   /* 
      Evaluate an index expression.
@@ -285,7 +285,7 @@ Range Compiler::getRange(vector<ParseTree*> const &range_list,
     /* An empty range expression implies the default range, if it exists,
        or a scalar value, if it does not */
     if (isNULL(default_range))
-      return Index(1);
+      return Index(1,1);
     else 
       return default_range;
   }
@@ -302,7 +302,7 @@ Range Compiler::getRange(vector<ParseTree*> const &range_list,
   }
   
   // Now step through and evaluate lower and upper index expressions
-  Index lower(size), upper(size);
+  Index lower(size,1), upper(size,1);
   for (unsigned int i = 0; i < size; i++) {
     switch (range_list[i]->parameters().size()) {
     case 0:
@@ -413,12 +413,12 @@ Range Compiler::CounterRange(ParseTree const *var)
     throw logic_error(string("Invalid range expression for counter")
 		      + var->name());
   }
-  long lower;
+  int lower;
   if(!indexExpression(prange->parameters()[0], lower)) {
     throw runtime_error(string("Unable to evaluate lower index of counter ")
 			+ var->name());
   }
-  long upper;
+  int upper;
   if (prange->parameters().size() == 2) {
     if (!indexExpression(prange->parameters()[1], upper)) {
       throw runtime_error(string("Unable to evaluate upper index of counter ")
@@ -433,7 +433,7 @@ Range Compiler::CounterRange(ParseTree const *var)
     return Range();
   }
   else {
-    Index ind_lower(1), ind_upper(1);
+    Index ind_lower(1,1), ind_upper(1,1);
     ind_lower[0] = lower;
     ind_upper[0] = upper;
     
@@ -979,7 +979,7 @@ void Compiler::declareVariables(vector<ParseTree*> const &dec_list)
     }
     else {
       // Variable is an array
-      Index dim(ndim);
+      Index dim(ndim,1);
       for (unsigned int i = 0; i < ndim; ++i) {
 	if (!indexExpression(node_dec->parameters()[i], dim[i])) {
 	  throw runtime_error(string("Unable to calculate dimensions of node ")

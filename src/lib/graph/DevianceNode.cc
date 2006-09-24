@@ -24,7 +24,7 @@ static vector<Node*> mkParents(set<StochasticNode*> const &param)
 }
          
 DevianceNode::DevianceNode(set<StochasticNode*> const &parameters)
-  : DeterministicNode(Index(1), mkParents(parameters))
+  : DeterministicNode(Index(1,1), mkParents(parameters))
 {
   _parameters.reserve(parameters.size());
   for (set<StochasticNode*>::const_iterator p = parameters.begin(); 

@@ -42,7 +42,7 @@ bool DSum::checkParameterDiscrete(vector<bool> const &mask) const
 
 Index DSum::dim(vector<Index> const &dims) const
 {
-    return Index(1);
+    return Index(1,1);
 }
 
 double DSum::logLikelihood(SArray const &x, 

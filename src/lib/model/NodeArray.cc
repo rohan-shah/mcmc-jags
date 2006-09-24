@@ -17,7 +17,7 @@ using std::logic_error;
 using std::set;
 
 NodeArray::NodeArray(string const &name, Index const &dim, unsigned int nchain)
-  : _name(name), _range(Index(dim.size()), dim), _nchain(nchain)
+  : _name(name), _range(Index(dim.size(),1), dim), _nchain(nchain)
 {
   long length = _range.length();
   _node_pointers = new Node *[length];
@@ -425,7 +425,7 @@ Range NodeArray::getRange(Node const *node) const
   
   /* Find the lower limit of the range. This is easy */
   unsigned int ndim = _range.ndim(false);
-  Index lower(ndim), upper(ndim);
+  Index lower(ndim, 1), upper(ndim, 1);
   unsigned long j = 0;
   for (; j < _range.length(); ++j) {
     if (_node_pointers[j] == node) {
@@ -438,7 +438,7 @@ Range NodeArray::getRange(Node const *node) const
   }
 
   unsigned int m = node->dim(false).size();
-  Index ind(m);
+  Index ind(m, 1);
   if (findActiveIndices(ind, 0, lower, node->dim(false))) {
     upper = lower;
     for (unsigned int l = 0; l < m; ++l) {

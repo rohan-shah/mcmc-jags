@@ -1,5 +1,4 @@
-INCLUDES = -I $(top_srcdir)/src/include -I$(top_srcdir)/src/modules/bugs/matrix \
-           -I$(top_srcdir)/src/modules/bugs/rmath
+INCLUDES = -I $(top_srcdir)/src/include -I$(top_srcdir)/src/modules/bugs/matrix 
 
 noinst_LTLIBRARIES = bugsdist.la
 

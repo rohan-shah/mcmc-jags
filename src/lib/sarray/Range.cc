@@ -44,7 +44,7 @@ static RangeImp const *getPtr(Index const &lower, Index const &upper)
 }
 
 Range::Range()
-  : _p(getPtr(Index(0),Index(0)))
+  : _p(getPtr(Index(),Index()))
 {
     ref(_p)++;
 }

@@ -177,7 +177,7 @@ void BUGSModel::addDevianceNode()
   if (array)
     return; //Deviance already defined by user
 
-  _symtab.addVariable("deviance", Index(1));
+  _symtab.addVariable("deviance", Index(1,1));
   NodeArray *deviance = _symtab.getVariable("deviance");
   vector<Node*> nodes;
   graph().getNodes(nodes);
@@ -193,7 +193,7 @@ void BUGSModel::addDevianceNode()
   if (!parameters.empty()) {
      //Can't construct a deviance node with no parameters
      DevianceNode *dnode = new DevianceNode(parameters);
-     deviance->insert(dnode, Index(1));
+     deviance->insert(dnode, Index(1,1));
      addExtraNode(dnode);
   }
 }

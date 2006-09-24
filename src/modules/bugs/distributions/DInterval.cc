@@ -40,7 +40,7 @@ DInterval::checkParameterDim(vector<Index> const &dims) const
 
 Index DInterval::dim(vector<Index> const &dims) const
 {
-    return Index(1);
+    return Index(1,1);
 }
 
 bool DInterval::checkParameterValue(vector<SArray const *> const &parameters) const

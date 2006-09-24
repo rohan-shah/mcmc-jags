@@ -20,7 +20,7 @@ ScalarFunc::evaluate (SArray & value, vector <SArray const *> const &args)
 
 Index ScalarFunc::dim (vector <Index> const &args) const
 {
-  return Index(1);
+  return Index(1,1);
 }
 
 bool ScalarFunc::checkParameterDim (vector <Index> const &dims) const

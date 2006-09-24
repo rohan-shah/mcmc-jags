@@ -51,8 +51,8 @@ using std::set;
 //Structure to hold subset indices
 struct SSI {
   Node *node;
-  long lower;
-  long upper;
+  int lower;
+  int upper;
 };
 
 
@@ -78,8 +78,8 @@ static void getSubsetRanges(vector<pair<Index, Range> > &subsets,
   }
 
   // Create upper and lower bounds
-  Index variable_offset(nvi), variable_lower(nvi), variable_upper(nvi);
-  Index lower_index(ndim), upper_index(ndim);
+  Index variable_offset(nvi,1), variable_lower(nvi,1), variable_upper(nvi,1);
+  Index lower_index(ndim,1), upper_index(ndim,1);
   int k = 0;
   for (unsigned int j = 0; j < ndim; ++j) {
     if (limits[j].node != 0) {
@@ -202,7 +202,7 @@ static Node* getMixtureNode1(NodeArray *array, vector<SSI> const &limits, Compil
   }
 
   unsigned long nparents = stoch_parents.size();
-  Index lower(nparents), upper(nparents);
+  Index lower(nparents,1), upper(nparents,1);
   for (unsigned int i = 0; i < nparents; ++i) {
     StochasticNode const *snode = stoch_parents[i];
     Distribution const *dist = snode->distribution();
@@ -240,7 +240,7 @@ static Node* getMixtureNode1(NodeArray *array, vector<SSI> const &limits, Compil
      indices can take */
 
   set<Index> index_values;
-  Index this_index(indices.size());
+  Index this_index(indices.size(),1);
   Range stoch_node_range(lower, upper);
 
   for (RangeIterator i(stoch_node_range); !i.atEnd(); i.nextLeft()) {
@@ -269,8 +269,8 @@ static Node* getMixtureNode1(NodeArray *array, vector<SSI> const &limits, Compil
 
   /* Now set up the possible subsets defined by the stochastic indices */
 
-  Index variable_offset(nvi);
-  Index lower_index(ndim), upper_index(ndim);
+  Index variable_offset(nvi, 1);
+  Index lower_index(ndim, 1), upper_index(ndim, 1);
   int k = 0;
   for (unsigned int j = 0; j < ndim; ++j) {
     if (limits[j].node != 0) {

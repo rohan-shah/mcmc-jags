@@ -11,7 +11,7 @@ using std::ostringstream;
 using std::floor;
 
 ConstantNode::ConstantNode(double value, unsigned int nchain)
-  : Node(Index(1), nchain)
+  : Node(Index(1,1), nchain)
 {
   setObserved(&value, 1);
   //FIXME: This should be done within the setObserved function
