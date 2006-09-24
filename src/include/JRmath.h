@@ -1,3 +1,5 @@
+/* This is MODIFIED version of R's Mathlib */
+
 /* -*- C -*-
  *  Mathlib : A C Library of Special Functions
  *  Copyright (C) 1998-2003  The R Development Core Team
