@@ -55,7 +55,7 @@ double DWish::logLikelihood(SArray const &x,
 
     double loglik = 0;
     unsigned int length = LENGTH(par);
-    for (int i = 0; i < length; ++i) {
+    for (unsigned int i = 0; i < length; ++i) {
 	loglik += scale[i] * y[i];
     }
     loglik += DF(par) * logdet(scale, p) + (DF(par) - p - 1) * logdet(y, p);
@@ -73,7 +73,7 @@ void DWish::randomSample(SArray &x, vector<SArray const *> const &par,
   delete [] y;
 }
 
-void DWish::randomSample(double *x, unsigned int length,
+void DWish::randomSample(double *x, int length,
 			 double const *R, double k, int nrow,
                          RNG *rng)
 {
@@ -172,8 +172,8 @@ bool DWish::checkParameterValue (vector<SArray const *> const &par) const
     /* Check symmetry of scale matrix */
     double const *scale = SCALE(par);
     unsigned int nrow = NROW(par);
-    for (int i = 0; i < nrow; ++i) {
-	for (int j = 0; j < i; ++i) {
+    for (unsigned int i = 0; i < nrow; ++i) {
+	for (unsigned int j = 0; j < i; ++i) {
 	    if (fabs(scale[i + nrow*j] - scale[j + nrow*i]) > DBL_EPSILON)
 		return false;
 	}

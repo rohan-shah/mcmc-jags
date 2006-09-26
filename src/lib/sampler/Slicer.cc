@@ -140,7 +140,7 @@ void Slicer::updateDouble(RNG *rng)
 
   // Doubling 
   bool left_ok = false, right_ok = false;
-  for (int i = 0; i < _max; ++i) {
+  for (unsigned int i = 0; i < _max; ++i) {
     if (rng->uniform() < 0.5) {
       if (L >= lower) {
 	L = 2*L - R;

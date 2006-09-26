@@ -122,8 +122,8 @@ bool DMNorm::checkParameterValue(vector<SArray const *> const &parameters) const
 
   double const *T = parameters[1]->value();
   // Check symmetry
-  for (int i = 0; i < n - 1; i++) {
-    for (int j = i + 1; j < n; j++) {
+  for (unsigned int i = 1; i < n; i++) {
+    for (unsigned int j = 0; j < i - 1; j++) {
       if (fabs(T[i + j*n] - T[j + i*n]) > DBL_EPSILON)
 	return false;
     }

@@ -98,6 +98,8 @@ void SymTab::readValues(map<string, SArray> &data_table,
 {
   if (chain > _nchain) 
     throw logic_error("Invalid chain in SymTab::readValues");
+  if (!condition) 
+    throw logic_error("NULL condition in Symtab::readValues");
 
   map<string, NodeArray*>::const_iterator p;
   for (p = _varTable.begin(); p != _varTable.end(); ++p) {

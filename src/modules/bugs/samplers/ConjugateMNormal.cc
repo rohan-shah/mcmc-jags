@@ -78,7 +78,7 @@ void ConjugateMNormal::calBeta()
     unsigned int nrow = node()->length();
 
     double *xnew = new double[nrow];
-    for (int i = 0; i < nrow; ++i) {
+    for (unsigned int i = 0; i < nrow; ++i) {
 	xnew[i] = xold[i];
     }
 
@@ -90,7 +90,7 @@ void ConjugateMNormal::calBeta()
 	StochasticNode const *snode = stoch_children[j];
 	double const *mu = snode->parents()[0]->value(chain());
 	unsigned int nrow_child = snode->length();
-	for (int k = 0; k < nrow_child; ++k) {
+	for (unsigned int k = 0; k < nrow_child; ++k) {
 	    for (unsigned int i = 0; i < nrow; ++i) {
 		beta_j[nrow * k + i] = -mu[k];
 	    }
@@ -98,7 +98,7 @@ void ConjugateMNormal::calBeta()
 	beta_j += nrow_child * nrow;
     }
 
-    for (int i = 0; i < nrow; ++i) {
+    for (unsigned int i = 0; i < nrow; ++i) {
 	xnew[i] += 1;
 	setValue(xnew, nrow);
 	beta_j = _betas;
@@ -106,7 +106,7 @@ void ConjugateMNormal::calBeta()
 	    StochasticNode const *snode = stoch_children[j];
 	    double const *mu = snode->parents()[0]->value(chain());
 	    unsigned int nrow_child = snode->length();
-	    for (int k = 0; k < nrow_child; ++k) {
+	    for (unsigned int k = 0; k < nrow_child; ++k) {
 		beta_j[nrow * k + i] += mu[k];
 	    }
 	    beta_j += nrow_child * nrow;
@@ -293,7 +293,7 @@ void ConjugateMNormal::update(RNG *rng)
 
 
     //Shift origin back to original scale
-    for (unsigned int i = 0; i < nrow; ++i) {
+    for (int i = 0; i < nrow; ++i) {
 	b[i] += xold[i];
     }
     double *xnew = new double[nrow];

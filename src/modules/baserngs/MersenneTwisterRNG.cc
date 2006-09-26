@@ -124,7 +124,7 @@ void MersenneTwisterRNG::init(unsigned int seed)
 
 void MersenneTwisterRNG::fixupSeeds(bool initial)
 {	
-  bool notallzero = false;
+  //bool notallzero = false;
   
   if(initial) dummy[0] = 624;
   /* No action unless user has corrupted .Random.seed */

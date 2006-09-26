@@ -14,7 +14,6 @@ class TraceMonitor {
   int _thin;                         // thinning interval (=1/frequency)
   double *_values;                   // vector containing sampled values
   unsigned int _size;                        // current size of _values
-  unsigned int _maxsize;                     // maximum size of _values (or -1)
   unsigned int _current;                     // current index value of vector
  public:
   /**

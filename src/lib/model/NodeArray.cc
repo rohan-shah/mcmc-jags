@@ -204,7 +204,7 @@ void NodeArray::getValue(SArray &value, unsigned int chain, bool (*condition)(No
 
   unsigned int array_length = _range.length();
   double *array_value = new double[array_length];
-  for (int j = 0; j < array_length; ++j) {
+  for (unsigned int j = 0; j < array_length; ++j) {
     Node const *node = _node_pointers[j];
     if (node && condition(node)) {
       array_value[j] = node->value(chain)[_offsets[j]];
@@ -330,7 +330,7 @@ bool NodeArray::findActiveIndices(vector<unsigned int> &ind, unsigned int k,
       Range test_range(lower, upper);
       if (_range.contains(test_range)) {
 	Node *node = _node_pointers[_range.leftOffset(lower)];
-	int j = 0;
+	unsigned int j = 0;
 	bool ok = true;
 	for (RangeIterator i(test_range); !i.atEnd(); i.nextLeft(), ++j) {
 	  unsigned int offset = _range.leftOffset(i);

@@ -197,7 +197,6 @@ void ConjugateGamma::update(RNG *rng)
 
     double r; // shape
     double mu; // 1/scale
-    double xold = *node()->value(chain());
 
     //Prior
     vector<Node *> const &param = node()->parents();

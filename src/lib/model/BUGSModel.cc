@@ -158,7 +158,7 @@ void BUGSModel::coda(vector<Node const*> const &nodes, ofstream &index,
 		    double const *y = monitor->values();
 		    for (unsigned int offset = 0; offset < nvar; ++offset) {
 			unsigned int iter = monitor->start();
-			for (int k = 0; k < monitor->size(); k++) {
+			for (unsigned int k = 0; k < monitor->size(); k++) {
 			    *(output[ch]) << iter << "  ";
 			    writeDouble(y[k * nvar + offset], *output[ch]);
 			    *(output[ch]) << '\n';

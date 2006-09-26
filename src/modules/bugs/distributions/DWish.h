@@ -18,7 +18,7 @@ public:
 		       std::vector<SArray const *> const &parameters) const;
   void randomSample(SArray &x, std::vector<SArray const *> const &parameters,
 		    RNG *rng) const;
-  static void randomSample(double *x, unsigned int length,
+  static void randomSample(double *x, int length,
                            double const *R, double k, int nrow,
                            RNG *rng);
 

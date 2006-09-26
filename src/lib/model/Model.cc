@@ -272,7 +272,7 @@ void Model::update(unsigned int niter)
       vector<Sampler*> &samplers = _chain_info[n].samplers;
       list<TraceMonitor*> &monitors = _chain_info[n].monitors;
       RNG *rng = _chain_info[n].rng;
-      for (int iter = 0; iter < niter; ++iter) {
+      for (unsigned int iter = 0; iter < niter; ++iter) {
 	for (vector<Sampler*>::iterator i = samplers.begin(); 
 	     i != samplers.end(); ++i) 
 	  {

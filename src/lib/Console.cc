@@ -430,7 +430,7 @@ bool Console::clearMonitor(string const &name, Range const &range)
       }
     }
     else {
-      Node *node = _model->getNode(name, range, message);
+      node = _model->getNode(name, range, message);
     }
 
     if (node) {
@@ -489,7 +489,7 @@ bool Console::dumpState(map<string,SArray> &data_table,
     _err << "Invalid chain number" << endl;
     return false;
   }
-  bool (*selection)(Node const *);
+  bool (*selection)(Node const *) = 0;
   switch (type) {
   case DUMP_PARAMETERS:
     selection = isParameter;
@@ -643,6 +643,8 @@ bool Console::getMonitoredValues(map<string,SArray> &data_table,
     _err << "Please send a bug report to " << PACKAGE_BUGREPORT << endl;
     return false;
   }
+
+  return true;
 }
 
 bool Console::coda(string const &name, Range const &range,

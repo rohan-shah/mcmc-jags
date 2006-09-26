@@ -41,7 +41,6 @@ TraceMonitor::TraceMonitor(Node const *node, unsigned int start, unsigned int en
   _end = end;
   _size =  (end - start) / thin + 1;
   _values = (double*) calloc(_node->length() * _size, sizeof(double));
-  _maxsize = _size;    
   _current = 0;
 }
 
@@ -58,7 +57,6 @@ TraceMonitor::TraceMonitor(Node const *node, unsigned int start, unsigned int th
     _start = start;
     _end = start + thin * (_size - 1);
     _values = (double*) calloc (node->length() * _size, sizeof(double));
-    _maxsize = -1;
     _current = 0;
 }
 
@@ -119,8 +117,7 @@ void TraceMonitor::update(unsigned int iteration, unsigned int chain)
     unsigned int node_length = _node->length();
 
     /* Reallocate vector _values if it is full */
-    if (_current == _size && _maxsize == -1) {
-      /* Fixme: what do we do if _maxsize != -1 */
+    if (_current == _size) {
       _size = _size * 2;
       _values = (double*) 
 	realloc(_values,  node_length * _size * sizeof(double));
