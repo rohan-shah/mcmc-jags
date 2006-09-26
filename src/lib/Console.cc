@@ -650,56 +650,53 @@ bool Console::getMonitoredValues(map<string,SArray> &data_table,
 bool Console::coda(string const &name, Range const &range,
 		   ofstream &index, vector<ofstream*> &output)
 {
-  if (!_model) {
-     _err << "Can't dump CODA output. No model!" << endl;
-     return false;
-  }
-
-  Range frange = range;
-  NodeArray *array = _model->symtab().getVariable(name);
-  if (array) {
-    if (isNULL(frange)) {
-      frange = array->range();
-    }
-    if (array->range().contains(frange)) {
-      Node *node = array->getSubset(frange);
-      if (node) {
-	try {
-	  _model->coda(vector<Node const*>(1, node), index, output);
-	}
-	catch (NodeError except) {
-	  _err << "Error in node " <<
-	    _model->symtab().getName(except.node) << "\n";
-	  _err << except.what() << endl;
-	  return false;
-	}
-	catch (std::runtime_error except) {
-	  _err << "RUNTIME ERROR:\n";
-	  _err << except.what() << endl;
-	  return false;
-	}
-	catch (std::logic_error except) {
-	  _err << "LOGIC ERROR:\n";
-	  _err << except.what() << '\n';
-	  _err << "Please send a bug report to " << PACKAGE_BUGREPORT << endl;            return false;
-	}
-
-	return true;
-      }
-      else {
-	_err << "Node is not being monitored" << endl;
+    if (!_model) {
+	_err << "Can't dump CODA output. No model!" << endl;
 	return false;
-      }
+    }
+
+    NodeArray *array = _model->symtab().getVariable(name);
+    if (!array) {
+	_err << name << " not found" << endl;
+	return false;
+    }
+
+    Node *node = 0;
+    if (isNULL(range)) {
+	node = array->getSubset(array->range());
+    }
+    else if (array->range().contains(range)) {
+	node = array->getSubset(range);
     }
     else {
-      _err << "Requested invalid subset of node " << name << endl;
-      return false;
+	_err << "Requested invalid subset of node " << name << endl;
+	return false;
     }
-  }
-  else {
-    _err << name << " not found" << endl;
-    return false;
-  }
+    if (!node) {
+	_err << "Node is not being monitored" << endl;
+	return false;
+    }
+
+    try {
+	_model->coda(vector<Node const*>(1, node), index, output);
+    }
+    catch (NodeError except) {
+	_err << "Error in node " <<
+	    _model->symtab().getName(except.node) << "\n";
+	_err << except.what() << endl;
+	return false;
+    }
+    catch (std::runtime_error except) {
+	_err << "RUNTIME ERROR:\n";
+	_err << except.what() << endl;
+	return false;
+    }
+    catch (std::logic_error except) {
+	_err << "LOGIC ERROR:\n";
+	_err << except.what() << '\n';
+	_err << "Please send a bug report to " << PACKAGE_BUGREPORT << endl;            return false;
+    }
+    return true;
 }
 
 /*
