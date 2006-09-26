@@ -7,7 +7,6 @@
 #include <rng/RNG.h>
 #include <graph/LogicalNode.h>
 #include <graph/StochasticNode.h>
-#include <sarray/Index.h>
 
 #include <set>
 #include <stdexcept>

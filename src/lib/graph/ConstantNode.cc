@@ -1,7 +1,6 @@
 #include <config.h>
 #include <graph/ConstantNode.h>
 #include <graph/NodeNameTab.h>
-#include <sarray/Index.h>
 
 #include <sstream>
 #include <cmath>

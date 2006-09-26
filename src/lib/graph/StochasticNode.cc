@@ -3,7 +3,6 @@
 #include <graph/StochasticNode.h>
 #include <graph/NodeError.h>
 #include <distribution/Distribution.h>
-#include <sarray/Index.h>
 
 #include <vector>
 #include <stdexcept>

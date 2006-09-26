@@ -9,7 +9,6 @@
 #include <graph/StochasticNode.h>
 #include <graph/NodeError.h>
 #include <graph/Node.h>
-#include <sarray/Index.h>
 
 #include <fstream>
 #include <sstream>

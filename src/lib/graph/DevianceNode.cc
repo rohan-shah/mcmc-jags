@@ -1,6 +1,5 @@
 #include <graph/DevianceNode.h>
 #include <distribution/Distribution.h>
-#include <sarray/Index.h>
 #include <stdexcept>
 
 using std::vector;
