@@ -23,7 +23,7 @@ Mean::eval (vector <SArray const*> const &args) const
     return svalue;
 }
 
-bool Mean::checkParameterDim (vector <Index> const &dims) const
+bool Mean::checkParameterDim (vector<vector<unsigned int> > const &dims) const
 {
     return true;
 }

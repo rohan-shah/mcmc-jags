@@ -85,10 +85,16 @@ bool readRData(std::vector<ParseTree*> const *array_list,
 	  }
 
 	  /* Get the dimensions of the array */
-	  Index dim(ndim,1);
+	  vector<unsigned int> dim(ndim);
 	  if (pdim) {
 	    for (int i = 0; i < ndim; ++i) {
-	      dim[i] = (long) (pdim->parameters()[i]->value() + 1.0E-6);
+              int dim_i = (int) (pdim->parameters()[i]->value() + 1.0E-6);
+              if (dim_i <= 0) {
+                 cerr << "Non-positive dimension for variable "
+                      << name << endl; 
+                 return false;
+              }
+	      dim[i] = (unsigned int) dim_i;
 	    }
 	    /* Check that dimension is consistent with length */
 	    unsigned long dimprod = 1;

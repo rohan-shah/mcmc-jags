@@ -5,7 +5,8 @@
 
 class DeterministicNode : public Node {
  public:
-  DeterministicNode(Index const &dim, std::vector<Node*> const &parents);
+  DeterministicNode(std::vector<unsigned int> const &dim,
+                    std::vector<Node*> const &parents);
   void randomSample(RNG*, unsigned int nchain) {deterministicSample(nchain);};
   /**
    * Deterministic nodes are not random variables

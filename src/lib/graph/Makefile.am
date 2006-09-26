@@ -2,7 +2,6 @@ INCLUDES = -I $(top_srcdir)/src/include
 
 noinst_LTLIBRARIES = libgraph.la
 
-libgraph_la_SOURCES = AggNode.cc MixtureNode.cc Node.cc		\
-ConstantNode.cc StochasticNode.cc LogicalNode.cc Graph.cc	\
-DeterministicNode.cc GraphMarks.cc NodeError.cc DevianceNode.cc	\
-NodeNameTab.cc
+libgraph_la_SOURCES = Node.cc DeterministicNode.cc AggNode.cc MixtureNode.cc \
+LogicalNode.cc ConstantNode.cc StochasticNode.cc Graph.cc	\
+GraphMarks.cc NodeError.cc DevianceNode.cc NodeNameTab.cc

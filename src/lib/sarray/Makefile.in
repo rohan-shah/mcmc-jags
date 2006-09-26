@@ -52,8 +52,8 @@ CONFIG_HEADER = $(top_builddir)/src/include/config.h
 CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 libsarray_la_LIBADD =
-am_libsarray_la_OBJECTS = Index.lo RangeIterator.lo SArray.lo Range.lo \
-	RangeImp.lo
+am_libsarray_la_OBJECTS = RangeImp.lo Range.lo RangeIterator.lo \
+	SArray.lo
 libsarray_la_OBJECTS = $(am_libsarray_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/src/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -188,9 +188,7 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 INCLUDES = -I $(top_srcdir)/src/include 
 noinst_LTLIBRARIES = libsarray.la
-libsarray_la_SOURCES = Index.cc RangeIterator.cc SArray.cc	\
-Range.cc RangeImp.cc 
-
+libsarray_la_SOURCES = RangeImp.cc Range.cc RangeIterator.cc SArray.cc
 noinst_HEADERS = RangeImp.h
 all: all-am
 
@@ -243,7 +241,6 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Index.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Range.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RangeImp.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RangeIterator.Plo@am__quote@

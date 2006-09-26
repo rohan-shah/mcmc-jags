@@ -24,12 +24,12 @@ Mexp::evaluate (SArray &value, vector <SArray const *> const &args) const
   delete [] expmat;
 }
 
-Index Mexp::dim (vector <Index> const &dims) const
+vector<unsigned int> Mexp::dim (vector <vector<unsigned int> > const &dims) const
 {
     return dims[0];
 }
 
-bool Mexp::checkParameterDim (vector <Index> const &dims) const
+bool Mexp::checkParameterDim (vector <vector<unsigned int> > const &dims) const
 {
     return isSquareMatrix(dims[0]);
 }

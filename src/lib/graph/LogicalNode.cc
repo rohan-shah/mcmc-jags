@@ -3,7 +3,6 @@
 #include <function/Function.h>
 #include <graph/NodeError.h>
 #include <graph/NodeNameTab.h>
-#include <sarray/Index.h>
 
 #include <stdexcept>
 #include <vector>
@@ -16,16 +15,15 @@ using std::set;
 using std::logic_error;
 using std::runtime_error;
 
-#include <iostream>
-static Index mkDim(Function const *func, vector<Node*> const &parents)
+static vector<unsigned int> mkDim(Function const *func, vector<Node*> const &parents)
 {
   /* 
      Calculates dimension of logical node as a function of its
      parameters.
   */
 
-  vector<Index> parameter_dims(parents.size());
-  for (unsigned long j = 0; j < parents.size(); ++j) {
+  vector<vector<unsigned int> > parameter_dims(parents.size());
+  for (unsigned int j = 0; j < parents.size(); ++j) {
     parameter_dims[j] = parents[j]->dim(true);
   }
   if (!func->checkParameterLength(parameter_dims.size())) {

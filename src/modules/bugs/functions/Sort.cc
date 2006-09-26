@@ -31,12 +31,12 @@ void Sort::evaluate (SArray & value, vector <SArray const *> const &args) const
   delete [] copy;
 }
 
-Index Sort::dim (vector <Index> const &dims) const
+vector<unsigned int>  Sort::dim (vector <vector<unsigned int> > const &dims) const
 {
     return dims[0];
 }
 
-bool Sort::checkParameterDim (vector<Index> const &dims) const
+bool Sort::checkParameterDim (vector<vector<unsigned int> > const &dims) const
 {
     return isVector(dims[0]) || isScalar(dims[0]);
 }

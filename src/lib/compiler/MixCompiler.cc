@@ -65,7 +65,7 @@ struct SSI {
    All possible values of Index are included in the vector, based on the
    the range of the array we are taking subsets from (default_range).
 */
-static void getSubsetRanges(vector<pair<Index, Range> > &subsets,  
+static void getSubsetRanges(vector<pair<vector<int>, Range> > &subsets,  
 			    vector<SSI> const &limits,
 			    Range const &default_range)
 {
@@ -78,8 +78,8 @@ static void getSubsetRanges(vector<pair<Index, Range> > &subsets,
   }
 
   // Create upper and lower bounds
-  Index variable_offset(nvi,1), variable_lower(nvi,1), variable_upper(nvi,1);
-  Index lower_index(ndim,1), upper_index(ndim,1);
+  vector<int> variable_offset(nvi,1), variable_lower(nvi,1), variable_upper(nvi,1);
+  vector<int> lower_index(ndim,1), upper_index(ndim,1);
   int k = 0;
   for (unsigned int j = 0; j < ndim; ++j) {
     if (limits[j].node != 0) {
@@ -100,7 +100,7 @@ static void getSubsetRanges(vector<pair<Index, Range> > &subsets,
       lower_index[variable_offset[k]] = i[k];
       upper_index[variable_offset[k]] = i[k];
     }
-    subsets.push_back(pair<Index, Range>(i, Range(lower_index, upper_index)));
+    subsets.push_back(pair<vector<int>, Range>(i, Range(lower_index, upper_index)));
   }
 }
 
@@ -201,8 +201,8 @@ static Node* getMixtureNode1(NodeArray *array, vector<SSI> const &limits, Compil
     return 0; 
   }
 
-  unsigned long nparents = stoch_parents.size();
-  Index lower(nparents,1), upper(nparents,1);
+  unsigned int nparents = stoch_parents.size();
+  vector<int> lower(nparents,1), upper(nparents,1);
   for (unsigned int i = 0; i < nparents; ++i) {
     StochasticNode const *snode = stoch_parents[i];
     Distribution const *dist = snode->distribution();
@@ -216,11 +216,11 @@ static Node* getMixtureNode1(NodeArray *array, vector<SSI> const &limits, Compil
       if (l == -DBL_MAX || u == DBL_MAX) {
 	return 0; //Unbounded parent => serious trouble
       }
-      if (l < -LONG_MAX || u > LONG_MAX) {
-	return 0; //Can't cast to long
+      if (l < -INT_MAX || u > INT_MAX) {
+	return 0; //Can't cast to int
       }
-      long il = static_cast<long>(l);
-      long iu = static_cast<long>(u);
+      int il = static_cast<int>(l);
+      int iu = static_cast<int>(u);
       if (n == 0 || il < lower[i]) {
 	lower[i] = il;
       }
@@ -239,8 +239,8 @@ static Node* getMixtureNode1(NodeArray *array, vector<SSI> const &limits, Compil
   /* Create a set containing all possible values that the stochastic
      indices can take */
 
-  set<Index> index_values;
-  Index this_index(indices.size(),1);
+  set<vector<int> > index_values;
+  vector<int>  this_index(indices.size(),1);
   Range stoch_node_range(lower, upper);
 
   for (RangeIterator i(stoch_node_range); !i.atEnd(); i.nextLeft()) {
@@ -255,7 +255,7 @@ static Node* getMixtureNode1(NodeArray *array, vector<SSI> const &limits, Compil
     }
     
     for (unsigned int l = 0; l < indices.size(); ++l) {
-      this_index[l] = static_cast<long>(*indices[l]->value(0));
+      this_index[l] = static_cast<int>(*indices[l]->value(0));
     }
     
     index_values.insert(this_index);
@@ -269,8 +269,8 @@ static Node* getMixtureNode1(NodeArray *array, vector<SSI> const &limits, Compil
 
   /* Now set up the possible subsets defined by the stochastic indices */
 
-  Index variable_offset(nvi, 1);
-  Index lower_index(ndim, 1), upper_index(ndim, 1);
+  vector<int> variable_offset(nvi, 1);
+  vector<int> lower_index(ndim, 1), upper_index(ndim, 1);
   int k = 0;
   for (unsigned int j = 0; j < ndim; ++j) {
     if (limits[j].node != 0) {
@@ -282,26 +282,26 @@ static Node* getMixtureNode1(NodeArray *array, vector<SSI> const &limits, Compil
     }
   }
 
-  vector<pair<Index, Range> > ranges;  
-  set<Index>::const_iterator p;
+  vector<pair<vector<int>, Range> > ranges;  
+  set<vector<int> >::const_iterator p;
   for (p = index_values.begin(); p != index_values.end(); ++p) {
 
-    Index const &i = *p;
+      vector<int> const &i = *p;
     for (unsigned int k = 0; k < nvi; ++k) {
       lower_index[variable_offset[k]] = i[k];
       upper_index[variable_offset[k]] = i[k];
     }
-    ranges.push_back(pair<Index, Range>(i, Range(lower_index, upper_index)));
+    ranges.push_back(pair<vector<int>, Range>(i, Range(lower_index, upper_index)));
   }
 
   /* Convert these into subsets */
 
-  vector<pair<Index, Node*> > subsets;  
+  vector<pair<vector<int>, Node*> > subsets;  
   for (unsigned int i = 0; i < ranges.size(); ++i) {
     Node *subset_node = array->getSubset(ranges[i].second);
     if (!subset_node)
       return 0;
-    subsets.push_back(pair<Index, Node*>(ranges[i].first, subset_node));
+    subsets.push_back(pair<vector<int>, Node*>(ranges[i].first, subset_node));
   }
 
   return compiler->mixtureFactory().getMixtureNode(indices, subsets);
@@ -309,14 +309,14 @@ static Node* getMixtureNode1(NodeArray *array, vector<SSI> const &limits, Compil
 
 static Node * getMixtureNode2(NodeArray *array, vector<SSI> const &limits, Compiler *compiler)
 {
-  vector<pair<Index, Range> > ranges;  
+  vector<pair<vector<int>, Range> > ranges;  
   getSubsetRanges(ranges, limits, array->range());
-  vector<pair<Index, Node*> > subsets;  
+  vector<pair<vector<int>, Node*> > subsets;  
   for (unsigned int i = 0; i < ranges.size(); ++i) {
     Node *subset_node = array->getSubset(ranges[i].second);
     if (!subset_node)
       return 0;
-    subsets.push_back(pair<Index, Node*>(ranges[i].first, subset_node));
+    subsets.push_back(pair<vector<int>, Node*>(ranges[i].first, subset_node));
   }
 
   vector<Node*> indices;

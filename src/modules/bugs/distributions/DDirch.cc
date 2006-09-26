@@ -17,7 +17,7 @@ static inline double const *ALPHA(vector<SArray const *> const &par)
     return par[0]->value();
 }
 
-static inline unsigned long LENGTH(vector<SArray const *> const &par)
+static inline unsigned int LENGTH(vector<SArray const *> const &par)
 {
     return par[0]->length();
 }
@@ -36,12 +36,12 @@ DDirch::DDirch()
 DDirch::~DDirch()
 {}
 
-Index DDirch::dim(vector<Index> const &dims) const
+vector<unsigned int> DDirch::dim(vector<vector<unsigned int> > const &dims) const
 {
     return dims[0];
 }
 
-bool DDirch::checkParameterDim(vector<Index> const &dims) const
+bool DDirch::checkParameterDim(vector<vector<unsigned int> > const &dims) const
 {
     return (dims[0].size() == 1) && (dims[0][0] > 1);
 }
@@ -49,9 +49,9 @@ bool DDirch::checkParameterDim(vector<Index> const &dims) const
 bool DDirch::checkParameterValue(vector<SArray const *> const &par) const
 {
     double const *alpha = ALPHA(par);
-    unsigned long length = LENGTH(par);
+    unsigned int length = LENGTH(par);
 
-    unsigned long nzero = 0; // No of zero shape par
+    unsigned int nzero = 0; // No of zero shape par
     for (unsigned int i = 0; i < length; i++) {
 	if (alpha[i] <= 0) {
 	    if (alpha[i] == 0) {
@@ -76,11 +76,11 @@ double DDirch::logLikelihood(SArray const &x,
 {
     double const *y = x.value();
     double const *alpha = ALPHA(par);
-    unsigned long length = LENGTH(par);
+    unsigned int length = LENGTH(par);
 
     double alphasum = 0.0;
     double loglik = 0.0;
-    for (unsigned long i = 0; i < length; i++) {
+    for (unsigned int i = 0; i < length; i++) {
 	if (alpha[i] == 0) {
 	    if (y[i] > 0)
 		return -DBL_MAX;
@@ -99,7 +99,7 @@ void DDirch::randomSample(SArray &x, vector<SArray const *> const &par,
 			  RNG *rng) const
 {
     double const *alpha = ALPHA(par);
-    unsigned long length = LENGTH(par);
+    unsigned int length = LENGTH(par);
 
     if (length != x.length()) 
 	throw length_error ("Length mismatch error in DDirch::randomSample");
@@ -109,24 +109,24 @@ void DDirch::randomSample(SArray &x, vector<SArray const *> const &par,
     */
     double *y = new double[length];
     double sumy = 0.0;
-    for (unsigned long i = 0; i < length; i++) {
+    for (unsigned int i = 0; i < length; i++) {
 	y[i] = (alpha[i]==0) ? 0 : rgamma(alpha[i], 1, rng);
 	sumy += y[i];
     }
-    for (unsigned long j = 0; j < length; j++) {
+    for (unsigned int j = 0; j < length; j++) {
 	y[j] /= sumy;
     }
     x.setValue(y, length);
     delete [] y;
 }
 
-unsigned long DDirch::df(std::vector<SArray const *> const &par) const
+unsigned int DDirch::df(std::vector<SArray const *> const &par) const
 {
-    unsigned long length = LENGTH(par);
+    unsigned int length = LENGTH(par);
     double const *alpha = ALPHA(par);
 
-    unsigned long d = length - 1;
-    for (unsigned long i = 0; i < length; ++i) {
+    unsigned int d = length - 1;
+    for (unsigned int i = 0; i < length; ++i) {
 	if (d == 0) {
 	    throw logic_error("Bad degrees of freedom in DDirch");
 	}
@@ -138,7 +138,7 @@ unsigned long DDirch::df(std::vector<SArray const *> const &par) const
 }
 
 double 
-DDirch::lowerSupport(unsigned long i,
+DDirch::lowerSupport(unsigned int i,
 		     std::vector<SArray const *> const &par) const
 {
     if (i >= LENGTH(par))
@@ -148,7 +148,7 @@ DDirch::lowerSupport(unsigned long i,
 }
 
 double 
-DDirch:: upperSupport(unsigned long i,
+DDirch:: upperSupport(unsigned int i,
 		      std::vector<SArray const *> const &par) const
 {
     if (i >= LENGTH(par))
@@ -163,13 +163,13 @@ DDirch:: upperSupport(unsigned long i,
 
 void DDirch::typicalValue(SArray &x, vector<SArray const *> const &par) const
 {
-  unsigned long N = LENGTH(par);
+  unsigned int N = LENGTH(par);
 
   double alphasum = 0.0;
-  for (unsigned long i = 0; i < N; ++i) {
+  for (unsigned int i = 0; i < N; ++i) {
     alphasum += ALPHA(par)[i];
   }
-  for (unsigned long i = 0; i < N; ++i) {
+  for (unsigned int i = 0; i < N; ++i) {
     x.setValue(ALPHA(par)[i]/alphasum, i);
   }
 }

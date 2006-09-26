@@ -10,7 +10,7 @@
 using std::vector;
 
 Slicer::Slicer(vector<StochasticNode *> const &nodes, Graph const &graph,
-	       unsigned int chain, double width, long max)
+	       unsigned int chain, double width, unsigned int max)
   : Sampler(nodes, graph, chain), _width(width), _burnin(true), _max(max),
     _sumdiff(0), _iter(0)
 {

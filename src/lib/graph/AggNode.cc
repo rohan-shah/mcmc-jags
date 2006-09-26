@@ -7,9 +7,9 @@
 using std::vector;
 using std::set;
 
-AggNode::AggNode(Index const &dim, 
+AggNode::AggNode(vector<unsigned int> const &dim, 
 		 vector<Node *> const &nodes,
-                 vector<unsigned long> const &offsets)
+                 vector<unsigned int> const &offsets)
   : DeterministicNode(dim, nodes), _offsets(offsets)
 {
   /* Check argument lengths */
@@ -18,14 +18,14 @@ AggNode::AggNode(Index const &dim,
   }
 
   /* Check that offsets are valid */
-  for (unsigned long i = 0; i < length(); i++) {
+  for (unsigned int i = 0; i < length(); i++) {
     if (offsets[i] >= parents()[i]->length())
       throw std::out_of_range("Invalid offset in Aggregate Node constructor");
   }
   
   /* See if node is discrete-valued */
   bool isdiscrete = true;
-  for (unsigned long i = 0; i < length(); i++) {
+  for (unsigned int i = 0; i < length(); i++) {
     if (!parents()[i]->isDiscreteValued()) {
       isdiscrete = false;
       break;
@@ -42,10 +42,10 @@ AggNode::~AggNode()
 
 void AggNode::deterministicSample(unsigned int chain)
 {
-  unsigned long l = this->length();
+  unsigned int l = this->length();
   double *value = new double[l];
   vector<Node*> const &par = parents();
-  for (unsigned long i = 0; i < l; ++i) {
+  for (unsigned int i = 0; i < l; ++i) {
     value[i] = par[i]->value(chain)[_offsets[i]];
   }
   setValue(value, l, chain);

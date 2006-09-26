@@ -14,15 +14,14 @@ using std::vector;
 using std::string;
 using std::runtime_error;
 
-#include <iostream>
-static Index mkDim(Distribution const *dist, vector<Node*> const &parents)
+static vector<unsigned int> mkDim(Distribution const *dist, vector<Node*> const &parents)
 {
   /* 
      Calculates dimension of stochastic node as a function of its
      parents
   */
 
-  vector<Index> parameter_dims(parents.size());
+  vector<vector<unsigned int> > parameter_dims(parents.size());
   for (unsigned long j = 0; j < parents.size(); ++j) {
     parameter_dims[j] = parents[j]->dim(true);
   }
@@ -62,7 +61,7 @@ StochasticNode::StochasticNode(Distribution const *dist,
   if (parameters.size() != _dist->npar()) {
     throw NodeError(this, "Incorrect number of parameters for distribution");
   }
-  vector<Index> parameter_dims;
+  vector<vector<unsigned int> > parameter_dims;
   parameter_dims.reserve(parameters.size());
   for (unsigned int i = 0; i < parameters.size(); ++i) {
     parameter_dims.push_back(parameters[i]->dim(true));

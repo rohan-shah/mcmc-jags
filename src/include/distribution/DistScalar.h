@@ -58,12 +58,12 @@ class DistScalar : public Distribution
   /**
    * All scalar distributions have the same dimension
    */
-  Index dim(std::vector<Index> const &parameters) const;
-  double lowerSupport(unsigned long i,
+  std::vector<unsigned int> 
+      dim(std::vector<std::vector<unsigned int> > const &parameters) const;
+  double lowerSupport(unsigned int i,
 		      std::vector<SArray const *> const &parameters) const;
-  double upperSupport(unsigned long i,
+  double upperSupport(unsigned int i,
 		      std::vector<SArray const *> const &parameters) const;
-  unsigned long df(std::vector<SArray const *> const &parameters) const;
   /**
    * Lower limit of distribution, given parameters, but ignoring
    * bounds.  If the distribution has no lower limit, this should
@@ -131,7 +131,8 @@ class DistScalar : public Distribution
    * scalar.  Distributions that do not take scalar parameters need to
    * overload this
    */
-  bool checkParameterDim (std::vector<Index> const &dims) const;
+  bool checkParameterDim (std::vector<std::vector<unsigned int> > const &dims)
+      const;
 };
 
 #endif /* DIST_SCALAR_H_ */

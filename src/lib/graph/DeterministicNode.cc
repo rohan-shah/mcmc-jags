@@ -1,11 +1,9 @@
 #include <config.h>
 #include <graph/DeterministicNode.h>
-//#include <graph/NodeError.h>
-#include <stdexcept>
 
-using std::set;
-using std::logic_error;
+using std::vector;
 
-DeterministicNode::DeterministicNode(Index const &dim, std::vector<Node*> const &parents)
+DeterministicNode::DeterministicNode(vector<unsigned int> const &dim, 
+                                     vector<Node*> const &parents)
   : Node(dim, parents)
 {}

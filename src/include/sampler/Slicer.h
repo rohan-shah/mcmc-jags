@@ -18,9 +18,9 @@ class Slicer : public Sampler
 {
   double _width;
   bool _burnin;
-  long _max;
+  unsigned int _max;
   double _sumdiff;
-  long _iter;
+  unsigned int _iter;
   bool accept(double xold, double xnew, double z, double L, double R);
  public:
   /**
@@ -31,7 +31,7 @@ class Slicer : public Sampler
    * @param max Maximum number of times initial width of slice will increase.
    */
   Slicer(std::vector<StochasticNode*> const &nodes, Graph const &graph,
-	 unsigned int chain, double width,  long max);
+	 unsigned int chain, double width,  unsigned int max);
   /**
    * Update the current value using the "stepping" method
    */

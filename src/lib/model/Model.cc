@@ -259,7 +259,7 @@ void Model::chooseSamplers()
   _can_sample = true;
 }
 
-void Model::update(long niter)
+void Model::update(unsigned int niter)
 {
     if (!_is_initialized) {
 	throw logic_error("Attempt to update uninitialized model");
@@ -293,7 +293,7 @@ void Model::update(long niter)
     }
 }
 
-long Model::iteration(unsigned int chain) const
+unsigned int Model::iteration(unsigned int chain) const
 {
   return _chain_info[chain].iteration;
 }

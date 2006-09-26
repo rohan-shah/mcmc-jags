@@ -19,7 +19,7 @@ public:
   LogDet ();
 
   double eval (std::vector <SArray const *> const &args) const;
-  bool checkParameterDim (std::vector <Index> const &dims) const;
+  bool checkParameterDim (std::vector<std::vector<unsigned int> > const &dims) const;
 };
 
 #endif /* LOG_DET_H_ */

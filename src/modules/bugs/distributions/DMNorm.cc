@@ -99,7 +99,7 @@ void DMNorm::randomsample(double *x, double const *mu, double const *T,
   delete [] Tcopy;
 }
 
-bool DMNorm::checkParameterDim(vector<Index> const &dims) const
+bool DMNorm::checkParameterDim(vector<vector<unsigned int> > const &dims) const
 {
   if (!isVector(dims[0]))
     return false;
@@ -111,14 +111,14 @@ bool DMNorm::checkParameterDim(vector<Index> const &dims) const
   return true;
 }
 
-Index DMNorm::dim(vector<Index> const &dims) const
+vector<unsigned int> DMNorm::dim(vector<vector<unsigned int> > const &dims) const
 {
   return dims[0];
 }
 
 bool DMNorm::checkParameterValue(vector<SArray const *> const &parameters) const
 {
-  long n = parameters[0]->length();
+  unsigned int n = parameters[0]->length();
 
   double const *T = parameters[1]->value();
   // Check symmetry
@@ -133,16 +133,16 @@ bool DMNorm::checkParameterValue(vector<SArray const *> const &parameters) const
   return true;
 }
 
-unsigned long DMNorm::df(std::vector<SArray const *> const &parameters) const
+unsigned int DMNorm::df(std::vector<SArray const *> const &parameters) const
 {
     return parameters[0]->length();
 }
 
 double 
-DMNorm::lowerSupport(unsigned long i,
+DMNorm::lowerSupport(unsigned int i,
 		     std::vector<SArray const *> const &parameters) const
 {
-  unsigned long m = parameters[0]->length();
+  unsigned int m = parameters[0]->length();
   if (i >= m)
     throw logic_error("Invalid index in DMNorm::lowerSupport");
   
@@ -150,10 +150,10 @@ DMNorm::lowerSupport(unsigned long i,
 }
 
 double 
-DMNorm::upperSupport(unsigned long i,
+DMNorm::upperSupport(unsigned int i,
 		     std::vector<SArray const *> const &parameters) const
 {
-  unsigned long m = parameters[0]->length();
+  unsigned int m = parameters[0]->length();
   if (i >= m)
     throw logic_error("Invalid index in DMNorm::upperSupport");
 

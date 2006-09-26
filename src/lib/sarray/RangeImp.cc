@@ -5,204 +5,209 @@
 #include <stdexcept>
 #include <sstream>
 
+using std::vector;
 using std::min;
 using std::max;
 using std::out_of_range;
 using std::invalid_argument;
 using std::logic_error;
-//using std::ostringstream;
 using std::string;
 
-static Index makeDim(Index const &lower, Index const &upper, bool drop)
+static vector<unsigned int> 
+makeDim(vector<int> const &lower, vector<int> const &upper)
 {
-  /* 
-     Utility function for constructor: calculates the dimension of the
-     range with, or without, dropping of scalar dimensions.
-  */
-  unsigned int ndim = upper.size();
+    /* 
+       Utility function for constructor: calculates the dimension of the
+       range with, or without, dropping of scalar dimensions.
+    */
+    unsigned int ndim = upper.size();
 
-  if (!drop) {
-    //We only need to check this once
     if (lower.size() != ndim) {
-      throw logic_error("RangeImp: Length mismatch in constructor");
+	throw logic_error("RangeImp: Length mismatch in constructor");
+    }
+    for (unsigned int i = 0; i < ndim; i++) {
+	if (upper[i] < lower[i]) {
+	    throw out_of_range("RangeImp: upper < lower bound in constructor");
+	}
+    }
+    
+    vector<unsigned int> dim(ndim);
+    for (unsigned int i = 0; i < ndim; i++) {
+	dim[i] = static_cast<unsigned int>(upper[i] - lower[i] + 1);
+    }
+    return dim;
+}
+
+static vector<unsigned int> makeDimDropped(vector<unsigned int> const &dim)
+{
+    /* 
+       Utility function for constructor. Reduces the dimensions of 
+       an array by dropping scalar dimensions.
+    */
+
+    unsigned int ndim = dim.size();
+    unsigned int size = 0;
+    for (unsigned int i = 0; i < ndim; i++) {
+	size += (dim[i] > 1);
+    }
+    if (size == ndim) {
+	// No scalar dimensions OR null dimension
+	return dim;
+    }
+    else if (size == 0) {
+	// All dimensions are scalar. Keep one of them.
+	return vector<unsigned int>(1,1);
     }
     else {
-      for (unsigned int i = 0; i < ndim; i++) {
-	if (upper[i] < lower[i]) {
-	  throw out_of_range("RangeImp: upper < lower bound in constructor");
-      }
-      }
+	vector<unsigned int> newdim(size);
+	unsigned int j = 0;
+	for (unsigned int i = 0; i < ndim; i++) {
+	    if (dim[i] > 1) {
+		newdim[j++] = dim[i];
+	    }
+	}
+	return newdim;
     }
-  }
-
-  long *dim = new long[ndim];
-
-  int size = 0;
-  for (unsigned int i = 0; i < ndim; i++) {
-    long d = (upper[i] - lower[i] + 1);
-    if (!drop || d > 1) {
-      dim[size++] = d;
-    }
-  }
-
-  if (drop && size == 0) {
-    delete [] dim;
-    return Index(1,1); //FIXME: Why?
-  }
-  else {
-    Index index(size,1);
-    for (int j = 0; j < size; j++) {
-      index[j] = dim[j];
-    }
-    delete [] dim;
-    return index;
-  }
 }
 
-static unsigned long makeLength(Index const &lower, Index const &upper)
+static unsigned int 
+makeLength(vector<unsigned int> const &dim)
 {
-  /* 
-     Utility function for constructor: calculates the length of the
-     range.
-  */
-  unsigned int ndim = upper.size();
-  if (ndim == 0) {
-    return 0;
-  }
-  else {
-    unsigned long length = 1;
-    for (unsigned int i = 0; i < ndim; i++) {
-      length *= (upper[i] - lower[i] + 1);
+    /* 
+       Utility function for constructor: calculates the length of the
+       range based on its dimensions
+    */
+    unsigned int ndim = dim.size();
+    if (ndim == 0) {
+	return 0;
     }
-    return length;
-  }
+    else {
+	unsigned int length = 1;
+	for (unsigned int i = 0; i < ndim; i++) {
+	    length *= dim[i];
+	}
+	return length;
+    }
 }
 
-RangeImp::RangeImp(Index const &lower, Index const &upper)
-  : _lower(lower), _upper(upper), 
-	   _dim(makeDim(lower, upper, false)),
-	   _dim_dropped(makeDim(lower, upper, true)), 
-	   _length(makeLength(lower, upper))
-    
+RangeImp::RangeImp(vector<int> const &lower, vector<int> const &upper)
+    : _lower(lower), _upper(upper), 
+      _dim(makeDim(lower, upper)),
+      _dim_dropped(makeDimDropped(_dim)),
+      _length(makeLength(_dim))
 {
 }
 
-unsigned long RangeImp::length() const
+unsigned int RangeImp::length() const
 {
-  return _length;
+    return _length;
 }
 
 unsigned int RangeImp::ndim(bool drop) const
 {
-  if (drop)
-    return _dim_dropped.size();
-  else
-    return _dim.size();
+    return drop ? _dim_dropped.size() : _dim.size();
 }
 
-Index const &RangeImp::dim(bool drop) const
+vector<unsigned int> const &RangeImp::dim(bool drop) const
 {
-  if (drop)
-    return _dim_dropped;
-  else
-    return _dim;
+    return drop ? _dim_dropped : _dim;
 }
 
 bool RangeImp::contains(RangeImp const &other) const
 {
-  unsigned int ndim = _upper.size();
-  if (other._lower.size() != ndim) {
-    throw invalid_argument("Range::contains. Dimension mismatch");
-  }
- 
-  for (unsigned int i = 0; i < ndim; ++i) {
-    if (other._lower[i] < _lower[i] || other._upper[i] > _upper[i])
-      return false;
-  }
-  return true;
+    unsigned int ndim = _upper.size();
+    if (other._lower.size() != ndim) {
+	throw invalid_argument("Range::contains. Dimension mismatch");
+    }
+  
+    for (unsigned int i = 0; i < ndim; ++i) {
+	if (other._lower[i] < _lower[i] || other._upper[i] > _upper[i]) {
+	    return false;
+	}
+    }
+    return true;
 }
 
 bool RangeImp::overlaps(RangeImp const &other) const
 {
-  unsigned int dim = _upper.size();
-  if (other.ndim(false) != dim) {
-    throw invalid_argument("RangeImp::overlaps. Dimension mismatch");
-  }
-
-  for (unsigned int i = 0; i < dim; i++) {
-    if (max(_lower[i], other._lower[i]) > min(_upper[i], other._upper[i])) {
-      return false;
+    unsigned int dim = _upper.size();
+    if (other.ndim(false) != dim) {
+	throw invalid_argument("RangeImp::overlaps. Dimension mismatch");
     }
-  }
-  return true;
+
+    for (unsigned int i = 0; i < dim; i++) {
+	if (max(_lower[i], other._lower[i]) > min(_upper[i], other._upper[i])) 
+	    return false;
+    }
+    return true;
 }
 
-unsigned long RangeImp::leftOffset(Index const &index) const
+unsigned int RangeImp::leftOffset(vector<int> const &index) const
 {
-  if (!contains(RangeImp(index,index))) {
-    throw out_of_range("RangeImp::leftOffset. Index outside of allowed range");
-  }
+    if (!contains(RangeImp(index,index))) {
+	throw out_of_range("RangeImp::leftOffset. Index outside of allowed range");
+    }
   
-  unsigned long offset = 0;
-  long step = 1;
-  unsigned int ndim = _upper.size();
-  for (unsigned int i = 0; i < ndim; i++) {
-      offset += step * (index[i] - _lower[i]);
-      step *= (_upper[i] - _lower[i] + 1);
-  }
-  return offset;
+    unsigned int offset = 0;
+    int step = 1;
+    unsigned int ndim = _upper.size();
+    for (unsigned int i = 0; i < ndim; i++) {
+	offset += step * (index[i] - _lower[i]);
+	step *= _dim[i];
+    }
+    return offset;
 }
 
-Index RangeImp::leftIndex(unsigned long offset) const
+vector<int> RangeImp::leftIndex(unsigned int offset) const
 {
-  if (offset >= _length) {
-    throw out_of_range("RangeImp::leftIndex. Offset exceeds length of range");
-  }
+    if (offset >= _length) {
+	throw out_of_range("RangeImp::leftIndex. Offset exceeds length of range");
+    }
 
-  unsigned int ndim = _lower.size();
-  Index index(_lower);
-  for (unsigned int i = 0; i < ndim; ++i) {
-    index[i] += offset % _dim[i];
-    offset = offset / _dim[i];
-  }
-  return index;
+    unsigned int ndim = _lower.size();
+    vector<int> index(_lower);
+    for (unsigned int i = 0; i < ndim; ++i) {
+	index[i] += offset % _dim[i];
+	offset = offset / _dim[i];
+    }
+    return index;
 }
 
-unsigned long RangeImp::rightOffset(Index const &index) const
+unsigned int RangeImp::rightOffset(vector<int> const &index) const
 {
-  if (!contains(RangeImp(index,index))) {
-    throw out_of_range("RangeImp::rightOffset.Index outside of allowed range");
-  }
+    if (!contains(RangeImp(index,index))) {
+	throw out_of_range("RangeImp::rightOffset. Index outside of allowed range");
+    }
  
-  unsigned long offset = 0;
-  long step = 1;
-  for (int i = _upper.size() - 1; i >= 0; --i) {
-    offset += step * (index[i] - _lower[i]);
-    step *= (_upper[i] - _lower[i] + 1);
-  }
-  return offset;
+    unsigned int offset = 0;
+    int step = 1;
+    for (int i = _upper.size() - 1; i >= 0; --i) {
+	offset += step * (index[i] - _lower[i]);
+	step *= _dim[i];
+    }
+    return offset;
 }
 
-Index RangeImp::rightIndex(unsigned long offset) const
+vector<int> RangeImp::rightIndex(unsigned int offset) const
 {
-  if (offset >= _length)
-    throw out_of_range("RangeImp::rightIndex. Offset exceeds length of range");
+    if (offset >= _length)
+	throw out_of_range("RangeImp::rightIndex. Offset exceeds length of range");
 
-  int ndim = _lower.size();
-  Index index(_lower);
-  for (int i = ndim - 1; i >= 0; --i) {
-    index[i] += offset % _dim[i];
-    offset = offset / _dim[i];
-  }
-  return index;
+    int ndim = _lower.size();
+    vector<int> index(_lower);
+    for (int i = ndim - 1; i >= 0; --i) {
+	index[i] += offset % _dim[i];
+	offset = offset / _dim[i];
+    }
+    return index;
 }
 
-Index const & RangeImp::lower() const
+vector<int> const & RangeImp::lower() const
 {
   return _lower;
 }
 
-Index const & RangeImp::upper() const
+vector<int> const & RangeImp::upper() const
 {
   return _upper;
 }

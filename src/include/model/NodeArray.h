@@ -22,19 +22,20 @@ class NodeArray {
   unsigned int _nchain;
   Graph _graph;
   Node **_node_pointers;
-  long *_offsets;
+  unsigned int *_offsets;
   std::map<Range, Node *> _generated_nodes;
 
   /* Forbid copying */
   NodeArray(NodeArray const &orig);
   NodeArray &operator=(NodeArray const &rhs);
 
-  bool findActiveIndices(Index &ind, unsigned int k, Index const &lower, Index const &dim) const;
+  bool findActiveIndices(std::vector<unsigned int> &ind, unsigned int k,
+                         std::vector<int> const &lower, std::vector<unsigned int> const &dim) const;
 public:
   /**
    * Constructor. Creates a NodeArray with the given name and dimension
    */
-  NodeArray(std::string const &name, Index const &dim, unsigned int nchain);
+  NodeArray(std::string const &name, std::vector<unsigned int> const &dim, unsigned int nchain);
   ~NodeArray();
   /**
    * Inserts a node into the subset of the NodeArray defined by range.

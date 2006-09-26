@@ -50,9 +50,9 @@ CONFIG_HEADER = $(top_builddir)/src/include/config.h
 CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 libgraph_la_LIBADD =
-am_libgraph_la_OBJECTS = AggNode.lo MixtureNode.lo Node.lo \
-	ConstantNode.lo StochasticNode.lo LogicalNode.lo Graph.lo \
-	DeterministicNode.lo GraphMarks.lo NodeError.lo \
+am_libgraph_la_OBJECTS = Node.lo DeterministicNode.lo AggNode.lo \
+	MixtureNode.lo LogicalNode.lo ConstantNode.lo \
+	StochasticNode.lo Graph.lo GraphMarks.lo NodeError.lo \
 	DevianceNode.lo NodeNameTab.lo
 libgraph_la_OBJECTS = $(am_libgraph_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/src/include
@@ -187,10 +187,9 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 INCLUDES = -I $(top_srcdir)/src/include
 noinst_LTLIBRARIES = libgraph.la
-libgraph_la_SOURCES = AggNode.cc MixtureNode.cc Node.cc		\
-ConstantNode.cc StochasticNode.cc LogicalNode.cc Graph.cc	\
-DeterministicNode.cc GraphMarks.cc NodeError.cc DevianceNode.cc	\
-NodeNameTab.cc
+libgraph_la_SOURCES = Node.cc DeterministicNode.cc AggNode.cc MixtureNode.cc \
+LogicalNode.cc ConstantNode.cc StochasticNode.cc Graph.cc	\
+GraphMarks.cc NodeError.cc DevianceNode.cc NodeNameTab.cc
 
 all: all-am
 

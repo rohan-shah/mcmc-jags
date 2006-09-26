@@ -26,7 +26,7 @@ public:
    * 
    * @param dim Dimension of SArray to be constructed
    */
-  SArray(Index const &dim);
+  SArray(std::vector<unsigned int> const &dim);
   /**
    * Copy constructor. 
    *
@@ -53,7 +53,7 @@ public:
    *
    * @exception logic_error length_error
    */
-  void setValue(double const *value, unsigned long length);
+  void setValue(double const *value, unsigned int length);
   /**
    * Sets the value of a single element of SArray
    *
@@ -61,7 +61,7 @@ public:
    *
    * @param offset Distance along the value array
    */
-  void setValue(double value, unsigned long offset);
+  void setValue(double value, unsigned int offset);
   /**
    * The value of the SArray in vector form. 
    *
@@ -109,9 +109,9 @@ public:
    * can be thought of as having some of the dimension attributes
    * of its associated range.
    */
-  unsigned long length() const { return range().length(); }
+  unsigned int length() const { return range().length(); }
   unsigned int ndim(bool drop) const { return range().ndim(drop); }
-  Index const &dim(bool drop) const { return range().dim(drop); }
+  std::vector <unsigned int> const &dim(bool drop) const { return range().dim(drop); }
 };
 
 

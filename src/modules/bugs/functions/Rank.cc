@@ -40,12 +40,12 @@ void Rank::evaluate (SArray & value, vector <SArray const *> const &args) const
   delete [] ranks;
 }
 
-Index Rank::dim (vector <Index> const &dims) const
+vector<unsigned int>  Rank::dim (vector <vector<unsigned int> > const &dims) const
 {
   return dims[0];
 }
 
-bool Rank::checkParameterDim (vector<Index> const &dims) const
+bool Rank::checkParameterDim (vector<vector<unsigned int> > const &dims) const
 {
     return isVector(dims[0]) || isScalar(dims[0]);
 }

@@ -12,7 +12,7 @@ class Max: public ScalarFunc
 public:
   Max ();
   double eval (std::vector <SArray const *> const &args) const;
-  bool checkParameterDim (std::vector <Index> const &dims) const;
+  bool checkParameterDim (std::vector <std::vector<unsigned int> > const &dims) const;
   /** Returns true if all arguments are true */
   bool isDiscreteValued(std::vector<bool> const &mask) const;
 };

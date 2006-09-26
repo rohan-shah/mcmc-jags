@@ -29,7 +29,7 @@ public:
    * Checks that x is scalar, t is scalar and Lambda is
    * a square matrix
    */
-  bool checkParameterDim(std::vector<Index> const &dims) const;
+  bool checkParameterDim(std::vector<std::vector<unsigned int> > const &dims) const;
   /** Checks that x is discrete */
   bool checkParameterDiscrete(std::vector<bool> const &mask) const;
   /**

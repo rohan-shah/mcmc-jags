@@ -29,12 +29,12 @@ static inline double DF(vector<SArray const *> const &par)
     return  *par[1]->value();
 }
 
-static inline unsigned long NROW(vector<SArray const *> const &par)
+static inline unsigned int NROW(vector<SArray const *> const &par)
 {
     return par[0]->dim(true)[0];
 }
 
-static inline unsigned long LENGTH(vector<SArray const *> const &par)
+static inline unsigned int LENGTH(vector<SArray const *> const &par)
 {
     return par[0]->length();
 }
@@ -51,10 +51,10 @@ double DWish::logLikelihood(SArray const &x,
 {
     double const *y = x.value();
     double const *scale = SCALE(par);
-    long p = NROW(par);
+    unsigned int p = NROW(par);
 
     double loglik = 0;
-    long length = LENGTH(par);
+    unsigned int length = LENGTH(par);
     for (int i = 0; i < length; ++i) {
 	loglik += scale[i] * y[i];
     }
@@ -66,14 +66,14 @@ double DWish::logLikelihood(SArray const &x,
 void DWish::randomSample(SArray &x, vector<SArray const *> const &par,
 			 RNG *rng) const
 {
-  long length = LENGTH(par);
+  unsigned int length = LENGTH(par);
   double *y = new double[length];
   randomSample(y, length, SCALE(par), DF(par), NROW(par), rng);
   x.setValue(y, length);
   delete [] y;
 }
 
-void DWish::randomSample(double *x, long length,
+void DWish::randomSample(double *x, unsigned int length,
 			 double const *R, double k, int nrow,
                          RNG *rng)
 {
@@ -154,12 +154,12 @@ void DWish::randomSample(double *x, long length,
     delete [] Ztrans;
 }
 
-bool DWish::checkParameterDim (vector<Index> const &dims) const
+bool DWish::checkParameterDim (vector<vector<unsigned int> > const &dims) const
 {
   return isSquareMatrix(dims[0]) && isScalar(dims[1]);
 }
 
-Index DWish::dim(vector<Index> const &dims) const
+vector<unsigned int> DWish::dim(vector<vector<unsigned int> > const &dims) const
 {
   return dims[0];
 }
@@ -171,7 +171,7 @@ bool DWish::checkParameterValue (vector<SArray const *> const &par) const
 	return false;
     /* Check symmetry of scale matrix */
     double const *scale = SCALE(par);
-    long nrow = NROW(par);
+    unsigned int nrow = NROW(par);
     for (int i = 0; i < nrow; ++i) {
 	for (int j = 0; j < i; ++i) {
 	    if (fabs(scale[i + nrow*j] - scale[j + nrow*i]) > DBL_EPSILON)
@@ -182,13 +182,13 @@ bool DWish::checkParameterValue (vector<SArray const *> const &par) const
     return true;
 }
 
-unsigned long DWish::df(std::vector<SArray const *> const &par) const
+unsigned int DWish::df(std::vector<SArray const *> const &par) const
 {
     return LENGTH(par);
 }
 
 double 
-DWish::lowerSupport(unsigned long i,
+DWish::lowerSupport(unsigned int i,
 		    std::vector<SArray const *> const &par) const
 {
     if (i % NROW(par) == i / NROW(par)) {
@@ -201,7 +201,7 @@ DWish::lowerSupport(unsigned long i,
 }
 
 double 
-DWish::upperSupport(unsigned long i,
+DWish::upperSupport(unsigned int i,
 		    std::vector<SArray const *> const &par) const
 {
     return DBL_MAX;
@@ -214,10 +214,10 @@ DWish::typicalValue(SArray &x, std::vector<SArray const *> const &par)
   /* Returns the mean as a typical value. We need to invert the
      scale matrix */
 
-  unsigned long length = LENGTH(par);
+  unsigned int length = LENGTH(par);
   double * C = new double[length];
   inverse(C, SCALE(par), NROW(par), true);
-  for (unsigned long i = 0; i < length; ++i) {
+  for (unsigned int i = 0; i < length; ++i) {
     C[i] *= DF(par);
   }
   x.setValue(C, length);

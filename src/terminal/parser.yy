@@ -479,17 +479,17 @@ static Range getRange(ParseTree const *var)
   */
   unsigned int size = var->parameters().size();
 
-  Index ind_lower(size,1), ind_upper(size,1);
+  std::vector<int>  ind_lower(size), ind_upper(size);
   for (unsigned int i = 0; i < size; ++i) {
     ParseTree const *range_element = var->parameters()[i];
     switch(range_element->parameters().size()) {
     case 1:
-      ind_lower[i] = (long) (range_element->parameters()[0]->value() + 1.0E-6);
+      ind_lower[i] = (int) (range_element->parameters()[0]->value() + 1.0E-6);
       ind_upper[i] = ind_lower[i];
       break;
     case 2:
-      ind_lower[i] = (long) (range_element->parameters()[0]->value() + 1.0E-6);  
-      ind_upper[i] = (long) (range_element->parameters()[1]->value() + 1.0E-6);
+      ind_lower[i] = (int) (range_element->parameters()[0]->value() + 1.0E-6);  
+      ind_upper[i] = (int) (range_element->parameters()[1]->value() + 1.0E-6);
       break;
     default:
       //Error! FIXME
@@ -703,7 +703,7 @@ void doDump(std::string const &file, DumpType type, unsigned int chain)
     double const *value = sarray.value();
     long length = sarray.length();
     out << "\"" << name << "\" <- " << std::endl;
-    Index const &dim = sarray.dim(false);
+    std::vector<unsigned int> const &dim = sarray.dim(false);
     bool discrete = sarray.isDiscreteValued();
 
     if (discrete) {

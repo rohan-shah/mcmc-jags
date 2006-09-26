@@ -31,7 +31,7 @@ double Min::eval (vector <SArray const *> const &args) const
 }
 
 // Overriding ScalarFunc::checkParameterDim
-bool Min::checkParameterDim (vector <Index> const &dims) const
+bool Min::checkParameterDim (vector<vector<unsigned int> > const &dims) const
 {
   return true;
 }

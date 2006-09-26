@@ -20,7 +20,7 @@ class DNormMix : public DistReal {
   double q(double p, std::vector<SArray const *> const &parameters, bool lower,
 	   bool log_p) const;
   double r(std::vector<SArray const *> const &parameters, RNG *rng) const;
-  bool checkParameterDim(std::vector<Index> const &dims) const;
+  bool checkParameterDim(std::vector<std::vector<unsigned int> > const &dims) const;
   bool checkParameterValue(std::vector<SArray const *> const &parameters) const;
   void typicalValue(SArray&, std::vector<SArray const *> const &par) const;
 };

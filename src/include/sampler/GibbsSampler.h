@@ -27,7 +27,7 @@ class GibbsSampler : public Sampler {
    * deterministic descendants
    * @see Sampler::setValue
    */
-  void setValue(double const *value, unsigned long length);
+  void setValue(double const *value, unsigned int length);
 };
 
 #endif /* GIBBS_SAMPLER_H_ */

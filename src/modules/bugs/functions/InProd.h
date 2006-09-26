@@ -16,7 +16,7 @@ class InProd : public ScalarFunc
 public:
   InProd ();
   double eval (std::vector <SArray const *> const &args) const;
-  bool checkParameterDim (std::vector <Index> const &dims) const;
+  bool checkParameterDim (std::vector <std::vector<unsigned int> > const &dims) const;
   bool isDiscreteValued(std::vector<bool> const &mask) const;
   bool isLinear(std::vector<bool> const &mask,
                 std::vector<bool> const &fix) const;

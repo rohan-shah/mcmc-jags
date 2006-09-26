@@ -9,8 +9,8 @@ class Mexp : public Function
   Mexp();
   void evaluate (SArray &value,
 		 std::vector <SArray const *> const &args) const;
-  Index dim (std::vector <Index> const &dims) const;
-  bool checkParameterDim (std::vector <Index> const &dims) const;
+  std::vector<unsigned int> dim (std::vector<std::vector<unsigned int> > const &dims) const;
+  bool checkParameterDim (std::vector <std::vector<unsigned int> > const &dims) const;
 };
 
 #endif /* MEXP_H_ */

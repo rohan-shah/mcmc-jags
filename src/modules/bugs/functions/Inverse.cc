@@ -21,12 +21,12 @@ Inverse::evaluate (SArray & value, vector <SArray const *> const &args) const
     delete y;
 }
 
-bool Inverse::checkParameterDim (vector <Index> const &dims) const
+bool Inverse::checkParameterDim (vector<vector<unsigned int> > const &dims) const
 {
     return isSquareMatrix(dims[0]);
 }
 
-Index Inverse::dim (vector <Index> const &dims) const
+vector<unsigned int> Inverse::dim (vector<vector<unsigned int> > const &dims) const
 {
     return dims[0];
 }

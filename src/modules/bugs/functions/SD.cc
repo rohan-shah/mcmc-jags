@@ -39,7 +39,7 @@ SD::eval (vector < SArray const *>const &args) const
   return svalue;
 }
 
-bool SD::checkParameterDim (vector <Index> const &dims) const
+bool SD::checkParameterDim (vector<vector<unsigned int> > const &dims) const
 {
   return dims[0][0] >= 2;
 }

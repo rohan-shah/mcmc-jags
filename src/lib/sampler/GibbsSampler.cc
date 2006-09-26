@@ -15,7 +15,7 @@ GibbsSampler::GibbsSampler(StochasticNode *node,
 {
 }
 
-void GibbsSampler::setValue(double const *value, unsigned long length)
+void GibbsSampler::setValue(double const *value, unsigned int length)
 {
   nodes().front()->setValue(value, length, chain());
   vector<DeterministicNode*> const &dc = deterministicChildren();

@@ -24,22 +24,22 @@ public:
    * Checks that mu is a vector, T is a square matrix and the sizes of
    * mu and T conform.
    */
-  bool checkParameterDim (std::vector<Index> const &dims) const;
+  bool checkParameterDim (std::vector<std::vector<unsigned int> > const &dims) const;
   /**
    * Checks that T is symmetric. Note that there is currently NO CHECK
    * that T is positive definite.
    */
   bool checkParameterValue (std::vector<SArray const *> const &parameters) const;
-  Index dim(std::vector<Index> const &dims) const;
+  std::vector<unsigned int> dim(std::vector<std::vector<unsigned int> > const &dims) const;
   /**
    * Convenience random sampler function 
    */
   static void randomsample(double *x, double const *mu, double const *tau,
 			   int nrow, RNG *rng);
-  unsigned long df(std::vector<SArray const *> const &parameters) const;
-  double lowerSupport(unsigned long i,
+  unsigned int df(std::vector<SArray const *> const &parameters) const;
+  double lowerSupport(unsigned int i,
 		      std::vector<SArray const *> const &parameters) const;
-  double upperSupport(unsigned long i,
+  double upperSupport(unsigned int i,
 		      std::vector<SArray const *> const &parameters) const;
   void typicalValue(SArray &x, std::vector<SArray const *> const &parameters)
     const;

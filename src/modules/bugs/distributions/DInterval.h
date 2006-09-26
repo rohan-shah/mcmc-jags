@@ -23,19 +23,19 @@ class DInterval : public Distribution {
   /**
    * Checks that t is scalar and that cutpoints is a vector
    */
-  bool checkParameterDim(std::vector<Index> const &parameters) const;
+  bool checkParameterDim(std::vector<std::vector<unsigned int> > const &parameters) const;
   /**
    * Checks that cutpoints are in ascending order
    */
   bool checkParameterValue(std::vector<SArray const *> const &parameters) const;
-  Index dim(std::vector<Index> const &dims) const;
+  std::vector<unsigned int> dim(std::vector<std::vector<unsigned int> > const &dims) const;
   /**
    * Returns zero
    */
-  unsigned long df(std::vector<SArray const *> const &parameters) const;
-  double lowerSupport(unsigned long i,
+  unsigned int df(std::vector<SArray const *> const &parameters) const;
+  double lowerSupport(unsigned int i,
 		      std::vector<SArray const *> const &parameters) const;
-  double upperSupport(unsigned long i,
+  double upperSupport(unsigned int i,
 		      std::vector<SArray const *> const &parameters) const;
 
   void typicalValue(SArray &x, std::vector<SArray const *> const &parameters)

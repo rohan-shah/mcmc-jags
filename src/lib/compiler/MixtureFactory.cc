@@ -35,8 +35,8 @@ bool compMixPair(MixPair const &arg1, MixPair const &arg2)
   }
 
   //Same indices. Now compare parameters 
-  vector<pair<Index, Node*> > const &parameters1 = arg1.second;
-  vector<pair<Index, Node*> > const &parameters2 = arg2.second;
+  vector<pair<vector<int>, Node*> > const &parameters1 = arg1.second;
+  vector<pair<vector<int>, Node*> > const &parameters2 = arg2.second;
   if (parameters1.size() < parameters2.size()) {
     return true;
   }
@@ -64,7 +64,7 @@ bool compMixPair(MixPair const &arg1, MixPair const &arg2)
 
 MixtureNode *
 MixtureFactory::getMixtureNode(vector<Node*> const &index,
-			       vector<pair<Index, Node*> > const &parameters)
+			       vector<pair<vector<int>, Node*> > const &parameters)
 {
   MixPair mpair(index, parameters);
   map<MixPair, MixtureNode*, ltmixpair>::const_iterator p = 

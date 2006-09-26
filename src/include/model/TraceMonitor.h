@@ -9,13 +9,13 @@ class Node;
  */
 class TraceMonitor {
   Node const *_node;                  
-  long _start;                  
-  long _end;                    
+  unsigned int _start;                  
+  unsigned int _end;                    
   int _thin;                         // thinning interval (=1/frequency)
   double *_values;                   // vector containing sampled values
-  long _size;                        // current size of _values
-  long _maxsize;                     // maximum size of _values (or -1)
-  long _current;                     // current index value of vector
+  unsigned int _size;                        // current size of _values
+  unsigned int _maxsize;                     // maximum size of _values (or -1)
+  unsigned int _current;                     // current index value of vector
  public:
   /**
    * Constructor for a TraceMonitor of finite size
@@ -25,7 +25,8 @@ class TraceMonitor {
    * @param thin Thinning interval for monitor.  The monitor only
    * stores iteration for which (iteration number)%thin == 0.
    */
-  TraceMonitor(Node const *node, long start, long end, int thin);
+  TraceMonitor(Node const *node, unsigned int start, unsigned int end,
+               unsigned int thin);
   /**
    * Constructor for an open-ended TraceMonitor. The Monitor will
    * continue to sample values until it is deleted
@@ -34,37 +35,37 @@ class TraceMonitor {
    * @param thin Thinning interval for monitor.  The monitor only
    * stores iterations for which (iteration number)%thin == 0.
    */
-  TraceMonitor(Node const *node, long start, int thin);
+  TraceMonitor(Node const *node, unsigned int start, unsigned int thin);
   ~TraceMonitor();
   /**
    * Iteration number at which the node started monitoring.  This
    * may be different from the starting iteration requested in the
    * constructor if the thinning interval is > 1.
    */
-  long start() const; 
+  unsigned int start() const; 
   /**
    * For a finite monitor, returns the iteration number at which the
    * node will stop monitoring.  For an open ended monitor, returns
    * the last monitored node.
    */
-  long end() const;
+  unsigned int end() const;
   /**
    * Thinning interval of monitor
    */
-  long thin() const;
+  unsigned int thin() const;
   /**
    * Sample size: the number of monitored iterations
    */
-  long size() const;                       
+  unsigned int size() const;                       
   /**
    * The number of monitored iterations between two limits
    */
-  long size(long start, long end) const;
+  unsigned int size(unsigned int start, unsigned int end) const;
   /**
    * Updates the monitor
    * @param iteration The current iteration number.
    */
-  void update(long iteration, unsigned int chain);
+  void update(unsigned int iteration, unsigned int chain);
   /**
    * Returns a pointer to the start of the vector of monitored values.
    * For an open-ended monitor, his pointer may be invalidated by a

@@ -5,7 +5,6 @@
 #include <vector>
 
 class SArray;
-class Index;
 class Range;
 
 /**
@@ -59,7 +58,8 @@ class Function
    * the parameters, with any redundant dimensions dropped.
    */
   virtual bool
-     checkParameterDim (std::vector <Index> const &dims) const = 0;
+     checkParameterDim (std::vector <std::vector<unsigned int> > const &dims) 
+      const = 0;
   /**
    * Checks whether the parameter values lie in the domain of the
    * function.  
@@ -80,7 +80,8 @@ class Function
    * parameters. This vector must return true when passed to
    * checkParameterDim
    */
-  virtual Index dim (std::vector <Index> const &dims) const = 0;
+  virtual std::vector<unsigned int> 
+     dim (std::vector <std::vector<unsigned int> > const &dims) const = 0;
   /**
    * Returns true if the function returns integer values. The default
    * implementation returns false, so any function that can return

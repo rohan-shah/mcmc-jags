@@ -5,7 +5,6 @@
 #include <string>
 
 class SArray;
-class Index;
 struct RNG;
 
 /**
@@ -94,14 +93,14 @@ class Distribution
    * the parameters.
    */
   virtual double 
-    lowerSupport(unsigned long i,
+    lowerSupport(unsigned int i,
 		 std::vector<SArray const *> const &parameters) const = 0;
   /**
    * The highest possible value that X[i] can take, conditional on
    * the parameters. 
    */
   virtual double 
-    upperSupport(unsigned long i,
+    upperSupport(unsigned int i,
 		 std::vector<SArray const *> const &parameters) const = 0;
   /**
    * The number of parameters of the distribution
@@ -115,7 +114,8 @@ class Distribution
    * the dimensions will not.
    */
   virtual bool 
-    checkParameterDim (std::vector<Index> const &parameters) const = 0;
+    checkParameterDim (std::vector<std::vector<unsigned int> > const &parameters) 
+    const = 0;
   /**
    * Check that the values of the parameters are consistent with
    * the distribution. For example, some distributions require
@@ -132,7 +132,8 @@ class Distribution
    * based on the distribution of its parameters. This function
    * assumes that checkParameterDim is correct.
    */
-  virtual Index dim (std::vector <Index> const &args) const = 0;
+  virtual std::vector<unsigned int> 
+     dim (std::vector <std::vector<unsigned int> > const &args) const = 0;
   /**
    * Returns true if the distribution has support on the integers.
    */

@@ -6,32 +6,33 @@
 
 const double JAGS_NA = -DBL_MAX*(1-1e-15);
 
+using std::vector;
 using std::logic_error;
 using std::length_error;
 
-SArray::SArray(Index const &dim)
-  : _range(Index(dim.size(), 1), dim)
+SArray::SArray(vector<unsigned int> const &dim)
+    : _range(dim)
 {
-  unsigned long n = _range.length();
-  _value = new double[n];
-  for (unsigned long i = 0; i < n; ++i) {
-    _value[i] = JAGS_NA;
-  }
-  _fixed = false;
-  _discrete = false;
+    unsigned int n = _range.length();
+    _value = new double[n];
+    for (unsigned int i = 0; i < n; ++i) {
+	_value[i] = JAGS_NA;
+    }
+    _fixed = false;
+    _discrete = false;
 }
 
 SArray::SArray(SArray const &orig)
   : _range(orig._range)
 {
-  unsigned long n = _range.length();
+    unsigned int n = _range.length();
 
-  _value = new double[n];
-  for (unsigned long i = 0; i < n; ++i) {
-    _value[i] = orig._value[i];
-  }
-  _fixed = false;
-  _discrete = orig._discrete;
+    _value = new double[n];
+    for (unsigned int i = 0; i < n; ++i) {
+	_value[i] = orig._value[i];
+    }
+    _fixed = false;
+    _discrete = orig._discrete;
 }
 
 SArray::~SArray()
@@ -44,7 +45,7 @@ bool SArray::isFixed() const
   return _fixed;
 }
 
-void SArray::setValue(double const *value, unsigned long n)
+void SArray::setValue(double const *value, unsigned int n)
 {
   if (_fixed) {
     throw logic_error ("Attempt to set value of fixed SArray");
@@ -53,13 +54,13 @@ void SArray::setValue(double const *value, unsigned long n)
     throw length_error("Length mismatch error in SArray::setValue");
   }
   else {
-    for (unsigned long i = 0; i < n; ++i) {
+    for (unsigned int i = 0; i < n; ++i) {
 	_value[i] = value[i];
     }
   }
 }
 
-void SArray::setValue(double const value, unsigned long i)
+void SArray::setValue(double const value, unsigned int i)
 {
   if (_fixed) {
     throw logic_error ("Attempt to set value of fixed SArray");

@@ -1,8 +1,8 @@
 #ifndef RANGE_H_
 #define RANGE_H_
 
-#include <sarray/Index.h>
 #include <string>
+#include <vector>
 
 class RangeImp;
 
@@ -38,15 +38,21 @@ class Range {
    *              element of lower.
    * @exception logic_error range_error
    */
-  Range(Index const &lower, Index const &upper);
+  Range(std::vector<int> const &lower, std::vector<int> const &upper);
   /**
    * Constructs a scalar range from an index. The upper and lower
-   * bounds are both equal to the supplied index.  This constructor
-   * is used for implicit conversion of Index to Range objects, so
-   * that an Index can be supplied to any function in place of a 
-   * Range parameter.
+   * bounds are both equal to the supplied index.  
    */
-  Range(Index const &index);
+  Range(std::vector<int> const &index);
+  /**
+   * Constructs a range from a dimension. For each index, the lower
+   * limit is 1 and  the upper limit is the corresponding element of
+   * dim (cast to a signed int).
+   *
+   * This constructor should not be confused with the constructor
+   * that creates a scalar range.
+   */
+  Range(std::vector<unsigned int> const &dim);
   /** Copy constructor */
   Range (Range const &rhs);
   /** Destructor */
@@ -62,7 +68,7 @@ class Range {
    * contained in the range. For example, the range [1:2,4,4:5]
    * contains 4 elements.
    */
-  unsigned long length() const;
+  unsigned int length() const;
   /**
    * Indicates whether the test range is completely contained inside this
    * range.
@@ -74,40 +80,43 @@ class Range {
    */
   bool contains(Range const &test_range) const;
   /**
-   * Returns the value of a RangeIterator after n iterations of nextLeft()
+   * Returns the value of a RangeIterator after n iterations of
+   * RangeIterator##nextLeft() 
+   *
    * @see RangeIterator
    */
-  Index leftIndex(long n) const;
+  std::vector<int> leftIndex(unsigned int n) const;
   /**
    * The inverse of leftIndex. Returns the number of iterations of 
    * RangeIterator##nextLeft required to reach index.
    *
-   * @param index Index to convert to offset. An out_of_range is thrown
-   *              if the index is not contained in the range.
+   * @param index Index vector to convert to offset. An out_of_range
+   * exception is thrown if the index is not contained in the range.
    * @see RangeIterator
    */
-  long leftOffset(Index const &index) const;
+  unsigned int leftOffset(std::vector<int> const &index) const;
   /**
-   * Returns the value of a RangeIterator after n iterations of nextRight()
+   * Returns the value of a RangeIterator after n iterations of
+   * RangeIterator##nextRight() 
    * @see RangeIterator
    */
-  Index rightIndex(long n) const;
+  std::vector<int> rightIndex(unsigned int n) const;
   /**
    * The inverse of rightIndex. Returns the number of iterations of 
    * RangeIterator##nextRight required to reach index.
    *
-   * @param index Index to convert to offset. An out_of_range is thrown
+   * @param index Index vector to convert to offset. An out_of_range is thrown
    *              if the index is not contained in the range.
    * @see RangeIterator
    */
-  long rightOffset(Index const &index) const;
+  unsigned int rightOffset(std::vector<int> const &index) const;
   /**
    * Dimension of the range. The range [1:4,2,3:5] has dimension
    * (4,1,3) if drop==false and (4,3) if drop==true. 
    *
    * @param drop Should dimensions of size 1 be dropped?
    */
-  Index const &dim(bool drop) const;
+  std::vector<unsigned int> const &dim(bool drop) const;
   /**
    * Number of dimensions covered by the Range
    * @param drop Should dimensions of size 1 be counted?
@@ -116,14 +125,13 @@ class Range {
   /**
    * lower limit of range
    */
-  Index const & lower() const;
+  std::vector<int> const & lower() const;
   /**
    * upper limit of range
    */
-  Index const & upper() const;
+  std::vector<int> const & upper() const;
   /**
-   * Lexicographic ordering based on lower and then upper limit
-   * @see Index##operator<
+   * Ordering based on lexicographic ordering of lower and then upper limit
    */
   bool operator<(Range const &rhs) const;
 };

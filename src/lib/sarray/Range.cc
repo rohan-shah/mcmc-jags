@@ -7,6 +7,7 @@
 #include <sstream>
 #include <map>
 
+using std::vector;
 using std::map;
 using std::pair;
 using std::string;
@@ -20,21 +21,22 @@ struct ltrangeimp
   }
 };
 
-map<RangeImp const*, long, ltrangeimp> &impMap()
+map<RangeImp const*, unsigned int, ltrangeimp> &impMap()
 {
-  static map<RangeImp const*, long, ltrangeimp> _impmap;
+  static map<RangeImp const*, unsigned int, ltrangeimp> _impmap;
   return _impmap;
 }
 
-inline long &ref(RangeImp const *p) { return impMap().find(p)->second; }
+inline unsigned int &ref(RangeImp const *p) { return impMap().find(p)->second; }
 
-static RangeImp const *getPtr(Index const &lower, Index const &upper)
+static RangeImp const *getPtr(vector<int> const &lower,
+                              vector<int> const &upper)
 {
   RangeImp * newimp = new RangeImp(lower, upper);  
-  map<RangeImp const*, long, ltrangeimp> &impmap = impMap();
-  map<RangeImp const*, long, ltrangeimp>::iterator p = impmap.find(newimp);
+  map<RangeImp const*, unsigned int, ltrangeimp> &impmap = impMap();
+  map<RangeImp const*, unsigned int, ltrangeimp>::iterator p = impmap.find(newimp);
   if (p == impmap.end()) {
-    impmap.insert(pair<RangeImp*,long>(newimp,0));
+    impmap.insert(pair<RangeImp*, unsigned int>(newimp,0));
     return newimp;
   }
   else {
@@ -44,15 +46,31 @@ static RangeImp const *getPtr(Index const &lower, Index const &upper)
 }
 
 Range::Range()
-  : _p(getPtr(Index(),Index()))
+  : _p(getPtr(vector<int>(),vector<int>()))
 {
     ref(_p)++;
 }
 
-Range::Range(Index const &lower, Index const &upper)
+Range::Range(vector<int> const &lower, vector<int> const &upper)
   : _p(getPtr(lower,upper))
 {
   ref(_p)++;
+}
+
+static vector<int> asSigned(vector<unsigned int> const &orig)
+{
+  unsigned int n = orig.size();
+  vector<int> ans(n);
+  for (unsigned int i = 0; i < n; ++i) {
+     ans[i] = static_cast<int>(orig[i]);
+  }
+  return ans;
+}
+
+Range::Range(vector<unsigned int> const &dim)
+  : _p(getPtr(vector<int>(dim.size(), 1), asSigned(dim)))
+{
+   ref(_p)++;
 }
 
 Range::Range(Range const &rhs)
@@ -61,7 +79,7 @@ Range::Range(Range const &rhs)
   ref(_p)++;
 }
 
-Range::Range(Index const &index)
+Range::Range(vector<int> const &index)
   : _p(getPtr(index,index))
 {
   ref(_p)++;
@@ -99,7 +117,7 @@ bool Range::operator!=(Range const &range) const
   return _p != range._p; 
 }
 
-unsigned long Range::length() const 
+unsigned int Range::length() const 
 { 
   return _p->length(); 
 }
@@ -109,29 +127,29 @@ bool Range::contains(Range const &range) const
   return _p->contains(*range._p); 
 }
 
-long Range::leftOffset(Index const &index) const 
+unsigned int Range::leftOffset(vector<int> const &index) const 
 { 
   return _p->leftOffset(index); 
 }
 
-Index Range::leftIndex(long n) const
+vector<int> Range::leftIndex(unsigned int n) const
 {
   return _p->leftIndex(n);
 }
 
-long Range::rightOffset(Index const &index) const 
+unsigned int Range::rightOffset(vector<int> const &index) const 
 { 
   return _p->rightOffset(index); 
 }
 
-Index Range::rightIndex(long n) const
+vector<int> Range::rightIndex(unsigned int n) const
 {
   return _p->rightIndex(n);
 }
 
-Index const &Range::dim(bool drop) const 
+vector<unsigned int> const &Range::dim(bool drop) const 
 { 
-  return _p->dim(drop); 
+   return _p->dim(drop); 
 }
 
 unsigned int Range::ndim(bool drop) const 
@@ -139,12 +157,12 @@ unsigned int Range::ndim(bool drop) const
   return _p->ndim(drop); 
 }
 
-Index const & Range::lower() const 
+vector<int> const & Range::lower() const 
 { 
   return _p->lower(); 
 }
 
-Index const & Range::upper() const 
+vector<int> const & Range::upper() const 
 { 
   return _p->upper(); 
 }

@@ -37,7 +37,7 @@ static void getParameters(int *initial, double *time,
   *intensity = parameters[2]->value();
 }
 
-bool DMState::checkParameterDim(vector<Index> const &dims) const
+bool DMState::checkParameterDim(vector<vector<unsigned int> > const &dims) const
 {
   return isScalar(dims[0]) && isScalar(dims[1]) && isSquareMatrix(dims[2]);
 }

@@ -8,7 +8,6 @@
 class NodeNameTab;
 class RNG;
 class SArray;
-class Index;
 
 /**
  * Abstract base class for nodes in a directed graphical model.
@@ -42,7 +41,7 @@ public:
    * @param dim Dimension of new Node.
    * @param nchain Number of chains that the Node will contain data on.
    */
-  Node(Index const &dim, unsigned int nchain);
+  Node(std::vector<unsigned int> const &dim, unsigned int nchain);
   /**
    * Constructs a node with parents.  Each parent must contain data on
    * the same number of chains. Subclasses of Node may give specific
@@ -53,7 +52,8 @@ public:
    * @ param parents vector of parent nodes. A node may not be its own
    * parent.
    */
-  Node(Index const &dim, std::vector<Node*> const &parents);
+  Node(std::vector<unsigned int> const &dim,
+       std::vector<Node*> const &parents);
   /**
    * Destructor. 
    */
@@ -126,14 +126,14 @@ public:
   /**
    * Dimension of the node
    */
-  Index const &dim(bool drop) const;
+  std::vector<unsigned int> const &dim(bool drop) const;
   /**
    * Length of the node, which is the length of its data value
    * for any chain.
    *
    * @see SArray##length
    */
-  unsigned long length() const;
+  unsigned int length() const;
   /**
    * Sets the value of the node, in all chains, to "value", and marks
    * the node as "observed". This function can only be called once for
@@ -141,7 +141,7 @@ public:
    * @param value array of doubles
    * @param length length of the value array
    */
-  void setObserved(double const *value, unsigned long length);
+  void setObserved(double const *value, unsigned int length);
   /**
    * Indicates whether node is observed. This is only true if a call
    * to setObserved has previously been used to set the value.
@@ -150,7 +150,7 @@ public:
   /**
    * FIXME
    */
-  void setValue(double const *value, unsigned long length, unsigned int chain);
+  void setValue(double const *value, unsigned int length, unsigned int chain);
   bool isDiscreteValued() const;
   void setDiscreteValued();
   double const *value(unsigned int chain) const;

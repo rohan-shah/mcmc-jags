@@ -30,7 +30,7 @@ bool DSum::checkParameterValue(vector<SArray const *> const &par) const
   return true;
 }
 
-bool DSum::checkParameterDim(vector<Index> const &dims) const
+bool DSum::checkParameterDim(vector<vector<unsigned int> > const &dims) const
 {
     return isScalar(dims[0]) && isScalar(dims[1]);
 }
@@ -40,9 +40,9 @@ bool DSum::checkParameterDiscrete(vector<bool> const &mask) const
     return allTrue(mask);
 }
 
-Index DSum::dim(vector<Index> const &dims) const
+vector<unsigned int> DSum::dim(vector<vector<unsigned int> > const &dims) const
 {
-    return Index(1,1);
+    return vector<unsigned int>(1,1);
 }
 
 double DSum::logLikelihood(SArray const &x, 
@@ -66,13 +66,13 @@ DSum::randomSample(SArray &x, vector<SArray const *> const &par,
     x.setValue(SUM(par), 0);
 }
 
-unsigned long DSum::df(std::vector<SArray const *> const &par) const
+unsigned int DSum::df(std::vector<SArray const *> const &par) const
 {
     return 0;
 }
 
 double 
-DSum::lowerSupport(unsigned long i,
+DSum::lowerSupport(unsigned int i,
 		   std::vector<SArray const *> const &par) const
 {
     if (i != 0)
@@ -83,7 +83,7 @@ DSum::lowerSupport(unsigned long i,
 
 
 double 
-DSum::upperSupport(unsigned long i,
+DSum::upperSupport(unsigned int i,
 		   std::vector<SArray const *> const &par) const
 {
     if (i != 0)

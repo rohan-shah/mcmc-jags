@@ -16,7 +16,6 @@
 class ParseTree;
 class Graph;
 class SymTab;
-class Index;
 class FuncTab;
 class DistTab;
 class NodeAlias;
@@ -36,7 +35,7 @@ class Compiler {
   ConstantFactory _constantfactory;
   LogicalFactory _logicalfactory;
   MixtureFactory _mixfactory;
-  std::map<std::string, std::vector<Index> > _node_array_ranges;
+  std::map<std::string, std::vector<std::vector<int> > > _node_array_ranges;
 
   Node *getArraySubset(ParseTree const *t);
   bool constantExpression(ParseTree const *p, double &value);

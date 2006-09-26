@@ -134,7 +134,7 @@ bool Console::compile(map<string, SArray> &data_table, unsigned int nchain,
       datagen_rng = datagen_model.rng(0);
       vector <Node*> data_nodes;
       datagen_model.graph().getSortedNodes(data_nodes);
-      for (unsigned long i = 0; i < data_nodes.size(); ++i) {
+      for (unsigned int i = 0; i < data_nodes.size(); ++i) {
 	if (!data_nodes[i]->isObserved()) {
 	  data_nodes[i]->randomSample(datagen_rng, 0);
 	}
@@ -321,7 +321,7 @@ bool Console::setRNGname(string const &name, unsigned int chain)
   return true;
 }
 
-bool Console::update(unsigned long n)
+bool Console::update(unsigned int n)
 {
     if (_model == 0) {
 	_err << "Can't update. No model!" << endl;    
@@ -357,7 +357,7 @@ bool Console::update(unsigned long n)
     return true;
 }
 
-unsigned long Console::iter(unsigned int chain) const
+unsigned int Console::iter(unsigned int chain) const
 {
   if (!_model) {
     return 0;
@@ -511,8 +511,7 @@ bool Console::dumpState(map<string,SArray> &data_table,
       if (_model->rng(chain - 1)) {
 	_model->rng(chain - 1)->getState(rngstate);
 	
-	Index dimrng(1,1);
-	dimrng[0] = rngstate.size();
+	vector<unsigned int> dimrng(1,rngstate.size());
 	SArray rngsarray(dimrng);
 	rngsarray.setDiscreteValued(true);
 	for (unsigned i = 0; i < rngstate.size(); ++i) {
@@ -605,9 +604,9 @@ bool Console::getMonitoredValues(map<string,SArray> &data_table,
 	//iterations. We put the extra dimension first.
 	unsigned int niter = monitor->size();
 	unsigned int ndim = node->dim(false).size();
-	Index dim(ndim + 1, 1);
+	vector<unsigned int> dim(ndim + 1);
 	dim[0] = niter;
-	unsigned long length = 1;
+	unsigned int length = 1;
 	for (unsigned int i = 1; i <= ndim; ++i) {
 	    dim[i] = node->dim(false)[i-1];
 	    length *= dim[i];

@@ -11,13 +11,13 @@ using std::max;
 using std::logic_error;
 using std::vector;
 
-static unsigned long value(vector<SArray const *> const &parameters)
+static unsigned int value(vector<SArray const *> const &parameters)
 {
     double t = *parameters[0]->value();
     double const *cutpoints = parameters[1]->value();
-    unsigned long length = parameters[1]->length();
+    unsigned int length = parameters[1]->length();
 
-    for (unsigned long i = 0; i < length; ++i) {
+    for (unsigned int i = 0; i < length; ++i) {
 	if (t <= cutpoints[i])
 	    return i;
     }
@@ -33,21 +33,21 @@ DInterval::~DInterval()
 {}
 
 bool 
-DInterval::checkParameterDim(vector<Index> const &dims) const
+DInterval::checkParameterDim(vector<vector<unsigned int> > const &dims) const
 {
   return dims[0].size() == 1 && dims[0][0] == 1 && dims[1].size() == 1;
 }
 
-Index DInterval::dim(vector<Index> const &dims) const
+vector<unsigned int> DInterval::dim(vector<vector<unsigned int> > const &dims) const
 {
-    return Index(1,1);
+    return vector<unsigned int>(1,1);
 }
 
 bool DInterval::checkParameterValue(vector<SArray const *> const &parameters) const
 {
-  unsigned long length = parameters[1]->length();
+  unsigned int length = parameters[1]->length();
   double const *cutpoints = parameters[1]->value();
-  for (unsigned long i = 1; i < length; ++i) {
+  for (unsigned int i = 1; i < length; ++i) {
     if (cutpoints[i] < cutpoints[i-1])
       return false;
   }
@@ -61,7 +61,7 @@ DInterval::logLikelihood(SArray const &y,
   if (y.value() < 0)
     return -DBL_MAX;
 
-  unsigned long x = static_cast<unsigned long>(*y.value());
+  unsigned int x = static_cast<unsigned int>(*y.value());
   if (x > parameters[1]->length()) {
     return -DBL_MAX;
   }
@@ -89,14 +89,14 @@ void DInterval::randomSample(SArray  &x,
     x.setValue(static_cast<double>(value(parameters)), 0);
 }
 
-unsigned long 
+unsigned int 
 DInterval::df(std::vector<SArray const *> const &parameters) const
 {
     return 0;
 }
 
 double 
-DInterval::lowerSupport(unsigned long i,
+DInterval::lowerSupport(unsigned int i,
 			std::vector<SArray const *> const &parameters) const
 {
   if (i != 0)
@@ -106,7 +106,7 @@ DInterval::lowerSupport(unsigned long i,
 }
 
 double 
-DInterval::upperSupport(unsigned long i,
+DInterval::upperSupport(unsigned int i,
 			std::vector<SArray const *> const &parameters) const
 {
   if (i != 0)

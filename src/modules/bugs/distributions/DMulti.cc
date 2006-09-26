@@ -18,7 +18,7 @@ static inline double const *PROB(vector<SArray const *> const &parameters)
     return parameters[0]->value();
 }
 
-static inline unsigned long LENGTH(vector<SArray const *> const &parameters)
+static inline unsigned int LENGTH(vector<SArray const *> const &parameters)
 {
     return parameters[0]->length();
 }
@@ -35,7 +35,7 @@ DMulti::DMulti()
 DMulti::~DMulti()
 {}
 
-bool DMulti::checkParameterDim(vector<Index> const &dims) const
+bool DMulti::checkParameterDim(vector<vector<unsigned int> > const &dims) const
 {
   //Check that PROB is a vector and SIZE is a scalar
   return isVector(dims[0]) && isScalar(dims[1]);
@@ -49,13 +49,13 @@ bool DMulti::checkParameterDiscrete(vector<bool> const &mask) const
 bool DMulti::checkParameterValue(vector<SArray const *> const &par) const
 {
     double const *prob = PROB(par);
-    unsigned long length = LENGTH(par);
+    unsigned int length = LENGTH(par);
   
     if (SIZE(par) < 1)
 	return false;
 
     double sump = 0.0;
-    for (unsigned long i = 0; i < length; i++) {
+    for (unsigned int i = 0; i < length; i++) {
 	if (prob[i] < 0 || prob[i] > 1)
 	    return false;
 	sump += prob[i];
@@ -71,11 +71,11 @@ double DMulti::logLikelihood(SArray const &x,
 {
     double const *y = x.value();
     double const *prob = PROB(par);
-    unsigned long length = LENGTH(par);
+    unsigned int length = LENGTH(par);
 
     double loglik = 0.0;
     double ysum = 0.0;
-    for (unsigned long i = 0; i < length; i++) {
+    for (unsigned int i = 0; i < length; i++) {
 	if (prob[i] == 0) {
 	    if (y[i] != 0)
 		return -DBL_MAX;
@@ -93,14 +93,14 @@ double DMulti::logLikelihood(SArray const &x,
 void DMulti::randomSample(SArray &x, vector<SArray const *> const &par,
 			  RNG *rng) const
 {
-    unsigned long length = LENGTH(par);
+    unsigned int length = LENGTH(par);
 
     /* Sample multinomial as a series of binomial distributions */
     double *y = new double[length];
     double N = SIZE(par);
     double sump = 1.0;
     double const *prob = PROB(par);
-    for (unsigned long i = 0; i < length - 1; i++) {
+    for (unsigned int i = 0; i < length - 1; i++) {
 	if (N == 0) {
 	    y[i] = 0;
 	}
@@ -115,13 +115,13 @@ void DMulti::randomSample(SArray &x, vector<SArray const *> const &par,
     delete [] y;
 }
 
-unsigned long DMulti::df(std::vector<SArray const *> const &par) const
+unsigned int DMulti::df(vector<SArray const *> const &par) const
 {
-    unsigned long length = LENGTH(par);
+    unsigned int length = LENGTH(par);
     double const *prob = PROB(par);
     //FIXME: Should we allow structural zeros only for fixed p, as in DDirch?
-    unsigned long df = length - 1;
-    for (unsigned long i = 0; i < length; ++i) {
+    unsigned int df = length - 1;
+    for (unsigned int i = 0; i < length; ++i) {
 	if (df == 0) {
 	    throw logic_error("Bad degrees of freedom in DMulti");
 	}
@@ -133,8 +133,8 @@ unsigned long DMulti::df(std::vector<SArray const *> const &par) const
 }
 
 double 
-DMulti::lowerSupport(unsigned long i,
-		     std::vector<SArray const *> const &par) const
+DMulti::lowerSupport(unsigned int i,
+		     vector<SArray const *> const &par) const
 {
     if (i >= LENGTH(par))
 	throw logic_error("Invalid index in DMulti::lowerSupport");
@@ -143,8 +143,8 @@ DMulti::lowerSupport(unsigned long i,
 }
 
 double 
-DMulti::upperSupport(unsigned long i,
-		     std::vector<SArray const *> const &par) const
+DMulti::upperSupport(unsigned int i,
+		     vector<SArray const *> const &par) const
 {
     if (i >= LENGTH(par))
 	throw logic_error("Invalid index in DMulti::upperSupport");
@@ -152,7 +152,7 @@ DMulti::upperSupport(unsigned long i,
     return DBL_MAX;
 }
 
-Index DMulti::dim(std::vector<Index> const &dims) const
+vector<unsigned int> DMulti::dim(vector<vector<unsigned int> > const &dims) const
 {
     return dims[0];
 }
@@ -163,13 +163,13 @@ void DMulti::typicalValue(SArray &x, vector<SArray const *> const &par) const
   /* Draw a typical value in the same way as a random sample, but
      substituting the median at each stage */
 
-  unsigned long length = LENGTH(par);
+  unsigned int length = LENGTH(par);
 
   double *y = new double[length];
   double N = SIZE(par);
   double sump = 1.0;
   double const *prob = PROB(par);
-  for (unsigned long i = 0; i < length - 1; i++) {
+  for (unsigned int i = 0; i < length - 1; i++) {
     if (N == 0) {
       y[i] = 0;
     }

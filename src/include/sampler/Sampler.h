@@ -65,7 +65,7 @@ public:
    * @param length vector of lengths for the corresponding arrays.
    */
   void setValue(std::vector<double const *> const &value, 
-		std::vector<unsigned long> const &length);
+		std::vector<unsigned int> const &length);
   /**
    * Returns the marginal stochastic children of the sampled nodes.
    */

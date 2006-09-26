@@ -17,7 +17,7 @@ class SD : public ScalarFunc
 public:
   SD ();
   double eval (std::vector <SArray const *> const &args) const;
-  bool checkParameterDim (std::vector <Index> const &dims) const;
+  bool checkParameterDim (std::vector<std::vector<unsigned int> > const &dims) const;
 };
 
 #endif /* FUNC_SD_H_ */

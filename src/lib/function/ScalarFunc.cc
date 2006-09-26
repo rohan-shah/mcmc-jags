@@ -18,12 +18,12 @@ ScalarFunc::evaluate (SArray & value, vector <SArray const *> const &args)
   value.setValue(eval(args), 0);
 }
 
-Index ScalarFunc::dim (vector <Index> const &args) const
+vector<unsigned int> ScalarFunc::dim (vector <vector<unsigned int> > const &args) const
 {
-  return Index(1,1);
+  return vector<unsigned int>(1,1);
 }
 
-bool ScalarFunc::checkParameterDim (vector <Index> const &dims) const
+bool ScalarFunc::checkParameterDim (vector <vector<unsigned int> > const &dims) const
 {
   return count_if(dims.begin(), dims.end(), isScalar) == dims.size();
 }

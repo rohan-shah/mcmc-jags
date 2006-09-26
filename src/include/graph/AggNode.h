@@ -13,7 +13,7 @@
  * @short Aggregate Node
  */
 class AggNode : public DeterministicNode {
-  std::vector<unsigned long> _offsets;
+  std::vector<unsigned int> _offsets;
 
   /* Forbid copying */
   AggNode(AggNode const &orig);
@@ -31,9 +31,9 @@ class AggNode : public DeterministicNode {
    * offset denotes the element of the value vector to be copied
    * from the corresponding parent.
    */
-  AggNode(Index const &dim,
+  AggNode(std::vector<unsigned int> const &dim,
 	  std::vector<Node*> const &nodes, 
-	  std::vector<unsigned long> const &offsets);
+	  std::vector<unsigned int> const &offsets);
   ~AggNode();
 
   /**

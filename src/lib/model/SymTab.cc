@@ -21,7 +21,7 @@ SymTab::SymTab(unsigned int nchain)
 {
 }
 
-void SymTab::addVariable(string const &name, Index const &dim)
+void SymTab::addVariable(string const &name, vector<unsigned int> const &dim)
 {
   if (_varTable.find(name) != _varTable.end()) {
     string msg("Name ");
@@ -106,7 +106,7 @@ void SymTab::readValues(map<string, SArray> &data_table,
     p->second->getValue(read_values, chain, condition);
     /* Only write to the data table if we can find at least one
        non-missing value */
-    for (unsigned long i = 0; i < read_values.length(); ++i) {
+    for (unsigned int i = 0; i < read_values.length(); ++i) {
       if (read_values.value()[i] != JAGS_NA) {
 	string const &name = p->first;
 	if (data_table.find(name) != data_table.end()) {

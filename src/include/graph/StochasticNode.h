@@ -1,10 +1,9 @@
 #ifndef STOCHASTIC_NODE_H_
 #define STOCHASTIC_NODE_H_
 
-#include <graph/Node.h>
-//#include <sarray/SArray.h>
-
 #include <vector>
+
+#include <graph/Node.h>
 
 class Distribution;
 class RNG;
@@ -25,13 +24,9 @@ class StochasticNode : public Node {
     ~StochasticNode();
 
     bool isBounded() const;
-    //SArray const *lowerBound(unsigned int chain);
-    //SArray const *upperBound(unsigned int chain);
     Node const *lowerBound();
     Node const *upperBound();
-    //void setBounds(Node *lBound, Node *uBound);
     Distribution const *distribution() const;
-    //void setParameters(std::vector<Node*> const &parameters);
     std::vector<SArray const *> const &parameters(unsigned int chain) const;
     double logDensity(unsigned int chain) const;
     void randomSample(RNG *rng, unsigned int chain);

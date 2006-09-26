@@ -23,7 +23,7 @@ InProd::eval (vector <SArray const *> const &args) const
   return svalue;
 }
 
-bool InProd::checkParameterDim (vector <Index> const &dims) const
+bool InProd::checkParameterDim (vector<vector<unsigned int> > const &dims) const
 {
     return (dims[0] == dims[1]);
 }

@@ -26,7 +26,7 @@ public:
   /**
    * Checks that  p is a vector of length at least 2
    */
-  bool checkParameterDim(std::vector<Index> const &dims) const;
+  bool checkParameterDim(std::vector<std::vector<unsigned int> > const &dims) const;
   /**
    * Checks that all elements of p lie in the interval (0,1)
    * and sum to 1

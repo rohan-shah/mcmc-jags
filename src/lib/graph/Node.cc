@@ -11,7 +11,7 @@ using std::string;
 using std::vector;
 using std::logic_error;
 
-vector<SArray*> mkData(Index const &dim, unsigned int nchain)
+vector<SArray*> mkData(vector<unsigned int> const &dim, unsigned int nchain)
 {
   vector<SArray*> data(nchain);
   for (unsigned int n = 0; n < nchain; ++n) {
@@ -20,14 +20,14 @@ vector<SArray*> mkData(Index const &dim, unsigned int nchain)
   return data;
 }
 
-Node::Node(Index const &dim, unsigned int nchain)
+Node::Node(vector<unsigned int> const &dim, unsigned int nchain)
   : _parents(0), _children(), _ref(0), _data(mkData(dim,nchain))
 {
   if (nchain==0)
     throw logic_error("Node must have at least one chain");
 }
 
-Node::Node(Index const &dim, vector<Node *> const &parents)
+Node::Node(vector<unsigned int> const &dim, vector<Node *> const &parents)
   : _parents(parents), _children(), _ref(0),
     _data(vector<SArray*>(mkData(dim,countChains(parents))))
 {
@@ -175,17 +175,17 @@ SArray & Node::data(unsigned int chain)
 }
 */
 
-Index const &Node::dim(bool drop) const
+vector<unsigned int> const &Node::dim(bool drop) const
 {
     return _data[0]->dim(drop);
 }
 
-unsigned long Node::length() const
+unsigned int Node::length() const
 {
     return _data[0]->length();
 }
 
-void Node::setObserved(double const *value, unsigned long length)
+void Node::setObserved(double const *value, unsigned int length)
 {
    for (unsigned int n = 0; n < nchain(); ++n) {
       _data[n]->setValue(value, length);
@@ -224,7 +224,7 @@ unsigned int countChains(std::vector<Node*> const &parameters)
   return nchain;
 }
 
-void Node::setValue(double const *value, unsigned long length, unsigned int chain)
+void Node::setValue(double const *value, unsigned int length, unsigned int chain)
 {
    _data[chain]->setValue(value, length);
 }

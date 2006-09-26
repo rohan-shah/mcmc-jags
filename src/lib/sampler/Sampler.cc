@@ -150,7 +150,7 @@ vector<DeterministicNode*> const &Sampler::deterministicChildren() const
 }
 
 void Sampler::setValue(vector<double const *> const &value, 
-		       vector<unsigned long> const &length)
+		       vector<unsigned int> const &length)
 {
     unsigned int n = _nodes.size();
     if (value.size() != n || length.size() != n) {

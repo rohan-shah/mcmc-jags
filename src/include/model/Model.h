@@ -17,7 +17,7 @@ struct ChainInfo
   RNG *rng;
   std::vector<Sampler*> samplers;
   std::list<TraceMonitor*> monitors;
-  unsigned long iteration;
+  unsigned int iteration;
 };
 
 /**
@@ -85,12 +85,12 @@ public:
    *
    * @param niter Number of iterations to run
    */
-  void update(long niter);
+  void update(unsigned int niter);
   /**
    * Returns the current iteration number for the given chain. Chains
    * are enumerated starting from 0.
    */
-  long iteration(unsigned int chain) const;
+  unsigned int iteration(unsigned int chain) const;
   /**
    * Creates a monitor for the given node, with given thinning
    * interval If the node is already being monitored, a NodeError is

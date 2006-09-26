@@ -284,10 +284,10 @@ Range Compiler::getRange(vector<ParseTree*> const &range_list,
   if (range_list.empty()) {
     /* An empty range expression implies the default range, if it exists,
        or a scalar value, if it does not */
-    if (isNULL(default_range))
-      return Index(1,1);
-    else 
-      return default_range;
+      if (isNULL(default_range))
+	  return Range(vector<int>(1,1));
+      else 
+	  return default_range;
   }
 
   // Check size and integrity of range expression
@@ -302,7 +302,7 @@ Range Compiler::getRange(vector<ParseTree*> const &range_list,
   }
   
   // Now step through and evaluate lower and upper index expressions
-  Index lower(size,1), upper(size,1);
+  vector<int> lower(size), upper(size);
   for (unsigned int i = 0; i < size; i++) {
     switch (range_list[i]->parameters().size()) {
     case 0:
@@ -433,11 +433,7 @@ Range Compiler::CounterRange(ParseTree const *var)
     return Range();
   }
   else {
-    Index ind_lower(1,1), ind_upper(1,1);
-    ind_lower[0] = lower;
-    ind_upper[0] = upper;
-    
-    return Range(ind_lower, ind_upper);
+    return Range(vector<int>(1, lower), vector<int>(1, upper));
   }
 }
 
@@ -793,13 +789,14 @@ void Compiler::getArrayDim(ParseTree const *p)
 
   Range new_range = VariableSubsetRange(var);
 
-  map<string, vector<Index> >::iterator i = _node_array_ranges.find(name);
+  map<string, vector<vector<int> > >::iterator i = 
+      _node_array_ranges.find(name);
   if (i == _node_array_ranges.end()) {
     //Create a new entry
-    vector<Index> ivec;
+    vector<vector<int> > ivec;
     ivec.push_back(new_range.lower());
     ivec.push_back(new_range.upper());
-    _node_array_ranges.insert(pair<const string, vector<Index> >(name,ivec));
+    _node_array_ranges.insert(pair<const string, vector<vector<int> > >(name,ivec));
   }
   else {
     //Check against the existing entry, and modify if necessary
@@ -974,19 +971,25 @@ void Compiler::declareVariables(vector<ParseTree*> const &dec_list)
     string const &name = node_dec->name();
     unsigned int ndim = node_dec->parameters().size();
     if (ndim == 0) {
-      // Variable is scalar
-      _symtab.addVariable(name);
+	// Variable is scalar
+	_symtab.addVariable(name, vector<unsigned int>(1,1));
     }
     else {
       // Variable is an array
-      Index dim(ndim,1);
-      for (unsigned int i = 0; i < ndim; ++i) {
-	if (!indexExpression(node_dec->parameters()[i], dim[i])) {
-	  throw runtime_error(string("Unable to calculate dimensions of node ")
-			      + name);
+	vector<unsigned int> dim(ndim);
+	for (unsigned int i = 0; i < ndim; ++i) {
+	    int dim_i;
+	    if (!indexExpression(node_dec->parameters()[i], dim_i)) {
+		throw runtime_error(string("Unable to calculate dimensions of node ")
+				    + name);
+	    }
+	    if (dim_i <= 0) {
+		throw runtime_error(string("Non-positive dimension for node") 
+				    + name);
+	    }
+	    dim[i] = static_cast<unsigned int>(dim_i);
 	}
-      }
-      _symtab.addVariable(name, dim);
+	_symtab.addVariable(name, dim);
     }
   }
 }
@@ -1017,12 +1020,12 @@ void Compiler::undeclaredVariables(ParseTree const *prelations)
 
   // Infer the dimension of remaining nodes from the relations
   traverseTree(prelations, &Compiler::getArrayDim);
-  map<string, vector<Index> >::const_iterator i = _node_array_ranges.begin(); 
+  map<string, vector<vector<int> > >::const_iterator i = _node_array_ranges.begin(); 
   for (; i != _node_array_ranges.end(); ++i) {
     if (_symtab.getVariable(i->first)) {
        //Node already declared. Check consistency 
        NodeArray const * array = _symtab.getVariable(i->first);
-       Index const &upper = array->range().upper();
+       vector<int> const &upper = array->range().upper();
        if (upper.size() != i->second[1].size()) {
            string msg = "Dimension mismatch between data and model for node ";
            msg.append(i->first);
@@ -1036,8 +1039,21 @@ void Compiler::undeclaredVariables(ParseTree const *prelations)
        } 
     }
     else {
-       //Node not declared. Use inferred size
-       _symtab.addVariable(i->first, i->second[1]);
+	//Node not declared. Use inferred size
+	vector<int> const &upper = i->second[1];
+	unsigned int ndim = upper.size();
+	vector<unsigned int> dim(ndim);
+	for (unsigned int j = 0; j < ndim; ++j) {
+	    if (upper[j] <= 0) {
+		string msg = string("Invalid index for node ") + i->first;
+		throw runtime_error(msg);
+	    }
+	    else {
+		dim[j] = static_cast<unsigned int>(upper[j]);
+	    }
+	}
+				 
+	_symtab.addVariable(i->first, dim);
     }
   }
   //_node_array_ranges.clear(); (Need to keep this now)

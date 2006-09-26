@@ -159,7 +159,7 @@ void DSumSampler::setValue(double x)
   vector<double const*> value;
   value.push_back(&v[0]);
   value.push_back(&v[1]);
-  vector<unsigned long> length = vector<unsigned long>(2,1);  
+  vector<unsigned int> length(2,1);  
 
   _x = x;
   v[0] = static_cast<long>(x);

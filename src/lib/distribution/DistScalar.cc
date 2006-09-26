@@ -24,7 +24,7 @@ DistScalar::DistScalar(string const &name, unsigned int npar, Support support,
 }
 
 double 
-DistScalar::lowerSupport(unsigned long i,
+DistScalar::lowerSupport(unsigned int i,
 			 vector<SArray const *> const &parameters) const
 {
   if (i != 0) {
@@ -41,7 +41,7 @@ DistScalar::lowerSupport(unsigned long i,
 }
 
 double
-DistScalar::upperSupport(unsigned long i,
+DistScalar::upperSupport(unsigned int i,
 			 vector<SArray const *> const &parameters) const
 {
   if (i != 0) {
@@ -57,10 +57,9 @@ DistScalar::upperSupport(unsigned long i,
   }
 }
 
-Index DistScalar::dim(vector<Index> const &parameters) const
+vector<unsigned int> DistScalar::dim(vector<vector<unsigned int> > const &parameters) const
 {
-    static const Index ScalarIndex(1, 1);
-    return ScalarIndex;
+    return vector<unsigned int>(1,1);
 }
 
 double DistScalar::l(vector<SArray const *> const &parameters,
@@ -175,7 +174,7 @@ DistScalar::typicalValue(SArray &x,
     //x.setValue(q(0.5, parameters, true, false),0);
 }
 
-bool DistScalar::checkParameterDim (vector<Index> const &dims) const
+bool DistScalar::checkParameterDim (vector<vector<unsigned int> > const &dims) const
 {
   return count_if(dims.begin(), dims.end(), isScalar) == dims.size();
 }

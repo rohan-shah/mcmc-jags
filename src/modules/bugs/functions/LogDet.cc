@@ -18,7 +18,7 @@ double LogDet::eval (vector <SArray const *> const &args) const
   return logdet (args[0]->value(), args[0]->dim(true)[0]);
 }
 
-bool LogDet::checkParameterDim (vector <Index> const &dims) const
+bool LogDet::checkParameterDim (vector<vector<unsigned int> > const &dims) const
 {
   return isSquareMatrix(dims[0]);
 }

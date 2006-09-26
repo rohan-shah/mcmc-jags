@@ -35,7 +35,7 @@ DNormMix::DNormMix()
 DNormMix::~DNormMix()
 {}
 
-bool DNormMix::checkParameterDim(vector<Index> const &dims) const
+bool DNormMix::checkParameterDim(vector<vector<unsigned int> > const &dims) const
 {
     if (dims[0][0] == 1)
         return false; // Must be a mixture

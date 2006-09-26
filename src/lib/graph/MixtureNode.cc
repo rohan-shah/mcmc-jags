@@ -1,6 +1,5 @@
 #include <config.h>
 #include <graph/MixtureNode.h>
-#include <sarray/Index.h>
 
 #include <utility>
 #include <vector>
@@ -17,7 +16,7 @@ using std::logic_error;
 using std::set;
 
 static vector<Node*> mkParents(vector<Node *> const &index,
-			       vector<pair<Index, Node*> > const &param)
+			       vector<pair<vector<int>, Node*> > const &param)
 {
   vector<Node*> parents;
   parents.reserve(index.size() + param.size());
@@ -30,9 +29,8 @@ static vector<Node*> mkParents(vector<Node *> const &index,
   return parents;
 }
 
-#include <iostream>
 MixtureNode::MixtureNode(vector<Node *> const &index,
-			 vector<pair<Index, Node *> > const &parameters)
+			 vector<pair<vector<int>, Node *> > const &parameters)
   : DeterministicNode(parameters[0].second->dim(true),
 		      mkParents(index, parameters)),
 		      _Nindex(index.size())
@@ -41,20 +39,19 @@ MixtureNode::MixtureNode(vector<Node *> const &index,
     {
       Node *node = *i;
       if (node->length() != 1 || !node->isDiscreteValued()) {
-         std::cout << "length = " << node->length() << "\n";
          throw NodeError(node, "Invalid index parameter for mixture node");
-         //throw invalid_argument("Invalid index parameter for mixture node");
       }
     }
 
   unsigned int ndim = parameters.size();
-  Index const &default_dim = dim(false);
+  vector<unsigned int> const &default_dim = dim(false);
   for (unsigned int i = 0; i < ndim; ++i) {
     Node *node = parameters[i].second;
     if (!node) {
       throw invalid_argument("Null parameter in MixtureNode");
     }
-    _map[parameters[i].first] = node;
+    //_map[parameters[i].first] = node;
+    _map.insert(parameters[i]);
   }
   
   bool isdiscrete = true;
@@ -76,34 +73,32 @@ MixtureNode::~MixtureNode()
 {
 }
 
-//debuggin
-#include <iostream>
-#include <sarray/Range.h>
-#include <sarray/SArray.h>
 void MixtureNode::deterministicSample(unsigned int chain)
 {
-  Index i(_Nindex, 1);
-  vector <Node*> const &parents = this->parents();
-  for (unsigned int j = 0; j < _Nindex; ++j) {
-    i[j] = static_cast<long>(parents[j]->value(chain)[0]);
-  }
-  map<Index,Node*>::iterator p = _map.find(i);
-  if (p != _map.end()) {
-    setValue(p->second->value(chain), p->second->length(), chain);
-  }
-  else {
-    std::cout << "Got " << print(i) << "\nOriginally\n";
+    vector<int> i(_Nindex);
+    vector <Node*> const &parents = this->parents();
     for (unsigned int j = 0; j < _Nindex; ++j) {
-        std:: cout << parents[j]->value(chain)[0] << "\n";
-        if (parents[j]->value(chain)[0] == JAGS_NA)
-           std::cout << "(which is  missing)\n";
+	i[j] = static_cast<int>(parents[j]->value(chain)[0]);
     }
-    std::cout << "Expected one of \n";
-    for (p = _map.begin(); p != _map.end(); ++p) {
-       std::cout << print(p->first) << "\n";
+    map<vector<int>,Node*>::iterator p = _map.find(i);
+    if (p != _map.end()) {
+	setValue(p->second->value(chain), p->second->length(), chain);
     }
-    throw logic_error("Invalid index in MixtureNode");
-  }
+    else {
+	/* Debuggin
+	std::cout << "Got " << print(i) << "\nOriginally\n";
+	for (unsigned int j = 0; j < _Nindex; ++j) {
+	    std:: cout << parents[j]->value(chain)[0] << "\n";
+	    if (parents[j]->value(chain)[0] == JAGS_NA)
+		std::cout << "(which is  missing)\n";
+	}
+	std::cout << "Expected one of \n";
+	for (p = _map.begin(); p != _map.end(); ++p) {
+	    std::cout << print(p->first) << "\n";
+	}
+	*/
+	throw logic_error("Invalid index in MixtureNode");
+    }
 }
 
 unsigned int MixtureNode::index_size() const

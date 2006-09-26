@@ -118,13 +118,13 @@ void BUGSModel::coda(vector<Node const*> const &nodes, ofstream &index,
         throw logic_error("Wrong number of output streams in BUGSModel::coda");
     }
 
-    long lineno = 0;
+    unsigned int lineno = 0;
     for (unsigned int i = 0; i < nodes.size(); i++) {
 
 	Node const *node = nodes[i];
 	string const &name = _node_map[node].first;
 	Range const &range = _node_map[node].second;
-	int nvar = node->length();
+	unsigned int nvar = node->length();
 
 	list<TraceMonitor*>::const_iterator j;
 	//Write index file
@@ -133,7 +133,7 @@ void BUGSModel::coda(vector<Node const*> const &nodes, ofstream &index,
 	    if (monitor->node() == node) {
 		if (nvar != 1) {
 		    /* Multivariate node */
-		    for (long offset = 0; offset < nvar; ++offset) {
+		    for (unsigned int offset = 0; offset < nvar; ++offset) {
 			index << name << print(range.leftIndex(offset))
 			      << " "  
 			      << lineno + 1 << "  "  
@@ -156,8 +156,8 @@ void BUGSModel::coda(vector<Node const*> const &nodes, ofstream &index,
 		TraceMonitor const *monitor = *j;
 		if (monitor->node() == node) {
 		    double const *y = monitor->values();
-		    for (long offset = 0; offset < nvar; ++offset) {
-			long iter = monitor->start();
+		    for (unsigned int offset = 0; offset < nvar; ++offset) {
+			unsigned int iter = monitor->start();
 			for (int k = 0; k < monitor->size(); k++) {
 			    *(output[ch]) << iter << "  ";
 			    writeDouble(y[k * nvar + offset], *output[ch]);
@@ -177,7 +177,7 @@ void BUGSModel::addDevianceNode()
   if (array)
     return; //Deviance already defined by user
 
-  _symtab.addVariable("deviance", Index(1,1));
+  _symtab.addVariable("deviance", vector<unsigned int>(1,1));
   NodeArray *deviance = _symtab.getVariable("deviance");
   vector<Node*> nodes;
   graph().getNodes(nodes);
@@ -193,7 +193,7 @@ void BUGSModel::addDevianceNode()
   if (!parameters.empty()) {
      //Can't construct a deviance node with no parameters
      DevianceNode *dnode = new DevianceNode(parameters);
-     deviance->insert(dnode, Index(1,1));
+     deviance->insert(dnode, vector<unsigned int>(1,1));
      addExtraNode(dnode);
   }
 }
@@ -258,52 +258,5 @@ void BUGSModel::setParameters(std::map<std::string, SArray> const &param_table,
 	throw runtime_error("Invalid .RNG.state");
       }
     }
-
-    //set<Node*>::const_iterator p;
-
-    /*
-    std::cout << "Setting values\n";
-    for (p = setnodes.begin(); p != setnodes.end(); p++) {
-        std::cout << _symtab.getName(*p) << " = ";
-        for (unsigned int i = 0; i < (*p)->length(); ++i) {
-            if (i > 0) std::cout << ",";
-            std::cout << (*p)->value(chain)[i];
-        }
-        std::cout << "\n";
-    }
-    */
-
-    /*
-    GraphMarks marks(graph());
-    for (p = setnodes.begin(); p != setnodes.end(); p++) {
-	marks.markDescendants(*p,1);
-    }
-    for (p = setnodes.begin(); p != setnodes.end(); p++) {
-	marks.mark(*p, 0);
-    }
-    */
-
-    /*
-    FIXME: This is all very well in principle, but setParameters
-    may be called before the model is initialized, in which
-    case it may be illegal to update the children. 
-
-    Also, we need to work out how far to take the updating.
-    Is it just the immediate deterministic descendants? Or more?
-    vector<Node*> nodes;
-    graph().getSortedNodes(nodes);
-    for (unsigned long i = 0; i < nodes.size(); ++i) {
-	if (!nodes[i]->isObserved() && marks.mark(nodes[i]) == 1) {
-            std::cout << "Updating\n";
-            std::cout << nodes[i]->name(_symtab) << " = ";
-	    nodes[i]->deterministicSample(chain);
-            for (unsigned int j = 0; j < nodes[i]->length(); ++j) {
-                if (j > 0) std::cout << ",";
-                std::cout << nodes[i]->value(chain)[j];
-            }
-            std::cout << "\n";
-        }
-    }
-    */
 }
 

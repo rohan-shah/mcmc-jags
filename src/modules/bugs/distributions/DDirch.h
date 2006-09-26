@@ -27,11 +27,11 @@ public:
 		       std::vector<SArray const *> const &parameters) const;
   void randomSample(SArray &x, std::vector<SArray const *> const &parameters,
 		    RNG *rng) const;
-  Index dim(std::vector<Index> const &dims) const;
+  std::vector<unsigned int> dim(std::vector<std::vector<unsigned int> > const &dims) const;
   /**
    * Checks that alpha is a vector of length at least 2
    */
-  bool checkParameterDim(std::vector<Index> const &dims) const;
+  bool checkParameterDim(std::vector<std::vector<unsigned int> > const &dims) const;
   /**
    * Checks that each element of alpha is >= 0.
    *
@@ -41,10 +41,10 @@ public:
    * least one non-zero element of alpha.
    */
   bool checkParameterValue(std::vector<SArray const *> const &parameters) const;
-  unsigned long df(std::vector<SArray const *> const &parameters) const;
-  double lowerSupport(unsigned long i,
+  unsigned int df(std::vector<SArray const *> const &parameters) const;
+  double lowerSupport(unsigned int i,
 		      std::vector<SArray const *> const &parameters) const;
-  double upperSupport(unsigned long i,
+  double upperSupport(unsigned int i,
 		      std::vector<SArray const *> const &parameters) const;
   void typicalValue(SArray &x, std::vector<SArray const *> const &parameters)
      const;

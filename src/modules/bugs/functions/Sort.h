@@ -15,8 +15,8 @@ class Sort : public Function
 public:
   Sort ();
   void evaluate (SArray & value, std::vector <SArray const *> const &args) const;
-  bool checkParameterDim (std::vector <Index> const &dims) const;
-  Index dim (std::vector <Index> const &dims) const;
+  bool checkParameterDim (std::vector <std::vector<unsigned int> > const &dims) const;
+  std::vector<unsigned int>  dim (std::vector <std::vector<unsigned int> > const &dims) const;
   bool isDiscreteValued(std::vector<bool> const &mask) const;
 };
 

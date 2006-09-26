@@ -11,45 +11,36 @@
  * @short Node for mixture models
  */
 class MixtureNode : public DeterministicNode {
-  std::map<Index, Node*> _map;
-  unsigned int _Nindex;
+    std::map<std::vector<int>, Node*> _map;
+    unsigned int _Nindex;
 public:
-  /**
-   * Constructor. 
-   * @param index Vector of discrete-valued scalar nodes
-   * @param parameters Vector of pairs. Each pair associates a
-   * possible value of the index nodes with a parent. The mixture node
-   * copies its value from the parent that matches the current value
-   * of the index.
-   */
-  MixtureNode(std::vector<Node *> const &index,
-	      std::vector<std::pair<Index, Node *> > const &parameters);
-  ~MixtureNode();
+    /**
+     * Constructor. 
+     * @param index Vector of discrete-valued scalar nodes
+     * @param parameters Vector of pairs. Each pair associates a
+     * possible value of the index nodes with a parent. The mixture node
+     * copies its value from the parent that matches the current value
+     * of the index.
+     */
+    MixtureNode(std::vector<Node *> const &index,
+		std::vector<std::pair<std::vector<int>, Node *> > const &parameters);
+    ~MixtureNode();
 	
-  void deterministicSample(unsigned int chain);
-  /** 
-   * Returns the vector of index nodes.
-   */
-  //std::vector<Node *> const &index() const;
-  /**
-   * Returns true if all of the parameters of the node are discrete-valued
-   */
-  //FIXME: This isn't a virtual function
-  //bool isDiscreteValued() const;
-  /**
-   * Returns the number of index parameters
-   */
-  unsigned int index_size() const;
-  /**
-   * A MixtureNode preserves linearity if none of the indices are
-   * parameters. It is never a fixed linear function.
-   */
-  bool isLinear(std::set<Node*> const &parameters, bool fixed) const;
-  /**
-   * A MixtureNode is a scale transformation if none of the indices
-   * are parameters. It is never a fixed linear function.
-   */
-  bool isScale(std::set<Node*> const &parameters, bool fixed) const;
+    void deterministicSample(unsigned int chain);
+    /**
+     * Returns the number of index parameters
+     */
+    unsigned int index_size() const;
+    /**
+     * A MixtureNode preserves linearity if none of the indices are
+     * parameters. It is never a fixed linear function.
+     */
+    bool isLinear(std::set<Node*> const &parameters, bool fixed) const;
+    /**
+     * A MixtureNode is a scale transformation if none of the indices
+     * are parameters. It is never a fixed scale transformation.
+     */
+    bool isScale(std::set<Node*> const &parameters, bool fixed) const;
 };
 
 MixtureNode const *asMixture(Node const *node);

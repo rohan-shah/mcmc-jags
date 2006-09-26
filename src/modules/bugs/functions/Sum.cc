@@ -24,7 +24,7 @@ Sum::eval (vector <SArray const *> const &args) const
   return value;
 }
 
-bool Sum::checkParameterDim (vector <Index> const &args) const
+bool Sum::checkParameterDim (vector<vector<unsigned int> > const &args) const
 {
   return true;
 }

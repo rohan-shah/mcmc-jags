@@ -1,7 +1,7 @@
 #ifndef RANGE_IMP_H_
 #define RANGE_IMP_H_
 
-#include <sarray/Index.h>
+#include <vector>
 
 /**
  * A RangeImp implements the interface described by the Range class.
@@ -13,8 +13,9 @@
  * @see Range
  */
 class RangeImp {
-  Index _lower, _upper, _dim, _dim_dropped;
-  unsigned long _length;
+    std::vector<int> _lower, _upper;
+    std::vector<unsigned int> _dim, _dim_dropped;
+    unsigned int _length;
   /** 
    * Forbid copying. We only need one instance of a RangeImp object
    * with the same upper and lower limits 
@@ -23,29 +24,29 @@ class RangeImp {
   RangeImp &operator=(RangeImp const &rhs);
  public:
   /** @see Range##Range */
-  RangeImp(Index const &lower, Index const &upper);
+  RangeImp(std::vector<int> const &lower, std::vector<int> const &upper);
   /** @see Range##length */
-  unsigned long length() const;
+  unsigned int length() const;
   /** @see Range##contains */
   bool contains(RangeImp const &range) const;
   /** @see Range##overlaps */
   bool overlaps(RangeImp const &range) const;
   /** @see Range##leftOffset */
-  unsigned long leftOffset(Index const &index) const;
+  unsigned int leftOffset(std::vector<int> const &index) const;
   /** @see Range##leftIndex */
-  Index leftIndex(unsigned long offset) const;
+  std::vector<int> leftIndex(unsigned int offset) const;
   /** @see Range##rightOffset */
-  unsigned long rightOffset(Index const &index) const;
+  unsigned int rightOffset(std::vector<int> const &index) const;
   /** @see Range##rightIndex */
-  Index rightIndex(unsigned long offset) const;
-  /** @see Range##Index */
-  Index const & dim(bool drop) const;
+  std::vector<int> rightIndex(unsigned int offset) const;
+  /** @see Range##dim */
+  std::vector<unsigned int> const & dim(bool drop) const;
   /** @see Range##ndim */
   unsigned int ndim(bool drop) const;
   /** @see Range##lower */
-  Index const & lower() const;
+  std::vector<int> const & lower() const;
   /** @see Range##upper */
-  Index const & upper() const;
+  std::vector<int> const & upper() const;
   /** @see Range##operator< */
   bool operator<(RangeImp const &rhs) const;
 };

@@ -20,7 +20,7 @@ DCat::DCat()
 DCat::~DCat()
 {}
 
-bool DCat::checkParameterDim(vector<Index> const &dims) const
+bool DCat::checkParameterDim(vector<vector<unsigned int> > const &dims) const
 {
   return (dims[0].size() == 1) && (dims[0][0] > 1);
 }

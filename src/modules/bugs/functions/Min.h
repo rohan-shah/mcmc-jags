@@ -12,8 +12,8 @@ class Min: public ScalarFunc
 public:
   Min ();
   double eval (std::vector <SArray const *> const &args) const;
-  bool checkParameterDim (std::vector <Index> const &dims) const;
-  Index dim (std::vector <SArray const *> const &args) const;
+  bool checkParameterDim (std::vector<std::vector<unsigned int> > const &dims) const;
+  std::vector<unsigned int> dim (std::vector <SArray const *> const &args) const;
   /** Returns true if all arguments are true */
   bool isDiscreteValued(std::vector<bool> const &mask) const;  
 };

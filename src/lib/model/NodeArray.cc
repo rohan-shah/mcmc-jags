@@ -16,13 +16,13 @@ using std::runtime_error;
 using std::logic_error;
 using std::set;
 
-NodeArray::NodeArray(string const &name, Index const &dim, unsigned int nchain)
-  : _name(name), _range(Index(dim.size(),1), dim), _nchain(nchain)
+NodeArray::NodeArray(string const &name, vector<unsigned int> const &dim, unsigned int nchain)
+  : _name(name), _range(dim), _nchain(nchain)
 {
-  long length = _range.length();
+  unsigned int length = _range.length();
   _node_pointers = new Node *[length];
-  _offsets = new long[length];
-  for (long i = 0; i < length; i++) {
+  _offsets = new unsigned int[length];
+  for (unsigned int i = 0; i < length; i++) {
     _node_pointers[i] = 0;
     _offsets[i] = -1;
   }
@@ -67,9 +67,9 @@ void NodeArray::insert(Node *node, Range const &target_range)
 
   /* Set the _node_pointers array and the offset array */
   RangeIterator j(target_range);
-  for (unsigned long k = 0; !j.atEnd(); j.nextLeft(), ++k)
+  for (unsigned int k = 0; !j.atEnd(); j.nextLeft(), ++k)
     {
-      long offset = _range.leftOffset(j);
+      unsigned int offset = _range.leftOffset(j);
       _node_pointers[offset] = node;
       _offsets[offset] = k;
     }
@@ -84,7 +84,7 @@ Node *NodeArray::find(Range const &target_range) const
     return 0;
   }
 
-  long offset = _range.leftOffset(target_range.lower());
+  unsigned int offset = _range.leftOffset(target_range.lower());
   Node *node = _node_pointers[offset];
   if (!node)
     return 0;
@@ -93,7 +93,7 @@ Node *NodeArray::find(Range const &target_range) const
     return 0;
 
   RangeIterator j(target_range);
-  for (long k = 0; !j.atEnd(); j.nextLeft(), ++k) {
+  for (unsigned int k = 0; !j.atEnd(); j.nextLeft(), ++k) {
     offset = _range.leftOffset(j);
     if (_node_pointers[offset] != node || _offsets[offset] != k)
       return 0;
@@ -117,9 +117,9 @@ Node *NodeArray::getSubset(Range const &target_range)
 
   /* Otherwise create an aggregate node */
   vector<Node *> nodes;
-  vector<unsigned long> offsets;
+  vector<unsigned int> offsets;
   for (RangeIterator i(target_range); !i.atEnd(); i.nextLeft()) {
-    long offset = _range.leftOffset(i);
+    unsigned int offset = _range.leftOffset(i);
     if (_node_pointers[offset] == 0) {
       return 0;
     }
@@ -141,10 +141,10 @@ void NodeArray::setValue(SArray const &value, unsigned int chain,
     }
   
     double const *x = value.value();
-    unsigned long N = value.length();
+    unsigned int N = value.length();
 
     //Gather all the nodes for which a data value is supplied
-    for (unsigned long i = 0; i < _range.length(); ++i) {
+    for (unsigned int i = 0; i < _range.length(); ++i) {
 	if (x[i] != JAGS_NA) {
 	    Node *node = _node_pointers[i];
 	    if (node == 0) {
@@ -169,7 +169,7 @@ void NodeArray::setValue(SArray const &value, unsigned int chain,
 	Node *node = *p;
 
 	//Get vector of values for this node
-	for (unsigned long i = 0; i < N; ++i) {
+	for (unsigned int i = 0; i < N; ++i) {
 	    if (_node_pointers[i] == node) {
 		if (_offsets[i] < 0 || _offsets[i] > node->length()) {
 		    throw logic_error("Invalid offset in NodeArray::setValue");
@@ -181,7 +181,7 @@ void NodeArray::setValue(SArray const &value, unsigned int chain,
 	}
 	// If there are any missing values, they must all be missing
 	bool missing = node_value[0] == JAGS_NA;
-	for (unsigned long j = 1; j < node->length(); ++j) {
+	for (unsigned int j = 1; j < node->length(); ++j) {
 	    if ((node_value[j] == JAGS_NA) != missing) {
 		delete [] node_value;
 		throw NodeError(node,"Values supplied for node are partially missing");
@@ -202,7 +202,7 @@ void NodeArray::getValue(SArray &value, unsigned int chain, bool (*condition)(No
     throw runtime_error(msg);
   }
 
-  long array_length = _range.length();
+  unsigned int array_length = _range.length();
   double *array_value = new double[array_length];
   for (int j = 0; j < array_length; ++j) {
     Node const *node = _node_pointers[j];
@@ -228,12 +228,12 @@ void NodeArray::setData(SArray const &value)
     throw runtime_error(string("Dimension mismatch when setting value of node array ") + name());
   }
 
-  unsigned long N = value.length();  
+  unsigned int N = value.length();  
   double const *x = value.value();
   
   //Gather all the nodes for which a data value is supplied
   set<Node*> setnodes;
-  for (unsigned long i = 0; i < _range.length(); ++i) {
+  for (unsigned int i = 0; i < _range.length(); ++i) {
     if (x[i] != JAGS_NA) {
       if (_node_pointers[i] == 0) {
 	//Insert a new constant node
@@ -254,7 +254,7 @@ void NodeArray::setData(SArray const &value)
     Node *node = *p;
 
     //Get vector of values for this node
-    for (unsigned long i = 0; i < N; ++i) {
+    for (unsigned int i = 0; i < N; ++i) {
       if (_node_pointers[i] == node) {
 	if (_offsets[i] < 0 || _offsets[i] > node->length()) {
 	  throw logic_error("Invalid offset in NodeArray::setValue");
@@ -266,7 +266,7 @@ void NodeArray::setData(SArray const &value)
     }
     // If there are any missing values, they must all be missing
     bool missing = (node_value[0] == JAGS_NA);
-    for (unsigned long j = 1; j < node->length(); ++j) {
+    for (unsigned int j = 1; j < node->length(); ++j) {
       if ((node_value[j] == JAGS_NA) != missing) {
 	delete [] node_value;
 	throw NodeError(node,"Values supplied for node are partially missing");
@@ -278,64 +278,6 @@ void NodeArray::setData(SArray const &value)
   }
   delete [] node_value;
 }
-
-/* Old version
-
-void NodeArray::setData(SArray const &value)
-{
-  if (!(_range == value.range())) {
-    throw runtime_error(string("Dimension mismatch when setting data for node array ") + name());
-  }
-  
-  double const *x = value.value();
-
-  long j = 0;
-  for (RangeIterator i(_range); !i.atEnd(); i.nextLeft(), ++j) {
-    double fvalue = x[j];
-    if (fvalue != JAGS_NA) {
-      Node *node = _node_pointers[j];
-      if (node == 0) {
-	node = new ConstantNode(fvalue, nchain());
-	insert(node, i);
-      }
-      else {
-	for (unsigned int n = 0; n < nchain(); ++n) {
-          if (!node->isObserved()) {
-	    node->setValue(fvalue, _offsets[j], n);
-	  }
-          else {
-            throw NodeError(node, "Attempt to change value of data node");
-          }
-        }
-      }
-    }
-  }
-  
-  //Gather all the nodes for which a data value is supplied
-  set<Node*> setnodes;
-  for (unsigned long i = 0; i < _range.length(); ++i) {
-    if (x[i] != JAGS_NA) {
-      setnodes.insert(_node_pointers[i]);
-    }
-  }
-
-  // Check to see if Node's value is partially missing
-  for (set<Node*>::const_iterator p = setnodes.begin(); 
-       p != setnodes.end(); ++p) 
-    {
-      double const *member_value = (*p)->data(0).value();
-      unsigned long member_length = (*p)->data(0).length();
-      for (unsigned long j = 0; j < member_length; ++j) {
-	if (member_value[j] == JAGS_NA) {
-	  throw NodeError(*p,"Values supplied for node are partially missing");
-	}
-      }     
-      for (unsigned int n = 0; n < nchain(); ++n) {
-	(*p)->data(n).setFixed(true);
-      }
-    }
-}
-*/
 
 string const &NodeArray::name() const
 {
@@ -352,8 +294,8 @@ Graph const &NodeArray::graph() const
   return _graph;
 }
 
-bool NodeArray::findActiveIndices(Index &ind, unsigned int k, 
-				  Index const &lower, Index const &dim) const
+bool NodeArray::findActiveIndices(vector<unsigned int> &ind, unsigned int k, 
+				  vector<int> const &lower, vector<unsigned int> const &dim) const
 {
   /* 
      We pay a heavy computational price for the flexibility of
@@ -381,7 +323,7 @@ bool NodeArray::findActiveIndices(Index &ind, unsigned int k,
   unsigned int M = _range.ndim(false);
   for (;ind[k] + m <= M + k; ind[k] = ind[k] + 1) {
     if (k == m - 1) {
-      Index upper(lower);
+      vector<int> upper(lower);
       for (unsigned int l = 0; l < m; ++l) {
 	upper[ind[l]] = upper[ind[l]] + dim[l] - 1;
       }
@@ -391,7 +333,7 @@ bool NodeArray::findActiveIndices(Index &ind, unsigned int k,
 	int j = 0;
 	bool ok = true;
 	for (RangeIterator i(test_range); !i.atEnd(); i.nextLeft(), ++j) {
-	  long offset = _range.leftOffset(i);
+	  unsigned int offset = _range.leftOffset(i);
 	  if (_node_pointers[offset] != node || _offsets[offset] != j) {
 	    ok = false;
 	    break;
@@ -411,44 +353,44 @@ bool NodeArray::findActiveIndices(Index &ind, unsigned int k,
 
 Range NodeArray::getRange(Node const *node) const
 {
-  if (!_graph.contains(node)) {
-    return Range();
-  }
+    if (!_graph.contains(node)) {
+	return Range();
+    }
 
-  //Look in the generated nodes first
-  for (map<Range, Node *>::const_iterator p = _generated_nodes.begin(); 
-       p != _generated_nodes.end(); ++p) 
+    //Look in the generated nodes first
+    for (map<Range, Node *>::const_iterator p = _generated_nodes.begin(); 
+	 p != _generated_nodes.end(); ++p) 
     { 
-      if (node == p->second)
-	return p->first;
+	if (node == p->second)
+	    return p->first;
     } 
   
-  /* Find the lower limit of the range. This is easy */
-  unsigned int ndim = _range.ndim(false);
-  Index lower(ndim, 1), upper(ndim, 1);
-  unsigned long j = 0;
-  for (; j < _range.length(); ++j) {
-    if (_node_pointers[j] == node) {
-      lower = _range.leftIndex(j);
-      break;
+    /* Find the lower limit of the range. This is easy */
+    unsigned int ndim = _range.ndim(false);
+    vector<int> lower(ndim);
+    unsigned int j = 0;
+    for (; j < _range.length(); ++j) {
+	if (_node_pointers[j] == node) {
+	    lower = _range.leftIndex(j);
+	    break;
+	}
     }
-  }
-  if (j == _range.length()) {
-    return Range();
-  }
+    if (j == _range.length()) {
+	return Range();
+    }
 
-  unsigned int m = node->dim(false).size();
-  Index ind(m, 1);
-  if (findActiveIndices(ind, 0, lower, node->dim(false))) {
-    upper = lower;
-    for (unsigned int l = 0; l < m; ++l) {
-      upper[ind[l]] = upper[ind[l]] + node->dim(false)[l] - 1;
+    unsigned int m = node->dim(false).size();
+    vector<unsigned int> ind(m, 1);
+    if (findActiveIndices(ind, 0, lower, node->dim(false))) {
+	vector<int> upper = lower;
+	for (unsigned int l = 0; l < m; ++l) {
+	    upper[ind[l]] = upper[ind[l]] + node->dim(false)[l] - 1;
+	}
+	return Range(lower, upper);    
     }
-    return Range(lower, upper);    
-  }
-  else {
-    throw logic_error("Unable to find node range");
-  }
+    else {
+	throw logic_error("Unable to find node range");
+    }
 }
 
 unsigned int NodeArray::nchain() const

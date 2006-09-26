@@ -30,7 +30,7 @@ double Max::eval (vector < SArray const *>const &args) const
   return ans;
 }
 
-bool Max::checkParameterDim (vector <Index> const &dims) const
+bool Max::checkParameterDim (vector<vector<unsigned int> > const &dims) const
 {
   return true;
 }

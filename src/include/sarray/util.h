@@ -4,7 +4,6 @@
 /**
  * @short Some low-level utility functions.
  */
-#include <sarray/Index.h>
 #include <vector>
 #include <algorithm>
 
@@ -25,52 +24,52 @@ inline bool anyTrue (std::vector<bool> const &mask)
 }
 
 /**
- * Tests whether the dimension represented by the Index "dim"
+ * Tests whether the dimension represented by the vector "dim"
  * corresponds to a scalar quantity.
  *
  * Note that isScalar, isVector, and isArray are mutually exclusive.
  */
-inline bool isScalar(Index const &dim)
+inline bool isScalar(std::vector<unsigned int> const &dim)
 {
    return dim.size() == 1 && dim[0] == 1;
 }
 
 /**
- * Tests whether the dimension represented by the Index "dim"
+ * Tests whether the dimension represented by the vector "dim"
  * corresponds to a vector quantity.
 
  * Note that isScalar, isVector, and isArray are mutually exclusive.
  */
-inline bool isVector(Index const &dim)
+inline bool isVector(std::vector<unsigned int> const &dim)
 {
    return dim.size() == 1 && dim[0] > 1;
 }
 
 /**
- * Tests whether the dimension represented by the Index "dim"
+ * Tests whether the dimension represented by the vector "dim"
  * corresponds to an array.
  *
  * Note that isScalar, isVector, and isArray are mutually exclusive.
  */
-inline bool isArray(Index const &dim)
+inline bool isArray(std::vector<unsigned int> const &dim)
 {
    return dim.size() > 1;
 }
 
 /**
- * Tests whether the dimension represented by the Index "dim"
+ * Tests whether the dimension represented by the vector "dim"
  * corresponds to a two-dimensional array.
  */
-inline bool isMatrix(Index const &dim)
+inline bool isMatrix(std::vector<unsigned int> const &dim)
 {
    return dim.size() == 2;
 }
 
 /**
- * Tests whether the dimension represented by the Index "dim"
+ * Tests whether the dimension represented by the vector "dim"
  * corresponds to a matrix with the same number of rows as columns.
  */
-inline bool isSquareMatrix(Index const &dim)
+inline bool isSquareMatrix(std::vector<unsigned int> const &dim)
 {
    return dim.size() == 2 && dim[0] == dim[1];
 }

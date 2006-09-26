@@ -13,7 +13,7 @@
 class NodeArray;
 class MixtureNode;
 
-typedef std::pair<std::vector <Node*>, std::vector<std::pair<Index, Node*> > > 
+typedef std::pair<std::vector <Node*>, std::vector<std::pair<std::vector<int> , Node*> > > 
 MixPair;
 
 bool compMixPair(MixPair const &, MixPair const &);
@@ -42,14 +42,16 @@ public:
    * repeated, the same node will be returned.
    *
    * @param index Vector of discrete-valued Nodes that index the
-   * possible parameters
-   * @param parameters Vector of pairs. The Index shows a possible value
-   * of the index vector and the Node pointer shows the corresponding
-   * parent from which the mixture node copies its value.
+   * possible parameters 
+   *
+   * @param parameters Vector of pairs. The first element of the pair
+   * shows a possible value of the index vector and the second element
+   * shows the corresponding parent from which the mixture node copies
+   * its value.
    *
    */
   MixtureNode *getMixtureNode(std::vector<Node *> const &index,
-			      std::vector<std::pair<Index, Node*> > 
+			      std::vector<std::pair<std::vector<int> , Node*> > 
 			      const &parameters);
 };
 

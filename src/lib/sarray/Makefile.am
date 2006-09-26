@@ -2,7 +2,6 @@ INCLUDES = -I $(top_srcdir)/src/include
 
 noinst_LTLIBRARIES = libsarray.la
 
-libsarray_la_SOURCES = Index.cc RangeIterator.cc SArray.cc	\
-Range.cc RangeImp.cc 
+libsarray_la_SOURCES = RangeImp.cc Range.cc RangeIterator.cc SArray.cc
 
 noinst_HEADERS = RangeImp.h
