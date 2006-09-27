@@ -26,7 +26,6 @@ SArray::SArray(SArray const &orig)
   : _range(orig._range)
 {
     unsigned int n = _range.length();
-
     _value = new double[n];
     for (unsigned int i = 0; i < n; ++i) {
 	_value[i] = orig._value[i];
@@ -37,64 +36,70 @@ SArray::SArray(SArray const &orig)
 
 SArray::~SArray()
 {
-  delete [] _value;
-}
-
-bool SArray::isFixed() const
-{
-  return _fixed;
-}
-
-void SArray::setValue(double const *value, unsigned int n)
-{
-  if (_fixed) {
-    throw logic_error ("Attempt to set value of fixed SArray");
-  }
-  else if (n != _range.length()) {
-    throw length_error("Length mismatch error in SArray::setValue");
-  }
-  else {
-    for (unsigned int i = 0; i < n; ++i) {
-	_value[i] = value[i];
-    }
-  }
-}
-
-void SArray::setValue(double const value, unsigned int i)
-{
-  if (_fixed) {
-    throw logic_error ("Attempt to set value of fixed SArray");
-  }
-  else if (i >= _range.length()) {
-    throw logic_error("Attempt to set value of invalid element of SArray");
-  }
-  else {
-    _value[i] = value;
-  }
-}
-
-void SArray::setFixed(bool fix)
-{
-  if (fix) {
-    for (unsigned int i = 0; i < _range.length(); ++i) {
-      if (_value[i] == JAGS_NA)
-	throw logic_error("Attempt to fix SArray containing missing values");
-    }
-  }
-  _fixed = fix;
+    delete [] _value;
 }
 
 Range const &SArray::range() const
 {
-  return _range;
+    return _range;
 }
+
+void SArray::setValue(double const *value, unsigned int n)
+{
+    if (_fixed) {
+	throw logic_error ("Attempt to set value of fixed SArray");
+    }
+    else if (n != _range.length()) {
+	throw length_error("Length mismatch error in SArray::setValue");
+    }
+    else {
+	for (unsigned int i = 0; i < n; ++i) {
+	    _value[i] = value[i];
+	}
+    }
+}
+
+void SArray::setValue(double const value, unsigned int i)
+{
+    if (_fixed) {
+	throw logic_error ("Attempt to set value of fixed SArray");
+    }
+    else if (i >= _range.length()) {
+	throw logic_error("Attempt to set value of invalid element of SArray");
+    }
+    else {
+	_value[i] = value;
+    }
+}
+
+double const * SArray::value() const
+{
+    return _value;
+}
+
+void SArray::setFixed(bool fix)
+{
+    if (fix) {
+	for (unsigned int i = 0; i < _range.length(); ++i) {
+	    if (_value[i] == JAGS_NA)
+		throw logic_error("Attempt to fix SArray containing missing values");
+	}
+    }
+    _fixed = fix;
+}
+
+bool SArray::isFixed() const
+{
+    return _fixed;
+}
+
 
 void SArray::setDiscreteValued(bool discrete)
 {
-  _discrete = discrete;
+    _discrete = discrete;
 }
 
 bool SArray::isDiscreteValued() const
 {
-  return _discrete;
+    return _discrete;
 }
