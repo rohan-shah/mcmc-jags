@@ -107,23 +107,22 @@ class Function
    * non-linear for parameters with mask value false.
    *
    * @param isfixed boolean vector. This may be empty, in which case
-   * it is ignored, and the function tests for linearity of the
-   * parameters in mask. A non-empty vector must have length equal to
-   * mask, and denotes the parameters whose values are fixed. In this
-   * case the test is more restrictive, and the function returns true
-   * only if the parameters of the coefficients are fixed, i.e
-   * the function is of the form f(x) = A + B * x where B is fixed
-   * (but A may vary).
+   * it is ignored. A non-empty vector must have length equal to mask,
+   * and denotes the parameters whose values are fixed. In this case
+   * the test is more restrictive, and the function returns true only
+   * if the parameters of the coefficients are fixed, except for the
+   * intercept, which may vary.
    *
-   * @seealso DeterministicNode##isLinear
+   * @see DeterministicNode##isLinear
    */
   virtual bool isLinear(std::vector<bool> const &mask,
 			std::vector<bool> const &isfixed) const;
   /**
    * Tests whether the value of the function is a scale transformation
-   * of the given parameter.  False negative responses are permitted.
-   * Since most functions of interest are not scale transormations,
-   * the default method returns false.
+   * of the given parameter, i.e. a trivial linear function of the
+   * form f(x) = A + B %*% x, where A or B is zero..  False negative
+   * responses are permitted.  Since most functions of interest are
+   * not scale transormations, the default method returns false.
    * 
    * @param index The index of the parameter to be tested. The function
    * may be a non-scale transformation of the other pararameters (e.g.
@@ -133,10 +132,9 @@ class Function
    * it is ignored.  A non-empty vector must have length equal to
    * mask, and denotes the parameters whose values are fixed. In this
    * case the test is more restrictive, and the function returns true
-   * only if the scale transformation is fixed, i.e. the function is
-   * of the form f(x) = B * x where B is fixed.
+   * only if the parameter B is fixed.
    *
-   * @seealso DeterministicNode##isScale
+   * @see DeterministicNode##isScale
    */
   virtual bool isScale(unsigned int index,
 		       std::vector<bool> const &isfixed) const;

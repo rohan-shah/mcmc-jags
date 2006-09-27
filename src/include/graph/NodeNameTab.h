@@ -12,16 +12,16 @@ class Node;
  * @see Node##name
  */
 class NodeNameTab {
- public:
-  /**
-   * Virtual destructor
-   */
-  virtual ~NodeNameTab();
-  /**
-   * Returns the name of the node, if it is included in the NodeNameTab,
-   * or an empty string if not.
-   */
-  virtual std::string getName(Node const *node) const = 0;
+public:
+    /**
+     * Virtual destructor
+     */
+    virtual ~NodeNameTab();
+    /**
+     * Returns the name of the node, if it is included in the NodeNameTab,
+     * or an empty string if not.
+     */
+    virtual std::string getName(Node const *node) const = 0;
 };
 
 #endif

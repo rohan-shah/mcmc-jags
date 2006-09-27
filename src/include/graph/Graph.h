@@ -36,7 +36,7 @@ public:
   void add(Node *node);
   /**
    * Removes node from graph. The reference count of the node is
-   * decremented. If node is not a member, no action is taken
+   * decremented. If node is not a member, no action is taken.
    */
   void remove(Node *node);
   /**
@@ -50,22 +50,22 @@ public:
   /**
    * Checks if the graph is connected.
    */
-  bool isConnected();
+  bool isConnected() const;
   /**
    * Checks if the parents and children of every node in the
    * graph are also contained in the graph.
    */
-  bool isClosed();
+  bool isClosed() const;
   /**
    * Checks if there is any path in the graph leading from a
    * node to itself.
    */
-  bool hasCycle();
+  bool hasCycle() const;
   /**
    * Checks if every node in the graph has exactly one parent in
    * the graph except for a unique root node which has none.
    */
-  bool isTree();
+  //bool isTree() const;
   /**
    * The set of nodes contained in the graph
    */

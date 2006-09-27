@@ -6,16 +6,18 @@
 #include <vector>
 
 /**
- * A mixture node takes its value from one of several parents, based
- * on the current value of an index node, which is also a parent
- * @short Node for mixture models
+ * A mixture node copies its value from one of several parents, based
+ * on the current values of a set of index nodes, which are also
+ * parents.  
+ *
+ * @short Node for mixture models.
  */
 class MixtureNode : public DeterministicNode {
     std::map<std::vector<int>, Node*> _map;
     unsigned int _Nindex;
 public:
     /**
-     * Constructor. 
+     * Constructs a MixtureNode. 
      * @param index Vector of discrete-valued scalar nodes
      * @param parameters Vector of pairs. Each pair associates a
      * possible value of the index nodes with a parent. The mixture node
@@ -25,10 +27,13 @@ public:
     MixtureNode(std::vector<Node *> const &index,
 		std::vector<std::pair<std::vector<int>, Node *> > const &parameters);
     ~MixtureNode();
-	
+    /**
+     * Calculates the value of the node based on the current value of the
+     * index and the value of the corresponding parameter.
+     */
     void deterministicSample(unsigned int chain);
     /**
-     * Returns the number of index parameters
+     * Returns the number of index parameters.
      */
     unsigned int index_size() const;
     /**
