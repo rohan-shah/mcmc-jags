@@ -54,7 +54,7 @@ unsigned int Graph::size() const
   return _nodes.size();
 }
 
-bool Graph::isClosed()
+bool Graph::isClosed() const
 {
   /* Determine whether any nodes in the graph have children or
      parents outside the graph */
@@ -85,7 +85,7 @@ bool Graph::isClosed()
   return true;
 }
 
-bool Graph::isConnected()
+bool Graph::isConnected() const
 {
   GraphMarks marks(*this);
  
@@ -108,13 +108,12 @@ bool Graph::isConnected()
 }
 
 
+/*
 bool Graph::isTree()
 {
-  /* 
      Determine whether a graph is a tree
      All nodes in the graph have exactly one parent in the graph,
      except for the root node which has none. The root node is unique
-  */
   
   bool foundroot = false;
 
@@ -146,6 +145,7 @@ bool Graph::isTree()
   }
   return true;
 }
+*/
 
 /*
 static bool findDescendant(Node const *node, Node const *target, 
@@ -184,7 +184,7 @@ bool Graph::hasCycle()
 }
 */
 
-bool Graph::hasCycle()
+bool Graph::hasCycle() const
 {
   /* 
      Recursively grows a an acyclic graph G, consisting of marked

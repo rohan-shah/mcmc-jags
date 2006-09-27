@@ -34,9 +34,9 @@ void GraphMarks::mark(Node const *node, int m)
   }
 }
 
-int GraphMarks::mark(Node const *node)
+int GraphMarks::mark(Node const *node) const
 {
-  map<Node const*, int>::iterator i = _marks.find(node);
+  map<Node const*, int>::const_iterator i = _marks.find(node);
   if (i == _marks.end()) {
     throw NodeError(node, "Attempt to get mark of node not in Graph");
   }

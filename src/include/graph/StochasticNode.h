@@ -1,8 +1,6 @@
 #ifndef STOCHASTIC_NODE_H_
 #define STOCHASTIC_NODE_H_
 
-#include <vector>
-
 #include <graph/Node.h>
 
 class Distribution;
@@ -16,7 +14,7 @@ class StochasticNode : public Node {
     /* Forbid copying of Stochastic Nodes */
     StochasticNode(StochasticNode const &orig);
     StochasticNode &operator=(StochasticNode const &rhs);
- public:
+public:
 
     StochasticNode(Distribution const *dist, 
                    std::vector<Node*> const &parameters,
