@@ -6,7 +6,7 @@
 #include <sarray/Range.h>
 
 /**
- * A RangeIterator is an index that is bound to be inside a given
+ * A RangeIterator is a numeric vector that is bound to be inside a given
  * Range.  It has operators to allow traversing the Range in row- or
  * column-major order.
  *
@@ -14,10 +14,9 @@
  */
 class RangeIterator : public std::vector<int> {
     const Range _range;
-    bool _atend;
+    unsigned int  _atend;
     //Forbid assignment
     RangeIterator &operator=(std::vector<int> const &);
-    RangeIterator &operator=(RangeIterator const &);
 public:
     /**
      * Constructor. The initial value of a RangeIterator is
@@ -26,12 +25,6 @@ public:
      * @param range. Range to traverse
      */
     RangeIterator(Range const &range);
-    virtual ~RangeIterator();
-    /**
-     * Tests to see if the RangeIterator has gone past the upper limit
-     * of the range. For use in for() loops.
-     */
-    bool atEnd() const;
     /**
      * Goes to the next index in column-major order, (i.e. moving the
      * left hand index fastest). If the RangeIterator at the upper
@@ -50,6 +43,14 @@ public:
      * @see nextLeft
      */
     RangeIterator &nextRight();
+    /**
+     * Returns a numeric counter of the number of times the
+     * RangeIterator has gone past the upper bound of the Range (and
+     * returned to the lower bound) in a call to nexLeft or nextRight.
+     * The initial value is zero.
+     */
+    unsigned int atEnd() const;
+
 };
 
 #endif /* RANGE_ITERATOR_H_ */

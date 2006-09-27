@@ -28,7 +28,7 @@ class DeterministicNode : public Node {
    * function of nodes not in this set.
    *
    * @param fixed When true, the test is more stringent and returns
-   * the value true is returned only if the function is linear and the
+   * the value true only if the function is BOTH linear AND the
    * coefficients b1, ... bn are fixed (but not necessarily a).
    */
   virtual bool 

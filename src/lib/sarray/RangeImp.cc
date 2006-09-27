@@ -94,7 +94,7 @@ RangeImp::RangeImp(vector<int> const &lower, vector<int> const &upper)
     : _lower(lower), _upper(upper), 
       _dim(makeDim(lower, upper)),
       _dim_dropped(makeDimDropped(_dim)),
-      _length(makeLength(_dim))
+      _length(makeLength(_dim)), _ref(0)
 {
 }
 
@@ -210,6 +210,17 @@ vector<int> const & RangeImp::lower() const
 vector<int> const & RangeImp::upper() const
 {
   return _upper;
+}
+
+unsigned int RangeImp::ref() 
+{
+    return ++_ref;
+}
+
+unsigned int RangeImp::unRef()
+{
+    if (_ref > 0) _ref--;
+    return _ref;
 }
 
 bool RangeImp::operator<(RangeImp const &rhs) const

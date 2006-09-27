@@ -63,19 +63,20 @@ public:
    */
   void setValue(double value, unsigned int offset);
   /**
-   * The value of the SArray in vector form. 
+   * The value of the SArray in array form. 
    *
    * Values are given in column-major order (i.e. with
    * the left hand index moving fastest), like the S language and Fortran. 
    *
    * @return A pointer to the beginning of the value array.
    */
-  inline double const *value() const;
+  double const *value() const;
   /** 
    * Sets the SArray to be fixed (true) or not (false).
    *
-   * Fixed SArrays cannot change their value. It is an error to fix
+   * Fixed SArrays cannot change their value. It is an logic error to fix
    * an SArray that contains missing values.
+   * @exception logic_error
    */
   void setFixed(bool fix);
   /**
@@ -84,14 +85,14 @@ public:
    */
   bool isFixed() const;
   /**
-   * Determines whether the array is integer-valued (true) or real
-   * valued (false).
+   * Sets the array to be integer-valued (true) or real-valued
+   * (false).
    *
    * Currently, the integer-value flag of an SArray is purely
    * semantic: the storage type of the values is always double, and
    * the values are never checked to see if they are consistent with
    * the integer-value flag. This semantic information may be used, however,
-   * in other parts of the library to see whether the value of the
+   * in other parts of the JAGS library to see whether the value of the
    * SArray would be a valid subscript, for example.
    */
   void setDiscreteValued(bool flag);
@@ -101,7 +102,7 @@ public:
    */
   bool isDiscreteValued() const;
   /**
-   * Returns the range associated with the SArray
+   * Returns the range associated with the SArray.
    */
   Range const &range() const;
   /**
@@ -111,13 +112,8 @@ public:
    */
   unsigned int length() const { return range().length(); }
   unsigned int ndim(bool drop) const { return range().ndim(drop); }
-  std::vector <unsigned int> const &dim(bool drop) const { return range().dim(drop); }
+  std::vector<unsigned int> const &
+      dim(bool drop) const { return range().dim(drop); }
 };
-
-
-inline double const *SArray::value() const
-{
-  return _value;
-}
 
 #endif /* SARRAY_H_ */

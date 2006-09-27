@@ -127,7 +127,8 @@ Node *NodeArray::getSubset(Range const &target_range)
     offsets.push_back(_offsets[offset]);
   }
   node = new AggNode(target_range.dim(false), nodes, offsets);
-  _generated_nodes[target_range] = node;
+  _generated_nodes.insert(std::pair<Range,Node*>(target_range, node));
+//[target_range] = node;
   _graph.add(node);
   return node;
 }

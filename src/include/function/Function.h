@@ -8,7 +8,7 @@ class SArray;
 class Range;
 
 /**
- * An abstract base class for functions.
+ * Base class for functions.
  *
  * Function objects contain only constant data members and all member
  * functions are constant. Hence only one object needs to be
