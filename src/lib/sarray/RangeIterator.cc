@@ -6,14 +6,10 @@ using std::vector;
 using std::out_of_range;
 
 RangeIterator::RangeIterator(Range const &range)
-  : vector<int>(range.lower()), _range(range), _atend(false)
-{
-}
-
-RangeIterator::~RangeIterator()
+  : vector<int>(range.lower()), _range(range), _atend(0)
 {}
 
-bool RangeIterator::atEnd() const
+unsigned int RangeIterator::atEnd() const
 {
     return _atend;
 }
@@ -33,7 +29,7 @@ RangeIterator &RangeIterator::nextLeft()
         }
     }
     if (i == n) {
-        _atend = true;
+        _atend++;
     }
     return *this;
 }
@@ -52,7 +48,7 @@ RangeIterator &RangeIterator::nextRight()
         }
     }
     if (i < 0) {
-        _atend = true;
+        _atend++;
     }
     return *this;
 }
