@@ -7,3 +7,11 @@ DeterministicNode::DeterministicNode(vector<unsigned int> const &dim,
                                      vector<Node*> const &parents)
   : Node(dim, parents)
 {}
+
+void DeterministicNode::randomSample(RNG*, unsigned int nchain) {
+    deterministicSample(nchain);
+}
+
+bool DeterministicNode::isVariable() const { 
+    return false; 
+}

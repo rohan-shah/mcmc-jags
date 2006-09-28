@@ -20,6 +20,10 @@ ConstantNode::ConstantNode(double value, unsigned int nchain)
   }
 }
 
+void ConstantNode::deterministicSample(unsigned int) {};
+
+void ConstantNode::randomSample(RNG*, unsigned int) {};
+
 string ConstantNode::name(NodeNameTab const &name_table) const
 {
   string name = name_table.getName(this);

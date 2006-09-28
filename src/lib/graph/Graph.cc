@@ -242,7 +242,7 @@ void Graph::getNodes(vector<Node*> &nodes) const
     }
 }
 
-void Graph::getSortedNodes(vector<Node*> &sortednodes)
+void Graph::getSortedNodes(vector<Node*> &sortednodes) const
 {
   /* 
      Return a vector of nodes whose ordering follows the partial

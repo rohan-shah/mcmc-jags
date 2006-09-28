@@ -198,23 +198,6 @@ void BUGSModel::addDevianceNode()
   }
 }
 
-static void addDescendants(Node *node, Graph &descendants)
-{
-   /* Adds node and its descendants to the given graph */
-
-   if (descendants.contains(node)) {
-      return;
-   }
-
-   descendants.add(node);
-
-   set<Node*> const &children = node->children();
-   set<Node*>::const_iterator p;
-   for (p = children.begin(); p != children.end(); ++p) {
-       addDescendants(*p, descendants);
-   }
-}
-
 void BUGSModel::setParameters(std::map<std::string, SArray> const &param_table,
 			      unsigned int chain)
 {
