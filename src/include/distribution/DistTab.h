@@ -2,6 +2,7 @@
 #define DIST_TAB_H_
 
 #include <map>
+#include <list>
 #include <string>
 
 class Distribution;
@@ -18,36 +19,17 @@ class Distribution;
  */
 class DistTab {
   std::map<const std::string, const Distribution*> _table;
+  std::list<Distribution *> _overloaded;
 public:
   /**
-   * Distributions in the table should be removed before the DistTab
-   * is deleted.  The destructor therefore prints a warning to the
-   * standard error if the DistTab contains any Distributions when it
-   * is called.
-   */
-  ~DistTab();
-  /**
-   * Inserts a distribution into the table.  
-   * 
-   * @return logical value indicating success.  The insertion will
-   * fail if a distribution with the same name is already in the
-   * DistTab.  
+   * Inserts a distribution into the table.  The new distribution will
+   * replace any existing distribution with the same name in the table.
    *
-   * @param dist Pointer to the distribution to insert, which should
-   * be dynamically allocated.
+   * @param dist Pointer to the distribution to insert. The pointer
+   * must be valid for the lifetime of the DistTab, unless it is 
+   * removed with a call to erase.
    */
-  bool insert(Distribution const *dist);
-  /** 
-   * Removes a distribution from the table by name.
-   * 
-   * With a combination of erase and insert calls, a module may
-   * replace any existing distribution with another implementation.
-   *
-   * @return a logical value indicating success.  If there is no
-   * distribution with the given name in the DistTab then the return
-   * value is false.
-   */
-  bool erase(std::string const &name);
+  void insert(Distribution const *dist);
   /**
    * Finds a distribution by name
    *
