@@ -21,11 +21,11 @@ class GraphMarks {
   /** Constructor. Each node in the graph initially has mark zero */
   GraphMarks(Graph const &graph);
   ~GraphMarks();
-  /** Sets the mark of node to m. The graph must contain node */
+  /** Sets the mark of a given node to m. The graph must contain node */
   void mark(Node const *node, int m);
-  /** Gives the mark of node */
+  /** Gives the mark of a node */
   int mark(Node const *node) const;
-  /** Sets the mark all nodes in the graph to m */
+  /** Sets the mark of all nodes in the graph to m */
   void markAll(int m);
   /** Marks the parents of node that are in the graph.
       The graph must contain node */

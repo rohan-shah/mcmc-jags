@@ -8,8 +8,9 @@ class Function;
 class SArray;
 
 /**
- * A LogicalNode is a type of DeterministicNode that can be defined by
- * a logical relation in the BUGS language.
+ * A LogicalNode is a type of DeterministicNode that is defined by a
+ * function, and a vector of parents as parameters. In the BUGS
+ * language the function may be represented as an operator.
  *
  * @short Logical Node
  */
@@ -62,8 +63,5 @@ public:
      */
     bool isScale(std::set<Node*> const &parameters, bool fixed) const;
 };
-
-bool isLogical(Node const *node);
-LogicalNode const *asLogical(Node const *node);
 
 #endif /* LOGICAL_NODE_H_ */

@@ -19,12 +19,12 @@ public:
      * This function does nothing. It exists only so that objects of
      * class ConstantNode can be instantiated.
      */
-    void deterministicSample(unsigned int) {};
+    void deterministicSample(unsigned int);
     /**
-     * This function does nothing. It exists only so that objects of
-     * class ConstantNode can be instantiated.
+     * This function does nothing. The value of the constant node is
+     * not changed and the state of the RNG remains the same.
      */
-    void randomSample(RNG*, unsigned int) {};
+    void randomSample(RNG*, unsigned int);
     /**
      * If a constant node does not have a name in the supplied
      * name table, then it is named after its value.

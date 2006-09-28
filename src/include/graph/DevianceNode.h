@@ -17,7 +17,7 @@ public:
     /**
      * A DevianceNode is a scalar node whose parents are all
      * stochastic nodes. The value of a Deviance node is minus twice
-     * the log density of the parents
+     * the log density of the parents.
      */
     DevianceNode(std::set<StochasticNode*> const &parameters);
     /**

@@ -62,11 +62,6 @@ public:
    */
   bool hasCycle() const;
   /**
-   * Checks if every node in the graph has exactly one parent in
-   * the graph except for a unique root node which has none.
-   */
-  //bool isTree() const;
-  /**
    * The set of nodes contained in the graph
    */
   std::set<Node*> const &nodes() const;
@@ -85,7 +80,7 @@ public:
    * @param sorted Empty vector of Node pointers.  On exit
    * this vector will contain the sorted nodes.
    */
-  void getSortedNodes(std::vector<Node*> &sorted); 
+  void getSortedNodes(std::vector<Node*> &sorted) const; 
 };
 
 #endif /* GRAPH_H_ */

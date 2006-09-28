@@ -14,13 +14,12 @@ public:
     /**
      * Random samples from a Deterministic node are not random.
      */
-    void randomSample(RNG*, unsigned int nchain) {
-	deterministicSample(nchain);
-    };
+    void randomSample(RNG*, unsigned int nchain);
     /**
-     * Deterministic nodes are not random variables
+     * Deterministic nodes are not random variables. This function
+     * always returns false.
      */
-    bool isVariable() const { return false; }
+    bool isVariable() const;
     /**
      * Tests whether the value of the node is a linear function of the
      * ancestor nodes X1, X2, ... Xn of form A + B %*% X1 + B2 %*% X2

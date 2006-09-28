@@ -33,7 +33,6 @@ class Node {
   Node(Node const &orig);
   Node &operator=(Node const &rhs);
 protected:
-  //fixme? Const?
   const std::vector<SArray*> _data;
 public:
   /**
@@ -148,11 +147,29 @@ public:
    */
   bool isObserved() const;
   /**
-   * FIXME
+   * Sets the value of the node for a given chain
+   * @param value Array of values to be assigned
+   * @param length Length of the value array
+   * @param chain number of chain (starting from zero) to modify
+   *
+   * @see SArray##setValue
    */
   void setValue(double const *value, unsigned int length, unsigned int chain);
+  /**
+   * Indicates whether a node is discrete-valued or not.
+   * @see SArray##isDiscreteValued
+   */
   bool isDiscreteValued() const;
+  /**
+   * Permanently sets the node to be discrete-valued for all chains.
+   * @see SArray##isDiscreteValued
+   */
   void setDiscreteValued();
+  /**
+   * Gives direct access to the value of the node for a given chain
+   * without going through the data member function.
+   * @see Node##data
+   */
   double const *value(unsigned int chain) const;
 };
 
