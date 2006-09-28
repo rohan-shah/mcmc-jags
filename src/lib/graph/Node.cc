@@ -88,7 +88,6 @@ vector <Node *> const &Node::parents() const
   return _parents;
 }
 
-
 set<Node*> const &Node::children() const
 {
   return _children;

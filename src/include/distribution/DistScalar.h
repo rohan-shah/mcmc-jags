@@ -6,8 +6,8 @@
 struct RNG;
 
 /**
- * Enumerates three possible ranges of support for a real valued
- * random variable
+ * Enumerates three possible ranges of support for a scalar random
+ * variable.
  *
  * DIST_UNBOUNDED for support on the whole real line
  *
@@ -21,7 +21,7 @@ struct RNG;
 enum Support {DIST_UNBOUNDED, DIST_POSITIVE, DIST_PROPORTION, DIST_SPECIAL};
 
 /**
- * Abstract class for scalar valued distributions.
+ * Base class for scalar valued distributions.
  *
  * A subclass of DistScalar has to implement the d,p,q, and r virtual
  * member functions. These are based on the d-p-q-r functions provided
@@ -67,7 +67,7 @@ class DistScalar : public Distribution
   /**
    * Lower limit of distribution, given parameters, but ignoring
    * bounds.  If the distribution has no lower limit, this should
-   * return -DBL_MAX.
+   * return -DBL_MAX or -Inf.
    *
    * The default implementation should be used for distributions with
    * Support DIST_UNBOUNDED, DIST_POSITIVE and DIST_PROPORTION. If
@@ -78,7 +78,7 @@ class DistScalar : public Distribution
   /**
    * Upper limit of distribution, given parameters, but ignoring
    * bounds.  If the distribution has no upper limit, this should
-   * return DBL_MAX
+   * return DBL_MAX or Inf.
    *
    * The default implementation should be used for distributions with
    * Support DIST_UNBOUNDED, DIST_POSITIVE and DIST_PROPORTION. If

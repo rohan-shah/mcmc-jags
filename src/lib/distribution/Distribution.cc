@@ -19,8 +19,7 @@ string const &Distribution::name() const
   return _name;
 }
 
-bool 
-Distribution::isDiscreteValued() const
+bool Distribution::isDiscreteValued() const
 {
   return _discrete;
 }

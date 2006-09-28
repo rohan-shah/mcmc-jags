@@ -4,7 +4,7 @@
 #include <distribution/DistScalar.h>
 
 /**
- * Abstract class for integer valued distributions
+ * Base class for integer valued distributions
  *
  * @see DistReal
  * @short Integer valued distributions

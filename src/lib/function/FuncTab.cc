@@ -20,23 +20,19 @@ FuncTab::~FuncTab ()
     }
 }
 
-bool
-FuncTab::insert (Function const *func)
+bool FuncTab::insert (Function const *func)
 {
   string const &name = func->name ();
-  if (_table.find (name) == _table.end ())
-    {
+  if (_table.find (name) == _table.end ()) {
       _table[name] = func;
       return true;
-    }
-  else
-    {
+  }
+  else {
       return false;
-    }
+  }
 }
 
-bool
-FuncTab::insert (InverseLinkFunc const *lfunc)
+bool FuncTab::insert (InverseLinkFunc const *lfunc)
 {
   string const &name = lfunc->name ();
   string const &linkname = lfunc->linkName ();
@@ -54,8 +50,7 @@ FuncTab::insert (InverseLinkFunc const *lfunc)
     }
 }
 
-bool
-FuncTab::erase (string const &name)
+bool FuncTab::erase (string const &name)
 {
     /* Is it a link function?
        Manual search through the map of link functions required, since they
@@ -73,36 +68,30 @@ FuncTab::erase (string const &name)
 }
 
 
-Function const *
-FuncTab::find (string const &name) const
+Function const * FuncTab::find (string const &name) const
 {
-  map < const string, const Function *>::const_iterator 
-    p = _table.find (name);
+    map < const string, const Function *>::const_iterator p 
+	= _table.find (name);
 
-  if (p == _table.end ())
-    {
-      return 0;
+    if (p == _table.end ()) {
+	return 0;
     }
-  else
-    {
-      return p->second;
+    else {
+	return p->second;
     }
 }
 
-Function const *
-FuncTab::findInverse (string const &name) const
+Function const * FuncTab::findInverse (string const &name) const
 {
     map < const string, const InverseLinkFunc *>::const_iterator 
 	p =_link_table.find (name);
   
-    if (p == _link_table.end ())
-	{
-	    return 0;
-	}
-    else
-	{
-	    return p->second;
-	}
+    if (p == _link_table.end ()) {
+	return 0;
+    }
+    else {
+	return p->second;
+    }
 }
 
 

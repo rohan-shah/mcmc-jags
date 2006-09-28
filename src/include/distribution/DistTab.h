@@ -38,14 +38,14 @@ public:
    */
   bool insert(Distribution const *dist);
   /** 
-   * Removes a distribution by name and frees the associated memory.
+   * Removes a distribution from the table by name.
    * 
-   * With a combination of erase and insert calls, you can replace any
-   * existing distribution with another implementation.
+   * With a combination of erase and insert calls, a module may
+   * replace any existing distribution with another implementation.
    *
-   * @return a logical value indicating success.  The removal will
-   * fail if there is no distribution with the given name in the
-   * DistTab.
+   * @return a logical value indicating success.  If there is no
+   * distribution with the given name in the DistTab then the return
+   * value is false.
    */
   bool erase(std::string const &name);
   /**
