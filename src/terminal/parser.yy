@@ -2,8 +2,6 @@
 %{
 #include <config.h>
 
-/* #include <Rmath.h> */
-
 #include <cstdio>
 #include <iostream>
 #include <fstream>
@@ -12,6 +10,7 @@
 #include <cmath>
 #include <sstream>
 #include <fstream>
+#include <list>
 
 #include <Console.h>
 #include <compiler/ParseTree.h>
@@ -20,8 +19,12 @@
 #include <cstring>
 #include <ltdl.h>
 
+//Required for warning about masked distributions after module loading
+#include <deque>
+#include <distribution/Distribution.h>
+#include <compiler/Compiler.h>
+
 #include "ReadData.h"
-//#include "JRNG.h"
 
     typedef void(*pt2Func)();
 
@@ -32,6 +35,7 @@
     static bool interactive = true;
     void setName(ParseTree *p, std::string *name);
     std::map<std::string, SArray> _data_table;
+    std::deque<lt_dlhandle> _modules;
     bool open_data_buffer(std::string const *name);
     void return_to_main_buffer();
     void setMonitor(ParseTree const *var, int thin);
@@ -845,10 +849,28 @@ static void updatestar(long niter, long refresh, int width)
 
 static void loadModule(std::string const &name)
 {
-  std::cout << "   " << name << std::endl;
+  //Record number of masked distributions before loading module
+  std::list<Distribution const *> const &masked_dist = 
+     Compiler::distTab().masked();
+  unsigned int n_dist = masked_dist.size(); 
   lt_dlhandle mod = lt_dlopenext(name.c_str());
   if (mod == NULL) {
       std::cout << lt_dlerror() << std::endl;
+  }
+  else {
+      _modules.push_front(mod);
+      std::cout << "Loading module: " << name << std::endl;
+      //Warn about newly masked distributions
+      if (masked_dist.size() > n_dist) {
+	  std::cerr << "Warning: the following distributions were masked "
+		    << "by module " << name << ":\n";
+	  std::list<Distribution const *>::const_iterator p = 
+             masked_dist.begin();
+	  for(unsigned int i = masked_dist.size(); i > n_dist; --i, ++p) {
+	      std::cerr << (*p)->name() << "\n";
+	  }
+	  std::cerr << std::endl;
+      }
   }
 }
 
@@ -894,7 +916,6 @@ int main (int argc, char **argv)
   std::cout << "JAGS is free software and comes with ABSOLUTELY NO WARRANTY" 
             << std::endl;
 
-  std::cout << "Loading modules:" << std::endl;
   if (getenv("JAGS_HOME")) {
      /* Locate configuration file containing names of modules to load */
      std::string conf_name = std::string(getenv("JAGS_HOME")) + 
@@ -917,7 +938,10 @@ int main (int argc, char **argv)
   if (argc==2) {
     fclose(cmdfile);
   }
-
   delete console;
+  //We have to unload modules *AFTER* deleting the console. 
+  for (unsigned int i = 0; i < _modules.size(); ++i) {
+      lt_dlclose(_modules[i]);
+  }
   lt_dlexit();
 }

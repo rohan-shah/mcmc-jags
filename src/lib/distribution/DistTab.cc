@@ -1,36 +1,72 @@
 #include <config.h>
 #include <distribution/DistTab.h>
 #include <distribution/Distribution.h>
-#include <sarray/SArray.h>
-
-#include <iostream>
+#include <functional>
 
 using std::string;
-using std::list;
-typedef std::map<const string, Distribution const *> DistMap;
+using std::binary_function;
+
+typedef std::list<Distribution const*> DistList;
+
+/* Adaptable binary predicate for find_if algorithm */
+struct isName: 
+    public binary_function<Distribution const *, string const *, bool> 
+{
+    bool operator()(Distribution const *dist, string const *name) const
+    {
+	return dist->name() == *name;
+    }
+};
 
 void DistTab::insert(Distribution const *dist)
 {
-    string const &name = dist->name();
-    DistMap::iterator p = _table.find(name);
-    if (p != _table.end()) {
-	_table.erase(p);
+    DistList::iterator p = find_if(_dist_list.begin(), _dist_list.end(),
+                                   bind2nd(isName(), &dist->name()));
+    //Transfer distribution with same name (if any) to the masked list
+    if (p != _dist_list.end()) {
+	_masked_list.push_front(*p);
+	_dist_list.erase(p);
     }
-    _table[name] = dist;
+    _dist_list.push_front(dist);
 }
 
-Distribution const *DistTab::find(string const &name) const
+Distribution const *DistTab::find(string const &distname) const
 {
-    DistMap::const_iterator p = _table.find(name);
+    //Note scoping operator to distinguish std::find from DistTab::find
+    DistList::const_iterator p = std::find_if(_dist_list.begin(), 
+					      _dist_list.end(),
+					      bind2nd(isName(), &distname));
 
-    return (p == _table.end()) ? 0 : p->second;
+    return (p == _dist_list.end()) ? 0 : *p;
 }
 
 void DistTab::erase(Distribution *dist)
 {
-    DistMap::iterator p = _table.find(dist->name());
-    if (p != _table.end() && p->second == dist) {
-	_table.erase(p);
+    //Erase from the main list.
+    DistList::iterator p = std::find(_dist_list.begin(), _dist_list.end(),
+				     dist);
+    bool move_masked = false;
+    if (p != _dist_list.end()) {
+	_dist_list.erase(p);
+	move_masked = true; //Move any masked distributions into the main list
     }
-    
+
+    //Erase from the masked list
+    p = std::find(_masked_list.begin(), _masked_list.end(), dist);
+    if (p != _masked_list.end()) {
+        if (move_masked) {
+	    _dist_list.push_front(*p);
+	}
+	_masked_list.erase(p);
+    }
+}
+
+DistList const &DistTab::distributions() const
+{
+    return _dist_list;
+}
+
+DistList const &DistTab::masked() const
+{
+    return _masked_list;
 }
