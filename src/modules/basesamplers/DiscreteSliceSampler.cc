@@ -54,13 +54,13 @@ double DiscreteSliceSampler::value()
 double DiscreteSliceSampler::lowerLimit()
 {
   StochasticNode const *snode = nodes().front();
-  return snode->distribution()->lowerSupport(chain(), snode->parameters(chain()));
+  return snode->distribution()->lowerSupport(0, snode->parameters(chain()));
 }
 
 double DiscreteSliceSampler::upperLimit()
 {
   StochasticNode const *snode = nodes().front();
-  return snode->distribution()->upperSupport(chain(), snode->parameters(chain()));
+  return snode->distribution()->upperSupport(0, snode->parameters(chain()));
 }
 
 void DiscreteSliceSampler::update(RNG *rng)
