@@ -51,7 +51,7 @@ CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 libdist_la_LIBADD =
 am_libdist_la_OBJECTS = DistTab.lo Distribution.lo DistDiscrete.lo \
-	DistScalar.lo DistReal.lo
+	DistScalar.lo DistReal.lo Bounds.lo
 libdist_la_OBJECTS = $(am_libdist_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/src/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -186,8 +186,9 @@ target_alias = @target_alias@
 INCLUDES = -I $(top_srcdir)/src/include
 noinst_LTLIBRARIES = libdist.la
 libdist_la_SOURCES = DistTab.cc Distribution.cc DistDiscrete.cc	\
-DistScalar.cc DistReal.cc 
+DistScalar.cc DistReal.cc Bounds.cc
 
+noinst_headers = Bounds.h
 all: all-am
 
 .SUFFIXES:
@@ -239,6 +240,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Bounds.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DistDiscrete.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DistReal.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DistScalar.Plo@am__quote@

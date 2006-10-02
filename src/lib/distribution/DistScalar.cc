@@ -2,6 +2,7 @@
 #include <distribution/DistScalar.h>
 #include <sarray/SArray.h>
 #include <sarray/util.h>
+#include "Bounds.h"
 
 #include <stdexcept>
 #include <cfloat>
@@ -27,17 +28,17 @@ double
 DistScalar::lowerSupport(unsigned int i,
 			 vector<SArray const *> const &parameters) const
 {
-  if (i != 0) {
-    throw logic_error("Invalid index in Distreal::lowerSupport");
-  }
-
-  SArray const *lb = lowerBound(parameters);
-  if (lb) {
-    return max(l(parameters, false), *lb->value());
-  }
-  else {
-    return l(parameters, false);
-  }
+    if (i != 0) {
+	throw logic_error("Invalid index in Distreal::lowerSupport");
+    }
+  
+    SArray const *lb = lowerBound(this, parameters);
+    if (lb) {
+	return max(l(parameters, false), *lb->value());
+    }
+    else {
+	return l(parameters, false);
+    }
 }
 
 double
@@ -48,7 +49,7 @@ DistScalar::upperSupport(unsigned int i,
     throw logic_error("Invalid index in Distreal::upperSupport");
   }
 
-  SArray const *ub = upperBound(parameters);
+  SArray const *ub = upperBound(this, parameters);
   if (ub) {
     return min(u(parameters, false), *ub->value());
   }
@@ -102,8 +103,8 @@ DistScalar::typicalValue(SArray &x,
                          std::vector<SArray const *> const &parameters) const
 {
 
-    SArray const *bb = lowerBound(parameters);
-    SArray const *ba = upperBound(parameters);
+    SArray const *bb = lowerBound(this, parameters);
+    SArray const *ba = upperBound(this, parameters);
 
     double y;
     if (!ba && !bb) {

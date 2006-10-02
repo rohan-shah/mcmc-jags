@@ -3,4 +3,6 @@ INCLUDES = -I $(top_srcdir)/src/include
 noinst_LTLIBRARIES = libdist.la
 
 libdist_la_SOURCES = DistTab.cc Distribution.cc DistDiscrete.cc	\
-DistScalar.cc DistReal.cc 
+DistScalar.cc DistReal.cc Bounds.cc
+
+noinst_headers = Bounds.h

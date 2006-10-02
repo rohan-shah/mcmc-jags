@@ -17,6 +17,7 @@ public:
    *
    * @param name BUGS language name of the distribution
    * @param npar Number of parameters, excluding upper and lower bounds
+   * @param support Support of the distribution.
    * @param canbound Logical flag indicating whether distribution is boundable.
    */
   DistDiscrete(std::string const &name, unsigned int npar, 

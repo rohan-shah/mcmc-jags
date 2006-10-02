@@ -2,6 +2,7 @@
 #include <distribution/DistReal.h>
 #include <rng/RNG.h>
 #include <sarray/SArray.h>
+#include "Bounds.h"
 
 #include <stdexcept>
 #include <cfloat>
@@ -25,8 +26,8 @@ DistReal::DistReal(string const &name, unsigned int npar, Support support,
 double DistReal::logLikelihood(SArray const &x,
 			       vector<SArray const *> const &parameters) const
 {
-  SArray const *lb = lowerBound(parameters);
-  SArray const *ub = upperBound(parameters);
+  SArray const *lb = lowerBound(this, parameters);
+  SArray const *ub = upperBound(this, parameters);
 
   double y = x.value()[0];
   double loglik = d(y, parameters, true);
@@ -62,8 +63,8 @@ DistReal::randomSample(SArray &x, vector<SArray const *> const &parameters,
 		       RNG *rng) const
 {
 
-    SArray const *bb = lowerBound(parameters);
-    SArray const *ba = upperBound(parameters);
+    SArray const *bb = lowerBound(this, parameters);
+    SArray const *ba = upperBound(this, parameters);
 
     double y;
     if (!ba && !bb) {

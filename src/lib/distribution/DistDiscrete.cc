@@ -2,6 +2,7 @@
 #include <distribution/DistDiscrete.h>
 #include <rng/RNG.h>
 #include <sarray/SArray.h>
+#include "Bounds.h"
 
 #include <stdexcept>
 #include <cfloat>
@@ -27,8 +28,8 @@ double
 DistDiscrete::logLikelihood(SArray const &x,
 			    vector<SArray const *> const &parameters) const
 {
-  bool lb = lowerBound(parameters);
-  bool ub = upperBound(parameters);
+  bool lb = lowerBound(this, parameters);
+  bool ub = upperBound(this, parameters);
 
   if (!lb && !ub) {
     return d(*x.value(), parameters, true);
@@ -74,8 +75,8 @@ void DistDiscrete::randomSample(SArray &x,
   if (x.length() != 1)
     throw length_error("length mismatch in DistDiscrete::randomSample");
 
-  bool bb = lowerBound(parameters) != 0;
-  bool ba = upperBound(parameters) != 0;
+  bool bb = lowerBound(this, parameters);
+  bool ba = upperBound(this, parameters);
   
   double y;
   if (ba || bb) {

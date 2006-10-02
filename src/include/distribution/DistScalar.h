@@ -15,7 +15,7 @@ struct RNG;
  *
  * DIST_PROPORTION for support on values in [0,1]
  *
- * DIST_SPECIAL for other distributions, i.e. distributions where the
+ * DIST_SPECIAL for other distributions, e.g. distributions where the
  * support depends on the parameter values.
  */
 enum Support {DIST_UNBOUNDED, DIST_POSITIVE, DIST_PROPORTION, DIST_SPECIAL};
@@ -25,8 +25,7 @@ enum Support {DIST_UNBOUNDED, DIST_POSITIVE, DIST_PROPORTION, DIST_SPECIAL};
  *
  * A subclass of DistScalar has to implement the d,p,q, and r virtual
  * member functions. These are based on the d-p-q-r functions provided
- * by libRmath and, for most of the standard JAGS distributions are
- * simply wrappers around them.
+ * by libRmath.
  *
  * The JAGS versions of most (but not all) scalar distributions extend
  * the distribution families in libRmath by allowing the distribution
@@ -60,14 +59,24 @@ class DistScalar : public Distribution
    */
   std::vector<unsigned int> 
       dim(std::vector<std::vector<unsigned int> > const &parameters) const;
+  /**
+   * This implementation of lowerSupport checks that i == 0, and then
+   * calculates the lower limit based on the bounds and on the 
+   * DistScalar##l function.
+   */
   double lowerSupport(unsigned int i,
 		      std::vector<SArray const *> const &parameters) const;
+  /**
+   * This implementation of upperSupport checks that i == 0, and then
+   * calculates the upper limit based on the bounds and on the
+   * DistScalar##u function.
+   */
   double upperSupport(unsigned int i,
 		      std::vector<SArray const *> const &parameters) const;
   /**
    * Lower limit of distribution, given parameters, but ignoring
    * bounds.  If the distribution has no lower limit, this should
-   * return -DBL_MAX or -Inf.
+   * return -DBL_MAX.
    *
    * The default implementation should be used for distributions with
    * Support DIST_UNBOUNDED, DIST_POSITIVE and DIST_PROPORTION. If
@@ -78,7 +87,7 @@ class DistScalar : public Distribution
   /**
    * Upper limit of distribution, given parameters, but ignoring
    * bounds.  If the distribution has no upper limit, this should
-   * return DBL_MAX or Inf.
+   * return DBL_MAX.
    *
    * The default implementation should be used for distributions with
    * Support DIST_UNBOUNDED, DIST_POSITIVE and DIST_PROPORTION. If

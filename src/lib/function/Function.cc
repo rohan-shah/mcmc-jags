@@ -25,7 +25,6 @@ bool Function::checkParameterValue (vector <SArray const *> const &args) const
   return true;
 }
 
-#include <iostream>
 bool Function::checkParameterLength (unsigned int npar) const
 {
   return _npar == 0 ||  npar == _npar;

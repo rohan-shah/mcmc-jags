@@ -5,7 +5,10 @@
 #include <function/ScalarFunc.h>
 
 /**
- * @short Base class for inverse link function 
+ * @short Base class for inverse link functions.
+ *
+ * An inverse link function is a continuous differentiable scalar function
+ * with range (-Inf,Inf).
  *
  * Link functions may be expressed in the BUGS language using an
  * S-style replacement function notation. For example the log link may
@@ -15,17 +18,17 @@
  */
 class InverseLinkFunc : public ScalarFunc
 {
-  const std::string _link;
+    const std::string _link;
 public:
-  InverseLinkFunc (std::string const &name, std::string const &link);
-  /**
-   * Returns the name of the link function
-   */
-  std::string const &linkName () const;
-  /** Link function */
-  virtual double link(double mu) const = 0;
-  /** Gradient of link function */
-  virtual double gradLink(double mu) const = 0;
+    InverseLinkFunc (std::string const &name, std::string const &link);
+    /**
+     * Returns the name of the link function
+     */
+    std::string const &linkName () const;
+    /** Link function */
+    virtual double link(double mu) const = 0;
+    /** Gradient of link function */
+    virtual double gradLink(double mu) const = 0;
 };
 
 #endif

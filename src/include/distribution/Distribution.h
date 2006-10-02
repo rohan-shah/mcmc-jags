@@ -30,6 +30,8 @@ public:
      * Constructor.
      * @param name name of the distribution as used in the BUGS language
      * @param npar number of parameters, excluding upper and lower bounds
+     * @param canbound logical flag indicating whether distribution can
+     * be truncated by defining lower and upper bounds.
      * @param discrete logical flag indicating whether distribution is 
      * discrete valued.
      */
@@ -43,7 +45,7 @@ public:
     /**
      * @param x Value at which to evaluate the likelihood.
      *
-     * @param parameters Parameter values or the distribution.  This
+     * @param parameters Parameter values of the distribution.  This
      * vector should be of length npar().
      *
      * @returns the log likelihood.  If the likelihood should be zero
@@ -90,32 +92,36 @@ public:
      * The lowest possible value that X[i] can take, conditional on
      * the parameters.
      */
+    /*
     virtual double 
 	lowerSupport(unsigned int i,
 		     std::vector<SArray const *> const &parameters) const = 0;
+    */
     /**
      * The highest possible value that X[i] can take, conditional on
      * the parameters. 
      */
+    /*
     virtual double 
 	upperSupport(unsigned int i,
 		     std::vector<SArray const *> const &parameters) const = 0;
+    */
     /**
      * The number of parameters of the distribution
      */
     unsigned int npar() const;
     /**
-     * Check that dimensions of the parameters are correct.
+     * Checks that dimensions of the parameters are correct.
      *
      * This function only needs to be run once for each parameter
-     * vector. Thereafter, the values of the parameters will change, but
-     * the dimensions will not.
+     * vector. Thereafter, the values of the parameters will change,
+     * but the dimensions will not.
      */
     virtual bool 
 	checkParameterDim (std::vector<std::vector<unsigned int> > const &parameters) 
 	const = 0;
     /**
-     * Check that the values of the parameters are consistent with
+     * Checks that the values of the parameters are consistent with
      * the distribution. For example, some distributions require
      * than certain parameters are positive, or lie in a given
      * range.
@@ -127,8 +133,7 @@ public:
 	const = 0;
     /**
      * Calculates what the dimension of the distribution should be,
-     * based on the distribution of its parameters. This function
-     * assumes that checkParameterDim is correct.
+     * based on the distribution of its parameters.
      */
     virtual std::vector<unsigned int> 
 	dim (std::vector <std::vector<unsigned int> > const &args) const = 0;
@@ -137,22 +142,12 @@ public:
      */
     bool isDiscreteValued() const;
     /**
-     * Indicates whether a sampled value from the distribution is 
+     * Indicates whether a sampled value from the distribution is
      * determined completely by its parameters. The vast majority of
-     * distributions are not deterministic, so the default method returns
-     * false.
+     * distributions are not deterministic, so the default method
+     * returns false.
      */
     virtual bool isDeterministic() const;
-    /**
-     * @returns pointer to an SArray that contains the lower bound of
-     * the distribution, or 0 if there is no lower bound.
-     */ 
-    SArray const *lowerBound(std::vector<SArray const *> const &args) const;
-    /**
-     * @returns pointer to an SArray that contains the upper bound of
-     * the distribution, or 0 if there is no lower bound.
-     */ 
-    SArray const *upperBound(std::vector<SArray const *> const &args) const;
     /**
      * Indicates whether a distribution is boundable using the T(,) construct
      */
