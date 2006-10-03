@@ -92,20 +92,16 @@ public:
      * The lowest possible value that X[i] can take, conditional on
      * the parameters.
      */
-    /*
     virtual double 
 	lowerSupport(unsigned int i,
 		     std::vector<SArray const *> const &parameters) const = 0;
-    */
     /**
      * The highest possible value that X[i] can take, conditional on
      * the parameters. 
      */
-    /*
     virtual double 
 	upperSupport(unsigned int i,
 		     std::vector<SArray const *> const &parameters) const = 0;
-    */
     /**
      * The number of parameters of the distribution
      */
