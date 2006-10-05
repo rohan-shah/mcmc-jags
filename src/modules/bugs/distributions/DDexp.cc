@@ -15,7 +15,7 @@ static inline double MU(vector<SArray const *> const &par)
 
 static inline double SCALE(vector<SArray const *> const &par)
 {
-    return 1/(*par[0]->value());
+    return 1/(*par[1]->value());
 }
 
 DDexp::DDexp()

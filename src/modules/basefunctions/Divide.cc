@@ -34,7 +34,6 @@ bool Divide::isLinear(vector<bool> const &mask, vector<bool> const &fix) const
     }
 }
 
-/*
 bool Divide::isScale(unsigned int index, vector<bool> const &fix) const
 {
     if (index == 1)
@@ -45,4 +44,3 @@ bool Divide::isScale(unsigned int index, vector<bool> const &fix) const
     else
 	return fix[1];
 }
-*/

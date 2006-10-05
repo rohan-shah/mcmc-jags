@@ -72,9 +72,9 @@ DistReal::randomSample(SArray &x, vector<SArray const *> const &parameters,
     }
     else if (bb && ba) {
 	double lower = lowerSupport(0, parameters);
-	double plower = p(lower, parameters, false, false);
+	double plower = p(lower, parameters, true, false);
 	double upper = upperSupport(0, parameters);
-	double pupper = p(upper, parameters, false, false);
+	double pupper = p(upper, parameters, true, false);
 	double px = plower + rng->uniform() * (pupper - plower);
 	y = q(px, parameters, true, false);
     }
@@ -82,7 +82,6 @@ DistReal::randomSample(SArray &x, vector<SArray const *> const &parameters,
 	double lower = lowerSupport(0, parameters);
 	double plower = p(lower, parameters, false, false);
 	double px = plower * rng->uniform();
-//	y = q(px, parameters, false, true);
   	y = q(px, parameters, false, false);
     }
     else if (ba) {
