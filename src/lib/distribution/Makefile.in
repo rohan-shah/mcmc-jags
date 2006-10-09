@@ -14,6 +14,7 @@
 
 @SET_MAKE@
 
+
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
 VPATH = @srcdir@
@@ -37,7 +38,8 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 subdir = src/lib/distribution
-DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
+DIST_COMMON = $(noinst_HEADERS) $(srcdir)/Makefile.am \
+	$(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/R.m4 \
 	$(top_srcdir)/m4/acx_blas.m4 $(top_srcdir)/m4/acx_fortran.m4 \
@@ -66,6 +68,7 @@ CXXLINK = $(LIBTOOL) --tag=CXX --mode=link $(CXXLD) $(AM_CXXFLAGS) \
 	$(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 SOURCES = $(libdist_la_SOURCES)
 DIST_SOURCES = $(libdist_la_SOURCES)
+HEADERS = $(noinst_HEADERS)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -188,7 +191,7 @@ noinst_LTLIBRARIES = libdist.la
 libdist_la_SOURCES = DistTab.cc Distribution.cc DistDiscrete.cc	\
 DistScalar.cc DistReal.cc Bounds.cc
 
-noinst_headers = Bounds.h
+noinst_HEADERS = Bounds.h
 all: all-am
 
 .SUFFIXES:
@@ -355,7 +358,7 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(LTLIBRARIES)
+all-am: Makefile $(LTLIBRARIES) $(HEADERS)
 installdirs:
 install: install-am
 install-exec: install-exec-am
