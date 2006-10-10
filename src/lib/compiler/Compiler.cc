@@ -72,7 +72,7 @@ double Compiler::constFromTable(ParseTree const *p)
   if (i == _data_table.end()) {
     return JAGS_NA;
   }
-  Range range = getRange(p->parameters(), i->second.range());
+  Range range = getRange(p, i->second.range());
   if (isNULL(range)) {
     return JAGS_NA;
   }
@@ -95,7 +95,7 @@ double Compiler::constFromNode(ParseTree const*p)
   if (array) {
     // We can't call getConstantRange() because we aren't sure that
     // the range expression can be evaluated.
-    Range subset_range = getRange(p->parameters(), array->range());
+      Range subset_range = getRange(p, array->range());
     if (isNULL(subset_range)) {
       return JAGS_NA;
     }
@@ -267,8 +267,7 @@ bool Compiler::indexExpression(ParseTree const *p, int &value)
   }
 }
 
-Range Compiler::getRange(vector<ParseTree*> const &range_list, 
-			 Range const &default_range)
+Range Compiler::getRange(ParseTree const *p, Range const &default_range)
 {
   /* 
      Evaluate a range expression. If successful, it returns the range
@@ -281,6 +280,9 @@ Range Compiler::getRange(vector<ParseTree*> const &range_list,
      failure.
   */
   
+    vector<ParseTree*> const &range_list = p->parameters();
+    string const &name = p->name();
+
   if (range_list.empty()) {
     /* An empty range expression implies the default range, if it exists,
        or a scalar value, if it does not */
@@ -293,7 +295,8 @@ Range Compiler::getRange(vector<ParseTree*> const &range_list,
   // Check size and integrity of range expression
   unsigned int size = range_list.size();
   if (!isNULL(default_range) && size != default_range.ndim(false)) {
-    throw logic_error("Default range does not match dimension of range expression");
+    string msg = string("dimension mismatch taking subset of ") + name;
+    throw runtime_error(msg);
   }
   for (unsigned int i = 0; i < size; ++i) {
     if (range_list[i]->treeClass() != P_RANGE) {
@@ -368,7 +371,7 @@ Range Compiler::VariableSubsetRange(ParseTree const *var)
       throw runtime_error(string("Dimension mismatch in subset expression ")
 			  + "of variable " + name);
     }
-    Range range = getRange(var->parameters(), array->range());
+    Range range = getRange(var, array->range());
     if (isNULL(range)) {
       throw runtime_error(string("Missing values in subset expression ") 
 			  + "of variable " + name);
@@ -377,7 +380,7 @@ Range Compiler::VariableSubsetRange(ParseTree const *var)
   }
   else {
     // Undeclared node
-    Range range = getRange(var->parameters(), Range());
+      Range range = getRange(var, Range());
     if (isNULL(range)) {
       throw runtime_error(string("Cannot evaluate subset expression for ")
 			  + "undeclared variable " + name);
@@ -459,7 +462,7 @@ Node * Compiler::getSubSetNode(ParseTree const *var)
   if (array == 0) {
     throw runtime_error(string("Unknown variable ") + var->name());
   }
-  Range subset_range = getRange(var->parameters(), array->range());
+  Range subset_range = getRange(var, array->range());
   if (isNULL(subset_range)) {
     return 0;
   }
@@ -495,7 +498,7 @@ Node *Compiler::getArraySubset(ParseTree const *p)
 	if (array == 0) {
 	  throw runtime_error(string("Unknown parameter ") + p->name());
 	}
-	Range subset_range = getRange(p->parameters(), array->range());
+	Range subset_range = getRange(p, array->range());
 	if (isNULL(subset_range)) {
 	  node = getMixtureNode(p, this); //A stochastic subset
 	} 
