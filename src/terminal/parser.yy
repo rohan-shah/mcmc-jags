@@ -112,6 +112,7 @@
 %type <pvec>  r_value_list r_assignment_list range_list
 %type <ptree> r_value_collection r_integer_collection r_collection
 %type <stringptr> file_name;
+%type <stringptr> r_name;
 
 %%
 
@@ -366,21 +367,27 @@ r_assignment_list: r_assignment {
 }
 ;
 
-r_assignment: STRING ARROW r_structure {
+r_assignment: r_name ARROW r_structure {
   $$ = $3; setName($$, $1);
 }
-| STRING ARROW r_collection {
+| r_name ARROW r_collection {
   $$ = new ParseTree(P_ARRAY);
   setName($$, $1);
   setParameters($$, $3);
 }
-| STRING ARROW STRING {
+| r_name ARROW STRING {
   /* Allow this for setting the NAME of the random number generator */
   $$ = new ParseTree(P_VAR); setName($$, $1);
   ParseTree *p = new ParseTree(P_VAR); setName(p, $3);
   setParameters($$, p);
 }
 ;
+
+r_name: STRING
+| '`' NAME '`' {
+    /* R >= 2.4.0 uses backticks for quoted names */
+    $$ = $2;
+}
 
 r_structure: STRUCTURE '(' r_collection ',' r_attribute_list ')' {
   $$ = new ParseTree(P_ARRAY); 

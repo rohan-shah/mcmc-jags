@@ -54,6 +54,7 @@ exit			zzlval.intval=EXIT; return EXIT;
 "*"			return '*';
 ":"                     return ':';
 ";"                     return ';';
+"`"                     return '`';
 
 "/*"                    BEGIN(COMMENT);
 <COMMENT>[^*]*          /* Eat up anything that's not a '*'   */
