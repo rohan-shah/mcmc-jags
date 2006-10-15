@@ -103,6 +103,11 @@ public:
 	upperSupport(unsigned int i,
 		     std::vector<SArray const *> const &parameters) const = 0;
     /**
+     * FIXME
+     */
+     virtual bool
+	 isSupportFixed(std::vector<bool> const &fixmask) const = 0;
+    /**
      * The number of parameters of the distribution
      */
     unsigned int npar() const;

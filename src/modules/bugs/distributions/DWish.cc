@@ -223,3 +223,8 @@ DWish::typicalValue(SArray &x, std::vector<SArray const *> const &par)
   x.setValue(C, length);
   delete [] C;
 }
+
+bool DWish::isSupportFixed(std::vector<bool> const &fixmask) const
+{
+    return true;
+}

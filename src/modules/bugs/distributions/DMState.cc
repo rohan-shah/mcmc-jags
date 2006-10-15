@@ -94,14 +94,12 @@ DMState::checkParameterValue(vector<SArray const *> const &parameters) const
   return true;
 }
 
-double DMState::l(vector<SArray const *> const &parameters,
-		  bool absolute) const
+double DMState::l(vector<SArray const *> const &parameters) const
 {
     return 1;
 }
 
-double DMState::u(vector<SArray const *> const &parameters,
-		  bool absolute) const
+double DMState::u(vector<SArray const *> const &parameters) const
 {
     return NSTATE;
 }
@@ -282,4 +280,9 @@ double DMState::r(std::vector<SArray const *> const &parameters, RNG *rng)
   const
 {
     return q(rng->uniform(), parameters, true, false);
+}
+
+bool DMState::isSupportFixed(vector<bool> const &parameters) const
+{
+    return true;
 }

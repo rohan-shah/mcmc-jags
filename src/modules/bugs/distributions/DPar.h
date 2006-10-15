@@ -21,12 +21,13 @@ class DPar : public DistReal {
   double q(double p, std::vector<SArray const *> const &parameters, bool lower,
 	   bool log_p) const;
   double r(std::vector<SArray const *> const &parameters, RNG *rng) const;
-  double l(std::vector<SArray const*> const &parameters, bool absolute) const;
-  double u(std::vector<SArray const*> const &parameters, bool absolute) const;
+  double l(std::vector<SArray const*> const &parameters) const;
+  double u(std::vector<SArray const*> const &parameters) const;
   /** 
    * Checks that alpha > 0, c > 0
    */
   bool checkParameterValue(std::vector<SArray const *> const &parameters) const;
+  bool isSupportFixed(std::vector<bool> const &fixmask) const;
 };
 
 #endif /* DPAR_H_ */

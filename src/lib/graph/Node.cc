@@ -21,7 +21,8 @@ vector<SArray*> mkData(vector<unsigned int> const &dim, unsigned int nchain)
 }
 
 Node::Node(vector<unsigned int> const &dim, unsigned int nchain)
-  : _parents(0), _children(), _ref(0), _data(mkData(dim,nchain))
+    : _parents(0), _children(), _ref(0), _data(mkData(dim,nchain)),
+      _isobserved(false), _isdiscrete(false)
 {
   if (nchain==0)
     throw logic_error("Node must have at least one chain");
@@ -29,7 +30,8 @@ Node::Node(vector<unsigned int> const &dim, unsigned int nchain)
 
 Node::Node(vector<unsigned int> const &dim, vector<Node *> const &parents)
   : _parents(parents), _children(), _ref(0),
-    _data(vector<SArray*>(mkData(dim,countChains(parents))))
+    _data(vector<SArray*>(mkData(dim,countChains(parents)))),
+    _isobserved(false), _isdiscrete(false)
 {
   if (nchain() == 0) {
     throw logic_error("chain number mismatch in Node constructor");
@@ -151,9 +153,12 @@ bool Node::initialize()
             return true; //Not observed
 	}
     }
+    /*
     for (unsigned int n = 0; n < nchain(); ++n) {
         _data[n]->setFixed(true); //Observed
     }
+    */
+    _isobserved = true;
     return true;
 }
     
@@ -186,22 +191,27 @@ unsigned int Node::length() const
 
 void Node::setObserved(double const *value, unsigned int length)
 {
-   for (unsigned int n = 0; n < nchain(); ++n) {
-      _data[n]->setValue(value, length);
-      _data[n]->setFixed(true);
-   }
+    for (unsigned int n = 0; n < nchain(); ++n) {
+	_data[n]->setValue(value, length);
+	//_data[n]->setFixed(true);
+    }
+    _isobserved = true;
    //_status = NODE_DATA;
 }
 
 bool Node::isObserved() const
 {
-    /* A node is observed if all its data are fixed */
+    return _isobserved;
+
+    /*
+    // A node is observed if all its data are fixed 
     for (unsigned int n = 0; n < nchain(); ++n) {
 	if (!_data[n]->isFixed()) {
 	    return false;
 	}
     }
     return true;
+    */
 }
 
 unsigned int Node::nchain() const
@@ -230,14 +240,16 @@ void Node::setValue(double const *value, unsigned int length, unsigned int chain
 
 bool Node::isDiscreteValued() const
 {
-   return _data[0]->isDiscreteValued();
+    return _isdiscrete;
+    //return _data[0]->isDiscreteValued();
 }
 
 void Node::setDiscreteValued()
 {
-   for (unsigned int n = 0; n < nchain(); ++n) {
+    _isdiscrete = true;
+    for (unsigned int n = 0; n < nchain(); ++n) {
       _data[n]->setDiscreteValued(true);
-   }
+    }
 }
 
 double const *Node::value(unsigned int chain) const

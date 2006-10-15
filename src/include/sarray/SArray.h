@@ -14,7 +14,7 @@ class SArray
 {
   Range const _range;
   double *_value;
-  bool  _fixed;
+  //bool  _fixed;
   bool _discrete;
   SArray &operator=(SArray const &rhs);
 public:
@@ -78,12 +78,12 @@ public:
    * an SArray that contains missing values.
    * @exception logic_error
    */
-  void setFixed(bool fix);
+  //void setFixed(bool fix);
   /**
    * Indicates whether the SArray is fixed, and so cannot change
    * its value. 
    */
-  bool isFixed() const;
+  //bool isFixed() const;
   /**
    * Sets the array to be integer-valued (true) or real-valued
    * (false).

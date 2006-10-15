@@ -36,6 +36,7 @@ public:
   double upperSupport(unsigned int i,
 		      std::vector<SArray const *> const &parameters) const;
   void typicalValue(SArray &x, std::vector<SArray const *> const &par) const;
+  bool isSupportFixed(std::vector<bool> const &fixmask) const;
 };
 
 #endif /* DMULTI_H_ */

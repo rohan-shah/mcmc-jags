@@ -64,26 +64,19 @@ double DBin::r(std::vector<SArray const *> const &par, RNG *rng) const
 }
 
 double 
-DBin::l(vector<SArray const *> const &par, bool absolute) const
+DBin::l(vector<SArray const *> const &par) const
 {
     return 0;
 }
 	
 
 double 
-DBin::u(vector<SArray const *> const &par, bool absolute) const
+DBin::u(vector<SArray const *> const &par) const
 {
-  if (absolute) {
-    /* Largest possible value that u can take for any parameters */
-    if (par[1]->isFixed()) {
-      return SIZE(par);
-    }
-    else {
-      return DBL_MAX;
-    }
-  }
-  else {
-    /* Largest possible value that u can take for any parameters */
     return SIZE(par);
-  }
 }
+
+bool DBin::isSupportFixed(vector<bool> const &fixmask) const
+{
+   return fixmask[1]; //SIZE is fixed;
+} 

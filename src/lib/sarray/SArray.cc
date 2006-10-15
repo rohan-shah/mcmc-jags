@@ -18,7 +18,7 @@ SArray::SArray(vector<unsigned int> const &dim)
     for (unsigned int i = 0; i < n; ++i) {
 	_value[i] = JAGS_NA;
     }
-    _fixed = false;
+    //_fixed = false;
     _discrete = false;
 }
 
@@ -30,7 +30,7 @@ SArray::SArray(SArray const &orig)
     for (unsigned int i = 0; i < n; ++i) {
 	_value[i] = orig._value[i];
     }
-    _fixed = false;
+    //_fixed = false;
     _discrete = orig._discrete;
 }
 
@@ -46,10 +46,13 @@ Range const &SArray::range() const
 
 void SArray::setValue(double const *value, unsigned int n)
 {
+    /*
     if (_fixed) {
 	throw logic_error ("Attempt to set value of fixed SArray");
     }
-    else if (n != _range.length()) {
+    else 
+    */
+    if (n != _range.length()) {
 	throw length_error("Length mismatch error in SArray::setValue");
     }
     else {
@@ -61,10 +64,13 @@ void SArray::setValue(double const *value, unsigned int n)
 
 void SArray::setValue(double const value, unsigned int i)
 {
+    /*
     if (_fixed) {
 	throw logic_error ("Attempt to set value of fixed SArray");
     }
-    else if (i >= _range.length()) {
+    else 
+    */
+    if (i >= _range.length()) {
 	throw logic_error("Attempt to set value of invalid element of SArray");
     }
     else {
@@ -77,6 +83,7 @@ double const * SArray::value() const
     return _value;
 }
 
+/*
 void SArray::setFixed(bool fix)
 {
     if (fix) {
@@ -92,8 +99,12 @@ bool SArray::isFixed() const
 {
     return _fixed;
 }
+*/
 
-
+/*
+ FIXME: We should be retiring these functions, but need to keep them
+ for reading/writing the data table
+*/
 void SArray::setDiscreteValued(bool discrete)
 {
     _discrete = discrete;

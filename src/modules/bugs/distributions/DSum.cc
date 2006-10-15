@@ -98,3 +98,8 @@ DSum::typicalValue(SArray &x,
 {
   x.setValue(SUM(par), 0);
 }
+
+bool DSum::isSupportFixed(std::vector<bool> const &fixmask) const
+{
+    return fixmask[0] && fixmask[1];
+}

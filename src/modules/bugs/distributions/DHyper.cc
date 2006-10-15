@@ -306,57 +306,25 @@ double DHyper::r(vector<SArray const *> const &parameters, RNG *rng) const
   return y;
 }
 
-double DHyper::l(std::vector<SArray const *> const &parameters,
-		 bool absolute) const
+double DHyper::l(std::vector<SArray const *> const &parameters) const
 {
-  long n1,n2,m1;
-  double psi;
-  getParameters(n1, n2, m1, psi, parameters);
+    long n1,n2,m1;
+    double psi;
+    getParameters(n1, n2, m1, psi, parameters);
   
-  if (!absolute) {
     return max(0L, m1 - n2);
-  }
-  else {
-    bool n2fixed = parameters[1]->isFixed();
-    bool m1fixed = parameters[2]->isFixed();
-    if (m1fixed && n2fixed) {
-      return max(0L, m1 - n2);
-    }
-    else {
-      return 0;
-    }
-  }
 }
 
-double DHyper::u(std::vector<SArray const *> const &parameters,
-		 bool absolute) const
+double DHyper::u(std::vector<SArray const *> const &parameters) const
 {
   long n1,n2,m1;
   double psi;
   getParameters(n1, n2, m1, psi, parameters);
   
-  if (!absolute) {
-    return min(n1, m1);
-  }
-  else {
-    bool n1fixed = parameters[0]->isFixed();
-    bool n2fixed = parameters[1]->isFixed();
-    bool m1fixed = parameters[2]->isFixed();
-    
-    if (n1fixed && m1fixed) {
-      return min(n1, m1);
-    }
-    else if (n1fixed) {
-      return n1;
-    }
-    else if (m1fixed) {
-      return m1;
-    }
-    else if (n1fixed && n2fixed) {
-      return n1 + n2;
-    }
-    else {
-      return DBL_MAX;
-    }
-  }
+  return min(n1, m1);
+}
+
+bool DHyper::isSupportFixed(vector<bool> const &fixmask) const
+{
+  return fixmask[0] && fixmask[1] && fixmask[2]; //Margins fixed
 }

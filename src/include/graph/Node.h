@@ -28,7 +28,9 @@ class Node {
   std::vector<Node *> _parents;
   std::set<Node*> _children;
   unsigned int _ref;
-  
+  bool _isobserved;
+  bool _isdiscrete;
+
   /* Forbid copying of Node objects */
   Node(Node const &orig);
   Node &operator=(Node const &rhs);

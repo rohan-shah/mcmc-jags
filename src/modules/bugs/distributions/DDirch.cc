@@ -64,7 +64,8 @@ bool DDirch::checkParameterValue(vector<SArray const *> const &par) const
     }
 
     if (nzero) {
-	return par[0]->isFixed() && (nzero < length);
+	//return par[0]->isFixed() && (nzero < length);
+	return (nzero < length);
     }
     else {
 	return true;
@@ -172,4 +173,9 @@ void DDirch::typicalValue(SArray &x, vector<SArray const *> const &par) const
   for (unsigned int i = 0; i < N; ++i) {
     x.setValue(ALPHA(par)[i]/alphasum, i);
   }
+}
+
+bool DDirch::isSupportFixed(vector<bool> const &fixmask) const
+{
+    return fixmask[0];
 }

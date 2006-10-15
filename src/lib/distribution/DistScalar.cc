@@ -34,10 +34,10 @@ DistScalar::lowerSupport(unsigned int i,
   
     SArray const *lb = lowerBound(this, parameters);
     if (lb) {
-	return max(l(parameters, false), *lb->value());
+	return max(l(parameters), *lb->value());
     }
     else {
-	return l(parameters, false);
+	return l(parameters);
     }
 }
 
@@ -51,10 +51,10 @@ DistScalar::upperSupport(unsigned int i,
 
   SArray const *ub = upperBound(this, parameters);
   if (ub) {
-    return min(u(parameters, false), *ub->value());
+    return min(u(parameters), *ub->value());
   }
   else {
-    return u(parameters, false);
+    return u(parameters);
   }
 }
 
@@ -63,8 +63,7 @@ vector<unsigned int> DistScalar::dim(vector<vector<unsigned int> > const &parame
     return vector<unsigned int>(1,1);
 }
 
-double DistScalar::l(vector<SArray const *> const &parameters,
-		     bool absolute) const
+double DistScalar::l(vector<SArray const *> const &parameters) const
 {
   switch(_support) {
   case DIST_UNBOUNDED:
@@ -78,11 +77,9 @@ double DistScalar::l(vector<SArray const *> const &parameters,
       throw logic_error("Cannot call DistScalar::l for special distribution");
   }
   return 0; //Wall
-      
 }
 
-double DistScalar::u(vector<SArray const *> const &parameters,
-		     bool absolute) const
+double DistScalar::u(vector<SArray const *> const &parameters) const
 {
   switch(_support) {
   case DIST_UNBOUNDED: case DIST_POSITIVE:
@@ -180,3 +177,13 @@ bool DistScalar::checkParameterDim (vector<vector<unsigned int> > const &dims) c
   return count_if(dims.begin(), dims.end(), isScalar) == dims.size();
 }
 
+bool DistScalar::isSupportFixed(vector<bool> const &fixmask) const
+{
+    if (_support == DIST_SPECIAL) {
+	//You must overload this function 
+	throw logic_error("Cannot call DistScalar::isSupportFixed for special distribution");
+    }
+    else {
+	return true;
+    }
+}

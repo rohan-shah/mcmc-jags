@@ -40,6 +40,7 @@ class DInterval : public Distribution {
 
   void typicalValue(SArray &x, std::vector<SArray const *> const &parameters)
     const;
+  bool isSupportFixed(std::vector<bool> const &fixmask) const;
 };
 
 #endif /* DINTERVAL_H_ */

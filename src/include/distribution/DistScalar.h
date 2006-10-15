@@ -74,6 +74,10 @@ class DistScalar : public Distribution
   double upperSupport(unsigned int i,
 		      std::vector<SArray const *> const &parameters) const;
   /**
+   *
+   */
+  bool isSupportFixed(std::vector<bool> const &fixmask) const;
+  /**
    * Lower limit of distribution, given parameters, but ignoring
    * bounds.  If the distribution has no lower limit, this should
    * return -DBL_MAX.
@@ -82,8 +86,7 @@ class DistScalar : public Distribution
    * Support DIST_UNBOUNDED, DIST_POSITIVE and DIST_PROPORTION. If
    * the Support is DIST_SPECIAL, this must be overloaded.
    */
-  virtual double l(std::vector<SArray const *> const &parameters,
-                   bool absolute) const;
+  virtual double l(std::vector<SArray const *> const &parameters) const;
   /**
    * Upper limit of distribution, given parameters, but ignoring
    * bounds.  If the distribution has no upper limit, this should
@@ -93,8 +96,7 @@ class DistScalar : public Distribution
    * Support DIST_UNBOUNDED, DIST_POSITIVE and DIST_PROPORTION. If
    * the Support is DIST_SPECIAL, this must be overloaded.
    */
-  virtual double u(std::vector<SArray const *> const &parameters,
-                   bool absolute) const;
+  virtual double u(std::vector<SArray const *> const &parameters) const;
   /** 
    * Density function, ignoring bounds
    * @param x value at which to evaluate the density

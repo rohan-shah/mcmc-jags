@@ -149,7 +149,7 @@ DMulti::upperSupport(unsigned int i,
     if (i >= LENGTH(par))
 	throw logic_error("Invalid index in DMulti::upperSupport");
     
-    return DBL_MAX;
+    return SIZE(par);
 }
 
 vector<unsigned int> DMulti::dim(vector<vector<unsigned int> > const &dims) const
@@ -182,4 +182,9 @@ void DMulti::typicalValue(SArray &x, vector<SArray const *> const &par) const
   y[length - 1] = N;
   x.setValue(y, length);
   delete [] y;
+}
+
+bool DMulti::isSupportFixed(std::vector<bool> const &fixmask) const
+{
+    return fixmask[1];
 }

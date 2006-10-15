@@ -96,22 +96,17 @@ double DPar::r(vector<SArray const *> const &par, RNG *rng) const
     return exp(log(C(par)) - rexp(1, rng)/ALPHA(par));
 }
 
-double DPar::l(vector<SArray const*> const &par, bool absolute) const
+double DPar::l(vector<SArray const*> const &par) const
 {
-  if (absolute) {
-    if (par[1]->isFixed()) {
-      return C(par);
-    }
-    else {
-      return 0;
-    }
-  }
-  else {
     return C(par);
-  }
 }
 
-double DPar::u(vector<SArray const*> const &par, bool absolute) const
+double DPar::u(vector<SArray const*> const &par) const
 {
   return DBL_MAX;
+}
+
+bool DPar::isSupportFixed(vector<bool> const &fixmask) const
+{
+    return fixmask[1]; //Fixed if C is fixed
 }

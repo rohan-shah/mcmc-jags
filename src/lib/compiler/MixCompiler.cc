@@ -192,7 +192,9 @@ static Node* getMixtureNode1(NodeArray *array, vector<SSI> const &limits, Compil
     if (dynamic_cast<DistScalar const *>(snode->distribution()) == 0)
       {
 	/* We need to be able to downcast the distribution to DistScalar
-	   in order to access the "l" and "u" member functions */
+	   in order to access the "l" and "u" member functions 
+	   FIXME: We can get round this now 
+	*/
 	cansimplify = false;
 	break;
       }
@@ -208,25 +210,35 @@ static Node* getMixtureNode1(NodeArray *array, vector<SSI> const &limits, Compil
     Distribution const *dist = snode->distribution();
     DistScalar const *dscalar = dynamic_cast<DistScalar const *>(dist);
 
+    /* Check that support of node is fixed */
+    vector<bool> fixmask;
+    for (vector<Node*>::const_iterator p = snode->parents().begin();
+	 p != snode->parents().end(); ++p) {
+	fixmask.push_back((*p)->isObserved());
+    }
+    if (!dist->isSupportFixed(fixmask)) {
+	return 0; //Can't count on support being fixed
+    }
+
     /* To be safe, we cycle over all chains */
     for (unsigned int n = 0; n < snode->nchain(); ++n) {
-      // Get absolute lower and upper bounds
-      double l = dscalar->l(snode->parameters(n), true);
-      double u = dscalar->u(snode->parameters(n), true);
-      if (l == -DBL_MAX || u == DBL_MAX) {
-	return 0; //Unbounded parent => serious trouble
-      }
-      if (l < -INT_MAX || u > INT_MAX) {
-	return 0; //Can't cast to int
-      }
-      int il = static_cast<int>(l);
-      int iu = static_cast<int>(u);
-      if (n == 0 || il < lower[i]) {
-	lower[i] = il;
-      }
-      if (n == 0 || iu > upper[i]) {
-	upper[i] = iu;
-      }
+	// Get lower and upper limits of support
+	double l = dscalar->l(snode->parameters(n));
+	double u = dscalar->u(snode->parameters(n));
+	if (l == -DBL_MAX || u == DBL_MAX) {
+	    return 0; //Unbounded parent => serious trouble
+	}
+	if (l < -INT_MAX || u > INT_MAX) {
+	    return 0; //Can't cast to int
+	}
+	int il = static_cast<int>(l);
+	int iu = static_cast<int>(u);
+	if (n == 0 || il < lower[i]) {
+	    lower[i] = il;
+	}
+	if (n == 0 || iu > upper[i]) {
+	    upper[i] = iu;
+	}
     }
   }
 

@@ -166,3 +166,8 @@ DMNorm::typicalValue(SArray &x, std::vector<SArray const *> const &parameters)
 {
   x.setValue(parameters[0]->value(), parameters[0]->length());
 }
+
+bool DMNorm::isSupportFixed(vector<bool> const &fixmask) const
+{
+    return true;
+}

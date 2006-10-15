@@ -23,8 +23,8 @@ public:
   double q(double p, std::vector<SArray const *> const &parameters, bool lower,
 	 bool log_p) const;
   double r(std::vector<SArray const *> const &parameters, RNG *rng) const;
-  double l(std::vector<SArray const *> const &parameters, bool absolute) const;
-  double u(std::vector<SArray const *> const &parameters, bool absolute) const;
+  double l(std::vector<SArray const *> const &parameters) const;
+  double u(std::vector<SArray const *> const &parameters) const;
   /**
    * Checks that x is scalar, t is scalar and Lambda is
    * a square matrix
@@ -37,6 +37,8 @@ public:
    * and Lambda is a valid transition intensity matrix with
    * rows that sum to 0.
    */
-  bool checkParameterValue(std::vector<SArray const *> const &parameters) const;};
+  bool checkParameterValue(std::vector<SArray const *> const &parameters) const;
+  bool isSupportFixed(std::vector<bool> const &fixmask) const;
+};
 
 #endif /* DMSTATE_H_ */

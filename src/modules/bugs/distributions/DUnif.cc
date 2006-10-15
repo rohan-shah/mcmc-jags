@@ -56,32 +56,17 @@ double DUnif::r(vector<SArray const *> const &par, RNG *rng) const
     return runif(LOWER(par), UPPER(par), rng);
 }
 
-double DUnif::l(vector<SArray const*> const &par, bool absolute) const
+double DUnif::l(vector<SArray const*> const &par) const
 {
-    if (absolute) {
-       if (par[0]->isFixed()) {
-          return LOWER(par);
-       }
-       else {
-          return -DBL_MAX;
-       }
-    }
-    else {
-       return LOWER(par);
-    }
+    return LOWER(par);
 }
 
-double DUnif::u(vector<SArray const*> const &par, bool absolute) const
+double DUnif::u(vector<SArray const*> const &par) const
 {
-    if (absolute) {
-       if (par[1]->isFixed()) {
-          return UPPER(par);
-       }
-       else {
-          return DBL_MAX;
-       }
-    }
-    else {
-       return UPPER(par);
-    }
+    return UPPER(par);
+}
+
+bool DUnif::isSupportFixed(vector<bool> const &fixmask) const
+{
+    return fixmask[0] && fixmask[1]; //Lower and upper bounds fixed
 }

@@ -121,3 +121,8 @@ DInterval::typicalValue(SArray &x,
 {
      x.setValue(static_cast<double>(value(parameters)), 0);
 }
+
+bool DInterval::isSupportFixed(vector<bool> const &fixmask) const
+{
+    return fixmask[0] && fixmask[1];
+}

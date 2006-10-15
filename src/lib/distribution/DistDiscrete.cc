@@ -80,8 +80,8 @@ void DistDiscrete::randomSample(SArray &x,
   
   double y;
   if (ba || bb) {
-    double plower = p(l(parameters, false) - 1, parameters, true, false);
-    double pupper = p(u(parameters, false), parameters, true, false);
+    double plower = p(l(parameters) - 1, parameters, true, false);
+    double pupper = p(u(parameters), parameters, true, false);
     double u = plower + rng->uniform() * (pupper - plower);
     y = q(u, parameters, true, false);
   }
