@@ -43,12 +43,12 @@ bool DCat::checkParameterValue(vector<SArray const *> const &parameters) const
   return true;
 }
 
-double DCat::l(vector<SArray const *> const &parameters, bool absolute) const
+double DCat::l(vector<SArray const *> const &parameters) const
 {
    return 1;
 }
 
-double DCat::u(vector<SArray const *> const &parameters, bool absolute) const
+double DCat::u(vector<SArray const *> const &parameters) const
 {
    return parameters[0]->length();
 }
@@ -125,3 +125,7 @@ double DCat::r(std::vector<SArray const *> const &parameters, RNG *rng) const
   return q(rng->uniform(), parameters, true, false);
 }
 
+bool DCat::isSupportFixed(std::vector<bool> const &fixmask) const
+{
+    return true;
+}
