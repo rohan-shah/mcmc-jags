@@ -1,7 +1,7 @@
 #ifndef DNEGBIN_H_
 #define DNEGBIN_H_
 
-#include <distribution/DistDiscrete.h>
+#include <distribution/DistScalarRmath.h>
 
 /**
  * <pre>
@@ -10,23 +10,22 @@
  * </pre>
  * @short Negative Binomial distribution
  */
-class DNegBin : public DistDiscrete {
+class DNegBin : public DistScalarRmath {
  public:
   DNegBin();
-  ~DNegBin();
 
-  double d(double x, std::vector<SArray const *> const &parameters, bool give_log) const;
-  double p(double q, std::vector<SArray const *> const &parameters, bool lower,
+  double d(double x, std::vector<double const *> const &parameters, bool give_log) const;
+  double p(double q, std::vector<double const *> const &parameters, bool lower,
 	   bool give_log) const;
-  double q(double p, std::vector<SArray const *> const &parameters, bool lower,
+  double q(double p, std::vector<double const *> const &parameters, bool lower,
 	   bool log_p) const;
-  double r(std::vector<SArray const *> const &parameters, RNG *rng) const;
+  double r(std::vector<double const *> const &parameters, RNG *rng) const;
   /** Checks that r is discrete-valued */
   bool checkParameterDiscrete (std::vector<bool> const &mask) const;
   /**
    * Checks that p lies in the interval (0,1) and r > 0
    */
-  bool checkParameterValue(std::vector<SArray const *> const &parameters) const;
+  bool checkParameterValue(std::vector<double const *> const &parameters) const;
 
 };
 

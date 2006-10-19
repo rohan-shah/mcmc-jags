@@ -22,12 +22,17 @@ struct RNG;
 class DDirch : public Distribution {
 public:
   DDirch();
-  ~DDirch();
-  double logLikelihood(SArray const &x,
-		       std::vector<SArray const *> const &parameters) const;
-  void randomSample(SArray &x, std::vector<SArray const *> const &parameters,
+
+  double logLikelihood(double const *x, unsigned int length,
+		       std::vector<double const *> const &parameters,
+		       std::vector<std::vector<unsigned int> > const &dims) 
+      const;
+  void randomSample(double *x, unsigned int length,
+		    std::vector<double const *> const &parameters,
+		    std::vector<std::vector<unsigned int> > const &dims,
 		    RNG *rng) const;
-  std::vector<unsigned int> dim(std::vector<std::vector<unsigned int> > const &dims) const;
+  std::vector<unsigned int> 
+      dim(std::vector<std::vector<unsigned int> > const &dims) const;
   /**
    * Checks that alpha is a vector of length at least 2
    */
@@ -40,14 +45,15 @@ public:
    * zero.  This is permitted only if alpha is fixed and there is at
    * least one non-zero element of alpha.
    */
-  bool checkParameterValue(std::vector<SArray const *> const &parameters) const;
-  unsigned int df(std::vector<SArray const *> const &parameters) const;
-  double lowerSupport(unsigned int i,
-		      std::vector<SArray const *> const &parameters) const;
-  double upperSupport(unsigned int i,
-		      std::vector<SArray const *> const &parameters) const;
-  void typicalValue(SArray &x, std::vector<SArray const *> const &parameters)
-     const;
+  bool checkParameterValue(std::vector<double const *> const &parameters,
+			   std::vector<std::vector<unsigned int> > const &dims)
+      const;
+  void support(double *lower, double *upper, unsigned int length,
+	       std::vector<double const *> const &parameters,
+               std::vector<std::vector<unsigned int> > const &dims) const;
+  void typicalValue(double *x, unsigned int length,
+		    std::vector<double const *> const &parameter,
+		    std::vector<std::vector<unsigned int> > const &dims) const;
   bool isSupportFixed(std::vector<bool> const &fixmask) const;
 };
 

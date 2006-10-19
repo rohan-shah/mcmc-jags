@@ -1,5 +1,5 @@
 #include <config.h>
-#include <sarray/SArray.h>
+#include <sarray/util.h>
 #include "Max.h"
 
 #include <algorithm>
@@ -9,17 +9,17 @@ using std::max_element;
 using std::max;
 
 Max::Max ()
-  : ScalarFunc("max", 0)
+  : Function("max", 0)
 {
 }
 
-double Max::eval (vector < SArray const *>const &args) const
+void Max::evaluate(double *value,  vector<double const *> const &args,
+                     vector<vector<unsigned int> > const &dims) const
 {
   double ans;
   for (unsigned int i = 0; i < args.size(); ++i) {
-    double const *argi = args[i]->value ();
-    long len = args[i]->length ();
-    double maxi = *max_element(argi, argi + len);
+    unsigned int len = product(dims[i]);
+    double maxi = *max_element(args[i], args[i] + len);
     if (i == 0) {
       ans = maxi;
     }
@@ -27,7 +27,7 @@ double Max::eval (vector < SArray const *>const &args) const
       ans = max(ans, maxi);
     }
   }
-  return ans;
+  *value = ans;
 }
 
 bool Max::checkParameterDim (vector<vector<unsigned int> > const &dims) const
@@ -37,5 +37,6 @@ bool Max::checkParameterDim (vector<vector<unsigned int> > const &dims) const
 
 bool Max::isDiscreteValued(vector<bool> const &mask) const
 {
-    return count(mask.begin(), mask.end(), false) == 0;
+    return allTrue(mask);
 }
+

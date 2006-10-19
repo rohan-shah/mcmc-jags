@@ -7,13 +7,14 @@
  * @short Minimum element of a vector
  * @see Max
  */
-class Min: public ScalarFunc
+class Min: public Function
 {
 public:
   Min ();
-  double eval (std::vector <SArray const *> const &args) const;
-  bool checkParameterDim (std::vector<std::vector<unsigned int> > const &dims) const;
-  std::vector<unsigned int> dim (std::vector <SArray const *> const &args) const;
+  void evaluate(double *x, std::vector<double const *> const &args,
+		std::vector<std::vector<unsigned int> > const &dims) const;
+  bool checkParameterDim (std::vector<std::vector<unsigned int> > const &dims)
+      const;
   /** Returns true if all arguments are true */
   bool isDiscreteValued(std::vector<bool> const &mask) const;  
 };

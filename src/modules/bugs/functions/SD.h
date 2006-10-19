@@ -1,7 +1,7 @@
 #ifndef FUNC_SD_H_
 #define FUNC_SD_H_
 
-#include <function/ScalarFunc.h>
+#include <function/Function.h>
 
 /**
  * @short Standard deviation function
@@ -12,12 +12,14 @@
  * y <- sd(x[])
  * </pre>
  */
-class SD : public ScalarFunc
+class SD : public Function
 {
 public:
-  SD ();
-  double eval (std::vector <SArray const *> const &args) const;
-  bool checkParameterDim (std::vector<std::vector<unsigned int> > const &dims) const;
+    SD ();
+    void evaluate (double *x, std::vector<double const *> const &args,
+		   std::vector<std::vector<unsigned int> > const &dims) const;
+    bool checkParameterDim (std::vector<std::vector<unsigned int> > const &dims) 
+	const;
 };
 
 #endif /* FUNC_SD_H_ */

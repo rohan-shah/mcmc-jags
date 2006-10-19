@@ -4,7 +4,10 @@
 #include <function/Function.h>
 
 /** 
- * ScalarFunc provides a base class for scalar-valued functions
+ * ScalarFunc is a convenience class for scalar-valued functions whose
+ * parameters are also scalars. It provides simplified versions of some
+ * of the required virtual functions.
+ *
  * @short Scalar functions
  */
 class ScalarFunc : public Function
@@ -13,16 +16,16 @@ public:
     ScalarFunc(std::string const &name, unsigned int npar);
     /** 
      * Implementation of the virtual function Function##evaluate, which
-     * calls ScalarFunc##evalScalar.
+     * calls ScalarFunc##eval.
      */
-    void evaluate(SArray & value,
-		  std::vector <SArray const *> const &args) const;
+    void evaluate(double *value,
+		  std::vector <double const *> const &args,
+                  std::vector<std::vector<unsigned int> > const &dims) const;
     /**
      * Scalar functions need to implement this simplified function,
-     * which returns a double, instead of Function##evaluate.
+     * instead of Function##evaluate.
      */
-    virtual double eval(std::vector <SArray const *> const &args) const =
-	0;
+    virtual double eval(std::vector <double const *> const &args) const = 0;
     /**
      * Returns (1) since the result of a scalar function should
      * always be scalar.
@@ -30,14 +33,24 @@ public:
     std::vector<unsigned int> 
 	dim(std::vector <std::vector<unsigned int> > const &args) const;
     /**
-     * Most functions with a scalar value also take scalar arguments.
-     * For convenience, a default implementation of
-     * Function##checkParameterDim is provided which checks that all
-     * arguments are scalar.  This must be overridden if the function
-     * takes any vector arguments
+     * Checks that all arguments are scalar.
      */
     bool checkParameterDim(std::vector<std::vector<unsigned int> > const &args)
 	const;
+    /**
+     * Implementation of Function##checkParameterValues which calls the
+     * simplified version below.
+     */
+    bool checkParameterValue(std::vector<double const *> const &args,
+			     std::vector<std::vector<unsigned int> > const &dim)
+	const;
+    /**
+     * Simplified version of checkParameterValues for Scalar functions.
+     *
+     * The default version always returns true.
+     */
+    virtual bool 
+	checkParameterValue(std::vector<double const *> const &args) const;
 };
 
 #endif /* SCALAR_FUNC_H_ */

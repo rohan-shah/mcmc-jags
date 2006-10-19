@@ -603,12 +603,12 @@ bool Console::getMonitoredValues(map<string,SArray> &data_table,
 	//monitored node, plus an extra one for the 
 	//iterations. We put the extra dimension first.
 	unsigned int niter = monitor->size();
-	unsigned int ndim = node->dim(false).size();
+	unsigned int ndim = node->dim().size();
 	vector<unsigned int> dim(ndim + 1);
 	dim[0] = niter;
 	unsigned int length = 1;
 	for (unsigned int i = 1; i <= ndim; ++i) {
-	    dim[i] = node->dim(false)[i-1];
+	    dim[i] = node->dim()[i-1];
 	    length *= dim[i];
 	}
 	//Create a new SArray and insert it into the table

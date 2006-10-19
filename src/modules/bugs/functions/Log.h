@@ -14,9 +14,9 @@
 class Log : public ScalarFunc
 {
 public:
-  Log ();
-  double eval (std::vector <SArray const *> const &args) const;
-  bool checkParameterValue (std::vector <SArray const *> const &args) const;
+    Log ();
+    double eval(std::vector<double const *> const &args) const;
+    bool checkParameterValue(std::vector<double const *> const &args) const;
 };
 
 #endif /* FUNC_LOG_H_ */

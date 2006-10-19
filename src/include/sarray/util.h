@@ -74,4 +74,10 @@ inline bool isSquareMatrix(std::vector<unsigned int> const &dim)
    return dim.size() == 2 && dim[0] == dim[1];
 }
 
+/**
+ * Returns the product of the elements of a vector
+ */
+unsigned int product(std::vector<unsigned int> const &arg);
+
+
 #endif /* UTIL_H_ */

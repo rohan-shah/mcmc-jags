@@ -13,9 +13,9 @@
 class LogGam:public ScalarFunc
 {
 public:
-  LogGam ();
-  double eval (std::vector <SArray const *> const &args) const;
-  bool checkParameterValue (std::vector <SArray const *> const &args) const;
+    LogGam ();
+    double eval(std::vector<double const *> const &args) const;
+    bool checkParameterValue(std::vector<double const *> const &args) const;
 };
 
 #endif /* FUNC_LOGGAM_H_ */

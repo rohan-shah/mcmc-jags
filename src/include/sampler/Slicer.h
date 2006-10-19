@@ -50,13 +50,9 @@ class Slicer : public Sampler
    */
   virtual void setValue(double x) = 0;
   /**
-   * Returns the lowest possible value of the sampler
+   * Gets the lowest and highest possible values of the sampler
    */
-  virtual double lowerLimit() = 0;
-  /**
-   * Returns the highest possible value of the sampler
-   */
-  virtual double upperLimit() = 0;
+  virtual void getLimits(double *lower, double *upper) = 0;
   void burninOff();
 
 };

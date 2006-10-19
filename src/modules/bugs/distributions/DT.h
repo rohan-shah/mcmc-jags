@@ -1,7 +1,7 @@
 #ifndef DT_H_
 #define DT_H_
 
-#include <distribution/DistReal.h>
+#include <distribution/DistScalarRmath.h>
 
 /**
  * t-distribution on k degrees of freedom, with median mu and
@@ -12,22 +12,21 @@
  * </pre>
  * @short t distribution
  */
-class DT : public DistReal {
+class DT : public DistScalarRmath {
  public:
   DT();
-  ~DT();
 
-  double d(double x, std::vector<SArray const *> const &parameters, 
+  double d(double x, std::vector<double const *> const &parameters, 
 	   bool log) const;
-  double p(double x, std::vector<SArray const *> const &parameters, bool lower,
+  double p(double x, std::vector<double const *> const &parameters, bool lower,
 	   bool log) const;
-  double q(double x, std::vector<SArray const *> const &parameters, bool lower,
+  double q(double x, std::vector<double const *> const &parameters, bool lower,
 	   bool log) const;
-  double r(std::vector<SArray const *> const &parameters, RNG *rng) const;
+  double r(std::vector<double const *> const &parameters, RNG *rng) const;
   /**
    * Check that tau > 0 and k > 0
    */
-  bool checkParameterValue (std::vector<SArray const *> const &parameters) const;
+  bool checkParameterValue (std::vector<double const *> const &parameters) const;
 };
 
 #endif /* DT_H_ */

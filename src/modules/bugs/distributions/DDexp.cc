@@ -1,5 +1,4 @@
 #include <config.h>
-#include <sarray/SArray.h>
 #include "DDexp.h"
 
 #include <cmath>
@@ -8,31 +7,28 @@
 
 using std::vector;
 
-static inline double MU(vector<SArray const *> const &par)
+static inline double MU(vector<double const *> const &par)
 {
-    return *par[0]->value();
+    return *par[0];
 }
 
-static inline double SCALE(vector<SArray const *> const &par)
+static inline double SCALE(vector<double const *> const &par)
 {
-    return 1/(*par[1]->value());
+    return 1/(*par[1]);
 }
 
 DDexp::DDexp()
-  : DistReal("ddexp", 2, DIST_UNBOUNDED, true)
-{}
-
-DDexp::~DDexp()
+    : DistScalarRmath("ddexp", 2, DIST_UNBOUNDED, true, false)
 {}
 
 bool 
-DDexp::checkParameterValue(vector<SArray const *> const &par) const
+DDexp::checkParameterValue(vector<double const *> const &par) const
 {
-  return (*par[1]->value() > 0);
+  return (*par[1] > 0);
 }
 
 double 
-DDexp::d(double x, vector<SArray const *> const &par, bool dolog) const
+DDexp::d(double x, vector<double const *> const &par, bool dolog) const
 {
     double d = dexp(fabs(x - MU(par)), SCALE(par), dolog);
     if (dolog)
@@ -42,7 +38,7 @@ DDexp::d(double x, vector<SArray const *> const &par, bool dolog) const
 }
 
 double 
-DDexp::p(double x, vector<SArray const *> const &par, bool lower, 
+DDexp::p(double x, vector<double const *> const &par, bool lower, 
 	 bool dolog) const
 {
     if (!lower)
@@ -63,7 +59,7 @@ DDexp::p(double x, vector<SArray const *> const &par, bool lower,
 }
 
 double
-DDexp::q(double p, vector<SArray const *> const &par, bool lower, 
+DDexp::q(double p, vector<double const *> const &par, bool lower, 
 	 bool log_p)
   const
 {
@@ -81,7 +77,7 @@ DDexp::q(double p, vector<SArray const *> const &par, bool lower,
     }
 }
 
-double DDexp::r(vector<SArray const *> const &par, RNG *rng) const
+double DDexp::r(vector<double const *> const &par, RNG *rng) const
 {
     double ans = MU(par);
     if (unif_rand(rng) < 0.5)

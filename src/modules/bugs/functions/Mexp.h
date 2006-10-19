@@ -5,12 +5,14 @@
 
 class Mexp : public Function
 {
- public:
-  Mexp();
-  void evaluate (SArray &value,
-		 std::vector <SArray const *> const &args) const;
-  std::vector<unsigned int> dim (std::vector<std::vector<unsigned int> > const &dims) const;
-  bool checkParameterDim (std::vector <std::vector<unsigned int> > const &dims) const;
+public:
+    Mexp();
+    void evaluate (double *value,
+		   std::vector<double const *> const &args,
+		   std::vector<std::vector<unsigned int> > const &dims) const;
+    std::vector<unsigned int> 
+	dim(std::vector<std::vector<unsigned int> > const &dims) const;
+    bool checkParameterDim(std::vector <std::vector<unsigned int> > const &dims) const;
 };
 
 #endif /* MEXP_H_ */

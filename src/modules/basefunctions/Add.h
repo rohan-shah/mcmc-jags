@@ -15,11 +15,11 @@
 class Add:public ScalarFunc
 {
 public:
-  Add ();
-  double eval (std::vector < SArray const *>const &args) const;
-  bool isDiscreteValued(std::vector<bool> const &flags) const;
-  bool isLinear(std::vector<bool> const &mask,
-		std::vector<bool> const &fixmask) const;
+    Add ();
+    double eval (std::vector<double const *>const &args) const;
+    bool isDiscreteValued(std::vector<bool> const &flags) const;
+    bool isLinear(std::vector<bool> const &mask,
+		  std::vector<bool> const &fixmask) const;
 };
 
 #endif /* FUNC_ADD_H_ */

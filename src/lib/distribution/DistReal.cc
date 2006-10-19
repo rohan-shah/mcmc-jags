@@ -19,76 +19,70 @@ using std::logic_error;
 
 DistReal::DistReal(string const &name, unsigned int npar, Support support, 
 		   bool canbound)
-  : DistScalar(name, npar, support, canbound, false)
+  : DistScalarRmath(name, npar, support, canbound, false)
 {
 }
 
-double DistReal::logLikelihood(SArray const &x,
-			       vector<SArray const *> const &parameters) const
+double DistReal::logLikelihood(double const x,
+			       vector<double const *> const &parameters) const
 {
-  SArray const *lb = lowerBound(this, parameters);
-  SArray const *ub = upperBound(this, parameters);
+    double const *lb = lowerBound(this, parameters);
+    double const *ub = upperBound(this, parameters);
 
-  double y = x.value()[0];
-  double loglik = d(y, parameters, true);
-  if (lb && ub) {
-    double ll = lowerSupport(0, parameters);
-    if (y < ll)
-      return -DBL_MAX;
-    double uu = upperSupport(0, parameters); 
-    if (y > uu) {
-      return -DBL_MAX;
+    double loglik = d(x, parameters, true);
+    if (lb || ub) {
+	double lower = -DBL_MAX, upper = DBL_MAX;
+	support(&lower, &upper, parameters);
+	double plower = 0, pupper = 1;
+    if (lb && ub) {
+	lowerSupport(&ll, parameters, dims);
+	if (y < ll)
+	    return -DBL_MAX;
+	upperSupport(&uu, parameters, dims); 
+	if (y > uu) {
+	    return -DBL_MAX;
+	}
+	loglik -= log(p(uu, parameters, true, false) - 
+		      p(ll, parameters, true, false));
     }
-    loglik -= log(p(uu, parameters, true, false) - 
-		  p(ll, parameters, true, false));
-  }
-  else if (lb) {
-    double ll = lowerSupport(0, parameters);
-    if (y < ll)
-      return -DBL_MAX;
-    loglik -= p(ll, parameters, false, true);
-  }
-  else if (ub) {
-    double uu = upperSupport(0, parameters); 
-    if (y > uu) {
-      return -DBL_MAX;
+    else if (lb) {
+	lowerSupport(&ll, parameters, dims);
+	if (y < ll)
+	    return -DBL_MAX;
+	loglik -= p(ll, parameters, false, true);
     }
-    loglik -= p(uu, parameters, true, true);
-  }
-  return loglik;
+    else if (ub) {
+	upperSupport(&uu, parameters, dims); 
+	if (y > uu) {
+	    return -DBL_MAX;
+	}
+	loglik -= p(uu, parameters, true, true);
+    }
+    return loglik;
 }
 
-void 
-DistReal::randomSample(SArray &x, vector<SArray const *> const &parameters,
+double 
+DistReal::randomSample(double x, vector<double const *> const &parameters,
 		       RNG *rng) const
 {
 
-    SArray const *bb = lowerBound(this, parameters);
-    SArray const *ba = upperBound(this, parameters);
+    double const *bb = lowerBound(this, parameters);
+    double const *ba = upperBound(this, parameters);
 
-    double y;
     if (!ba && !bb) {
-      y = r(parameters, rng);
+	return r(parameters, rng);
     }
-    else if (bb && ba) {
-	double lower = lowerSupport(0, parameters);
-	double plower = p(lower, parameters, true, false);
-	double upper = upperSupport(0, parameters);
-	double pupper = p(upper, parameters, true, false);
+    else {
+        double lower=-DBL_MAX, upper=DBL_MAX;	
+	support(&lower, &upper, parameters);
+	double plower = 0, pupper = 1;
+	if (bb) {
+	    plower = p(lower, parameters, true, false);
+	}
+	if (ba) {
+	    pupper = p(upper, parameters, true, false);	    
+	}
 	double px = plower + rng->uniform() * (pupper - plower);
-	y = q(px, parameters, true, false);
+	return q(px, parameters, true, false);
     }
-    else if (bb) {
-	double lower = lowerSupport(0, parameters);
-	double plower = p(lower, parameters, false, false);
-	double px = plower * rng->uniform();
-  	y = q(px, parameters, false, false);
-    }
-    else if (ba) {
-	double upper = upperSupport(0, parameters);
-	double pupper = p(upper, parameters, true, false);
-	double px = pupper * rng->uniform();
-	y = q(px, parameters, true, false);
-    }
-    x.setValue(&y,1);
 }

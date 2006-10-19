@@ -4,14 +4,14 @@
 
 using std::vector;
 
-SArray const *
-lowerBound(Distribution const *dist, vector<SArray const *> const &args) 
+double const *
+lowerBound(Distribution const *dist, vector<double const *> const &args) 
 {
   return dist->canBound() ? args[dist->npar()] : 0;
 }
 
-SArray const *
-upperBound(Distribution const *dist, vector<SArray const *> const &args) 
+double const *
+upperBound(Distribution const *dist, vector<double const *> const &args) 
 {
   return dist->canBound() ? args[dist->npar() + 1] : 0;
 }

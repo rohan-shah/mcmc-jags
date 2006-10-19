@@ -14,10 +14,10 @@
 class Equals:public ScalarFunc
 {
 public:
-  Equals ();
-  double eval (std::vector <SArray const *> const &args) const;
-  /** Returns true */
-  bool isDiscreteValued(std::vector<bool> const &mask) const;
+    Equals ();
+    double eval(std::vector<double const *> const &args) const;
+    /** Returns true */
+    bool isDiscreteValued(std::vector<bool> const &mask) const;
 };
 
 #endif /* FUNC_EQUALS_H_ */

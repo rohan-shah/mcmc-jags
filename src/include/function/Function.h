@@ -4,7 +4,6 @@
 #include <string>
 #include <vector>
 
-class SArray;
 class Range;
 
 /**
@@ -47,8 +46,8 @@ public:
      * the dimension of value.
      */
     virtual void
-	evaluate(SArray & value,
-		 std::vector <SArray const *> const &args) const = 0;
+	evaluate(double *value, std::vector<double const *> const &args,
+		 std::vector<std::vector<unsigned int> > const &dim) const = 0;
     /**
      * Checks that a vector of parameters of length npar is consistent
      * with the function.
@@ -61,7 +60,7 @@ public:
      * the parameters, with any redundant dimensions dropped.
      */
     virtual bool
-	checkParameterDim(std::vector <std::vector<unsigned int> > const &dims) 
+	checkParameterDim(std::vector<std::vector<unsigned int> > const &dims) 
 	const = 0;
     /**
      * Checks whether the parameter values lie in the domain of the
@@ -72,19 +71,24 @@ public:
      * true.
      */
     virtual bool
-	checkParameterValue(std::vector <SArray const *> const &args) const;
+	checkParameterValue(std::vector <double const *> const &args,
+                            std::vector<std::vector<unsigned int> > const &dims) 
+        const;
     /**
      * Calculates what the dimension of the return value should be,
      * based on the dimensions of the arguments. The dimension of the
      * return value cannot depend on the value of any of the arguments,
      * only their dimensions.
      *
+     * This is a virtual function. The default implementation assumes
+     * that the function is scalar-valued.
+     *
      * @param dims Vector of Indices denoting the dimensions of the 
      * parameters. This vector must return true when passed to
      * checkParameterDim.
      */
     virtual std::vector<unsigned int> 
-	dim(std::vector <std::vector<unsigned int> > const &dims) const = 0;
+	dim(std::vector <std::vector<unsigned int> > const &dims) const;
     /**
      * Returns true if the function returns integer values. The default
      * implementation returns false, so any function that can return

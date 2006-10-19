@@ -1,26 +1,24 @@
 #include <config.h>
-#include <sarray/SArray.h>
+#include <sarray/util.h>
 #include "Mean.h"
 
 using std::vector;
 
 Mean::Mean ()
-    : ScalarFunc ("mean", 1)
+    : Function ("mean", 1)
 {
 }
 
-double
-Mean::eval (vector <SArray const*> const &args) const
+void Mean::evaluate (double *x, vector<double const*> const &args,
+                     vector<vector<unsigned int> > const &dims) const
 {
-    double const *arg1 = args[0]->value ();
-    long len = args[0]->length ();
+    unsigned int len = product(dims[0]);
     double svalue = 0;
-    for (long i = 0; i < len; i++)
-	{
-	    svalue += arg1[i];
-	}
+    for (unsigned int i = 0; i < len; i++) {
+       svalue += args[0][i];
+    }
     svalue /= len;
-    return svalue;
+    *x = svalue;
 }
 
 bool Mean::checkParameterDim (vector<vector<unsigned int> > const &dims) const

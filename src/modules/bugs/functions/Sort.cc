@@ -1,5 +1,4 @@
 #include <config.h>
-#include <sarray/SArray.h>
 #include "Sort.h"
 
 #include <algorithm>
@@ -16,19 +15,14 @@ Sort::Sort ()
 {
 }
 
-void Sort::evaluate (SArray & value, vector <SArray const *> const &args) const
+void Sort::evaluate (double *value, vector <double const *> const &args,
+                     vector<vector<unsigned int> > const &dims) const
 {
-  double const *arg1 = args[0]->value ();
-  long len = args[0]->length ();
-
-  double *copy = new double[len];
-  for (long i = 0; i < len; ++i) {
-    copy[i] = arg1[i];
+  long len = product(dims[0]);
+  for (unsigned int i = 0; i < len; ++i) {
+    value[i] = args[0][i];
   }
-  sort(copy, copy + len);
-
-  value.setValue(copy, len);
-  delete [] copy;
+  sort(value, value + len);
 }
 
 vector<unsigned int>  Sort::dim (vector <vector<unsigned int> > const &dims) const

@@ -1,5 +1,4 @@
 #include <config.h>
-#include <sarray/SArray.h>
 #include "Divide.h"
 
 using std::vector;
@@ -8,17 +7,14 @@ Divide::Divide ():ScalarFunc ("/", 2)
 {
 }
 
-double Divide::eval (vector <SArray const *> const &args) const
+double Divide::eval(vector <double const *> const &args) const
 {
-  return *args[0]->value() / *args[1]->value();
+  return *args[0] / *args[1];
 }
 
-bool Divide::checkParameterValue (vector <SArray const *> const &args) const
+bool Divide::checkParameterValue(vector<double const*> const &args) const
 {
-  if (*(args[1]->value ()) == 0)
-    return false;
-  else
-    return true;
+  return *args[1] != 0;
 }
 
 bool Divide::isLinear(vector<bool> const &mask, vector<bool> const &fix) const

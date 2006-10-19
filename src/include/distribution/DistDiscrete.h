@@ -1,7 +1,7 @@
 #ifndef DIST_DISCRETE_H_
 #define DIST_DISCRETE_H_
 
-#include <distribution/DistScalar.h>
+#include <distribution/DistScalarRmath.h>
 
 /**
  * Base class for integer valued distributions
@@ -9,7 +9,7 @@
  * @see DistReal
  * @short Integer valued distributions
  */
-class DistDiscrete : public DistScalar
+class DistDiscrete : public DistScalarRmath
 {
 public:
   /**
@@ -22,11 +22,10 @@ public:
    */
   DistDiscrete(std::string const &name, unsigned int npar, 
 	       Support support, bool canbound);
-  double logLikelihood(SArray const &x,
-		       std::vector<SArray const *> const &parameters) const;
-  void randomSample(SArray &x,
-		    std::vector<SArray const *> const &parameters,
-                    RNG *rng) const;
+  double logLikelihood(double x,
+		       std::vector<double const *> const &parameters) const;
+  double randomSample(std::vector<double const *> const &parameters, RNG *rng) 
+      const;
 };
 
 #endif /* DIST_DISCRETE_H_ */

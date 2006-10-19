@@ -8,7 +8,6 @@
 
 #include <config.h>
 #include <rng/RNG.h>
-#include <sarray/SArray.h>
 #include "DHyper.h"
 
 #include <algorithm>
@@ -22,20 +21,17 @@ using std::min;
 using std::logic_error;
 
 DHyper::DHyper()
-  : DistDiscrete("dhyper", 4, DIST_SPECIAL, false)
-{}
-
-DHyper::~DHyper()
+    : DistScalarRmath("dhyper", 4, DIST_SPECIAL, false, true)
 {}
 
 static void
-getParameters(long &n1, long &n2, long &m1, double &psi,
-	      vector<SArray const *> const &parameters)
+getParameters(int &n1, int &n2, int &m1, double &psi,
+	      vector<double const *> const &parameters)
 {
-  n1 = static_cast<long>(*parameters[0]->value());
-  n2 = static_cast<long>(*parameters[1]->value());
-  m1 = static_cast<long>(*parameters[2]->value());
-  psi = *parameters[3]->value();
+    n1 = static_cast<int>(*parameters[0]);
+    n2 = static_cast<int>(*parameters[1]);
+    m1 = static_cast<int>(*parameters[2]);
+    psi = *parameters[3];
 }
 
 bool 
@@ -50,9 +46,9 @@ DHyper::checkParameterDiscrete (vector<bool> const &mask) const
   return true;
 }
 
-bool DHyper::checkParameterValue(vector<SArray const *> const &parameters) const
+bool DHyper::checkParameterValue(vector<double const *> const &parameters) const
 {
-  long n1,n2,m1;
+  int n1,n2,m1;
   double psi;
   getParameters(n1, n2, m1, psi, parameters);
 
@@ -66,7 +62,7 @@ bool DHyper::checkParameterValue(vector<SArray const *> const &parameters) const
     return true;
 }
 
-static long modeCompute(long n1, long n2, long m1, double psi)
+static int modeCompute(int n1, int n2, int m1, double psi)
 {
   double a =  psi - 1;
   double b =  -((m1 + n1 + 2) * psi + n2 - m1);
@@ -79,29 +75,29 @@ static long modeCompute(long n1, long n2, long m1, double psi)
     q -= sqrt(b * b - 4 * a * c);
   }
   q = -q/2;
-  long mode = static_cast<long>(c/q);
+  int mode = static_cast<int>(c/q);
   if (mode >= 0 && mode >= m1 - n2 && mode <= n1 && mode <= m1) {
     return mode;
   }
   else {
-    return static_cast<long>(q/a);
+    return static_cast<int>(q/a);
   }
 }
 
-double rfunction(long n1, long n2, long m1, double psi, long i) {
+double rfunction(int n1, int n2, int m1, double psi, int i) {
   return psi * (n1 - i + 1) * (m1 - i + 1)/(i * (n2 - m1 + i));
 }  
 
-static void density(double *p, long N,
-		    long n1, long n2, long m1, double psi)
+static void density(double *p, int N,
+		    int n1, int n2, int m1, double psi)
 {
-  long ll = max((long) 0, m1 - n2);
-  long uu = min(n1, m1);
+  int ll = max((int) 0, m1 - n2);
+  int uu = min(n1, m1);
   if (N != uu - ll + 1) {
     throw logic_error("Length mismatch calculating hypergeometric density");
   }
 
-  long mode = modeCompute(n1, n2, m1, psi);
+  int mode = modeCompute(n1, n2, m1, psi);
 
   // Set elements of p to 1 
   for (int i = 0; i < N; ++i) {
@@ -135,8 +131,8 @@ static void density(double *p, long N,
   }
 }
 
-static long 
-sampleLowToHigh(long lower_end, double ran, double const *pi, long N)
+static int 
+sampleLowToHigh(int lower_end, double ran, double const *pi, int N)
 {
   //fixme: check lower_end > 0 <= N
 
@@ -148,8 +144,8 @@ sampleLowToHigh(long lower_end, double ran, double const *pi, long N)
   return N - 1;
 }
 
-static long 
-sampleHighToLow(long upper_end, double ran, double const *pi, long N)
+static int 
+sampleHighToLow(int upper_end, double ran, double const *pi, int N)
 {
   //fixme: check upper_end > 0 <= N
 
@@ -162,8 +158,8 @@ sampleHighToLow(long upper_end, double ran, double const *pi, long N)
   return 0;
 }
 
-static long singleDraw(long n1, long n2, long m1, double psi, 
-		       long mode, double const *pi, long N, double ran) 
+static int singleDraw(int n1, int n2, int m1, double psi, 
+		       int mode, double const *pi, int N, double ran) 
 {
   if (mode == 0) 
     return sampleLowToHigh(0, ran, pi, N);
@@ -174,8 +170,8 @@ static long singleDraw(long n1, long n2, long m1, double psi,
     return mode;
 
   ran -= pi[mode];
-  long lower = mode - 1;
-  long upper = mode + 1;
+  int lower = mode - 1;
+  int upper = mode + 1;
   while (true) {
     if (pi[upper] >= pi[lower]) {
       if (ran < pi[upper]) 
@@ -196,20 +192,20 @@ static long singleDraw(long n1, long n2, long m1, double psi,
   }
 }
 
-double DHyper::d(double z, vector<SArray const *> const &parameters, 
+double DHyper::d(double z, vector<double const *> const &parameters, 
 	 bool give_log) const
 {
-  long n1,n2,m1;
+  int n1,n2,m1;
   double psi;
   getParameters(n1, n2, m1, psi, parameters);
 
-  long x = static_cast<long>(z);
-  long ll = max(0L, m1 - n2);
-  long uu = min(n1, m1);
+  int x = static_cast<int>(z);
+  int ll = max((int) 0, m1 - n2);
+  int uu = min(n1, m1);
 
   double den = 0;
   if (x >= 11 && x <= uu) {
-    long N = uu - ll + 1;
+    int N = uu - ll + 1;
     double *pi = new double[N];
     density(pi, N, n1, n2, m1, psi);
     den = pi[x - ll];
@@ -224,15 +220,15 @@ double DHyper::d(double z, vector<SArray const *> const &parameters,
   }
 }
 
-double DHyper::p(double x, vector<SArray const *> const &parameters, bool lower,
+double DHyper::p(double x, vector<double const *> const &parameters, bool lower,
 	         bool give_log) const
 {
-  long n1,n2,m1;
+  int n1,n2,m1;
   double psi;
   getParameters(n1, n2, m1, psi, parameters);
 
-  long ll = max((long) 0, m1 - n2);
-  long uu = min(n1, m1);
+  int ll = max((int) 0, m1 - n2);
+  int uu = min(n1, m1);
 
   double sumpi = 0;
   if (x >= ll) {
@@ -240,10 +236,10 @@ double DHyper::p(double x, vector<SArray const *> const &parameters, bool lower,
       sumpi = 1;
     }
     else {
-      long N = uu - ll + 1;
+      int N = uu - ll + 1;
       double *pi = new double[N];
       density(pi, N, n1, n2, m1, psi);
-      for (long i = ll; i <= x; ++i) {
+      for (int i = ll; i <= x; ++i) {
 	sumpi += pi[i - ll];
       }
       delete [] pi;
@@ -261,17 +257,17 @@ double DHyper::p(double x, vector<SArray const *> const &parameters, bool lower,
   }
 }
 
-double DHyper::q(double p, vector<SArray const *> const &parameters, bool lower,
+double DHyper::q(double p, vector<double const *> const &parameters, bool lower,
                bool log_p) const
 {
-  long n1,n2,m1;
+  int n1,n2,m1;
   double psi;
   getParameters(n1, n2, m1, psi, parameters);
   
-  long ll = max((long) 0, m1 - n2);
-  long uu = min(n1, m1);
+  int ll = max((int) 0, m1 - n2);
+  int uu = min(n1, m1);
   
-  long N = uu - ll + 1;
+  int N = uu - ll + 1;
   double *pi = new double[N];
   density(pi, N, n1, n2, m1, psi);
 
@@ -281,7 +277,7 @@ double DHyper::q(double p, vector<SArray const *> const &parameters, bool lower,
     p = 1 - p;
 
   double sumpi = 0;
-  for (long i = ll; i < uu; ++i) {
+  for (int i = ll; i < uu; ++i) {
     sumpi += pi[i - ll];
     if (sumpi >= p) {
       delete [] pi;
@@ -292,32 +288,32 @@ double DHyper::q(double p, vector<SArray const *> const &parameters, bool lower,
   return uu;
 }
 
-double DHyper::r(vector<SArray const *> const &parameters, RNG *rng) const
+double DHyper::r(vector<double const *> const &parameters, RNG *rng) const
 {
-  long n1,n2,m1;
+  int n1,n2,m1;
   double psi;
   getParameters(n1, n2, m1, psi, parameters);
 
-  long mode = modeCompute(n1, n2, m1, psi);
-  long N = max(0L, m1 - n2) - min(n1, m1) + 1;
+  int mode = modeCompute(n1, n2, m1, psi);
+  int N = max((int) 0, m1 - n2) - min(n1, m1) + 1;
   double *pi = new double[N];
-  long y =  singleDraw(n1, n2, m1, psi, mode, pi, N, rng->uniform());
+  int y =  singleDraw(n1, n2, m1, psi, mode, pi, N, rng->uniform());
   delete [] pi;
   return y;
 }
 
-double DHyper::l(std::vector<SArray const *> const &parameters) const
+double DHyper::l(std::vector<double const *> const &parameters) const
 {
-    long n1,n2,m1;
+    int n1,n2,m1;
     double psi;
     getParameters(n1, n2, m1, psi, parameters);
   
-    return max(0L, m1 - n2);
+    return max((int) 0, m1 - n2);
 }
 
-double DHyper::u(std::vector<SArray const *> const &parameters) const
+double DHyper::u(std::vector<double const *> const &parameters) const
 {
-  long n1,n2,m1;
+  int n1,n2,m1;
   double psi;
   getParameters(n1, n2, m1, psi, parameters);
   

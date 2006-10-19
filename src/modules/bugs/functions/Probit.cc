@@ -1,5 +1,4 @@
 #include <config.h>
-#include <sarray/SArray.h>
 #include "Probit.h"
 
 #include <JRmath.h>
@@ -11,14 +10,13 @@ Probit::Probit ()
 {
 }
 
-double Probit::eval (vector <SArray const *> const &args) const
+double Probit::eval(vector<double const *> const &args) const
 {
-  double p = *(args[0]->value ());
-  return qnorm5 (p, 0, 1, 0, 0);
+    return qnorm5 (*args[0], 0, 1, 0, 0);
 }
 
-bool Probit::checkParameterValue (vector <SArray const *> const &args) const
+bool Probit::checkParameterValue (vector <double const *> const &args) const
 {
-  double p = *(args[0]->value ());
-  return (p > 0 && p < 1);
+    double p = *args[0];
+    return (p > 0 && p < 1);
 }

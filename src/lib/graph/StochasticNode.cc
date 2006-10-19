@@ -22,7 +22,7 @@ static vector<unsigned int> mkDim(Distribution const *dist, vector<Node*> const 
 
   vector<vector<unsigned int> > parameter_dims(parents.size());
   for (unsigned long j = 0; j < parents.size(); ++j) {
-    parameter_dims[j] = parents[j]->dim(true);
+    parameter_dims[j] = parents[j]->dim();
   }
   if (parameter_dims.size() != dist->npar()) {
     //FIXME: logic_error or runtime_error?
@@ -60,21 +60,21 @@ StochasticNode::StochasticNode(Distribution const *dist,
   if (parameters.size() != _dist->npar()) {
     throw NodeError(this, "Incorrect number of parameters for distribution");
   }
-  vector<vector<unsigned int> > parameter_dims;
-  parameter_dims.reserve(parameters.size());
+  
+  _dims.reserve(parameters.size());
   for (unsigned int i = 0; i < parameters.size(); ++i) {
-    parameter_dims.push_back(parameters[i]->dim(true));
+    _dims.push_back(parameters[i]->dim());
   }
-  if (!_dist->checkParameterDim(parameter_dims)) {
+  if (!_dist->checkParameterDim(_dims)) {
     throw NodeError(this,"Invalid parameter dimensions for distribution");
   }
-  if (_dist->dim(parameter_dims) != dim(true)) {
+  if (_dist->dim(_dims) != dim()) {
     throw NodeError(this, "Dimension mismatch between parameters and Node");
   }
 
   //check boundaries
-  if ((lower && lower->dim(true) != dim(true)) || 
-      (upper && upper->dim(true) != dim(true)))
+  if ((lower && lower->dim() != dim()) || 
+      (upper && upper->dim() != dim()))
     {
       throw NodeError(this,"Dimension mismatch when setting bounds");
     }
@@ -89,10 +89,10 @@ StochasticNode::StochasticNode(Distribution const *dist,
     _parameters[n].reserve(parameters.size() + 2 * (_dist->canBound()));
     
     for (unsigned int i = 0; i < parameters.size(); ++i) {
-      _parameters[n].push_back(parameters[i]->data(n));
+      _parameters[n].push_back(parameters[i]->value(n));
     }
-    _parameters[n].push_back(lower ? lower->data(n) : 0);
-    _parameters[n].push_back(upper ? upper->data(n) : 0);
+    _parameters[n].push_back(lower ? lower->value(n) : 0);
+    _parameters[n].push_back(upper ? upper->value(n) : 0);
   }
   
   if (dist->isDiscreteValued()) {
@@ -215,10 +215,11 @@ void StochasticNode::setParameters(vector<Node *> const &parameters)
 
 double StochasticNode::logDensity(unsigned int chain) const
 {
-  return _dist->logLikelihood(*_data[chain], _parameters[chain]);
+    return _dist->logLikelihood(_data + _length * chain, _length,
+				_parameters[chain], _dims);
 }
 
-vector<SArray const *> const &StochasticNode::parameters(unsigned int chain) 
+vector<double const *> const &StochasticNode::parameters(unsigned int chain) 
   const
 {
   return _parameters[chain];
@@ -226,12 +227,14 @@ vector<SArray const *> const &StochasticNode::parameters(unsigned int chain)
 
 void StochasticNode::deterministicSample(unsigned int chain)
 {
-  _dist->typicalValue(*_data[chain], _parameters[chain]);
+    _dist->typicalValue(_data + _length * chain, _length,
+			_parameters[chain], _dims);
 }
 
 void StochasticNode::randomSample(RNG *rng, unsigned int chain)
 {
-  _dist->randomSample(*_data[chain], _parameters[chain], rng);
+    _dist->randomSample(_data + _length * chain, _length, 
+			_parameters[chain], _dims, rng);
 }  
 
 StochasticNode const *asStochastic(Node const *node)
@@ -257,3 +260,7 @@ bool StochasticNode::isVariable() const
   */
 }
 
+vector<vector<unsigned int> > const &StochasticNode::parameterDims() const
+{
+   return _dims;
+}

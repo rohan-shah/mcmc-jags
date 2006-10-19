@@ -11,15 +11,16 @@
  * y <- mean(x[])
  * </pre>
  */
-class Mean : public ScalarFunc
+class Mean : public Function
 {
 public:
-  Mean ();
-  double eval (std::vector <SArray const *> const &args) const;
-  bool checkParameterDim (std::vector<std::vector<unsigned int> > const &dims) const;
-  bool isLinear(std::vector<bool> const &mask,
-                std::vector<bool> const &fix) const;
-  bool isScale(unsigned int index, std::vector<bool> const &fix) const;
+    Mean ();
+    void evaluate(double *x, std::vector<double const *> const &args,
+		  std::vector<std::vector<unsigned int> > const &dims) const;
+    bool checkParameterDim (std::vector<std::vector<unsigned int> > const &dims) const;
+    bool isLinear(std::vector<bool> const &mask,
+		  std::vector<bool> const &fix) const;
+    bool isScale(unsigned int index, std::vector<bool> const &fix) const;
 };
 
 #endif /* FUNC_MEAN_H_ */

@@ -173,20 +173,16 @@ double DSumSampler::value()
   return _x;
 }
 
-double DSumSampler::lowerLimit()
+void DSumSampler::getLimits(double *lower, double *upper)
 {
   vector<StochasticNode *> const &n = nodes();
-  double l0 = n[0]->distribution()->lowerSupport(0, n[0]->parameters(chain()));
-  double u1 = n[1]->distribution()->upperSupport(0, n[1]->parameters(chain()));
-  return max(l0, _sum - u1);
-}
-
-double DSumSampler::upperLimit()
-{
-  vector<StochasticNode *> const &n = nodes();
-  double u1 = n[0]->distribution()->upperSupport(0, n[0]->parameters(chain()));
-  double l2 = n[1]->distribution()->lowerSupport(0, n[1]->parameters(chain()));
-  return min(u1, _sum - l2);
+  double l0, u0, l1, u1;
+  n[0]->distribution()->support(&l0, &u0, 1U, n[0]->parameters(chain()),
+                                n[0]->parameterDims());
+  n[1]->distribution()->support(&l1, &u1, 1U, n[1]->parameters(chain()),
+                                n[1]->parameterDims());
+  *lower = max(l0, _sum - u1);
+  *upper = min(u0, _sum - l1);
 }
 
 void DSumSampler::update(RNG *rng)

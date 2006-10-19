@@ -1,7 +1,6 @@
 #include <config.h>
 #include <distribution/DistDiscrete.h>
 #include <rng/RNG.h>
-#include <sarray/SArray.h>
 #include "Bounds.h"
 
 #include <stdexcept>
@@ -20,73 +19,57 @@ using std::logic_error;
 
 DistDiscrete::DistDiscrete(string const &name, unsigned int npar, 
 			   Support support, bool canbound)
-  : DistScalar(name, npar, support, canbound, true)
+  : DistScalarRmath(name, npar, support, canbound, true)
 {
 }
 
 double 
-DistDiscrete::logLikelihood(SArray const &x,
-			    vector<SArray const *> const &parameters) const
+DistDiscrete::logLikelihood(double x,
+			    vector<double const *> const &parameters) const
 {
-  bool lb = lowerBound(this, parameters);
-  bool ub = upperBound(this, parameters);
+    bool lb = lowerBound(this, parameters);
+    bool ub = upperBound(this, parameters);
 
-  if (!lb && !ub) {
-    return d(*x.value(), parameters, true);
-  }
-  else {
-    double y = *x.value();
-    double loglik =  d(y, parameters, true);
-    if (lb && !ub) {
-      double ll = lowerSupport(0, parameters);
-      if (y < ll) {
-	return -DBL_MAX;
-      }
-      loglik -= p(ll-1, parameters, false, true);
-    }
-    else if (!lb && ub) {
-      double ul = upperSupport(0, parameters);
-      if (y > ul) {
-	return -DBL_MAX;
-      }
-      loglik -= p(ul, parameters, true, true);
-    }
-    else {
-      double ll = lowerSupport(0, parameters);
-      double ul = upperSupport(0, parameters);
-      if (y < ll || y > ul) {
-	return -DBL_MAX;
-      }
-      if (ll > ul) {
-	string msg("Inconsistent bounds for distribution ");
-	throw runtime_error(msg + name());
-      }
-      loglik -= log(p(ul, parameters, true, false) -
-		    p(ll - 1, parameters, true, false));
+    double loglik =  d(x, parameters, true);
+    if (lb || ub) {
+	double lower, upper;
+	support(&lower, &upper, parameters);
+	if (x < lower || x > upper) {
+	    return -DBL_MAX;
+	}
+	double plower = 0, pupper = 1;
+	if (lb && lower != -DBL_MAX) {
+	    //Need to correct for discreteness
+	    plower = p(lower - 1, parameters, true, false);
+	}
+	if (ub) {
+	    pupper = p(upper, parameters, true, false); 
+	}
+	loglik -= log(pupper - plower);
     }
     return loglik;
-  }
 }
 
-void DistDiscrete::randomSample(SArray &x,
-				vector<SArray const *> const &parameters,
-				RNG *rng) const
+double DistDiscrete::randomSample(vector<double const *> const &parameters,
+				  RNG *rng) const
 {
-  if (x.length() != 1)
-    throw length_error("length mismatch in DistDiscrete::randomSample");
-
-  bool bb = lowerBound(this, parameters);
-  bool ba = upperBound(this, parameters);
+    bool bb = lowerBound(this, parameters);
+    bool ba = upperBound(this, parameters);
   
-  double y;
-  if (ba || bb) {
-    double plower = p(l(parameters) - 1, parameters, true, false);
-    double pupper = p(u(parameters), parameters, true, false);
-    double u = plower + rng->uniform() * (pupper - plower);
-    y = q(u, parameters, true, false);
-  }
-  else {
-    y = r(parameters, rng);
-  }
-  x.setValue(&y,1);
+    if (ba || bb) {
+	double lower, upper;
+	support(&lower, &upper, parameters);
+	double plower = 0, pupper = 1;
+	if (bb && lower != -DBL_MAX) {
+	    plower = p(lower - 1, parameters, true, false);
+	}
+	if (ba) {
+	    pupper = p(upper, parameters, true, false);
+	}
+	double u = plower + rng->uniform() * (pupper - plower);
+	return q(u, parameters, true, false);
+    }
+    else {
+	return r(parameters, rng);
+    }
 }

@@ -52,8 +52,8 @@ CONFIG_HEADER = $(top_builddir)/src/include/config.h
 CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 libdist_la_LIBADD =
-am_libdist_la_OBJECTS = DistTab.lo Distribution.lo DistDiscrete.lo \
-	DistScalar.lo DistReal.lo Bounds.lo
+am_libdist_la_OBJECTS = Distribution.lo DistScalar.lo \
+	DistScalarRmath.lo DistTab.lo Bounds.lo
 libdist_la_OBJECTS = $(am_libdist_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/src/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -188,8 +188,8 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 INCLUDES = -I $(top_srcdir)/src/include
 noinst_LTLIBRARIES = libdist.la
-libdist_la_SOURCES = DistTab.cc Distribution.cc DistDiscrete.cc	\
-DistScalar.cc DistReal.cc Bounds.cc
+libdist_la_SOURCES = Distribution.cc DistScalar.cc DistScalarRmath.cc	\
+DistTab.cc Bounds.cc
 
 noinst_HEADERS = Bounds.h
 all: all-am
@@ -244,9 +244,8 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Bounds.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DistDiscrete.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DistReal.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DistScalar.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DistScalarRmath.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DistTab.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Distribution.Plo@am__quote@
 

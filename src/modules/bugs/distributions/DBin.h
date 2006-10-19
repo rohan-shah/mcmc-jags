@@ -1,7 +1,7 @@
 #ifndef DBIN_H_
 #define DBIN_H_
 
-#include <distribution/DistDiscrete.h>
+#include <distribution/DistScalarRmath.h>
 
 /**
  * @short Binomial distribution
@@ -10,19 +10,19 @@
  * f(r|p,n) = n!/r!.(n - r)! p^r * (1 - p)^(n - r) ; r in 0:n
  * </pre>
  */
-class DBin : public DistDiscrete {
+class DBin : public DistScalarRmath {
  public:
   DBin();
-  ~DBin();
-  double d(double x, std::vector<SArray const *> const &parameters, 
+
+  double d(double x, std::vector<double const *> const &parameters, 
 	   bool give_log) const;
-  double p(double x, std::vector<SArray const *> const &parameters, bool lower,
+  double p(double x, std::vector<double const *> const &parameters, bool lower,
 	   bool give_log) const;
-  double q(double p, std::vector<SArray const *> const &parameters, bool lower,
+  double q(double p, std::vector<double const *> const &parameters, bool lower,
 	   bool log_p) const;
-  double r(std::vector<SArray const *> const &parameters, RNG *rng) const;
-  double l(std::vector<SArray const *> const &parameters) const;
-  double u(std::vector<SArray const *> const &parameters) const;
+  double r(std::vector<double const *> const &parameters, RNG *rng) const;
+  double l(std::vector<double const *> const &parameters) const;
+  double u(std::vector<double const *> const &parameters) const;
   /**
    * Checks that n is discrete-valued.
    */
@@ -30,7 +30,7 @@ class DBin : public DistDiscrete {
   /**
    * Checks that p lies in (0,1) and n > 1
    */
-  bool checkParameterValue(std::vector<SArray const *> const &parameters) const;
+  bool checkParameterValue(std::vector<double const *> const &parameters) const;
   bool isSupportFixed(std::vector<bool> const &fixmask) const;
 };
 

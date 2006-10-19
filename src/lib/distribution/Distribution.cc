@@ -52,3 +52,9 @@ bool Distribution::isDeterministic() const
 {
   return false;
 }
+
+bool Distribution::checkParameterValue(vector<double const *> const &args,
+           vector<vector<unsigned int> > const &dims) const
+{
+  return true;
+}

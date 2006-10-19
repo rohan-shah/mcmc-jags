@@ -24,157 +24,70 @@ DistScalar::DistScalar(string const &name, unsigned int npar, Support support,
 {
 }
 
-double 
-DistScalar::lowerSupport(unsigned int i,
-			 vector<SArray const *> const &parameters) const
+void DistScalar::support(double *lower, double *upper, unsigned int length, 
+			 std::vector<double const *> const &parameters,
+			 std::vector<std::vector<unsigned int> > const &dims) 
+    const
 {
-    if (i != 0) {
-	throw logic_error("Invalid index in Distreal::lowerSupport");
-    }
-  
-    SArray const *lb = lowerBound(this, parameters);
+    support(lower, upper, parameters);
+}
+
+void DistScalar::support(double *lower, double *upper,
+			 vector<double const *> const &parameters) const
+{
+    double const *lb = lowerBound(this, parameters);
     if (lb) {
-	return max(l(parameters), *lb->value());
+	*lower = max(l(parameters), *lb);
     }
     else {
-	return l(parameters);
+	*lower = l(parameters);
     }
+    double const *ub = upperBound(this, parameters);
+    if (ub) {
+	*upper = min(u(parameters), *ub);
+    }
+    else {
+	*upper = u(parameters);
+    }
+
 }
 
-double
-DistScalar::upperSupport(unsigned int i,
-			 vector<SArray const *> const &parameters) const
-{
-  if (i != 0) {
-    throw logic_error("Invalid index in Distreal::upperSupport");
-  }
-
-  SArray const *ub = upperBound(this, parameters);
-  if (ub) {
-    return min(u(parameters), *ub->value());
-  }
-  else {
-    return u(parameters);
-  }
-}
-
-vector<unsigned int> DistScalar::dim(vector<vector<unsigned int> > const &parameters) const
+vector<unsigned int> 
+DistScalar::dim(vector<vector<unsigned int> > const &parameters) const
 {
     return vector<unsigned int>(1,1);
 }
 
-double DistScalar::l(vector<SArray const *> const &parameters) const
+double DistScalar::l(vector<double const *> const &parameters) const
 {
-  switch(_support) {
-  case DIST_UNBOUNDED:
-      return -DBL_MAX;
-      break;
-  case DIST_POSITIVE: case DIST_PROPORTION:
-      return 0;
-      break;
-  case DIST_SPECIAL:
-      //You must overload this function 
-      throw logic_error("Cannot call DistScalar::l for special distribution");
-  }
-  return 0; //Wall
+    switch(_support) {
+    case DIST_UNBOUNDED:
+	return -DBL_MAX;
+	break;
+    case DIST_POSITIVE: case DIST_PROPORTION:
+	return 0;
+	break;
+    case DIST_SPECIAL:
+	//You must overload this function 
+	throw logic_error("Cannot call DistScalar::l for special distribution");
+    }
+    return 0; //Wall
 }
 
-double DistScalar::u(vector<SArray const *> const &parameters) const
+double DistScalar::u(vector<double const *> const &parameters) const
 {
-  switch(_support) {
-  case DIST_UNBOUNDED: case DIST_POSITIVE:
-    return DBL_MAX;
-    break;
-  case DIST_PROPORTION:
-    return 1;
-    break;
-  case DIST_SPECIAL:
-    //You must overload this function 
-    throw logic_error("Cannot call DistScalar::u for special distribution");
-  }
-  return 0; //Wall
-}
-
-void
-DistScalar::typicalValue(SArray &x,
-                         std::vector<SArray const *> const &parameters) const
-{
-
-    SArray const *bb = lowerBound(this, parameters);
-    SArray const *ba = upperBound(this, parameters);
-
-    double y;
-    if (!ba && !bb) {
-      y = q(0.5, parameters, true, false);
+    switch(_support) {
+    case DIST_UNBOUNDED: case DIST_POSITIVE:
+	return DBL_MAX;
+	break;
+    case DIST_PROPORTION:
+	return 1;
+	break;
+    case DIST_SPECIAL:
+	//You must overload this function 
+	throw logic_error("Cannot call DistScalar::u for special distribution");
     }
-    else if (bb && ba) {
-
-      //Find lower bound, upper bound and median
-      double lower = lowerSupport(0, parameters);
-      double plower = p(lower, parameters, false, false);
-      double upper = upperSupport(0, parameters);
-      double pupper = p(upper, parameters, false, false);
-      double px = (plower + pupper)/2;
-      double med = q(px, parameters, true, false);
-      
-      //Calculate the log densities
-      double dlower = d(lower, parameters, true);
-      double dupper = d(upper, parameters, true);
-      double dmed = d(med, parameters, true);
-      
-      //Pick the point with the highest density
-      if (dmed > dlower && dmed > dupper) {
-	y = med;
-      }
-      else if (dupper > dlower) {
-	y = upper;
-      }
-      else {
-	y = lower;
-      }
-    }
-    else if (bb) {
-      double lower = lowerSupport(0, parameters);
-      double plower = p(lower, parameters, false, false);
-      double med = q(plower/2, parameters, false, false);
-      
-      //Calculate the log densities
-      double dlower = d(lower, parameters, true);
-      double dmed = d(med, parameters, true);
-      
-      //Pick the point with the highest density
-      if (dmed > dlower) {
-	y = med;
-      }
-      else {
-	y = lower;
-      }
-    }
-    else if (ba) {
-      double upper = upperSupport(0, parameters);
-      double pupper = p(upper, parameters, true, false);
-      double med = q(pupper/2, parameters, true, false);
-      
-      //Calculate the densities
-      double dupper = d(upper, parameters, true);
-      double dmed = d(med, parameters, true);
-      
-      //Pick the point with the highest density
-      if (dmed > dupper) {
-	y = med;
-      }
-      else {
-	y = upper;
-      }
-    }
-
-    x.setValue(&y,1);
-    //x.setValue(q(0.5, parameters, true, false),0);
-}
-
-bool DistScalar::checkParameterDim (vector<vector<unsigned int> > const &dims) const
-{
-  return count_if(dims.begin(), dims.end(), isScalar) == dims.size();
+    return 0; //Wall
 }
 
 bool DistScalar::isSupportFixed(vector<bool> const &fixmask) const
@@ -187,3 +100,36 @@ bool DistScalar::isSupportFixed(vector<bool> const &fixmask) const
 	return true;
     }
 }
+
+double 
+DistScalar::logLikelihood(double const *x, unsigned int length,
+			  std::vector<double const *> const &parameters,
+			  std::vector<std::vector<unsigned int> > const  &dims)
+    const
+{
+    return logLikelihood(*x, parameters);
+}
+
+void 
+DistScalar::randomSample(double *x, unsigned int length,
+			 std::vector<double const *> const &parameters,
+			 std::vector<std::vector<unsigned int> > const  &dims,
+			 RNG *r) const
+{
+    *x = randomSample(parameters, r);
+}
+
+void 
+DistScalar::typicalValue(double *x, unsigned int length,
+			 std::vector<double const *> const &parameters,
+			 std::vector<std::vector<unsigned int> > const &dims) const
+{
+    *x = typicalValue(parameters);
+}
+
+bool 
+DistScalar::checkParameterDim(vector<vector<unsigned int> > const &dims) const
+{
+    return count_if(dims.begin(), dims.end(), isScalar) == dims.size();
+}
+

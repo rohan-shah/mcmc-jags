@@ -4,18 +4,18 @@
 #include "matrix.h"
 
 #include <sarray/util.h>
-#include <sarray/SArray.h>
 
 using std::vector;
 
 LogDet::LogDet ()
-  : ScalarFunc ("logdet", 1)
+  : Function ("logdet", 1)
 {
 }
 
-double LogDet::eval (vector <SArray const *> const &args) const
+void LogDet::evaluate (double *x, vector<double const *> const &args,
+                       vector<vector<unsigned int> > const &dims) const
 {
-  return logdet (args[0]->value(), args[0]->dim(true)[0]);
+  *x = logdet(args[0], dims[0][0]);
 }
 
 bool LogDet::checkParameterDim (vector<vector<unsigned int> > const &dims) const

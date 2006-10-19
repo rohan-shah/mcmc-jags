@@ -1,5 +1,4 @@
 #include <config.h>
-#include <sarray/SArray.h>
 #include <sarray/util.h>
 #include "Multiply.h"
 
@@ -11,24 +10,24 @@ Multiply::Multiply ()
 }
 
 double
-Multiply::eval (vector < SArray const *>const &args) const
+Multiply::eval (vector<double const *>const &args) const
 {
-  double val = *args[0]->value();
-  /* We adopt the convention that any argument multiplied by zero
-     is zero. This is required to do calculations like x*log(x)
-     when x is zero.
-  */
-  if (val == 0) {
-    return 0;
-  }
-  for (unsigned int i = 1; i < args.size(); ++i) {
-    double vali = *args[i]->value();
-    if (vali == 0) {
-      return 0;
+    double val = *args[0];
+    /* We adopt the convention that any argument multiplied by zero
+       is zero. This is required to do calculations like x*log(x)
+       when x is zero.
+    */
+    if (val == 0) {
+	return 0;
     }
-    val *= vali;
-  }
-  return val;
+    for (unsigned int i = 1; i < args.size(); ++i) {
+	double vali = *args[i];
+	if (vali == 0) {
+	    return 0;
+	}
+	val *= vali;
+    }
+    return val;
 }
 
 bool Multiply::isDiscreteValued(vector<bool> const &mask) const

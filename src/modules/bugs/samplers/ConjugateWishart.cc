@@ -89,7 +89,7 @@ void ConjugateWishart::update(RNG *rng)
 
   double k = *param[1]->value(chain());
   double const *Rprior = param[0]->value(chain());
-  int nrow = (param[0]->dim(true))[0];
+  int nrow = param[0]->dim()[0];
 
   int N = nrow * nrow;
   double *R = new double[N]; 

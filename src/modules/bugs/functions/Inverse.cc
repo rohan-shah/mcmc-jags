@@ -1,6 +1,5 @@
 #include <config.h>
 #include "matrix.h"
-#include <sarray/SArray.h>
 #include <sarray/util.h>
 #include "Inverse.h"
 
@@ -10,15 +9,10 @@ Inverse::Inverse ():Function ("inverse", 1)
 {
 }
 
-void
-Inverse::evaluate (SArray & value, vector <SArray const *> const &args) const
+void Inverse::evaluate (double *value, vector<double const *> const &args,
+                        vector<vector<unsigned int> > const &dims) const
 {
-    int n = args[0]->dim(true)[0];
-    int N = args[0]->length();
-    double *y = new double[N];
-    inverse (y, args[0]->value(), n, false);
-    value.setValue (y, N);
-    delete y;
+    inverse (value, args[0], dims[0][0], false);
 }
 
 bool Inverse::checkParameterDim (vector<vector<unsigned int> > const &dims) const

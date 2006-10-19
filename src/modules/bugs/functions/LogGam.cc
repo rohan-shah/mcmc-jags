@@ -1,5 +1,4 @@
 #include <config.h>
-#include <sarray/SArray.h>
 #include "LogGam.h"
 
 #include <JRmath.h>
@@ -11,12 +10,12 @@ LogGam::LogGam ()
 {
 }
 
-double LogGam::eval (vector <SArray const *> const &args) const
+double LogGam::eval(vector<double const *> const &args) const
 {
-  return lgammafn (*args[0]->value ());
+  return lgammafn (*args[0]);
 }
 
-bool LogGam::checkParameterValue (vector <SArray const *> const &args) const
+bool LogGam::checkParameterValue(vector<double const *> const &args) const
 {
-  return *args[0]->value() > 0;
+  return *args[0] > 0;
 }

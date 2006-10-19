@@ -1,6 +1,6 @@
 #include <config.h>
-#include <sarray/SArray.h>
 #include "DInterval.h"
+#include <sarray/util.h>
 
 #include <cfloat>
 #include <algorithm>
@@ -11,31 +11,29 @@ using std::max;
 using std::logic_error;
 using std::vector;
 
-static unsigned int value(vector<SArray const *> const &parameters)
-{
-    double t = *parameters[0]->value();
-    double const *cutpoints = parameters[1]->value();
-    unsigned int length = parameters[1]->length();
+#define T(par) (*par[0])
+#define CUTPOINTS(par) (par[1])
+#define NCUT(dims) (dims[1][0])
 
-    for (unsigned int i = 0; i < length; ++i) {
-	if (t <= cutpoints[i])
+static unsigned int value(vector<double const *> const &par, unsigned int ncut)
+{
+    double t = T(par);
+    for (unsigned int i = 0; i < ncut; ++i) {
+	if (t <= CUTPOINTS(par)[i])
 	    return i;
     }
-    return length;
+    return ncut;
 }
 
 DInterval::DInterval()
-  : Distribution("dinterval", 2, false, true)
+    : Distribution("dinterval", 2, false, true)
 {
 }
-
-DInterval::~DInterval()
-{}
 
 bool 
 DInterval::checkParameterDim(vector<vector<unsigned int> > const &dims) const
 {
-  return dims[0].size() == 1 && dims[0][0] == 1 && dims[1].size() == 1;
+    return isScalar(dims[0]) && dims[1].size() == 1;
 }
 
 vector<unsigned int> DInterval::dim(vector<vector<unsigned int> > const &dims) const
@@ -43,84 +41,73 @@ vector<unsigned int> DInterval::dim(vector<vector<unsigned int> > const &dims) c
     return vector<unsigned int>(1,1);
 }
 
-bool DInterval::checkParameterValue(vector<SArray const *> const &parameters) const
+bool DInterval::checkParameterValue(vector<double const *> const &par,
+				    vector<vector<unsigned int> > const &dims) 
+    const
 {
-  unsigned int length = parameters[1]->length();
-  double const *cutpoints = parameters[1]->value();
-  for (unsigned int i = 1; i < length; ++i) {
-    if (cutpoints[i] < cutpoints[i-1])
-      return false;
-  }
-  return true;
+    for (unsigned int i = 1; i < NCUT(dims); ++i) {
+	if (CUTPOINTS(par)[i] <= CUTPOINTS(par)[i-1])
+	    return false;
+    }
+    return true;
 }
 
 double 
-DInterval::logLikelihood(SArray const &y, 
-			 vector<SArray const *> const &parameters) const
+DInterval::logLikelihood(double const *y, unsigned int length, 
+			 vector<double const *> const &par,
+			 vector<vector<unsigned int> > const &dims) const
 {
-  if (y.value() < 0)
-    return -DBL_MAX;
-
-  unsigned int x = static_cast<unsigned int>(*y.value());
-  if (x > parameters[1]->length()) {
-    return -DBL_MAX;
-  }
-  else {
-    double t = *parameters[0]->value();
-    double const *cutpoints = parameters[1]->value();
+    if (*y < 0)
+	return -DBL_MAX;
     
-    if (x > 0 && t <= cutpoints[x-1])
-      return -DBL_MAX;
-    else if (x < parameters[1]->length() && t > cutpoints[x])
-      return -DBL_MAX;
-    else
-      return 0;
-  }
+    unsigned int x = static_cast<unsigned int>(*y);
+    if (x > NCUT(dims)) {
+	return -DBL_MAX;
+    }
+    else {
+	double t = T(par);
+	if (x > 0 && t <= CUTPOINTS(par)[x-1])
+	    return -DBL_MAX;
+	else if (x < NCUT(dims) && t > CUTPOINTS(par)[x])
+	    return -DBL_MAX;
+	else
+	    return 0;
+    }
 }
 
-void DInterval::randomSample(SArray  &x,
-			     vector<SArray const *> const &parameters,
+void DInterval::randomSample(double  *x, unsigned int length,
+			     vector<double const *> const &par,
+			     vector<vector<unsigned int> > const &dims,
 			     RNG *rng) const
 {
     /* 
        The random sample from DInterval is not random at all,
        but deterministic.
     */
-    x.setValue(static_cast<double>(value(parameters)), 0);
+    *x = static_cast<double>(value(par, NCUT(dims)));
 }
 
-unsigned int 
-DInterval::df(std::vector<SArray const *> const &parameters) const
+void DInterval::typicalValue(double *x, unsigned int length,
+			     vector<double const *> const &par,
+			     vector<vector<unsigned int> > const &dims) const
 {
-    return 0;
+    *x = static_cast<double>(value(par, NCUT(dims)));
 }
 
-double 
-DInterval::lowerSupport(unsigned int i,
-			std::vector<SArray const *> const &parameters) const
+bool DInterval::isDeterministic() const
 {
-  if (i != 0)
-    throw logic_error("Invalid index in DInterval::lowerSupport");
-
-  return value(parameters);
+    return true;
 }
 
-double 
-DInterval::upperSupport(unsigned int i,
-			std::vector<SArray const *> const &parameters) const
+void DInterval::support(double *lower, double *upper, unsigned int length,
+			std::vector<double const *> const &par,
+			vector<vector<unsigned int> > const &dims) const
 {
-  if (i != 0)
-    throw logic_error("Invalid index in DInteval::upperSupport");
-    
-  return value(parameters);
+    unsigned int y = value(par, NCUT(dims));    
+    *lower = y;
+    *upper = y;
 }
 
-void
-DInterval::typicalValue(SArray &x, 
-			std::vector<SArray const *> const &parameters) const
-{
-     x.setValue(static_cast<double>(value(parameters)), 0);
-}
 
 bool DInterval::isSupportFixed(vector<bool> const &fixmask) const
 {

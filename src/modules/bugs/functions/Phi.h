@@ -12,11 +12,11 @@
  * p = Prob(X < x) where X ~ N(0,1)
  * </pre>
  */
-class Phi:public InverseLinkFunc
+class Phi : public InverseLinkFunc
 {
 public:
   Phi ();
-  double eval (std::vector < SArray const *>const &args) const;
+  double eval(std::vector<double const *> const &args) const;
   double link(double mu) const;
   double gradLink(double mu) const;
 };

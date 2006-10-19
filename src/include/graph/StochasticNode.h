@@ -11,7 +11,8 @@ class RNG;
  */
 class StochasticNode : public Node {
     Distribution const * const _dist;
-    std::vector<std::vector<SArray const *> > _parameters;
+    std::vector<std::vector<double const *> > _parameters;
+    std::vector<std::vector<unsigned int> > _dims;
     Node *_lower, *_upper;
 
     /* Forbid copying of Stochastic Nodes */
@@ -51,7 +52,11 @@ public:
     /**
      * Returns a vector of parameter values for the given chain.
      */
-    std::vector<SArray const *> const &parameters(unsigned int chain) const;
+    std::vector<double const *> const &parameters(unsigned int chain) const;
+    /**
+     * FIXME
+     */
+    std::vector<std::vector<unsigned int> > const &parameterDims() const;
     /**
      * Returns the log of the prior density of the StochasticNode given
      * the current parameter values.
@@ -76,6 +81,7 @@ public:
      * true.
      */
     bool isVariable() const;
+    
 };
 
 StochasticNode const *asStochastic(Node const *node);

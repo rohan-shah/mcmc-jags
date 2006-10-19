@@ -1,5 +1,4 @@
 #include <config.h>
-#include <sarray/SArray.h>
 #include "Log.h"
 
 #include <cmath>
@@ -13,12 +12,12 @@ Log::Log ()
 {
 }
 
-double Log::eval (vector <SArray const *> const &args) const
+double Log::eval(vector<double const *> const &args) const
 {
-  return log (*args[0]->value());
+  return log(*args[0]);
 }
 
-bool Log::checkParameterValue (vector <SArray const *> const &args) const
+bool Log::checkParameterValue(vector<double const *> const &args) const
 {
-  return *args[0]->value() >= 0;
+  return *args[0] >= 0;
 }

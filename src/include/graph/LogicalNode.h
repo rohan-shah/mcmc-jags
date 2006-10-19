@@ -5,7 +5,6 @@
 #include <vector>
 
 class Function;
-class SArray;
 
 /**
  * A LogicalNode is a type of DeterministicNode that is defined by a
@@ -16,7 +15,8 @@ class SArray;
  */
 class LogicalNode : public DeterministicNode {
     Function const * const _func;
-    std::vector<std::vector<SArray const*> > _parameters;
+    std::vector<std::vector<double const*> > _parameters;
+    std::vector<std::vector<unsigned int> > _dims;
 
     /* Forbid copying of logical nodes */
     LogicalNode(LogicalNode const &orig);
@@ -29,15 +29,18 @@ public:
     LogicalNode(Function const *func, std::vector<Node*> const &parameters);
     ~LogicalNode();
     /** 
-     * Returns the parameters of the node as a vector of SArray
-     * pointers
+     * Returns the parameter values of the node 
      */
-    std::vector<SArray const *> const &parameters(unsigned int chain) const;
+    //std::vector<double const *> const &parameters(unsigned int chain) const;
+    /**
+     * Returns the dimensions of the parameters of the node
+     */
+    //std::vector<std::vector<unsigned int> > const &parameterDims() const;
     /** 
      * Returns the Function used to calculate the value of the logical
      * node.
      */
-    Function const* function() const;
+    //Function const* function() const;
     /** 
      * Calculates the value of the node based on the parameters. This
      * function calls Function##checkParameterValue and will throw an

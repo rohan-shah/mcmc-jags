@@ -26,8 +26,7 @@ public:
 		 Graph const &graph);
   void setValue(double x);
   double value();
-  double lowerLimit();
-  double upperLimit();
+  void getLimits(double *lower, double *upper);
 };
 
 #endif /* DSUM_SAMPLER_H_ */

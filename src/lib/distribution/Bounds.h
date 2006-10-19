@@ -4,12 +4,11 @@
 #include <vector> 
 
 class Distribution;
-class SArray;
 
-SArray const *
-lowerBound(Distribution const *dist, std::vector<SArray const *> const &args); 
+double const *
+lowerBound(Distribution const *dist, std::vector<double const *> const &args); 
 
-SArray const *
-upperBound(Distribution const *dist, std::vector<SArray const *> const &args); 
+double const *
+upperBound(Distribution const *dist, std::vector<double const *> const &args); 
 
 #endif /* BOUNDS_H_ */

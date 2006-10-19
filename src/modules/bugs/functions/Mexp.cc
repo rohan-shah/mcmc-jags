@@ -4,7 +4,6 @@
 #include "matexp.h"
 
 #include <sarray/util.h>
-#include <sarray/SArray.h>
 
 using std::vector;
 
@@ -13,15 +12,10 @@ Mexp::Mexp()
 {
 }
 
-void
-Mexp::evaluate (SArray &value, vector <SArray const *> const &args) const
+void Mexp::evaluate (double *value, vector<double const *> const &args,
+                     vector<vector<unsigned int> > const &dims) const
 {
-  int n = args[0]->dim(true)[0];
-  int N = args[0]->length();
-  double *expmat = new double[N];
-  MatrixExpPade(expmat, args[0]->value(), n, 1);
-  value.setValue(expmat, N);
-  delete [] expmat;
+  MatrixExpPade(value, args[0], dims[0][0], 1);
 }
 
 vector<unsigned int> Mexp::dim (vector <vector<unsigned int> > const &dims) const

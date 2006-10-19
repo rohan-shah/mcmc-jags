@@ -1,6 +1,5 @@
 #include <config.h>
 #include <sarray/util.h>
-#include <sarray/SArray.h>
 #include "DSum.h"
 
 #include <cfloat>
@@ -12,27 +11,20 @@ using std::fabs;
 using std::runtime_error;
 using std::logic_error;
 
-static inline double SUM(vector<SArray const *> const &par)
+static inline double SUM(vector<double const *> const &par)
 {
-    return *par[0]->value() + *par[1]->value();
+    return *par[0] + *par[1];
 }
 
 DSum::DSum()
-  : Distribution("dsum", 2, false, true)
+    : DistScalar("dsum", 2, DIST_SPECIAL, false, true)
 {
 }
 
-DSum::~DSum()
-{}
-
-bool DSum::checkParameterValue(vector<SArray const *> const &par) const
+bool DSum::checkParameterValue(vector<double const *> const &par,
+			       vector<vector<unsigned int> > const &dims) const
 {
-  return true;
-}
-
-bool DSum::checkParameterDim(vector<vector<unsigned int> > const &dims) const
-{
-    return isScalar(dims[0]) && isScalar(dims[1]);
+    return true;
 }
 
 bool DSum::checkParameterDiscrete(vector<bool> const &mask) const
@@ -40,15 +32,9 @@ bool DSum::checkParameterDiscrete(vector<bool> const &mask) const
     return allTrue(mask);
 }
 
-vector<unsigned int> DSum::dim(vector<vector<unsigned int> > const &dims) const
+double DSum::logLikelihood(double x, vector<double const *> const &par) const
 {
-    return vector<unsigned int>(1,1);
-}
-
-double DSum::logLikelihood(SArray const &x, 
-			   vector<SArray const *> const &par) const
-{
-    if (fabs(*x.value() - SUM(par)) > 16*DBL_EPSILON) {
+    if (fabs(x - SUM(par)) > 16 * DBL_EPSILON) {
 	// If this happens by accident, you have no chance of getting it right
 	throw runtime_error("Inconsistent arguments for dsum");
     }
@@ -56,50 +42,34 @@ double DSum::logLikelihood(SArray const &x,
     return 0;
 }
 
-void
-DSum::randomSample(SArray &x, vector<SArray const *> const &par,
-		   RNG *rng) const
+double DSum::randomSample(vector<double const *> const &par, RNG *rng) const
 {
     /* The random sample from DSum is not random at all, but
        deterministic. */
-  
-    x.setValue(SUM(par), 0);
-}
-
-unsigned int DSum::df(std::vector<SArray const *> const &par) const
-{
-    return 0;
-}
-
-double 
-DSum::lowerSupport(unsigned int i,
-		   std::vector<SArray const *> const &par) const
-{
-    if (i != 0)
-	throw logic_error("Invalid index in DSum::lowerSupport");
-    
     return SUM(par);
 }
 
-
-double 
-DSum::upperSupport(unsigned int i,
-		   std::vector<SArray const *> const &par) const
+double DSum::l(std::vector<double const *> const &par) const
 {
-    if (i != 0)
-	throw logic_error("Invalid index in DSum::upperSupport");
-    
     return SUM(par);
 }
 
-void
-DSum::typicalValue(SArray &x, 
-		   std::vector<SArray const *> const &par) const
+double DSum::u(std::vector<double const *> const &par) const
 {
-  x.setValue(SUM(par), 0);
+    return SUM(par);
+}
+
+double DSum::typicalValue(std::vector<double const *> const &par) const
+{
+    return SUM(par);
 }
 
 bool DSum::isSupportFixed(std::vector<bool> const &fixmask) const
 {
     return fixmask[0] && fixmask[1];
+}
+
+bool DSum::isDeterministic() const
+{
+    return true;
 }

@@ -1,5 +1,4 @@
 #include <config.h>
-#include <sarray/SArray.h>
 #include "Exp.h"
 
 #include <cmath>
@@ -13,10 +12,9 @@ Exp::Exp ()
 {
 }
 
-double
-Exp::eval (vector <SArray const *> const &args) const
+double Exp::eval(vector<double const *> const &args) const
 {
-  return exp (*args[0]->value());
+  return exp(*args[0]);
 }
 
 double Exp::link(double mu) const

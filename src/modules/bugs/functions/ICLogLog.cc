@@ -1,5 +1,4 @@
 #include <config.h>
-#include <sarray/SArray.h>
 #include "ICLogLog.h"
 
 #include <cmath>
@@ -13,9 +12,9 @@ ICLogLog::ICLogLog(): InverseLinkFunc("icloglog", "cloglog")
 }
 
 double
-ICLogLog::eval (vector <SArray const *> const &args) const
+ICLogLog::eval (vector <double const *> const &args) const
 {
-  return 1 - exp(-exp(*args[0]->value()));
+  return 1 - exp(-exp(*args[0]));
 }
 
 double ICLogLog::link(double mu) const

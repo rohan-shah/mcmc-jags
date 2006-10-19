@@ -42,8 +42,8 @@ void Slicer::updateStep(RNG *rng)
   double L = xold - rng->uniform() * _width; 
   double R = L + _width;
 
-  double lower = lowerLimit();
-  double upper = upperLimit();
+  double lower = -DBL_MAX, upper = DBL_MAX;
+  getLimits(&lower, &upper);
 
   // Stepping out 
 
@@ -135,8 +135,8 @@ void Slicer::updateDouble(RNG *rng)
   double L = xold - rng->uniform() * _width; 
   double R = L + _width;
 
-  double lower = lowerLimit();
-  double upper = upperLimit();
+  double lower = -DBL_MAX, upper = DBL_MAX;
+  getLimits(&lower, &upper);
 
   // Doubling 
   bool left_ok = false, right_ok = false;

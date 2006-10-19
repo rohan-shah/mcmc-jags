@@ -15,10 +15,10 @@
 class ILogit:public InverseLinkFunc
 {
 public:
-  ILogit ();
-  double eval (std::vector <SArray const *> const &args) const;
-  double link(double mu) const;
-  double gradLink(double mu) const;
+    ILogit ();
+    double eval(std::vector <double const *> const &args) const;
+    double link(double mu) const;
+    double gradLink(double mu) const;
 };
 
 #endif /* FUNC_ILOGIT_H_ */

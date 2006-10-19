@@ -1,7 +1,7 @@
 #ifndef FUNC_TAB_H_
 #define FUNC_TAB_H_
 
-#include <map>
+#include <list>
 #include <string>
 
 class Function;
@@ -16,8 +16,10 @@ class InverseLinkFunc;
  */
 class FuncTab
 {
-    std::map < const std::string, const Function *> _table;
-    std::map < const std::string, const InverseLinkFunc *> _link_table;
+    std::list<Function const *> _func_list;
+    std::list<Function const *> _masked_func_list;
+    std::list<InverseLinkFunc const *> _link_list;
+    std::list<InverseLinkFunc const *> _masked_link_list;
 public:
   /**
    * Any functions inserted into the FuncTab should be removed before
@@ -44,16 +46,6 @@ public:
    * the memory allocated to func.
    */
   bool insert (Function const *func);
-  /** 
-   * Removes a function by name
-   * 
-   * With a combination of erase and insert calls, you can
-   * replace any existing function with another implementation.
-   *
-   * @return a logical value indicating success.  The removal will
-   * fail if there is no function with the given name in the FuncTab.
-   */
-  bool erase (std::string const &name);
   /**
    * Finds a function by name 
    *
@@ -71,6 +63,7 @@ public:
    * module that owns the Function object, as it requires a
    * non-constant pointer.
    */
+  void erase(InverseLinkFunc *func);
   void erase(Function *func);
 };
 

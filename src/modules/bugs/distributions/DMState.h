@@ -1,7 +1,7 @@
 #ifndef DMSTATE_H_
 #define DMSTATE_H_
 
-#include <distribution/DistDiscrete.h>
+#include <distribution/Distribution.h>
 
 /**
  * Distribution of x in multi-state homogeneous Markov model at time t
@@ -12,33 +12,33 @@
  * </pre>
  * @short Interval censored transitions in a multistate Markov model
  */
-class DMState : public DistDiscrete {
+class DMState : public Distribution {
 public:
-  DMState();
-  ~DMState();
-  double d(double x, std::vector<SArray const *> const &parameters, 
-	   bool give_log) const;
-  double p(double x, std::vector<SArray const *> const &parameters, bool lower,
-	   bool give_log) const;
-  double q(double p, std::vector<SArray const *> const &parameters, bool lower,
-	 bool log_p) const;
-  double r(std::vector<SArray const *> const &parameters, RNG *rng) const;
-  double l(std::vector<SArray const *> const &parameters) const;
-  double u(std::vector<SArray const *> const &parameters) const;
-  /**
-   * Checks that x is scalar, t is scalar and Lambda is
-   * a square matrix
-   */
-  bool checkParameterDim(std::vector<std::vector<unsigned int> > const &dims) const;
-  /** Checks that x is discrete */
-  bool checkParameterDiscrete(std::vector<bool> const &mask) const;
-  /**
-   * Checks that t > 0, xold is in permitted range 1:nrow(Lambda)
-   * and Lambda is a valid transition intensity matrix with
-   * rows that sum to 0.
-   */
-  bool checkParameterValue(std::vector<SArray const *> const &parameters) const;
-  bool isSupportFixed(std::vector<bool> const &fixmask) const;
+    DMState();
+  
+    double logLikelihood(double const *x, unsigned int length,
+			 std::vector<double const *> const &parameters,
+			 std::vector<std::vector<unsigned int> > const &dims)
+	const;
+    void randomSample(double *x, unsigned int length,
+		      std::vector<double const *> const &parameters,
+		      std::vector<std::vector<unsigned int> > const &dims,
+		      RNG *rng) const;
+    std::vector<unsigned int> 
+	dim(std::vector<std::vector<unsigned int> > const &dims) const;
+    void support(double *lower, double *upper, unsigned int length,
+		 std::vector<double const *> const &parameters,
+		 std::vector<std::vector<unsigned int> > const &dims) const;
+    void typicalValue(double *x, unsigned int length,
+		      std::vector<double const *> const &parameters,
+		      std::vector<std::vector<unsigned int> > const &dims) 
+	const;
+    bool isSupportFixed(std::vector<bool> const &fixmask) const;
+    bool checkParameterDim(std::vector<std::vector<unsigned int> > const &dims)
+	const;
+    bool checkParameterDiscrete(std::vector<bool> const &mask) const;
+    bool checkParameterValue(std::vector<double const *> const &par,
+			     std::vector<std::vector<unsigned int> > const &dims) const;
 };
 
 #endif /* DMSTATE_H_ */

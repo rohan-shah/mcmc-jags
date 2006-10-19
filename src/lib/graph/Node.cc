@@ -2,7 +2,10 @@
 #include <graph/Node.h>
 #include <graph/NodeError.h>
 #include <graph/NodeNameTab.h>
+#include <sarray/Range.h>
+//FIXME: for JAGS_NA
 #include <sarray/SArray.h>
+#include <sarray/util.h>
 
 #include <stdexcept>
 
@@ -11,27 +14,26 @@ using std::string;
 using std::vector;
 using std::logic_error;
 
-vector<SArray*> mkData(vector<unsigned int> const &dim, unsigned int nchain)
-{
-  vector<SArray*> data(nchain);
-  for (unsigned int n = 0; n < nchain; ++n) {
-    data[n] = new SArray(dim);
-  }
-  return data;
-}
-
 Node::Node(vector<unsigned int> const &dim, unsigned int nchain)
-    : _parents(0), _children(), _ref(0), _data(mkData(dim,nchain)),
-      _isobserved(false), _isdiscrete(false)
+    : _parents(0), _children(), _ref(0), _isobserved(false),
+      _isdiscrete(false), _dim(dim), _length(product(dim)), _nchain(nchain),
+      _data(0)
+      
 {
-  if (nchain==0)
-    throw logic_error("Node must have at least one chain");
+    if (nchain==0)
+	throw logic_error("Node must have at least one chain");
+
+    unsigned int N = _length * _nchain;
+    _data = new double[N];
+    for (unsigned int i = 0; i < N; ++i) {
+	_data[i] = JAGS_NA;
+    }
 }
 
 Node::Node(vector<unsigned int> const &dim, vector<Node *> const &parents)
-  : _parents(parents), _children(), _ref(0),
-    _data(vector<SArray*>(mkData(dim,countChains(parents)))),
-    _isobserved(false), _isdiscrete(false)
+  : _parents(parents), _children(), _ref(0),  _isobserved(false), 
+    _isdiscrete(false), _dim(dim), _length(product(dim)),
+     _nchain(countChains(parents)), _data(0)
 {
   if (nchain() == 0) {
     throw logic_error("chain number mismatch in Node constructor");
@@ -46,24 +48,28 @@ Node::Node(vector<unsigned int> const &dim, vector<Node *> const &parents)
   for (unsigned int i = 0; i < parents.size(); ++i) {
     parents[i]->_children.insert(this);
   }
+
+  unsigned int N = _length * _nchain;
+  _data = new double[N];
+  for (unsigned int i = 0; i < N; ++i) {
+      _data[i] = JAGS_NA;
+  }
 }
 
 Node::~Node()
 {
-  for (unsigned int n = 0; n < _data.size(); ++n) {
-    delete _data[n];
-  }
+    delete [] _data;
 
-  for (unsigned int i = 0; i < _parents.size(); ++i) {
-    _parents[i]->_children.erase(this);
-  }
-  for (set<Node*>::iterator p = _children.begin(); p != _children.end(); p++)
+    for (unsigned int i = 0; i < _parents.size(); ++i) {
+	_parents[i]->_children.erase(this);
+    }
+    for (set<Node*>::iterator p = _children.begin(); p != _children.end(); p++)
     {
-      vector<Node*> &P = (*p)->_parents;
-      vector<Node*>::iterator cp;
-      while ( (cp = find(P.begin(), P.end(), this)) != P.end()) {
-         P.erase(cp);
-      }
+	vector<Node*> &P = (*p)->_parents;
+	vector<Node*>::iterator cp;
+	while ( (cp = find(P.begin(), P.end(), this)) != P.end()) {
+	    P.erase(cp);
+	}
     }
 }
 
@@ -95,13 +101,14 @@ set<Node*> const &Node::children() const
   return _children;
 }
 
-static bool isInitialized(Node const *node, unsigned int chain)
+static bool isInitialized(Node const *node)
 {
-   double const *value = node->value(chain);
-   for (unsigned int i = 0; i < node->length(); ++i) {
-      if (value[i] == JAGS_NA) {
-          return false;
-      }
+   for (unsigned int n = 0; n < node->nchain(); ++n) {
+       double const *value = node->value(n);
+       for (unsigned int i = 0; i < node->length(); ++i) {
+           if (value[i] == JAGS_NA) 
+               return false;
+       }
    }
    return true;
 }
@@ -109,39 +116,18 @@ static bool isInitialized(Node const *node, unsigned int chain)
 bool Node::initialize()
 {
     // Test whether node is already initialized and, if so, skip it
-    bool isinitialized = true;
-    for (unsigned int n = 0; n < nchain(); ++n) {
-        if (!isInitialized(this, n)) {
-            isinitialized = false;
-            break;
+    if (isInitialized(this))
+        return true;
+
+    // Check that parents are initialized
+    for (unsigned int i = 0; i < _parents.size(); ++i) {
+        if (!isInitialized(_parents[i])) {
+	    return false; // Uninitialized parent
         }
     }
-    if (isinitialized) {
-        return true; //Nothing to do
+    for (unsigned int n = 0; n < _nchain; ++n) {
+        deterministicSample(n);
     }
-
-    // Initialize each chain, if possible
-    isinitialized = true;
-    for (unsigned int n = 0; n < nchain(); ++n) {
-        if (!isInitialized(this, n)) {
-	    bool caninit = true;
-	    for (unsigned int i = 0; i < _parents.size(); ++i) {
-	        if (!isInitialized(_parents[i], n)) {
-		    caninit = false;
-		    break;
-	        }
-	    }
-	    if (caninit) {
-	        deterministicSample(n);
-	    }
-	    else {
-	        isinitialized = false;
-	    }
-        }
-    }
-
-    if (!isinitialized)
-	return false; //At least one chain uninitialized
 
     if (isVariable())
         return true; // Nothing more to do for variable nodes
@@ -153,11 +139,6 @@ bool Node::initialize()
             return true; //Not observed
 	}
     }
-    /*
-    for (unsigned int n = 0; n < nchain(); ++n) {
-        _data[n]->setFixed(true); //Observed
-    }
-    */
     _isobserved = true;
     return true;
 }
@@ -167,56 +148,28 @@ string Node::name(NodeNameTab const &name_table) const
   return name_table.getName(this);
 }
 
-/*
-SArray const & Node::data(unsigned int chain) const
-{
-  return _data[chain];
-}
-
-SArray & Node::data(unsigned int chain)
-{
-  return _data[chain];
-}
-*/
-
-vector<unsigned int> const &Node::dim(bool drop) const
-{
-    return _data[0]->dim(drop);
-}
-
-unsigned int Node::length() const
-{
-    return _data[0]->length();
-}
-
 void Node::setObserved(double const *value, unsigned int length)
 {
-    for (unsigned int n = 0; n < nchain(); ++n) {
-	_data[n]->setValue(value, length);
-	//_data[n]->setFixed(true);
+    if (length != _length) {
+	throw logic_error("Length mismatch in Node::setObserved");
+    }
+
+    for (unsigned int n = 0; n < _nchain; ++n) {
+        for (unsigned int i = 0; i < length; ++i) {
+	    _data[n * length + i] = value[i];
+        }
     }
     _isobserved = true;
-   //_status = NODE_DATA;
 }
 
 bool Node::isObserved() const
 {
     return _isobserved;
-
-    /*
-    // A node is observed if all its data are fixed 
-    for (unsigned int n = 0; n < nchain(); ++n) {
-	if (!_data[n]->isFixed()) {
-	    return false;
-	}
-    }
-    return true;
-    */
 }
 
 unsigned int Node::nchain() const
 {
-  return _data.size();
+  return _nchain;
 }
 
 unsigned int countChains(std::vector<Node*> const &parameters)
@@ -235,29 +188,38 @@ unsigned int countChains(std::vector<Node*> const &parameters)
 
 void Node::setValue(double const *value, unsigned int length, unsigned int chain)
 {
-   _data[chain]->setValue(value, length);
+   if (length != _length)
+      throw NodeError(this, "Length mismatch in Node::setValue");
+   if (chain >= _nchain)
+      throw NodeError(this, "Invalid chain in Node::setValue");
+
+   double *v = _data + length * chain;
+   for (unsigned int i = 0; i < length; ++i) {
+      v[i] = value[i];
+   }
 }
 
 bool Node::isDiscreteValued() const
 {
     return _isdiscrete;
-    //return _data[0]->isDiscreteValued();
 }
 
 void Node::setDiscreteValued()
 {
     _isdiscrete = true;
-    for (unsigned int n = 0; n < nchain(); ++n) {
-      _data[n]->setDiscreteValued(true);
-    }
 }
 
 double const *Node::value(unsigned int chain) const
 {
-   return _data[chain]->value();
+   return _data + chain * _length;
 }
 
-SArray const *Node::data(unsigned int chain) const
+vector<unsigned int> const &Node::dim() const
 {
-  return _data[chain];
+    return _dim;
+}
+
+unsigned int Node::length() const
+{
+    return _length;
 }

@@ -1,5 +1,4 @@
 #include <config.h>
-#include <sarray/SArray.h>
 #include "Phi.h"
 
 #include <JRmath.h>
@@ -10,13 +9,13 @@ Phi::Phi ():InverseLinkFunc ("phi", "probit")
 {
 }
 
-double Phi::eval (vector <SArray const *> const &args) const
+double Phi::eval (vector<double const *> const &args) const
 {
-  double q = *(args[0]->value ());
+  double q = *args[0];
   if (!R_FINITE (q)) {
     return q > 0 ? 1 : 0;
   }
-  double p = pnorm5 (q, 0, 1, 0, 0);
+  double p = pnorm5(q, 0, 1, 0, 0);
   if (p == 0)
     return DBL_EPSILON;
   else if (p == 1)

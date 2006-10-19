@@ -1,6 +1,5 @@
 #include <config.h>
 #include <sarray/util.h>
-#include <sarray/SArray.h>
 #include "Rank.h"
 
 #include <algorithm>
@@ -17,27 +16,23 @@ Rank::Rank ()
 {
 }
 
-void Rank::evaluate (SArray & value, vector <SArray const *> const &args) const
+void Rank::evaluate(double *value, vector<double const *> const &args,
+                    vector<vector<unsigned int> > const &dims) const
 {
-  double const *arg = args[0]->value ();
-  long len = args[0]->length ();
+  long len = product(dims[0]);
 
   //Create a vector of pointers to the elements of arg and sort it
   double const **argptrs = new double const *[len];
   for (long i = 0; i < len; ++i) {
-    argptrs[i] = arg + i;
+    argptrs[i] = args[0] + i;
   }
   stable_sort(argptrs, argptrs + len, lt_doubleptr);
 
   //Ranks can be inferred from the sorted vector of pointers
-  double *ranks = new double[len];
   for (long i = 0; i < len; ++i) {
-    ranks[argptrs[i] - arg] = i + 1;
+    value[argptrs[i] - args[0]] = i + 1;
   }
   delete [] argptrs;
-  
-  value.setValue(ranks, len);
-  delete [] ranks;
 }
 
 vector<unsigned int>  Rank::dim (vector <vector<unsigned int> > const &dims) const

@@ -1,13 +1,14 @@
 #ifndef NODE_H_
 #define NODE_H_
 
+#include <sarray/Range.h>
+
 #include <set>
 #include <vector>
 #include <string>
 
 class NodeNameTab;
 class RNG;
-class SArray;
 
 /**
  * Abstract base class for nodes in a directed graphical model.
@@ -35,7 +36,11 @@ class Node {
   Node(Node const &orig);
   Node &operator=(Node const &rhs);
 protected:
-  const std::vector<SArray*> _data;
+  const std::vector<unsigned int> _dim;
+  const unsigned int _length;
+  const unsigned int _nchain;
+  double *_data;
+  
 public:
   /**
    * Constucts a Node with no parents.
@@ -53,8 +58,7 @@ public:
    * @ param parents vector of parent nodes. A node may not be its own
    * parent.
    */
-  Node(std::vector<unsigned int> const &dim,
-       std::vector<Node*> const &parents);
+  Node(std::vector<unsigned int> const &dim, std::vector<Node*> const &parents);
   /**
    * Destructor. 
    */
@@ -72,10 +76,6 @@ public:
    * Shows the current reference count.
    */
   unsigned int refCount() const;
-  /**
-   * Numerical value of the node for a given chain.
-   */
-  SArray const *data(unsigned int chain) const;
   /**
    * Number of chains.
    */ 
@@ -125,16 +125,9 @@ public:
    */
   virtual bool isVariable() const = 0;
   /**
-   * Dimension of the node
+   * Range of indices of the node
    */
-  std::vector<unsigned int> const &dim(bool drop) const;
-  /**
-   * Length of the node, which is the length of its data value
-   * for any chain.
-   *
-   * @see SArray##length
-   */
-  unsigned int length() const;
+  Range const &range() const;
   /**
    * Sets the value of the node, in all chains, to "value", and marks
    * the node as "observed". This function can only be called once for
@@ -173,6 +166,8 @@ public:
    * @see Node##data
    */
   double const *value(unsigned int chain) const;
+  std::vector<unsigned int> const &dim() const;
+  unsigned int length() const;
 };
 
 /**

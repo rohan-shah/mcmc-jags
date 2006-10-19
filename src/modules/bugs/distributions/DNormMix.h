@@ -1,7 +1,7 @@
 #ifndef DNORM_MIX_H_
 #define DNORM_MIX_H_
 
-#include <distribution/DistReal.h>
+#include <distribution/Distribution.h>
 
 /**
  * <pre>
@@ -9,20 +9,36 @@
  * </pre>
  * @short Mixture of normal distribution
  */
-class DNormMix : public DistReal {
+class DNormMix : public Distribution {
  public:
-  DNormMix();
-  ~DNormMix();
+    DNormMix();
 
-  double d(double x, std::vector<SArray const *> const &parameters, bool give_log) const;
-  double p(double q, std::vector<SArray const *> const &parameters, bool lower,
-	   bool give_log) const;
-  double q(double p, std::vector<SArray const *> const &parameters, bool lower,
-	   bool log_p) const;
-  double r(std::vector<SArray const *> const &parameters, RNG *rng) const;
-  bool checkParameterDim(std::vector<std::vector<unsigned int> > const &dims) const;
-  bool checkParameterValue(std::vector<SArray const *> const &parameters) const;
-  void typicalValue(SArray&, std::vector<SArray const *> const &par) const;
+    double logLikelihood(double const *x, unsigned int length,
+			 std::vector<double const *> const &parameters,
+			 std::vector<std::vector<unsigned int> > const &dims)
+	const;
+    void randomSample(double *x, unsigned int length,
+		      std::vector<double const *> const &parameters,
+		      std::vector<std::vector<unsigned int> > const &dims,
+		      RNG *rng) const;
+    std::vector<unsigned int> 
+	dim(std::vector<std::vector<unsigned int> > const &dims) const;
+    void support(double *lower, double *upper, unsigned int length,
+		 std::vector<double const *> const &parameters,
+		 std::vector<std::vector<unsigned int> > const &dims) const;
+    void typicalValue(double *x, unsigned int length,
+		      std::vector<double const *> const &parameters,
+		      std::vector<std::vector<unsigned int> > 
+		      const &dims) const;
+    bool isSupportFixed(std::vector<bool> const &fixmask) const;
+    bool checkParameterDim(std::vector<std::vector<unsigned int> > const &dims)
+	const;
+    bool checkParameterValue(std::vector<double const *> const &parameters,
+			     std::vector<std::vector<unsigned int> > 
+			     const &dims) const;
+    void typicalValue(double *x, std::vector<double const *> const &par,
+		      std::vector<std::vector<unsigned int> > const &dims) 
+	const;
 };
 
 #endif /* DNORM_MIX_H_ */

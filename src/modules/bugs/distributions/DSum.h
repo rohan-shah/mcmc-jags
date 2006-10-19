@@ -1,34 +1,28 @@
 #ifndef DSUM_H_
 #define DSUM_H_
 
-#include <distribution/Distribution.h>
+#include <distribution/DistScalar.h>
 
 /**
  * @short Sum of two discrete random variables
  */
-class DSum : public Distribution {
- public:
-  DSum();
-  ~DSum();
-  
-  double logLikelihood (SArray const & x, 
-		        std::vector<SArray const *> const &parameters) const;
-  void randomSample (SArray &x, std::vector<SArray const *> const &parameters,
-		     RNG *rng)
-    const;
-  bool checkParameterDim (std::vector<std::vector<unsigned int> > const &dims) const;
-  bool checkParameterDiscrete (std::vector<bool> const &mask) const;
-  bool checkParameterValue(std::vector<SArray const *> const &parameters) 
-    const;
-  std::vector<unsigned int> dim(std::vector<std::vector<unsigned int> > const &dims) const;
-  unsigned int df(std::vector<SArray const *> const &parameters) const;
-  double lowerSupport(unsigned int i,
-		      std::vector<SArray const *> const &parameters) const;
-  double upperSupport(unsigned int i,
-		      std::vector<SArray const *> const &parameters) const;
-  void typicalValue(SArray &x, std::vector<SArray const *> const &parameters)
-    const;
-  bool isSupportFixed(std::vector<bool> const &fixmask) const;
+class DSum : public DistScalar {
+public:
+    DSum();
+
+    double logLikelihood(double x, 
+			 std::vector<double const *> const &parameters) const;
+    double randomSample(std::vector<double const *> const &parameters,
+			RNG *rng) const;
+    bool checkParameterDiscrete (std::vector<bool> const &mask) const;
+    bool checkParameterValue(std::vector<double const *> const &parameters,
+			     std::vector<std::vector<unsigned int> > const &dims)
+	const;
+    double l(std::vector<double const *> const &parameters) const;
+    double u(std::vector<double const *> const &parameters) const;
+    double typicalValue(std::vector<double const *> const &parameters) const;
+    bool isSupportFixed(std::vector<bool> const &fixmask) const;
+    bool isDeterministic() const;
 };
 
 #endif /* DSUM_H_ */

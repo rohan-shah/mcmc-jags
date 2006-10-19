@@ -50,10 +50,10 @@ Module::~Module()
     }
 }
 
-void Module::insert(InverseLinkFunc * func)
+void Module::insert(InverseLinkFunc *lfunc)
 {
-    _functions.push_back(func);
-    Compiler::funcTab().insert(func);
+    _link_functions.push_back(lfunc);
+    Compiler::funcTab().insert(lfunc);
 }
 
 void Module::insert(Function *func)

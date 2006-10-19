@@ -24,7 +24,7 @@ static vector<unsigned int> mkDim(Function const *func, vector<Node*> const &par
 
   vector<vector<unsigned int> > parameter_dims(parents.size());
   for (unsigned int j = 0; j < parents.size(); ++j) {
-    parameter_dims[j] = parents[j]->dim(true);
+    parameter_dims[j] = parents[j]->dim();
   }
   if (!func->checkParameterLength(parameter_dims.size())) {
     //FIXME: logic_error or runtime_error?
@@ -37,7 +37,8 @@ static vector<unsigned int> mkDim(Function const *func, vector<Node*> const &par
   }
   return func->dim(parameter_dims);
 }
-  
+
+
 LogicalNode::LogicalNode(Function const *function, 
 			 vector<Node*> const &parameters)
   : DeterministicNode(mkDim(function,parameters), parameters),
@@ -45,20 +46,26 @@ LogicalNode::LogicalNode(Function const *function,
     _parameters(nchain())
 {
   
-  for (unsigned int n = 0; n < nchain(); ++n) {
-    _parameters[n].reserve(parameters.size());
-    for (unsigned long j = 0; j < parameters.size(); ++j) {
-      _parameters[n].push_back(parameters[j]->data(n));
+    _dims.reserve(parameters.size());
+    for (unsigned int j = 0; j < parameters.size(); ++j) {
+	_dims.push_back(parameters[j]->dim());
     }
-  }
 
-  vector<bool> mask(parameters.size());
-  for (unsigned long j = 0; j < parameters.size(); ++j) {
-    mask[j] = parameters[j]->isDiscreteValued();
-  }
-  if (_func->isDiscreteValued(mask)) {
-     setDiscreteValued();
-  }
+    for (unsigned int n = 0; n < nchain(); ++n) {
+	_parameters[n].reserve(parameters.size());
+	for (unsigned long j = 0; j < parameters.size(); ++j) {
+	    _parameters[n].push_back(parameters[j]->value(n));
+	}
+	
+    }
+
+    vector<bool> mask(parameters.size());
+    for (unsigned long j = 0; j < parameters.size(); ++j) {
+	mask[j] = parameters[j]->isDiscreteValued();
+    }
+    if (_func->isDiscreteValued(mask)) {
+	setDiscreteValued();
+    }
 }
 
 LogicalNode::~LogicalNode()
@@ -106,6 +113,7 @@ string LogicalNode::name(NodeNameTab const &name_table) const
   return name;
 }
 
+/*
 vector<SArray const *> const &LogicalNode::parameters(unsigned int chain) const
 {
   return _parameters[chain];
@@ -115,13 +123,14 @@ Function const* LogicalNode::function() const
 {
   return _func;
 }
+*/
 
 void LogicalNode::deterministicSample(unsigned int chain)
 {
-  if (!_func->checkParameterValue(_parameters[chain])) {
+  if (!_func->checkParameterValue(_parameters[chain], _dims)) {
     throw NodeError(this, "Invalid parameter values for LogicalNode");
   }
-  _func->evaluate(*_data[chain], _parameters[chain]);
+  _func->evaluate(_data + chain * _length, _parameters[chain], _dims);
 }
 
 LogicalNode const *asLogical(Node const *node)

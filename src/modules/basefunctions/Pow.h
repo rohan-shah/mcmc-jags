@@ -14,9 +14,9 @@
 class Pow : public ScalarFunc
 {
 public:
-  Pow ();
-  double eval (std::vector <SArray const *> const &args) const;
-  bool checkParameterValue (std::vector <SArray const *> const &args) const;
+    Pow ();
+    double eval(std::vector<double const *> const &args) const;
+    bool checkParameterValue(std::vector<double const*> const &args) const;
 };
 
 #endif /* FUNC_POW_H_ */

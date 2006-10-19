@@ -12,12 +12,14 @@
 class Inverse:public Function
 {
 public:
-  Inverse ();
-
-  void evaluate (SArray & value,
-		 std::vector <SArray const *> const &args) const;
-  std::vector<unsigned int> dim (std::vector<std::vector<unsigned int> > const &args) const;
-  bool checkParameterDim (std::vector<std::vector<unsigned int> > const &dims) const;
+    Inverse ();
+    void evaluate (double *value,
+		   std::vector <double const *> const &args,
+		   std::vector<std::vector<unsigned int> > const &dims) const;
+    std::vector<unsigned int> 
+	dim(std::vector<std::vector<unsigned int> > const &args) const;
+    bool checkParameterDim(std::vector<std::vector<unsigned int> > const &dims)
+	const;
 };
 
 #endif /* INVERSE_H_ */

@@ -12,18 +12,33 @@ ScalarFunc::ScalarFunc (string const &name, unsigned int npar)
 }
 
 void
-ScalarFunc::evaluate (SArray & value, vector <SArray const *> const &args)
-  const
+ScalarFunc::evaluate (double *value, vector<double const *> const &args,
+                      vector<vector<unsigned int> > const &dims) const
 {
-  value.setValue(eval(args), 0);
+  *value = eval(args);
 }
 
-vector<unsigned int> ScalarFunc::dim (vector <vector<unsigned int> > const &args) const
+vector<unsigned int> 
+ScalarFunc::dim(vector<vector<unsigned int> > const &args) const
 {
   return vector<unsigned int>(1,1);
 }
 
-bool ScalarFunc::checkParameterDim (vector <vector<unsigned int> > const &dims) const
+bool
+ScalarFunc::checkParameterDim(vector<vector<unsigned int> > const &dims) const
 {
   return count_if(dims.begin(), dims.end(), isScalar) == dims.size();
+}
+
+bool 
+ScalarFunc::checkParameterValue(vector<double const *> const &args,
+				vector<vector<unsigned int> > const &dims)
+    const
+{
+    return checkParameterValue(args);
+}
+
+bool ScalarFunc::checkParameterValue(vector<double const *> const &args) const
+{
+    return true;
 }

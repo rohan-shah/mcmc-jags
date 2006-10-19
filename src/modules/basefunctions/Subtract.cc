@@ -1,5 +1,4 @@
 #include <config.h>
-#include <sarray/SArray.h>
 #include <sarray/util.h>
 #include "Subtract.h"
 
@@ -14,11 +13,9 @@ Subtract::Subtract ()
 }
 
 double
-Subtract::eval (vector <SArray const *> const &args) const
+Subtract::eval(vector<double const *> const &args) const
 {
-  double val1 = *(args[0]->value ());
-  double val2 = *(args[1]->value ());
-  return val1 - val2;
+    return *args[0] - *args[1];
 }
 
 bool Subtract::isDiscreteValued(vector<bool> const &mask) const

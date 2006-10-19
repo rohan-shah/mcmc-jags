@@ -1,7 +1,6 @@
 #include <config.h>
 #include <rng/RNG.h>
 #include <sarray/util.h>
-#include <sarray/SArray.h>
 #include "DMulti.h"
 
 #include <stdexcept>
@@ -13,26 +12,11 @@ using std::vector;
 using std::length_error;
 using std::logic_error;
 
-static inline double const *PROB(vector<SArray const *> const &parameters)
-{
-    return parameters[0]->value();
-}
-
-static inline unsigned int LENGTH(vector<SArray const *> const &parameters)
-{
-    return parameters[0]->length();
-}
-
-static inline double SIZE(vector<SArray const *> const &parameters) 
-{
-    return *parameters[1]->value();
-}
+#define PROB(par) (par[0])
+#define SIZE(par) (*par[1])
 
 DMulti::DMulti()
   : Distribution("dmulti", 2, false, true) 
-{}
-
-DMulti::~DMulti()
 {}
 
 bool DMulti::checkParameterDim(vector<vector<unsigned int> > const &dims) const
@@ -46,142 +30,113 @@ bool DMulti::checkParameterDiscrete(vector<bool> const &mask) const
     return mask[1]; //SIZE is discrete-valued
 }
 
-bool DMulti::checkParameterValue(vector<SArray const *> const &par) const
+bool 
+DMulti::checkParameterValue(vector<double const *> const &par,
+			    vector<vector<unsigned int> > const &dims) const
 {
-    double const *prob = PROB(par);
-    unsigned int length = LENGTH(par);
-  
     if (SIZE(par) < 1)
 	return false;
 
     double sump = 0.0;
+    double const *prob = PROB(par);
+    unsigned int length = product(dims[0]);
     for (unsigned int i = 0; i < length; i++) {
 	if (prob[i] < 0 || prob[i] > 1)
 	    return false;
 	sump += prob[i];
     }
-    if (fabs(sump - 1.0) > 1.0E-6)
+    if (fabs(sump - 1.0) > 16 * DBL_EPSILON)
 	return false;
 
     return true;
 }
 
-double DMulti::logLikelihood(SArray const &x,
-			     vector<SArray const *> const &par) const
+double DMulti::logLikelihood(double const *x, unsigned int length,
+			     vector<double const *> const &par,
+			     vector<vector<unsigned int> > const &dims) const
 {
-    double const *y = x.value();
     double const *prob = PROB(par);
-    unsigned int length = LENGTH(par);
 
     double loglik = 0.0;
-    double ysum = 0.0;
+    double xsum = 0.0;
     for (unsigned int i = 0; i < length; i++) {
 	if (prob[i] == 0) {
-	    if (y[i] != 0)
+	    if (x[i] != 0)
 		return -DBL_MAX;
 	}
-	else if (y[i] != 0) {
-	     loglik += y[i] * log(prob[i]) - lgamma(y[i] + 1);
-	     ysum += y[i];
+	else if (x[i] != 0) {
+	     loglik += x[i] * log(prob[i]) - lgamma(x[i] + 1);
+	     xsum += x[i];
 	}
     }
-    loglik += lgamma(ysum + 1);
+    loglik += lgamma(xsum + 1);
 
     return loglik;
 }
 
-void DMulti::randomSample(SArray &x, vector<SArray const *> const &par,
+void DMulti::randomSample(double *x, unsigned int length,
+			  vector<double const *> const &par,
+			  vector<vector<unsigned int> > const &dims,
 			  RNG *rng) const
 {
-    unsigned int length = LENGTH(par);
-
     /* Sample multinomial as a series of binomial distributions */
-    double *y = new double[length];
     double N = SIZE(par);
     double sump = 1.0;
     double const *prob = PROB(par);
     for (unsigned int i = 0; i < length - 1; i++) {
 	if (N == 0) {
-	    y[i] = 0;
+	    x[i] = 0;
 	}
 	else {
-	    y[i] = rbinom(N, prob[i]/sump, rng);
-	    N -= y[i];
+	    x[i] = rbinom(N, prob[i]/sump, rng);
+	    N -= x[i];
 	    sump -= prob[i];
 	}
     }
-    y[length - 1] = N;
-    x.setValue(y, length);
-    delete [] y;
+    x[length - 1] = N;
 }
 
-unsigned int DMulti::df(vector<SArray const *> const &par) const
+void DMulti::support(double *lower, double *upper, unsigned int length,
+	     vector<double const *> const &par,
+	     vector<vector<unsigned int> > const &dims) const
 {
-    unsigned int length = LENGTH(par);
-    double const *prob = PROB(par);
-    //FIXME: Should we allow structural zeros only for fixed p, as in DDirch?
-    unsigned int df = length - 1;
     for (unsigned int i = 0; i < length; ++i) {
-	if (df == 0) {
-	    throw logic_error("Bad degrees of freedom in DMulti");
-	}
-	else {
-	    df -= (prob[i] == 0);
-	}
+	lower[i] = 0;
+        if (PROB(par)[i] == 0) 
+           upper[i] = 0;
+        else
+	   upper[i] = SIZE(par);
     }
-    return df;
 }
 
-double 
-DMulti::lowerSupport(unsigned int i,
-		     vector<SArray const *> const &par) const
-{
-    if (i >= LENGTH(par))
-	throw logic_error("Invalid index in DMulti::lowerSupport");
-    
-    return 0.0;
-}
-
-double 
-DMulti::upperSupport(unsigned int i,
-		     vector<SArray const *> const &par) const
-{
-    if (i >= LENGTH(par))
-	throw logic_error("Invalid index in DMulti::upperSupport");
-    
-    return SIZE(par);
-}
-
-vector<unsigned int> DMulti::dim(vector<vector<unsigned int> > const &dims) const
+vector<unsigned int> 
+DMulti::dim(vector<vector<unsigned int> > const &dims) const
 {
     return dims[0];
 }
 
 
-void DMulti::typicalValue(SArray &x, vector<SArray const *> const &par) const
+void DMulti::typicalValue(double *x, unsigned int length,
+			  vector<double const *> const &par,
+			  vector<vector<unsigned int> > const &dims) const
 {
-  /* Draw a typical value in the same way as a random sample, but
-     substituting the median at each stage */
+    /* Draw a typical value in the same way as a random sample, but
+       substituting the median at each stage */
 
-  unsigned int length = LENGTH(par);
-
-  double *y = new double[length];
-  double N = SIZE(par);
-  double sump = 1.0;
-  double const *prob = PROB(par);
-  for (unsigned int i = 0; i < length - 1; i++) {
-    if (N == 0) {
-      y[i] = 0;
+    double N = SIZE(par);
+    double sump = 1.0;
+    double const *prob = PROB(par);
+    for (unsigned int i = 0; i < length - 1; i++) {
+	if (N == 0) {
+	    x[i] = 0;
+	}
+	else {
+	    x[i] = qbinom(0.5, N, prob[i]/sump, true, false);
+	    N -= x[i];
+	    sump -= prob[i];
+	}
     }
-    else {
-      y[i] = qbinom(0.5, N, prob[i]/sump, true, false);
-      N -= y[i];
-      sump -= prob[i];
-    }
-  }
-  y[length - 1] = N;
-  x.setValue(y, length);
-  delete [] y;
+    x[length - 1] = N;
 }
 
 bool DMulti::isSupportFixed(std::vector<bool> const &fixmask) const

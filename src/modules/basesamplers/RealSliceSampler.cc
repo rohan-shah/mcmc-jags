@@ -46,16 +46,11 @@ void RealSliceSampler::setValue(double value)
     }
 }
 
-double RealSliceSampler::lowerLimit()
+void RealSliceSampler::getLimits(double *lower, double *upper)
 {
-  StochasticNode const *node = nodes().front();
-  return node->distribution()->lowerSupport(0, node->parameters(chain()));
-}
-
-double RealSliceSampler::upperLimit()
-{
-  StochasticNode const *node = nodes().front();
-  return node->distribution()->upperSupport(0, node->parameters(chain()));
+  StochasticNode const *snode = nodes().front();
+  snode->distribution()->support(lower, upper, 1, snode->parameters(chain()),
+                                      snode->parameterDims());
 }
 
 void RealSliceSampler::update(RNG *rng)

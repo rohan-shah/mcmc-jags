@@ -31,7 +31,7 @@ static vector<Node*> mkParents(vector<Node *> const &index,
 
 MixtureNode::MixtureNode(vector<Node *> const &index,
 			 vector<pair<vector<int>, Node *> > const &parameters)
-  : DeterministicNode(parameters[0].second->dim(true),
+  : DeterministicNode(parameters[0].second->dim(),
 		      mkParents(index, parameters)),
 		      _Nindex(index.size())
 {
@@ -44,21 +44,23 @@ MixtureNode::MixtureNode(vector<Node *> const &index,
     }
 
   unsigned int ndim = parameters.size();
-  vector<unsigned int> const &default_dim = dim(false);
   for (unsigned int i = 0; i < ndim; ++i) {
     Node *node = parameters[i].second;
     if (!node) {
       throw invalid_argument("Null parameter in MixtureNode");
     }
-    //_map[parameters[i].first] = node;
+    if (parameters[i].first.size() != _Nindex) {
+      throw invalid_argument("Invalid index in MixtureNode");
+    }
     _map.insert(parameters[i]);
   }
   
   bool isdiscrete = true;
+  vector<unsigned int> const &default_dim = dim();
   for (unsigned int i = 0; i < ndim; ++i) {
     Node *node = parameters[i].second;
-    if (node->dim(true) != default_dim) {
-      throw invalid_argument("Dimension mismatch for MixtureNode parameters");
+    if (node->dim() != default_dim) {
+      throw invalid_argument("Range mismatch for MixtureNode parameters");
     }
     if (!node->isDiscreteValued()) {
       isdiscrete = false;
@@ -76,9 +78,9 @@ MixtureNode::~MixtureNode()
 void MixtureNode::deterministicSample(unsigned int chain)
 {
     vector<int> i(_Nindex);
-    vector <Node*> const &parents = this->parents();
+    vector <Node*> const &par = parents();
     for (unsigned int j = 0; j < _Nindex; ++j) {
-	i[j] = static_cast<int>(parents[j]->value(chain)[0]);
+	i[j] = static_cast<int>(*par[j]->value(chain));
     }
     map<vector<int>,Node*>::iterator p = _map.find(i);
     if (p != _map.end()) {

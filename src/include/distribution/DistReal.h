@@ -1,14 +1,14 @@
 #ifndef DIST_REAL_H_
 #define DIST_REAL_H_
 
-#include <distribution/DistScalar.h>
+#include <distribution/DistScalarRmath.h>
 
 /**
  * Base class for real-valued distributions.
  *
  * @short Real-valued distributions
  */
-class DistReal : public DistScalar
+class DistReal : public DistScalarRmath
 {
 public:
     /**
@@ -25,10 +25,10 @@ public:
      */
     DistReal(std::string const &name, unsigned int npar,
 	     Support support, bool boundable);
-    double logLikelihood(SArray const &x,
-			 std::vector<SArray const *> const &parameters) const;
-    void randomSample(SArray &x, std::vector<SArray const *> const &parameters,
-		      RNG *rng) const;
+    double logLikelihood(double x,
+			 std::vector<double const *> const &parameters) const;
+    double randomSample(std::vector<double const *> const &parameters,
+			RNG *rng) const;
 };
 
 #endif /* DIST_REAL_H_ */

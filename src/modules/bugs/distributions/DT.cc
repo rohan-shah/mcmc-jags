@@ -1,5 +1,4 @@
 #include <config.h>
-#include <sarray/SArray.h>
 #include "DT.h"
 
 #include <cmath>
@@ -8,35 +7,20 @@
 
 using std::vector;
 
-// Mean
-static inline double MU (vector<SArray const *> const &par)
-{
-    return *par[0]->value();
-}
-// Precision
-static inline double TAU (vector<SArray const *> const &par)
-{
-    return *par[1]->value();
-}
-// Degrees of freedom 
-static inline double DF (vector<SArray const *> const &par)
-{
-    return *par[2]->value();
-}
+#define MU(par) (*par[0])
+#define TAU(par) (*par[1])
+#define DF(par) (*par[2])
 
 DT::DT()
-  : DistReal("dt", 3, DIST_UNBOUNDED, true)
+    : DistScalarRmath("dt", 3, DIST_UNBOUNDED, true, false)
 {}
 
-DT::~DT()
-{}
-
-bool DT::checkParameterValue (vector<SArray const *> const &par) const
+bool DT::checkParameterValue (vector<double const *> const &par) const
 {
     return (TAU(par) > 0 && DF(par) > 0);
 }
 
-double DT::d(double x, vector<SArray const *> const &par, bool give_log) const
+double DT::d(double x, vector<double const *> const &par, bool give_log) const
 {
     x = (x - MU(par)) * sqrt(TAU(par));
     if (give_log) {
@@ -47,19 +31,19 @@ double DT::d(double x, vector<SArray const *> const &par, bool give_log) const
     }
 }
 
-double DT::p(double x, vector<SArray const *> const &par, bool lower, 
+double DT::p(double x, vector<double const *> const &par, bool lower, 
 	     bool use_log) const
 {
     return pt((x - MU(par)) * sqrt(TAU(par)), DF(par), lower, use_log);
 }
 
-double DT::q(double p, vector<SArray const *> const &par, bool lower, 
+double DT::q(double p, vector<double const *> const &par, bool lower, 
 	     bool log_p) const
 {
     return MU(par) + qt(p, DF(par), lower, log_p) / sqrt(TAU(par));
 }
 
-double DT::r(vector<SArray const *> const &par, RNG *rng) const
+double DT::r(vector<double const *> const &par, RNG *rng) const
 {
     return rt(DF(par), rng) / sqrt(TAU(par)) + MU(par);
 }

@@ -189,15 +189,6 @@ static Node* getMixtureNode1(NodeArray *array, vector<SSI> const &limits, Compil
 	cansimplify = false;
 	break;
       }
-    if (dynamic_cast<DistScalar const *>(snode->distribution()) == 0)
-      {
-	/* We need to be able to downcast the distribution to DistScalar
-	   in order to access the "l" and "u" member functions 
-	   FIXME: We can get round this now 
-	*/
-	cansimplify = false;
-	break;
-      }
   }
   if (!cansimplify) {
     return 0; 
@@ -208,7 +199,6 @@ static Node* getMixtureNode1(NodeArray *array, vector<SSI> const &limits, Compil
   for (unsigned int i = 0; i < nparents; ++i) {
     StochasticNode const *snode = stoch_parents[i];
     Distribution const *dist = snode->distribution();
-    DistScalar const *dscalar = dynamic_cast<DistScalar const *>(dist);
 
     /* Check that support of node is fixed */
     vector<bool> fixmask;
@@ -223,8 +213,8 @@ static Node* getMixtureNode1(NodeArray *array, vector<SSI> const &limits, Compil
     /* To be safe, we cycle over all chains */
     for (unsigned int n = 0; n < snode->nchain(); ++n) {
 	// Get lower and upper limits of support
-	double l = dscalar->l(snode->parameters(n));
-	double u = dscalar->u(snode->parameters(n));
+	double l = -DBL_MAX, u = DBL_MAX;
+	dist->support(&l, &u, 1, snode->parameters(n), snode->parameterDims());
 	if (l == -DBL_MAX || u == DBL_MAX) {
 	    return 0; //Unbounded parent => serious trouble
 	}

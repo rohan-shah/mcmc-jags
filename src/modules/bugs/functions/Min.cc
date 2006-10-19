@@ -1,5 +1,5 @@
 #include <config.h>
-#include <sarray/SArray.h>
+#include <sarray/util.h>
 #include "Min.h"
 
 #include <algorithm>
@@ -9,17 +9,17 @@ using std::min;
 using std::vector;
 
 Min::Min ()
-  : ScalarFunc ("min", 0)
+  : Function ("min", 0)
 {
 }
 
-double Min::eval (vector <SArray const *> const &args) const
+void Min::evaluate(double *value,  vector<double const *> const &args,
+                     vector<vector<unsigned int> > const &dims) const
 {
   double ans;
   for (unsigned int i = 0; i < args.size(); ++i) {
-    double const *argi = args[i]->value ();
-    long len = args[i]->length ();
-    double mini = *min_element(argi, argi + len);
+    unsigned int len = product(dims[i]);
+    double mini = *min_element(args[i], args[i] + len);
     if (i == 0) {
       ans = mini;
     }
@@ -27,10 +27,9 @@ double Min::eval (vector <SArray const *> const &args) const
       ans = min(ans, mini);
     }
   }
-  return ans;
+  *value = ans;
 }
 
-// Overriding ScalarFunc::checkParameterDim
 bool Min::checkParameterDim (vector<vector<unsigned int> > const &dims) const
 {
   return true;
@@ -38,5 +37,6 @@ bool Min::checkParameterDim (vector<vector<unsigned int> > const &dims) const
 
 bool Min::isDiscreteValued(vector<bool> const &mask) const
 {
-    return count(mask.begin(), mask.end(), false) == 0;
+    return allTrue(mask);
 }
+

@@ -1,5 +1,4 @@
 #include <config.h>
-#include <sarray/SArray.h>
 #include "Pow.h"
 
 #include <cmath>
@@ -14,21 +13,19 @@ Pow::Pow ()
 {
 }
 
-double Pow::eval (vector <SArray const *> const &args) const
+double Pow::eval(vector<double const *> const &args) const
 {
-  double arg1 = *(args[0]->value ());
-  double arg2 = *(args[1]->value ());
-  return pow (arg1, arg2);
+    return pow (*args[0], *args[1]);
 }
 
-bool Pow::checkParameterValue (vector <SArray const *> const &args) const
+bool Pow::checkParameterValue(vector<double const *> const &args) const
 {
-  if (*(args[0]->value()) >= 0) {
-    return true;
-  }
-  else {
-    double arg2 = *(args[1]->value ());
-    int iarg2 = static_cast<int>(arg2 + DBL_EPSILON);
-    return fabs(arg2 - iarg2) < DBL_EPSILON;
-  }
+    if (*args[0] >= 0) {
+	return true;
+    }
+    else {
+	double arg2 = *args[1];
+	int iarg2 = static_cast<int>(arg2 + DBL_EPSILON);
+	return fabs(arg2 - iarg2) < DBL_EPSILON;
+    }
 }

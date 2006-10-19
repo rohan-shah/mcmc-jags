@@ -52,7 +52,7 @@ void NodeArray::insert(Node *node, Range const &target_range)
     throw logic_error(string("Attempt to insert NULL node at ") + name() +
 		      print(target_range));
   }
-  if (node->dim(true) != target_range.dim(true)) {
+  if (node->dim() != target_range.dim(true)) {
     throw runtime_error(string("Cannot insert node into ") + name() + 
 			print(target_range) + ". Dimension mismatch");
   }
@@ -89,7 +89,7 @@ Node *NodeArray::find(Range const &target_range) const
   if (!node)
     return 0;
 
-  if (node->dim(true) != target_range.dim(true))
+  if (node->dim() != target_range.dim(true))
     return 0;
 
   RangeIterator j(target_range);
@@ -126,7 +126,11 @@ Node *NodeArray::getSubset(Range const &target_range)
     nodes.push_back(_node_pointers[offset]);
     offsets.push_back(_offsets[offset]);
   }
-  node = new AggNode(target_range.dim(false), nodes, offsets);
+  //node = new AggNode(target_range.dim(false), nodes, offsets);
+  /* debuggin
+     Give *dropped* dimensions to new aggregate nodes 
+  */
+  node = new AggNode(target_range.dim(true), nodes, offsets);
   _generated_nodes.insert(std::pair<Range,Node*>(target_range, node));
 //[target_range] = node;
   _graph.add(node);
@@ -380,12 +384,12 @@ Range NodeArray::getRange(Node const *node) const
 	return Range();
     }
 
-    unsigned int m = node->dim(false).size();
+    unsigned int m = node->dim().size();
     vector<unsigned int> ind(m, 1);
-    if (findActiveIndices(ind, 0, lower, node->dim(false))) {
+    if (findActiveIndices(ind, 0, lower, node->dim())) {
 	vector<int> upper = lower;
 	for (unsigned int l = 0; l < m; ++l) {
-	    upper[ind[l]] = upper[ind[l]] + node->dim(false)[l] - 1;
+	    upper[ind[l]] = upper[ind[l]] + node->dim()[l] - 1;
 	}
 	return Range(lower, upper);    
     }

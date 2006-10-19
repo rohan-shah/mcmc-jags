@@ -1,5 +1,4 @@
 #include <config.h>
-#include <sarray/SArray.h>
 #include "Logit.h"
 
 #include <cmath>
@@ -11,14 +10,14 @@ Logit::Logit ():ScalarFunc ("logit", 1)
 {
 }
 
-double Logit::eval (vector <SArray const *> const &args) const
+double Logit::eval (vector <double const *> const &args) const
 {
-  double arg = *args[0]->value ();
+  double arg = *args[0];
   return log (arg / (1 - arg));
 }
 
-bool Logit::checkParameterValue (vector <SArray const *> const &args) const
+bool Logit::checkParameterValue (vector <double const *> const &args) const
 {
-  double arg = *args[0]->value ();
+  double arg = *args[0];
   return (arg >= 0 && arg <= 1);
 }

@@ -8,6 +8,7 @@
 #include "DiscreteSliceSampler.h"
 
 #include <cmath>
+#include <cfloat>
 
 using std::floor;
 using std::vector;
@@ -51,16 +52,11 @@ double DiscreteSliceSampler::value()
   return _x;
 }
 
-double DiscreteSliceSampler::lowerLimit()
+void DiscreteSliceSampler::getLimits(double *lower, double *upper)
 {
   StochasticNode const *snode = nodes().front();
-  return snode->distribution()->lowerSupport(0, snode->parameters(chain()));
-}
-
-double DiscreteSliceSampler::upperLimit()
-{
-  StochasticNode const *snode = nodes().front();
-  return snode->distribution()->upperSupport(0, snode->parameters(chain()));
+  snode->distribution()->support(lower, upper, 1, snode->parameters(chain()),
+		  	       snode->parameterDims());
 }
 
 void DiscreteSliceSampler::update(RNG *rng)

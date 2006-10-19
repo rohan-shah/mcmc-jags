@@ -14,9 +14,9 @@
 class CLogLog : public ScalarFunc
 {
 public:
-  CLogLog ();
-  double eval (std::vector <SArray const *> const &args) const;
-  bool checkParameterValue (std::vector <SArray const *> const &args) const;
+    CLogLog ();
+    double eval(std::vector<double const *> const &args) const;
+    bool checkParameterValue (std::vector<double const *> const &args) const;
 };
 
 #endif /* FUNC_CLOGLOG_H_ */

@@ -4,7 +4,6 @@
 #include <vector>
 #include <string>
 
-class SArray;
 struct RNG;
 
 /**
@@ -53,8 +52,10 @@ public:
      * -Inf is returned.
      */
     virtual double 
-	logLikelihood(SArray const & x, 
-		      std::vector<SArray const *> const &parameters) const = 0;
+	logLikelihood(double const *x, unsigned int length,
+		      std::vector<double const *> const &parameters,
+		      std::vector<std::vector<unsigned int> > const  &dims)
+	const = 0;
     /**
      * Draws a random sample from the distribution. 
      *
@@ -69,8 +70,9 @@ public:
      * @exception length_error 
      */
     virtual void 
-	randomSample(SArray &x,
-		     std::vector<SArray const *> const &parameters,
+	randomSample(double *x, unsigned int length,
+		     std::vector<double const *> const &parameters,
+		     std::vector<std::vector<unsigned int> > const  &dims,
 		     RNG *r) const = 0;
     /**
      * Returns a typical value from the distribution.  The meaning of
@@ -86,22 +88,18 @@ public:
      * @exception length_error 
      */
     virtual void 
-	typicalValue(SArray &x, std::vector<SArray const *> const &parameters)
+	typicalValue(double *x, unsigned int length,
+		     std::vector<double const *> const &parameters,
+		     std::vector<std::vector<unsigned int> > const &dims)
 	const = 0;
     /**
-     * The lowest possible value that X[i] can take, conditional on
-     * the parameters.
+     * FIXME
+     * The lower and upper limits on the support of X, given the parameters
      */
-    virtual double 
-	lowerSupport(unsigned int i,
-		     std::vector<SArray const *> const &parameters) const = 0;
-    /**
-     * The highest possible value that X[i] can take, conditional on
-     * the parameters. 
-     */
-    virtual double 
-	upperSupport(unsigned int i,
-		     std::vector<SArray const *> const &parameters) const = 0;
+    virtual void 
+	support(double *lower, double *upper, unsigned int length,
+		std::vector<double const *> const &parameters,
+		std::vector<std::vector<unsigned int> > const &dims) const = 0;
     /**
      * FIXME
      */
@@ -130,8 +128,8 @@ public:
      * This function assumes that checkParameterDim returns true.
      */
     virtual bool 
-	checkParameterValue (std::vector<SArray const *> const &parameters)
-	const = 0;
+	checkParameterValue(std::vector<double const *> const &parameters,
+			    std::vector<std::vector<unsigned int> > const &dims) const;
     /**
      * Calculates what the dimension of the distribution should be,
      * based on the distribution of its parameters.

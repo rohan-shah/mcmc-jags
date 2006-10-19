@@ -1,5 +1,4 @@
 #include <config.h>
-#include <sarray/SArray.h>
 #include "DPar.h"
 
 #include <cmath>
@@ -9,30 +8,20 @@
 
 using std::vector;
 
-static double ALPHA(vector<SArray const *> const &par)
-{
-    return *par[0]->value();
-}
-
-static double C(vector<SArray const *> const &par)
-{
-    return *par[1]->value();
-}
+#define ALPHA(par) (*par[0])
+#define C(par) (*par[1])
 
 DPar::DPar()
-  : DistReal("dpar", 2, DIST_SPECIAL, true)
+    : DistScalarRmath("dpar", 2, DIST_SPECIAL, true, false)
 {}
 
-DPar::~DPar()
-{}
-
-bool DPar::checkParameterValue(vector<SArray const *> const &par) const
+bool DPar::checkParameterValue(vector<double const *> const &par) const
 {
   return (ALPHA(par) > 0 && C(par) > 0);
 }
 
 double 
-DPar::d(double x, vector<SArray const *> const &par, bool give_log) const
+DPar::d(double x, vector<double const *> const &par, bool give_log) const
 {
   double alpha = ALPHA(par);
   double c = C(par);
@@ -47,7 +36,7 @@ DPar::d(double x, vector<SArray const *> const &par, bool give_log) const
 }
 
 double 
-DPar::p(double x, vector<SArray const *> const &par, bool lower, bool give_log)
+DPar::p(double x, vector<double const *> const &par, bool lower, bool give_log)
   const
 {
   double alpha = ALPHA(par);
@@ -66,7 +55,7 @@ DPar::p(double x, vector<SArray const *> const &par, bool lower, bool give_log)
 }
 
 double 
-DPar::q(double p, vector<SArray const *> const &par, bool lower, 
+DPar::q(double p, vector<double const *> const &par, bool lower, 
 	bool log_p) const
 {
     if ((log_p  && p > 0) ||                    
@@ -91,17 +80,17 @@ DPar::q(double p, vector<SArray const *> const &par, bool lower,
     return exp(log(C(par)) - logp/ALPHA(par));
 }
 
-double DPar::r(vector<SArray const *> const &par, RNG *rng) const
+double DPar::r(vector<double const *> const &par, RNG *rng) const
 {
     return exp(log(C(par)) - rexp(1, rng)/ALPHA(par));
 }
 
-double DPar::l(vector<SArray const*> const &par) const
+double DPar::l(vector<double const*> const &par) const
 {
     return C(par);
 }
 
-double DPar::u(vector<SArray const*> const &par) const
+double DPar::u(vector<double const*> const &par) const
 {
   return DBL_MAX;
 }

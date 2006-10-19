@@ -25,8 +25,7 @@ public:
   static bool canSample(StochasticNode const *node, Graph const &graph);
   double value();
   void setValue(double value);
-  double lowerLimit();
-  double upperLimit();
+  void getLimits(double *lower, double *upper);
   void update(RNG *rng);
 };
 

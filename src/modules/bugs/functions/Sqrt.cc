@@ -1,5 +1,4 @@
 #include <config.h>
-#include <sarray/SArray.h>
 #include "Sqrt.h"
 
 #include <cmath>
@@ -11,14 +10,12 @@ Sqrt::Sqrt ():ScalarFunc ("sqrt", 1)
 {
 }
 
-double
-Sqrt::eval (vector <SArray const *> const &args) const
+double Sqrt::eval(vector<double const *> const &args) const
 {
-  return sqrt(args[0]->value()[0]);
+  return sqrt(*args[0]);
 }
 
-bool
-Sqrt::checkParameterValue (vector <SArray const *> const &args) const
+bool Sqrt::checkParameterValue(vector<double const *> const &args) const
 {
-  return *args[0]->value() >= 0;
+  return *args[0] >= 0;
 }

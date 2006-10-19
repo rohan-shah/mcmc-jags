@@ -7,14 +7,16 @@
  * @short Maximum element of a vector
  * @see Min
  */
-class Max: public ScalarFunc
+class Max: public Function
 {
 public:
-  Max ();
-  double eval (std::vector <SArray const *> const &args) const;
-  bool checkParameterDim (std::vector <std::vector<unsigned int> > const &dims) const;
-  /** Returns true if all arguments are true */
-  bool isDiscreteValued(std::vector<bool> const &mask) const;
+    Max ();
+    void evaluate(double *x, std::vector <double const *> const &args,
+		  std::vector<std::vector<unsigned int> > const &dims) const;
+    bool checkParameterDim (std::vector<std::vector<unsigned int> > const &dims)
+	const;
+    /** Returns true if all arguments are true */
+    bool isDiscreteValued(std::vector<bool> const &mask) const;
 };
 
 #endif /* FUNC_MAX_H_ */

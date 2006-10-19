@@ -2,7 +2,6 @@
 #include <lapack.h>
 #include <matrix.h>
 #include <sarray/util.h>
-#include <sarray/SArray.h>
 #include "DMNorm.h"
 
 #include <cmath>
@@ -18,43 +17,36 @@ DMNorm::DMNorm()
   : Distribution("dmnorm", 2, false, false) 
 {}
 
-DMNorm::~DMNorm()
-{}
-
-double DMNorm::logLikelihood(SArray const &x,
-			     vector<SArray const *> const &parameters) const
+double DMNorm::logLikelihood(double const *x, unsigned int m,
+			     vector<double const *> const &parameters,
+			     vector<vector<unsigned int> > const &dims) const
 {
-  double const *y = x.value();
-  int m = parameters[0]->length();
-  double const * mu = parameters[0]->value();
-  double const * T = parameters[1]->value();
+    double const * mu = parameters[0];
+    double const * T = parameters[1];
 
-  double loglik = logdet(T, m)/2;
-  double * delta = new double[m];
-  for (int i = 0; i < m; ++i) {
-    delta[i] = y[i] - mu[i];
-    loglik -= (delta[i] * T[i + i * m] * delta[i])/2;
-    for (int j = 0; j < i; ++j) {
-      loglik -= (delta[i] * T[i + j * m] * delta[j]);
+    double loglik = logdet(T, m)/2;
+    double * delta = new double[m];
+    for (int i = 0; i < m; ++i) {
+	delta[i] = x[i] - mu[i];
+	loglik -= (delta[i] * T[i + i * m] * delta[i])/2;
+	for (int j = 0; j < i; ++j) {
+	    loglik -= (delta[i] * T[i + j * m] * delta[j]);
+	}
     }
-  }
-  delete [] delta;
+    delete [] delta;
 
-  return loglik;
+    return loglik;
 }
 
-void DMNorm::randomSample(SArray &x,
-			  vector<SArray const *> const &parameters,
+void DMNorm::randomSample(double *x, unsigned int length,
+			  vector<double const *> const &parameters,
+			  vector<vector<unsigned int> > const &dims,
 			  RNG *rng) const
 {
-    double const * mu = parameters[0]->value();
-    double const * T = parameters[1]->value();
-    int nrow = parameters[0]->length();
-
-    double *y = new double[nrow];
-    randomsample(y, mu, T, nrow, rng);
-    x.setValue(y, nrow);
-    delete [] y;
+    double const * mu = parameters[0];
+    double const * T = parameters[1];
+    
+    randomsample(x, mu, T, length, rng);
 }
 
 void DMNorm::randomsample(double *x, double const *mu, double const *T,
@@ -113,58 +105,45 @@ bool DMNorm::checkParameterDim(vector<vector<unsigned int> > const &dims) const
 
 vector<unsigned int> DMNorm::dim(vector<vector<unsigned int> > const &dims) const
 {
-  return dims[0];
+    return dims[0];
 }
 
-bool DMNorm::checkParameterValue(vector<SArray const *> const &parameters) const
+bool
+DMNorm::checkParameterValue(vector<double const *> const &parameters,
+			    vector<vector<unsigned int> > const &dims) const
 {
-  unsigned int n = parameters[0]->length();
-
-  double const *T = parameters[1]->value();
-  // Check symmetry
-  for (unsigned int i = 1; i < n; i++) {
-    for (unsigned int j = 0; j < i - 1; j++) {
-      if (fabs(T[i + j*n] - T[j + i*n]) > DBL_EPSILON)
-	return false;
+    unsigned int n = dims[0][0];
+    double const *T = parameters[1];
+    // Check symmetry
+    for (unsigned int i = 1; i < n; i++) {
+	for (unsigned int j = 0; j < i - 1; j++) {
+	    if (fabs(T[i + j*n] - T[j + i*n]) > DBL_EPSILON)
+		return false;
+	}
     }
-  }
-  // Don't bother checking positive definiteness
+    // Don't bother checking positive definiteness
 
-  return true;
+    return true;
 }
 
-unsigned int DMNorm::df(std::vector<SArray const *> const &parameters) const
+
+void DMNorm::support(double *lower, double *upper, unsigned int length,
+		     vector<double const *> const &parameters,
+		     vector<vector<unsigned int> > const &dims) const
 {
-    return parameters[0]->length();
+    for (unsigned int i = 0; i < length; ++i) {
+	lower[i] = -DBL_MAX;
+	upper[i] = DBL_MAX;
+    }
 }
 
-double 
-DMNorm::lowerSupport(unsigned int i,
-		     std::vector<SArray const *> const &parameters) const
+void DMNorm::typicalValue(double *x, unsigned int length,
+			  vector<double const *> const &parameters,
+			  vector<vector<unsigned int> > const &dims) const
 {
-  unsigned int m = parameters[0]->length();
-  if (i >= m)
-    throw logic_error("Invalid index in DMNorm::lowerSupport");
-  
-  return -DBL_MAX;
-}
-
-double 
-DMNorm::upperSupport(unsigned int i,
-		     std::vector<SArray const *> const &parameters) const
-{
-  unsigned int m = parameters[0]->length();
-  if (i >= m)
-    throw logic_error("Invalid index in DMNorm::upperSupport");
-
-  return DBL_MAX;
-}
-
-void 
-DMNorm::typicalValue(SArray &x, std::vector<SArray const *> const &parameters)
-  const
-{
-  x.setValue(parameters[0]->value(), parameters[0]->length());
+    for (unsigned int i = 0; i < length; ++i) {
+	x[i] = parameters[0][i];
+    }
 }
 
 bool DMNorm::isSupportFixed(vector<bool> const &fixmask) const

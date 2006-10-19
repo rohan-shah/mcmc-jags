@@ -1,5 +1,4 @@
 #include <config.h>
-#include <sarray/SArray.h>
 #include <sarray/util.h>
 #include "Neg.h"
 
@@ -14,11 +13,9 @@ Neg::Neg ()
 {
 }
 
-double
-Neg::eval (vector <SArray const*> const &args) const
+double Neg::eval (vector<double const*> const &args) const
 {
-  double arg = *(args[0]->value ());
-  return -arg;
+    return -args[0][0];
 }
 
 bool Neg::isDiscreteValued(vector<bool> const &mask) const

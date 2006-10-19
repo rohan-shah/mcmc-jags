@@ -1,6 +1,5 @@
 #include <config.h>
 #include <function/Function.h>
-#include <sarray/SArray.h>
 
 using std::vector;
 using std::string;
@@ -20,7 +19,9 @@ string const & Function::name () const
   return _name;
 }
 
-bool Function::checkParameterValue (vector <SArray const *> const &args) const
+bool Function::checkParameterValue(vector<double const *> const &args,
+			           vector<vector<unsigned int> > const &dims)
+const
 {
   return true;
 }
@@ -45,4 +46,10 @@ bool Function::isScale(unsigned int index,
 		       vector<bool> const &isfixed) const
 {
     return false;
+}
+
+vector<unsigned int> 
+Function::dim(std::vector <std::vector<unsigned int> > const &dims) const
+{
+    return vector<unsigned int>(1,1);
 }
