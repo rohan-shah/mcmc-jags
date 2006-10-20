@@ -2,8 +2,6 @@
 #include <distribution/Distribution.h>
 //asStochastic
 #include <graph/StochasticNode.h>
-//asDiscrete
-#include <distribution/DistDiscrete.h>
 #include <graph/Graph.h>
 
 #include "DSumFactory.h"

@@ -3,7 +3,7 @@
 //temporarily required
 #include <graph/DeterministicNode.h>
 #include <graph/NodeError.h>
-#include <distribution/DistReal.h>
+#include <distribution/Distribution.h>
 #include "RealSliceSampler.h"
 
 #include <cmath>

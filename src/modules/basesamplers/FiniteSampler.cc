@@ -1,5 +1,5 @@
 #include <config.h>
-#include <distribution/DistDiscrete.h>
+#include <distribution/Distribution.h>
 #include <graph/StochasticNode.h>
 #include <graph/Graph.h>
 #include <rng/RNG.h>

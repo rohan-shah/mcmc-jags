@@ -6,7 +6,6 @@
 
 #include <graph/NodeError.h>
 #include <graph/StochasticNode.h>
-#include <distribution/DistReal.h>
 
 #include <stdexcept>
 #include <vector>

@@ -3,7 +3,7 @@
 //fixme: temporarily needed
 #include <graph/DeterministicNode.h>
 #include <graph/NodeError.h>
-#include <distribution/DistDiscrete.h>
+#include <distribution/Distribution.h>
 
 #include "DiscreteSliceSampler.h"
 
