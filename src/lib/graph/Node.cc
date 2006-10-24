@@ -104,7 +104,7 @@ vector <Node const *> const &Node::parents() const
   return _parents;
 }
 
-set<Node*> const *Node::children() const
+set<Node*> const *Node::children() 
 {
   return _children;
 }

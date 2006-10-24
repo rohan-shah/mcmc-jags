@@ -62,7 +62,7 @@ void Sampler::classifyChildren(vector<StochasticNode *> const &nodes,
   /* Classify children of each node */
   vector<StochasticNode  *>::const_iterator p = nodes.begin();
   for (; p != nodes.end(); ++p) {
-    StochasticNode const *snode = *p;
+    StochasticNode *snode = *p;
     if (!graph.contains(snode)) {
       throw logic_error("Sampled node outside of sampling graph");
     }

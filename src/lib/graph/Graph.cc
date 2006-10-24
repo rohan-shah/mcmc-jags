@@ -90,7 +90,7 @@ bool Graph::isConnected() const
  
   /* Start by taking an arbitrary node */
   set<Node*>::const_iterator i = _nodes.begin();
-  Node const *anode = *i;
+  Node *anode = *i;
 
   /* Mark the node, its parents and ancestors */
   marks.mark(anode, 1);

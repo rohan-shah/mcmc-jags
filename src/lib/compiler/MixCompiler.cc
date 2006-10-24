@@ -55,6 +55,7 @@ struct SSI {
   Node const *node;
   int lower;
   int upper;
+  SSI() : node(0), lower(0), upper(0) {};
 };
 
 
@@ -115,7 +116,7 @@ static void markParents(Node const *node, GraphMarks &marks)
         if (asStochastic(node)) 
 	    marks.mark(node, 2);
     }
-    else if (!marks.mark(node) == 0) {
+    else if (marks.mark(node) == 0) {
 	marks.mark(node, 1);
 	vector<Node const*>::const_iterator p;
 	for (p = node->parents().begin(); p != node->parents().end(); ++p) {
@@ -125,28 +126,35 @@ static void markParents(Node const *node, GraphMarks &marks)
 }
 
 static void classifyParents(vector<Node const *> const &indices, 
-			    GraphMarks &marks,
+			    Graph const &graph,
 			    vector<StochasticNode *> &stoch_nodes,
 			    vector<DeterministicNode *> &dtrm_nodes)
 {
+    GraphMarks marks(graph);
+
     /* Classify parents of each node */
     vector<Node const*>::const_iterator p;
     for (p = indices.begin(); p != indices.end(); ++p) {
 	markParents(*p, marks);
     }
-    Graph sgraph, dgraph;
-    marks.getMarkedNodes(sgraph, 2);
-    marks.getMarkedNodes(dgraph, 1);
-
-    vector<Node*> svector;
-    sgraph.getNodes(svector);
-    for (vector<Node*>::iterator i = svector.begin(); i != svector.end(); 
-	 ++i) 
-    {
-      //FIXME: downcasting non-constant pointer
-      stoch_nodes.push_back(static_cast<StochasticNode*>(*i));
+    
+    Graph dgraph;
+    set<Node *>::const_iterator q;
+    for (q = graph.nodes().begin(); q != graph.nodes().end(); ++q) {
+	switch(marks.mark(*q)) {
+	case 0:
+	    break;
+	case 1:
+	    dgraph.add(*q);
+	    break;
+	case 2:
+	    stoch_nodes.push_back(static_cast<StochasticNode*>(*q));	    
+	    break;
+	default:
+	    break;
+	}
     }
-  
+    /* Get deterministic nodes in forward sampling order */
     vector<Node*> dvector;
     dgraph.getSortedNodes(dvector);
     for (vector<Node*>::iterator i = dvector.begin(); i != dvector.end();
@@ -174,14 +182,13 @@ getMixtureNode1(NodeArray *array, vector<SSI> const &limits, Compiler *compiler)
   }
 
   Graph &compiler_graph = compiler->model().graph();
-  GraphMarks marks(compiler_graph);
 
   /* Find stochastic parents (ancestors) and deterministic ancestors in
      forward sampling order */
   
   vector<StochasticNode*> stoch_parents;
   vector<DeterministicNode*> dtrm_nodes;
-  classifyParents(indices, marks, stoch_parents, dtrm_nodes);
+  classifyParents(indices, compiler_graph, stoch_parents, dtrm_nodes);
 
   /* Test to see if all stochastic parents are discrete, scalar, with
      bounded support. If not we give up. */

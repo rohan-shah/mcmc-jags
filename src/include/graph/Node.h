@@ -87,8 +87,15 @@ public:
   std::vector<Node const *> const &parents() const;
   /** 
    * Set of children.
+   *
+   * This is not a constant member function of the Node class for a 
+   * good reason.  Even if it were a constant function, you could still
+   * access a non-constant pointer to this node by looking among
+   * the children of its parents. To preserve the spirit of const
+   * correctness we forbid access to the children of a Node when we
+   * are given a constant pointer or reference to it.
    */
-  std::set<Node*> const *children() const;
+  std::set<Node*> const *children();
   /**
    * Draws a random sample from the node's prior distribution.
    * @param rng Pointer to random number generator

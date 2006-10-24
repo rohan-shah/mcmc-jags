@@ -32,7 +32,7 @@ class GraphMarks {
   void markParents(Node const *node, int m);
   /** Marks the children of node that are in the graph. The
       graph must contain node */
-  void markChildren(Node const *node, int m);
+  void markChildren(Node *node, int m);
   /** Marks the ancestors of the node in the graph, i.e. every
       node N for which there is a directed path from N to node
       in the graph. The graph must contain node.
@@ -42,9 +42,7 @@ class GraphMarks {
       node N for which there is a directed path from node N
       in the graph. The graph must contain node.
   */
-  void markDescendants(Node const *node, int m);
-  /** Inserts all nodes with mark m into the graph */
-  void getMarkedNodes(Graph &graph, int m);
+  void markDescendants(Node *node, int m);
 };
 
 #endif /* GRAPH_MARKS_H_ */

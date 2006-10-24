@@ -70,7 +70,7 @@ void GraphMarks::markParents(Node const *node, int m)
   }
 }
  
-void GraphMarks::markChildren(Node const *node, int m)
+void GraphMarks::markChildren(Node *node, int m)
 {
 
     if (_marks.find(node) == _marks.end()) {
@@ -89,7 +89,7 @@ void GraphMarks::markChildren(Node const *node, int m)
     }
 }
 
-void GraphMarks::markDescendants(Node const *node, int m)
+void GraphMarks::markDescendants(Node *node, int m)
 {
   /* 
      We need a temporary set of marks in order to keep track of which
@@ -142,14 +142,4 @@ void GraphMarks::markAncestors(Node const *node, int m)
       markAncestors(*i, m);
     }
   }
-}
-
-void GraphMarks::getMarkedNodes(Graph &graph, int m)
-{
-    set<Node*> const &nodes = graph.nodes();
-    for (set<Node*>::const_iterator i = nodes.begin(); i != nodes.end(); ++i) {
-	if (_marks[*i] == m) {
-	    graph.add(*i);
-	}
-    }
 }
