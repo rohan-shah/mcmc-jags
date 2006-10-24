@@ -63,8 +63,8 @@ bool Graph::isClosed() const
        i != _nodes.end(); i++) {
     
     /* Check parents */
-    vector<Node*> const &parents = (*i)->parents();
-    for (vector<Node*>::const_iterator j = parents.begin(); 
+    vector<Node const *> const &parents = (*i)->parents();
+    for (vector<Node const *>::const_iterator j = parents.begin(); 
 	 j != parents.end(); j++) 
       {
 	if (!this->contains(*j)) {
@@ -73,14 +73,13 @@ bool Graph::isClosed() const
       }
 
     /* Check children */
-    set<Node*> const &children = (*i)->children();
-    for (set<Node*>::iterator k = children.begin(); 
-	 k != children.end(); k++) 
-      {
-	if (!this->contains(*k)) {
-	  return false;
+    set<Node*> const *children = (*i)->children();
+    for (set<Node*>::iterator k = children->begin(); k != children->end(); k++)
+	{
+	    if (!this->contains(*k)) {
+		return false;
+	    }
 	}
-      }
   }
   return true;
 }
@@ -204,9 +203,9 @@ bool Graph::hasCycle() const
       {
 	if (marks.mark(*p) == 0) {
 	  bool can_mark = true;
-	  set<Node*> const &children = (*p)->children();
-	  for(set<Node*>::const_iterator c = children.begin();
-	      c != children.end(); ++c) 
+	  set<Node*> const *children = (*p)->children();
+	  for(set<Node*>::const_iterator c = children->begin();
+	      c != children->end(); ++c) 
 	    {
 	      if (marks.mark(*c) == 0) {
 		can_mark = false;
@@ -265,9 +264,9 @@ void Graph::getSortedNodes(vector<Node*> &sortednodes) const
   unsigned int n = _nodes.size();
   for (i = _nodes.begin(); i != _nodes.end(); i++) {
     Node *node = (*i);
-    vector<Node*> const &parents = node->parents();
+    vector<Node const *> const &parents = node->parents();
     bool isFounder = true;
-    for (vector<Node*>::const_iterator j = parents.begin(); 
+    for (vector<Node const *>::const_iterator j = parents.begin(); 
 	 j != parents.end(); j++) 
       {
 	if (this->contains(*j)) {
@@ -293,12 +292,12 @@ void Graph::getSortedNodes(vector<Node*> &sortednodes) const
       if (marks.mark(node) == 0) {
 
 	/* We can only mark a node if its parents in the graph are marked */
-	vector<Node*> const &parents = node->parents();
+	vector<Node const *> const &parents = node->parents();
 	bool can_mark = true;
-	for (vector<Node*>::const_iterator j = parents.begin(); 
+	for (vector<Node const *>::const_iterator j = parents.begin(); 
 	     j != parents.end(); j++) 
 	  {
-	    Node *parent = *j;
+	    Node const *parent = *j;
 	    if (this->contains(parent) && marks.mark(parent) == 0) {
 	      /* Unmarked parent */
 	      can_mark = false;

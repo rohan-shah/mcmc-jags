@@ -19,14 +19,17 @@
  */
 class SymTab : public NodeNameTab
 {
+  Graph &_graph;
   unsigned int _nchain;
   std::map<std::string, NodeArray*> _varTable;
   std::map<Node const*, std::string> _names;
 public:
   /**
    * Constructs an empty symbol table
+   * @param graph Graph to which newly allocated nodes are added.
+   * @param nchain Number of chains of nodes in the Symbol table.
    */
-  SymTab(unsigned int nchain);
+  SymTab(Graph &graph, unsigned int nchain);
   /**
    * Adds an array variable to the symbol table. This creates a
    * NodeArray object of the given dimension and associates it
@@ -49,7 +52,7 @@ public:
    * Adds all the nodes contained in all the NodeArray objects
    * in the SymTab to the given vector
    */
-  void getNodes(std::vector<Node*> &nodes);
+  //void getNodes(std::vector<Node*> &nodes);
   /**
    *
    */

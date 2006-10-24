@@ -34,7 +34,7 @@ ConjugateGamma::ConjugateGamma(StochasticNode *snode, Graph const &graph, unsign
     if (!deterministicChildren().empty()) {
     
 	// Check for constant scale transformation
-	set<Node*> paramset;
+	set<Node const*> paramset;
 	vector<DeterministicNode*> const &dtrm = deterministicChildren();
 	paramset.insert(snode);
 	for (unsigned int j = 0; j < dtrm.size(); ++j) {
@@ -118,7 +118,7 @@ bool ConjugateGamma::canSample(StochasticNode *snode, Graph const &graph)
        Create a set of nodes containing snode and its deterministic
        descendants for the checks below.
     */
-    set<Node *> paramset;
+    set<Node const *> paramset;
     paramset.insert(snode);
     for (unsigned int j = 0; j < dtrm_nodes.size(); ++j) {
 	paramset.insert(dtrm_nodes[j]);
@@ -126,7 +126,7 @@ bool ConjugateGamma::canSample(StochasticNode *snode, Graph const &graph)
 
     // Check stochastic children
     for (unsigned int i = 0; i < stoch_nodes.size(); ++i) {
-	vector<Node*> const &param = stoch_nodes[i]->parents();
+	vector<Node const*> const &param = stoch_nodes[i]->parents();
 	if (stoch_nodes[i]->isBounded()) {
 	    return false; //Bounded
 	}
@@ -199,7 +199,7 @@ void ConjugateGamma::update(RNG *rng)
     double mu; // 1/scale
 
     //Prior
-    vector<Node *> const &param = node()->parents();
+    vector<Node const *> const &param = node()->parents();
     switch(_target_dist) {
     case GAMMA:
 	r = *param[0]->value(chain());
@@ -233,7 +233,7 @@ void ConjugateGamma::update(RNG *rng)
 	if (coef_i > 0) {
 
 	    StochasticNode const *schild = stoch_children[i];
-	    vector<Node*> const &cparam = schild->parents();
+	    vector<Node const*> const &cparam = schild->parents();
 	    double Y = *schild->value(chain());
 	    double ymean; //normal mean
 	    switch(_child_dist[i]) {

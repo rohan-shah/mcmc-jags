@@ -26,7 +26,8 @@ public:
      * A logical node is defined by a function (which may be an inline
      * operator in the BUGS language) and its parameters.
      */
-    LogicalNode(Function const *func, std::vector<Node*> const &parameters);
+    LogicalNode(Function const *func,
+                std::vector<Node const*> const &parameters);
     ~LogicalNode();
     /** 
      * Returns the parameter values of the node 
@@ -59,12 +60,12 @@ public:
      * A logical node preserves linearity if its function is linear.
      * @see Function##isLinear
      */
-    bool isLinear(std::set<Node*> const &parameters, bool fixed) const;
+    bool isLinear(std::set<Node const*> const &parameters, bool fixed) const;
     /**
      * A logical node preserves scale if its function is a scale function.
      * @see Function##isScale
      */
-    bool isScale(std::set<Node*> const &parameters, bool fixed) const;
+    bool isScale(std::set<Node const*> const &parameters, bool fixed) const;
 };
 
 #endif /* LOGICAL_NODE_H_ */

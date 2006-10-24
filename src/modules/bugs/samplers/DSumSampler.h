@@ -22,11 +22,12 @@ public:
 	      Graph const &graph, unsigned int chain);
   ~DSumSampler();
   void update(RNG *);
-  bool canSample(std::vector<StochasticNode *> const &nodes, 
-		 Graph const &graph);
   void setValue(double x);
   double value();
   void getLimits(double *lower, double *upper);
+  static bool canSample(std::vector<StochasticNode *> const &nodes, 
+			Graph const &graph);
+
 };
 
 #endif /* DSUM_SAMPLER_H_ */

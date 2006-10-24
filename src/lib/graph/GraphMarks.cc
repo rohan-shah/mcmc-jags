@@ -58,9 +58,9 @@ void GraphMarks::markParents(Node const *node, int m)
     throw NodeError(node, "Can't mark parents of node: not in Graph");
   }
   else {
-    vector<Node*> const &parents = node->parents();
-    for (vector<Node*>::const_iterator p = parents.begin(); p != parents.end(); 
-	 ++p) 
+    vector<Node const *> const &parents = node->parents();
+    for (vector<Node const *>::const_iterator p = parents.begin(); 
+	 p != parents.end(); ++p) 
       {
 	map<Node const*, int>::iterator i = _marks.find(*p);    
 	if (i != _marks.end()) {
@@ -73,20 +73,20 @@ void GraphMarks::markParents(Node const *node, int m)
 void GraphMarks::markChildren(Node const *node, int m)
 {
 
-  if (_marks.find(node) == _marks.end()) {
-    throw NodeError(node, "Can't mark children of node: not in Graph");
-  }
-  else {
-    set<Node*> const &children = node->children();
-    for (set<Node*>::const_iterator p = children.begin(); p != children.end(); 
-	 ++p) 
-      {
-	map<Node const*, int>::iterator i = _marks.find(*p);    
-	if (i != _marks.end()) {
-	  i->second = m;
-	}
-      }
-  }
+    if (_marks.find(node) == _marks.end()) {
+	throw NodeError(node, "Can't mark children of node: not in Graph");
+    }
+    else {
+	set<Node*> const *children = node->children();
+	for (set<Node*>::const_iterator p = children->begin(); 
+	     p != children->end(); ++p) 
+	    {
+		map<Node const*, int>::iterator i = _marks.find(*p);    
+		if (i != _marks.end()) {
+		    i->second = m;
+		}
+	    }
+    }
 }
 
 void GraphMarks::markDescendants(Node const *node, int m)
@@ -110,8 +110,8 @@ void GraphMarks::markDescendants(Node const *node, int m)
     }
   }
   */
-  for (set<Node*>::const_iterator i = node->children().begin();
-       i != node->children().end(); ++i) {
+    for (set<Node*>::const_iterator i = node->children()->begin();
+       i != node->children()->end(); ++i) {
     if (_marks.find(*i) != _marks.end()) {
       mark(*i, m);
       markDescendants(*i, m);
@@ -135,11 +135,21 @@ void GraphMarks::markAncestors(Node const *node, int m)
     }
   }
   */
-  for (vector<Node*>::const_iterator i = node->parents().begin();
+  for (vector<Node const *>::const_iterator i = node->parents().begin();
        i != node->parents().end(); ++i) {
     if (_marks.find(*i) != _marks.end()) {
       mark(*i, m);
       markAncestors(*i, m);
     }
   }
+}
+
+void GraphMarks::getMarkedNodes(Graph &graph, int m)
+{
+    set<Node*> const &nodes = graph.nodes();
+    for (set<Node*>::const_iterator i = nodes.begin(); i != nodes.end(); ++i) {
+	if (_marks[*i] == m) {
+	    graph.add(*i);
+	}
+    }
 }

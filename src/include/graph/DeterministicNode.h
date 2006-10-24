@@ -10,7 +10,7 @@
 class DeterministicNode : public Node {
 public:
     DeterministicNode(std::vector<unsigned int> const &dim,
-		      std::vector<Node*> const &parents);
+		      std::vector<Node const *> const &parents);
     /**
      * Random samples from a Deterministic node are not random.
      */
@@ -42,7 +42,7 @@ public:
      * coefficients B1, ... Bn are fixed (but not necessarily A).
      */
     virtual bool 
-	isLinear(std::set<Node*> const &parameters, bool fixed) const = 0;
+	isLinear(std::set<Node const*> const &parameters, bool fixed) const = 0;
     /**
      * Tests whether the value of the node is a scale function of the
      * ancestor node X. A scale function is a trivial linear function
@@ -59,7 +59,7 @@ public:
      * with fixed coefficient B.
      */
     virtual bool 
-	isScale(std::set<Node*> const &parameters, bool fixed) const = 0;
+	isScale(std::set<Node const*> const &parameters, bool fixed) const = 0;
 };
 
 #endif /* DETERMINISTIC_NODE_H_ */

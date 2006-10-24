@@ -54,8 +54,8 @@ LTLIBRARIES = $(noinst_LTLIBRARIES)
 libcompiler_la_LIBADD =
 am_libcompiler_la_OBJECTS = parser.lo scanner.lo Compiler.lo \
 	LogicalFactory.lo ParseTree.lo Counter.lo CounterTab.lo \
-	ConstantFactory.lo MixtureFactory.lo NodeFactory.lo \
-	MixCompiler.lo
+	ConstantFactory.lo MixtureFactory.lo MixCompiler.lo \
+	NodeFactory.lo
 libcompiler_la_OBJECTS = $(am_libcompiler_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/src/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -207,7 +207,7 @@ AM_YFLAGS = -d
 BUILT_SOURCES = parser.h
 libcompiler_la_SOURCES = parser.yy scanner.ll Compiler.cc		\
 LogicalFactory.cc ParseTree.cc Counter.cc CounterTab.cc			\
-ConstantFactory.cc MixtureFactory.cc NodeFactory.cc MixCompiler.cc
+ConstantFactory.cc MixtureFactory.cc MixCompiler.cc NodeFactory.cc
 
 noinst_HEADERS = parser.h parser_extra.h remap.h MixCompiler.h
 all: $(BUILT_SOURCES)

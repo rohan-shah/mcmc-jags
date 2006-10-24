@@ -4,7 +4,7 @@
 using std::vector;
 
 DeterministicNode::DeterministicNode(vector<unsigned int> const &dim, 
-                                     vector<Node*> const &parents)
+                                     vector<Node const *> const &parents)
   : Node(dim, parents)
 {}
 

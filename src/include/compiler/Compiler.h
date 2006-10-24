@@ -7,6 +7,7 @@
 #include <compiler/CounterTab.h>
 #include <distribution/DistTab.h>
 #include <function/FuncTab.h>
+#include <model/BUGSModel.h>
 
 #include <map>
 #include <string>
@@ -24,8 +25,7 @@ class Compiler;
 typedef void (Compiler::*CompilerMemFn) (ParseTree const *);
 
 class Compiler {
-  Graph &_graph;
-  SymTab &_symtab;
+  BUGSModel &_model;
   CounterTab _countertab;
   std::map<std::string, SArray> const &_data_table;
   std::map<std::string, std::vector<bool> > _constant_mask;
@@ -53,32 +53,24 @@ class Compiler {
   void writeConstantData(ParseTree const *rel);
   void writeVariableData();
   void getArrayDim(ParseTree const *p);
-  //void setStochasticParameters(ParseTree const *node);
-  //void setLogicalParameters(ParseTree const *node);
-
   bool getLogicalParameterVector(ParseTree const *t,
-			      std::vector<Node*> &parents);
+			      std::vector<Node const *> &parents);
   Node * getSubSetNode(ParseTree const *var);
-  //Node * getMixtureNode(ParseTree const *var);
   double constFromTable(ParseTree const *p);
   double constFromNode(ParseTree const *p);
-  void collectNodes();
   void addDevianceNode();
 public:
-  Graph &graph() const;
   bool indexExpression(ParseTree const *t, int &value);
   MixtureFactory &mixtureFactory();
-  SymTab &symTab() const;
+  BUGSModel &model() const;
   Node* getParameter(ParseTree const *t);
   /**
    * Constructor
-   * @param graph Graph to be created. It should initially be empty
-   * @param symtab Symbol table to be created. It should initially be empty
+   * @param model To be created by the compiler.
    * @param datatab Data table. This is required since some constant
    * expressions in the BUGS language may depend on data values.
    */
-  Compiler(Graph &graph, SymTab &symtab,
-	   std::map<std::string, SArray> const &data_table);
+  Compiler(BUGSModel &model, std::map<std::string, SArray> const &data_table);
   void declareVariables(std::vector<ParseTree*> const &pvariables);
   /**
    * Adds variables without an explicit declaration to the symbol

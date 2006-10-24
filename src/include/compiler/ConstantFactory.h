@@ -1,13 +1,11 @@
 #ifndef CONSTANT_FACTORY_H_
 #define CONSTANT_FACTORY_H_
 
-#include <graph/Graph.h>
-#include <compiler/NodeFactory.h>
-
 #include <map>
-#include <cfloat>
+//#include <cfloat>
 
 class ConstantNode;
+class Graph;
 
 /**
  * Fuzzy "less than" operator for doubles, allowing some numerical
@@ -33,7 +31,7 @@ struct ltdouble
  * factory object for them that will create and/or lookup constant
  * nodes based on their value.
  */
-class ConstantFactory : public NodeFactory
+class ConstantFactory 
 { 
   unsigned int _nchain;
   std::map<double, ConstantNode*, ltdouble> _constmap;
@@ -42,8 +40,9 @@ class ConstantFactory : public NodeFactory
   /**
    * Get a constant node with a given value.  The results are cached,
    * so if a request is repeated, the same node will be returned.
+   * If a node is newly allocated, it is inserted into the given graph.
    */
-  ConstantNode *getConstantNode(double value);
+  ConstantNode *getConstantNode(double value, Graph &graph);
 };
 
 #endif /* CONSTANT_FACTORY_H_ */

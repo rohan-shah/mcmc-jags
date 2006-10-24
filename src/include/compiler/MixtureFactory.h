@@ -4,7 +4,6 @@
 #include <graph/Graph.h>
 #include <graph/Node.h>
 #include <sarray/SArray.h>
-#include <compiler/NodeFactory.h>
 
 #include <vector>
 #include <map>
@@ -13,7 +12,7 @@
 class NodeArray;
 class MixtureNode;
 
-typedef std::pair<std::vector <Node*>, std::vector<std::pair<std::vector<int> , Node*> > > 
+typedef std::pair<std::vector <Node const*>, std::vector<std::pair<std::vector<int> , Node const *> > > 
 MixPair;
 
 bool compMixPair(MixPair const &, MixPair const &);
@@ -33,7 +32,7 @@ struct ltmixpair
  * of mixture nodes by having a container class and factory object
  * that will create and/or lookup mixture nodes.
  */
-class MixtureFactory : public NodeFactory
+class MixtureFactory  
 { 
   std::map<MixPair, MixtureNode*, ltmixpair> _mixmap;
 public:
@@ -49,10 +48,13 @@ public:
    * shows the corresponding parent from which the mixture node copies
    * its value.
    *
+   * @param graph Graph to which newly allocated mixturenodes are added.
+   *
    */
-  MixtureNode *getMixtureNode(std::vector<Node *> const &index,
-			      std::vector<std::pair<std::vector<int> , Node*> > 
-			      const &parameters);
+  MixtureNode *getMixtureNode(std::vector<Node const *> const &index,
+			      std::vector<std::pair<std::vector<int> , Node const *> > 
+			      const &parameters,
+                              Graph &graph);
 };
 
 #endif /* MIXTURE_FACTORY_H_ */

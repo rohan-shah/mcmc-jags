@@ -40,7 +40,7 @@ FuncTab::~FuncTab ()
 
 }
 
-bool FuncTab::insert (Function const *func)
+void FuncTab::insert (Function const *func)
 {
     FuncList::iterator p = find_if(_func_list.begin(), _func_list.end(),
                                    bind2nd(isFuncName(), &func->name()));
@@ -64,7 +64,7 @@ bool FuncTab::insert (Function const *func)
     */
 }
 
-bool FuncTab::insert (InverseLinkFunc const *lfunc)
+void FuncTab::insert (InverseLinkFunc const *lfunc)
 {
     FuncList::iterator p = find_if(_func_list.begin(), _func_list.end(),
                                    bind2nd(isFuncName(), &lfunc->name()));

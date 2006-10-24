@@ -6,12 +6,12 @@ using std::vector;
 using std::set;
 using std::logic_error;
 
-static vector<Node*> mkParents(set<StochasticNode*> const &param)
+static vector<Node const *> mkParents(set<StochasticNode const *> const &param)
 {
-   vector <Node*> par;
+   vector <Node const *> par;
    unsigned long N = param.size();
    par.reserve(N);
-   set<StochasticNode*>::const_iterator p;
+   set<StochasticNode const *>::const_iterator p;
    for (p = param.begin(); p != param.end(); ++p) {
       par.push_back(*p);
    }
@@ -22,11 +22,11 @@ static vector<Node*> mkParents(set<StochasticNode*> const &param)
    return par;
 }
          
-DevianceNode::DevianceNode(set<StochasticNode*> const &parameters)
+DevianceNode::DevianceNode(set<StochasticNode const *> const &parameters)
   : DeterministicNode(vector<unsigned int>(1,1), mkParents(parameters))
 {
   _parameters.reserve(parameters.size());
-  for (set<StochasticNode*>::const_iterator p = parameters.begin(); 
+  for (set<StochasticNode const *>::const_iterator p = parameters.begin(); 
        p != parameters.end(); ++p) 
     {
       _parameters.push_back(*p);
@@ -45,11 +45,11 @@ void DevianceNode::deterministicSample(unsigned int chain)
   setValue(&deviance, 1, chain);
 }
 
-bool DevianceNode::isLinear(std::set<Node*> const &parameters, bool fixed) const 
+bool DevianceNode::isLinear(std::set<Node  const *> const &parameters, bool fixed) const 
 {
   return false;
 }
-bool DevianceNode::isScale(std::set<Node*> const &parameters, bool fixed) const 
+bool DevianceNode::isScale(std::set<Node const *> const &parameters, bool fixed) const 
 {
   return false;
 }

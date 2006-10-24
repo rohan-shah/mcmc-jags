@@ -16,8 +16,9 @@ using std::runtime_error;
 using std::logic_error;
 using std::set;
 
-NodeArray::NodeArray(string const &name, vector<unsigned int> const &dim, unsigned int nchain)
-  : _name(name), _range(dim), _nchain(nchain)
+NodeArray::NodeArray(string const &name, vector<unsigned int> const &dim, 
+		     unsigned int nchain)
+    : _name(name), _range(dim), _nchain(nchain)
 {
   unsigned int length = _range.length();
   _node_pointers = new Node *[length];
@@ -75,7 +76,7 @@ void NodeArray::insert(Node *node, Range const &target_range)
     }
 
   /* Add to the graph */
-  _graph.add(node);
+  _member_graph.add(node);
 }
 
 Node *NodeArray::find(Range const &target_range) const
@@ -102,7 +103,7 @@ Node *NodeArray::find(Range const &target_range) const
   return node;
 }
 
-Node *NodeArray::getSubset(Range const &target_range)
+Node *NodeArray::getSubset(Range const &target_range, Graph &graph)
 {
   /* If range corresponds to a set node, then return this */
   Node *node = find(target_range);
@@ -116,7 +117,7 @@ Node *NodeArray::getSubset(Range const &target_range)
   }
 
   /* Otherwise create an aggregate node */
-  vector<Node *> nodes;
+  vector<Node const *> nodes;
   vector<unsigned int> offsets;
   for (RangeIterator i(target_range); !i.atEnd(); i.nextLeft()) {
     unsigned int offset = _range.leftOffset(i);
@@ -133,7 +134,8 @@ Node *NodeArray::getSubset(Range const &target_range)
   node = new AggNode(target_range.dim(true), nodes, offsets);
   _generated_nodes.insert(std::pair<Range,Node*>(target_range, node));
 //[target_range] = node;
-  _graph.add(node);
+  graph.add(node);
+  _member_graph.add(node);
   return node;
 }
 
@@ -227,7 +229,7 @@ void NodeArray::getValue(SArray &value, unsigned int chain, bool (*condition)(No
 //FIXME: A lot of code overlap with setValue here.
 
 #include <iostream>
-void NodeArray::setData(SArray const &value)
+void NodeArray::setData(SArray const &value, Graph &graph)
 {
   if (!(_range == value.range())) {
     throw runtime_error(string("Dimension mismatch when setting value of node array ") + name());
@@ -243,6 +245,7 @@ void NodeArray::setData(SArray const &value)
       if (_node_pointers[i] == 0) {
 	//Insert a new constant node
 	ConstantNode *cnode = new ConstantNode(x[i], _nchain);
+        graph.add(cnode);
 	insert(cnode, _range.leftIndex(i));
       }
       else {
@@ -294,10 +297,12 @@ Range const &NodeArray::range() const
   return _range;
 }
 
+/*
 Graph const &NodeArray::graph() const
 {
   return _graph;
 }
+*/
 
 bool NodeArray::findActiveIndices(vector<unsigned int> &ind, unsigned int k, 
 				  vector<int> const &lower, vector<unsigned int> const &dim) const
@@ -358,7 +363,7 @@ bool NodeArray::findActiveIndices(vector<unsigned int> &ind, unsigned int k,
 
 Range NodeArray::getRange(Node const *node) const
 {
-    if (!_graph.contains(node)) {
+    if (!_member_graph.contains(node)) {
 	return Range();
     }
 

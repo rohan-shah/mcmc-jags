@@ -36,7 +36,7 @@ ConjugateNormal::ConjugateNormal(StochasticNode *snode, Graph const &graph,
 	}
     
 	// Check for constant linear terms
-	set<Node*> paramset;
+	set<Node const*> paramset;
 	vector<DeterministicNode*> const &dtrm = deterministicChildren();
 	paramset.insert(snode);
 	for (unsigned int j = 0; j < dtrm.size(); ++j) {
@@ -117,7 +117,7 @@ bool ConjugateNormal::canSample(StochasticNode *snode, Graph const &graph)
      Create a set of nodes containing snode and its deterministic
      descendants for the checks below.
   */
-  set<Node*> paramset;
+  set<Node const*> paramset;
   paramset.insert(snode);
   for (unsigned int j = 0; j < dtrm_nodes.size(); ++j) {
     paramset.insert(dtrm_nodes[j]);
@@ -134,7 +134,7 @@ bool ConjugateNormal::canSample(StochasticNode *snode, Graph const &graph)
       if (stoch_nodes[i]->isBounded()) {
 	  return false; //Truncated distribution
       }
-      vector<Node*> const &param = stoch_nodes[i]->parents();
+      vector<Node const*> const &param = stoch_nodes[i]->parents();
       if (paramset.count(param[1])) {
 	  return false; //Precision depends on snode
       }

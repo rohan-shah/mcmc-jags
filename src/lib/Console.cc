@@ -95,8 +95,7 @@ bool Console::compile(map<string, SArray> &data_table, unsigned int nchain,
   RNG *datagen_rng = 0;
   if (_pdata && gendata) {
     BUGSModel datagen_model(1);
-    Compiler compiler(datagen_model.graph(), datagen_model.symtab(), 
-		      data_table);
+    Compiler compiler(datagen_model, data_table);
     _out << "Compiling data graph" << endl;
     try {
       if (_pvariables) {
@@ -114,8 +113,8 @@ bool Console::compile(map<string, SArray> &data_table, unsigned int nchain,
       datagen_model.graph().getNodes(nodes);
       for (unsigned int i = 0; i < nodes.size(); ++i) {
 	if (nodes[i]->isObserved()) {
-	  vector<Node*> const &parents = nodes[i]->parents();
-	  for (vector<Node*>::const_iterator p = parents.begin();
+	  vector<Node const*> const &parents = nodes[i]->parents();
+	  for (vector<Node const*>::const_iterator p = parents.begin();
 	       p != parents.end(); ++p)
 	    {
 	      if (!((*p)->isObserved())) {
@@ -162,7 +161,7 @@ bool Console::compile(map<string, SArray> &data_table, unsigned int nchain,
   }
 
   _model = new BUGSModel(nchain);
-  Compiler compiler(_model->graph(), _model->symtab(), data_table);
+  Compiler compiler(*_model, data_table);
 
   _out << "Compiling model graph" << endl;
   try {
@@ -663,10 +662,10 @@ bool Console::coda(string const &name, Range const &range,
 
     Node *node = 0;
     if (isNULL(range)) {
-	node = array->getSubset(array->range());
+	node = array->getSubset(array->range(), _model->graph());
     }
     else if (array->range().contains(range)) {
-	node = array->getSubset(range);
+	node = array->getSubset(range, _model->graph());
     }
     else {
 	_err << "Requested invalid subset of node " << name << endl;

@@ -16,8 +16,8 @@ using std::runtime_error;
 using std::logic_error;
 using std::set;
 
-SymTab::SymTab(unsigned int nchain)
-  : _nchain(nchain)
+SymTab::SymTab(Graph &graph, unsigned int nchain)
+    : _graph(graph), _nchain(nchain)
 {
 }
 
@@ -46,6 +46,7 @@ NodeArray* SymTab::getVariable(string const &name) const
   }
 }
 
+/*
 void SymTab::getNodes(std::vector<Node*> &nodes)
 {
   map<string, NodeArray*>::const_iterator p(_varTable.begin());
@@ -55,6 +56,7 @@ void SymTab::getNodes(std::vector<Node*> &nodes)
     graph.getNodes(nodes);
   }
 }
+*/
 
 void SymTab::writeData(std::map<std::string, SArray> const &data_table)
 {
@@ -67,7 +69,7 @@ void SymTab::writeData(std::map<std::string, SArray> const &data_table)
 	msg.append(p->first);
 	throw runtime_error(msg);
       }
-      array->setData(p->second);
+      array->setData(p->second, _graph);
     }
   }
 }
@@ -168,11 +170,11 @@ static string makeMixtureName(MixtureNode const *mnode,
   */
 
   //The indices are the first elements of the vector of parents 
-  vector<Node*> index = mnode->parents();
+  vector<Node const *> index = mnode->parents();
   index.resize(mnode->index_size());
 
   //Create a set of parents, excluding index nodes
-  set<Node*> parents;
+  set<Node const *> parents;
   for (unsigned int i = mnode->index_size(); i < mnode->parents().size(); ++i)
     {
       parents.insert(mnode->parents()[i]);
@@ -183,7 +185,8 @@ static string makeMixtureName(MixtureNode const *mnode,
 
   //Create a vector of parameter names
   vector<string> param_names;
-  for (set<Node*>::const_iterator i = parents.begin(); i != parents.end(); ++i)
+  for (set<Node const*>::const_iterator i = parents.begin(); 
+       i != parents.end(); ++i)
     {
       param_names.push_back((*i)->name(symtab));
     }
@@ -252,8 +255,9 @@ string SymTab::getName(Node const *node) const
   map<string, NodeArray*>::const_iterator p;
   for (p = _varTable.begin(); p != _varTable.end(); ++p) {
     NodeArray *array = p->second;
-    if (array->graph().contains(node)) {
-      if (array->getRange(node) == array->range()) {
+    Range node_range = array->getRange(node);
+    if (!isNULL(node_range)) {
+      if (node_range == array->range()) {
          return p->first;
       }
       else {

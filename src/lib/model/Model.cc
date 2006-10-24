@@ -168,8 +168,8 @@ void Model::chooseSamplers()
   // Now mark ancestors of observed nodes
   for (i = _nodes.rbegin(); i != _nodes.rend(); ++i) {
     if (marks.mark(*i) != 2) {
-      for (set<Node*>::const_iterator ch = (*i)->children().begin(); 
-	   ch != (*i)->children().end(); ++ch) 
+      for (set<Node*>::const_iterator ch = (*i)->children()->begin(); 
+	   ch != (*i)->children()->end(); ++ch) 
 	{
 	  if (marks.mark(*ch) != 0) {
 	    marks.mark(*i,1);
@@ -297,7 +297,7 @@ unsigned int Model::iteration(unsigned int chain) const
   return _chain_info[chain].iteration;
 }
 
-
+/*
 static void addAncestors(Node *node, Graph &to, set<Node*> const &from)
 {
   // Take ancestors of "node" belonging to set "from" and add them to
@@ -306,19 +306,17 @@ static void addAncestors(Node *node, Graph &to, set<Node*> const &from)
     return;
   }
   to.add(node);
-  for (vector<Node*>::const_iterator p = node->parents().begin(); 
+  for (vector<Node const *>::const_iterator p = node->parents().begin(); 
        p != node->parents().end(); ++p) 
     {
       addAncestors(*p, to, from);
     }
 }
+*/
 
-//debuggin
-#include <iostream>
 void Model::setMonitor(Node *node, int thin)
 {
   if (_monitored_nodes.count(node)) {
-    std::cout << "Node is already being monitored\n";
     //Nothing to do. Node is already being monitored.
     return;
   }
@@ -343,12 +341,32 @@ void Model::setMonitor(Node *node, int thin)
   _monitored_nodes.insert(node);
 
   // Recalculate the vector of uninformative nodes that need sampling
+
+  //Insert extra nodes into a new graph
   Graph egraph;
+  for (set<Node *>::const_iterator p = _extra_nodes.begin(); 
+       p != _extra_nodes.end(); ++p)
+      {
+	  egraph.add(*p);
+      }
+  //Mark the ancestors of all monitored nodes in this graph
+  GraphMarks emarks(egraph);
   for (set<Node*>::const_iterator j = _monitored_nodes.begin();
        j != _monitored_nodes.end(); ++j)
     {
-      addAncestors(*j, egraph, _extra_nodes);
+        if (egraph.contains(*j)) {
+            emarks.mark(*j,1);
+	    emarks.markAncestors(*j, 1);
+        }
     }
+  //Remove unmarked nodes from graph
+  for (set<Node *>::const_iterator p = _extra_nodes.begin(); 
+       p != _extra_nodes.end(); ++p)
+      {
+	  if (emarks.mark(*p) == 0)
+	      egraph.remove(*p);
+      }
+  //Replace vector of sampled extra nodes
   _sampled_extra.clear();
   egraph.getSortedNodes(_sampled_extra);
 }
@@ -382,14 +400,10 @@ void Model::addExtraNode(Node *node)
   if (node->isObserved()) {
     throw logic_error("Cannot add observed node to initialized model");
   }
-   
-  if (!node->children().empty()) {
+  if (!node->children()->empty()) {
     throw logic_error("Cannot add extra node with children");
   }
-  if (_graph.contains(node)) {
-    throw logic_error("Extra node already in model");
-  }
-  for (vector<Node*>::const_iterator p = node->parents().begin(); 
+  for (vector<Node const *>::const_iterator p = node->parents().begin(); 
        p != node->parents().end(); ++p)
     {
       if (!_graph.contains(*p)) {
@@ -397,8 +411,16 @@ void Model::addExtraNode(Node *node)
       }
     }
 
-  _extra_nodes.insert(node);
-  _graph.add(node);
+  if (_extra_nodes.count(node)) {
+    throw logic_error("Extra node already in model");
+  }
+  else {
+     _extra_nodes.insert(node);
+  }
+  if (!_graph.contains(node)) {
+     _graph.add(node);
+  }
+
 }
 
 list<SamplerFactory const *> &Model::samplerFactories()

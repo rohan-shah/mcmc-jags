@@ -34,6 +34,8 @@
 #include <distribution/DistScalar.h>
 #include <model/NodeArray.h>
 #include <graph/MixtureNode.h>
+#include <graph/GraphMarks.h>
+#include <sampler/Sampler.h>
 
 #include "MixCompiler.h"
 
@@ -50,7 +52,7 @@ using std::set;
 
 //Structure to hold subset indices
 struct SSI {
-  Node *node;
+  Node const *node;
   int lower;
   int upper;
 };
@@ -104,64 +106,65 @@ static void getSubsetRanges(vector<pair<vector<int>, Range> > &subsets,
   }
 }
 
-/* Helper function for classifyParents */
-static void classifyNode(Node *node, Graph &sgraph, Graph &dgraph)
+static void markParents(Node const *node, GraphMarks &marks)
 {
+    /* Recursively mark node and its parents until we get back to the
+       nearest stochastic ancestors */
+
     if (node->isVariable()) {
         if (asStochastic(node)) 
-	   sgraph.add(node);
+	    marks.mark(node, 2);
     }
-    else if (!dgraph.contains(node)) {
-	dgraph.add(node);      
-	for (vector<Node*>::const_iterator p = node->parents().begin();
-	     p != node->parents().end(); ++p) {
-	    classifyNode(*p, sgraph, dgraph);
+    else if (!marks.mark(node) == 0) {
+	marks.mark(node, 1);
+	vector<Node const*>::const_iterator p;
+	for (p = node->parents().begin(); p != node->parents().end(); ++p) {
+	    markParents(*p, marks);
 	}
     }
 }
 
-/* 
-   Trace ancestors of Stochastic nodes in the vector "indices" back to
-   their stochastic ancestors. This function works exactly like
-   Sampler::classifyChildren, but for parents rather than children.
-*/
-static void classifyParents(vector<Node *> const &indices,
+static void classifyParents(vector<Node const *> const &indices, 
+			    GraphMarks &marks,
 			    vector<StochasticNode *> &stoch_nodes,
 			    vector<DeterministicNode *> &dtrm_nodes)
 {
-  Graph dgraph, sgraph;
+    /* Classify parents of each node */
+    vector<Node const*>::const_iterator p;
+    for (p = indices.begin(); p != indices.end(); ++p) {
+	markParents(*p, marks);
+    }
+    Graph sgraph, dgraph;
+    marks.getMarkedNodes(sgraph, 2);
+    marks.getMarkedNodes(dgraph, 1);
 
-  /* Classify parents of each node */
-  for (vector<Node*>::const_iterator p = indices.begin(); p != indices.end(); ++p) {
-    classifyNode(*p, sgraph, dgraph);
-  }
-  
-  vector<Node*> svector;
-  sgraph.getNodes(svector);
-  for (vector<Node*>::iterator i = svector.begin(); i != svector.end(); 
-       ++i) 
+    vector<Node*> svector;
+    sgraph.getNodes(svector);
+    for (vector<Node*>::iterator i = svector.begin(); i != svector.end(); 
+	 ++i) 
     {
       //FIXME: downcasting non-constant pointer
       stoch_nodes.push_back(static_cast<StochasticNode*>(*i));
     }
   
-  vector<Node*> dvector;
-  dgraph.getSortedNodes(dvector);
-  for (vector<Node*>::iterator i = dvector.begin(); i != dvector.end();
-       ++i)
+    vector<Node*> dvector;
+    dgraph.getSortedNodes(dvector);
+    for (vector<Node*>::iterator i = dvector.begin(); i != dvector.end();
+	 ++i)
     {
-      dtrm_nodes.push_back(dynamic_cast<DeterministicNode*>(*i));
+	dtrm_nodes.push_back(dynamic_cast<DeterministicNode*>(*i));
     }
 }
 
-static Node* getMixtureNode1(NodeArray *array, vector<SSI> const &limits, Compiler *compiler)
+static Node* 
+getMixtureNode1(NodeArray *array, vector<SSI> const &limits, Compiler *compiler)
 /* Try to simplify the mixture node by enumerating all possible values
    that the indices can take. This can only be done under certain
    conditions. */
 {
   unsigned int ndim = limits.size();
 
-  vector<Node*> indices;
+  vector<Node const*> indices;
   unsigned int nvi = 0;
   for (unsigned int i = 0; i < ndim; ++i) {
     if (limits[i].node) {
@@ -169,67 +172,65 @@ static Node* getMixtureNode1(NodeArray *array, vector<SSI> const &limits, Compil
       ++nvi;
     }
   }
-  
+
+  Graph &compiler_graph = compiler->model().graph();
+  GraphMarks marks(compiler_graph);
+
   /* Find stochastic parents (ancestors) and deterministic ancestors in
      forward sampling order */
   
   vector<StochasticNode*> stoch_parents;
   vector<DeterministicNode*> dtrm_nodes;
-  classifyParents(indices, stoch_parents, dtrm_nodes);
-  
+  classifyParents(indices, marks, stoch_parents, dtrm_nodes);
+
   /* Test to see if all stochastic parents are discrete, scalar, with
      bounded support. If not we give up. */
-  
-  bool cansimplify = true;
-  for (unsigned int i = 0; i < stoch_parents.size(); ++i) {
-    StochasticNode const *snode = stoch_parents[i];
-    if (snode->length() != 1 || !snode->isDiscreteValued() ||
-	snode->isObserved() || snode->isBounded()) 
-      {
-	cansimplify = false;
-	break;
-      }
-  }
-  if (!cansimplify) {
-    return 0; 
+
+  unsigned int nparents = stoch_parents.size();  
+  for (unsigned int i = 0; i < nparents; ++i) {
+      StochasticNode const *snode = stoch_parents[i];
+      if (snode->length() != 1 || !snode->isDiscreteValued() ||
+	  snode->isObserved() || snode->isBounded()) 
+	  {
+	      return 0;
+	  }
   }
 
-  unsigned int nparents = stoch_parents.size();
   vector<int> lower(nparents,1), upper(nparents,1);
   for (unsigned int i = 0; i < nparents; ++i) {
-    StochasticNode const *snode = stoch_parents[i];
-    Distribution const *dist = snode->distribution();
+      StochasticNode const *snode = stoch_parents[i];
+      Distribution const *dist = snode->distribution();
 
-    /* Check that support of node is fixed */
-    vector<bool> fixmask;
-    for (vector<Node*>::const_iterator p = snode->parents().begin();
-	 p != snode->parents().end(); ++p) {
-	fixmask.push_back((*p)->isObserved());
-    }
-    if (!dist->isSupportFixed(fixmask)) {
-	return 0; //Can't count on support being fixed
-    }
+      /* Check that support of node is fixed */
+      vector<bool> fixmask;
+      for (vector<Node const*>::const_iterator p = snode->parents().begin();
+	   p != snode->parents().end(); ++p) {
+	  fixmask.push_back((*p)->isObserved());
+      }
+      if (!dist->isSupportFixed(fixmask)) {
+	  return 0; //Can't count on support being fixed
+      }
 
-    /* To be safe, we cycle over all chains */
-    for (unsigned int n = 0; n < snode->nchain(); ++n) {
-	// Get lower and upper limits of support
-	double l = -DBL_MAX, u = DBL_MAX;
-	dist->support(&l, &u, 1, snode->parameters(n), snode->parameterDims());
-	if (l == -DBL_MAX || u == DBL_MAX) {
-	    return 0; //Unbounded parent => serious trouble
-	}
-	if (l < -INT_MAX || u > INT_MAX) {
-	    return 0; //Can't cast to int
-	}
-	int il = static_cast<int>(l);
-	int iu = static_cast<int>(u);
-	if (n == 0 || il < lower[i]) {
-	    lower[i] = il;
-	}
-	if (n == 0 || iu > upper[i]) {
-	    upper[i] = iu;
-	}
-    }
+      /* To be safe, we cycle over all chains */
+      for (unsigned int n = 0; n < snode->nchain(); ++n) {
+	  // Get lower and upper limits of support
+	  double l = -DBL_MAX, u = DBL_MAX;
+	  dist->support(&l, &u, 1, snode->parameters(n), snode->parameterDims());
+	  if (l == -DBL_MAX || u == DBL_MAX) {
+	      return 0; //Unbounded parent => serious trouble
+	  }
+	  if (l < -INT_MAX || u > INT_MAX) {
+	      return 0; //Can't cast to int
+	  }
+	  int il = static_cast<int>(l);
+	  int iu = static_cast<int>(u);
+	  if (n == 0 || il < lower[i]) {
+	      lower[i] = il;
+	  }
+	  if (n == 0 || iu > upper[i]) {
+	      upper[i] = iu;
+	  }
+      }
   }
 
   //Save current node value in chain 0;
@@ -253,7 +254,7 @@ static Node* getMixtureNode1(NodeArray *array, vector<SSI> const &limits, Compil
     }
 
     for (unsigned int k = 0; k < dtrm_nodes.size(); ++k) {
-      dtrm_nodes[k]->deterministicSample(0);
+	dtrm_nodes[k]->deterministicSample(0);
     }
     
     for (unsigned int l = 0; l < indices.size(); ++l) {
@@ -298,37 +299,39 @@ static Node* getMixtureNode1(NodeArray *array, vector<SSI> const &limits, Compil
 
   /* Convert these into subsets */
 
-  vector<pair<vector<int>, Node*> > subsets;  
+  vector<pair<vector<int>, Node const *> > subsets;  
   for (unsigned int i = 0; i < ranges.size(); ++i) {
-    Node *subset_node = array->getSubset(ranges[i].second);
+    Node *subset_node = array->getSubset(ranges[i].second, compiler_graph);
     if (!subset_node)
       return 0;
     subsets.push_back(pair<vector<int>, Node*>(ranges[i].first, subset_node));
   }
 
-  return compiler->mixtureFactory().getMixtureNode(indices, subsets);
+  return compiler->mixtureFactory().getMixtureNode(indices, subsets, compiler_graph);
 }
 
 static Node * getMixtureNode2(NodeArray *array, vector<SSI> const &limits, Compiler *compiler)
 {
   vector<pair<vector<int>, Range> > ranges;  
   getSubsetRanges(ranges, limits, array->range());
-  vector<pair<vector<int>, Node*> > subsets;  
+  vector<pair<vector<int>, Node const*> > subsets;  
   for (unsigned int i = 0; i < ranges.size(); ++i) {
-    Node *subset_node = array->getSubset(ranges[i].second);
+    Node *subset_node = array->getSubset(ranges[i].second,
+                                         compiler->model().graph());
     if (!subset_node)
       return 0;
     subsets.push_back(pair<vector<int>, Node*>(ranges[i].first, subset_node));
   }
 
-  vector<Node*> indices;
+  vector<Node const *> indices;
   for (unsigned int i = 0; i < limits.size(); ++i) {
     if (limits[i].node) {
       indices.push_back(limits[i].node);
     }
   }
 
-  return compiler->mixtureFactory().getMixtureNode(indices, subsets);
+  Graph &compiler_graph = compiler->model().graph();
+  return compiler->mixtureFactory().getMixtureNode(indices, subsets, compiler_graph);
 }
 
 Node * getMixtureNode(ParseTree const * var, Compiler *compiler)
@@ -337,7 +340,7 @@ Node * getMixtureNode(ParseTree const * var, Compiler *compiler)
     throw logic_error("Expecting variable expression");
   }
   
-  NodeArray *array = compiler->symTab().getVariable(var->name());
+  NodeArray *array = compiler->model().symtab().getVariable(var->name());
   if (array == 0) {
     throw runtime_error(string("Unknown parameter: ") + var->name());
   }
@@ -416,7 +419,7 @@ Node * getMixtureNode(ParseTree const * var, Compiler *compiler)
   if (nvi == 0) {
     throw logic_error("Trivial mixture node");
   }
-  
+
   Node *mnode = getMixtureNode1(array, limits, compiler);
   if (mnode)
     return mnode;

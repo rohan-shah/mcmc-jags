@@ -45,8 +45,8 @@ static void classifyNode(Node *node, Graph const &sample_graph,
     }
     else if (!dgraph.contains(node)) {
 	dgraph.add(node);      
-	for (set<Node*>::iterator p = node->children().begin();
-	     p != node->children().end(); ++p) {
+	for (set<Node*>::iterator p = node->children()->begin();
+	     p != node->children()->end(); ++p) {
 	    classifyNode(*p, sample_graph, sgraph, dgraph);
 	}
     }
@@ -66,8 +66,8 @@ void Sampler::classifyChildren(vector<StochasticNode *> const &nodes,
     if (!graph.contains(snode)) {
       throw logic_error("Sampled node outside of sampling graph");
     }
-    for (set<Node*>::const_iterator q = snode->children().begin(); 
-	 q != snode->children().end(); ++q) 
+    for (set<Node*>::const_iterator q = snode->children()->begin(); 
+	 q != snode->children()->end(); ++q) 
       {
 	classifyNode(*q, graph, sgraph, dgraph);
       }

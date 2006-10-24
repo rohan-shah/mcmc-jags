@@ -31,7 +31,7 @@ public:
      * vector of the corresponding parent should be taken.
      */
     AggNode(std::vector<unsigned int> const &dim,
-	    std::vector<Node*> const &nodes, 
+	    std::vector<Node const *> const &nodes, 
 	    std::vector<unsigned int> const &offsets);
     ~AggNode();
     /**
@@ -41,12 +41,12 @@ public:
     /**
      * An AggNode always preserves linearity.
      */
-    bool isLinear(std::set<Node*> const &parameters, bool fixed) const;
+    bool isLinear(std::set<Node const*> const &parameters, bool fixed) const;
     /**
      * An AggNode is a scale transformation only if it has a single
      * parent, and in this case it is also fixed.
      */
-    bool isScale(std::set<Node*> const &parameters, bool fixed) const;
+    bool isScale(std::set<Node const*> const &parameters, bool fixed) const;
 };
 
 #endif /* AGGREGATE_NODE_H */

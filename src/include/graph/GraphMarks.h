@@ -43,7 +43,8 @@ class GraphMarks {
       in the graph. The graph must contain node.
   */
   void markDescendants(Node const *node, int m);
-
+  /** Inserts all nodes with mark m into the graph */
+  void getMarkedNodes(Graph &graph, int m);
 };
 
 #endif /* GRAPH_MARKS_H_ */

@@ -49,7 +49,7 @@ bool ConjugateWishart::canSample(StochasticNode *snode, Graph const &graph)
      Create a set of nodes containing snode and its deterministic
      descendants for the checks below.
   */
-  set<Node *> paramset;
+  set<Node const *> paramset;
   paramset.insert(snode);
   for (unsigned int j = 0; j < dtrm_nodes.size(); ++j) {
     paramset.insert(dtrm_nodes[j]);
@@ -57,7 +57,7 @@ bool ConjugateWishart::canSample(StochasticNode *snode, Graph const &graph)
 
   // Check stochastic children
   for (unsigned int i = 0; i < stoch_nodes.size(); ++i) {
-    vector<Node *> const &param = stoch_nodes[i]->parents();
+    vector<Node const*> const &param = stoch_nodes[i]->parents();
     if (stoch_nodes[i]->isBounded()) {
       return false; //Bounded
     }
@@ -85,7 +85,7 @@ void ConjugateWishart::update(RNG *rng)
   vector<StochasticNode const*> const &stoch_children = stochasticChildren();
   unsigned int nchildren = stoch_children.size();
 
-  vector<Node *> const &param = node()->parents();  
+  vector<Node const *> const &param = node()->parents();  
 
   double k = *param[1]->value(chain());
   double const *Rprior = param[0]->value(chain());
@@ -102,7 +102,7 @@ void ConjugateWishart::update(RNG *rng)
     StochasticNode const *schild = stoch_children[i];
     if (_child_dist[i] != MNORM)
       throw logic_error("Invalid distribution in Conjugate Wishart sampler");
-    vector<Node *> const &cparam = schild->parents();
+    vector<Node const *> const &cparam = schild->parents();
     
     double const *Y = schild->value(chain());
     double const *mu = cparam[0]->value(chain());

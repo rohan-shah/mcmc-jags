@@ -13,7 +13,7 @@
  * @short Node for mixture models.
  */
 class MixtureNode : public DeterministicNode {
-    std::map<std::vector<int>, Node*> _map;
+    std::map<std::vector<int>, Node const *> _map;
     unsigned int _Nindex;
 public:
     /**
@@ -24,8 +24,8 @@ public:
      * copies its value from the parent that matches the current value
      * of the index.
      */
-    MixtureNode(std::vector<Node *> const &index,
-		std::vector<std::pair<std::vector<int>, Node *> > const &parameters);
+    MixtureNode(std::vector<Node const *> const &index,
+		std::vector<std::pair<std::vector<int>, Node const *> > const &parameters);
     ~MixtureNode();
     /**
      * Calculates the value of the node based on the current value of the
@@ -40,12 +40,12 @@ public:
      * A MixtureNode preserves linearity if none of the indices are
      * parameters. It is never a fixed linear function.
      */
-    bool isLinear(std::set<Node*> const &parameters, bool fixed) const;
+    bool isLinear(std::set<Node const*> const &parameters, bool fixed) const;
     /**
      * A MixtureNode is a scale transformation if none of the indices
      * are parameters. It is never a fixed scale transformation.
      */
-    bool isScale(std::set<Node*> const &parameters, bool fixed) const;
+    bool isScale(std::set<Node const*> const &parameters, bool fixed) const;
 };
 
 MixtureNode const *asMixture(Node const *node);

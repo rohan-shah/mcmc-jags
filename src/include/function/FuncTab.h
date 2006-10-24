@@ -34,7 +34,7 @@ public:
    * but additionally registers the function by its link name 
    * @see InverseLinkFunc
    */
-  bool insert (InverseLinkFunc const *func);
+  void insert (InverseLinkFunc const *func);
   /**
    * Inserts a function into the table.
    *
@@ -45,7 +45,7 @@ public:
    * be dynamically allocated. The FuncTab is responsible for freeing
    * the memory allocated to func.
    */
-  bool insert (Function const *func);
+  void insert (Function const *func);
   /**
    * Finds a function by name 
    *

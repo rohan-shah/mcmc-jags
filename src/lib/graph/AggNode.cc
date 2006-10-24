@@ -8,9 +8,9 @@ using std::vector;
 using std::set;
 
 AggNode::AggNode(vector<unsigned int> const &dim, 
-		 vector<Node *> const &nodes,
+		 vector<Node const *> const &nodes,
                  vector<unsigned int> const &offsets)
-  : DeterministicNode(dim, nodes), _offsets(offsets)
+    : DeterministicNode(dim, nodes), _offsets(offsets)
 {
   /* Check argument lengths */
   if (_length != nodes.size() || _length != offsets.size()) {
@@ -43,7 +43,7 @@ AggNode::~AggNode()
 void AggNode::deterministicSample(unsigned int chain)
 {
   double *value = _data + _length * chain;
-  vector<Node*> const &par = parents();
+  vector<Node const*> const &par = parents();
   for (unsigned int i = 0; i < _length; ++i) {
     value[i] = par[i]->value(chain)[_offsets[i]];
   }
@@ -54,12 +54,12 @@ AggNode const *asAggregate(Node *node)
   return dynamic_cast<AggNode const*>(node);
 }
 
-bool AggNode::isLinear(set<Node*> const &parameters, bool fixed) const
+bool AggNode::isLinear(set<Node const*> const &parameters, bool fixed) const
 {
    return true;
 }
 
-bool AggNode::isScale(set<Node*> const &parameters, bool fixed) const
+bool AggNode::isScale(set<Node const *> const &parameters, bool fixed) const
 {
     return (parents().size() == 1);
 }

@@ -92,7 +92,7 @@ BUGSModule::BUGSModule() {
     insert(new DWeib);
     insert(new DWish);
     insert(new DHyper);
-    insert(new DSum);
+    insert(new DSum); 
     insert(new DNormMix);
 
     insert(new CLogLog);

@@ -24,7 +24,7 @@ using std::runtime_error;
 using std::set;
 
 BUGSModel::BUGSModel(unsigned int nchain)
-  : Model(nchain), _symtab(nchain)
+  : Model(nchain), _symtab(graph(), nchain)
 {
 }
 
@@ -47,7 +47,12 @@ Node *BUGSModel::getNode(string const &name, Range const &target_range,
   }
   else {
     message.clear();
-    return array->getSubset(target_range);
+    unsigned int NNode = graph().size();
+    Node *node = array->getSubset(target_range, graph());
+    if (graph().size() != NNode) {
+       addExtraNode(node); // Node was newly allocated
+    }
+    return node;
   }
 }
 
@@ -181,7 +186,7 @@ void BUGSModel::addDevianceNode()
   NodeArray *deviance = _symtab.getVariable("deviance");
   vector<Node*> nodes;
   graph().getNodes(nodes);
-  std::set<StochasticNode*> parameters;
+  std::set<StochasticNode const *> parameters;
   for (vector<Node*>::const_iterator p = nodes.begin(); p != nodes.end(); ++p)
     {
       if ((*p)->isObserved()) {
@@ -193,8 +198,8 @@ void BUGSModel::addDevianceNode()
   if (!parameters.empty()) {
      //Can't construct a deviance node with no parameters
      DevianceNode *dnode = new DevianceNode(parameters);
-     deviance->insert(dnode, vector<unsigned int>(1,1));
      addExtraNode(dnode);
+     deviance->insert(dnode, vector<unsigned int>(1,1));
   }
 }
 

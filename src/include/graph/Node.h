@@ -26,8 +26,8 @@ class RNG;
  * @short Node in a directed graphical model
  */
 class Node {
-  std::vector<Node *> _parents;
-  std::set<Node*> _children;
+  std::vector<Node const *> _parents;
+  std::set<Node*> *_children;
   unsigned int _ref;
   bool _isobserved;
   bool _isdiscrete;
@@ -58,7 +58,8 @@ public:
    * @ param parents vector of parent nodes. A node may not be its own
    * parent.
    */
-  Node(std::vector<unsigned int> const &dim, std::vector<Node*> const &parents);
+  Node(std::vector<unsigned int> const &dim, 
+       std::vector<Node const *> const &parents);
   /**
    * Destructor. 
    */
@@ -83,11 +84,11 @@ public:
   /**
    * Vector of parents.
    */
-  std::vector<Node*> const &parents() const;
+  std::vector<Node const *> const &parents() const;
   /** 
    * Set of children.
    */
-  std::set<Node*> const &children() const;
+  std::set<Node*> const *children() const;
   /**
    * Draws a random sample from the node's prior distribution.
    * @param rng Pointer to random number generator
@@ -174,6 +175,6 @@ public:
  * Calculate the number of chains of parameter vector. Returns 0
  * if the parameters are inconsistent
  */
-unsigned int countChains(std::vector<Node*> const &parameters);
+unsigned int countChains(std::vector<Node const *> const &parameters);
 
 #endif /* NODE_H_ */

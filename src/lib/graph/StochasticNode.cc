@@ -13,7 +13,8 @@ using std::vector;
 using std::string;
 using std::runtime_error;
 
-static vector<unsigned int> mkDim(Distribution const *dist, vector<Node*> const &parents)
+static vector<unsigned int> mkDim(Distribution const *dist, 
+				  vector<Node const *> const &parents)
 {
   /* 
      Calculates dimension of stochastic node as a function of its
@@ -36,11 +37,11 @@ static vector<unsigned int> mkDim(Distribution const *dist, vector<Node*> const 
   return dist->dim(parameter_dims);
 }
 
-static vector<Node*> mkParents(vector<Node*> const &parameters, 
-		               Node *lower, Node *upper)
+static vector<Node const *> mkParents(vector<Node const *> const &parameters, 
+				      Node const *lower, Node const *upper)
 {
   //Add bounds to vector of parents, if they are non-zero
-  vector<Node*> parents = parameters;
+  vector<Node const *> parents = parameters;
   if (lower) {
     parents.push_back(lower);
   }
@@ -51,8 +52,8 @@ static vector<Node*> mkParents(vector<Node*> const &parameters,
 }
 
 StochasticNode::StochasticNode(Distribution const *dist, 
-			       vector<Node*> const &parameters,
-			       Node *lower, Node *upper)
+			       vector<Node const *> const &parameters,
+			       Node const *lower, Node const *upper)
   : Node(mkDim(dist, parameters), mkParents(parameters, lower, upper)), 
     _dist(dist), _parameters(nchain()), _lower(lower), _upper(upper)
 {

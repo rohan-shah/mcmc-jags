@@ -15,7 +15,7 @@ using std::vector;
 using std::logic_error;
 
 Node::Node(vector<unsigned int> const &dim, unsigned int nchain)
-    : _parents(0), _children(), _ref(0), _isobserved(false),
+    : _parents(0), _children(0), _ref(0), _isobserved(false),
       _isdiscrete(false), _dim(dim), _length(product(dim)), _nchain(nchain),
       _data(0)
       
@@ -28,10 +28,13 @@ Node::Node(vector<unsigned int> const &dim, unsigned int nchain)
     for (unsigned int i = 0; i < N; ++i) {
 	_data[i] = JAGS_NA;
     }
+
+    _children = new set<Node*>;
 }
 
-Node::Node(vector<unsigned int> const &dim, vector<Node *> const &parents)
-  : _parents(parents), _children(), _ref(0),  _isobserved(false), 
+Node::Node(vector<unsigned int> const &dim, 
+	   vector<Node const *> const &parents)
+  : _parents(parents), _children(0), _ref(0),  _isobserved(false), 
     _isdiscrete(false), _dim(dim), _length(product(dim)),
      _nchain(countChains(parents)), _data(0)
 {
@@ -46,7 +49,7 @@ Node::Node(vector<unsigned int> const &dim, vector<Node *> const &parents)
   }
   
   for (unsigned int i = 0; i < parents.size(); ++i) {
-    parents[i]->_children.insert(this);
+    parents[i]->_children->insert(this);
   }
 
   unsigned int N = _length * _nchain;
@@ -54,6 +57,8 @@ Node::Node(vector<unsigned int> const &dim, vector<Node *> const &parents)
   for (unsigned int i = 0; i < N; ++i) {
       _data[i] = JAGS_NA;
   }
+  
+  _children = new set<Node*>;
 }
 
 Node::~Node()
@@ -61,16 +66,19 @@ Node::~Node()
     delete [] _data;
 
     for (unsigned int i = 0; i < _parents.size(); ++i) {
-	_parents[i]->_children.erase(this);
+	_parents[i]->_children->erase(this);
     }
-    for (set<Node*>::iterator p = _children.begin(); p != _children.end(); p++)
-    {
-	vector<Node*> &P = (*p)->_parents;
-	vector<Node*>::iterator cp;
-	while ( (cp = find(P.begin(), P.end(), this)) != P.end()) {
-	    P.erase(cp);
+    for (set<Node*>::iterator p = _children->begin(); p != _children->end(); 
+	 p++)
+	{
+	    vector<Node const *> &P = (*p)->_parents;
+	    vector<Node const *>::iterator cp;
+	    while ( (cp = find(P.begin(), P.end(), this)) != P.end()) {
+		P.erase(cp);
 	}
     }
+
+    delete _children;
 }
 
 void Node::ref()
@@ -91,12 +99,12 @@ unsigned int Node::refCount() const
   return _ref;
 }
 
-vector <Node *> const &Node::parents() const
+vector <Node const *> const &Node::parents() const
 {
   return _parents;
 }
 
-set<Node*> const &Node::children() const
+set<Node*> const *Node::children() const
 {
   return _children;
 }
@@ -172,7 +180,7 @@ unsigned int Node::nchain() const
   return _nchain;
 }
 
-unsigned int countChains(std::vector<Node*> const &parameters)
+unsigned int countChains(std::vector<Node const *> const &parameters)
 {
   unsigned int nchain = parameters[0]->nchain();
 

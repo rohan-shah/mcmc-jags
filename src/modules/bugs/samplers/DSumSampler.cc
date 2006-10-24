@@ -29,9 +29,8 @@ DSumSampler::DSumSampler(vector<StochasticNode *> const &nodes,
     }
 
     Node const *dsum = 0;
-    set<Node*> const &children = nodes[0]->children();
-    for (set<Node*>::const_iterator p = children.begin(); p != children.end();
-	 ++p) 
+    set<Node*> const *children = nodes[0]->children();
+    for (set<Node*>::const_iterator p = children->begin(); p != children->end();	 ++p) 
 	{
 	  if (asStochastic(*p) && (*p)->isObserved() &&
 	      asStochastic(*p)->distribution()->name() == "dsum")
@@ -55,47 +54,43 @@ DSumSampler::~DSumSampler()
 bool DSumSampler::canSample(vector<StochasticNode *> const &nodes,
 			    Graph const &graph)
 {
-  if (nodes.size() != 2)
-    return false;
+    if (nodes.size() != 2)
+	return false;
 
-  if (!(graph.contains(nodes[0]) && graph.contains(nodes[1])))
-    return false;
-
-  Node const *dsum[2] = {0,0};
-  for (unsigned int i = 0; i < 2; ++i) {
-    // Nodes must be scalar ...
-    if (nodes[i]->length() != 1)
-      return false;
+    if (!(graph.contains(nodes[0]) && graph.contains(nodes[1])))
+	return false;
     
-    // stochastic ...
-    if (!asStochastic(nodes[i]))
-      return false;
+    Node const *dsum[2] = {0,0};
+    for (unsigned int i = 0; i < 2; ++i) {
+	// Nodes must be scalar ...
+	if (nodes[i]->length() != 1)
+	    return false;
+    
+	// stochastic ...
+	if (!asStochastic(nodes[i]))
+	    return false;
 
-    // discrete-valued ...
-    if (!nodes[i]->isDiscreteValued())
-      return false;
-
-    // Nodes must be parents of an observed dsum node
-    set<Node*> const &children = nodes[i]->children();
-    for (set<Node*>::const_iterator p = children.begin(); 
-	 p != children.end(); ++p) 
-      {
-	if (asStochastic(*p) && (*p)->isObserved() &&
-	    asStochastic(*p)->distribution()->name() == "dsum")
-	  {
-	    dsum[i] = *p;
-	    break;
-	  }
-      }
-    if (dsum[i] == 0) {
-      return false;
+	// discrete-valued ...
+	if (!nodes[i]->isDiscreteValued())
+	    return false;
     }
-  }
-  // Must be the same dsum node!
-  if (dsum[0] != dsum[1])
-    return false;
 
-  return true;
+    /* Nodes must be direct parents of a single observed stochastic
+       node with distribution DSum  */
+    vector<StochasticNode const*> stoch_nodes;
+    vector<DeterministicNode*> dtrm_nodes;
+    classifyChildren(nodes, graph, stoch_nodes, dtrm_nodes);
+    if (!dtrm_nodes.empty())
+	return false;
+    if (stoch_nodes.size() != 1)
+	return false;
+    if (!stoch_nodes[0]->isObserved())
+	return false;
+    if (stoch_nodes[0]->distribution()->name() != "dsum")
+	return false;
+
+    // And so, their work was done...
+    return true;
 }
 
 /*

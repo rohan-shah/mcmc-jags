@@ -1,9 +1,11 @@
 #include <config.h>
 #include <compiler/ConstantFactory.h>
 #include <graph/ConstantNode.h>
+#include <compiler/NodeFactory.h>
 
 #include <sstream>
 #include <cmath>
+#include <cfloat>
 
 using std::map;
 using std::ostringstream;
@@ -18,49 +20,44 @@ bool lt(double arg1, double arg2)
 }
 
 ConstantFactory::ConstantFactory(unsigned int nchain)
-  : _nchain(nchain)
+    : _nchain(nchain)
 {
 }
 
-ConstantNode*
-ConstantFactory::getConstantNode(double value)
+ConstantNode *ConstantFactory::getConstantNode(double value, Graph &graph)
 {
   
-  ConstantNode *cnode = 0;
+    ConstantNode *cnode = 0;
 
-  map<const double,ConstantNode*, ltdouble>::const_iterator i 
-    = _constmap.find(value);
-  if (i == _constmap.end()) {
-    // Create a new constant node
-    //ostringstream os;
-    long ivalue;
-    /* FIXME: This is, unfortunately, a big problem casting doubles to
-       long that is used everywhere, and is currently broken for
-       negative numbers
-    */
-    if (value >= 0) {
-       ivalue = static_cast<long>(value + DBL_EPSILON);
+    map<const double,ConstantNode*, ltdouble>::const_iterator i 
+	= _constmap.find(value);
+    if (i == _constmap.end()) {
+	// Create a new constant node
+	long ivalue;
+	/* FIXME: This is, unfortunately, a big problem casting doubles to
+	   long that is used everywhere, and is currently broken for
+	   negative numbers
+	*/
+	if (value >= 0) {
+	    ivalue = static_cast<long>(value + DBL_EPSILON);
+	}
+	else {
+	    ivalue = static_cast<long>(value - DBL_EPSILON);
+	}
+	if (fabs(value - ivalue) < DBL_EPSILON) {
+	    // Integer value 
+	    cnode = new ConstantNode(ivalue, _nchain);
+	}
+	else {
+	    // Floating point value
+	    cnode = new ConstantNode(value, _nchain);
+	}
+
+	_constmap[value] = cnode;
+	graph.add(cnode);
+	return cnode;
     }
     else {
-      ivalue = static_cast<long>(value - DBL_EPSILON);
+	return i->second;
     }
-    if (fabs(value - ivalue) < DBL_EPSILON) {
-      // Integer value 
-      cnode = new ConstantNode(ivalue, _nchain);
-      //os << ivalue;
-    }
-    else {
-      // Floating point value
-      cnode = new ConstantNode(value, _nchain);
-      //os << value;
-    }
-
-    //cnode->setName(os.str());
-    _graph.add(cnode);
-    _constmap[value] = cnode;
-    return cnode;
-  }
-  else {
-    return i->second;
-  }
 }

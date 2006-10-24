@@ -2,12 +2,10 @@
 
 #include <compiler/Compiler.h>
 #include <compiler/ParseTree.h>
-#include <model/SymTab.h>
 #include <graph/LogicalNode.h>
 #include <graph/ConstantNode.h>
 #include <graph/StochasticNode.h>
 #include <graph/DevianceNode.h>
-#include <graph/Graph.h>
 #include <sarray/RangeIterator.h>
 
 #include "MixCompiler.h"
@@ -91,7 +89,7 @@ double Compiler::constFromNode(ParseTree const*p)
   //Evaluate constant expression if it corresponds to a node with
   //a fixed value
 
-  NodeArray *array = _symtab.getVariable(p->name());
+  NodeArray *array = _model.symtab().getVariable(p->name());
   if (array) {
     // We can't call getConstantRange() because we aren't sure that
     // the range expression can be evaluated.
@@ -104,7 +102,7 @@ double Compiler::constFromNode(ParseTree const*p)
 			  print(subset_range) + " in constant expression");
     }
     else {
-      Node *node = array->getSubset(subset_range);
+      Node *node = array->getSubset(subset_range, _model.graph());
       if (node && node->isObserved()) {
 	return *node->value(0);
       }
@@ -355,7 +353,7 @@ Range Compiler::VariableSubsetRange(ParseTree const *var)
     throw runtime_error(string("Counter cannot appear on LHS of relation: ")
 			+ name);
   }
-  NodeArray *array = _symtab.getVariable(name);
+  NodeArray *array = _model.symtab().getVariable(name);
   if (array) {
     // It's a declared node
     vector<ParseTree*> const &range_list = var->parameters();
@@ -440,25 +438,13 @@ Range Compiler::CounterRange(ParseTree const *var)
   }
 }
 
-Node* Compiler::VarGetNode(ParseTree const *var)
-{
-  if (var->treeClass() != P_VAR) {
-    throw logic_error("Expecting variable expression");
-  }
-  NodeArray *array = _symtab.getVariable(var->name());
-  Range range = VariableSubsetRange(var);
-  Node *node = array->find(range);
-  
-  return node;
-}
-
 Node * Compiler::getSubSetNode(ParseTree const *var)
 {
   if (var->treeClass() != P_VAR) {
     throw logic_error("Expecting variable expression");
   }
 
-  NodeArray *array = _symtab.getVariable(var->name());
+  NodeArray *array = _model.symtab().getVariable(var->name());
   if (array == 0) {
     throw runtime_error(string("Unknown variable ") + var->name());
   }
@@ -470,7 +456,7 @@ Node * Compiler::getSubSetNode(ParseTree const *var)
     throw runtime_error(string("Subset ") + var->name() + print(subset_range)
 			+ " out of range");
   }
-  Node *node = array->getSubset(subset_range);
+  Node *node = array->getSubset(subset_range, _model.graph());
   if (node == 0 && _strict_resolution) {
     throw runtime_error(string("Unable to resolve parameter ") + 
 			array->name() + print(subset_range) +
@@ -485,16 +471,16 @@ Node *Compiler::getArraySubset(ParseTree const *p)
 
   switch(p->treeClass()) {
   case P_VALUE:
-    node = _constantfactory.getConstantNode(p->value());
+      node = _constantfactory.getConstantNode(p->value(), _model.graph());
     break;
   case P_VAR:
     {
       Counter *counter = _countertab.getCounter(p->name()); //A counter
       if (counter) {
-	node = _constantfactory.getConstantNode((*counter)[0]);
+	node = _constantfactory.getConstantNode((*counter)[0], _model.graph());
       }
       else {
-	NodeArray *array = _symtab.getVariable(p->name());
+	NodeArray *array = _model.symtab().getVariable(p->name());
 	if (array == 0) {
 	  throw runtime_error(string("Unknown parameter ") + p->name());
 	}
@@ -596,23 +582,22 @@ static Distribution const *getDistribution(ParseTree const *pstoch_rel,
   return dist;
 }
 
-//debuggin
-#include <iostream>
+
 Node* Compiler::getParameter(ParseTree const *t)
 {
-    vector<Node*> parents;
+    vector<Node const *> parents;
     Node *node = 0;
 
     switch (t->treeClass()) {
     case P_VALUE:
-	node =  _constantfactory.getConstantNode(t->value());
+	node =  _constantfactory.getConstantNode(t->value(), _model.graph());
 	break;
     case P_VAR:
 	node = getArraySubset(t);
 	break;
     case P_FUNCTION: case P_OPERATOR:
 	if (getLogicalParameterVector(t, parents)) {
-	    node = _logicalfactory.getLogicalNode(getFunction(t, funcTab()), parents);
+	    node = _logicalfactory.getLogicalNode(getFunction(t, funcTab()), parents, _model.graph());
 	}
 	break;
     default:
@@ -629,7 +614,7 @@ Node* Compiler::getParameter(ParseTree const *t)
 }
 
 bool Compiler::getLogicalParameterVector(ParseTree const *t,
-					 vector<Node*> &parents)
+					 vector<Node const *> &parents)
 {
   if (!parents.empty()) {
     throw logic_error("parent vector must be empty in getLogicalParameterVector");
@@ -658,7 +643,7 @@ bool Compiler::getLogicalParameterVector(ParseTree const *t,
 Node * Compiler::allocateStochastic(ParseTree const *stoch_relation)
 {
   ParseTree const *distribution = stoch_relation->parameters()[1];  
-  vector<Node*> parameters;
+  vector<Node const *> parameters;
   Node *lBound = 0, *uBound = 0;
 
   // Create the parameter vector
@@ -692,20 +677,25 @@ Node * Compiler::allocateStochastic(ParseTree const *stoch_relation)
     }
   }
 
-  return new StochasticNode(getDistribution(stoch_relation, distTab()),
-			    parameters, lBound, uBound);
+  StochasticNode *snode =
+     new StochasticNode(getDistribution(stoch_relation, distTab()),
+		    parameters, lBound, uBound);
+  _model.graph().add(snode);
+  return snode;
 }
 
 Node * Compiler::allocateLogical(ParseTree const *rel)
 {
   ParseTree *expression = rel->parameters()[1];
   Node *node = 0;
-  vector <Node*> parents;
+  vector <Node const *> parents;
 
   switch (expression->treeClass()) {
   case P_VALUE: 
-    node = new ConstantNode(expression->value(), _symtab.nchain());
-    _graph.add(node); //FIXME: Why are we adding here?
+    node = new ConstantNode(expression->value(), _model.nchain());
+    _model.graph().add(node); 
+    /* The reason we aren't using a ConstantFactory here is to ensure
+       that the nodes are correctly named */
     break;
   case P_VAR: case P_FUNCTION: case P_OPERATOR:
     node = getParameter(expression);
@@ -713,7 +703,7 @@ Node * Compiler::allocateLogical(ParseTree const *rel)
   case P_LINK:
     if (getLogicalParameterVector(expression, parents)) {
       node = _logicalfactory.getLogicalNode(getLink(expression, funcTab()), 
-					    parents);
+					    parents, _model.graph());
     }
     break;
   default:
@@ -723,7 +713,6 @@ Node * Compiler::allocateLogical(ParseTree const *rel)
   return node;
 }
 
-#include <iostream>
 void Compiler::allocate(ParseTree const *rel)
 {
   if (_is_resolved[_n_relations])
@@ -746,7 +735,7 @@ void Compiler::allocate(ParseTree const *rel)
   if (node) {
     /* Check if a node is already inserted into this range */
     ParseTree *var = rel->parameters()[0];
-    NodeArray *array = _symtab.getVariable(var->name());
+    NodeArray *array = _model.symtab().getVariable(var->name());
     Range range = VariableSubsetRange(var);
     if (array->find(range)) {
       throw runtime_error(string("Attempt to redefine node ") +
@@ -758,7 +747,6 @@ void Compiler::allocate(ParseTree const *rel)
   }
 }
 
-#include <iostream>
 void Compiler::setConstantMask(ParseTree const *rel)
 {
   ParseTree const *var = rel->parameters()[0];
@@ -855,7 +843,7 @@ void Compiler::writeConstantData(ParseTree const *relations)
     }
   }
 
-  _symtab.writeData(temp_data_table);
+  _model.symtab().writeData(temp_data_table);
 }
 
 void Compiler::writeVariableData()
@@ -875,7 +863,7 @@ void Compiler::writeVariableData()
     }
   }
 
-  _symtab.writeData(temp_data_table);
+  _model.symtab().writeData(temp_data_table);
 }
 		     
 void Compiler::writeRelations(ParseTree const *relations)
@@ -903,7 +891,7 @@ void Compiler::writeRelations(ParseTree const *relations)
   delete [] _is_resolved; _is_resolved = 0;
 
   writeVariableData();
-  collectNodes();
+  //collectNodes();
 }
 
 void Compiler::traverseTree(ParseTree const *relations, CompilerMemFn fun,
@@ -947,16 +935,15 @@ void Compiler::traverseTree(ParseTree const *relations, CompilerMemFn fun,
     }
 }
 
-Compiler::Compiler(Graph &graph, SymTab &symtab,
-		   map<string, SArray> const &data_table)
-    : _graph(graph), _symtab(symtab), _countertab(), 
+Compiler::Compiler(BUGSModel &model, map<string, SArray> const &data_table)
+    : _model(model), _countertab(), 
       _data_table(data_table), _n_resolved(0), 
       _n_relations(0), _is_resolved(0), _strict_resolution(false),
-      _constantfactory(symtab.nchain())
+      _constantfactory(model.nchain())
 {
-  if (graph.size() != 0)
+  if (_model.graph().size() != 0)
     throw invalid_argument("Non empty graph in Compiler constructor");
-  if (symtab.size() != 0)
+  if (_model.symtab().size() != 0)
     throw invalid_argument("Non empty symtab in Compiler constructor");
 }
 
@@ -975,7 +962,7 @@ void Compiler::declareVariables(vector<ParseTree*> const &dec_list)
     unsigned int ndim = node_dec->parameters().size();
     if (ndim == 0) {
 	// Variable is scalar
-	_symtab.addVariable(name, vector<unsigned int>(1,1));
+	_model.symtab().addVariable(name, vector<unsigned int>(1,1));
     }
     else {
       // Variable is an array
@@ -992,21 +979,8 @@ void Compiler::declareVariables(vector<ParseTree*> const &dec_list)
 	    }
 	    dim[i] = static_cast<unsigned int>(dim_i);
 	}
-	_symtab.addVariable(name, dim);
+	_model.symtab().addVariable(name, dim);
     }
-  }
-}
-
-void Compiler::collectNodes()
-{
-  vector<Node*> nodes;
-  _symtab.getNodes(nodes);
-  _logicalfactory.graph().getNodes(nodes);
-  _constantfactory.graph().getNodes(nodes);
-  _mixfactory.graph().getNodes(nodes);
-
-  for (vector<Node*>::iterator p = nodes.begin(); p != nodes.end(); ++p) {
-    _graph.add(*p);
   }
 }
 
@@ -1016,8 +990,8 @@ void Compiler::undeclaredVariables(ParseTree const *prelations)
   map<string, SArray>::const_iterator p = _data_table.begin();
   for (; p != _data_table.end(); ++p) {
     string const &name = p->first;
-    if (!_symtab.getVariable(name)) {
-      _symtab.addVariable(name, p->second.dim(false));
+    if (!_model.symtab().getVariable(name)) {
+      _model.symtab().addVariable(name, p->second.dim(false));
     }
   }
 
@@ -1025,9 +999,9 @@ void Compiler::undeclaredVariables(ParseTree const *prelations)
   traverseTree(prelations, &Compiler::getArrayDim);
   map<string, vector<vector<int> > >::const_iterator i = _node_array_ranges.begin(); 
   for (; i != _node_array_ranges.end(); ++i) {
-    if (_symtab.getVariable(i->first)) {
+    if (_model.symtab().getVariable(i->first)) {
        //Node already declared. Check consistency 
-       NodeArray const * array = _symtab.getVariable(i->first);
+       NodeArray const * array = _model.symtab().getVariable(i->first);
        vector<int> const &upper = array->range().upper();
        if (upper.size() != i->second[1].size()) {
            string msg = "Dimension mismatch between data and model for node ";
@@ -1056,7 +1030,7 @@ void Compiler::undeclaredVariables(ParseTree const *prelations)
 	    }
 	}
 				 
-	_symtab.addVariable(i->first, dim);
+	_model.symtab().addVariable(i->first, dim);
     }
   }
   //_node_array_ranges.clear(); (Need to keep this now)
@@ -1079,12 +1053,7 @@ MixtureFactory& Compiler::mixtureFactory()
    return _mixfactory;
 }
 
-SymTab &Compiler::symTab() const
+BUGSModel &Compiler::model() const
 {
-   return _symtab;
-}
-
-Graph &Compiler::graph() const
-{
-  return _graph;
+    return _model;
 }

@@ -13,8 +13,8 @@ class StochasticNode : public Node {
     Distribution const * const _dist;
     std::vector<std::vector<double const *> > _parameters;
     std::vector<std::vector<unsigned int> > _dims;
-    Node *_lower, *_upper;
-
+    Node const *_lower;
+    Node const *_upper;
     /* Forbid copying of Stochastic Nodes */
     StochasticNode(StochasticNode const &orig);
     StochasticNode &operator=(StochasticNode const &rhs);
@@ -26,8 +26,8 @@ public:
      * is truncated at the current value of the lower and upper bounds.
      */
     StochasticNode(Distribution const *dist, 
-                   std::vector<Node*> const &parameters,
-                   Node *lower=0, Node *upper=0);
+                   std::vector<Node const *> const &parameters,
+                   Node const *lower=0, Node const *upper=0);
     ~StochasticNode();
     /**
      * Indicates whether the distribution of the node is bounded above

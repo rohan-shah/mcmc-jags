@@ -15,7 +15,8 @@ using std::set;
 using std::logic_error;
 using std::runtime_error;
 
-static vector<unsigned int> mkDim(Function const *func, vector<Node*> const &parents)
+static vector<unsigned int> mkDim(Function const *func, 
+				  vector<Node const *> const &parents)
 {
   /* 
      Calculates dimension of logical node as a function of its
@@ -40,7 +41,7 @@ static vector<unsigned int> mkDim(Function const *func, vector<Node*> const &par
 
 
 LogicalNode::LogicalNode(Function const *function, 
-			 vector<Node*> const &parameters)
+			 vector<Node const *> const &parameters)
   : DeterministicNode(mkDim(function,parameters), parameters),
     _func(function),
     _parameters(nchain())
@@ -78,7 +79,7 @@ string LogicalNode::name(NodeNameTab const &name_table) const
   if (!name.empty())
     return name;
 
-  vector<Node *> const &par = parents();
+  vector<Node const *> const &par = parents();
   string const &fname = _func->name();
   if (fname == "*" || fname == "/" || fname == "+" || fname == "-")
     {
@@ -143,7 +144,7 @@ bool isLogical(Node const *node)
   return dynamic_cast<LogicalNode const*>(node);
 }
 
-bool LogicalNode::isLinear(std::set<Node*> const &parameters, bool fixed) const
+bool LogicalNode::isLinear(std::set<Node const *> const &parameters, bool fixed) const
 {
     vector<bool> mask(parents().size());
     for (unsigned int i = 0; i < parents().size(); ++i) {
@@ -160,7 +161,7 @@ bool LogicalNode::isLinear(std::set<Node*> const &parameters, bool fixed) const
     return _func->isLinear(mask, fixed_mask);
 }
 
-bool LogicalNode::isScale(std::set<Node*> const &parameters, bool fixed) const
+bool LogicalNode::isScale(std::set<Node const *> const &parameters, bool fixed) const
 {
     unsigned int nparam = 0;
     unsigned int index = 0;

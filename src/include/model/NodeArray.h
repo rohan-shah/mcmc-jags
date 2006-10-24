@@ -19,8 +19,8 @@ class SArray;
 class NodeArray {
   std::string _name;
   Range _range;
+  Graph _member_graph;
   unsigned int _nchain;
-  Graph _graph;
   Node **_node_pointers;
   unsigned int *_offsets;
   std::map<Range, Node *> _generated_nodes;
@@ -35,7 +35,8 @@ public:
   /**
    * Constructor. Creates a NodeArray with the given name and dimension
    */
-  NodeArray(std::string const &name, std::vector<unsigned int> const &dim, unsigned int nchain);
+  NodeArray(std::string const &name, std::vector<unsigned int> const &dim, 
+	    unsigned int nchain);
   ~NodeArray();
   /**
    * Inserts a node into the subset of the NodeArray defined by range.
@@ -62,11 +63,10 @@ public:
    * Returns an arbitrary subset of the NodeArray. If the range
    * corresponds to a previously inserted node, this will be
    * returned. Otherwise, an aggregate node will be created, and it
-   * will be added to the graph of the NodeArray.  If the range is not
-   * completely covered by inserted nodes, a NULL pointer will be
-   * returned.
+   * will be added to the given graph.  If the range is not completely
+   * covered by inserted nodes, a NULL pointer will be returned.
    */
-  Node* getSubset(Range const &range);
+  Node* getSubset(Range const &range, Graph &graph);
   /**
    * Sets the values of the nodes in the array. 
    *
@@ -101,7 +101,7 @@ public:
    * given for an index with no node, then a new ConstantNode is created
    * with that value.
    */
-  void setData(SArray const &value);
+  void setData(SArray const &value, Graph &graph);
   /**
    * Returns the name of the node array
    */
@@ -115,7 +115,7 @@ public:
    * contains all the nodes that were either used in a call to
    * insert, or created during a call to getSubset.
    */
-  Graph const &graph() const;
+  //Graph const &graph() const;
   /**
    * Returns the range corresponding to the given node, if it
    * belongs to the graph associated with the NodeArray. If it is

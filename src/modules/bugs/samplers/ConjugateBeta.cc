@@ -64,7 +64,7 @@ bool ConjugateBeta::canSample(StochasticNode *snode,
      Create a set of nodes containing snode and its deterministic
      descendants for the checks below.
   */
-  set<Node *> paramset;
+  set<Node const *> paramset;
   paramset.insert(snode);
   for (unsigned int j = 0; j < dtrm_nodes.size(); ++j) {
     paramset.insert(dtrm_nodes[j]);
@@ -75,7 +75,7 @@ bool ConjugateBeta::canSample(StochasticNode *snode,
   for (unsigned int j = 0; j < dtrm_nodes.size(); ++j) {
     if (isMixture(dtrm_nodes[j])) {
       // Check that indices do not depend on snode
-      vector<Node*> const &parents = dtrm_nodes[j]->parents();
+      vector<Node const*> const &parents = dtrm_nodes[j]->parents();
       unsigned int nindex = asMixture(dtrm_nodes[j])->index_size();
       for (unsigned int i = 0; i < nindex; ++i) {
         if (paramset.count(parents[i]))

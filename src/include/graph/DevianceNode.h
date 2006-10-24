@@ -19,7 +19,7 @@ public:
      * stochastic nodes. The value of a Deviance node is minus twice
      * the log density of the parents.
      */
-    DevianceNode(std::set<StochasticNode*> const &parameters);
+    DevianceNode(std::set<StochasticNode const*> const &parameters);
     /**
      * Calculate the deviance.
      */
@@ -27,11 +27,11 @@ public:
     /**
      * A deviance node never preserves linearity.
      */
-    bool isLinear(std::set<Node*> const &parameters, bool fixed) const;
+    bool isLinear(std::set<Node const*> const &parameters, bool fixed) const;
     /**
      * A deviance node is never a scale transformation of its parameters.
      */
-    bool isScale(std::set<Node*> const &parameters, bool fixed) const;
+    bool isScale(std::set<Node const*> const &parameters, bool fixed) const;
 };
 
 #endif
