@@ -36,11 +36,6 @@ DInterval::checkParameterDim(vector<vector<unsigned int> > const &dims) const
     return isScalar(dims[0]) && dims[1].size() == 1;
 }
 
-vector<unsigned int> DInterval::dim(vector<vector<unsigned int> > const &dims) const
-{
-    return vector<unsigned int>(1,1);
-}
-
 bool DInterval::checkParameterValue(vector<double const *> const &par,
 				    vector<vector<unsigned int> > const &dims) 
     const

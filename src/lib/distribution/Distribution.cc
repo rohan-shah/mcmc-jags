@@ -58,3 +58,10 @@ bool Distribution::checkParameterValue(vector<double const *> const &args,
 {
   return true;
 }
+
+vector<unsigned int>
+Distribution::dim(vector<vector<unsigned int> > const &parameters) const
+{
+    return vector<unsigned int>(1,1);
+}
+

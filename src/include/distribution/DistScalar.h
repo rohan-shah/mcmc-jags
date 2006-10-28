@@ -64,11 +64,6 @@ class DistScalar : public Distribution
   bool checkParameterDim(std::vector<std::vector<unsigned int> > const &dims)
      const;
   /**
-   * All scalar distributions have the same dimension
-   */
-  std::vector<unsigned int> 
-      dim(std::vector<std::vector<unsigned int> > const &parameters) const;
-  /**
    * This implementation of lowerSupport calculates the lower limit
    * based on the bounds and on the DistScalar##l function.
    */

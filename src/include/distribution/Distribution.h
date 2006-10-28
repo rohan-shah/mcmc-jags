@@ -132,10 +132,13 @@ public:
 			    std::vector<std::vector<unsigned int> > const &dims) const;
     /**
      * Calculates what the dimension of the distribution should be,
-     * based on the distribution of its parameters.
+     * based on the distribution of its parameters. Since the majority
+     * of distributions are scalar valued, a default function is provided
+     * that returns a vector of length 1 with element 1. This must be
+     * overloaded by multivariate distributions.
      */
     virtual std::vector<unsigned int> 
-	dim (std::vector <std::vector<unsigned int> > const &args) const = 0;
+	dim (std::vector <std::vector<unsigned int> > const &args) const;
     /**
      * Returns true if the distribution has support on the integers.
      */

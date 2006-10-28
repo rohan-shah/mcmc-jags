@@ -60,7 +60,6 @@ bool DSumSampler::canSample(vector<StochasticNode *> const &nodes,
     if (!(graph.contains(nodes[0]) && graph.contains(nodes[1])))
 	return false;
     
-    Node const *dsum[2] = {0,0};
     for (unsigned int i = 0; i < 2; ++i) {
 	// Nodes must be scalar ...
 	if (nodes[i]->length() != 1)

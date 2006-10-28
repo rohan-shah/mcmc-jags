@@ -141,7 +141,6 @@ DNormMix::randomSample(double *x, unsigned int length,
 {
     double const *mu = MU(par);
     double const *tau = TAU(par);
-    double const *p = PROB(par);
     unsigned long Ncat = product(dims[0]);
     
     // Select mixture component (r)
@@ -166,7 +165,6 @@ void DNormMix::typicalValue(double *x, unsigned int length,
                   std::vector<std::vector<unsigned int> > const &dims) const
 {
     double const *mu = MU(par);
-    double const *prob = PROB(par);
     unsigned int Ncat = product(dims[0]);
 
     unsigned int j = 0;
@@ -181,7 +179,7 @@ void DNormMix::typicalValue(double *x, unsigned int length,
 
 bool DNormMix::isSupportFixed(std::vector<bool> const &fixmask) const
 {
-    true;
+    return true;
 }
 
 void 
@@ -193,8 +191,3 @@ DNormMix::support(double *lower, double *upper, unsigned int length,
     *upper = DBL_MAX;
 }
 
-vector<unsigned int> 
-DNormMix::dim(vector<vector<unsigned int> > const &dims) const
-{
-    return vector<unsigned int>(1,1);
-}

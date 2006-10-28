@@ -52,12 +52,6 @@ void DistScalar::support(double *lower, double *upper,
 
 }
 
-vector<unsigned int> 
-DistScalar::dim(vector<vector<unsigned int> > const &parameters) const
-{
-    return vector<unsigned int>(1,1);
-}
-
 double DistScalar::l(vector<double const *> const &parameters) const
 {
     switch(_support) {

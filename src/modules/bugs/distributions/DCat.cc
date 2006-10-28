@@ -74,12 +74,6 @@ void DCat::randomSample(double *x, unsigned int length,
     *x  = NCAT(dims);
 }
 
-std::vector<unsigned int> 
-DCat::dim(std::vector<std::vector<unsigned int> > const &dims) const
-{
-    return vector<unsigned int>(1,1);
-}
-
 void DCat::support(double *lower, double *upper, unsigned int length,
 	           vector<double const *> const &par,
 	           vector<vector<unsigned int> > const &dims) const
