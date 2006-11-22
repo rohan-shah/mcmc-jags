@@ -113,6 +113,8 @@ AC_CONFIG_FILES([
   src/modules/bugs/distributions/Makefile	
   src/modules/bugs/samplers/Makefile	
   src/modules/bugs/matrix/Makefile	
+  src/modules/mix/Makefile	
+  src/modules/mix/distributions/Makefile	
   src/terminal/Makefile
 ])
 AC_OUTPUT

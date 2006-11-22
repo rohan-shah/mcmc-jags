@@ -37,7 +37,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-subdir = src/modules/bugs/distributions
+subdir = src/modules/mix/distributions
 DIST_COMMON = $(noinst_HEADERS) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -51,13 +51,9 @@ mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/src/include/config.h
 CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
-bugsdist_la_LIBADD =
-am_bugsdist_la_OBJECTS = DBern.lo DCat.lo DDirch.lo DHyper.lo \
-	DLogis.lo DMulti.lo DSum.lo DWeib.lo DBeta.lo DChisqr.lo \
-	DExp.lo DInterval.lo DMNorm.lo DNegBin.lo DPar.lo DT.lo \
-	DWish.lo DBin.lo DDexp.lo DGamma.lo DLnorm.lo DMState.lo \
-	DNorm.lo DPois.lo DUnif.lo
-bugsdist_la_OBJECTS = $(am_bugsdist_la_OBJECTS)
+mixdist_la_LIBADD =
+am_mixdist_la_OBJECTS = DNormMix.lo
+mixdist_la_OBJECTS = $(am_mixdist_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/src/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -69,8 +65,8 @@ LTCXXCOMPILE = $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) \
 CXXLD = $(CXX)
 CXXLINK = $(LIBTOOL) --tag=CXX --mode=link $(CXXLD) $(AM_CXXFLAGS) \
 	$(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(bugsdist_la_SOURCES)
-DIST_SOURCES = $(bugsdist_la_SOURCES)
+SOURCES = $(mixdist_la_SOURCES)
+DIST_SOURCES = $(mixdist_la_SOURCES)
 HEADERS = $(noinst_HEADERS)
 ETAGS = etags
 CTAGS = ctags
@@ -189,19 +185,11 @@ sharedstatedir = @sharedstatedir@
 subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
-INCLUDES = -I $(top_srcdir)/src/include -I$(top_srcdir)/src/modules/bugs/matrix 
-noinst_LTLIBRARIES = bugsdist.la
-bugsdist_la_LDFLAGS = -no-undefined -module -avoid-version
-bugsdist_la_SOURCES = DBern.cc DCat.cc DDirch.cc DHyper.cc DLogis.cc	\
-DMulti.cc DSum.cc DWeib.cc DBeta.cc DChisqr.cc DExp.cc	\
-DInterval.cc DMNorm.cc DNegBin.cc DPar.cc DT.cc DWish.cc DBin.cc	\
-DDexp.cc DGamma.cc DLnorm.cc DMState.cc DNorm.cc DPois.cc DUnif.cc 
-
-noinst_HEADERS = DBern.h DCat.h DDirch.h DHyper.h DLogis.h DMulti.h	\
-DSum.h DWeib.h DBeta.h DChisqr.h DExp.h DInterval.h		\
-DMNorm.h DNegBin.h DPar.h DT.h DWish.h DBin.h DDexp.h DGamma.h		\
-DLnorm.h DMState.h DNorm.h DPois.h DUnif.h 
-
+INCLUDES = -I $(top_srcdir)/src/include 
+noinst_LTLIBRARIES = mixdist.la
+mixdist_la_LDFLAGS = -no-undefined -module -avoid-version
+mixdist_la_SOURCES = DNormMix.cc 
+noinst_HEADERS = DNormMix.h
 all: all-am
 
 .SUFFIXES:
@@ -215,9 +203,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  src/modules/bugs/distributions/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  src/modules/mix/distributions/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu  src/modules/bugs/distributions/Makefile
+	  $(AUTOMAKE) --gnu  src/modules/mix/distributions/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -244,8 +232,8 @@ clean-noinstLTLIBRARIES:
 	  echo "rm -f \"$${dir}/so_locations\""; \
 	  rm -f "$${dir}/so_locations"; \
 	done
-bugsdist.la: $(bugsdist_la_OBJECTS) $(bugsdist_la_DEPENDENCIES) 
-	$(CXXLINK)  $(bugsdist_la_LDFLAGS) $(bugsdist_la_OBJECTS) $(bugsdist_la_LIBADD) $(LIBS)
+mixdist.la: $(mixdist_la_OBJECTS) $(mixdist_la_DEPENDENCIES) 
+	$(CXXLINK)  $(mixdist_la_LDFLAGS) $(mixdist_la_OBJECTS) $(mixdist_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -253,31 +241,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DBern.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DBeta.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DBin.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DCat.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DChisqr.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DDexp.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DDirch.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DExp.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DGamma.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DHyper.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DInterval.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DLnorm.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DLogis.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DMNorm.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DMState.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DMulti.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DNegBin.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DNorm.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DPar.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DPois.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DSum.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DT.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DUnif.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DWeib.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DWish.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DNormMix.Plo@am__quote@
 
 .cc.o:
 @am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \

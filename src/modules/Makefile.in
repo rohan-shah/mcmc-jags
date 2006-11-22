@@ -173,7 +173,7 @@ sharedstatedir = @sharedstatedir@
 subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
-SUBDIRS = basefunctions baserngs basesamplers bugs
+SUBDIRS = basefunctions baserngs basesamplers bugs mix
 all: all-recursive
 
 .SUFFIXES:

@@ -28,7 +28,6 @@
 #include <distributions/DWish.h>
 #include <distributions/DHyper.h>
 #include <distributions/DSum.h>
-#include <distributions/DNormMix.h>
 
 #include <functions/CLogLog.h>
 #include <functions/Exp.h>
@@ -93,7 +92,6 @@ BUGSModule::BUGSModule() {
     insert(new DWish);
     insert(new DHyper);
     insert(new DSum); 
-    insert(new DNormMix);
 
     insert(new CLogLog);
     insert(new Exp);
