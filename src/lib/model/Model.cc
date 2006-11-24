@@ -45,22 +45,42 @@ Model::Model(unsigned int nchain)
 
 Model::~Model()
 {
-  for (unsigned int n = 0; n < _nchain; ++n) {
+    while(!_chain_info[0].samplers.empty()) {
 
-    vector<Sampler*> &samplers = _chain_info[n].samplers;
-    while(!samplers.empty()) {
-      delete samplers.back();
-      samplers.pop_back();
+	/* Delete sampler from chain 0 */
+
+	Sampler *sampler0 = _chain_info[0].samplers.back();
+	delete sampler0;
+	_chain_info[0].samplers.pop_back();
+
+	/* Delete samplers from other chains. A single sampler may be
+	   responsible for updating more than one chain. We need to
+	   ensure that we don't delete it twice */
+
+	for (unsigned int n = 1; n < _nchain; ++n) {
+    	    vector<Sampler*> samplers_n = _chain_info[n].samplers;
+	    Sampler *last_sampler = samplers_n.back();
+	    if (last_sampler != sampler0) {
+		delete last_sampler;
+	    }
+	    samplers_n.pop_back();
+	}
+
+
+	
+
     }
 
-    list<TraceMonitor*> &monitors = _chain_info[n].monitors;
-    while(!monitors.empty()) {
-      delete monitors.back();
-      monitors.pop_back();
-    }
+    for (unsigned int n = 0; n < _nchain; ++n) {
+	
+	list<TraceMonitor*> &monitors = _chain_info[n].monitors;
+	while(!monitors.empty()) {
+	    delete monitors.back();
+	    monitors.pop_back();
+	}
 
-    //RNGs belong to the factory objects and are deleted by them
-  }
+	//RNGs belong to the factory objects and are deleted by them
+    }
 }
 
 Graph &Model::graph() 
@@ -212,24 +232,12 @@ void Model::chooseSamplers()
   for (list<SamplerFactory const *>::const_iterator p = sfactories.begin();
        p != sfactories.end(); ++p)
     {
-      for (unsigned int n = 0; n < _nchain; ++n) {
 	(*p)->makeSampler(sset, graph, sam);
-      }
     }
   
   // Make sure we found a sampler for all the nodes
   if (!sset.empty()) {
-
-      // Delete samplers
-      for (unsigned int n = 0; n < _nchain; ++n) {
-	  
-	  vector<Sampler*> &samplers = _chain_info[n].samplers;
-	  while(!samplers.empty()) {
-	      delete samplers.back();
-	      samplers.pop_back();
-	  }
-      }
-
+      
       throw NodeError(*sset.begin(),
 		      "Unable to find appropriate sampler");
   }
@@ -251,8 +259,8 @@ void Model::chooseSamplers()
 
   for (unsigned int n = 0; n < nchain(); ++n) {
     _chain_info[n].samplers = sam[n];
-    sort(_chain_info[n].samplers.begin(), 
-	 _chain_info[n].samplers.end(), less_sampler(node_map));
+    stable_sort(_chain_info[n].samplers.begin(), 
+		_chain_info[n].samplers.end(), less_sampler(node_map));
   }
 
   _can_sample = true;
@@ -266,29 +274,33 @@ void Model::update(unsigned int niter)
     if (!_can_sample) {
         throw logic_error("Attempt to update model with no samplers");
     }
-    
-    for (unsigned int n = 0; n < _nchain; ++n) {
-      vector<Sampler*> &samplers = _chain_info[n].samplers;
-      list<TraceMonitor*> &monitors = _chain_info[n].monitors;
-      RNG *rng = _chain_info[n].rng;
-      for (unsigned int iter = 0; iter < niter; ++iter) {
-	for (vector<Sampler*>::iterator i = samplers.begin(); 
-	     i != samplers.end(); ++i) 
-	  {
-	    (*i)->update(rng);
-	  }
-	for (vector<Node*>::const_iterator k = _sampled_extra.begin();
-	     k != _sampled_extra.end(); ++k)
-	  {
-	    (*k)->randomSample(rng, n);
-	  }
-	_chain_info[n].iteration++;
-	for (list<TraceMonitor*>::iterator k = monitors.begin(); 
-	     k != monitors.end(); k++) 
-	  {
-	    (*k)->update(_chain_info[n].iteration, n);
-	  }
-      }
+
+
+    for (unsigned int iter = 0; iter < niter; ++iter) {    
+	
+	for (unsigned int n = 0; n < _nchain; ++n) {
+	    
+	    vector<Sampler*> &samplers = _chain_info[n].samplers;
+	    list<TraceMonitor*> &monitors = _chain_info[n].monitors;
+	    RNG *rng = _chain_info[n].rng;
+	    
+	    for (vector<Sampler*>::iterator i = samplers.begin(); 
+		 i != samplers.end(); ++i) 
+	    {
+		(*i)->update(rng);
+	    }
+	    for (vector<Node*>::const_iterator k = _sampled_extra.begin();
+		 k != _sampled_extra.end(); ++k)
+	    {
+		(*k)->randomSample(rng, n);
+	    }
+	    _chain_info[n].iteration++;
+	    for (list<TraceMonitor*>::iterator k = monitors.begin(); 
+		 k != monitors.end(); k++) 
+	    {
+		(*k)->update(_chain_info[n].iteration, n);
+	    }
+	}
     }
 }
 
