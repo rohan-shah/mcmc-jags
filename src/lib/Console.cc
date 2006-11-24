@@ -47,7 +47,6 @@ static bool alwaysTrue(Node const *node)
   return true;
 }
 
-
 Console::Console(ostream &out, ostream &err)
   : _out(out), _err(err), _model(0), _pdata(0), _prelations(0), 
     _pvariables(0)

@@ -16,9 +16,9 @@ class SamplerFactory
  public:
   virtual ~SamplerFactory() {};
   /**
-   * Finds nodes in the set of stochastic nodes that can be sampled,
-   * removes them from the set and adds one or more samplers to the
-   * vector of samplers.
+   * Finds nodes in the set of stochastic nodes that can be sampled
+   * within the given graph, removes them from the set and adds one or
+   * more samplers to the vector of samplers.
    */
   virtual void makeSampler(std::set<StochasticNode*> &nodes, 
 			   Graph const &graph,

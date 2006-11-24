@@ -30,9 +30,15 @@ class GraphMarks {
   /** Marks the parents of node that are in the graph.
       The graph must contain node */
   void markParents(Node const *node, int m);
+  /** Marks the parents of a node in the graph obtained by marginalizing
+      over all nodes for which the function test returns false */
+  void markParents(Node const *node, bool (*test)(Node const*), int m);
   /** Marks the children of node that are in the graph. The
       graph must contain node */
   void markChildren(Node *node, int m);
+  /** Marks the children of a node in the graph obtained by marginalizing
+      over all nodes for which the function test returns false */
+  void markChildren(Node *node, bool (*test)(Node const*), int m);
   /** Marks the ancestors of the node in the graph, i.e. every
       node N for which there is a directed path from N to node
       in the graph. The graph must contain node.
