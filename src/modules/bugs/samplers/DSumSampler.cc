@@ -149,17 +149,11 @@ void DSumSampler::update()
 
 void DSumSampler::setValue(double x)
 {
-  double v[2];
-  vector<double const*> value;
-  value.push_back(&v[0]);
-  value.push_back(&v[1]);
-  vector<unsigned int> length(2,1);  
-
   _x = x;
-  v[0] = static_cast<long>(x);
-  v[1] = _sum - v[0];
- 
-  Sampler::setValue(value, length, _chain);
+  double value[2];
+  value[0] = static_cast<long>(x);
+  value[1] = _sum - value[0];
+  Sampler::setValue(value, 2, _chain);
 }
 
 double DSumSampler::value() const

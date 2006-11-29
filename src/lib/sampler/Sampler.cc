@@ -17,8 +17,18 @@ using std::runtime_error;
 using std::logic_error;
 using std::string;
 
+static unsigned int sumLength(vector<StochasticNode *> const &nodes)
+{
+    //Adds up the length of a vector of stochastic nodes
+    unsigned int n = 0;
+    for (unsigned int i = 0; i < nodes.size(); ++i) {
+	n += nodes[i]->length();
+    }
+    return n;
+}
+
 Sampler::Sampler(vector<StochasticNode *> const &nodes, Graph const &graph)
-  : _nodes(nodes)
+    : _length(sumLength(nodes)), _nodes(nodes)
 {
   classifyChildren(nodes, graph, _stoch_children, _determ_children);
 }
@@ -148,17 +158,19 @@ vector<DeterministicNode*> const &Sampler::deterministicChildren() const
   return _determ_children;
 }
 
-void Sampler::setValue(vector<double const *> const &value, 
-		       vector<unsigned int> const &length,
+void Sampler::setValue(double const * value, unsigned int length,
 		       unsigned int chain)
 {
-    unsigned int n = _nodes.size();
-    if (value.size() != n || length.size() != n) {
+    if (length != _length) {
       throw logic_error("Argument length mismatch in Sampler::setValue");
     }
-    for (unsigned int i = 0; i < n; ++i) {
-      _nodes[i]->setValue(value[i], length[i], chain);
+
+    for (unsigned int i = 0; i < _nodes.size(); ++i) {
+	StochasticNode *snode = _nodes[i];
+	snode->setValue(value, snode->length(), chain);
+	value += snode->length();
     }
+
     for (vector<DeterministicNode*>::iterator p(_determ_children.begin());
 	 p != _determ_children.end(); ++p) {
       (*p)->deterministicSample(chain);

@@ -14,18 +14,6 @@ GibbsSampler::GibbsSampler(StochasticNode *node, Graph const &graph)
 {
 }
 
-void GibbsSampler::setValue(double const *value, unsigned int length,
-			    unsigned int chain)
-{
-  nodes().front()->setValue(value, length, chain);
-  vector<DeterministicNode*> const &dc = deterministicChildren();
-  for (vector<DeterministicNode*>::const_iterator i = dc.begin(); 
-       i != dc.end(); ++i) 
-    {
-      (*i)->deterministicSample(chain);
-    }
-}
-
 StochasticNode *GibbsSampler::node()
 {
   return nodes().front();

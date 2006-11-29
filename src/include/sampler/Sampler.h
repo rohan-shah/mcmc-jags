@@ -33,7 +33,7 @@ class RNG;
  * forward sampling order is not uniquely determined.
  */
 class Sampler {
-private:
+  unsigned int _length;
   std::vector<StochasticNode *> _nodes;
   std::vector<StochasticNode const *> _stoch_children;
   std::vector<DeterministicNode*> _determ_children;
@@ -54,16 +54,16 @@ public:
   std::vector<StochasticNode *> const &nodes() const;
   /**
    * Sets the values of the sampled nodes.  The immediate
-   * deterministic descendants are automatically updated.
-   * This function should be called by the update function.
+   * deterministic descendants are automatically updated.  This
+   * function should be called by the update function.
    *
-   * @param value vector of pointers to the beginning of an array of
-   * values for each node.  
-   * @param length vector of lengths for the corresponding arrays.
+   * @param value Array of concatenated values to be applied to the sampled
+   * nodes.
+   * @param length Length of the value array. This must be equal to the
+   * sum of the  lengths of the sampled nodes.
+   * @param chain Number of the chain (starting from zero) to be modified.
    */
-  void setValue(std::vector<double const *> const &value, 
-		std::vector<unsigned int> const &length,
-		unsigned int chain);
+  void setValue(double const * value, unsigned int length, unsigned int chain);
   /**
    * Returns the marginal stochastic children of the sampled nodes.
    */
