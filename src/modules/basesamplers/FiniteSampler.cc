@@ -17,7 +17,7 @@ using std::vector;
 
 FiniteSampler::FiniteSampler(StochasticNode *node, Graph const &graph, 
 			     unsigned int chain)
-  : GibbsSampler(node, graph), _chain(chain)
+  : Sampler(vector<StochasticNode*>(1,node), graph), _chain(chain)
 {
     if (!canSample(node, graph))
 	throw logic_error("Attempt to construct invalid FiniteSampler");

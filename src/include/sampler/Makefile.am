@@ -1,3 +1,3 @@
 samplerincludedir = $(jagsincludedir)/sampler
-samplerinclude_HEADERS = Sampler.h GibbsSampler.h SamplerFactory.h	\
+samplerinclude_HEADERS = Sampler.h SamplerFactory.h	\
 GibbsFactory.h Slicer.h

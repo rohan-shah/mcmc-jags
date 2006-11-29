@@ -14,7 +14,6 @@ using std::string;
 using std::vector;
 
 static map<const string, ConjugateDist> _dist_table;
-//static map<const string, ConjugateOp> _op_table;
 static bool initialized = false;
 
 static void init_tables ()
@@ -41,15 +40,6 @@ static void init_tables ()
   _dist_table["dweib"] = WEIB;
   _dist_table["dwish"] = WISH;
 
-  /*
-  _op_table["*"] = MULTIPLY;
-  _op_table["/"] = DIVIDE;
-  _op_table["+"] = ADD;
-  _op_table["-"] = SUBTRACT;
-  _op_table["NEG"] = NEG;
-  _op_table["inprod"] = INPROD;
-  */
-
   initialized = true;
 }
 
@@ -68,23 +58,9 @@ ConjugateDist getDist(StochasticNode const *snode)
     return p->second;
 }
 
-/*
-ConjugateOp getOp(LogicalNode const *lnode)
-{
-  if(!initialized)
-    init_tables();
-  
-  string const &name = lnode->function()->name();
-  map<const string, ConjugateOp>::iterator p(_op_table.find(name));
-  if (p == _op_table.end())
-    return OTHEROP;
-  else
-    return p->second;
-}
-*/
-
 ConjugateSampler::ConjugateSampler(StochasticNode *node, Graph const &graph, unsigned int chain)
-  : GibbsSampler(node, graph), _chain(chain), _target_dist(getDist(node))
+  : Sampler(vector<StochasticNode*>(1,node), graph), _chain(chain),
+    _target_dist(getDist(node))
 {
   vector<StochasticNode const*> const &children = stochasticChildren();
   for (unsigned int i = 0; i < children.size(); ++i) {

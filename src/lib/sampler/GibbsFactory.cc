@@ -1,5 +1,4 @@
 #include <sampler/GibbsFactory.h>
-#include <sampler/GibbsSampler.h>
 #include <graph/StochasticNode.h>
 #include <sampler/Sampler.h>
 

@@ -39,15 +39,6 @@ double RealSliceSampler::value() const
 void RealSliceSampler::setValue(double value)
 {
     Sampler::setValue(&value, 1, _chain);
-    /*
-      nodes().front()->setValue(&value, 1, _chain);
-      vector<DeterministicNode*> const &dc = deterministicChildren();
-      for (vector<DeterministicNode*>::const_iterator i(dc.begin()); 
-      i != dc.end(); ++i) 
-      {
-      (*i)->deterministicSample(_chain);
-      }
-    */
 }
 
 void RealSliceSampler::getLimits(double *lower, double *upper) const

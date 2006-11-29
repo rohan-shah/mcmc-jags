@@ -176,7 +176,8 @@ void Slicer::updateDouble(RNG *rng)
     if (g >= z && accept(xold, xnew, z, L, R)) {
       // The accept function will alter the current value. So we must reset it.
       setValue(xnew);
-      return;
+      //return; No! We want to break here.
+      break;
     }
     // shrink the interval
     if (xnew <= xold) {

@@ -1,14 +1,13 @@
 #ifndef FINITE_SAMPLER_H_
 #define FINITE_SAMPLER_H_
 
-#include <sampler/GibbsSampler.h>
-
+#include <sampler/Sampler.h>
 class StochasticNode;
 
 /**
  * Sampler for discrete distributions with support on a finite set.
  */
-class FiniteSampler : public GibbsSampler {
+class FiniteSampler : public Sampler {
   const unsigned int _chain;
     int _lower, _upper;
 public:

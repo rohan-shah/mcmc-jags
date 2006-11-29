@@ -17,7 +17,7 @@ using std::vector;
 using std::invalid_argument;
 
 Censored::Censored(StochasticNode *snode, Graph const &graph, unsigned int chain)
-  : GibbsSampler(snode, graph), _chain(chain)
+  : Sampler(vector<StochasticNode*>(1,snode), graph), _chain(chain)
 {
   if (!canSample(snode, graph)) {
     throw invalid_argument("Can't construct Censored sampler");
