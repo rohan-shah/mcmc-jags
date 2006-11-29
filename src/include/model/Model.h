@@ -37,6 +37,7 @@ class Model {
   bool _is_graph_checked;
   bool _is_initialized;
   bool _can_sample;
+  bool _adapt;
   void chooseRNGs();
 public:
   Model(unsigned int nchain);
@@ -93,9 +94,9 @@ public:
   unsigned int iteration(unsigned int chain) const;
   /**
    * Creates a monitor for the given node, with given thinning
-   * interval If the node is already being monitored, a NodeError is
-   * thrown.  A side effect is to turn off burnin mode for all
-   * samplers in the model.
+   * interval. This can only be done if Model##adaptOff() has been
+   * successfully called. Otherwise, a logic_error is thrown.  If the
+   * node is already being monitored, a NodeError is thrown.
    */
   void setMonitor(Node *node, int thin);
   /**
@@ -152,6 +153,14 @@ public:
    * @return success indicator
    */
   bool setRNG(RNG *rng, unsigned int chain);
+  /**
+   * Attempts to turn off adaptive phase of all samplers
+   *
+   * @return success indicator. A Sampler may refuse to turn off its
+   * adaptive phase (until further samples are drawn). In this case, 
+   * adaptOff returns false.
+   */
+  bool adaptOff();
 };
 
 #endif /* MODEL_H_ */

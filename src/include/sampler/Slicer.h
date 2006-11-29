@@ -17,7 +17,7 @@ class StochasticNode;
 class Slicer : public Sampler 
 {
   double _width;
-  bool _burnin;
+  bool _adapt;
   unsigned int _max;
   double _sumdiff;
   unsigned int _iter;
@@ -53,7 +53,7 @@ class Slicer : public Sampler
    * Gets the lowest and highest possible values of the sampler
    */
   virtual void getLimits(double *lower, double *upper) const = 0;
-  void burninOff();
+  bool adaptOff();
   virtual double logFullConditional() const = 0;
 };
 

@@ -25,9 +25,7 @@ class DiscreteSliceSampler : public Slicer {
    * @param node Node to sample
    * @param graph Graph within which sampling takes place
    * @param width Initial width of slice
-   * @param maxwidth Maximal width of slice as a multiple of the width
-   * parameter
-   * @param nburn Length of burnin
+   * @param ndoubles Maximum number of doublings of slice 
    */
   DiscreteSliceSampler(StochasticNode *node, Graph const &graph,
 		       unsigned int chain, double width=2, long ndoubles = 10);

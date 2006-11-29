@@ -68,6 +68,7 @@ ConjugateSampler::ConjugateSampler(StochasticNode *node, Graph const &graph, uns
   }
 }
 
-void ConjugateSampler::burninOff()
+bool ConjugateSampler::adaptOff()
 {
+  return true;
 }

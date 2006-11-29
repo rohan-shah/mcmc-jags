@@ -372,6 +372,10 @@ bool Console::setMonitor(string const &name, Range const &range,
     _out << "Can't set monitor. No model!" << endl;    
     return false;
   }
+  if (!_model->adaptOff()) {
+    _out << "Can't set monitor. At least one sampler is still in adaptive phase" << endl;
+    return false;
+  }
   
   try {
     if (isNULL(range)) {

@@ -7,11 +7,14 @@
 #include <cmath>
 #include <cfloat>
 
+//Minimum length of adaptive phase before we adjust width
+#define MIN_ADAPT 10
+
 using std::vector;
 
 Slicer::Slicer(vector<StochasticNode *> const &nodes, Graph const &graph,
 	       double width, unsigned int max)
-  : Sampler(nodes, graph), _width(width), _burnin(true), _max(max),
+  : Sampler(nodes, graph), _width(width), _adapt(true), _max(max),
     _sumdiff(0), _iter(0)
 {
 }
@@ -105,9 +108,12 @@ void Slicer::updateStep(RNG *rng)
     }
   }
 
-  if (_burnin) {
+  if (_adapt) {
     _sumdiff += _iter * fabs(xnew - xold);
     ++_iter;
+    if (_iter > MIN_ADAPT) {
+      _width = 2 * _sumdiff / _iter / (_iter - 1);  
+    }
   }
 }
 
@@ -188,9 +194,12 @@ void Slicer::updateDouble(RNG *rng)
     }
   }
 
-  if (_burnin) {
+  if (_adapt) {
     _sumdiff += _iter * fabs(xnew - xold);
     ++_iter;
+    if (_iter > MIN_ADAPT) {
+      _width = 2 * _sumdiff / _iter / (_iter - 1);  
+    }
   }
 }
 
@@ -219,10 +228,8 @@ bool Slicer::accept(double xold, double xnew, double z, double L, double R)
   return true;
 }  
 
-void Slicer::burninOff()
+bool Slicer::adaptOff()
 {
-  // Reset slice width
-  if (_iter > 1) {
-    _width = 2 * _sumdiff / _iter / (_iter - 1);  
-  }
+  _adapt = false;
+  return true;
 }

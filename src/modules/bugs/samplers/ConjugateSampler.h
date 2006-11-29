@@ -29,9 +29,10 @@ class ConjugateSampler : public Sampler
   ConjugateSampler(StochasticNode *snode, Graph const &graph, unsigned int chain);
   inline StochasticNode *node() { return nodes().front(); }
   /**
-   * Conjugate samplers do not have a burnin mode. This function does nothing.
+   * Conjugate samplers do not have an adaptive phase. This function always
+   * returns true.
    */
-  void burninOff();
+  bool adaptOff();
 };
 
 #endif /* CONJUGATE_H_ */

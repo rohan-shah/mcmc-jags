@@ -41,6 +41,7 @@ Model::Model(unsigned int nchain)
   }
   _is_graph_checked = false;
   _is_initialized = false;
+  _adapt = true;
 }
 
 Model::~Model()
@@ -65,10 +66,6 @@ Model::~Model()
 	    }
 	    samplers_n.pop_back();
 	}
-
-
-	
-
     }
 
     for (unsigned int n = 0; n < _nchain; ++n) {
@@ -309,25 +306,28 @@ unsigned int Model::iteration(unsigned int chain) const
   return _chain_info[chain].iteration;
 }
 
-/*
-static void addAncestors(Node *node, Graph &to, set<Node*> const &from)
+bool Model::adaptOff() 
 {
-  // Take ancestors of "node" belonging to set "from" and add them to
-  // graph "to", along with "node" itself.
-  if (from.count(node) == 0 || to.contains(node)) {
-    return;
+  for (unsigned int n = 0; n < _nchain; ++n) {
+    for (vector<Sampler*>::iterator p = _chain_info[n].samplers.begin();
+	 p != _chain_info[n].samplers.end(); ++p)
+      {
+	bool ok = (*p)->adaptOff();
+	if (!ok) {
+	  return false;
+	}
+      }
+    _adapt = false;
   }
-  to.add(node);
-  for (vector<Node const *>::const_iterator p = node->parents().begin(); 
-       p != node->parents().end(); ++p) 
-    {
-      addAncestors(*p, to, from);
-    }
+  return true;
 }
-*/
 
 void Model::setMonitor(Node *node, int thin)
 {
+  if (_adapt) {
+    throw logic_error("Cannot set monitor in adaptive phase");
+  }
+  
   if (_monitored_nodes.count(node)) {
     //Nothing to do. Node is already being monitored.
     return;
@@ -338,15 +338,6 @@ void Model::setMonitor(Node *node, int thin)
   }
 
   for (unsigned int n = 0; n < _nchain; ++n) {
-     if (_chain_info[n].monitors.empty()) {
-       // The first monitor: turn off burnin mode.
-       for (vector<Sampler*>::iterator p = _chain_info[n].samplers.begin();
-	    p != _chain_info[n].samplers.end(); ++p)
-         {
-	   (*p)->burninOff();
-         }
-     }
-
      TraceMonitor *monitor = new TraceMonitor(node, iteration(n) + 1, thin);
      _chain_info[n].monitors.push_back(monitor);
   }   
