@@ -87,8 +87,8 @@ void ConjugateWishart::update(RNG *rng)
 
   vector<Node const *> const &param = node()->parents();  
 
-  double k = *param[1]->value(chain());
-  double const *Rprior = param[0]->value(chain());
+  double k = *param[1]->value(_chain);
+  double const *Rprior = param[0]->value(_chain);
   int nrow = param[0]->dim()[0];
 
   int N = nrow * nrow;
@@ -104,8 +104,8 @@ void ConjugateWishart::update(RNG *rng)
       throw logic_error("Invalid distribution in Conjugate Wishart sampler");
     vector<Node const *> const &cparam = schild->parents();
     
-    double const *Y = schild->value(chain());
-    double const *mu = cparam[0]->value(chain());
+    double const *Y = schild->value(_chain);
+    double const *mu = cparam[0]->value(_chain);
 
     for (int j = 0; j < nrow; j++) {
       delta[j] = Y[j] - mu[j];
@@ -123,6 +123,6 @@ void ConjugateWishart::update(RNG *rng)
   DWish::randomSample(xnew, N, R, k, nrow, rng);
 
   delete [] R;
-  setValue(xnew, N);
+  setValue(xnew, N, _chain);
   delete [] xnew;
 }

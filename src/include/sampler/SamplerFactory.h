@@ -20,10 +20,9 @@ class SamplerFactory
    * within the given graph, removes them from the set and adds one or
    * more samplers to the vector of samplers.
    */
-  virtual void makeSampler(std::set<StochasticNode*> &nodes, 
-			   Graph const &graph,
-			   std::vector<std::vector<Sampler*> > &samplers)
-  const = 0;
+  virtual void 
+    makeSampler(std::set<StochasticNode*> &nodes, Graph const &graph,
+		std::vector<std::vector<Sampler*> > &samplers) const = 0;
 };
 
 #endif /* SAMPLER_FACTORY_H_ */

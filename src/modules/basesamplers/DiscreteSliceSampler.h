@@ -17,6 +17,7 @@ struct RNG;
  * on the real line.  We sample Y and then set X = floor(Y).
  */
 class DiscreteSliceSampler : public Slicer {
+  const unsigned int _chain;
   double _x;
  public:
   /**
@@ -31,10 +32,11 @@ class DiscreteSliceSampler : public Slicer {
   DiscreteSliceSampler(StochasticNode *node, Graph const &graph,
 		       unsigned int chain, double width=2, long ndoubles = 10);
   void setValue(double x);
-  double value();
+  double value() const;
   static bool canSample(StochasticNode const *node, Graph const &graph);
-  void getLimits(double *lower, double *upper);
+  void getLimits(double *lower, double *upper) const;
   void update(RNG*);
+  double logFullConditional() const;
 };
 
 #endif /* DISCRETE_SLICE_SAMPLER_H_ */

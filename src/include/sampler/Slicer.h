@@ -31,7 +31,7 @@ class Slicer : public Sampler
    * @param max Maximum number of times initial width of slice will increase.
    */
   Slicer(std::vector<StochasticNode*> const &nodes, Graph const &graph,
-	 unsigned int chain, double width,  unsigned int max);
+	 double width,  unsigned int max);
   /**
    * Update the current value using the "stepping" method
    */
@@ -43,7 +43,7 @@ class Slicer : public Sampler
   /**
    * Returns the current value of the sampler
    */
-  virtual double value() = 0;
+  virtual double value() const = 0;
   /**
    * Sets the value of the sampler, and additionally updates all the
    * deterministic descendants
@@ -52,9 +52,9 @@ class Slicer : public Sampler
   /**
    * Gets the lowest and highest possible values of the sampler
    */
-  virtual void getLimits(double *lower, double *upper) = 0;
+  virtual void getLimits(double *lower, double *upper) const = 0;
   void burninOff();
-
+  virtual double logFullConditional() const = 0;
 };
 
 #endif /* SLICER_H_ */

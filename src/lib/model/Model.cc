@@ -287,7 +287,7 @@ void Model::update(unsigned int niter)
 	    for (vector<Sampler*>::iterator i = samplers.begin(); 
 		 i != samplers.end(); ++i) 
 	    {
-		(*i)->update(rng);
+	      (*i)->update(rng);
 	    }
 	    for (vector<Node*>::const_iterator k = _sampled_extra.begin();
 		 k != _sampled_extra.end(); ++k)

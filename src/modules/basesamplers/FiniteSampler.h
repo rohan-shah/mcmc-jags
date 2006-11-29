@@ -9,6 +9,7 @@ class StochasticNode;
  * Sampler for discrete distributions with support on a finite set.
  */
 class FiniteSampler : public GibbsSampler {
+  const unsigned int _chain;
     int _lower, _upper;
 public:
     FiniteSampler(StochasticNode *node, Graph const &graph, unsigned int chain);

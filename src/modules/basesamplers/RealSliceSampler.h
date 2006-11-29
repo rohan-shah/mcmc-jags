@@ -11,6 +11,7 @@ struct RNG;
  */
 class RealSliceSampler : public Slicer 
 {
+  const unsigned int _chain;
 public:
   /**
    * Constructor for Slice Sampler
@@ -23,10 +24,11 @@ public:
   RealSliceSampler(StochasticNode *node, Graph const &graph,
 		   unsigned int chain, double width = 1, long maxwidth = 10);
   static bool canSample(StochasticNode const *node, Graph const &graph);
-  double value();
+  double value() const;
   void setValue(double value);
-  void getLimits(double *lower, double *upper);
+  void getLimits(double *lower, double *upper) const;
   void update(RNG *rng);
+  double logFullConditional() const;
 };
 
 #endif /* REAL_SLICE_SAMPLER_H_ */

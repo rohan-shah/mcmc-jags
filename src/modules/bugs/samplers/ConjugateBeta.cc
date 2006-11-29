@@ -116,8 +116,8 @@ void ConjugateBeta::update(RNG *rng)
     double a, b;
     switch (_target_dist) {
     case BETA:
-	a = *snode->parents()[0]->value(chain());
-	b = *snode->parents()[1]->value(chain());
+	a = *snode->parents()[0]->value(_chain);
+	b = *snode->parents()[1]->value(_chain);
 	break;
     case UNIF:
 	a = 1;
@@ -134,26 +134,26 @@ void ConjugateBeta::update(RNG *rng)
     if (is_mix) {
 	C = new double[Nchild];
 	for (unsigned int i = 0; i < Nchild; ++i) {
-	    C[i] = *stoch_children[i]->parents()[0]->value(chain());
+	    C[i] = *stoch_children[i]->parents()[0]->value(_chain);
 	}
 	// Perturb current value, keeping in the legal range [0,1]
-	double x = *snode->value(chain());
+	double x = *snode->value(_chain);
 	x = x > 0.5 ? x - 0.4 : x + 0.4;
-	setValue(&x, 1);
+	setValue(&x, 1, _chain);
 	// C[i] == 1 if parameter of child i has changed (so depends on snode)
 	// C[i] == 0 otherwise
 	for (unsigned int i = 0; i < Nchild; ++i) {
-	    C[i] = (*stoch_children[i]->parents()[0]->value(chain()) != C[i]);
+	    C[i] = (*stoch_children[i]->parents()[0]->value(_chain) != C[i]);
 	}
     }
 
     for (unsigned int i = 0; i < stoch_children.size(); ++i) {
 	if (!(is_mix && C[i] == 0)) {
-	    double y = *stoch_children[i]->value(chain());
+	    double y = *stoch_children[i]->value(_chain);
 	    double n;
 	    switch(_child_dist[i]) {
 	    case BIN:
-		n = *stoch_children[i]->parents()[1]->value(chain());
+		n = *stoch_children[i]->parents()[1]->value(_chain);
 		break;
 	    case BERN:
 		n = 1;
@@ -172,17 +172,17 @@ void ConjugateBeta::update(RNG *rng)
 	double lower = 0;
 	Node const *lb = node()->lowerBound();
 	if (lb) {
-	    lower = max(lower, *lb->value(chain()));
+	    lower = max(lower, *lb->value(_chain));
 	}
 	double upper = 1;
 	Node const *ub = node()->upperBound();
 	if (ub) {
-	    upper = min(upper, *ub->value(chain()));
+	    upper = min(upper, *ub->value(_chain));
 	}
 	/* Try 4 more attempts to get random sample within the bounds */
 	for (int i = 0; i < 4; i++) {
 	    if (xnew >= lower && xnew <= upper) {
-		setValue(&xnew, 1);
+		setValue(&xnew, 1, _chain);
 		return;
 	    }
 	    xnew = rbeta(a, b, rng);
@@ -193,7 +193,7 @@ void ConjugateBeta::update(RNG *rng)
 	double p = runif(plower, pupper, rng);
 	xnew = qbeta(p, a, b, 1, 0);   
     }
-    setValue(&xnew, 1);
+    setValue(&xnew, 1, _chain);
 
     if (is_mix) {
 	delete [] C;

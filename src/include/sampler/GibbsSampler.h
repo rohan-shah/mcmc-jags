@@ -20,14 +20,14 @@ class GibbsSampler : public Sampler {
   /** Construct a sampler for the given node.
    * @see Sampler::Sampler
    */
-  GibbsSampler(StochasticNode *node, Graph const &graph, unsigned int chain);
+  GibbsSampler(StochasticNode *node, Graph const &graph);
   /** Returns the node being sampled */
   StochasticNode *node();
   /** Sets the value of the node and updates its immediate
    * deterministic descendants
    * @see Sampler::setValue
    */
-  void setValue(double const *value, unsigned int length);
+  void setValue(double const *value, unsigned int length, unsigned int chain);
 };
 
 #endif /* GIBBS_SAMPLER_H_ */

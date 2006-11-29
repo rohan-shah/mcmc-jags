@@ -34,6 +34,7 @@ ConjugateDist getDist(StochasticNode const *snode);
 class ConjugateSampler : public GibbsSampler
 {
  protected:
+  const unsigned int _chain;
   const ConjugateDist _target_dist;
   std::vector<ConjugateDist> _child_dist;
  public:

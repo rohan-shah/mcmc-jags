@@ -65,30 +65,30 @@ ConjugateNormal::~ConjugateNormal()
 
 void ConjugateNormal::calBeta()
 {
-    const double xold = *node()->value(chain());
+    const double xold = *node()->value(_chain);
     vector<StochasticNode const*> const &stoch_children = stochasticChildren();
 
     double xnew = xold + 1;
-    setValue(&xnew, 1);
+    setValue(&xnew, 1, _chain);
 
     double *beta = _betas;    
     for (unsigned int i = 0; i < stoch_children.size(); ++i) {
 	StochasticNode const *snode = stoch_children[i];
 	unsigned int nrow = snode->length();
-	double const *mu = snode->parents()[0]->value(chain());
+	double const *mu = snode->parents()[0]->value(_chain);
 	for (unsigned int j = 0; j < nrow; ++j) {
 	    beta[j] = mu[j];
 	}
 	beta += nrow;
     }
 
-    setValue(&xold, 1);
+    setValue(&xold, 1, _chain);
 
     beta = _betas;    
     for (unsigned int i = 0; i < stoch_children.size(); ++i) {
 	StochasticNode const *snode = stoch_children[i];
 	unsigned int nrow = snode->length();
-	double const *mu = snode->parents()[0]->value(chain());
+	double const *mu = snode->parents()[0]->value(_chain);
 	for (unsigned int j = 0; j < nrow; ++j) {
 	    beta[j] -= mu[j];
 	}
@@ -158,9 +158,9 @@ void ConjugateNormal::update(RNG *rng)
     /* For convenience in the following computations, we shift the
        origin to xold, the previous value of the node */
 
-    const double xold = *node()->value(chain());
-    const double priormean = *node()->parents()[0]->value(chain()) - xold; 
-    const double priorprec = *node()->parents()[1]->value(chain()); 
+    const double xold = *node()->value(_chain);
+    const double priormean = *node()->parents()[0]->value(_chain) - xold; 
+    const double priorprec = *node()->parents()[1]->value(_chain); 
 
     double A = priormean * priorprec; //Weighted sum of means
     double B = priorprec; //Sum of weights
@@ -171,8 +171,8 @@ void ConjugateNormal::update(RNG *rng)
 	// univariate normal. We know alpha = 0, beta = 1.
 
 	for (unsigned int i = 0; i < nchildren; ++i) {
-	    double Y = *stoch_children[i]->value(chain());
-	    double tau = *stoch_children[i]->parents()[1]->value(chain());
+	    double Y = *stoch_children[i]->value(_chain);
+	    double tau = *stoch_children[i]->parents()[1]->value(_chain);
 	    A += (Y - xold) * tau;
 	    B += tau;
 	}
@@ -191,9 +191,9 @@ void ConjugateNormal::update(RNG *rng)
 
 	    StochasticNode const *snode = stoch_children[i];
 
-	    double const *Y = snode->value(chain());
-	    double const *tau = snode->parents()[1]->value(chain());
-	    double const *alpha = snode->parents()[0]->value(chain());
+	    double const *Y = snode->value(_chain);
+	    double const *tau = snode->parents()[1]->value(_chain);
+	    double const *alpha = snode->parents()[0]->value(_chain);
 	    unsigned int nrow = snode->length();
 
 	    for (unsigned int k = 0; k < nrow; ++k) {
@@ -223,14 +223,14 @@ void ConjugateNormal::update(RNG *rng)
     if (node()->isBounded()) {
 	Node const *lb = node()->lowerBound();
 	Node const *ub = node()->upperBound();
-	double plower = lb ? pnorm(*lb->value(chain()), postmean, postsd, 1, 0) : 0;
-	double pupper = ub ? pnorm(*ub->value(chain()), postmean, postsd, 1, 0) : 1;
+	double plower = lb ? pnorm(*lb->value(_chain), postmean, postsd, 1, 0) : 0;
+	double pupper = ub ? pnorm(*ub->value(_chain), postmean, postsd, 1, 0) : 1;
 	double p = runif(plower, pupper, rng);
 	xnew = qnorm(p, postmean, postsd, 1, 0);
     }
     else {
 	xnew = rnorm(postmean, postsd, rng);  
     }
-    setValue(&xnew, 1);
+    setValue(&xnew, 1, _chain);
 
 }

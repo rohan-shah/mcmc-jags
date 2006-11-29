@@ -17,7 +17,7 @@ using std::vector;
 
 FiniteSampler::FiniteSampler(StochasticNode *node, Graph const &graph, 
 			     unsigned int chain)
-    : GibbsSampler(node, graph, chain)
+  : GibbsSampler(node, graph), _chain(chain)
 {
     if (!canSample(node, graph))
 	throw logic_error("Attempt to construct invalid FiniteSampler");
@@ -40,8 +40,8 @@ void FiniteSampler::update(RNG *rng)
     double liksum = 0.0;
     for (int i = 0; i < size; i++) {
 	double ivalue = _lower + i;
-	setValue(&ivalue, 1);
-	lik[i] = exp(logFullConditional());
+	setValue(&ivalue, 1, _chain);
+	lik[i] = exp(logFullConditional(_chain));
 	liksum += lik[i];
     }
 
@@ -56,7 +56,7 @@ void FiniteSampler::update(RNG *rng)
 	}
     }
     double ivalue = _lower + i;
-    setValue(&ivalue, 1);
+    setValue(&ivalue, 1, _chain);
     delete [] lik;
 }
 

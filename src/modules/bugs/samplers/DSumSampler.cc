@@ -22,7 +22,7 @@ using std::exp;
 
 DSumSampler::DSumSampler(vector<StochasticNode *> const &nodes,
 			 Graph const &graph, unsigned int chain)
-    : Slicer(nodes, graph, chain, 2, 10)
+    : Slicer(nodes, graph, 2, 10), _chain(chain)
 {
     if (!canSample(nodes, graph)) {
 	throw invalid_argument("Can't construct DSumSampler");
@@ -159,21 +159,21 @@ void DSumSampler::setValue(double x)
   v[0] = static_cast<long>(x);
   v[1] = _sum - v[0];
  
-  Sampler::setValue(value, length);
+  Sampler::setValue(value, length, _chain);
 }
 
-double DSumSampler::value()
+double DSumSampler::value() const
 {
   return _x;
 }
 
-void DSumSampler::getLimits(double *lower, double *upper)
+void DSumSampler::getLimits(double *lower, double *upper) const
 {
   vector<StochasticNode *> const &n = nodes();
   double l0, u0, l1, u1;
-  n[0]->distribution()->support(&l0, &u0, 1U, n[0]->parameters(chain()),
+  n[0]->distribution()->support(&l0, &u0, 1U, n[0]->parameters(_chain),
                                 n[0]->parameterDims());
-  n[1]->distribution()->support(&l1, &u1, 1U, n[1]->parameters(chain()),
+  n[1]->distribution()->support(&l1, &u1, 1U, n[1]->parameters(_chain),
                                 n[1]->parameterDims());
   *lower = max(l0, _sum - u1);
   *upper = min(u0, _sum - l1);
@@ -182,4 +182,9 @@ void DSumSampler::getLimits(double *lower, double *upper)
 void DSumSampler::update(RNG *rng)
 {
   updateDouble(rng);
+}
+
+double DSumSampler::logFullConditional() const
+{
+  return Sampler::logFullConditional(_chain);
 }

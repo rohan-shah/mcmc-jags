@@ -17,9 +17,8 @@ using std::runtime_error;
 using std::logic_error;
 using std::string;
 
-Sampler::Sampler(vector<StochasticNode *> const &nodes, Graph const &graph,
-                 unsigned int chain)
-  : _chain(chain), _nodes(nodes)
+Sampler::Sampler(vector<StochasticNode *> const &nodes, Graph const &graph)
+  : _nodes(nodes)
 {
   classifyChildren(nodes, graph, _stoch_children, _determ_children);
 }
@@ -98,7 +97,7 @@ void Sampler::classifyChildren(vector<StochasticNode *> const &nodes,
     }
 }
 
-double Sampler::logFullConditional()
+double Sampler::logFullConditional(unsigned int chain) const
 {
   /* We don't know if isinf is a macro or a function declared in the
      standard name space */
@@ -108,7 +107,7 @@ double Sampler::logFullConditional()
   for (vector<StochasticNode*>::const_iterator p(_nodes.begin());
        p != _nodes.end(); ++p) 
     {
-      double l = (*p)->logDensity(_chain);
+      double l = (*p)->logDensity(chain);
       if (isnan(l)) {
 	throw NodeError(*p, "Failure to calculate log density");
       }
@@ -124,7 +123,7 @@ double Sampler::logFullConditional()
   for (vector<StochasticNode const*>::const_iterator p(_stoch_children.begin());
        p != _stoch_children.end(); ++p) 
     {
-      double l = (*p)->logDensity(_chain);
+      double l = (*p)->logDensity(chain);
       if (isnan(l)) {
 	  throw NodeError(*p, "Failure to calculate log density");
       }
@@ -150,22 +149,19 @@ vector<DeterministicNode*> const &Sampler::deterministicChildren() const
 }
 
 void Sampler::setValue(vector<double const *> const &value, 
-		       vector<unsigned int> const &length)
+		       vector<unsigned int> const &length,
+		       unsigned int chain)
 {
     unsigned int n = _nodes.size();
     if (value.size() != n || length.size() != n) {
       throw logic_error("Argument length mismatch in Sampler::setValue");
     }
     for (unsigned int i = 0; i < n; ++i) {
-      _nodes[i]->setValue(value[i], length[i], _chain);
+      _nodes[i]->setValue(value[i], length[i], chain);
     }
     for (vector<DeterministicNode*>::iterator p(_determ_children.begin());
 	 p != _determ_children.end(); ++p) {
-      (*p)->deterministicSample(_chain);
+      (*p)->deterministicSample(chain);
     }
 }
 
-unsigned int Sampler::chain()
-{
-  return _chain;
-}

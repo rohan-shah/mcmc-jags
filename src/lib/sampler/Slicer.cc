@@ -10,8 +10,8 @@
 using std::vector;
 
 Slicer::Slicer(vector<StochasticNode *> const &nodes, Graph const &graph,
-	       unsigned int chain, double width, unsigned int max)
-  : Sampler(nodes, graph, chain), _width(width), _burnin(true), _max(max),
+	       double width, unsigned int max)
+  : Sampler(nodes, graph), _width(width), _burnin(true), _max(max),
     _sumdiff(0), _iter(0)
 {
 }
@@ -193,8 +193,7 @@ void Slicer::updateDouble(RNG *rng)
   }
 }
 
-bool Slicer::accept(double xold, double xnew, double z,
-				  double L, double R)
+bool Slicer::accept(double xold, double xnew, double z, double L, double R)
 {
   //Acceptance step for doubling update method
 

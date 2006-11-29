@@ -84,7 +84,7 @@ ConjugateOp getOp(LogicalNode const *lnode)
 */
 
 ConjugateSampler::ConjugateSampler(StochasticNode *node, Graph const &graph, unsigned int chain)
-  : GibbsSampler(node, graph, chain), _target_dist(getDist(node))
+  : GibbsSampler(node, graph), _chain(chain), _target_dist(getDist(node))
 {
   vector<StochasticNode const*> const &children = stochasticChildren();
   for (unsigned int i = 0; i < children.size(); ++i) {

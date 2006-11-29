@@ -80,19 +80,19 @@ getScale(StochasticNode const *snode, ConjugateDist d, unsigned int chain)
 
 void ConjugateGamma::calCoef()
 {
-    const double xold = *node()->value(chain());
+    const double xold = *node()->value(_chain);
     vector<StochasticNode const*> const &stoch_children = stochasticChildren();
     unsigned long nchildren = stoch_children.size();
 
     for (unsigned int i = 0; i < nchildren; ++i) {
-	_coef[i] = -getScale(stoch_children[i], _child_dist[i], chain());
+	_coef[i] = -getScale(stoch_children[i], _child_dist[i], _chain);
     }
     double val = xold + 1;
-    setValue(&val, 1);
+    setValue(&val, 1, _chain);
     for (unsigned int i = 0; i < nchildren; ++i) {
-	_coef[i] += getScale(stoch_children[i], _child_dist[i], chain());
+	_coef[i] += getScale(stoch_children[i], _child_dist[i], _chain);
     }
-    setValue(&xold, 1);
+    setValue(&xold, 1, _chain);
 }
 
 
@@ -202,15 +202,15 @@ void ConjugateGamma::update(RNG *rng)
     vector<Node const *> const &param = node()->parents();
     switch(_target_dist) {
     case GAMMA:
-	r = *param[0]->value(chain());
-	mu = *param[1]->value(chain());
+	r = *param[0]->value(_chain);
+	mu = *param[1]->value(_chain);
 	break;
     case EXP:
 	r = 1;
-	mu = *param[0]->value(chain());
+	mu = *param[0]->value(_chain);
 	break;
     case CHISQ:
-	r = *param[0]->value(chain())/2;
+	r = *param[0]->value(_chain)/2;
 	mu = 1/2;
 	break;
     default:
@@ -234,11 +234,11 @@ void ConjugateGamma::update(RNG *rng)
 
 	    StochasticNode const *schild = stoch_children[i];
 	    vector<Node const*> const &cparam = schild->parents();
-	    double Y = *schild->value(chain());
+	    double Y = *schild->value(_chain);
 	    double ymean; //normal mean
 	    switch(_child_dist[i]) {
 	    case GAMMA:
-		r += *cparam[0]->value(chain());
+		r += *cparam[0]->value(_chain);
 		mu += coef_i * Y;
 		break;
 	    case EXP:
@@ -247,7 +247,7 @@ void ConjugateGamma::update(RNG *rng)
 		break;
 	    case NORM:
 		r += 0.5;
-		ymean = *cparam[0]->value(chain());
+		ymean = *cparam[0]->value(_chain);
 		mu += coef_i * (Y - ymean) * (Y - ymean) / 2;
 		break;
 	    case POIS:
@@ -256,12 +256,12 @@ void ConjugateGamma::update(RNG *rng)
 		break;
 	    case DEXP:
 		r += 1;
-		ymean = *cparam[0]->value(chain());
+		ymean = *cparam[0]->value(_chain);
 		mu += coef_i * fabs(Y - ymean);
 		break;
 	    case WEIB:
 		r += 1; 
-		mu += coef_i * pow(Y, *cparam[0]->value(chain()));
+		mu += coef_i * pow(Y, *cparam[0]->value(_chain));
 		break;
 	    default:
 		throw logic_error("Invalid distribution in Conjugate Gamma sampler");
@@ -280,16 +280,16 @@ void ConjugateGamma::update(RNG *rng)
 	double lower = 0;
 	Node const *lb = node()->lowerBound();
 	if (lb) {
-	    lower = max(lower, *lb->value(chain()));
+	    lower = max(lower, *lb->value(_chain));
 	}
 	Node const *ub = node()->upperBound();
 	double plower = lb ? pgamma(lower,               r, 1/mu, 1, 0) : 0;
-	double pupper = ub ? pgamma(*ub->value(chain()), r, 1/mu, 1, 0) : 1;
+	double pupper = ub ? pgamma(*ub->value(_chain), r, 1/mu, 1, 0) : 1;
 	double p = runif(plower, pupper, rng);
 	xnew = qgamma(p, r, 1/mu, 1, 0);    
     }
     else {
 	xnew = rgamma(r, 1/mu, rng);
     }
-    setValue(&xnew, 1);  
+    setValue(&xnew, 1, _chain);  
 }

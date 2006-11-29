@@ -14,7 +14,8 @@ using std::vector;
 RealSliceSampler::RealSliceSampler(StochasticNode *node, Graph const &graph,
                                    unsigned int chain,
 				   double width, long maxwidth)
-  : Slicer(vector<StochasticNode*>(1,node), graph, chain, width, maxwidth)
+  : Slicer(vector<StochasticNode*>(1,node), graph, width, maxwidth),
+    _chain(chain)
 {
 }
 
@@ -30,30 +31,35 @@ RealSliceSampler::canSample(StochasticNode const *node, Graph const &graph)
   return true;
 }
 
-double RealSliceSampler::value()
+double RealSliceSampler::value() const
 {
-  return *nodes().front()->value(chain());
+  return *nodes().front()->value(_chain);
 }
  
 void RealSliceSampler::setValue(double value)
 {
-  nodes().front()->setValue(&value, 1, chain());
+  nodes().front()->setValue(&value, 1, _chain);
   vector<DeterministicNode*> const &dc = deterministicChildren();
   for (vector<DeterministicNode*>::const_iterator i(dc.begin()); 
        i != dc.end(); ++i) 
     {
-      (*i)->deterministicSample(chain());
+      (*i)->deterministicSample(_chain);
     }
 }
 
-void RealSliceSampler::getLimits(double *lower, double *upper)
+void RealSliceSampler::getLimits(double *lower, double *upper) const
 {
   StochasticNode const *snode = nodes().front();
-  snode->distribution()->support(lower, upper, 1, snode->parameters(chain()),
+  snode->distribution()->support(lower, upper, 1, snode->parameters(_chain),
                                       snode->parameterDims());
 }
 
 void RealSliceSampler::update(RNG *rng)
 {
   updateStep(rng);
+}
+
+double RealSliceSampler::logFullConditional() const
+{
+  return Sampler::logFullConditional(_chain);
 }

@@ -33,8 +33,6 @@ class RNG;
  * forward sampling order is not uniquely determined.
  */
 class Sampler {
-protected:
-  const unsigned int _chain;
 private:
   std::vector<StochasticNode *> _nodes;
   std::vector<StochasticNode const *> _stoch_children;
@@ -48,8 +46,7 @@ public:
    * an error if this Graph does not contain all of the Nodes to be sampled.
    * @param chain  Index of chain sampled by this sampler.
    */
-  Sampler(std::vector<StochasticNode *> const &nodes, Graph const &graph,
-	  unsigned int chain);
+  Sampler(std::vector<StochasticNode *> const &nodes, Graph const &graph);
   virtual ~Sampler();
   /**
    * Returns the vector of sampled nodes
@@ -65,7 +62,8 @@ public:
    * @param length vector of lengths for the corresponding arrays.
    */
   void setValue(std::vector<double const *> const &value, 
-		std::vector<unsigned int> const &length);
+		std::vector<unsigned int> const &length,
+		unsigned int chain);
   /**
    * Returns the marginal stochastic children of the sampled nodes.
    */
@@ -76,17 +74,13 @@ public:
    */
   std::vector<DeterministicNode*> const &deterministicChildren() const;
   /**
-   * Returns the chain number that is sampled by this sampler
-  */
-  unsigned int chain();
-  /**
    * Calculates the log conditional density of the sampled nodes,
    * given all other nodes in the graph that was supplied to the
    * constructor, plus the parents of the nodes (which may be outside
    * the graph).  The log full conditional is calculated up to an
    * additive constant.
    */
-  double logFullConditional();
+  double logFullConditional(unsigned int chain) const;
   /**
    * Every sampler must update the vector of nodes and its immediate
    * deterministic descendants using the update function.

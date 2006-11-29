@@ -102,7 +102,7 @@ void ConjugateDirichlet::update(RNG *rng)
 {
     unsigned long size = node()->length();
     double *alpha = new double[size];
-    double const *prior = node()->parents()[0]->value(chain());
+    double const *prior = node()->parents()[0]->value(_chain);
     for (unsigned long i = 0; i < size; ++i) {
 	alpha[i] = prior[i];
     }
@@ -116,7 +116,7 @@ void ConjugateDirichlet::update(RNG *rng)
     for (unsigned long i = 0; i < size; ++i) {
 	xnew[i] = 0;
     }
-    setValue(xnew, size);
+    setValue(xnew, size, _chain);
 
     vector<StochasticNode const*> const &stoch_children = stochasticChildren();
     unsigned int nchildren = stoch_children.size();
@@ -124,17 +124,17 @@ void ConjugateDirichlet::update(RNG *rng)
 	StochasticNode const *schild = stoch_children[i];
 	long index = 0;
 	double const *N = 0;
-	if (allzero(schild->parents()[0]->value(chain()), 
+	if (allzero(schild->parents()[0]->value(_chain), 
 		    schild->parents()[0]->length())) {
 	    switch(_child_dist[i]) {
 	    case MULTI:
-	      N = schild->value(chain());
+	      N = schild->value(_chain);
 	      for (unsigned long i = 0; i < size; ++i) {
 		alpha[i] += N[i];
 	      }
 	      break;
 	    case CAT:
-	      index = static_cast<long>(*schild->value(chain()) + 1.0E-6);
+	      index = static_cast<long>(*schild->value(_chain) + 1.0E-6);
 	      alpha[index - 1] += 1;
 	      break;
 	    default:
@@ -169,7 +169,7 @@ void ConjugateDirichlet::update(RNG *rng)
 	xnew[i] /= sum;
     }
 
-    setValue(xnew, size);
+    setValue(xnew, size, _chain);
 
     delete [] xnew;
     delete [] alpha;

@@ -15,6 +15,7 @@ class Node;
  */
 class DSumSampler : public Slicer
 {
+  const unsigned int _chain;
   double _x;
   long _sum;
 public:
@@ -23,10 +24,11 @@ public:
   ~DSumSampler();
   void update(RNG *);
   void setValue(double x);
-  double value();
-  void getLimits(double *lower, double *upper);
+  double value() const;
+  void getLimits(double *lower, double *upper) const;
   static bool canSample(std::vector<StochasticNode *> const &nodes, 
 			Graph const &graph);
+  double logFullConditional() const;
 
 };
 

@@ -74,7 +74,7 @@ ConjugateMNormal::~ConjugateMNormal()
 
 void ConjugateMNormal::calBeta()
 {
-    double const *xold = node()->value(chain());
+    double const *xold = node()->value(_chain);
     unsigned int nrow = node()->length();
 
     double *xnew = new double[nrow];
@@ -88,7 +88,7 @@ void ConjugateMNormal::calBeta()
     double *beta_j = _betas;
     for (unsigned int j = 0; j < nchildren; ++j) {
 	StochasticNode const *snode = stoch_children[j];
-	double const *mu = snode->parents()[0]->value(chain());
+	double const *mu = snode->parents()[0]->value(_chain);
 	unsigned int nrow_child = snode->length();
 	for (unsigned int k = 0; k < nrow_child; ++k) {
 	    for (unsigned int i = 0; i < nrow; ++i) {
@@ -100,11 +100,11 @@ void ConjugateMNormal::calBeta()
 
     for (unsigned int i = 0; i < nrow; ++i) {
 	xnew[i] += 1;
-	setValue(xnew, nrow);
+	setValue(xnew, nrow, _chain);
 	beta_j = _betas;
 	for (unsigned int j = 0; j < nchildren; ++j) {
 	    StochasticNode const *snode = stoch_children[j];
-	    double const *mu = snode->parents()[0]->value(chain());
+	    double const *mu = snode->parents()[0]->value(_chain);
 	    unsigned int nrow_child = snode->length();
 	    for (unsigned int k = 0; k < nrow_child; ++k) {
 		beta_j[nrow * k + i] += mu[k];
@@ -113,7 +113,7 @@ void ConjugateMNormal::calBeta()
 	}
 	xnew[i] -= 1;
     }
-    setValue(xnew, nrow);
+    setValue(xnew, nrow, _chain);
 
     delete [] xnew;
 }
@@ -171,9 +171,9 @@ void ConjugateMNormal::update(RNG *rng)
     vector<StochasticNode const*> const &stoch_children = stochasticChildren();
     unsigned int nchildren = stoch_children.size();
     
-    double const *xold = node()->value(chain());
-    double const *priormean = node()->parents()[0]->value(chain()); 
-    double const *priorprec = node()->parents()[1]->value(chain());
+    double const *xold = node()->value(_chain);
+    double const *priormean = node()->parents()[0]->value(_chain); 
+    double const *priorprec = node()->parents()[1]->value(_chain);
     int nrow = node()->length();
     /* 
        The log of the full conditional density takes the form
@@ -202,8 +202,8 @@ void ConjugateMNormal::update(RNG *rng)
 	// columns normal. We know alpha = 0, beta = I.
 	
 	for (unsigned int j = 0; j < nchildren; ++j) {
-	    double const *Y = stoch_children[j]->value(chain());
-	    double const *tau = stoch_children[j]->parents()[1]->value(chain());
+	    double const *Y = stoch_children[j]->value(_chain);
+	    double const *tau = stoch_children[j]->parents()[1]->value(_chain);
 	    for (int i = 0; i < nrow; ++i) {
 		for (int i2 = 0; i2 < nrow; ++i2) {
 		    A[i * nrow + i2] += tau[i * nrow + i2];
@@ -226,9 +226,9 @@ void ConjugateMNormal::update(RNG *rng)
 	for (unsigned int j = 0; j < nchildren; ++j) {
 	    
 	    Node const *snode = stoch_children[j];
-	    double const *Y = snode->value(chain());
-	    double const *mu = snode->parents()[0]->value(chain());
-	    double const *tau = snode->parents()[1]->value(chain());
+	    double const *Y = snode->value(_chain);
+	    double const *mu = snode->parents()[0]->value(_chain);
+	    double const *tau = snode->parents()[1]->value(_chain);
 	    int nrow_child = snode->length();
 	  
 	    for (int i = 0; i < nrow; ++i) {
@@ -298,7 +298,7 @@ void ConjugateMNormal::update(RNG *rng)
     }
     double *xnew = new double[nrow];
     DMNorm::randomsample(xnew, b, A, nrow, rng);
-    setValue(xnew, nrow);
+    setValue(xnew, nrow, _chain);
     
     delete [] b;
     delete [] A;
