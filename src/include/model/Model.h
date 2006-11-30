@@ -154,13 +154,9 @@ public:
    */
   bool setRNG(RNG *rng, unsigned int chain);
   /**
-   * Attempts to turn off adaptive phase of all samplers
-   *
-   * @return success indicator. A Sampler may refuse to turn off its
-   * adaptive phase (until further samples are drawn). In this case, 
-   * adaptOff returns false.
+   * Turns off adaptive phase of all samplers
    */
-  bool adaptOff();
+  void adaptOff();
 };
 
 #endif /* MODEL_H_ */

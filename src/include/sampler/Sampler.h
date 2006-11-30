@@ -92,15 +92,10 @@ public:
    * When a sampler is constructed, it may be in adaptive mode, which
    * allows it to adapt its behaviour for increased efficiency. However,
    * a sampler in adaptive mode may not necessarily converge to the 
-   * correct target distribution.
-   *
-   * The purpose of this function is to turn off burnin mode, so that
-   * valid samples can be collected from the sampler. 
-   *
-   * @return Success indicator. A Sampler may refuse to switch off
-   * adaptive mode, in which case the adaptOff function returns false
+   * correct target distribution. This function turns off adaptive mode,
+   * so that valid samples can be collected from the sampler.
    */
-  virtual bool adaptOff() = 0;
+  virtual void adaptOff() = 0;
   /**
    * Static function that identifies the Marginal Stochastic Children
    * and the Immediate Deterministic Descendants of the given nodes

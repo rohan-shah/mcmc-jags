@@ -32,7 +32,7 @@ class ConjugateSampler : public Sampler
    * Conjugate samplers do not have an adaptive phase. This function always
    * returns true.
    */
-  bool adaptOff();
+  void adaptOff();
 };
 
 #endif /* CONJUGATE_H_ */

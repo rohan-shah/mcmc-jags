@@ -369,14 +369,10 @@ bool Console::setMonitor(string const &name, Range const &range,
 			 unsigned int thin)
 {
   if (!_model) {
-    _out << "Can't set monitor. No model!" << endl;    
+    _err << "Can't set monitor. No model!" << endl;    
     return false;
   }
-  if (!_model->adaptOff()) {
-    _out << "Can't set monitor. At least one sampler is still in adaptive phase" << endl;
-    return false;
-  }
-  
+
   try {
     if (isNULL(range)) {
       NodeArray *array = _model->symtab().getVariable(name);
@@ -755,6 +751,43 @@ unsigned int Console::nchain() const
   else {
     return _model->nchain();
   }
+}
+
+bool Console::adaptOff() 
+{
+  if (_model == 0) {
+    _err << "Can't update. No model!" << endl;
+    return false;
+  }
+  if (!_model->isInitialized()) {
+    _err << "Model not initialized" << endl;
+    return false;
+  }
+  if (!_model->canSample()) {
+    _err << "Model has no samplers" << endl;
+    return false;
+  }
+
+  try {
+    _model->adaptOff();
+  }
+  catch (NodeError except) {
+    _err << "Error in node " << _model->symtab().getName(except.node) << '\n';
+    _err << except.what() << endl;
+    return false;
+  }
+  catch (std::runtime_error except) {
+    _err << "RUNTIME ERROR:\n";
+    _err << except.what() << endl;
+    return false;
+  }
+  catch (std::logic_error except) {
+    _err << "LOGIC ERROR:\n";
+    _err << except.what() << '\n';
+    _err << "Please send a bug report to " << PACKAGE_BUGREPORT << endl;
+    return false;
+  }
+  return true;
 }
 
 /*

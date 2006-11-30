@@ -98,7 +98,5 @@ bool FiniteSampler::canSample(StochasticNode const *node,
     return true;
 }
 
-bool FiniteSampler::adaptOff()
-{
-   return true; // No adaptive phase
-}
+void FiniteSampler::adaptOff()
+{}

@@ -306,26 +306,23 @@ unsigned int Model::iteration(unsigned int chain) const
   return _chain_info[chain].iteration;
 }
 
-bool Model::adaptOff() 
+void Model::adaptOff() 
 {
   for (unsigned int n = 0; n < _nchain; ++n) {
     for (vector<Sampler*>::iterator p = _chain_info[n].samplers.begin();
 	 p != _chain_info[n].samplers.end(); ++p)
       {
-	bool ok = (*p)->adaptOff();
-	if (!ok) {
-	  return false;
-	}
+	(*p)->adaptOff();
       }
-    _adapt = false;
   }
-  return true;
+  _adapt = false;
 }
 
 void Model::setMonitor(Node *node, int thin)
 {
+
   if (_adapt) {
-    throw logic_error("Cannot set monitor in adaptive phase");
+    adaptOff();
   }
   
   if (_monitored_nodes.count(node)) {

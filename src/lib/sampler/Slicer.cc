@@ -228,8 +228,7 @@ bool Slicer::accept(double xold, double xnew, double z, double L, double R)
   return true;
 }  
 
-bool Slicer::adaptOff()
+void Slicer::adaptOff()
 {
   _adapt = false;
-  return true;
 }

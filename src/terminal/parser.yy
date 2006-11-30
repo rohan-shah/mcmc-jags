@@ -834,7 +834,19 @@ static void updatestar(long niter, long refresh, int width)
 	    << std::flush;
 
   int col = 0;
+  bool adapt = true;
   for (long n = niter; n > 0; n -= refresh) {
+    if (adapt && n <= niter/2) {
+      // Turn off adaptive mode half way through burnin
+      if (console->adaptOff()) {
+	adapt = false;
+      }
+      else {
+	std::cout << std::endl;
+	errordump();
+	return;
+      }
+    }
     long nupdate = std::min(n, refresh);
     if(console->update(nupdate))
       std::cout << "*" << std::flush;
