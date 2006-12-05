@@ -1,5 +1,6 @@
 #include <config.h>
 #include "DDexp.h"
+#include <rng/RNG.h>
 
 #include <cmath>
 
@@ -80,7 +81,7 @@ DDexp::q(double p, vector<double const *> const &par, bool lower,
 double DDexp::r(vector<double const *> const &par, RNG *rng) const
 {
     double ans = MU(par);
-    if (unif_rand(rng) < 0.5)
+    if (rng->uniform() < 0.5)
 	ans -= rexp(SCALE(par), rng);
     else
 	ans += rexp(SCALE(par), rng);
