@@ -51,7 +51,7 @@ mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/src/include/config.h
 CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
-bugsmatrix_la_DEPENDENCIES =
+bugsmatrix_la_LIBADD =
 am_bugsmatrix_la_OBJECTS = matexp.lo matrix.lo
 bugsmatrix_la_OBJECTS = $(am_bugsmatrix_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/src/include
@@ -189,7 +189,6 @@ INCLUDES = -I $(top_srcdir)/src/include
 noinst_LTLIBRARIES = bugsmatrix.la
 bugsmatrix_la_SOURCES = matexp.cc matrix.cc
 bugsmatrix_la_LDFLAGS = -no-undefined -module -avoid-version
-bugsmatrix_la_LIBADD = @LAPACK_LIBS@ @BLAS_LIBS@ @LIBS@ @FLIBS@
 noinst_HEADERS = matexp.h lapack.h matrix.h
 all: all-am
 
