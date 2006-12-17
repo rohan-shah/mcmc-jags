@@ -3,8 +3,7 @@
 #include <graph/NodeError.h>
 #include <graph/NodeNameTab.h>
 #include <sarray/Range.h>
-//FIXME: for JAGS_NA
-#include <sarray/SArray.h>
+#include <sarray/nainf.h>
 #include <sarray/util.h>
 
 #include <stdexcept>

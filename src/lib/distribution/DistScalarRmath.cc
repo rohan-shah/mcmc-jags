@@ -2,10 +2,11 @@
 #include <distribution/DistScalarRmath.h>
 #include <rng/RNG.h>
 #include <sarray/util.h>
+#include <sarray/nainf.h>
+
 #include "Bounds.h"
 
 #include <stdexcept>
-#include <cfloat>
 #include <cmath>
 #include <algorithm>
 
@@ -36,11 +37,11 @@ DistScalarRmath::typicalValue(vector<double const *> const &parameters) const
       y = q(0.5, parameters, true, false);
     }
     else {
-	double lower = -DBL_MAX, upper = DBL_MAX;
+        double lower = 0, upper = 0;
 	support(&lower, &upper, parameters);
 	double plower = 0, pupper = 1;
 	if (bb) {
-	    if (isDiscreteValued() && lower != -DBL_MAX) {
+	    if (isDiscreteValued() && jags_finite(lower)) {
 		plower = p(lower - 1, parameters, true, false);
 	    }
 	    else {
@@ -85,12 +86,12 @@ DistScalarRmath::logLikelihood(double x,
 	double lower, upper;
 	support(&lower, &upper, parameters);
 	if (x < lower || x > upper) {
-	    return -DBL_MAX;
+       	  return JAGS_NEGINF;
 	}
 	double plower = 0, pupper = 1;
 	if (lb) {
 	    if (isDiscreteValued()) {
-		if (lower != -DBL_MAX) {
+       	        if (jags_finite(lower)) {
 		    //Need to correct for discreteness
 		    plower = p(lower - 1, parameters, true, false);
 		}
@@ -120,7 +121,7 @@ double DistScalarRmath::randomSample(vector<double const *> const &parameters,
 	double plower = 0, pupper = 1;
 	if (bb) {
 	    if (isDiscreteValued()) {
-		if (lower != -DBL_MAX) {
+	        if (jags_finite(lower)) {
 		    plower = p(lower - 1, parameters, true, false);
 		}
 	    }

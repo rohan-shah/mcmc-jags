@@ -5,7 +5,6 @@
 #include "parser_extra.h"
 
 #include <cstdio>
-#include <cfloat>
 #include <cstdlib>
 #include <cstring>
 #include <iostream>

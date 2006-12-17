@@ -7,13 +7,13 @@
 #include <graph/StochasticNode.h>
 #include <graph/DevianceNode.h>
 #include <sarray/RangeIterator.h>
+#include <sarray/nainf.h>
 
 #include "MixCompiler.h"
 
 #include <utility>
 #include <vector>
 #include <stdexcept>
-#include <cfloat>
 #include <cmath>
 #include <list>
 #include <algorithm>

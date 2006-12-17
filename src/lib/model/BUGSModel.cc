@@ -91,17 +91,16 @@ TraceMonitor const *BUGSModel::getMonitor(string const &name, Range const &range
 }
 */
 
+#include <sarray/nainf.h>
 static void writeDouble(double x, std::ostream &out)
 {
-  using namespace std;
-
   if (x == JAGS_NA) {
     out << "NA";
   }
-  else if (isnan(x)) {
+  else if (jags_isnan(x)) {
     out << "NaN";
   }
-  else if (isinf(x)) {
+  else if (!jags_finite(x)) {
     if (x > 0) 
       out << "Inf";
     else 

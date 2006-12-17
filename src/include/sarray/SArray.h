@@ -3,9 +3,6 @@
 
 #include <sarray/Range.h>
 
-/** @short missing value */
-extern const double JAGS_NA;
-
 /**
  * An SArray represents a multi-dimensional array of double precision floats
  * @short multi-dimensional array

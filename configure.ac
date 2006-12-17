@@ -7,6 +7,16 @@ AC_PROG_CXX
 AM_PROG_LEX
 AC_PROG_YACC
 
+dnl IEEE 754 arithmetic
+AC_CHECK_HEADERS(ieeefp.h)
+R_IEEE_754
+if test "${ac_cv_func_finite}" = "yes"; then
+R_FUNC_FINITE
+fi
+if test "${ac_cv_have_decl_isfinite}" = "yes"; then
+R_FUNC_ISFINITE
+fi
+
 case "${host_os}" in
   darwin*)
     ## Allow linking of code compiled with Apple GCC and code
@@ -40,7 +50,7 @@ dnl Relevant parts lifted from R's configure.ac, version 2.3.0
 AC_CHECK_LIB(m, sin)
 
 ## IEEE 754. We rely on this in e.g. the working log test.
-R_IEEE_754
+##R_IEEE_754
 
 R_CHECK_FUNCS([expm1 log1p], [#include <math.h>])
 ## Used to build src/include/Rmath.h.

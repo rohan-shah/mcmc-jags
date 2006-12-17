@@ -178,7 +178,7 @@ subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 sarrayincludedir = $(jagsincludedir)/sarray
-sarrayinclude_HEADERS = RangeIterator.h SArray.h Range.h util.h
+sarrayinclude_HEADERS = RangeIterator.h SArray.h Range.h util.h nainf.h
 all: all-am
 
 .SUFFIXES:

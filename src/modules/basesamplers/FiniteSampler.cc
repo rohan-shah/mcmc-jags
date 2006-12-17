@@ -3,10 +3,10 @@
 #include <graph/StochasticNode.h>
 #include <graph/Graph.h>
 #include <rng/RNG.h>
+#include <sarray/nainf.h>
 #include "FiniteSampler.h"
 
 #include <cmath>
-#include <cfloat>
 #include <string>
 #include <stdexcept>
 #include <vector>
@@ -24,7 +24,7 @@ FiniteSampler::FiniteSampler(StochasticNode *node, Graph const &graph,
     
     Distribution const *dist = node->distribution();
     
-    double lower = -DBL_MAX, upper = DBL_MAX;
+    double lower = 0, upper = 0;
     dist->support(&lower, &upper, 1, node->parameters(chain), node->parameterDims());
     _lower = static_cast<int>(lower);
     _upper = static_cast<int>(upper);
@@ -76,10 +76,10 @@ bool FiniteSampler::canSample(StochasticNode const *node,
 
     for (unsigned int ch = 0; ch < node->nchain(); ++ch) {
 	//Distribution cannot be unbounded
-	double ulimit = DBL_MAX, llimit = -DBL_MAX;
+	double ulimit = 0, llimit = 0;
 	dist->support(&llimit, &ulimit, 1, node->parameters(ch), 
 		  node->parameterDims());
-	if (ulimit == DBL_MAX || llimit == -DBL_MAX)
+	if (!jags_finite(ulimit) || !jags_finite(llimit))
 	    return false;
 
 	//We don't want too many possibilities

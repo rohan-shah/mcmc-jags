@@ -1,8 +1,8 @@
 #include <config.h>
 #include <model/SymTab.h>
 #include <graph/MixtureNode.h>
+#include <sarray/nainf.h>
 
-#include <cfloat>
 #include <string>
 #include <stdexcept>
 #include <utility>

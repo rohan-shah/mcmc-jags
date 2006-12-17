@@ -7,7 +7,6 @@
 #include "RealSliceSampler.h"
 
 #include <cmath>
-#include <cfloat>
 
 using std::vector;
 

@@ -3,7 +3,6 @@
 
 #include <utility>
 #include <vector>
-#include <cfloat>
 #include <stdexcept>
 
 #include <graph/NodeError.h>

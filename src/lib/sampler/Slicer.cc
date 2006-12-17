@@ -3,12 +3,13 @@
 #include <graph/StochasticNode.h>
 #include <graph/NodeError.h>
 #include <rng/RNG.h>
+#include <sarray/nainf.h>
 
 #include <cmath>
 #include <cfloat>
 
 //Minimum length of adaptive phase before we adjust width
-#define MIN_ADAPT 10
+#define MIN_ADAPT 50
 
 using std::vector;
 
@@ -21,20 +22,15 @@ Slicer::Slicer(vector<StochasticNode *> const &nodes, Graph const &graph,
 
 void Slicer::updateStep(RNG *rng)
 {
-  using namespace std;
-
   // Test current value
   double g0 = logFullConditional();
-  if (isinf(g0)) {
-      if (g0 > 0) {
-	  return;
-      }
-      else {
-	  throw NodeError(nodes()[0], "Current value is inconsistent with data");
-      }
-  }
-  if (g0 == -DBL_MAX) {
-    throw NodeError(nodes()[0], "Current value is inconsistent with data");
+  if (!jags_finite(g0)) {
+    if (g0 > 0) {
+      return;
+    }
+    else {
+      throw NodeError(nodes()[0], "Current value is inconsistent with data");
+    }
   }
 
   // Generate auxiliary variable
@@ -45,7 +41,7 @@ void Slicer::updateStep(RNG *rng)
   double L = xold - rng->uniform() * _width; 
   double R = L + _width;
 
-  double lower = -DBL_MAX, upper = DBL_MAX;
+  double lower = JAGS_NEGINF, upper = JAGS_POSINF;
   getLimits(&lower, &upper);
 
   // Stepping out 
@@ -123,14 +119,13 @@ void Slicer::updateDouble(RNG *rng)
 
   // Test current value
   double g0 = logFullConditional();
-  if (g0 < 0) {
-    if (g0 == -DBL_MAX || isinf(g0)) {
-      throw NodeError(nodes()[0], 
-		      "Current value is inconsistent with data");
+  if (!jags_finite(g0)) {
+    if (g0 < 0) {
+      throw NodeError(nodes()[0], "Current value is inconsistent with data");
     }
-  }
-  else if (g0 == DBL_MAX || isinf(g0)) {
-    return;
+    else {
+      return;
+    }
   }
 
   // Generate auxiliary variable
@@ -141,7 +136,7 @@ void Slicer::updateDouble(RNG *rng)
   double L = xold - rng->uniform() * _width; 
   double R = L + _width;
 
-  double lower = -DBL_MAX, upper = DBL_MAX;
+  double lower = JAGS_NEGINF, upper = JAGS_POSINF;
   getLimits(&lower, &upper);
 
   // Doubling 

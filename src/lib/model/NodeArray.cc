@@ -5,6 +5,7 @@
 #include <sarray/RangeIterator.h>
 #include <graph/NodeError.h>
 #include <sarray/SArray.h>
+#include <sarray/nainf.h>
 
 #include <string>
 #include <stdexcept>

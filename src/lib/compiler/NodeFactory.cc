@@ -1,7 +1,6 @@
 #include <compiler/NodeFactory.h>
 #include <graph/Node.h>
-//FIXME: For JAGS_NA only
-#include <sarray/SArray.h>
+#include <sarray/nainf.h>
 
 #include <cfloat>
 

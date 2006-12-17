@@ -1,10 +1,8 @@
 #include <config.h>
 #include <sarray/SArray.h>
+#include <sarray/nainf.h>
 
 #include <stdexcept>
-#include <cfloat>
-
-const double JAGS_NA = -DBL_MAX*(1-1e-15);
 
 using std::vector;
 using std::logic_error;

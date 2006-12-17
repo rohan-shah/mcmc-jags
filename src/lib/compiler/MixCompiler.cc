@@ -36,6 +36,7 @@
 #include <graph/MixtureNode.h>
 #include <graph/GraphMarks.h>
 #include <sampler/Sampler.h>
+#include <sarray/nainf.h>
 
 #include "MixCompiler.h"
 
@@ -221,10 +222,10 @@ getMixtureNode1(NodeArray *array, vector<SSI> const &limits, Compiler *compiler)
       /* To be safe, we cycle over all chains */
       for (unsigned int n = 0; n < snode->nchain(); ++n) {
 	  // Get lower and upper limits of support
-	  double l = -DBL_MAX, u = DBL_MAX;
+	  double l = 0, u = 0;
 	  dist->support(&l, &u, 1, snode->parameters(n), snode->parameterDims());
-	  if (l == -DBL_MAX || u == DBL_MAX) {
-	      return 0; //Unbounded parent => serious trouble
+	  if (!jags_finite(l) || !jags_finite(u)) {
+	    return 0; //Unbounded parent => serious trouble
 	  }
 	  if (l < -INT_MAX || u > INT_MAX) {
 	      return 0; //Can't cast to int

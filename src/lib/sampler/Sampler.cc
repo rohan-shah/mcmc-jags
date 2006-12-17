@@ -4,11 +4,11 @@
 #include <graph/DeterministicNode.h>
 #include <graph/Graph.h>
 #include <graph/NodeError.h>
+#include <sarray/nainf.h>
 
 #include <stdexcept>
 #include <set>
 #include <string>
-#include <cfloat>
 #include <cmath>
 
 using std::vector;
@@ -109,43 +109,37 @@ void Sampler::classifyChildren(vector<StochasticNode *> const &nodes,
 
 double Sampler::logFullConditional(unsigned int chain) const
 {
-  /* We don't know if isinf is a macro or a function declared in the
-     standard name space */
-  using namespace std;
+  double lfc = 0.0;
 
-  double logprior = 0;
-  for (vector<StochasticNode*>::const_iterator p(_nodes.begin());
-       p != _nodes.end(); ++p) 
-    {
-      double l = (*p)->logDensity(chain);
-      if (isnan(l)) {
+  vector<StochasticNode*>::const_iterator p = _nodes.begin();
+  for (; p != _nodes.end(); ++p) {
+    lfc += (*p)->logDensity(chain);
+  }
+  
+  vector<StochasticNode const*>::const_iterator q = _stoch_children.begin();
+  for (; q != _stoch_children.end(); ++q) {
+    lfc += (*q)->logDensity(chain);
+  }
+  
+  if(jags_isnan(lfc)) {
+    //Try to find where the calculation went wrong
+    for (p = _nodes.begin(); p != _nodes.end(); ++p) {
+      if (jags_isnan((*p)->logDensity(chain))) {
 	throw NodeError(*p, "Failure to calculate log density");
       }
-      else if (l == -DBL_MAX || l == DBL_MAX || isinf(l)) {
-        return l;
-      }
-      else {
-	logprior += l;
+    }
+    
+    for (q = _stoch_children.begin(); q != _stoch_children.end(); ++q) {
+      if (jags_isnan((*q)->logDensity(chain))) {
+	throw NodeError(*q, "Failure to calculate log density");
       }
     }
 
-  double loglikelihood = 0;
-  for (vector<StochasticNode const*>::const_iterator p(_stoch_children.begin());
-       p != _stoch_children.end(); ++p) 
-    {
-      double l = (*p)->logDensity(chain);
-      if (isnan(l)) {
-	  throw NodeError(*p, "Failure to calculate log density");
-      }
-      else if (l == -DBL_MAX || l == DBL_MAX || isinf(l)) {
-	return l;
-      }
-      else {
-	loglikelihood += l;
-      }
-    }
+    //This could  happen if we try to add +Inf to -Inf
+    throw logic_error("Failure in Sampler::logFullConditional");
+  }
 
-  return logprior + loglikelihood;
+  return lfc;
 }
 
 vector<StochasticNode const*> const &Sampler::stochasticChildren() const

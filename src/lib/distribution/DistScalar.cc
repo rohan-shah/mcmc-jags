@@ -1,11 +1,10 @@
 #include <config.h>
 #include <distribution/DistScalar.h>
-#include <sarray/SArray.h>
+#include <sarray/nainf.h>
 #include <sarray/util.h>
 #include "Bounds.h"
 
 #include <stdexcept>
-#include <cfloat>
 #include <cmath>
 #include <algorithm>
 
@@ -56,7 +55,7 @@ double DistScalar::l(vector<double const *> const &parameters) const
 {
     switch(_support) {
     case DIST_UNBOUNDED:
-	return -DBL_MAX;
+	return JAGS_NEGINF;
 	break;
     case DIST_POSITIVE: case DIST_PROPORTION:
 	return 0;
@@ -72,7 +71,7 @@ double DistScalar::u(vector<double const *> const &parameters) const
 {
     switch(_support) {
     case DIST_UNBOUNDED: case DIST_POSITIVE:
-	return DBL_MAX;
+	return JAGS_POSINF;
 	break;
     case DIST_PROPORTION:
 	return 1;

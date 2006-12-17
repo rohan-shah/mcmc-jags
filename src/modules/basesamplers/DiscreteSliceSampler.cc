@@ -8,7 +8,6 @@
 #include "DiscreteSliceSampler.h"
 
 #include <cmath>
-#include <cfloat>
 
 using std::floor;
 using std::vector;
