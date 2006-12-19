@@ -109,37 +109,40 @@ void Sampler::classifyChildren(vector<StochasticNode *> const &nodes,
 
 double Sampler::logFullConditional(unsigned int chain) const
 {
-  double lfc = 0.0;
+    if (!checkParameterValues(chain))
+	return JAGS_NEGINF;
 
-  vector<StochasticNode*>::const_iterator p = _nodes.begin();
-  for (; p != _nodes.end(); ++p) {
-    lfc += (*p)->logDensity(chain);
-  }
-  
-  vector<StochasticNode const*>::const_iterator q = _stoch_children.begin();
-  for (; q != _stoch_children.end(); ++q) {
-    lfc += (*q)->logDensity(chain);
-  }
-  
-  if(jags_isnan(lfc)) {
-    //Try to find where the calculation went wrong
-    for (p = _nodes.begin(); p != _nodes.end(); ++p) {
-      if (jags_isnan((*p)->logDensity(chain))) {
-	throw NodeError(*p, "Failure to calculate log density");
-      }
+    double lfc = 0.0;
+
+    vector<StochasticNode*>::const_iterator p = _nodes.begin();
+    for (; p != _nodes.end(); ++p) {
+	lfc += (*p)->logDensity(chain);
     }
+  
+    vector<StochasticNode const*>::const_iterator q = _stoch_children.begin();
+    for (; q != _stoch_children.end(); ++q) {
+	lfc += (*q)->logDensity(chain);
+    }
+  
+    if(jags_isnan(lfc)) {
+	//Try to find where the calculation went wrong
+	for (p = _nodes.begin(); p != _nodes.end(); ++p) {
+	    if (jags_isnan((*p)->logDensity(chain))) {
+		throw NodeError(*p, "Failure to calculate log density");
+	    }
+	}
     
-    for (q = _stoch_children.begin(); q != _stoch_children.end(); ++q) {
-      if (jags_isnan((*q)->logDensity(chain))) {
-	throw NodeError(*q, "Failure to calculate log density");
-      }
+	for (q = _stoch_children.begin(); q != _stoch_children.end(); ++q) {
+	    if (jags_isnan((*q)->logDensity(chain))) {
+		throw NodeError(*q, "Failure to calculate log density");
+	    }
+	}
+
+	//This could  happen if we try to add +Inf to -Inf
+	throw logic_error("Failure in Sampler::logFullConditional");
     }
 
-    //This could  happen if we try to add +Inf to -Inf
-    throw logic_error("Failure in Sampler::logFullConditional");
-  }
-
-  return lfc;
+    return lfc;
 }
 
 vector<StochasticNode const*> const &Sampler::stochasticChildren() const
@@ -171,3 +174,19 @@ void Sampler::setValue(double const * value, unsigned int length,
     }
 }
 
+bool Sampler::checkParameterValues(unsigned int chain) const
+{
+    vector<StochasticNode*>::const_iterator p = _nodes.begin();
+    for (; p != _nodes.end(); ++p) {
+	if (!(*p)->checkParentValues(chain))
+	    return false;
+    }
+  
+    vector<StochasticNode const*>::const_iterator q = _stoch_children.begin();
+    for (; q != _stoch_children.end(); ++q) {
+	if (!(*q)->checkParentValues(chain))
+	    return false;
+    }
+    
+    return true;
+}

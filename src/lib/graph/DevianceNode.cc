@@ -53,3 +53,8 @@ bool DevianceNode::isScale(std::set<Node const *> const &parameters, bool fixed)
 {
   return false;
 }
+
+bool DevianceNode::checkParentValues(unsigned int nchain) const
+{
+    return true;
+}

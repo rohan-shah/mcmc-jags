@@ -63,3 +63,8 @@ bool AggNode::isScale(set<Node const *> const &parameters, bool fixed) const
 {
     return (parents().size() == 1);
 }
+
+bool AggNode::checkParentValues(unsigned int) const
+{
+   return true;
+}

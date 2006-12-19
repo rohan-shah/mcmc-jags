@@ -26,6 +26,10 @@ public:
      */
     void randomSample(RNG*, unsigned int);
     /**
+     * Constant nodes have no parents.
+     */
+    bool checkParentValues(unsigned int) const {return true;}
+    /**
      * If a constant node does not have a name in the supplied
      * name table, then it is named after its value.
      */

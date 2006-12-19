@@ -114,18 +114,6 @@ string LogicalNode::name(NodeNameTab const &name_table) const
   return name;
 }
 
-/*
-vector<SArray const *> const &LogicalNode::parameters(unsigned int chain) const
-{
-  return _parameters[chain];
-}
-
-Function const* LogicalNode::function() const
-{
-  return _func;
-}
-*/
-
 void LogicalNode::deterministicSample(unsigned int chain)
 {
   if (!_func->checkParameterValue(_parameters[chain], _dims)) {
@@ -184,4 +172,9 @@ bool LogicalNode::isScale(std::set<Node const *> const &parameters, bool fixed) 
     }
 
     return _func->isScale(index, fixed_mask);
+}
+
+bool LogicalNode::checkParentValues(unsigned int chain) const
+{
+    return _func->checkParameterValue(_parameters[chain], _dims);
 }

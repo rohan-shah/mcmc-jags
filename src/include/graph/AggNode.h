@@ -47,6 +47,11 @@ public:
      * parent, and in this case it is also fixed.
      */
     bool isScale(std::set<Node const*> const &parameters, bool fixed) const;
+    /**
+     * An AggNode places no restrictions on its parents' values. Therefore
+     * this function always returns true.
+     */
+    bool checkParentValues(unsigned int chain) const;
 };
 
 #endif /* AGGREGATE_NODE_H */

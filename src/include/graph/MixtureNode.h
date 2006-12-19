@@ -46,6 +46,11 @@ public:
      * are parameters. It is never a fixed scale transformation.
      */
     bool isScale(std::set<Node const*> const &parameters, bool fixed) const;
+    /**
+     * Checks that the current value of the index variable corresponds
+     * to a valid Node in the vector of parameters.
+     */
+    bool checkParentValues(unsigned int chain) const;
 };
 
 MixtureNode const *asMixture(Node const *node);

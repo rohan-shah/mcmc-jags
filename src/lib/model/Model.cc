@@ -123,6 +123,11 @@ void Model::initialize()
 	throw logic_error("Graph not checked yet");
 
     for (vector<Node*>::iterator i = _nodes.begin(); i != _nodes.end(); i++) {
+       for (unsigned int n = 0; n < _nchain; ++n) {
+           if (!(*i)->checkParentValues(n)) {
+	       throw NodeError(*i, "Invalid parent values");
+           }
+       }
        if (!(*i)->initialize()) {
           throw NodeError(*i, "Initialization failure");
        } 

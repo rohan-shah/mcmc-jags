@@ -108,13 +108,17 @@ public:
    */
   virtual void deterministicSample(unsigned int chain) = 0;
   /**
+   * Checks whether the parents of the Node have valid values.
+   */
+  virtual bool checkParentValues(unsigned int chain) const = 0;
+  /**
    * Attempts to initialize the node. If the parents are observed and
    * the node is non-variable, its value is fixed.
    *
    * Initialization will fail if any parents are non-initialized. 
    * An unobserved node that does not represent a variable in the model
    * may be re-initialized. For other nodes, reinitialization will
-   * have no effect.
+   * have no effect, but the function will still return the value true.
    *
    * @returns a logical value indicating success
    */
@@ -169,13 +173,20 @@ public:
    */
   void setDiscreteValued();
   /**
-   * Gives direct access to the value of the node for a given chain
-   * without going through the data member function.
-   * @see Node##data
+   * Returns a pointer to the start of the array of values for 
+   * the given chain.
    */
   double const *value(unsigned int chain) const;
-  std::vector<unsigned int> const &dim() const;
+  /**
+   * Returns the length of the value array
+   */
   unsigned int length() const;
+  /**
+   * Returns the dimensions of the Node
+   */
+  std::vector<unsigned int> const &dim() const;
+
+  
 };
 
 /**

@@ -79,8 +79,18 @@ public:
    * constructor, plus the parents of the nodes (which may be outside
    * the graph).  The log full conditional is calculated up to an
    * additive constant.
+   *
+   * This function calls checkParameterValues, and returns JAGS_NEGINF
+   * if it returns false. Thus, the full conditional density is
+   * defined to be zero when the prior and the likelihood are not well
+   * defined because the parameters are out of range.
    */
   double logFullConditional(unsigned int chain) const;
+  /**
+   * Checks whether the parameters of both the sampled nodes and their
+   * stochastic children are valid.
+   */
+  bool checkParameterValues(unsigned int chain) const;
   /**
    * Every sampler must update the vector of nodes and its immediate
    * deterministic descendants using the update function.

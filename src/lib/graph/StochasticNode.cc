@@ -265,3 +265,8 @@ vector<vector<unsigned int> > const &StochasticNode::parameterDims() const
 {
    return _dims;
 }
+
+bool StochasticNode::checkParentValues(unsigned int chain) const
+{
+    return _dist->checkParameterValue(_parameters[chain], _dims);
+}

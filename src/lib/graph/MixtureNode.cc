@@ -138,3 +138,13 @@ bool MixtureNode::isScale(set<Node const*> const &parameters, bool fixed) const
 {
     return isLinear(parameters, fixed);
 }
+
+bool MixtureNode::checkParentValues(unsigned int chain) const
+{
+    vector<int> i(_Nindex);
+    vector <Node const*> const &par = parents();
+    for (unsigned int j = 0; j < _Nindex; ++j) {
+	i[j] = static_cast<int>(*par[j]->value(chain));
+    }
+    return _map.find(i) != _map.end();
+}

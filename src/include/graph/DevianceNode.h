@@ -32,6 +32,10 @@ public:
      * A deviance node is never a scale transformation of its parameters.
      */
     bool isScale(std::set<Node const*> const &parameters, bool fixed) const;
+    /**
+     * A deviance node always has valid parent values
+     */
+    bool checkParentValues(unsigned int chain) const;
 };
 
 #endif

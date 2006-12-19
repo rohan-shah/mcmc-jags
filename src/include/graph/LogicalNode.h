@@ -30,25 +30,16 @@ public:
                 std::vector<Node const*> const &parameters);
     ~LogicalNode();
     /** 
-     * Returns the parameter values of the node 
-     */
-    //std::vector<double const *> const &parameters(unsigned int chain) const;
-    /**
-     * Returns the dimensions of the parameters of the node
-     */
-    //std::vector<std::vector<unsigned int> > const &parameterDims() const;
-    /** 
-     * Returns the Function used to calculate the value of the logical
-     * node.
-     */
-    //Function const* function() const;
-    /** 
      * Calculates the value of the node based on the parameters. This
      * function calls Function##checkParameterValue and will throw an
      * exception if the result is false.
      * @exception NodeError
      */
     void deterministicSample(unsigned int chain);
+    /**
+     * @see Function##checkParameterValue.
+     */
+    bool checkParentValues(unsigned int chain) const;
     /**
      * If a LogicalNode does not have a name defined in the name
      * table, then its name is constructed to be the BUGS-language

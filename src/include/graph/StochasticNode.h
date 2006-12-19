@@ -77,11 +77,23 @@ public:
      */
     void deterministicSample(unsigned int chain);
     /**
+     * @see Distribution##checkParameterValue
+     */
+    bool checkParentValues(unsigned int chain) const;
+    /**
      * Stochastic nodes are always random variables. This function returns
      * true.
      */
     bool isVariable() const;
-    
+    /**
+     * Checks that the parameters are within the valid range determined
+     * by the distribution.
+     *
+     * @param chain Chain number to check parameters for
+     *
+     * @see Distribution##checkParameterValue
+     */
+    bool checkParameterValue(unsigned int chain) const;    
 };
 
 StochasticNode const *asStochastic(Node const *node);
