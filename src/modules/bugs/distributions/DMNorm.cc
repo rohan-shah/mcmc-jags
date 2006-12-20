@@ -1,8 +1,10 @@
 #include <config.h>
+#include <sarray/util.h>
+#include <sarray/nainf.h>
+#include "DMNorm.h"
+
 #include <lapack.h>
 #include <matrix.h>
-#include <sarray/util.h>
-#include "DMNorm.h"
 
 #include <cmath>
 #include <vector>
@@ -132,8 +134,8 @@ void DMNorm::support(double *lower, double *upper, unsigned int length,
 		     vector<vector<unsigned int> > const &dims) const
 {
     for (unsigned int i = 0; i < length; ++i) {
-	lower[i] = -DBL_MAX;
-	upper[i] = DBL_MAX;
+	lower[i] = JAGS_NEGINF;
+	upper[i] = JAGS_POSINF;
     }
 }
 

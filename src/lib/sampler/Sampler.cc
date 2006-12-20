@@ -109,9 +109,6 @@ void Sampler::classifyChildren(vector<StochasticNode *> const &nodes,
 
 double Sampler::logFullConditional(unsigned int chain) const
 {
-    if (!checkParameterValues(chain))
-	return JAGS_NEGINF;
-
     double lfc = 0.0;
 
     vector<StochasticNode*>::const_iterator p = _nodes.begin();
@@ -172,21 +169,4 @@ void Sampler::setValue(double const * value, unsigned int length,
 	 p != _determ_children.end(); ++p) {
       (*p)->deterministicSample(chain);
     }
-}
-
-bool Sampler::checkParameterValues(unsigned int chain) const
-{
-    vector<StochasticNode*>::const_iterator p = _nodes.begin();
-    for (; p != _nodes.end(); ++p) {
-	if (!(*p)->checkParentValues(chain))
-	    return false;
-    }
-  
-    vector<StochasticNode const*>::const_iterator q = _stoch_children.begin();
-    for (; q != _stoch_children.end(); ++q) {
-	if (!(*q)->checkParentValues(chain))
-	    return false;
-    }
-    
-    return true;
 }

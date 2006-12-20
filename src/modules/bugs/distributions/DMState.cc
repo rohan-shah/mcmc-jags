@@ -1,7 +1,9 @@
 #include <config.h>
-#include <sarray/util.h>
-#include "matexp.h"
 #include "DMState.h"
+#include <sarray/util.h>
+#include <sarray/nainf.h>
+#include "matexp.h"
+
 
 #include <cfloat>
 #include <algorithm>
@@ -162,7 +164,7 @@ DMState::logLikelihood(double const *y, unsigned int length,
   
     int x = static_cast<int>(*y);
     if (x < 1 || x > nstate) {
-	return -DBL_MAX;
+	return JAGS_NEGINF;
     }
     else {
 	/*
@@ -185,7 +187,7 @@ DMState::logLikelihood(double const *y, unsigned int length,
 	      Allow for some numerical imprecision that may create small
 	      negative probabilities
 	    */
-	    return -DBL_MAX;
+	    return JAGS_NEGINF;
 	}
 	else {
 	    return log(lik);

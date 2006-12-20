@@ -1,6 +1,7 @@
 #include <config.h>
 #include "DInterval.h"
 #include <sarray/util.h>
+#include <sarray/nainf.h>
 
 #include <cfloat>
 #include <algorithm>
@@ -53,18 +54,18 @@ DInterval::logLikelihood(double const *y, unsigned int length,
 			 vector<vector<unsigned int> > const &dims) const
 {
     if (*y < 0)
-	return -DBL_MAX;
+	return JAGS_NEGINF;
     
     unsigned int x = static_cast<unsigned int>(*y);
     if (x > NCUT(dims)) {
-	return -DBL_MAX;
+	return JAGS_NEGINF;
     }
     else {
 	double t = T(par);
 	if (x > 0 && t <= CUTPOINTS(par)[x-1])
-	    return -DBL_MAX;
+	    return JAGS_NEGINF;
 	else if (x < NCUT(dims) && t > CUTPOINTS(par)[x])
-	    return -DBL_MAX;
+	    return JAGS_NEGINF;
 	else
 	    return 0;
     }

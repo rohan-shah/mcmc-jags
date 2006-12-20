@@ -3,6 +3,7 @@
 #include <graph/StochasticNode.h>
 #include <graph/NodeError.h>
 #include <distribution/Distribution.h>
+#include <sarray/nainf.h>
 
 #include <vector>
 #include <stdexcept>
@@ -216,6 +217,9 @@ void StochasticNode::setParameters(vector<Node *> const &parameters)
 
 double StochasticNode::logDensity(unsigned int chain) const
 {
+    if(!_dist->checkParameterValue(_parameters[chain], _dims))
+	return JAGS_NEGINF;
+    
     return _dist->logLikelihood(_data + _length * chain, _length,
 				_parameters[chain], _dims);
 }

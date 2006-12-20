@@ -1,7 +1,8 @@
 #include <config.h>
+#include "DMulti.h"
 #include <rng/RNG.h>
 #include <sarray/util.h>
-#include "DMulti.h"
+#include <sarray/nainf.h>
 
 #include <stdexcept>
 #include <cmath>
@@ -62,7 +63,7 @@ double DMulti::logLikelihood(double const *x, unsigned int length,
     for (unsigned int i = 0; i < length; i++) {
 	if (prob[i] == 0) {
 	    if (x[i] != 0)
-		return -DBL_MAX;
+		return JAGS_NEGINF;
 	}
 	else if (x[i] != 0) {
 	     loglik += x[i] * log(prob[i]) - lgamma(x[i] + 1);

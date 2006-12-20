@@ -2,6 +2,7 @@
 
 #include <rng/RNG.h>
 #include <sarray/util.h>
+#include <sarray/nainf.h>
 
 #include "lapack.h"
 #include "matrix.h"
@@ -154,7 +155,7 @@ DWish::checkParameterValue(vector<double const *> const &par,
     double const *scale = SCALE(par);
     unsigned int nrow = NROW(dims);
     for (unsigned int i = 0; i < nrow; ++i) {
-	for (unsigned int j = 0; j < i; ++i) {
+	for (unsigned int j = 0; j < i; ++j) {
 	    if (fabs(scale[i + nrow*j] - scale[j + nrow*i]) > DBL_EPSILON)
 		return false;
 	}
@@ -174,9 +175,9 @@ void DWish::support(double *lower, double *upper, unsigned int length,
 	    lower[i] =  0;
 	}
 	else {
-	    lower[i] =  -DBL_MAX;
+	    lower[i] =  JAGS_NEGINF;
 	}
-	upper[i] = DBL_MAX;
+	upper[i] = JAGS_POSINF;
     }
 }
 

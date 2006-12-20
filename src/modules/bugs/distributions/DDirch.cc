@@ -1,7 +1,8 @@
 #include <config.h>
+#include "DDirch.h"
 #include <rng/RNG.h>
 #include <sarray/util.h>
-#include "DDirch.h"
+#include <sarray/nainf.h>
 
 #include <stdexcept>
 #include <cmath>
@@ -76,7 +77,7 @@ double DDirch::logLikelihood(double const *x, unsigned int length,
     for (unsigned int i = 0; i < length; i++) {
 	if (alpha[i] == 0) {
 	    if (x[i] > 0)
-		return -DBL_MAX;
+		return JAGS_NEGINF;
 	}
 	else {
 	    alphasum += alpha[i];
@@ -117,7 +118,7 @@ void DDirch::support(double *lower, double *upper, unsigned int length,
       if (ALPHA(par)[i] == 0)
          upper[i] = 0;
       else
-         upper[i] = DBL_MAX;
+         upper[i] = JAGS_POSINF;
    }
 }
 

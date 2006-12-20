@@ -7,8 +7,10 @@
  */
 
 #include <config.h>
-#include <rng/RNG.h>
 #include "DHyper.h"
+#include <rng/RNG.h>
+#include <sarray/nainf.h>
+
 
 #include <algorithm>
 #include <stdexcept>
@@ -213,7 +215,7 @@ double DHyper::d(double z, vector<double const *> const &parameters,
   }
 
   if (give_log) {
-    return den == 0 ? -DBL_MAX : log(den);
+    return den == 0 ? JAGS_NEGINF : log(den);
   }
   else {
     return den;
@@ -250,7 +252,7 @@ double DHyper::p(double x, vector<double const *> const &parameters, bool lower,
     sumpi = max(1 - sumpi, 0.0);
   
   if (give_log) {
-    return sumpi == 0 ? -DBL_MAX : log(sumpi);
+    return sumpi == 0 ? JAGS_NEGINF : log(sumpi);
   }
   else {
     return sumpi;

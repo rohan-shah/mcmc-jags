@@ -1,6 +1,7 @@
 #include <config.h>
-#include <rng/RNG.h>
 #include "DBern.h"
+#include <rng/RNG.h>
+#include <sarray/nainf.h>
 
 #include <cmath>
 #include <algorithm>
@@ -33,7 +34,7 @@ double DBern::d(double x, vector<double const *> const &parameters,
 	d = 1 - PROB(parameters);
   
     if (give_log) {
-	return d == 0 ? -DBL_MAX : log(d);
+	return d == 0 ? JAGS_NEGINF : log(d);
     }
     else {
 	return d;

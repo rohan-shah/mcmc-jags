@@ -1,6 +1,7 @@
 #include <config.h>
-#include <sarray/util.h>
 #include "DNormMix.h"
+#include <sarray/util.h>
+#include <sarray/nainf.h>
 
 #include <cmath>
 
@@ -187,7 +188,7 @@ DNormMix::support(double *lower, double *upper, unsigned int length,
 		  vector<double const *> const &parameters,
 		  vector<vector<unsigned int> > const &dims) const
 {
-    *lower = -DBL_MAX;
-    *upper = DBL_MAX;
+    *lower = JAGS_NEGINF;
+    *upper = JAGS_POSINF;
 }
 

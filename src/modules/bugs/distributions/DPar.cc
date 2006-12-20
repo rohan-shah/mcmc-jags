@@ -1,5 +1,6 @@
 #include <config.h>
 #include "DPar.h"
+#include <sarray/nainf.h>
 
 #include <cmath>
 #include <cfloat>
@@ -27,7 +28,7 @@ DPar::d(double x, vector<double const *> const &par, bool give_log) const
   double c = C(par);
 
   if (x < c)
-    return give_log ? -DBL_MAX : 0;
+    return give_log ? JAGS_NEGINF : 0;
 
   if (give_log)
     return log(alpha) + alpha * log(c) - (alpha + 1) * log(x);
@@ -43,7 +44,7 @@ DPar::p(double x, vector<double const *> const &par, bool lower, bool give_log)
   double c = C(par);
   
   if (x < c)
-    return give_log ? -DBL_MAX : 0;
+    return give_log ? JAGS_NEGINF : 0;
   
   double logq = alpha * log(c/x);
   if (!lower) {
@@ -92,7 +93,7 @@ double DPar::l(vector<double const*> const &par) const
 
 double DPar::u(vector<double const*> const &par) const
 {
-  return DBL_MAX;
+  return JAGS_POSINF;
 }
 
 bool DPar::isSupportFixed(vector<bool> const &fixmask) const
