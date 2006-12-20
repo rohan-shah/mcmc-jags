@@ -38,16 +38,12 @@ DMulti::checkParameterValue(vector<double const *> const &par,
     if (SIZE(par) < 1)
 	return false;
 
-    double sump = 0.0;
     double const *prob = PROB(par);
     unsigned int length = product(dims[0]);
     for (unsigned int i = 0; i < length; i++) {
-	if (prob[i] < 0 || prob[i] > 1)
-	    return false;
-	sump += prob[i];
-    }
-    if (fabs(sump - 1.0) > 16 * DBL_EPSILON)
+      if (prob[i] < 0)
 	return false;
+    }
 
     return true;
 }
@@ -60,6 +56,7 @@ double DMulti::logLikelihood(double const *x, unsigned int length,
 
     double loglik = 0.0;
     double xsum = 0.0;
+    double sump = 0.0;
     for (unsigned int i = 0; i < length; i++) {
 	if (prob[i] == 0) {
 	    if (x[i] != 0)
@@ -69,8 +66,9 @@ double DMulti::logLikelihood(double const *x, unsigned int length,
 	     loglik += x[i] * log(prob[i]) - lgamma(x[i] + 1);
 	     xsum += x[i];
 	}
+	sump += prob[i];
     }
-    loglik += lgamma(xsum + 1);
+    loglik += lgamma(xsum + 1) - xsum * log(sump);
 
     return loglik;
 }
