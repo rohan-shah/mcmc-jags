@@ -19,6 +19,7 @@ const double JAGS_NEGINF = f_div(-1.0, 0.0);
 
 bool jags_finite(double x)
 {
+  using namespace std;
 #ifdef HAVE_WORKING_ISFINITE
   return isfinite(x);
 #elif HAVE_WORKING_FINITE
