@@ -2,7 +2,6 @@
 #include <graph/Node.h>
 #include <graph/NodeError.h>
 #include <graph/NodeNameTab.h>
-#include <sarray/Range.h>
 #include <sarray/nainf.h>
 #include <sarray/util.h>
 

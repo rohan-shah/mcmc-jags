@@ -3,7 +3,6 @@
 
 #include <graph/Graph.h>
 #include <graph/Node.h>
-#include <sarray/SArray.h>
 
 #include <vector>
 #include <map>

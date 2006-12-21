@@ -1,7 +1,6 @@
 #include <config.h>
 #include <function/ScalarFunc.h>
 #include <sarray/util.h>
-#include <sarray/SArray.h>
 
 using std::vector;
 using std::string;

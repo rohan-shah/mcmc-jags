@@ -1,8 +1,6 @@
 #ifndef NODE_H_
 #define NODE_H_
 
-#include <sarray/Range.h>
-
 #include <set>
 #include <vector>
 #include <string>
@@ -136,10 +134,6 @@ public:
    * Returns true if the node is to be considered a random variable.
    */
   virtual bool isVariable() const = 0;
-  /**
-   * Range of indices of the node
-   */
-  Range const &range() const;
   /**
    * Sets the value of the node, in all chains, to "value", and marks
    * the node as "observed". This function can only be called once for
