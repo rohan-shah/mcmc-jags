@@ -44,7 +44,7 @@ double DBin::p(double x, std::vector<double const *> const &par,
 double DBin::q(double p, std::vector<double const *> const &par, 
 	       bool lower, bool log_p) const
 {
-    return pbinom(p, SIZE(par), PROB(par), lower, log_p);
+    return qbinom(p, SIZE(par), PROB(par), lower, log_p);
 }
 
 double DBin::r(std::vector<double const *> const &par, RNG *rng) const
