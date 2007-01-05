@@ -241,7 +241,7 @@ getMixtureNode1(NodeArray *array, vector<SSI> const &limits, Compiler *compiler)
       }
   }
 
-  //Save current node value in chain 0;
+  /* Save current stochastic node values in chain 0 */
   vector<double> vsave(stoch_parents.size());
   for (unsigned int j = 0; j < stoch_parents.size(); ++j) {
     vsave[j] = *stoch_parents[j]->value(0);
@@ -276,6 +276,9 @@ getMixtureNode1(NodeArray *array, vector<SSI> const &limits, Compiler *compiler)
   for (unsigned int j = 0; j < stoch_parents.size(); ++j) {
     double v = vsave[j];
     stoch_parents[j]->setValue(&v, 1, 0);
+  }
+  for (unsigned int k = 0; k < dtrm_nodes.size(); ++k) {
+      dtrm_nodes[k]->deterministicSample(0);
   }
 
   /* Now set up the possible subsets defined by the stochastic indices */
