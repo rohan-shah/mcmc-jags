@@ -4,6 +4,7 @@
 #include <graph/Graph.h>
 #include <rng/RNG.h>
 #include <sarray/nainf.h>
+#include <graph/NodeError.h>
 #include "FiniteSampler.h"
 
 #include <cmath>
@@ -43,6 +44,13 @@ void FiniteSampler::update(RNG *rng)
 	setValue(&ivalue, 1, _chain);
 	lik[i] = exp(logFullConditional(_chain));
 	liksum += lik[i];
+    }
+
+    if (liksum == 0) {
+	throw NodeError(nodes()[0], "All possible values have zero probability in FiniteSampler");
+    }
+    if (!jags_finite(liksum)) {
+	throw NodeError(nodes()[0], "Cannot normalize density in FiniteSampler");
     }
 
     /* Sample */
