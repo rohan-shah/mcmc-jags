@@ -12,92 +12,93 @@ using std::map;
 using std::vector;
 using std::invalid_argument;
 
-/**
- * Two nodes are considered equal if they have the same address, or if
- * they are both constant and have the same value (within numerical
- * tolerance), or if they are deterministic, fixed nodes with the same
- * value.
-*/
-bool equal(Node const *node1, Node const *node2)
+#define TOL 16 * DBL_EPSILON
+
+/* Comparison operator for Nodes */
+static bool lt(Node const *node1, Node const *node2)
 {
-  if (node1 == node2) {
-    return true;
-  }
-  else if (node1->isObserved() && node2->isObserved() &&
-           node1->length() == node2->length()) {
-    unsigned long n = node1->length();
-    double const *value1 = node1->value(0);
-    double const *value2 = node2->value(0);
-    for (unsigned long i = 0; i < n; ++i) {
-      if (!equal(value1[i],value2[i])) {
-        return false;
-      }
+    if (node1 == node2) {
+	// A node is always identical to itself
+	return false; 
     }
-    return true;
-  }
-  else {
-    return false;
-  }
+
+    if (node1->isObserved() && !node2->isObserved()) {
+	//Observed nodes come before unobserved nodes
+	return true;
+    }
+    else if (!node1->isObserved() && node2->isObserved()) {
+	return false;
+    }
+    else if (node1->isObserved() && node2->isObserved()) {
+	//Observed nodes are sorted by dimension, then value
+	if (node1->dim() < node2->dim()) {
+	    return true;
+	}
+	else if (node1->dim() > node2->dim()) {
+	    return false;
+	}
+	else {
+	    //Equal length observed nodes are sorted by value, with
+	    //some numerical tolerance
+	    unsigned long n = node1->length();
+	    double const *value1 = node1->value(0);
+	    double const *value2 = node2->value(0);
+	    for (unsigned long i = 0; i < n; ++i) {
+		if (value1[i] < value2[i] - TOL) {
+		    return true;
+		}
+		else if (value1[i] > value2[i] + TOL) {
+		    return false;
+		}
+	    }
+	    return false; //Numerically identical observed nodes
+	}
+    }
+    else {
+	//Unobserved nodes are sorted by address. The ordering is
+	//arbitrary, but unique.
+	return (node1 < node2);
+    }
 }
 
-
-static bool equal(vector<Node const*> const &v1, vector<Node const*> const &v2)
+/* Comparison operator for vectors of parameters */
+static bool 
+lt(vector<Node const *> const &par1, vector<Node const *> const &par2)
 {
-  unsigned long n1 = v1.size();
-  unsigned long n2 = v1.size();
-  if (n1 != n2) {
-    return false;
-  }
-  else {
-    for (unsigned int i = 0; i < n1; ++i) {
-      if (!equal(v1[i], v2[i])) {
-	return false;
-      }
+    //Order by size
+    if (par1.size() < par2.size()) {
+	return true;
     }
-    return true;
-  }
+    else if (par1.size() > par2.size()) {
+	return false;
+    }
+    else {
+        //Equal sized vectors: Sort by ordering of elements 
+	for (unsigned int i = 0; i < par1.size(); ++i) {
+	    if (lt(par1[i], par2[i])) {
+		return true;
+	    }
+	    else if (lt(par2[i], par1[i])) {
+		return false;
+	    }
+	}
+	return false;
+    }
 }
 
 bool lt(LogicalPair const &arg1, LogicalPair const &arg2)
 {
-  // Order first by function
-  if (arg1.first < arg2.first) {
-    return true;
-  }
-  else if (arg1.first > arg2.first) {
-    return false;
-  }
-  else {
-    //Same function. Check parameters
-    //Order by parameter length
-    unsigned long n1 = arg1.second.size();
-    unsigned long n2 = arg2.second.size();
-    if (n1 < n2) {
-      return true;
+    // Order first by function
+    if (arg1.first < arg2.first) {
+	return true;
     }
-    else if (n1 > n2) {
-      return false;
+    else if (arg1.first > arg2.first) {
+	return false;
     }
     else {
-      //Same parameter length. 
-      //Check for equality
-      if (equal(arg1.second, arg2.second)) {
-	return false;
-      }
-      else {
-	//Order by address in memory
-	for (unsigned int i = 0; i < n1; ++i) {
-	  if (arg1.second[i] < arg2.second[i]) {
-	    return true;
-	  }
-	  else if (arg1.second[i] > arg2.second[i]) {
-	    return false;
-	  }
-	}
-	return false;
-      }
+	//Same function. Check parameters
+	return lt(arg1.second, arg2.second);
     }
-  }
 }
 
 LogicalNode*

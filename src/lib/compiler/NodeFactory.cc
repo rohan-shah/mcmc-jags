@@ -3,6 +3,7 @@
 #include <sarray/nainf.h>
 
 #include <cfloat>
+#include <cmath>
 
 static const double tol = 16 * DBL_EPSILON;
 
