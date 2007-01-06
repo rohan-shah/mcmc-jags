@@ -20,9 +20,9 @@ typedef std::pair<Function const*,std::vector<Node const *> > LogicalPair;
 /**
  * "Less than" operator for LogicalPairs. Two LogicalPairs A and B are
  * considered to be equivalent (i.e. lt(A,B) and lt(B,A) are both
- * false) if they have the same function, the parameter vectors are
- * the same length, and an element-wise call to equal (NodeFactory.h)
- * returns true.
+ * false) if they have the same function, and the same vector of
+ * parameters. Observed parameters are considered equal if they have
+ * the same value (within a certain numerical tolerance).
  *
  * For non-equivalent LogicalPairs, the ordering is unique, but 
  * arbitrary. The only use of this function is for the STL map class

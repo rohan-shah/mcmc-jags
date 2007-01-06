@@ -4,8 +4,6 @@
 #include <string>
 #include <vector>
 
-class RangeImp;
-
 /**
  * A Range object represents a range of indices used to take a subset
  * of a multi-dimensional array. For example, A[1:2,4,4:5] is a subset
@@ -21,7 +19,9 @@ class RangeImp;
  * @short Range of indices 
  */
 class Range {
-    RangeImp *_p;
+    std::vector<int> _lower, _upper;
+    std::vector<unsigned int> _dim, _dim_dropped;
+    unsigned int _length, _ref;
 public:
     /**
      * Default constructor which constructs a NULL range, with zero-length
@@ -52,12 +52,6 @@ public:
      * that creates a scalar range.
      */
     Range(std::vector<unsigned int> const &dim);
-    /** Copy constructor */
-    Range (Range const &rhs);
-    /** Destructor */
-    ~Range();
-    /** Assignment operator */
-    Range &operator=(Range const &rhs);
     /** Equality operator */
     bool operator==(Range const &range) const;
     /** Inequality operator */
