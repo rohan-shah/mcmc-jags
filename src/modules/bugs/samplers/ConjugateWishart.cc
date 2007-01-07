@@ -106,18 +106,19 @@ void ConjugateWishart::update(RNG *rng)
     
     double const *Y = schild->value(_chain);
     double const *mu = cparam[0]->value(_chain);
+    unsigned int Nrep = schild->repCount();
 
     for (int j = 0; j < nrow; j++) {
       delta[j] = Y[j] - mu[j];
     }
     for (int j = 0; j < nrow; j++) {
       for (int l = 0; l < nrow; l++) {
-	R[j*nrow + l] += delta[j]*delta[l];
+	R[j*nrow + l] += delta[j] * delta[l] * Nrep;
       }
     }
+    k += Nrep;
   }
   delete [] delta;
-  k += nchildren;
 
   double *xnew = new double[N];
   DWish::randomSample(xnew, N, R, k, nrow, rng);

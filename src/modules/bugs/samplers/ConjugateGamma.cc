@@ -236,32 +236,33 @@ void ConjugateGamma::update(RNG *rng)
 	    vector<Node const*> const &cparam = schild->parents();
 	    double Y = *schild->value(_chain);
 	    double ymean; //normal mean
+	    unsigned int Nrep = schild->repCount();
 	    switch(_child_dist[i]) {
 	    case GAMMA:
-		r += *cparam[0]->value(_chain);
-		mu += coef_i * Y;
+		r += *cparam[0]->value(_chain) * Nrep;
+		mu += coef_i * Y * Nrep;
 		break;
 	    case EXP:
-		r += 1;
-		mu += coef_i * Y;
+		r += Nrep;
+		mu += coef_i * Y * Nrep;
 		break;
 	    case NORM:
-		r += 0.5;
+		r += 0.5 * Nrep;
 		ymean = *cparam[0]->value(_chain);
-		mu += coef_i * (Y - ymean) * (Y - ymean) / 2;
+		mu += coef_i * (Y - ymean) * (Y - ymean)  * Nrep / 2;
 		break;
 	    case POIS:
-		r += Y;
-		mu += coef_i;
+		r += Y * Nrep;
+		mu += coef_i * Nrep;
 		break;
 	    case DEXP:
-		r += 1;
+		r += Nrep;
 		ymean = *cparam[0]->value(_chain);
-		mu += coef_i * fabs(Y - ymean);
+		mu += coef_i * fabs(Y - ymean) * Nrep;
 		break;
 	    case WEIB:
-		r += 1; 
-		mu += coef_i * pow(Y, *cparam[0]->value(_chain));
+		r += Nrep; 
+		mu += coef_i * pow(Y, *cparam[0]->value(_chain)) * Nrep;
 		break;
 	    default:
 		throw logic_error("Invalid distribution in Conjugate Gamma sampler");

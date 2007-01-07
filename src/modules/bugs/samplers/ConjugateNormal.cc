@@ -149,7 +149,6 @@ bool ConjugateNormal::canSample(StochasticNode *snode, Graph const &graph)
   return true; //We made it!
 }
 
-
 void ConjugateNormal::update(RNG *rng)
 {
     vector<StochasticNode const*> const &stoch_children = stochasticChildren();
@@ -173,8 +172,9 @@ void ConjugateNormal::update(RNG *rng)
 	for (unsigned int i = 0; i < nchildren; ++i) {
 	    double Y = *stoch_children[i]->value(_chain);
 	    double tau = *stoch_children[i]->parents()[1]->value(_chain);
-	    A += (Y - xold) * tau;
-	    B += tau;
+	    unsigned int Nrep = stoch_children[i]->repCount();
+	    A += (Y - xold) * tau * Nrep;
+	    B += tau * Nrep;
 	}
 
     }
@@ -195,14 +195,15 @@ void ConjugateNormal::update(RNG *rng)
 	    double const *tau = snode->parents()[1]->value(_chain);
 	    double const *alpha = snode->parents()[0]->value(_chain);
 	    unsigned int nrow = snode->length();
+	    unsigned int Nrep = snode->repCount();
 
 	    for (unsigned int k = 0; k < nrow; ++k) {
 		double tau_beta_k = 0;
 		for (unsigned int k2 = 0; k2 < nrow; ++k2) {
 		    tau_beta_k += tau[k * nrow + k2] * beta[k2];
 		}
-		A += (Y[k] - alpha[k]) * tau_beta_k;
-		B += beta[k] * tau_beta_k;
+		A += (Y[k] - alpha[k]) * tau_beta_k * Nrep;
+		B += beta[k] * tau_beta_k * Nrep;
 	    }
 	    
 	    beta += nrow;

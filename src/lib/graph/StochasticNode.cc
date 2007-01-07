@@ -13,6 +13,7 @@
 using std::vector;
 using std::string;
 using std::runtime_error;
+using std::logic_error;
 
 static vector<unsigned int> mkDim(Distribution const *dist, 
 				  vector<Node const *> const &parents)
@@ -56,7 +57,7 @@ StochasticNode::StochasticNode(Distribution const *dist,
 			       vector<Node const *> const &parameters,
 			       Node const *lower, Node const *upper)
   : Node(mkDim(dist, parameters), mkParents(parameters, lower, upper)), 
-    _dist(dist), _parameters(nchain()), _lower(lower), _upper(upper)
+    _dist(dist), _parameters(nchain()), _lower(lower), _upper(upper), _nrep(1)
 {
  
   if (parameters.size() != _dist->npar()) {
@@ -273,4 +274,17 @@ vector<vector<unsigned int> > const &StochasticNode::parameterDims() const
 bool StochasticNode::checkParentValues(unsigned int chain) const
 {
     return _dist->checkParameterValue(_parameters[chain], _dims);
+}
+
+unsigned int StochasticNode::repCount() const
+{
+    return _nrep;
+}
+
+void StochasticNode::replicate()
+{
+   if (!this->isObserved())
+       throw logic_error("Attempt to replicate unobserved stochastic node");
+
+   _nrep++;
 }

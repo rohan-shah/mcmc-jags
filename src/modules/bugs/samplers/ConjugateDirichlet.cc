@@ -126,16 +126,17 @@ void ConjugateDirichlet::update(RNG *rng)
 	double const *N = 0;
 	if (allzero(schild->parents()[0]->value(_chain), 
 		    schild->parents()[0]->length())) {
+	    unsigned int Nrep = schild->repCount();
 	    switch(_child_dist[i]) {
 	    case MULTI:
 	      N = schild->value(_chain);
 	      for (unsigned long i = 0; i < size; ++i) {
-		alpha[i] += N[i];
+		alpha[i] += N[i] * Nrep;
 	      }
 	      break;
 	    case CAT:
 	      index = static_cast<long>(*schild->value(_chain) + 1.0E-6);
-	      alpha[index - 1] += 1;
+	      alpha[index - 1] += Nrep;
 	      break;
 	    default:
 	      throw logic_error("Invalid distribution in Conjugate Dirichlet sampler");

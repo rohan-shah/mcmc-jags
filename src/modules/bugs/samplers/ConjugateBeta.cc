@@ -161,8 +161,9 @@ void ConjugateBeta::update(RNG *rng)
 	    default:
 		throw logic_error("Invalid distribution in Conjugate Beta sampler");
 	    }
-	    a += y;
-	    b += (n - y);
+	    unsigned int Nrep = stoch_children[i]->repCount();
+	    a += y * Nrep;
+	    b += (n - y) * Nrep;
 	}
     }
 

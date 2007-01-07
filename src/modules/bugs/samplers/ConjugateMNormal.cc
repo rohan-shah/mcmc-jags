@@ -225,12 +225,13 @@ void ConjugateMNormal::update(RNG *rng)
 	double const *beta_j = _betas;
 	for (unsigned int j = 0; j < nchildren; ++j) {
 	    
-	    Node const *snode = stoch_children[j];
+	    StochasticNode const *snode = stoch_children[j];
 	    double const *Y = snode->value(_chain);
 	    double const *mu = snode->parents()[0]->value(_chain);
 	    double const *tau = snode->parents()[1]->value(_chain);
 	    int nrow_child = snode->length();
-	  
+	    unsigned int Nrep = snode->repCount();
+
 	    for (int i = 0; i < nrow; ++i) {
 		for (int k = 0; k < nrow_child; ++k) {
 		  
@@ -241,10 +242,11 @@ void ConjugateMNormal::update(RNG *rng)
 		    }
 		  
 		    for (int i2 = 0; i2 < nrow; ++i2) {
-			A[i * nrow + i2] += beta_tau * beta_j[nrow * k + i2];
+			A[i * nrow + i2] += Nrep * 
+			    beta_tau * beta_j[nrow * k + i2];
 		    }
 		  
-		    b[i] += (Y[k] - mu[k]) * beta_tau;
+		    b[i] += Nrep * (Y[k] - mu[k]) * beta_tau;
 		  
 		}
 	    }
