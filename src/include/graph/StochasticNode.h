@@ -15,6 +15,7 @@ class StochasticNode : public Node {
     std::vector<std::vector<unsigned int> > _dims;
     Node const *_lower;
     Node const *_upper;
+    unsigned int _nrep;
     /* Forbid copying of Stochastic Nodes */
     StochasticNode(StochasticNode const &orig);
     StochasticNode &operator=(StochasticNode const &rhs);
@@ -94,6 +95,17 @@ public:
      * @see Distribution##checkParameterValue
      */
     bool checkParameterValue(unsigned int chain) const;    
+    /**
+     * A stochastic node may be replicated, if two or more identically
+     * distributed variables are observed. The repCount records the
+     * number of times a node has been observed. Newly allocated stochastic
+     * Nodes have a repCount of 1.
+     */
+    unsigned int repCount() const;
+    /**
+     * Increments the repCount of a stochastic node by 1.
+     */
+    void replicate();
 };
 
 StochasticNode const *asStochastic(Node const *node);

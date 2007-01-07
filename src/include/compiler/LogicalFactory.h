@@ -42,11 +42,12 @@ struct ltlogical
 
 /**
  * @short Factory object for logical nodes 
+ *
  * The value of a logical node is determined uniquely by its function
  * and its parameters.  The purpose of a LogicalFactory is to avoid
- * unnecessary duplication of logical nodes by having a container
- * class and factory object for them that will create and/or lookup
- * logical nodes based on the function and the parameter vector
+ * unnecessary duplication of logical nodes by having a factory object
+ * for them that will create and/or lookup logical nodes based on
+ * these arguments.
  */
 class LogicalFactory 
 { 

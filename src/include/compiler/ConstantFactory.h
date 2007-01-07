@@ -2,16 +2,11 @@
 #define CONSTANT_FACTORY_H_
 
 #include <map>
-//#include <cfloat>
+#include <compiler/NodeFactory.h>
 
 class ConstantNode;
 class Graph;
 
-/**
- * Fuzzy "less than" operator for doubles, allowing some numerical
- * imprecision.
- */
-bool lt(double arg1, double arg2);
 /**
  * Function object for the STL map class using double as a key
  */

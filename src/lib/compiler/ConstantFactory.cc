@@ -11,22 +11,13 @@ using std::map;
 using std::ostringstream;
 using std::fabs;
 
-bool lt(double arg1, double arg2)
-{
-  if (equal(arg1,arg2))
-    return false;
-  else
-    return arg1 < arg2;
-}
-
 ConstantFactory::ConstantFactory(unsigned int nchain)
     : _nchain(nchain)
 {
 }
 
-ConstantNode *ConstantFactory::getConstantNode(double value, Graph &graph)
+ConstantNode * ConstantFactory::getConstantNode(double value, Graph &graph)
 {
-  
     ConstantNode *cnode = 0;
 
     map<const double,ConstantNode*, ltdouble>::const_iterator i 

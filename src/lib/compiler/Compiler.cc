@@ -677,9 +677,43 @@ Node * Compiler::allocateStochastic(ParseTree const *stoch_relation)
     }
   }
 
-  StochasticNode *snode =
-     new StochasticNode(getDistribution(stoch_relation, distTab()),
-		    parameters, lBound, uBound);
+  
+  StochasticNode *snode = 0;
+  Distribution const *dist = getDistribution(stoch_relation, distTab());
+
+  //Search data table to see if this is an observed node
+  ParseTree *var = stoch_relation->parameters()[0];
+  string const &name = var->name();
+  map<string,SArray>::const_iterator q = _data_table.find(name);
+  if (q != _data_table.end() && lBound == 0 && uBound == 0) {
+      /* FIXME: Currently restricted to unbounded nodes */
+      SArray const &data = q->second;
+      double const *data_value = data.value();
+      Range target_range = VariableSubsetRange(var);
+      bool isdata = true;
+      SArray this_data(target_range.dim(true));
+      unsigned int i = 0;
+      for (RangeIterator p(target_range); !p.atEnd(); p.nextLeft()) {
+	  unsigned int j = data.range().leftOffset(p);
+	  if (data_value[j] == JAGS_NA) {
+	      isdata = false;
+	      break;
+	  }
+	  else {
+	      this_data.setValue(data_value[j], i++);
+	  }
+      }
+
+      if (isdata) {
+	  snode =  _stochasticfactory.getStochasticNode(dist, parameters,
+							this_data,
+                                                        _model.graph());
+      }
+  }
+ 
+  if (snode == 0) {
+      snode =  new StochasticNode(dist, parameters, lBound, uBound);
+  }
   _model.graph().add(snode);
   return snode;
 }
@@ -846,26 +880,6 @@ void Compiler::writeConstantData(ParseTree const *relations)
   _model.symtab().writeData(temp_data_table);
 }
 
-void Compiler::writeVariableData()
-{
-  //Create a temporary copy of the data table with no data for
-  //constant nodes
-  map<string, SArray> temp_data_table = _data_table;
-  map<string, SArray>::iterator p;
-  for(p = temp_data_table.begin(); p != temp_data_table.end(); ++p) {
-    string const &name = p->first;
-    SArray &temp_data = p->second;
-    vector<bool> const &mask = _constant_mask.find(name)->second;
-    for (unsigned long i = 0; i < temp_data.length(); ++i) {
-      if (mask[i]) {
-	temp_data.setValue(JAGS_NA, i);
-      }
-    }
-  }
-
-  _model.symtab().writeData(temp_data_table);
-}
-		     
 void Compiler::writeRelations(ParseTree const *relations)
 {
   writeConstantData(relations);
@@ -889,9 +903,6 @@ void Compiler::writeRelations(ParseTree const *relations)
     }
   }
   delete [] _is_resolved; _is_resolved = 0;
-
-  writeVariableData();
-  //collectNodes();
 }
 
 void Compiler::traverseTree(ParseTree const *relations, CompilerMemFn fun,

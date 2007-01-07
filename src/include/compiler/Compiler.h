@@ -2,6 +2,7 @@
 #define COMPILER_H_
 
 #include <compiler/LogicalFactory.h>
+#include <compiler/StochasticFactory.h>
 #include <compiler/ConstantFactory.h>
 #include <compiler/MixtureFactory.h>
 #include <compiler/CounterTab.h>
@@ -34,6 +35,7 @@ class Compiler {
   bool _strict_resolution;
   ConstantFactory _constantfactory;
   LogicalFactory _logicalfactory;
+  StochasticFactory _stochasticfactory;
   MixtureFactory _mixfactory;
   std::map<std::string, std::vector<std::vector<int> > > _node_array_ranges;
 
@@ -51,7 +53,6 @@ class Compiler {
   Node * allocateLogical(ParseTree const *dtrm_rel);
   void setConstantMask(ParseTree const *rel);
   void writeConstantData(ParseTree const *rel);
-  void writeVariableData();
   void getArrayDim(ParseTree const *p);
   bool getLogicalParameterVector(ParseTree const *t,
 			      std::vector<Node const *> &parents);

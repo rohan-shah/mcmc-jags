@@ -55,7 +55,7 @@ libcompiler_la_LIBADD =
 am_libcompiler_la_OBJECTS = parser.lo scanner.lo Compiler.lo \
 	LogicalFactory.lo ParseTree.lo Counter.lo CounterTab.lo \
 	ConstantFactory.lo MixtureFactory.lo MixCompiler.lo \
-	NodeFactory.lo
+	NodeFactory.lo StochasticFactory.lo
 libcompiler_la_OBJECTS = $(am_libcompiler_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/src/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -207,7 +207,8 @@ AM_YFLAGS = -d
 BUILT_SOURCES = parser.h
 libcompiler_la_SOURCES = parser.yy scanner.ll Compiler.cc		\
 LogicalFactory.cc ParseTree.cc Counter.cc CounterTab.cc			\
-ConstantFactory.cc MixtureFactory.cc MixCompiler.cc NodeFactory.cc
+ConstantFactory.cc MixtureFactory.cc MixCompiler.cc NodeFactory.cc	\
+StochasticFactory.cc
 
 noinst_HEADERS = parser.h parser_extra.h remap.h MixCompiler.h
 all: $(BUILT_SOURCES)
@@ -276,6 +277,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MixtureFactory.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NodeFactory.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ParseTree.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/StochasticFactory.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/parser.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/scanner.Plo@am__quote@
 
