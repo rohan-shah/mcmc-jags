@@ -1,5 +1,6 @@
 #include <config.h>
 #include <compiler/MixtureFactory.h>
+#include <compiler/NodeFactory.h>
 #include <graph/MixtureNode.h>
 #include <model/NodeArray.h>
 
@@ -14,52 +15,42 @@ using std::logic_error;
 
 bool compMixPair(MixPair const &arg1, MixPair const &arg2)
 {
-  //First compare indices
-  vector<Node const *> const &index1 = arg1.first;
-  vector<Node const *> const &index2 = arg2.first;
-  if (index1.size() < index2.size()) {
-    return true;
-  }
-  else if (index1.size() > index2.size()) {
-    return false;
-  }
-  else {
-    for (unsigned int i = 0; i < index1.size(); ++i) {
-      if (index1[i] < index2[i]) {
+    //First compare indices
+    vector<Node const *> const &index1 = arg1.first;
+    vector<Node const *> const &index2 = arg2.first;
+    if (lt(index1, index2)) {
 	return true;
-      }
-      else if (index1[i] > index2[i]) {
-	return false;
-      }
     }
-  }
+    else if (lt(index2, index1)) {
+	return false;
+    }
 
-  //Same indices. Now compare parameters 
-  vector<pair<vector<int>, Node const *> > const &parameters1 = arg1.second;
-  vector<pair<vector<int>, Node const *> > const &parameters2 = arg2.second;
-  if (parameters1.size() < parameters2.size()) {
-    return true;
-  }
-  else if (parameters1.size() > parameters2.size()) {
-    return false;
-  }
-  else {
-    for (unsigned int i = 0; i < parameters1.size(); ++i) {
-      if (parameters1[i].first < parameters2[i].first) {
+    //Same indices. Now compare parameters 
+    vector<pair<vector<int>, Node const *> > const &parameters1 = arg1.second;
+    vector<pair<vector<int>, Node const *> > const &parameters2 = arg2.second;
+    if (parameters1.size() < parameters2.size()) {
 	return true;
-      }
-      else if (parameters2[i].first < parameters1[i].first) {
-	return false;
-      }
-      else if (parameters1[i].second < parameters2[i].second) {
-	return true;
-      }
-      else if (parameters1[i].second > parameters2[i].second) {
-	return false;
-      }
     }
-    return false; //equal
-  }
+    else if (parameters1.size() > parameters2.size()) {
+	return false;
+    }
+    else {
+	for (unsigned int i = 0; i < parameters1.size(); ++i) {
+	    if (parameters1[i].first < parameters2[i].first) {
+		return true;
+	    }
+	    else if (parameters2[i].first < parameters1[i].first) {
+		return false;
+	    }
+	    else if (lt(parameters1[i].second, parameters2[i].second)) {
+		return true;
+	    }
+	    else if (lt(parameters2[i].second, parameters1[i].second)) {
+		return false;
+	    }
+	}
+	return false; //equal
+    }
 }
 
 MixtureNode *
