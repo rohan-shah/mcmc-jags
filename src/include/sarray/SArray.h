@@ -11,7 +11,6 @@ class SArray
 {
   Range const _range;
   double *_value;
-  //bool  _fixed;
   bool _discrete;
   SArray &operator=(SArray const &rhs);
 public:
@@ -31,24 +30,18 @@ public:
    * private, and so cannot be used.  An SArray can only be copied by a
    * constructor. This ensures that, once constructed, an SArray cannot
    * change its length or dimension.
-   *
-   * A copy of a fixed SArray is not itself fixed, but is otherwise
-   * identical to the original.
    */
   SArray(SArray const &orig);
   ~SArray();
   /**
    * Sets the value of an SArray. 
    *
-   * It is an error to attempt to set the value of a fixed SArray.
-   * A logic_error will be thrown in this case.
-   *
    * @param value Array of values to be assigned.
    *
    * @param length Length of value argument. This must match the length
    * of the SArray or a length_error will be thrown.
    *
-   * @exception logic_error length_error
+   * @exception length_error
    */
   void setValue(double const *value, unsigned int length);
   /**
@@ -68,19 +61,6 @@ public:
    * @return A pointer to the beginning of the value array.
    */
   double const *value() const;
-  /** 
-   * Sets the SArray to be fixed (true) or not (false).
-   *
-   * Fixed SArrays cannot change their value. It is an logic error to fix
-   * an SArray that contains missing values.
-   * @exception logic_error
-   */
-  //void setFixed(bool fix);
-  /**
-   * Indicates whether the SArray is fixed, and so cannot change
-   * its value. 
-   */
-  //bool isFixed() const;
   /**
    * Sets the array to be integer-valued (true) or real-valued
    * (false).

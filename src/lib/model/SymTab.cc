@@ -46,18 +46,6 @@ NodeArray* SymTab::getVariable(string const &name) const
   }
 }
 
-/*
-void SymTab::getNodes(std::vector<Node*> &nodes)
-{
-  map<string, NodeArray*>::const_iterator p(_varTable.begin());
-
-  for (; p != _varTable.end(); ++p) {
-    Graph const &graph = p->second->graph();
-    graph.getNodes(nodes);
-  }
-}
-*/
-
 void SymTab::writeData(std::map<std::string, SArray> const &data_table)
 {
   for(map<string, SArray>::const_iterator p(data_table.begin()); 

@@ -10,12 +10,6 @@
  * of the array A defined by a range with lower boundary (1,4,4) and
  * upper boundary (2,4,5).
  *
- * All of the member functions of the Range class are constant, with
- * the exception of the assignment operator, so identical Range
- * objects (i.e. those with the same lower and upper bounds) can share
- * their memory.  In fact, the Range class is just a wrapper around
- * the RangeImp class, which actually implements the member functions.
- *
  * @short Range of indices 
  */
 class Range {

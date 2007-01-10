@@ -9,6 +9,7 @@
 
 #include <string>
 #include <stdexcept>
+#include <climits>
 
 using std::vector;
 using std::map;
@@ -26,7 +27,7 @@ NodeArray::NodeArray(string const &name, vector<unsigned int> const &dim,
   _offsets = new unsigned int[length];
   for (unsigned int i = 0; i < length; i++) {
     _node_pointers[i] = 0;
-    _offsets[i] = -1;
+    _offsets[i] = UINT_MAX;
   }
 }
 
@@ -128,13 +129,8 @@ Node *NodeArray::getSubset(Range const &target_range, Graph &graph)
     nodes.push_back(_node_pointers[offset]);
     offsets.push_back(_offsets[offset]);
   }
-  //node = new AggNode(target_range.dim(false), nodes, offsets);
-  /* debuggin
-     Give *dropped* dimensions to new aggregate nodes 
-  */
   node = new AggNode(target_range.dim(true), nodes, offsets);
   _generated_nodes.insert(std::pair<Range,Node*>(target_range, node));
-//[target_range] = node;
   graph.add(node);
   _member_graph.add(node);
   return node;

@@ -7,7 +7,7 @@
 struct RNG;
 
 /**
- * Base class for distributions.
+ * @short Distribution of a random variable
  *
  * Distribution objects contain only constant data members and all
  * member functions are constant. Hence only one object needs to be
@@ -15,8 +15,8 @@ struct RNG;
  *
  * The DistTab class provides a convenient way of storing Distribution
  * objects and referencing them by name.
+ *
  * @see DistTab
- * @short Distribution of a random variable
  */
 class Distribution
 {
@@ -44,12 +44,17 @@ public:
     /**
      * @param x Value at which to evaluate the likelihood.
      *
-     * @param parameters Parameter values of the distribution.  This
-     * vector should be of length npar().
+     * @param parameters Vector of parameter values of the
+     * distribution.
+     * 
+     * @param dims Vector of dimensions of the parameters.
      *
      * @returns the log likelihood.  If the likelihood should be zero
-     * because x is inconsistent with the parameters, then -DBL_MAX or
-     * -Inf is returned.
+     * because x is inconsistent with the parameters then -Inf is
+     * returned. If the parameters are invalid
+     * (i.e. checkParameterValue returns false), then the return value
+     * is undefined.
+     * 
      */
     virtual double 
 	logLikelihood(double const *x, unsigned int length,
@@ -65,7 +70,7 @@ public:
      * to evaluate the likelihood. This vector should be of length
      * npar().
      *
-     * @param r pseudo-random number generator to use.
+     * @param rng pseudo-random number generator to use.
      *
      * @exception length_error 
      */
@@ -73,7 +78,7 @@ public:
 	randomSample(double *x, unsigned int length,
 		     std::vector<double const *> const &parameters,
 		     std::vector<std::vector<unsigned int> > const  &dims,
-		     RNG *r) const = 0;
+		     RNG *rng) const = 0;
     /**
      * Returns a typical value from the distribution.  The meaning of
      * this will depend on the distribution, but it will normally be a
@@ -93,6 +98,14 @@ public:
 		     std::vector<std::vector<unsigned int> > const &dims)
 	const = 0;
     /**
+     * @param lower Pointer to the start of an array to which the lower
+     * bound will be written.
+     * @param upper Pointer to the start of an array to which the lower
+     * bound will be written.
+     * @param length Length of the lower and upper arrays
+     * @param parameters Vector of parameters at which to evaluate the
+     * support
+     * 
      * FIXME
      * The lower and upper limits on the support of X, given the parameters
      */
@@ -101,7 +114,10 @@ public:
 		std::vector<double const *> const &parameters,
 		std::vector<std::vector<unsigned int> > const &dims) const = 0;
     /**
-     * FIXME
+     * Indicates whether the support of the distribution is fixed.
+     *
+     * @param fixmask Boolean vector indicating which parameters have
+     * fixed values.
      */
      virtual bool
 	 isSupportFixed(std::vector<bool> const &fixmask) const = 0;
