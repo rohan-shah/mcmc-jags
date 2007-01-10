@@ -65,56 +65,54 @@ static long asInteger(double fval)
 
 double Compiler::constFromTable(ParseTree const *p)
 {
-  // Try evaluating constant expression from data table
-  map<string,SArray>::const_iterator i = _data_table.find(p->name());
-  if (i == _data_table.end()) {
-    return JAGS_NA;
-  }
-  Range range = getRange(p, i->second.range());
-  if (isNULL(range)) {
-    return JAGS_NA;
-  }
-  else {
-    // Range expression successfully evaluated
-    if (range.length() > 1) {
-      throw runtime_error("Vector value in constant expression");
+    // Try evaluating constant expression from data table
+    map<string,SArray>::const_iterator i = _data_table.find(p->name());
+    if (i == _data_table.end()) {
+	return JAGS_NA;
     }
-    long offset = i->second.range().leftOffset(range.lower());
-    return i->second.value()[offset];
-  }
+    Range subset_range = getRange(p, i->second.range());
+    if (isNULL(subset_range)) {
+	return JAGS_NA;
+    }
+    else {
+	// Range expression successfully evaluated
+	if (range.length() > 1) {
+	    throw runtime_error(string("Vector value ") + p->name() +
+				print(range) + " in constant expression");
+	}
+	long offset = i->second.range().leftOffset(range.lower());
+	return i->second.value()[offset];
+    }
 }
 
 double Compiler::constFromNode(ParseTree const*p)
 {
-  //Evaluate constant expression if it corresponds to a node with
-  //a fixed value
+    //Evaluate constant expression if it corresponds to a node with
+    //a fixed value
 
-  NodeArray *array = _model.symtab().getVariable(p->name());
-  if (array) {
-    // We can't call getConstantRange() because we aren't sure that
-    // the range expression can be evaluated.
-      Range subset_range = getRange(p, array->range());
+    NodeArray *array = _model.symtab().getVariable(p->name());
+    if (!array) {
+	return JAGS_NA;
+    }
+    Range subset_range = getRange(p, array->range());
     if (isNULL(subset_range)) {
-      return JAGS_NA;
+	return JAGS_NA;
     }
     else if (subset_range.length() > 1) {
-      throw runtime_error(string("Vector value ") + p->name() +
-			  print(subset_range) + " in constant expression");
+	throw runtime_error(string("Vector value ") + p->name() +
+			    print(subset_range) + " in constant expression");
     }
     else {
-      Node *node = array->getSubset(subset_range, _model.graph());
-      if (node && node->isObserved()) {
-	return *node->value(0);
-      }
-      else {
-	return JAGS_NA;
-      }
+	Node *node = array->getSubset(subset_range, _model.graph());
+	if (node && node->isObserved()) {
+	    return *node->value(0);
+	}
+	else {
+	    return JAGS_NA;
+	}
     }
-  }
-  else {
-    return JAGS_NA;
-  }
 }
+
 
 bool Compiler::constantExpression(ParseTree const *p, double &value)
 {
@@ -134,7 +132,7 @@ bool Compiler::constantExpression(ParseTree const *p, double &value)
   */
   Counter *counter;
   double arg1, arg2;
-  std::vector<ParseTree*> const &parameters = p->parameters();
+  vector<ParseTree*> const &parameters = p->parameters();
 
   switch (p->treeClass()) {
   case P_VAR: 
