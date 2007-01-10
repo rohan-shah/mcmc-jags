@@ -65,10 +65,6 @@ bool DSumSampler::canSample(vector<StochasticNode *> const &nodes,
 	if (nodes[i]->length() != 1)
 	    return false;
     
-	// stochastic ...
-	if (!asStochastic(nodes[i]))
-	    return false;
-
 	// discrete-valued ...
 	if (!nodes[i]->isDiscreteValued())
 	    return false;
