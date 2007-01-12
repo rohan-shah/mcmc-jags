@@ -50,7 +50,8 @@ CONFIG_HEADER = $(top_builddir)/src/include/config.h
 CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 libsampler_la_LIBADD =
-am_libsampler_la_OBJECTS = Sampler.lo GibbsFactory.lo Slicer.lo
+am_libsampler_la_OBJECTS = Sampler.lo GibbsFactory.lo Slicer.lo \
+	Metropolis.lo RWMetropolis.lo
 libsampler_la_OBJECTS = $(am_libsampler_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/src/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -185,7 +186,7 @@ target_alias = @target_alias@
 INCLUDES = -I $(top_srcdir)/src/include
 noinst_LTLIBRARIES = libsampler.la
 libsampler_la_SOURCES = Sampler.cc GibbsFactory.cc	\
-Slicer.cc
+Slicer.cc Metropolis.cc RWMetropolis.cc
 
 all: all-am
 
@@ -239,6 +240,8 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GibbsFactory.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Metropolis.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RWMetropolis.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Sampler.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Slicer.Plo@am__quote@
 

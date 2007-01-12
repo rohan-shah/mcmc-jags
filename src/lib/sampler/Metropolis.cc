@@ -1,28 +1,33 @@
 #include <config.h>
-#include <sampler/Slicer.h>
+#include <sampler/Metropolis.h>
+#include <rng/RNG.h>
+
+#include <algorithm>
+#include <stdexcept>
+
+using std::logic_error;
+using std::vector;
+using std::copy;
 
 Metropolis::Metropolis(vector<StochasticNode *> const &nodes, 
 		       Graph const &graph, unsigned int chain,
-		       double const *value, unsigned int length,
-		       double prob, double scale)
-    : Sampler(nodes, graph), _length(length), _prob(prob), 
-      _iter(0), _scale(scale), 
-      _value(0), _last_value(0), 
+		       double const *value, unsigned int length)
+    : Sampler(nodes, graph), _chain(chain), _length(length), _adapt(true), 
+      _value(0), _last_value(0)
 {
     /* FIXME: we could check that length is compatible with nodes using
      * df
      */
-    _value = new double(_length);
-    _last_value = new double(_length);
-    for (unsigned int i = 0; i < _length; ++i) {
-	_value[i] = _last_value[i] = value[i];
-    }
+    _value = new double[_length];
+    _last_value = new double[_length];
+    copy(value, value + _length, _value);
+    copy(value, value + _length, _last_value);
 }
 
-Metropolis::~Metropolos()
+Metropolis::~Metropolis()
 {
     delete [] _value;
-    delete [] _last_value
+    delete [] _last_value;
 }
 
 void Metropolis::propose(double const *value, unsigned int length)
@@ -30,44 +35,36 @@ void Metropolis::propose(double const *value, unsigned int length)
     if (length != _length) {
 	throw logic_error("Invalid length in Metropolis::propose");
     }
-    for (unsigned int i = 0; i < _length; ++i) {
-	_value[i] == value[i];
-    }
+    copy(value, value + length, _value);
     setValue(value, length);
 }
 
 bool Metropolis::accept(RNG *rng, double prob)
 {
-    bool accept = false;
-    if (rng->uniform() <= prob) {
-	for (unsigned int i = 0; i < _length; ++i) {
-	    _last_value[i] = _value[i];
-	}
-	accept = true;
+    bool accept = rng->uniform() <= prob;
+    if (accept) {
+	copy(_value, _value + _length, _last_value);
     }
     else {
 	setValue(_last_value, _length);
     }
-
     if (_adapt) {
-	logscale += log(_scale) + (prob - _prob) / (_iter++ + 1);
-	_scale = exp(logscale);
+	rescale(prob, accept);
     }
-
     return accept;
 }
 
-double Metropolis::iter()
+double const * Metropolis::value() const
 {
-    return _iter;
+    return _value;
+}
+
+unsigned int Metropolis::length() const
+{
+    return _length;
 }
 
 void Metropolis::adaptOff()
 {
     _adapt = false;
-}
-
-double Metropolis::scale()
-{
-    return _scale;
 }

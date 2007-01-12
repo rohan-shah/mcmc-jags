@@ -179,7 +179,7 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 samplerincludedir = $(jagsincludedir)/sampler
 samplerinclude_HEADERS = Sampler.h SamplerFactory.h	\
-GibbsFactory.h Slicer.h
+GibbsFactory.h Slicer.h Metropolis.h RWMetropolis.h
 
 all: all-am
 

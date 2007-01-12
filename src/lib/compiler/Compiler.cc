@@ -76,11 +76,12 @@ double Compiler::constFromTable(ParseTree const *p)
     }
     else {
 	// Range expression successfully evaluated
-	if (range.length() > 1) {
+	if (subset_range.length() > 1) {
 	    throw runtime_error(string("Vector value ") + p->name() +
-				print(range) + " in constant expression");
+				print(subset_range) + 
+                                " in constant expression");
 	}
-	long offset = i->second.range().leftOffset(range.lower());
+	long offset = i->second.range().leftOffset(subset_range.lower());
 	return i->second.value()[offset];
     }
 }
