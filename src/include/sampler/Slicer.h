@@ -46,7 +46,7 @@ class Slicer : public Sampler
   virtual double value() const = 0;
   /**
    * Sets the value of the sampler, and additionally updates all the
-   * deterministic descendants
+   * deterministic descendants.
    */
   virtual void setValue(double x) = 0;
   /**
