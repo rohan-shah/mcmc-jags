@@ -142,6 +142,52 @@ double Sampler::logFullConditional(unsigned int chain) const
     return lfc;
 }
 
+double Sampler::logPrior(unsigned int chain) const
+{
+    double lprior = 0.0;
+
+    vector<StochasticNode*>::const_iterator p = _nodes.begin();
+    for (; p != _nodes.end(); ++p) {
+	lprior += (*p)->logDensity(chain);
+    }
+  
+    if(jags_isnan(lprior)) {
+	//Try to find where the calculation went wrong
+	for (p = _nodes.begin(); p != _nodes.end(); ++p) {
+	    if (jags_isnan((*p)->logDensity(chain))) {
+		throw NodeError(*p, "Failure to calculate log density");
+	    }
+	}
+	throw logic_error("Failure in Sampler::logLikelihood");
+    }
+
+    return lprior;
+}
+
+double Sampler::logLikelihood(unsigned int chain) const
+{
+    double llik = 0.0;
+
+    vector<StochasticNode const*>::const_iterator q = _stoch_children.begin();
+    for (; q != _stoch_children.end(); ++q) {
+	llik += (*q)->logDensity(chain) * (*q)->repCount();
+    }
+  
+    if(jags_isnan(llik)) {
+	//Try to find where the calculation went wrong
+	for (q = _stoch_children.begin(); q != _stoch_children.end(); ++q) {
+	    if (jags_isnan((*q)->logDensity(chain))) {
+		throw NodeError(*q, "Failure to calculate log density");
+	    }
+	}
+
+	//This could  happen if we try to add +Inf to -Inf
+	throw logic_error("Failure in Sampler::logLikelihood");
+    }
+
+    return llik;
+}
+
 vector<StochasticNode const*> const &Sampler::stochasticChildren() const
 {
   return _stoch_children;

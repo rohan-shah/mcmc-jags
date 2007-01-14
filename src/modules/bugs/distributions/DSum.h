@@ -22,7 +22,7 @@ public:
     double u(std::vector<double const *> const &parameters) const;
     double typicalValue(std::vector<double const *> const &parameters) const;
     bool isSupportFixed(std::vector<bool> const &fixmask) const;
-    bool isDeterministic() const;
+    unsigned int df(std::vector<std::vector<unsigned int> > const &dims) const;
 };
 
 #endif /* DSUM_H_ */

@@ -44,6 +44,7 @@ public:
 		    std::vector<double const *> const &par,
 		    std::vector<std::vector<unsigned int> > const &dims) const;
   bool isSupportFixed(std::vector<bool> const &fixmask) const;
+  unsigned int df(std::vector<std::vector<unsigned int> > const &dims) const;
 };
 
 #endif /* DMULTI_H_ */

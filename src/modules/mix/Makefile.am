@@ -1,4 +1,4 @@
-SUBDIRS = distributions 
+SUBDIRS = distributions samplers
 INCLUDES = -I $(top_srcdir)/src/include
 
 jagsmod_LTLIBRARIES = mix.la

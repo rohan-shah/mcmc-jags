@@ -288,3 +288,9 @@ void StochasticNode::replicate()
 
    _nrep++;
 }
+
+unsigned int df(StochasticNode const *snode)
+{
+    return snode->distribution()->df(snode->parameterDims());
+}
+

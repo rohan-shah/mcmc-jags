@@ -26,11 +26,9 @@
  */
 class Metropolis : public Sampler
 {
-    const unsigned int _chain;
-    const unsigned int _length;
     bool _adapt;
-    double *_value;
     double *_last_value;
+    const unsigned int _size;
 public:
     /**
      * Constructs a Metropolis Hastings sampler
@@ -41,19 +39,26 @@ public:
      * @param value Pointer to the beginning of an array of initial values.
      * @param length Length of initial value array
      */
-    Metropolis(std::vector<StochasticNode *> const &nodes, 
-	       Graph const &graph, unsigned int chain,
-	       double const *value, unsigned int length);
+    Metropolis(std::vector<StochasticNode *> const &nodes, Graph const &graph);
     ~Metropolis();
     /**
-     * Proposes a move to a new value. This function calls
-     * Metropolis##setValue, and records the current value of the
-     * sampler.
+     * Returns the current value of the chain. 
+     */
+    virtual double const *value() const = 0;
+    /**
+     * Returns the length of the value array for the sampler
+     */
+    virtual unsigned int length() const = 0;
+    /**
+     * Sets the value of the sampler. Subclasses of Metropolis must
+     * implement this function, which should transform the supplied
+     * value on to a legitimate value for the sampled nodes, and then
+     * call Sampler##setValue with the transformed values.
      *
      * @param value Pointer to the beginning of an array of values
      * @param length Length of value array
      */
-    void propose(double const *value, unsigned int length);
+    virtual void propose(double const *value, unsigned int length) = 0;
     /**
      * Accept current value with probabilty p. If the current value is
      * not accepted, the sampler reverts to the value at the last
@@ -66,14 +71,6 @@ public:
      */
     bool accept(RNG *rng, double p);
     /**
-     * Returns the current value of the chain. 
-     */
-    double const *value() const;
-    /**
-     * Returns the length of the value array for the sampler
-     */
-    unsigned int length() const;
-    /**
      * Rescales the proposal distribution. This function is called by
      * Metropolis##accept when the sampler is in adaptive
      * mode. Rescaling may optionally depend on the acceptance
@@ -84,19 +81,17 @@ public:
      */
     virtual void rescale(double p, bool accept) = 0;
     /**
-     * Sets the value of the sampler. Subclasses of Metropolis must
-     * implement this function, which should transform the supplied
-     * value on to a legitimate value for the sampled nodes, and then
-     * call Sampler##setValue with the transformed values.
-     *
-     * @param value Pointer to the beginning of an array of values
-     * @param length Length of value array
-     */
-    virtual void setValue(double const *value, unsigned int length) = 0;
-    /**
      * Turns off adaptive mode
      */
     void adaptOff();
+    /**
+     * Returns the number of the chain updated by the sampler
+     */
+    unsigned int chain() const;
+    /**
+     * Returns the total degrees of freedom of the sampled nodes
+     */
+    unsigned int size() const;
 };
 
 #endif /* METROPOLIS_H_ */

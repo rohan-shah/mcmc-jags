@@ -28,8 +28,8 @@ bool DiscreteSliceSampler::canSample(StochasticNode const *node,
 	  node->length() != 1)
      return false;
 
-  if (node->distribution()->isDeterministic())
-        return false;
+  if (df(node) == 0)
+      return false;
 
   return true;
 }

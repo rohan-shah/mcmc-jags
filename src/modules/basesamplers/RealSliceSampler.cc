@@ -24,7 +24,7 @@ RealSliceSampler::canSample(StochasticNode const *node, Graph const &graph)
   if (node->distribution()->isDiscreteValued() || node->length() != 1)
      return false;
 
-  if (node->distribution()->isDeterministic())
+  if (df(node) == 0)
      return false; 
 
   return true;

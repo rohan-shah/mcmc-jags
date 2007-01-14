@@ -79,7 +79,7 @@ bool FiniteSampler::canSample(StochasticNode const *node,
     if (node->length() != 1)
 	return false;
 
-    if (dist->isDeterministic())
+    if (df(node))
 	return false;
 
     for (unsigned int ch = 0; ch < node->nchain(); ++ch) {

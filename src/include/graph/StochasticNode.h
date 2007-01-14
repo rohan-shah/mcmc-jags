@@ -109,5 +109,11 @@ public:
 };
 
 StochasticNode const *asStochastic(Node const *node);
+/**
+ * Number of degrees of freedom of a node
+ * @see Distribution##df
+ */
+unsigned int df(StochasticNode const *snode);
 
 #endif /* STOCHASTIC_NODE_H_ */
+

@@ -125,6 +125,7 @@ AC_CONFIG_FILES([
   src/modules/bugs/matrix/Makefile	
   src/modules/mix/Makefile	
   src/modules/mix/distributions/Makefile	
+  src/modules/mix/samplers/Makefile	
   src/terminal/Makefile
 ])
 AC_OUTPUT

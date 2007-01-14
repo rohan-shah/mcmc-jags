@@ -1,5 +1,6 @@
 #include <config.h>
 #include <sampler/RWMetropolis.h>
+#include <rng/RNG.h>
 
 #include <cmath>
 #include <stdexcept>
@@ -18,17 +19,22 @@ using std::vector;
 
 RWMetropolis::RWMetropolis(vector<StochasticNode *> const &nodes, 
 			   Graph const &graph, unsigned int chain,
-			   double const *value, unsigned int length,
-			   double scale, double prob)
-    : Metropolis(nodes, graph, chain, value, length), 
+                           double const *value, unsigned int length,
+                           double scale, double prob)
+    : Metropolis(nodes, graph), _chain(chain), _value(0), 
       _prob(prob), _lscale(log(scale)), _p_over_target(false), _n(INITIAL_N)
 {
-    if (prob < 0 || prob > 1 || scale < 0)
+    if (prob < 0 || prob > 1 || scale < 0 || length == 0)
 	throw logic_error("Invalid initial values in RWMetropolis");
+    if (length != size()) {
+        throw logic_error("Invalid length of initial value in RWMetropolis");
+    }
+   _value = new double[size()];
 }
 
 RWMetropolis::~RWMetropolis()
 {
+   delete [] _value;
 }
 
 void RWMetropolis::rescale(double p, bool accept)
@@ -46,7 +52,15 @@ void RWMetropolis::rescale(double p, bool accept)
     }
 }
 
-double RWMetropolis::scale() const
+void RWMetropolis::update(RNG *rng)
 {
-    return exp(_lscale);
+    double scale = exp(_lscale);
+    double log_p = -logFullConditional(_chain);
+    unsigned int d = size();
+    for (unsigned int i = 0; i < d; ++i) {
+        _value[i] += scale * rng->uniform();
+    }
+    propose(_value, d);
+    log_p += logFullConditional(_chain);
+    accept(rng, exp(log_p));
 }

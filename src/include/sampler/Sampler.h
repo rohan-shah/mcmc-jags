@@ -82,6 +82,16 @@ public:
    */
   double logFullConditional(unsigned int chain) const;
   /**
+   * Calculates the log prior density of the sampled nodes, i.e. the
+   * density conditioned only on the parents.
+   */
+  double logPrior(unsigned int chain) const;
+  /**
+   * Calculates the log likelihood, which is added to the log prior
+   * to give the log full conditional density
+   */
+  double logLikelihood(unsigned int chain) const;
+  /**
    * Every sampler must update the vector of nodes and its immediate
    * deterministic descendants using the update function.
    *

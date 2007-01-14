@@ -14,6 +14,8 @@
  */
 class RWMetropolis : public Metropolis
 {
+    const unsigned int _chain;
+    double *_value;
     const double _prob;
     double _lscale;
     bool  _p_over_target;
@@ -42,6 +44,7 @@ public:
      * parameter is ignored.
      */
     void rescale(double p, bool accept);
+    void update(RNG *rng);
 };
 
 #endif /* RW_METROPOLIS_H_ */

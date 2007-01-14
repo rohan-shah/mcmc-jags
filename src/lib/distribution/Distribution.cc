@@ -1,5 +1,6 @@
 #include <config.h>
 #include <distribution/Distribution.h>
+#include <sarray/util.h>
 
 using std::vector;
 using std::string;
@@ -48,10 +49,7 @@ bool Distribution::canBound() const
   return _canbound;
 }
 
-bool Distribution::isDeterministic() const
-{
-  return false;
-}
+
 
 bool Distribution::checkParameterValue(vector<double const *> const &args,
            vector<vector<unsigned int> > const &dims) const
@@ -60,8 +58,13 @@ bool Distribution::checkParameterValue(vector<double const *> const &args,
 }
 
 vector<unsigned int>
-Distribution::dim(vector<vector<unsigned int> > const &parameters) const
+Distribution::dim(vector<vector<unsigned int> > const &dims) const
 {
     return vector<unsigned int>(1,1);
+}
+
+unsigned int Distribution::df(vector<vector<unsigned int> > const &pdims) const
+{
+    return product(dim(pdims));
 }
 

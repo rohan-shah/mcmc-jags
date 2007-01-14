@@ -198,3 +198,9 @@ bool DWish::isSupportFixed(vector<bool> const &fixmask) const
 {
     return true;
 }
+
+unsigned int DWish::df(vector<vector<unsigned int> > const &dims) const
+{   
+  return dims[0][0] * (dims[0][0] + 1) / 2;
+}
+

@@ -59,17 +59,17 @@ double DSum::u(std::vector<double const *> const &par) const
     return SUM(par);
 }
 
-double DSum::typicalValue(std::vector<double const *> const &par) const
+double DSum::typicalValue(vector<double const *> const &par) const
 {
     return SUM(par);
 }
 
-bool DSum::isSupportFixed(std::vector<bool> const &fixmask) const
+bool DSum::isSupportFixed(vector<bool> const &fixmask) const
 {
     return fixmask[0] && fixmask[1];
 }
 
-bool DSum::isDeterministic() const
+unsigned int DSum::df(vector<vector<unsigned int> > const &dims) const
 {
-    return true;
+    return 0;
 }

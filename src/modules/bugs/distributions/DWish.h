@@ -47,6 +47,7 @@ public:
 		    std::vector<double const *> const &parameters,
 		    std::vector<std::vector<unsigned int> > const &dims) const;
   bool isSupportFixed(std::vector<bool> const &fixmask) const;
+  unsigned int df(std::vector<std::vector<unsigned int> > const &dims) const;
 };
 
 #endif /* DWISH_H_ */

@@ -90,9 +90,9 @@ void DInterval::typicalValue(double *x, unsigned int length,
     *x = static_cast<double>(value(par, NCUT(dims)));
 }
 
-bool DInterval::isDeterministic() const
+unsigned int DInterval::df(vector<vector<unsigned int> > const &dims) const
 {
-    return true;
+    return 0;
 }
 
 void DInterval::support(double *lower, double *upper, unsigned int length,

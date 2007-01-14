@@ -40,7 +40,8 @@ class DInterval : public Distribution {
 		    std::vector<double const *> const &parameters,
 		    std::vector<std::vector<unsigned int> > const &dims) const;
   bool isSupportFixed(std::vector<bool> const &fixmask) const;
-  bool isDeterministic() const;
+  unsigned int df(std::vector<std::vector<unsigned int> > const &dims) const;
+
 };
 
 #endif /* DINTERVAL_H_ */

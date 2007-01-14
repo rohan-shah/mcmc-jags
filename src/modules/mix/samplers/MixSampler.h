@@ -1,19 +1,35 @@
 #ifndef MIX_SAMPLER_H_
 #define MIX_SAMPLER_H_
 
-#include <sampler/RWMetropolis.h>
+#include <sampler/Metropolis.h>
 
-class MixSampler : public RWMetropolis
+class MixSampler : public Metropolis
 {
+    const unsigned int _chain;
     const unsigned int _nlevels;
+    const unsigned int _nstep;
     const double _log_min_power;
-    std::vector<double> scale;
+    std::vector<double> _scale;
+    const unsigned int _length;
+    const double _target_prob;
+    double *_value;
+    double *_lower;
+    double *_upper;
+    std::vector<double> _prob;
+    std::vector<unsigned int> _n;
+    std::vector<double> _lscale;
+    std::vector<bool> _p_over_target;
 public:
-    MixSampler(vector<StochasticNode *> const &snodes, Graph const &graph, 
-	       unsigned int chain, unsigned int nlevels, double min_power);
-    
+    MixSampler(std::vector<StochasticNode *> const &snodes, Graph const &graph,
+	       unsigned int chain, unsigned int nlevels, double min_power,
+	       double target_prob = 0.234);
+    ~MixSampler();
     void update(RNG *rng);
-    void setValue(double const *value, unsigned int length);
+    void propose(double const *value, unsigned int length);
+    void getValue(double *value, unsigned int length);
+    void rescale(double prob, bool accept);
+    static bool canSample(std::vector<StochasticNode *> snodes, Graph const &graph);
+
 };
 
 #endif /* MIX_SAMPLER_H_ */

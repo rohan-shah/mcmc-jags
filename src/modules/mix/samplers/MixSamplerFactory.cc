@@ -53,19 +53,31 @@ void MixSamplerFactory::makeSampler(set<StochasticNode*> &nodes,
 	marks.markParents(mix_nodes[i], isStochastic, 2);
     }
     /* The stochastic parents can be sampled if
-       1) They are not discrete valued
-       2) They have fixed support
+       1) They are in the given set of nodes
+       2) They are not discrete valued
+       3) They have no dimensional constraints 
+       4) They have fixed support.
     
-       The second condition is necessary because the sampler uses log
-       or logit transformation of bounded variables, which must remain
-       constant between iterations to ensure reversibility of the
-       chain.
+       Condition 4 is necessary because the sampler uses log or logit
+       transformation of bounded variables, which must remain constant
+       between iterations to ensure stationarity of the chain.
     */
     vector<StochasticNode*> sample_nodes;
     for (p = graph.nodes().begin(); p != graph.nodes().end(); ++p) {
 	if (marks.Mark(*p) == 2) {
+	    bool cansample = true;
 	    StochasticNode *snode = asStochastic(*p);
-	    if (!snode->isDiscreteValued()) {
+	    if (nodes.count(snode) == 0) {
+		cansample = false;
+	    }
+	    else if (snode->isDiscreteValued()) {
+		cansample = false;
+	    }
+	    else if (df(snode) != length(snode)) {
+		/* FIXME: Excluding Dirichlet priors with this */
+		cansample = false;
+	    }
+	    else {
 		unsigned int Nparents = snode->parents().size();
 		vector<bool> fixmask(Nparents);
 		for (unsigned int i = 0; i < Nparents; i++) {
@@ -75,7 +87,6 @@ void MixSamplerFactory::makeSampler(set<StochasticNode*> &nodes,
 		    sample_nodes.push_back(snode);
 		}
 	    }
-	    
 	}
     }
 

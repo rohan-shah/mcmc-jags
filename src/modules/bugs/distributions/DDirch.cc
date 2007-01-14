@@ -45,6 +45,13 @@ DDirch::checkParameterValue(vector<double const *> const &par,
     double const *alpha = ALPHA(par);
     unsigned int length = LENGTH(dims);
 
+    for (unsigned int i = 0; i < length; i++) {
+	if (alpha[i] <= 0) {
+	    return false;
+	}
+    }
+
+    /*
     unsigned int nzero = 0; // No of zero shape par
     for (unsigned int i = 0; i < length; i++) {
 	if (alpha[i] <= 0) {
@@ -58,12 +65,12 @@ DDirch::checkParameterValue(vector<double const *> const &par,
     }
 
     if (nzero) {
-	//return par[0]->isFixed() && (nzero < length);
 	return (nzero < length);
     }
     else {
 	return true;
     }
+    */
 }
 
 double DDirch::logLikelihood(double const *x, unsigned int length,
@@ -138,4 +145,14 @@ void DDirch::typicalValue(double *x, unsigned int length,
 bool DDirch::isSupportFixed(vector<bool> const &fixmask) const
 {
     return fixmask[0];
+}
+
+unsigned int DDirch::df(vector<vector<unsigned int> > const &dims) const
+{
+    vector<unsigned int> const &dim0 = dims[0];
+    unsigned int d = 0;
+    for (unsigned int i = 0; i < dim0.size(); ++i) {
+        d += dim0[i];
+    }
+    return d - 1;
 }

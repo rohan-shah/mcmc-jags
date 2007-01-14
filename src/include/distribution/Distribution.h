@@ -148,7 +148,7 @@ public:
 			    std::vector<std::vector<unsigned int> > const &dims) const;
     /**
      * Calculates what the dimension of the distribution should be,
-     * based on the distribution of its parameters. Since the majority
+     * based on the dimensions of its parameters. Since the majority
      * of distributions are scalar valued, a default function is provided
      * that returns a vector of length 1 with element 1. This must be
      * overloaded by multivariate distributions.
@@ -160,12 +160,14 @@ public:
      */
     bool isDiscreteValued() const;
     /**
-     * Indicates whether a sampled value from the distribution is
-     * determined completely by its parameters. The vast majority of
-     * distributions are not deterministic, so the default method
-     * returns false.
+     * Returns the number of degrees of freedom of the distribution
+     * given the dimensions of the parameters. By default this is the
+     * product of the elements of the dimension vector returned by
+     * Distribution##dim. However, some distributions are constrained:
+     * and the support occupies a lower dimensional subspace. In this
+     * case, the df member function must be overrideen.
      */
-    virtual bool isDeterministic() const;
+    virtual unsigned int df(std::vector<std::vector<unsigned int> > const &dims) const;
     /**
      * Indicates whether a distribution is boundable using the T(,) construct
      */
