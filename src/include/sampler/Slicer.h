@@ -21,7 +21,8 @@ class Slicer : public Sampler
   unsigned int _max;
   double _sumdiff;
   unsigned int _iter;
-  bool accept(double xold, double xnew, double z, double L, double R);
+  bool accept(double xold, double xnew, double z, double L, double R,
+              double lower, double upper);
  public:
   /**
    * Constructor for Slice Sampler

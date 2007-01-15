@@ -145,8 +145,13 @@ void Slicer::updateDouble(RNG *rng)
     if (rng->uniform() < 0.5) {
       if (L >= lower) {
 	L = 2*L - R;
-	setValue(L);
-	left_ok = logFullConditional() < z;
+        if (L < lower) {
+           left_ok = true;
+        }
+        else {
+	   setValue(L);
+	   left_ok = logFullConditional() < z;
+        }
       }
       else {
 	left_ok = true;
@@ -155,8 +160,13 @@ void Slicer::updateDouble(RNG *rng)
     else {
       if (R <= upper) {
 	R = 2*R - L;
-	setValue(R);
-	right_ok = logFullConditional() < z;
+        if (R > upper) {
+           right_ok = true;
+        }
+        else {
+	   setValue(R);
+	   right_ok = logFullConditional() < z;
+        }
       }
       else {
 	right_ok = true;
@@ -172,17 +182,19 @@ void Slicer::updateDouble(RNG *rng)
   double xnew;
   for(;;) {
     xnew =  Lbar + rng->uniform() * (Rbar - Lbar);
-    setValue(xnew);
-    double g = logFullConditional();
-    if (g >= z && accept(xold, xnew, z, L, R)) {
-      // The accept function will alter the current value. So we must reset it.
-      setValue(xnew);
-      //return; No! We want to break here.
-      break;
+    if (xnew >= lower && xnew <= upper) {
+	setValue(xnew);
+	double g = logFullConditional();
+	if (g >= z && accept(xold, xnew, z, L, R, lower, upper)) {
+	    // The accept function will alter the current value. So we
+	    // must reset it.
+	    setValue(xnew);
+	    break;
+	}
     }
     // shrink the interval
     if (xnew <= xold) {
-      Lbar = xnew;
+	Lbar = xnew;
     }
     else {
       Rbar = xnew;
@@ -198,7 +210,8 @@ void Slicer::updateDouble(RNG *rng)
   }
 }
 
-bool Slicer::accept(double xold, double xnew, double z, double L, double R)
+bool Slicer::accept(double xold, double xnew, double z, double L, double R,
+                    double lower, double upper)
 {
   //Acceptance step for doubling update method
 
@@ -214,10 +227,17 @@ bool Slicer::accept(double xold, double xnew, double z, double L, double R)
       L = M;
     }
     if (d) {
-      setValue(R); bool right_ok = logFullConditional() < z;
-      setValue(L); bool left_ok = logFullConditional() < z;
-      if (left_ok && right_ok)
+      bool right_ok;
+      if (R <= upper) {
+         setValue(R); bool right_ok = logFullConditional() < z;
+      }
+      bool left_ok;
+      if (L >= lower) {
+         setValue(L); bool left_ok = logFullConditional() < z;
+      }
+      if (left_ok && right_ok) {
 	return false;
+      }
     }
   }
   return true;
