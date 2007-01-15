@@ -86,10 +86,6 @@ public:
      * Turns off adaptive mode
      */
     void adaptOff();
-    /**
-     * Returns the number of the chain updated by the sampler
-     */
-    unsigned int chain() const;
 };
 
 #endif /* METROPOLIS_H_ */

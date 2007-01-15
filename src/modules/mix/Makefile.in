@@ -57,7 +57,7 @@ am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
 am__installdirs = "$(DESTDIR)$(jagsmoddir)"
 jagsmodLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(jagsmod_LTLIBRARIES)
-mix_la_DEPENDENCIES = distributions/mixdist.la \
+mix_la_DEPENDENCIES = distributions/mixdist.la samplers/mixsamp.la \
 	$(top_builddir)/src/jrmath/libjrmath.la \
 	$(top_builddir)/src/lib/libjags.la
 am_mix_la_OBJECTS = mix.lo
@@ -204,6 +204,7 @@ INCLUDES = -I $(top_srcdir)/src/include
 jagsmod_LTLIBRARIES = mix.la
 mix_la_SOURCES = mix.cc
 mix_la_LIBADD = distributions/mixdist.la               \
+        samplers/mixsamp.la         			\
         $(top_builddir)/src/jrmath/libjrmath.la		\
         $(top_builddir)/src/lib/libjags.la 
 

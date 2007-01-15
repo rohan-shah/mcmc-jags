@@ -32,20 +32,26 @@ Metropolis::~Metropolis()
 
 bool Metropolis::accept(RNG *rng, double prob)
 {
-    bool accept = rng->uniform() <= prob;
-    if (!accept) {
-	if (_last_value) {
-	    propose(_last_value, _size);
-	}
-	else {
-            _last_value = new double[_size];
+    if (!_last_value) {
+	//Force acceptance on first call
+	_last_value = new double[_size]; //freed by destructor
+	copy(value(), value() + _size, _last_value);
+	return true;
+    }
+    else {
+	bool accept = rng->uniform() <= prob;
+	if (accept) {
 	    copy(value(), value() + _size, _last_value);
 	}
+	else {
+	    propose(_last_value, _size);
+	}
+	if (_adapt) {
+	    rescale(prob, accept);
+	}
+	
+	return accept;
     }
-    if (_adapt) {
-	rescale(prob, accept);
-    }
-    return accept;
 }
 
 void Metropolis::adaptOff()

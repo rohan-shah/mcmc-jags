@@ -1,24 +1,17 @@
-#ifndef CONJUGATE_FACTORY_H_
-#define CONJUGATE_FACTORY_H_
+#ifndef MIX_SAMPLER_FACTORY_H_
+#define MIX_SAMPLER_FACTORY_H_
 
-#include "MixSampler.h"
-
-#include <sampler/GibbsFactory.h>
-#include <map>
-#include <string>
-class StochasticNode;
-
+#include <sampler/SamplerFactory.h>
 
 /**
  * @short Factory object for mixture samplers
  */
-class MixSamplerFactory : public GibbsFactory
+class MixSamplerFactory : public SamplerFactory
 {
 public:
-    MixSamplerFactory();
     void makeSampler(std::set<StochasticNode*> &nodes, 
 		     Graph const &graph,
 		     std::vector<std::vector<Sampler*> > &samplers) const;
 };
 
-#endif /* CONJUGATE_FACTORY_H_ */
+#endif /* MIX_SAMPLER_FACTORY_H_ */

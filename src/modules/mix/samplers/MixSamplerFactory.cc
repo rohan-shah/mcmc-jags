@@ -11,14 +11,12 @@
 using std::set;
 using std::vector;
 
-static bool isStochastic(Node const *node)
+static bool isStoch(Node const *node)
 {
-	return asStochastic(node);
+    return asStochastic(node);
 }
 
-MixSamplerFactory::MixSamplerFactory()
-{}
-
+/*
 static bool 
 hasMarkedChild(Node *node, Graph const &graph, GraphMarks const &marks)
 {
@@ -30,6 +28,7 @@ hasMarkedChild(Node *node, Graph const &graph, GraphMarks const &marks)
     }
     return false;
 }
+*/
 
 void MixSamplerFactory::makeSampler(set<StochasticNode*> &nodes, 
 				    Graph const &graph,
@@ -53,7 +52,7 @@ void MixSamplerFactory::makeSampler(set<StochasticNode*> &nodes,
     for (p = graph.nodes().begin(); p != graph.nodes().end(); ++p) {
 	if (marks.mark(*p) == 1) {
 	    StochasticNode const *snode = asStochastic(*p);
-	    if (snode && snode->distribution()->name() == "DNormMix") {
+	    if (snode && snode->distribution()->name() == "dnormmix") {
 		mix_nodes.push_back(snode);
 	    }
 	}
@@ -64,7 +63,7 @@ void MixSamplerFactory::makeSampler(set<StochasticNode*> &nodes,
 
     /* Now find the stochastic parents of mix_nodes */
     for (unsigned int i = 0; i < mix_nodes.size(); ++i) {
-	marks.markParents(mix_nodes[i], isStochastic, 2);
+	marks.markParents(mix_nodes[i], isStoch, 2);
     }
     /* The stochastic parents can be sampled if
        1) They are in the given set of nodes

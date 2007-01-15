@@ -227,13 +227,15 @@ bool Slicer::accept(double xold, double xnew, double z, double L, double R,
       L = M;
     }
     if (d) {
-      bool right_ok;
+      bool right_ok = true;
       if (R <= upper) {
-         setValue(R); bool right_ok = logFullConditional() < z;
+         setValue(R);
+         right_ok = logFullConditional() < z;
       }
-      bool left_ok;
+      bool left_ok = true;
       if (L >= lower) {
-         setValue(L); bool left_ok = logFullConditional() < z;
+         setValue(L);
+         left_ok = logFullConditional() < z;
       }
       if (left_ok && right_ok) {
 	return false;
