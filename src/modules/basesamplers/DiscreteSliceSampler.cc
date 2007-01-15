@@ -37,7 +37,8 @@ bool DiscreteSliceSampler::canSample(StochasticNode const *node,
 void DiscreteSliceSampler::setValue(double x)
 {
   _x = x;
-  nodes().front()->setValue(&_x, 1, _chain);
+  x = floor(x);
+  nodes().front()->setValue(&x, 1, _chain);
   vector<DeterministicNode*> const &dc = deterministicChildren();
   for (vector<DeterministicNode*>::const_iterator i(dc.begin()); 
        i != dc.end(); ++i) 
@@ -55,7 +56,8 @@ void DiscreteSliceSampler::getLimits(double *lower, double *upper) const
 {
   StochasticNode const *snode = nodes().front();
   snode->distribution()->support(lower, upper, 1, snode->parameters(_chain),
-		  	       snode->parameterDims());
+	    	  	       snode->parameterDims());
+  *upper += 1;
 }
 
 void DiscreteSliceSampler::update(RNG *rng)
