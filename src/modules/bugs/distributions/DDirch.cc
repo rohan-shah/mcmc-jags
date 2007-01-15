@@ -149,10 +149,5 @@ bool DDirch::isSupportFixed(vector<bool> const &fixmask) const
 
 unsigned int DDirch::df(vector<vector<unsigned int> > const &dims) const
 {
-    vector<unsigned int> const &dim0 = dims[0];
-    unsigned int d = 0;
-    for (unsigned int i = 0; i < dim0.size(); ++i) {
-        d += dim0[i];
-    }
-    return d - 1;
+    return dims[0][0] - 1;
 }
