@@ -145,9 +145,5 @@ bool DMulti::isSupportFixed(std::vector<bool> const &fixmask) const
 
 unsigned int DMulti::df(vector<vector<unsigned int> > const &dims) const
 {
-    unsigned int d = 0;
-    for (unsigned int i = 0; i < dims[0].size(); ++i) {
-        d += dims[0][i];
-    }
-    return d - 1;
+    return dims[0][0] - 1;
 } 
