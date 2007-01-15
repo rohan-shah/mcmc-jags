@@ -819,7 +819,12 @@ static void errordump()
 static void updatestar(long niter, long refresh, int width)
 {
   if (refresh == 0) {
-    console->update(niter);
+    console->update(niter/2);
+    if (!console->adaptOff()) {
+       errordump();
+       return;
+    }
+    console->update(niter - niter/2);
     return;
   }
 
