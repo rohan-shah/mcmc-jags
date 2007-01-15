@@ -2,6 +2,7 @@
 #include "MixSampler.h"
 #include <graph/Graph.h>
 #include <graph/StochasticNode.h>
+#include <graph/GraphMarks.h>
 #include <distribution/Distribution.h>
 #include <rng/RNG.h>
 #include <sarray/util.h>
@@ -160,10 +161,8 @@ bool MixSampler::canSample(vector<StochasticNode *> snodes, Graph const &graph)
 
 void MixSampler::update(RNG *rng)
 {
-    double *old_value = new double[_length];
-    copy(old_value, old_value + _length, _value);
-    double *new_value = new double[_length];
-    copy(new_value, new_value + _length, _value);
+    double *last_value = new double[_length];
+    copy(last_value, last_value + _length, _value);
 
     /* 
        Set up vector of power steps up and down, with uniform
@@ -183,25 +182,25 @@ void MixSampler::update(RNG *rng)
 	double ldensity0 = logPrior(ch) + pwr[t] * logLikelihood(ch);
 	double scale = exp(_lscale[t]);
 	for (unsigned int j = 0; j < _length; ++j) {
-	    new_value[j] = old_value[j] + rng->normal() * scale;
+	    _value[j] = last_value[j] + rng->normal() * scale;
 	}
-	propose(new_value, _length);
+	propose(_value, _length);
 	double ldensity1 = logPrior(ch) + pwr[t] * logLikelihood(ch);
 	double lprob = ldensity1 - ldensity0;
 	log_global_prob -= lprob;
 	_prob[t] = (lprob > 0) ? 1.0 : exp(lprob);
 	if (rng->uniform() <= _prob[t]) {
 	    //Accept modified proposal
-	    copy(old_value, old_value + _length, new_value);
+	    copy(_value, _value + _length, last_value);
 	}
 	else {
-	    propose(old_value, _length); //Revert to previous proposal
+	    //FIXME: we only have to use propose on the last step
+	    propose(last_value, _length); //Revert to previous proposal
 	}
     }
     log_global_prob += logLikelihood(_chain);
 
-    delete [] old_value;
-    delete [] new_value;
+    delete [] last_value;
 
     accept(rng, exp(log_global_prob));
 }
@@ -218,4 +217,9 @@ void MixSampler::rescale(double prob, bool accept)
 	    _n[i]++;
 	}
     }
+}
+
+double const *MixSampler::value() const
+{
+    return _value;
 }

@@ -53,7 +53,7 @@ void Metropolis::adaptOff()
     _adapt = false;
 }
 
-unsigned int Metropolis::size() const
+unsigned int Metropolis::value_length() const
 {
     return _size;
 }

@@ -1,6 +1,20 @@
 #include <config.h>
 #include "MixSamplerFactory.h"
 #include "MixSampler.h"
+#include <graph/GraphMarks.h>
+#include <graph/Graph.h>
+#include <graph/StochasticNode.h>
+#include <distribution/Distribution.h>
+
+#include <set>
+
+using std::set;
+using std::vector;
+
+static bool isStochastic(Node const *node)
+{
+	return asStochastic(node);
+}
 
 MixSamplerFactory::MixSamplerFactory()
 {}
@@ -8,8 +22,8 @@ MixSamplerFactory::MixSamplerFactory()
 static bool 
 hasMarkedChild(Node *node, Graph const &graph, GraphMarks const &marks)
 {
-    set<Node*>::const_iterator i = node->children().begin();
-    for (; i != node->children().end(); ++i) {
+    set<Node*>::const_iterator i = node->children()->begin();
+    for (; i != node->children()->end(); ++i) {
 	if (graph.contains(*i) && marks.mark(*i) != 0) {
 	    return true;
 	}
@@ -35,7 +49,7 @@ void MixSamplerFactory::makeSampler(set<StochasticNode*> &nodes,
 
     /* Find informative nodes in the graph with distribution DNormMix
        and add them to the vector "mix_nodes" */
-    vector<StochasticNode*> mix_nodes;
+    vector<StochasticNode const*> mix_nodes;
     for (p = graph.nodes().begin(); p != graph.nodes().end(); ++p) {
 	if (marks.mark(*p) == 1) {
 	    StochasticNode const *snode = asStochastic(*p);
@@ -63,37 +77,39 @@ void MixSamplerFactory::makeSampler(set<StochasticNode*> &nodes,
        between iterations to ensure stationarity of the chain.
     */
     vector<StochasticNode*> sample_nodes;
-    for (p = graph.nodes().begin(); p != graph.nodes().end(); ++p) {
-	if (marks.Mark(*p) == 2) {
-	    bool cansample = true;
-	    StochasticNode *snode = asStochastic(*p);
-	    if (nodes.count(snode) == 0) {
+    set<StochasticNode*>::const_iterator q;
+    for (q = nodes.begin(); q != nodes.end(); ++q) {
+	StochasticNode *snode = *q;
+	bool cansample = true;
+	if (marks.mark(snode) != 2) {
+	    cansample = false;
+	}
+	else if (snode->isDiscreteValued()) {
+	    cansample = false;
+	}
+	else if (df(snode) != (snode)->length()) {
+	    /* FIXME: Excluding Dirichlet priors with this */
+	    cansample = false;
+	}
+	else {
+	    unsigned int Nparents = snode->parents().size();
+	    vector<bool> fixmask(Nparents);
+	    for (unsigned int i = 0; i < Nparents; i++) {
+		fixmask[i] = snode->parents()[i]->isObserved();
+	    }
+	    if (!snode->distribution()->isSupportFixed(fixmask)) {
 		cansample = false;
 	    }
-	    else if (snode->isDiscreteValued()) {
-		cansample = false;
-	    }
-	    else if (df(snode) != length(snode)) {
-		/* FIXME: Excluding Dirichlet priors with this */
-		cansample = false;
-	    }
-	    else {
-		unsigned int Nparents = snode->parents().size();
-		vector<bool> fixmask(Nparents);
-		for (unsigned int i = 0; i < Nparents; i++) {
-		    fixmask[i] = snode->parents()[i]->isObserved();
-		}
-		if (snode->distribution()->isSupportFixed(fixmask)) {
-		    sample_nodes.push_back(snode);
-		}
-	    }
+	}
+	if (cansample) {
+	    sample_nodes.push_back(snode);
 	}
     }
 
     if (sample_nodes.empty()) {
 	return; //Nothing to do
     }
-    else if (DSumSampler::canSample(sample_nodes, graph)) {
+    else if (MixSampler::canSample(sample_nodes, graph)) {
 	for (unsigned int i = 0; i < sample_nodes.size(); ++i) {
 	    nodes.erase(sample_nodes[i]);
 	}

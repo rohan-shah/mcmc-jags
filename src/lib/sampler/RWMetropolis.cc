@@ -26,10 +26,10 @@ RWMetropolis::RWMetropolis(vector<StochasticNode *> const &nodes,
 {
     if (prob < 0 || prob > 1 || scale < 0 || length == 0)
 	throw logic_error("Invalid initial values in RWMetropolis");
-    if (length != size()) {
+    if (length != value_length()) {
         throw logic_error("Invalid length of initial value in RWMetropolis");
     }
-   _value = new double[size()];
+   _value = new double[value_length()];
 }
 
 RWMetropolis::~RWMetropolis()
@@ -56,7 +56,7 @@ void RWMetropolis::update(RNG *rng)
 {
     double scale = exp(_lscale);
     double log_p = -logFullConditional(_chain);
-    unsigned int d = size();
+    unsigned int d = value_length();
     for (unsigned int i = 0; i < d; ++i) {
         _value[i] += scale * rng->uniform();
     }

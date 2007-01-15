@@ -3,20 +3,19 @@
 
 #include "MixSampler.h"
 
-#include <sampler/Sampler.h>
+#include <sampler/GibbsFactory.h>
 #include <map>
 #include <string>
 class StochasticNode;
 
 
 /**
- * @short Factory object for conjugate samplers
+ * @short Factory object for mixture samplers
  */
 class MixSamplerFactory : public GibbsFactory
 {
 public:
     MixSamplerFactory();
-    bool canSample(StochasticNode *snode, Graph const &graph) const;
     void makeSampler(std::set<StochasticNode*> &nodes, 
 		     Graph const &graph,
 		     std::vector<std::vector<Sampler*> > &samplers) const;

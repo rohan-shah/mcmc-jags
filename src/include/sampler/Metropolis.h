@@ -46,9 +46,11 @@ public:
      */
     virtual double const *value() const = 0;
     /**
-     * Returns the length of the value array for the sampler
+     * Returns the length of the value array. This is the sum of the
+     * degrees of freedom of the sampled nodes
+     * @see Distribution##df
      */
-    virtual unsigned int length() const = 0;
+    unsigned int value_length() const;
     /**
      * Sets the value of the sampler. Subclasses of Metropolis must
      * implement this function, which should transform the supplied
@@ -88,10 +90,6 @@ public:
      * Returns the number of the chain updated by the sampler
      */
     unsigned int chain() const;
-    /**
-     * Returns the total degrees of freedom of the sampled nodes
-     */
-    unsigned int size() const;
 };
 
 #endif /* METROPOLIS_H_ */
