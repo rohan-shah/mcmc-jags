@@ -46,10 +46,11 @@ DDirch::checkParameterValue(vector<double const *> const &par,
     unsigned int length = LENGTH(dims);
 
     for (unsigned int i = 0; i < length; i++) {
-	if (alpha[i] <= 0) {
+	if (alpha[i] < 0) {
 	    return false;
 	}
     }
+    return true;
 
     /*
     unsigned int nzero = 0; // No of zero shape par
