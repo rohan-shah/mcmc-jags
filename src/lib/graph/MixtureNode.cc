@@ -29,6 +29,9 @@ mkParents(vector<Node const *> const &index,
   return parents;
 }
 
+//debuggin
+#include <iostream>
+
 MixtureNode::MixtureNode(vector<Node const *> const &index,
 			 vector<pair<vector<int>, Node const *> > const &parameters)
   : DeterministicNode(parameters[0].second->dim(),
@@ -51,6 +54,8 @@ MixtureNode::MixtureNode(vector<Node const *> const &index,
       throw invalid_argument("Null parameter in MixtureNode");
     }
     if (parameters[i].first.size() != _Nindex) {
+      std::cout << "Expected " << parameters[i].first.size() << " got " <<
+                  _Nindex << "\n";
       throw invalid_argument("Invalid index in MixtureNode");
     }
     _map.insert(parameters[i]);
@@ -76,6 +81,12 @@ MixtureNode::~MixtureNode()
 {
 }
 
+/* Do not delete commented sections: they are useful for debugging
+#include <iostream>
+#include <sarray/Range.h>
+#include <sarray/nainf.h>
+#include <graph/NodeError.h>
+*/
 void MixtureNode::deterministicSample(unsigned int chain)
 {
     vector<int> i(_Nindex);
@@ -88,18 +99,19 @@ void MixtureNode::deterministicSample(unsigned int chain)
 	setValue(p->second->value(chain), p->second->length(), chain);
     }
     else {
-	/* Debuggin
-	std::cout << "Got " << print(i) << "\nOriginally\n";
+        /*
+	std::cout << "Got " << print(Range(i)) << "\nOriginally\n";
 	for (unsigned int j = 0; j < _Nindex; ++j) {
-	    std:: cout << parents[j]->value(chain)[0] << "\n";
-	    if (parents[j]->value(chain)[0] == JAGS_NA)
+	    std::cout << par[j]->value(chain)[0] << "\n";
+	    if (par[j]->value(chain)[0] == JAGS_NA)
 		std::cout << "(which is  missing)\n";
 	}
 	std::cout << "Expected one of \n";
 	for (p = _map.begin(); p != _map.end(); ++p) {
-	    std::cout << print(p->first) << "\n";
+	    std::cout << print(Range(p->first)) << "\n";
 	}
-	*/
+        throw NodeError(this, "Invalid index");
+        */
 	throw logic_error("Invalid index in MixtureNode");
     }
 }
