@@ -25,9 +25,9 @@ MixSampler::MixSampler(vector<StochasticNode *> const &snodes,
 		       double target_prob)
     : Metropolis(snodes, graph), _chain(chain), 
       _nlevels(nlevels), _nstep(2*nlevels-1),
-      _log_min_power(log(min_power)), _log_target_prob(log(target_prob)),
+      _log_min_power(log(min_power)), _target_prob(target_prob),
       _value(0), _lower(0), _upper(0),
-      _lprob(_nstep), 
+      _prob(_nstep), 
       _n(_nstep), 
       _lscale(_nstep), 
       _p_over_target(_nstep)
@@ -41,26 +41,26 @@ MixSampler::MixSampler(vector<StochasticNode *> const &snodes,
 
     for (unsigned int j = 0; j < _nstep; ++j) {
 	_n[j] = INIT_N;
-	_lscale[j] = -5;
+	_lscale[j] = -10;
 	_p_over_target[j] = false;
     }
 
     _lower = new double[value_length()];
     _upper = new double[value_length()];
-    _value = new double[value_length()];
-
     //Set up lower and upper bounds
-    double *lower = _lower;
-    double *upper = _upper;
+    double *lp = _lower;
+    double *up = _upper;
     for (unsigned int j = 0; j < snodes.size(); ++j) {
 	unsigned int length_j = snodes[j]->length();
-	snodes[j]->distribution()->support(lower, upper, length_j, 
+	snodes[j]->distribution()->support(lp, up, length_j, 
 					   snodes[j]->parameters(_chain), 
 					   snodes[j]->parameterDims());
-	lower += length_j;
-	upper += length_j;
+	lp += length_j;
+	up += length_j;
     }
+
     //Read current value of nodes (with transformation) into _value
+    _value = new double[value_length()];
     getValue(_value, value_length());
 }
 
@@ -71,7 +71,7 @@ MixSampler::~MixSampler()
     delete [] _value;
 }
 
-void MixSampler::propose(double const *value, unsigned int length)
+void MixSampler::propose(double const *v, unsigned int length)
 {
     if (length != value_length()) {
 	throw logic_error("Length error in MixSampler::propose");
@@ -79,20 +79,23 @@ void MixSampler::propose(double const *value, unsigned int length)
 
     double * nodes_value = new double[length];
     for (unsigned int i = 0; i < length; ++i) {
+	//Set value of sampler
+	_value[i] = v[i];
+	//Set node values, with scale transformation if they are bounded
 	bool bb = jags_finite(_lower[i]); //bounded below
 	bool ba = jags_finite(_upper[i]); //bounded above
-	if (bb & ba) {
-	    double w = 1.0 / (1 - exp(-_value[i]));
+	if (bb && ba) {
+	    double w = 1.0 / (1 - exp(-v[i]));
 	    nodes_value[i] = _lower[i] + w * (_upper[i] - _lower[i]);
 	}
 	else if (bb) {
-	    nodes_value[i] = _lower[i] + exp(_value[i]);
+	    nodes_value[i] = _lower[i] + exp(v[i]);
 	}
-	else if (bb) {
-	    nodes_value[i] = _upper[i] - exp(_value[i]);
+	else if (ba) {
+	    nodes_value[i] = _upper[i] - exp(v[i]);
 	}
 	else {
-	    nodes_value[i] = _value[i];
+	    nodes_value[i] = v[i];
 	}
     }
     setValue(nodes_value, length, _chain);
@@ -121,7 +124,7 @@ void MixSampler::getValue(double *value, unsigned int length)
 	//std::cout << "(" << _lower[i] << "," << _upper[i] << ") : " << value[i] << "\n";
 	bool bb = jags_finite(_lower[i]); //bounded below
 	bool ba = jags_finite(_upper[i]); //bounded above
-	if (bb & ba) {
+	if (bb && ba) {
 	    value[i] = log(value[i] - _lower[i]) - log(_upper[i] - value[i]);
 	}
 	else if (bb) {
@@ -192,9 +195,10 @@ void MixSampler::update(RNG *rng)
 	propose(_value, length);
 	//double ldensity1 = logPrior(_chain) + pwr[t] * logLikelihood(_chain);
 	double ldensity1 = logFullConditional(_chain);
-	_lprob[t] = ldensity1 - ldensity0;
-	log_global_prob -= _lprob[t];
-	if (rng->uniform() <= exp(_lprob[t])) {
+	double lprob = ldensity1 - ldensity0;
+	log_global_prob -= lprob;
+	_prob[t] = exp(lprob);
+	if (rng->uniform() <= _prob[t]) {
 	    //Accept modified proposal
 	    copy(_value, _value + length, last_value);
 	}
@@ -204,7 +208,6 @@ void MixSampler::update(RNG *rng)
 	}
     }
     log_global_prob += logFullConditional(_chain);
-    //std::cout << "GLOBAL PROB " << exp(log_global_prob) << std::endl;
 
     delete [] last_value;
 
@@ -215,28 +218,23 @@ void MixSampler::update(RNG *rng)
 #include <iostream>
 void MixSampler::rescale(double prob, bool accept)
 {
-    //std::cout << exp(_lprob[0]) << "\t" << _n[0] << std::endl;
     /* Each step up and down has its own scale */
     for (unsigned int i = 0; i < _nstep; ++i) {
-/*
-        std::cout << exp(_lprob[i]);
-        if (i == _nstep - 1)
-           std::cout << std::endl;
-        else
-           std::cout << ",";
-*/
-        if (_lprob[i] > 0)
-            _lprob[i] = 0;
-	double lpdiff = exp(_lprob[i]) - exp(_log_target_prob);
-        _lscale[i] +=  lpdiff / _n[i]; 
-	_n[i]++;
 	/*
-	bool p_over_target = (lpdiff >= 0);
+        std::cout << exp(_lscale[i]);
+        if (i == _nstep - 1)
+	    std::cout << std::endl;
+        else
+	    std::cout << ",";
+	*/
+	double pdiff = fmin(_prob[i], 1.0) - _target_prob;
+        _lscale[i] +=  pdiff / _n[i]; 
+
+	bool p_over_target = (pdiff >= 0);
 	if (p_over_target != _p_over_target[i]) {
 	    _p_over_target[i] = p_over_target;
 	    _n[i]++;
 	}
-	*/
     }
 }
 

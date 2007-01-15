@@ -32,10 +32,11 @@ Metropolis::~Metropolis()
 
 bool Metropolis::accept(RNG *rng, double prob)
 {
-    if (!_last_value) {
+    if (_last_value == 0) {
 	//Force acceptance on first call
 	_last_value = new double[_size]; //freed by destructor
 	copy(value(), value() + _size, _last_value);
+	rescale(prob, true);
 	return true;
     }
     else {
@@ -49,7 +50,6 @@ bool Metropolis::accept(RNG *rng, double prob)
 	if (_adapt) {
 	    rescale(prob, accept);
 	}
-	
 	return accept;
     }
 }

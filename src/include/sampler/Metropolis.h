@@ -53,9 +53,10 @@ public:
     unsigned int value_length() const;
     /**
      * Sets the value of the sampler. Subclasses of Metropolis must
-     * implement this function, which should transform the supplied
-     * value on to a legitimate value for the sampled nodes, and then
-     * call Sampler##setValue with the transformed values.
+     * implement this function, which should set the current value of
+     * the sampler to the given array, transform the supplied values 
+     * to a legitimate values for the sampled nodes, and then call
+     * Sampler##setValue with the transformed values.
      *
      * @param value Pointer to the beginning of an array of values
      * @param length Length of value array
