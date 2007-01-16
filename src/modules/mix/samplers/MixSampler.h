@@ -8,7 +8,7 @@ class MixSampler : public Metropolis
     const unsigned int _chain;
     const unsigned int _nlevels;
     const unsigned int _nstep;
-    const double _log_min_power;
+    double _log_min_power;
     const double _target_prob;
     double *_value;
     double *_lower;
@@ -17,10 +17,12 @@ class MixSampler : public Metropolis
     std::vector<unsigned int> _n;
     std::vector<double> _lscale;
     std::vector<bool> _p_over_target;
+    unsigned int _global_n;
+    bool _global_p_over_target;
 public:
     MixSampler(std::vector<StochasticNode *> const &snodes, Graph const &graph,
-	       unsigned int chain, unsigned int nlevels=40, 
-               double min_power=0.1, double target_prob = 0.234);
+	       unsigned int chain, unsigned int nlevels=50, 
+               double min_power=0.5, double target_prob = 0.234);
     ~MixSampler();
     void update(RNG *rng);
     void propose(double const *value, unsigned int length);

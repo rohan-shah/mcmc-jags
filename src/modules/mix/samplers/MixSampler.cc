@@ -24,13 +24,17 @@ MixSampler::MixSampler(vector<StochasticNode *> const &snodes,
 		       unsigned int nlevels, double min_power,
 		       double target_prob)
     : Metropolis(snodes, graph), _chain(chain), 
-      _nlevels(nlevels), _nstep(2*nlevels-1),
-      _log_min_power(log(min_power)), _target_prob(target_prob),
+      _nlevels(nlevels), _nstep(2*nlevels),
+      //_log_min_power(log(min_power)), 
+      _log_min_power(0), 
+      _target_prob(target_prob),
       _value(0), _lower(0), _upper(0),
       _prob(_nstep), 
       _n(_nstep), 
       _lscale(_nstep), 
-      _p_over_target(_nstep)
+      _p_over_target(_nstep),
+      _global_n(INIT_N),
+      _global_p_over_target(false)
 {
     if (!canSample(snodes, graph)) {
 	throw invalid_argument("Can't construct Mixture sampler");
@@ -41,6 +45,7 @@ MixSampler::MixSampler(vector<StochasticNode *> const &snodes,
 
     for (unsigned int j = 0; j < _nstep; ++j) {
 	_n[j] = INIT_N;
+	//_lscale[j] = 0;
 	_lscale[j] = -10;
 	_p_over_target[j] = false;
     }
@@ -102,7 +107,6 @@ void MixSampler::propose(double const *v, unsigned int length)
     delete [] nodes_value;
 }
 
-#include <iostream>
 void MixSampler::getValue(double *value, unsigned int length)
 {
     if (length != value_length()) {
@@ -178,7 +182,7 @@ void MixSampler::update(RNG *rng)
     */
     vector<double> pwr(_nstep);
     for (unsigned int i = 0; i < _nlevels; ++i) {
-	pwr[_nstep - 1 - i] = pwr[i] = exp(_log_min_power * (i+1) / _nlevels);
+	pwr[_nstep - 1 - i] = pwr[i] =  exp(_log_min_power * (i+1) / _nlevels);
     }
 
     double log_global_prob = -logFullConditional(_chain);
@@ -186,25 +190,23 @@ void MixSampler::update(RNG *rng)
 	/* Now calculate the log density under the tempered
 	   distribution.  Following Celeux et al (2000) we temper only
 	   the likelihood part of the log density */
-	//double ldensity0 = logPrior(_chain) + pwr[t] * logLikelihood(_chain);
-	double ldensity0 = logFullConditional(_chain);
+	double ldensity0 = logPrior(_chain) + pwr[t] * logLikelihood(_chain);
 	double scale = exp(_lscale[t]);
 	for (unsigned int j = 0; j < length; ++j) {
 	    _value[j] = last_value[j] + rng->normal() * scale;
 	}
 	propose(_value, length);
-	//double ldensity1 = logPrior(_chain) + pwr[t] * logLikelihood(_chain);
-	double ldensity1 = logFullConditional(_chain);
+	double ldensity1 = logPrior(_chain) + pwr[t] * logLikelihood(_chain);
 	double lprob = ldensity1 - ldensity0;
-	log_global_prob -= lprob;
 	_prob[t] = exp(lprob);
 	if (rng->uniform() <= _prob[t]) {
 	    //Accept modified proposal
 	    copy(_value, _value + length, last_value);
+	    log_global_prob -= lprob;
 	}
-	else {
-	    //FIXME: we only have to use propose on the last step
-	    propose(last_value, length); //Revert to previous proposal
+	else if (t < _nstep - 1) {
+	    propose(last_value, length); 
+	    //copy(last_value, last_value + length, _value);
 	}
     }
     log_global_prob += logFullConditional(_chain);
@@ -214,27 +216,27 @@ void MixSampler::update(RNG *rng)
     accept(rng, exp(log_global_prob));
 }
 
-//debuggin
-#include <iostream>
 void MixSampler::rescale(double prob, bool accept)
 {
     /* Each step up and down has its own scale */
     for (unsigned int i = 0; i < _nstep; ++i) {
-	/*
-        std::cout << exp(_lscale[i]);
-        if (i == _nstep - 1)
-	    std::cout << std::endl;
-        else
-	    std::cout << ",";
-	*/
 	double pdiff = fmin(_prob[i], 1.0) - _target_prob;
         _lscale[i] +=  pdiff / _n[i]; 
 
-	bool p_over_target = (pdiff >= 0);
-	if (p_over_target != _p_over_target[i]) {
-	    _p_over_target[i] = p_over_target;
+	if ((pdiff >= 0) != _p_over_target[i]) {
+	    _p_over_target[i] = !_p_over_target[i];
 	    _n[i]++;
 	}
+    }
+    /* Use the global acceptance rate to adjust the minimum power 
+       NB This works the opposite way to the scale function: if 
+       acceptance rate is too high we want to lower the min power.
+    */
+    double pgdiff = fmin(prob, 1.0) - _target_prob * _target_prob;
+    _log_min_power -= pgdiff/ _global_n;
+    if ((pgdiff >= 0) != _global_p_over_target) {
+	_global_p_over_target = !_global_p_over_target;
+	_global_n++;
     }
 }
 
