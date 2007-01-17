@@ -26,9 +26,11 @@
  */
 class Metropolis : public Sampler
 {
+    const unsigned int _chain;
     bool _adapt;
+    double *_value;
     double *_last_value;
-    const unsigned int _size;
+    const unsigned int _value_length;
 public:
     /**
      * Constructs a Metropolis Hastings sampler
@@ -39,12 +41,13 @@ public:
      * @param value Pointer to the beginning of an array of initial values.
      * @param length Length of initial value array
      */
-    Metropolis(std::vector<StochasticNode *> const &nodes, Graph const &graph);
+    Metropolis(std::vector<StochasticNode *> const &nodes, Graph const &graph,
+               unsigned int chain, double const *value, unsigned int length);
     ~Metropolis();
     /**
      * Returns the current value of the chain. 
      */
-    virtual double const *value() const = 0;
+    double const *value() const;
     /**
      * Returns the length of the value array. This is the sum of the
      * degrees of freedom of the sampled nodes
@@ -52,16 +55,20 @@ public:
      */
     unsigned int value_length() const;
     /**
-     * Sets the value of the sampler. Subclasses of Metropolis must
+     * Returns the number of the sampled chain 
+     */
+    unsigned int chain() const;
+    /**
+     * Sets the value of the sampler. This function calls
+     * writeTransfomedValues
+     *
      * implement this function, which should set the current value of
-     * the sampler to the given array, transform the supplied values 
-     * to a legitimate values for the sampled nodes, and then call
-     * Sampler##setValue with the transformed values.
+
      *
      * @param value Pointer to the beginning of an array of values
      * @param length Length of value array
      */
-    virtual void propose(double const *value, unsigned int length) = 0;
+    void propose(double const *value, unsigned int length);
     /**
      * Accept current value with probabilty p. If the current value is
      * not accepted, the sampler reverts to the value at the last
@@ -87,6 +94,13 @@ public:
      * Turns off adaptive mode
      */
     void adaptOff();
+    /*
+     * Transforms the supplied values to a legitimate values for the
+     * sampled nodes, and then calsl Sampler##setValue with the
+     * transformed values.  This function is called by Metropolis##propose
+     */
+    virtual void transformValues(double const *v, unsigned int length,
+                                 double *nv, unsigned int nlength) const = 0;
 };
 
 #endif /* METROPOLIS_H_ */

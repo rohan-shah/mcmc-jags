@@ -19,22 +19,47 @@ using std::invalid_argument;
 
 #define INIT_N 10
 
+static void read_bounds(vector<StochasticNode*> const &snodes, 
+			unsigned int chain,
+			double *lower, double *upper, unsigned int length)
+{
+    double *lp = lower;
+    double *up = upper;
+    unsigned int node_length = 0;
+    for (unsigned int j = 0; j < snodes.size(); ++j) {
+	unsigned int length_j = snodes[j]->length();
+	node_length += length_j;
+	if (node_length > length) {
+	    throw logic_error("Invalid length in read_bounds (MixSampler)");
+	}
+	else {
+	    snodes[j]->distribution()->support(lp, up, length_j, 
+					       snodes[j]->parameters(chain), 
+					       snodes[j]->parameterDims());
+	    lp += length_j;
+	    up += length_j;
+	}
+    }
+}
+
 MixSampler::MixSampler(vector<StochasticNode *> const &snodes, 
 		       Graph const &graph, unsigned int chain,
+                       double const *value, unsigned int length, 
 		       unsigned int nlevels, double min_power,
 		       double target_prob)
-    : Metropolis(snodes, graph), _chain(chain), 
+    : Metropolis(snodes, graph, chain, value, length), 
       _nlevels(nlevels), _nstep(2*nlevels),
-      //_log_min_power(log(min_power)), 
-      _log_min_power(0), 
+      _log_min_power(log(min_power)), 
       _target_prob(target_prob),
-      _value(0), _lower(0), _upper(0),
+      _lower(0), _upper(0),
       _prob(_nstep), 
       _n(_nstep), 
       _lscale(_nstep), 
       _p_over_target(_nstep),
+      _global_lscale(-10),
+      _global_p_over_target(false),
       _global_n(INIT_N),
-      _global_p_over_target(false)
+      _temper(false)
 {
     if (!canSample(snodes, graph)) {
 	throw invalid_argument("Can't construct Mixture sampler");
@@ -45,102 +70,91 @@ MixSampler::MixSampler(vector<StochasticNode *> const &snodes,
 
     for (unsigned int j = 0; j < _nstep; ++j) {
 	_n[j] = INIT_N;
-	//_lscale[j] = 0;
 	_lscale[j] = -10;
 	_p_over_target[j] = false;
     }
 
     _lower = new double[value_length()];
     _upper = new double[value_length()];
-    //Set up lower and upper bounds
-    double *lp = _lower;
-    double *up = _upper;
-    for (unsigned int j = 0; j < snodes.size(); ++j) {
-	unsigned int length_j = snodes[j]->length();
-	snodes[j]->distribution()->support(lp, up, length_j, 
-					   snodes[j]->parameters(_chain), 
-					   snodes[j]->parameterDims());
-	lp += length_j;
-	up += length_j;
-    }
-
-    //Read current value of nodes (with transformation) into _value
-    _value = new double[value_length()];
-    getValue(_value, value_length());
+    read_bounds(snodes, chain, _lower, _upper, value_length());
 }
 
 MixSampler::~MixSampler()
 {
     delete [] _lower;
     delete [] _upper;
-    delete [] _value;
 }
 
-void MixSampler::propose(double const *v, unsigned int length)
+void MixSampler::transformValues(double const *v, unsigned int length,
+				 double *nv, unsigned int nlength) const
 {
-    if (length != value_length()) {
-	throw logic_error("Length error in MixSampler::propose");
+    if (length != value_length() || nlength != length) {
+	throw logic_error("Length error in MixSampler::transformValues");
     }
 
-    double * nodes_value = new double[length];
     for (unsigned int i = 0; i < length; ++i) {
-	//Set value of sampler
-	_value[i] = v[i];
-	//Set node values, with scale transformation if they are bounded
 	bool bb = jags_finite(_lower[i]); //bounded below
 	bool ba = jags_finite(_upper[i]); //bounded above
 	if (bb && ba) {
 	    double w = 1.0 / (1 - exp(-v[i]));
-	    nodes_value[i] = _lower[i] + w * (_upper[i] - _lower[i]);
+	    nv[i] = w * _lower[i] + (1 - w) * _upper[i];
 	}
 	else if (bb) {
-	    nodes_value[i] = _lower[i] + exp(v[i]);
+	    nv[i] = _lower[i] + exp(v[i]);
 	}
 	else if (ba) {
-	    nodes_value[i] = _upper[i] - exp(v[i]);
+	    nv[i] = _upper[i] - exp(v[i]);
 	}
 	else {
-	    nodes_value[i] = v[i];
+	    nv[i] = v[i];
 	}
     }
-    setValue(nodes_value, length, _chain);
-    delete [] nodes_value;
 }
 
-void MixSampler::getValue(double *value, unsigned int length)
+void MixSampler::readValues(vector<StochasticNode*> const &snodes,
+			    unsigned int chain,
+			    double *value, unsigned int length)
 {
-    if (length != value_length()) {
-	throw logic_error("Length error in MixSampler::getValue");
+    unsigned int value_length = 0;
+    for (unsigned int i = 0; i < snodes.size(); ++i) {
+         value_length += df(snodes[i]);
+    }
+    if (length != value_length) {
+	throw logic_error("Length error in MixSampler::readValues");
     }
 
-    //First copy values from the nodes
+    //Get the lower and upper bounds
+    double *lower = new double[length];
+    double *upper = new double[length];
+    read_bounds(snodes, chain, lower, upper, length);
+
+    //Copy values from the nodes ...
     double *vp = value;
-    vector<StochasticNode*> const &snodes = nodes();
     for (unsigned int j = 0; j < snodes.size(); ++j) {
-	double const *value_j = snodes[j]->value(_chain);
+	double const *value_j = snodes[j]->value(chain);
 	unsigned int length_j = snodes[j]->length();
 	copy(value_j, value_j + length_j, vp);
 	vp += length_j;
     }
     
-    //Then transform them, if necessary
+    // ... transform them, if necessary
     for (unsigned int i = 0; i < length; ++i) {
-	//std::cout << "(" << _lower[i] << "," << _upper[i] << ") : " << value[i] << "\n";
-	bool bb = jags_finite(_lower[i]); //bounded below
-	bool ba = jags_finite(_upper[i]); //bounded above
+	bool bb = jags_finite(lower[i]); //bounded below
+	bool ba = jags_finite(upper[i]); //bounded above
 	if (bb && ba) {
-	    value[i] = log(value[i] - _lower[i]) - log(_upper[i] - value[i]);
+	    value[i] = log(value[i] - lower[i]) - log(upper[i] - value[i]);
 	}
 	else if (bb) {
-	    value[i] = log(value[i] - _lower[i]); 
+	    value[i] = log(value[i] - lower[i]); 
 	}
 	else if (ba) {
-	    value[i] = log(_upper[i] - value[i]);
+	    value[i] = log(upper[i] - value[i]);
 	}
     }
 }
 
-bool MixSampler::canSample(vector<StochasticNode *> snodes, Graph const &graph)
+bool MixSampler::canSample(vector<StochasticNode *> const &snodes,
+                           Graph const &graph)
 {
     for (unsigned int i = 0; i < snodes.size(); ++i) {
 	if (!graph.contains(snodes[i])) {
@@ -173,74 +187,94 @@ bool MixSampler::canSample(vector<StochasticNode *> snodes, Graph const &graph)
 void MixSampler::update(RNG *rng)
 {
     unsigned int length = value_length();
-    double *last_value = new double[length];
-    copy(_value, _value + length, last_value);
+    double *proposal = new double[length];
+    double *last_proposal = new double[length];
+    copy(value(), value() + length, proposal);
+    copy(value(), value() + length, last_proposal);
 
-    /* 
-       Set up vector of power steps up and down, with uniform
-       geometric progression between maximum and minimum
-    */
-    vector<double> pwr(_nstep);
-    for (unsigned int i = 0; i < _nlevels; ++i) {
-	pwr[_nstep - 1 - i] = pwr[i] =  exp(_log_min_power * (i+1) / _nlevels);
+    unsigned int ch = chain();
+
+    //We first do a non-tempered update
+    _temper = false;
+
+    double lprob = -logFullConditional(ch);
+    double scale = exp(_global_lscale);
+    for (unsigned int j = 0;j < length; ++j) {
+           proposal[j] = last_proposal[j] + rng->normal() * scale;
     }
+    propose(proposal, length);
+    lprob += logFullConditional(ch);
+    accept(rng, exp(lprob));
 
-    double log_global_prob = -logFullConditional(_chain);
+    //Now do a tempered update
+    _temper = true;
+
+    double lprior0 = logPrior(ch);
+    double llik0 = logLikelihood(ch);
+    
+    double log_global_prob = -lprior0 - llik0;
     for (unsigned int t = 0; t < _nstep; ++t) {
-	/* Now calculate the log density under the tempered
-	   distribution.  Following Celeux et al (2000) we temper only
-	   the likelihood part of the log density */
-	double ldensity0 = logPrior(_chain) + pwr[t] * logLikelihood(_chain);
+
+	// Generate new proposal
 	double scale = exp(_lscale[t]);
 	for (unsigned int j = 0; j < length; ++j) {
-	    _value[j] = last_value[j] + rng->normal() * scale;
+	    proposal[j] = last_proposal[j] + rng->normal() * scale;
 	}
-	propose(_value, length);
-	double ldensity1 = logPrior(_chain) + pwr[t] * logLikelihood(_chain);
-	double lprob = ldensity1 - ldensity0;
+	propose(proposal, length);
+
+	// Calculate new prior and likelihood
+	double lprior1 = logPrior(ch);
+	double llik1 = logLikelihood(ch);
+
+	// Calculate power level for tempering
+	unsigned int level = (t < _nlevels) ? t : _nstep - 1 - t;
+	double pwr = exp(_log_min_power * level / _nlevels);
+
+	// Calculate acceptance probability for new proposal
+	double lprob = (lprior1 - lprior0) + pwr * (llik1 - llik0);
 	_prob[t] = exp(lprob);
 	if (rng->uniform() <= _prob[t]) {
 	    //Accept modified proposal
-	    copy(_value, _value + length, last_value);
+	    copy(proposal, proposal + length, last_proposal);
 	    log_global_prob -= lprob;
+	    lprior0 = lprior1;
+	    llik0 = llik1;
 	}
-	else if (t < _nstep - 1) {
-	    propose(last_value, length); 
-	    //copy(last_value, last_value + length, _value);
+        else if (t == _nstep - 1) {
+            //On the last iteration, we must reset the value of the sampler
+            //to the last good proposal if the current one fails.
+	    propose(last_proposal, length); 
 	}
     }
-    log_global_prob += logFullConditional(_chain);
+    log_global_prob += lprior0 + llik0;
 
-    delete [] last_value;
+    delete [] proposal;
+    delete [] last_proposal;
 
     accept(rng, exp(log_global_prob));
 }
 
 void MixSampler::rescale(double prob, bool accept)
 {
-    /* Each step up and down has its own scale */
-    for (unsigned int i = 0; i < _nstep; ++i) {
-	double pdiff = fmin(_prob[i], 1.0) - _target_prob;
-        _lscale[i] +=  pdiff / _n[i]; 
-
-	if ((pdiff >= 0) != _p_over_target[i]) {
-	    _p_over_target[i] = !_p_over_target[i];
-	    _n[i]++;
-	}
+    if (!_temper) {
+        double pdiff = fmin(prob, 1.0) - _target_prob;
+        _global_lscale += pdiff / _global_n;
+        if ((pdiff >= 0) != _global_p_over_target) {
+            _global_p_over_target = !_global_p_over_target;
+            _global_n++;
+        }
     }
-    /* Use the global acceptance rate to adjust the minimum power 
-       NB This works the opposite way to the scale function: if 
-       acceptance rate is too high we want to lower the min power.
-    */
-    double pgdiff = fmin(prob, 1.0) - _target_prob * _target_prob;
-    _log_min_power -= pgdiff/ _global_n;
-    if ((pgdiff >= 0) != _global_p_over_target) {
-	_global_p_over_target = !_global_p_over_target;
-	_global_n++;
+    else {
+       /* Each step up and down has its own scale */
+       for (unsigned int i = 0; i < _nstep; ++i) {
+   
+	   double pdiff = fmin(_prob[i], 1.0) - _target_prob;
+           _lscale[i] +=  pdiff / _n[i]; 
+   
+	   if ((pdiff >= 0) != _p_over_target[i]) {
+	       _p_over_target[i] = !_p_over_target[i];
+	       _n[i]++;
+	   }
+       }
     }
-}
-
-double const *MixSampler::value() const
-{
-    return _value;
 }

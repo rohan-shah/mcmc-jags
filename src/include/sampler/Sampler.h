@@ -65,6 +65,10 @@ public:
    */
   void setValue(double const * value, unsigned int length, unsigned int chain);
   /**
+   * Returns the total length of the sampled nodes
+   */
+  unsigned int length() const;
+  /**
    * Returns the marginal stochastic children of the sampled nodes.
    */
   std::vector<StochasticNode const*> const &stochasticChildren() const;

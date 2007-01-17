@@ -216,3 +216,8 @@ void Sampler::setValue(double const * value, unsigned int length,
       (*p)->deterministicSample(chain);
     }
 }
+
+unsigned int Sampler::length() const
+{
+    return _length;
+}

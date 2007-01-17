@@ -20,38 +20,52 @@ static unsigned int addDF(vector<StochasticNode *> const &nodes)
 }
 
 Metropolis::Metropolis(vector<StochasticNode *> const &nodes, 
-		       Graph const &graph)
-    : Sampler(nodes, graph), _adapt(true), _last_value(0), _size(addDF(nodes))
+		       Graph const &graph, unsigned int chain,
+		       double const *value, unsigned int length)
+    : Sampler(nodes, graph), _chain(chain), _adapt(true), _value(0),
+      _last_value(0), _value_length(addDF(nodes))
 {
+    if (length != _value_length) {
+	throw logic_error("Invalid length for starting value in Metropolis");
+    }
+    _value = new double[length];
+    _last_value = new double[length];
+    copy(value, value + length, _value);
+    copy(value, value + length, _last_value);
 }
 
 Metropolis::~Metropolis()
 {
+    delete [] _value;
     delete [] _last_value;
+}
+
+void Metropolis::propose(double const *value, unsigned int length)
+{
+    if (length != _value_length) {
+	throw logic_error("Invalid length in Metropolis::propose");
+    }
+    copy(value, value + length, _value);
+    unsigned int node_length = Sampler::length();
+    double *node_values = new double[node_length];
+    transformValues(value, length, node_values, node_length);
+    setValue(node_values, node_length, _chain);
+    delete [] node_values;
 }
 
 bool Metropolis::accept(RNG *rng, double prob)
 {
-    if (_last_value == 0) {
-	//Force acceptance on first call
-	_last_value = new double[_size]; //freed by destructor
-	copy(value(), value() + _size, _last_value);
-	rescale(prob, true);
-	return true;
+    bool accept = rng->uniform() <= prob;
+    if (accept) {
+	copy(_value, _value + _value_length, _last_value);
     }
     else {
-	bool accept = rng->uniform() <= prob;
-	if (accept) {
-	    copy(value(), value() + _size, _last_value);
-	}
-	else {
-	    propose(_last_value, _size);
-	}
-	if (_adapt) {
-	    rescale(prob, accept);
-	}
-	return accept;
+	propose(_last_value, _value_length);
     }
+    if (_adapt) {
+	rescale(prob, accept);
+    }
+    return accept;
 }
 
 void Metropolis::adaptOff()
@@ -61,5 +75,15 @@ void Metropolis::adaptOff()
 
 unsigned int Metropolis::value_length() const
 {
-    return _size;
+    return _value_length;
+}
+
+double const *Metropolis::value() const
+{
+    return _value;
+}
+
+unsigned int Metropolis::chain() const
+{
+   return _chain;
 }

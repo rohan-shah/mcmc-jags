@@ -14,8 +14,6 @@
  */
 class RWMetropolis : public Metropolis
 {
-    const unsigned int _chain;
-    double *_value;
     const double _prob;
     double _lscale;
     bool  _p_over_target;
