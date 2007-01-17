@@ -96,8 +96,8 @@ void MixSampler::transformValues(double const *v, unsigned int length,
 	bool bb = jags_finite(_lower[i]); //bounded below
 	bool ba = jags_finite(_upper[i]); //bounded above
 	if (bb && ba) {
-	    double w = 1.0 / (1 - exp(-v[i]));
-	    nv[i] = w * _lower[i] + (1 - w) * _upper[i];
+	    double w = 1.0 / (1 + exp(-v[i]));
+	    nv[i] = (1 - w) * _lower[i] + w * _upper[i];
 	}
 	else if (bb) {
 	    nv[i] = _lower[i] + exp(v[i]);
