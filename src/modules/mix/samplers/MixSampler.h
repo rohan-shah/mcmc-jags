@@ -6,12 +6,10 @@
 class MixSampler : public Metropolis
 {
     const unsigned int _nlevels;
-    const unsigned int _nstep;
     const double _log_min_power;
     const double _target_prob;
     double *_lower;
     double *_upper;
-    std::vector<double> _prob;
     std::vector<unsigned int> _n;
     std::vector<double> _lscale;
     std::vector<bool> _p_over_target;
@@ -19,6 +17,7 @@ class MixSampler : public Metropolis
     double _global_p_over_target;
     unsigned int _global_n;
     bool _temper;
+    void localRescale(double prob, unsigned int t);
 public:
     MixSampler(std::vector<StochasticNode *> const &snodes, Graph const &graph,
                unsigned int chain, double const *value, unsigned int length,

@@ -48,18 +48,16 @@ MixSampler::MixSampler(vector<StochasticNode *> const &snodes,
 		       unsigned int nlevels, double min_power,
 		       double target_prob)
     : Metropolis(snodes, graph, chain, value, length), 
-      _nlevels(nlevels), _nstep(2*nlevels),
+      _nlevels(nlevels), 
       _log_min_power(log(min_power)), 
       _target_prob(target_prob),
       _lower(0), _upper(0),
-      _prob(_nstep), 
-      _n(_nstep), 
-      _lscale(_nstep), 
-      _p_over_target(_nstep),
+      _n(_nlevels), 
+      _lscale(_nlevels), 
+      _p_over_target(_nlevels),
       _global_lscale(-10),
       _global_p_over_target(false),
-      _global_n(INIT_N),
-      _temper(false)
+      _global_n(INIT_N)
 {
     if (!canSample(snodes, graph)) {
 	throw invalid_argument("Can't construct Mixture sampler");
@@ -68,7 +66,7 @@ MixSampler::MixSampler(vector<StochasticNode *> const &snodes,
 	throw invalid_argument("Invalid min_power in Mixture sampler");
     }
 
-    for (unsigned int j = 0; j < _nstep; ++j) {
+    for (unsigned int j = 0; j < _nlevels; ++j) {
 	_n[j] = INIT_N;
 	_lscale[j] = -10;
 	_p_over_target[j] = false;
@@ -189,34 +187,36 @@ void MixSampler::update(RNG *rng)
     unsigned int length = value_length();
     double *proposal = new double[length];
     double *last_proposal = new double[length];
-    copy(value(), value() + length, proposal);
     copy(value(), value() + length, last_proposal);
 
     unsigned int ch = chain();
 
     //We first do a non-tempered update
-    _temper = false;
 
     double lprob = -logFullConditional(ch);
     double scale = exp(_global_lscale);
     for (unsigned int j = 0;j < length; ++j) {
-           proposal[j] = last_proposal[j] + rng->normal() * scale;
+        proposal[j] = last_proposal[j] + rng->normal() * scale;
     }
     propose(proposal, length);
     lprob += logFullConditional(ch);
     accept(rng, exp(lprob));
 
     //Now do a tempered update
-    _temper = true;
 
     double lprior0 = logPrior(ch);
     double llik0 = logLikelihood(ch);
     
     double log_global_prob = -lprior0 - llik0;
-    for (unsigned int t = 0; t < _nstep; ++t) {
+    unsigned int nstep = 2 * _nlevels;
+    for (unsigned int t = 0; t < nstep; ++t) {
+
+	// Calculate power level for tempering
+	unsigned int level = (t < _nlevels) ? t : nstep - 1 - t;
+	double pwr = exp(_log_min_power * level / _nlevels);
 
 	// Generate new proposal
-	double scale = exp(_lscale[t]);
+	double scale = exp(_lscale[level]);
 	for (unsigned int j = 0; j < length; ++j) {
 	    proposal[j] = last_proposal[j] + rng->normal() * scale;
 	}
@@ -226,25 +226,22 @@ void MixSampler::update(RNG *rng)
 	double lprior1 = logPrior(ch);
 	double llik1 = logLikelihood(ch);
 
-	// Calculate power level for tempering
-	unsigned int level = (t < _nlevels) ? t : _nstep - 1 - t;
-	double pwr = exp(_log_min_power * level / _nlevels);
-
 	// Calculate acceptance probability for new proposal
 	double lprob = (lprior1 - lprior0) + pwr * (llik1 - llik0);
-	_prob[t] = exp(lprob);
-	if (rng->uniform() <= _prob[t]) {
+	double prob = exp(lprob);
+	if (rng->uniform() <= prob) {
 	    //Accept modified proposal
 	    copy(proposal, proposal + length, last_proposal);
 	    log_global_prob -= lprob;
 	    lprior0 = lprior1;
 	    llik0 = llik1;
 	}
-        else if (t == _nstep - 1) {
+        else if (t == nstep - 1) {
             //On the last iteration, we must reset the value of the sampler
             //to the last good proposal if the current one fails.
 	    propose(last_proposal, length); 
 	}
+	localRescale(prob, t);
     }
     log_global_prob += lprior0 + llik0;
 
@@ -254,27 +251,32 @@ void MixSampler::update(RNG *rng)
     accept(rng, exp(log_global_prob));
 }
 
+void MixSampler::localRescale(double prob, unsigned int t)
+{
+    /* 
+       Each step has its own scale: we use the same scales for the
+       "up" and "down" phases. But, crucially, the adaptation is
+       based only on the "up" phase.
+    */
+    
+    if (t >= _nlevels)
+	return;
+    
+    double pdiff = fmin(prob, 1.0) - _target_prob;
+    _lscale[t] +=  pdiff / _n[t]; 
+    
+    if ((pdiff >= 0) != _p_over_target[t]) {
+	_p_over_target[t] = !_p_over_target[t];
+	_n[t]++;
+    }
+}
+    
 void MixSampler::rescale(double prob, bool accept)
 {
-    if (!_temper) {
-        double pdiff = fmin(prob, 1.0) - _target_prob;
-        _global_lscale += pdiff / _global_n;
-        if ((pdiff >= 0) != _global_p_over_target) {
-            _global_p_over_target = !_global_p_over_target;
-            _global_n++;
-        }
-    }
-    else {
-       /* Each step up and down has its own scale */
-       for (unsigned int i = 0; i < _nstep; ++i) {
-   
-	   double pdiff = fmin(_prob[i], 1.0) - _target_prob;
-           _lscale[i] +=  pdiff / _n[i]; 
-   
-	   if ((pdiff >= 0) != _p_over_target[i]) {
-	       _p_over_target[i] = !_p_over_target[i];
-	       _n[i]++;
-	   }
-       }
+    double pdiff = fmin(prob, 1.0) - _target_prob;
+    _global_lscale += pdiff / _global_n;
+    if ((pdiff >= 0) != _global_p_over_target) {
+	_global_p_over_target = !_global_p_over_target;
+	_global_n++;
     }
 }
