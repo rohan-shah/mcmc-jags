@@ -1,11 +1,10 @@
 #include <config.h>
 #include "DPar.h"
 #include <sarray/nainf.h>
+#include <rng/RNG.h>
 
 #include <cmath>
 #include <cfloat>
-
-#include <JRmath.h>
 
 using std::vector;
 
@@ -59,9 +58,8 @@ double
 DPar::q(double p, vector<double const *> const &par, bool lower, 
 	bool log_p) const
 {
-    if ((log_p  && p > 0) ||                    
-	(!log_p && (p < 0 || p > 1)) )          
-	return C(par); /* FIXME: should return NaN */
+    if ( (log_p  && p > 0) || (!log_p && (p < 0 || p > 1)) )          
+	return JAGS_NAN;
     
     double logp;
 
@@ -83,7 +81,7 @@ DPar::q(double p, vector<double const *> const &par, bool lower,
 
 double DPar::r(vector<double const *> const &par, RNG *rng) const
 {
-    return exp(log(C(par)) - rexp(1, rng)/ALPHA(par));
+    return exp(log(C(par)) - rng->exponential()/ALPHA(par));
 }
 
 double DPar::l(vector<double const*> const &par) const

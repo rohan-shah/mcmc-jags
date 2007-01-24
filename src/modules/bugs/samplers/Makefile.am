@@ -11,11 +11,13 @@ ConjugateWishart.cc ConjugateBeta.cc		\
 ConjugateMNormal.cc 	\
 ConjugateDirichlet.cc ConjugateNormal.cc DSumFactory.cc		\
 ConjugateFactory.cc ConjugateSampler.cc	\
-DSumSampler.cc  
+DSumSampler.cc  \
+RESampler.cc REFactory.cc
 
 noinst_HEADERS = Censored.h ConjugateFactory.h ConjugateNormal.h	\
 	\
 ConjugateBeta.h ConjugateGamma.h ConjugateSampler.h DSumFactory.h	\
 ConjugateDirichlet.h ConjugateMNormal.h	\
-ConjugateWishart.h DSumSampler.h
+ConjugateWishart.h DSumSampler.h \
+RESampler.h REFactory.h
 

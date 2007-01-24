@@ -55,7 +55,8 @@ bugssampler_la_LIBADD =
 am_bugssampler_la_OBJECTS = Censored.lo ConjugateGamma.lo \
 	ConjugateWishart.lo ConjugateBeta.lo ConjugateMNormal.lo \
 	ConjugateDirichlet.lo ConjugateNormal.lo DSumFactory.lo \
-	ConjugateFactory.lo ConjugateSampler.lo DSumSampler.lo
+	ConjugateFactory.lo ConjugateSampler.lo DSumSampler.lo \
+	RESampler.lo REFactory.lo
 bugssampler_la_OBJECTS = $(am_bugssampler_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/src/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -199,13 +200,15 @@ ConjugateWishart.cc ConjugateBeta.cc		\
 ConjugateMNormal.cc 	\
 ConjugateDirichlet.cc ConjugateNormal.cc DSumFactory.cc		\
 ConjugateFactory.cc ConjugateSampler.cc	\
-DSumSampler.cc  
+DSumSampler.cc  \
+RESampler.cc REFactory.cc
 
 noinst_HEADERS = Censored.h ConjugateFactory.h ConjugateNormal.h	\
 	\
 ConjugateBeta.h ConjugateGamma.h ConjugateSampler.h DSumFactory.h	\
 ConjugateDirichlet.h ConjugateMNormal.h	\
-ConjugateWishart.h DSumSampler.h
+ConjugateWishart.h DSumSampler.h \
+RESampler.h REFactory.h
 
 all: all-am
 
@@ -269,6 +272,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ConjugateWishart.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DSumFactory.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DSumSampler.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/REFactory.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RESampler.Plo@am__quote@
 
 .cc.o:
 @am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
