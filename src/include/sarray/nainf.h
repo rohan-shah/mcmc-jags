@@ -4,6 +4,7 @@
 extern "C" {
 
   extern const double JAGS_NA;
+  extern const double JAGS_NAN;
   extern const double JAGS_POSINF;
   extern const double JAGS_NEGINF;
 

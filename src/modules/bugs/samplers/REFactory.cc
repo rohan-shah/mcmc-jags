@@ -25,8 +25,6 @@ static bool is_stoch(Node const *node)
    return asStochastic(node);
 }
 
-//debuggin
-#include <iostream>
 void REFactory::makeSampler(set<StochasticNode*> &nodes,
 			    Graph const &graph,
 			    vector<vector<Sampler*> > &samplers) const
@@ -52,7 +50,7 @@ void REFactory::makeSampler(set<StochasticNode*> &nodes,
 		*/
 		marks.markAll(0);
 		marks.markParents(*p, is_stoch, 1);
-
+		
 		StochasticNode *parent = 0;
 		bool cansample = false;
 		for (q = graph.nodes().begin(); q != graph.nodes().end(); ++q) 
@@ -88,8 +86,6 @@ void REFactory::makeSampler(set<StochasticNode*> &nodes,
 	    }
 	}
     }
-
-    std::cout << effect_nodes.size() << " eligible random effect nodes\n";
 
     set<Node*> eff;
     set<StochasticNode*> var;
@@ -128,7 +124,6 @@ void REFactory::makeSampler(set<StochasticNode*> &nodes,
 		    nodes.erase(effects[j]);
 		}
 		
-		std::cout << "Making RESampler for " << N << " random effects\n";
 		double *initial_value = new double[N + 1];
 		double lower, upper;
 		for (unsigned int ch = 0; ch < samplers.size(); ++ch) {

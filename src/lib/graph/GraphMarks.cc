@@ -79,8 +79,8 @@ GraphMarks::markParents(Node const *node, bool (*test)(Node const *), int m)
   }
   else {
     vector<Node const *> const &parents = node->parents();
-    for (unsigned int j = 0; j < node->parents().size(); ++j) {
-	map<Node const*, int>::iterator i = _marks.find(node->parents()[j]);
+    for (unsigned int j = 0; j < parents.size(); ++j) {
+	map<Node const*, int>::iterator i = _marks.find(parents[j]);
 	if (i != _marks.end()) {
 	    if (test(i->first)) {
 		i->second = m;

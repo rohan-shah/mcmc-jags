@@ -10,6 +10,7 @@
 #include <cmath>
 #include <stdexcept>
 #include <algorithm>
+#include <cfloat>
 
 using std::vector;
 using std::logic_error;
@@ -37,7 +38,7 @@ RESampler::RESampler(StochasticNode *variance,
 				      variance->parameters(chain),
 				      variance->parameterDims());
     for (unsigned int i = 0; i < 3; ++i) {
-	_lscale[i] = -5;
+	_lscale[i] = 0;
 	_n[i] = 10;
 	_p_over_target[i] = false;
     }
@@ -50,34 +51,33 @@ RESampler::~RESampler()
 void RESampler::update(RNG* rng)
 {
     unsigned int N = value_length();
+    double const *old_value = value();
     double *new_value = new double[N];
-    copy(value(), value() + N, new_value);
+    copy(old_value, old_value + N, new_value);
 
-    //Calculate mean and variance of random effects
-    double mean = 0;
-    double var = 0;
-    for (unsigned int i = 1; i < N; ++i) {
-	mean += (new_value[i] - mean)/i;
-	double delta = (new_value[i] - mean);
-	var += (delta*delta - var)/i;
-    }
-
-    //Step 1: Shuffle random effects
-    if (var == 0) {
-	if (_mode != RE_INIT)
-	    throw NodeError(nodes()[0], "Random effects have zero variance");
-
-	//Special rule when all random effects are initialized to the
-	//same value:  Use the prior distribution to assign initial
-	//values to the random effects
+    if (_mode == RE_INIT) {
+	/* On the first iteration, we initialize the random effects
+	   with their prior distribution, and then return */
 	for (unsigned int i = 1; i < N; ++i) {
 	    double tau = nodes()[i]->parents()[1]->value(chain())[0];
 	    new_value[i] = rng->normal() / sqrt(tau);
 	}
 	propose(new_value, N);
 	accept(rng, 1); //Force acceptance
-	return; //Do nothing more on this iteration
+	_mode = RE_LOCATION;
+	return; 
     }
+
+    //Calculate mean and variance of random effects
+    double mean = 0;
+    double var = 0;
+    for (unsigned int i = 1; i < N; ++i) {
+	mean += (old_value[i] - mean)/i;
+	double delta = (old_value[i] - mean);
+	var += (delta*delta - var)/i;
+    }
+
+    //Step 1: Shuffle random effects
 
     _mode = RE_SHUFFLE;
     double logdensity0 = logFullConditional(chain());
