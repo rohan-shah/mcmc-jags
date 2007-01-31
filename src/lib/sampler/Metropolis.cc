@@ -23,11 +23,12 @@ Metropolis::Metropolis(vector<StochasticNode *> const &nodes,
 		       Graph const &graph, unsigned int chain,
 		       double const *value, unsigned int length)
     : Sampler(nodes, graph), _chain(chain), _adapt(true), _value(0),
-      _last_value(0), _value_length(addDF(nodes))
+      _last_value(0), _value_length(length)
 {
-    if (length != _value_length) {
-	throw logic_error("Invalid length for starting value in Metropolis");
+    if (length < addDF(nodes)) {
+        throw logic_error("Invalid length in Metropolis constructor");
     }
+
     _value = new double[length];
     _last_value = new double[length];
     copy(value, value + length, _value);
@@ -40,16 +41,16 @@ Metropolis::~Metropolis()
     delete [] _last_value;
 }
 
-void Metropolis::propose(double const *value, unsigned int length)
+void Metropolis::propose(double const *value, unsigned int Nvalue)
 {
-    if (length != _value_length) {
+    if (Nvalue != _value_length) {
 	throw logic_error("Invalid length in Metropolis::propose");
     }
-    copy(value, value + length, _value);
-    unsigned int node_length = Sampler::length();
-    double *node_values = new double[node_length];
-    transformValues(value, length, node_values, node_length);
-    setValue(node_values, node_length, _chain);
+    copy(value, value + Nvalue, _value);
+    unsigned int Nnode = length();
+    double *node_values = new double[Nnode];
+    transformValues(value, Nvalue, node_values, Nnode);
+    setValue(node_values, Nnode, _chain);
     delete [] node_values;
 }
 
@@ -57,9 +58,11 @@ bool Metropolis::accept(RNG *rng, double prob)
 {
     bool accept = rng->uniform() <= prob;
     if (accept) {
+	//Store current value as last accepted value
 	copy(_value, _value + _value_length, _last_value);
     }
     else {
+	//Revert to last accepted value
 	propose(_last_value, _value_length);
     }
     if (_adapt) {

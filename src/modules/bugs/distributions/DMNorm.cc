@@ -28,7 +28,7 @@ double DMNorm::logLikelihood(double const *x, unsigned int m,
 
     double loglik = logdet(T, m)/2;
     double * delta = new double[m];
-    for (int i = 0; i < m; ++i) {
+    for (unsigned int i = 0; i < m; ++i) {
 	delta[i] = x[i] - mu[i];
 	loglik -= (delta[i] * T[i + i * m] * delta[i])/2;
 	for (int j = 0; j < i; ++j) {

@@ -6,11 +6,13 @@
 #include <sarray/util.h>
 
 #include <stdexcept>
+#include <algorithm>
 
 using std::set;
 using std::string;
 using std::vector;
 using std::logic_error;
+using std::copy;
 
 Node::Node(vector<unsigned int> const &dim, unsigned int nchain)
     : _parents(0), _children(0), _ref(0), _isobserved(false),
@@ -199,10 +201,13 @@ void Node::setValue(double const *value, unsigned int length, unsigned int chain
    if (chain >= _nchain)
       throw NodeError(this, "Invalid chain in Node::setValue");
 
+   copy(value, value + _length, _data + chain * _length);
+/*
    double *v = _data + length * chain;
    for (unsigned int i = 0; i < length; ++i) {
       v[i] = value[i];
    }
+*/
 }
 
 bool Node::isDiscreteValued() const

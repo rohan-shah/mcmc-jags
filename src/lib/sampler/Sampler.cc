@@ -31,6 +31,8 @@ Sampler::Sampler(vector<StochasticNode *> const &nodes, Graph const &graph)
     : _length(sumLength(nodes)), _nodes(nodes)
 {
   classifyChildren(nodes, graph, _stoch_children, _determ_children);
+
+
 }
 
 Sampler::~Sampler()
@@ -206,9 +208,9 @@ void Sampler::setValue(double const * value, unsigned int length,
     }
 
     for (unsigned int i = 0; i < _nodes.size(); ++i) {
-	StochasticNode *snode = _nodes[i];
-	snode->setValue(value, snode->length(), chain);
-	value += snode->length();
+	Node *node = _nodes[i];
+	node->setValue(value, node->length(), chain);
+	value += node->length();
     }
 
     for (vector<DeterministicNode*>::iterator p(_determ_children.begin());
