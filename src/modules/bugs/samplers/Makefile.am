@@ -12,12 +12,14 @@ ConjugateMNormal.cc 	\
 ConjugateDirichlet.cc ConjugateNormal.cc DSumFactory.cc		\
 ConjugateFactory.cc ConjugateSampler.cc	\
 DSumSampler.cc  \
-RESampler.cc REFactory.cc
+RESampler.cc REFactory.cc \
+MNormal.cc MNormalFactory.cc
 
 noinst_HEADERS = Censored.h ConjugateFactory.h ConjugateNormal.h	\
 	\
 ConjugateBeta.h ConjugateGamma.h ConjugateSampler.h DSumFactory.h	\
 ConjugateDirichlet.h ConjugateMNormal.h	\
 ConjugateWishart.h DSumSampler.h \
-RESampler.h REFactory.h
+RESampler.h REFactory.h \
+MNormal.h MNormalFactory.h
 
