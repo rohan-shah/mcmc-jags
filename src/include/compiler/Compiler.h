@@ -44,7 +44,7 @@ class Compiler {
   Range VariableSubsetRange(ParseTree const *var);
   Range CounterRange(ParseTree const *var);
   Node* VarGetNode(ParseTree const *var);
-  Range getRange(ParseTree const *var,  Range const &default_range);;
+  Range getRange(ParseTree const *var,  Range const &default_range);
 
   void traverseTree(ParseTree const *relations, CompilerMemFn fun,
 		    bool resetcounter=true);
