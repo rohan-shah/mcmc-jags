@@ -54,7 +54,6 @@ static void mvnormSample(double *x, double const *V, int nrow, RNG *rng)
     for (int i = 0; i < nrow; ++i) {
 	for (int j = 0; j < nrow; ++j) {
 	    x[i] += Vcopy[i + j * nrow] * w[j];
-	    //x[i] += Vcopy[j + i * nrow] * w[j]; FIXME???
 	}
     }
 
