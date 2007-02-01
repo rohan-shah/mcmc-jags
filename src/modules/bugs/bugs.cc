@@ -56,6 +56,7 @@
 #include <samplers/ConjugateFactory.h>
 #include <samplers/DSumFactory.h>
 #include <samplers/REFactory.h>
+#include <samplers/MNormalFactory.h>
 
 using std::vector;
 
@@ -118,6 +119,7 @@ BUGSModule::BUGSModule() {
     insert(new Step);
     insert(new Sum);
 
+    insert(new MNormalFactory);
     insert(new ConjugateFactory);
     //insert(new REFactory);
     insert(new DSumFactory);
