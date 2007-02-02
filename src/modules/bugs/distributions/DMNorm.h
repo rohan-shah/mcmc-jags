@@ -39,9 +39,25 @@ public:
       dim(std::vector<std::vector<unsigned int> > const &dims) const;
   /**
    * Convenience random sampler function 
+   *
+   * @param x  Array that will hold the result
+   *
+   * @param mu Array of mean values. A null pointer may be given, and in
+   * this case a mean of zero is used.
+   *
+   * @param tau Either the precision matrix or the variance-covariance
+   * matrix.  
+   * 
+   * @param prec Logical flag. If true then tau represents the
+   * precision matrix (the parameterization used in the bugs language).
+   * If false then tau represents the variance-covariance matrix.
+   *
+   * @param nrow length of x and mu; number of rows of the square matrix tau
+   *
+   * @param rng Random number generator
    */
   static void randomsample(double *x, double const *mu, double const *tau,
-			   int nrow, RNG *rng);
+			   bool prec, int nrow, RNG *rng);
   void support(double *lower, double *upper, unsigned int length,
 	       std::vector<double const *> const &parameters,
                std::vector<std::vector<unsigned int> > const &dims) const;

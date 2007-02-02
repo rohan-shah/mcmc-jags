@@ -48,11 +48,11 @@ void DMNorm::randomSample(double *x, unsigned int length,
     double const * mu = parameters[0];
     double const * T = parameters[1];
     
-    randomsample(x, mu, T, length, rng);
+    randomsample(x, mu, T, true, length, rng);
 }
 
 void DMNorm::randomsample(double *x, double const *mu, double const *T,
-			  int nrow, RNG *rng)
+			  bool prec, int nrow, RNG *rng)
 {
   //FIXME: do something with rng
 
@@ -76,18 +76,25 @@ void DMNorm::randomsample(double *x, double const *mu, double const *T,
 
   /* Generate independent random normal variates, scaled by
      the eigen values. We reuse the array w. */
-  for (int i = 0; i < nrow; ++i) {
-    w[i] = rnorm(0, 1/sqrt(w[i]), rng);
+  if (prec) {
+      for (int i = 0; i < nrow; ++i) {
+	  w[i] = rnorm(0, 1/sqrt(w[i]), rng);
+      }
+  }
+  else {
+      for (int i = 0; i < nrow; ++i) {
+	  w[i] = rnorm(0, sqrt(w[i]), rng);
+      }
   }
 
   /* Now transform them to dependant variates 
     (On exit from DSYEV, Tcopy contains the eigenvectors)
   */
   for (int i = 0; i < nrow; ++i) {
-    x[i] = mu[i];
-    for (int j = 0; j < nrow; ++j) {
-      x[i] += Tcopy[i + j * nrow] * w[j];
-    }
+      x[i] = mu ? mu[i] : 0;
+      for (int j = 0; j < nrow; ++j) {
+	  x[i] += Tcopy[i + j * nrow] * w[j]; 
+      }
   }
   delete [] w;
   delete [] Tcopy;

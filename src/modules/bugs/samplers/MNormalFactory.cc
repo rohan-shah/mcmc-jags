@@ -18,6 +18,6 @@ Sampler *
 MNormalFactory::makeGibbsSampler(StochasticNode *snode, Graph const &graph,
 				 unsigned int chain) const
 {
-    return new MNormalSampler(snode, graph, chain, snode->value(chain), 
+    return new MNormSampler(snode, graph, chain, snode->value(chain), 
 			      snode->length());
 }

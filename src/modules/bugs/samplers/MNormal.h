@@ -1,10 +1,9 @@
-#ifndef MNORMAL_SAMPLER_H_
-#define MNORMAL_SAMPLER_H_
+#ifndef MNORM_SAMPLER_H_
+#define MNORM_SAMPLER_H_
 
-#include <config.h>
 #include <sampler/Metropolis.h>
 
-class MNormalSampler : public Metropolis
+class MNormSampler : public Metropolis
 {
     double *_mean;
     double *_var;
@@ -16,14 +15,14 @@ class MNormalSampler : public Metropolis
     unsigned int _nstep;
     unsigned int _p_over_target;
 public:
-    MNormalSampler(StochasticNode * node, 
-		   Graph const &graph, unsigned int chain, 
-		   double const *value, unsigned int length);
-    ~MNormalSampler();
+    MNormSampler(StochasticNode * node, 
+		 Graph const &graph, unsigned int chain, 
+		 double const *value, unsigned int length);
+    ~MNormSampler();
     void rescale(double p, bool accept);
     void transformValues(double const *v, unsigned int length,
 			 double *nv, unsigned int nlength) const;
     void update(RNG *rng);
 };
 
-#endif /* MNORMAL_SAMPLER_H_ */
+#endif /* MNORM_SAMPLER_H_ */

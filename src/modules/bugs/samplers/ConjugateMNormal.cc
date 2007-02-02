@@ -299,7 +299,7 @@ void ConjugateMNormal::update(RNG *rng)
 	b[i] += xold[i];
     }
     double *xnew = new double[nrow];
-    DMNorm::randomsample(xnew, b, A, nrow, rng);
+    DMNorm::randomsample(xnew, b, A, true, nrow, rng);
     setValue(xnew, nrow, _chain);
     
     delete [] b;

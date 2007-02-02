@@ -1,10 +1,12 @@
 #include <config.h>
 #include "MNormal.h"
+
 #include <matrix.h>
 #include <DMNorm.h>
+#include <lapack.h>
+
 #include <graph/StochasticNode.h>
 #include <rng/RNG.h>
-#include <lapack.h>
 
 #include <cmath>
 #include <stdexcept>
@@ -16,52 +18,7 @@ using std::vector;
 using std::copy;
 using std::logic_error;
 
-/* Draws a sample from a multivariate normal distribution with given
-   variance matrix.
-   
-   Code adapted from DMNorm::randomSample, which is parameterized in
-   terms of the precision matrix, not the mean
-*/
-
-static void mvnormSample(double *x, double const *V, int nrow, RNG *rng)
-{
-    int N = nrow*nrow;
-    double * Vcopy = new double[N];
-    copy(V, V + N, Vcopy);
-    double * w = new double[nrow];
-
-    int info = 0;
-    double worktest;
-    int lwork = -1;
-    // Workspace query
-    F77_DSYEV ("V", "L", &nrow, Vcopy, &nrow, w, &worktest, &lwork, &info);
-    // Now get eigenvalues/vectors with optimal work space
-    lwork = static_cast<int>(worktest + 0.5);
-    double * work = new double[lwork];
-    F77_DSYEV ("V", "L", &nrow, Vcopy, &nrow, w, work, &lwork, &info);
-    delete [] work;
-
-    /* Generate independent random normal variates, scaled by
-       the eigen values. We reuse the array w. */
-    for (int i = 0; i < nrow; ++i) {
-	x[i] = 0;
-	w[i] = sqrt(w[i]) * rng->normal();
-    }
-
-    /* Now transform them to dependant variates 
-       (On exit from DSYEV, Vcopy contains the eigenvectors)
-    */
-    for (int i = 0; i < nrow; ++i) {
-	for (int j = 0; j < nrow; ++j) {
-	    x[i] += Vcopy[i + j * nrow] * w[j];
-	}
-    }
-
-    delete [] w;
-    delete [] Vcopy;
-}
-
-MNormalSampler::MNormalSampler(StochasticNode * node, 
+MNormSampler::MNormSampler(StochasticNode * node, 
 			       Graph const &graph, unsigned int chain, 
 			       double const *value, unsigned int N)
     : Metropolis(vector<StochasticNode*>(1,node), graph, chain, value, N),
@@ -81,14 +38,14 @@ MNormalSampler::MNormalSampler(StochasticNode * node,
     }
 }
 
-MNormalSampler::~MNormalSampler()
+MNormSampler::~MNormSampler()
 {
     delete [] _mean;
     delete [] _var;
     delete [] _prec;
 }
 
-void MNormalSampler::update(RNG *rng)
+void MNormSampler::update(RNG *rng)
 {
     double const *old_value = value();
     unsigned int N = value_length();
@@ -98,12 +55,7 @@ void MNormalSampler::update(RNG *rng)
 
     double *x = new double[N];
     
-    /* DMNorm::randomsample(x, _mean, _prec, N, rng);
-    for (unsigned int i = 0; i < N; ++i) {
-	x[i] = old_value[i] + (x[i] - _mean[i]) * step;
-    }
-    */
-    mvnormSample(x, _var, N, rng);
+    DMNorm::randomsample(x, 0, _var, false, N, rng);
     for (unsigned int i = 0; i < N; ++i) {
 	x[i] = old_value[i] + x[i] * step;
     }
@@ -115,7 +67,7 @@ void MNormalSampler::update(RNG *rng)
     delete [] x;
 }
 
-void MNormalSampler::rescale(double p, bool accept)
+void MNormSampler::rescale(double p, bool accept)
 {
     ++_n;
     p = fmin(p, 1.0);
@@ -151,41 +103,43 @@ void MNormalSampler::rescale(double p, bool accept)
 	/* 
 	   Adaptive random walk: The variance of the proposal
 	   distribution is adapted to the empirical variance of the
-	   posterior distribution. 
+	   posterior distribution.
 	   
-	   Note the different denominators for the increment to the mean
-	   (_n - _n_isotonic) and variance (_n). The mean is estimated
-	   using only the sampled values from iteration _n_isotonic + 1
-	   onwards. The variance is shrunk towards the prior (identity
-	   matrix) in order to ensure a smooth transition from the isotonic
+	   We use weighted moment estimators for the mean and variance
+	   so that more recent iterations get greter weight. This is
+	   important because the chain has not converged: the effect
+	   of an initial transient must be minimized.
+
+	   The weights are proportional to (_n - _n_isotonic) for the
+	   mean, and the iterative formula is exact.  For the
+	   variance, the weights are proportional to _n, and the
+	   formula is asymptotically correct.
+
+	   For small values of (_n - _n_isotonic), the variance
+	   estimator is shrunk towards the prior (identity matrix) in
+	   order to ensure a smooth transition from the isotonic
 	   random walk.
 	*/
 
 	unsigned int N = length();
 	double const *x = value();
 	for (unsigned int i = 0; i < N; ++i) {
-	    _mean[i] += (x[i] - _mean[i]) / (_n - _n_isotonic);
+	    _mean[i] += 2 * (x[i] - _mean[i]) / (_n - _n_isotonic + 1);
 	}
 	for (unsigned int i = 0; i < N; ++i) {
 	    for (unsigned int j = 0; j < N; ++j) {
-		_var[i + N * j] += ((x[i] - _mean[i]) * (x[j] - _mean[j]) -
-				    _var[i + N * j]) / _n;
+		_var[i + N * j] += 2 * ((x[i] - _mean[i]) * (x[j] - _mean[j]) -
+					_var[i + N * j]) / _n;
 	    }
 	}
-
-	/* 
-	   The DMNorm::randomSample function used by update is
-	    parameterized in terms of the precision.
-	*/
-	//inverse (_prec, _var, N, true);
     }
 }
 
-void MNormalSampler::transformValues(double const *v, unsigned int length,
+void MNormSampler::transformValues(double const *v, unsigned int length,
 				     double *nv, unsigned int nlength) const
 {
     if (length != nlength) {
-	throw logic_error("Invalid length in MNormalSampler::transformValues");
+	throw logic_error("Invalid length in MNormSampler::transformValues");
     }
     copy(v, v + length, nv);
 }
