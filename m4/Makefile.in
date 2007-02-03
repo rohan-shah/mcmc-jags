@@ -40,7 +40,7 @@ DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/R.m4 \
 	$(top_srcdir)/m4/acx_blas.m4 $(top_srcdir)/m4/acx_fortran.m4 \
-	$(top_srcdir)/m4/acx_lapack.m4 $(top_srcdir)/m4/libtool.m4 \
+	$(top_srcdir)/m4/acxx_lapack.m4 $(top_srcdir)/m4/libtool.m4 \
 	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
@@ -163,7 +163,7 @@ sharedstatedir = @sharedstatedir@
 subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
-DISTFILES = acx_blas.m4 acx_lapack.m4 acx_fortran.m4 libtool.m4 Makefile.in Makefile.am R.m4
+DISTFILES = acx_blas.m4 acxx_lapack.m4 acx_fortran.m4 libtool.m4 Makefile.in Makefile.am R.m4
 all: all-am
 
 .SUFFIXES:
