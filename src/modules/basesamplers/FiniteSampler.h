@@ -16,7 +16,7 @@ public:
 
     void update(RNG *rng);
     static bool canSample(StochasticNode const *node, Graph const &graph);
-    void adaptOff();
+    AdaptStatus adaptOff();
 };
 
 #endif /* FINITE_SAMPLER_H_ */

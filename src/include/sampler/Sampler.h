@@ -10,6 +10,11 @@ class Node;
 class Graph;
 class RNG;
 
+/** 
+ * Status returned by the Sampler##adaptOff function.
+ */
+enum AdaptStatus {ADAPT_NULL=0, ADAPT_PASS, ADAPT_FAIL};
+
 /**
  * A sampler updates a set of stochastic nodes.  It is also
  * responsible for updating the immediate deterministic descendants of
@@ -104,12 +109,21 @@ public:
   virtual void update(RNG *rng) = 0;
   /**
    * When a sampler is constructed, it may be in adaptive mode, which
-   * allows it to adapt its behaviour for increased efficiency. However,
-   * a sampler in adaptive mode may not necessarily converge to the 
-   * correct target distribution. This function turns off adaptive mode,
-   * so that valid samples can be collected from the sampler.
+   * allows it to adapt its behaviour for increased
+   * efficiency. However, a sampler in adaptive mode may not converge
+   * to the correct target distribution. This function turns off
+   * adaptive mode, so that valid samples can be collected from the
+   * sampler.
+   *
+   * The adaptOff function may be called at any time. Premature ending
+   * of adaptive mode may result in an extremely inefficient sampler.
+   * Therefore, any implementation of the adaptOff function must
+   * include an efficiency test to ensure that it has not been called
+   * prematurely.  If the efficiency test passes, the value ADAPT_PASS
+   * is returned; if it fails, the value ADAPT_FAIL. Samplers that
+   * have no adaptive phase must return ADAPT_NULL.
    */
-  virtual void adaptOff() = 0;
+  virtual AdaptStatus adaptOff() = 0;
   /**
    * Static function that identifies the Marginal Stochastic Children
    * and the Immediate Deterministic Descendants of the given nodes

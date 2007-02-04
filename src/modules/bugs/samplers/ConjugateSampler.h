@@ -30,9 +30,9 @@ class ConjugateSampler : public Sampler
   inline StochasticNode *node() { return nodes().front(); }
   /**
    * Conjugate samplers do not have an adaptive phase. This function always
-   * returns true.
+   * returns ADAPT_NULL
    */
-  void adaptOff();
+  AdaptStatus adaptOff();
 };
 
 #endif /* CONJUGATE_H_ */

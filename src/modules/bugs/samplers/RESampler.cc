@@ -175,3 +175,8 @@ void RESampler::transformValues(const double *v, unsigned int length,
 
     copy(v + 1, v + length, nv + 1);
 }
+
+bool RESampler::checkAdaptation() const
+{
+    return true; //FIXME!!
+}

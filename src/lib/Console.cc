@@ -753,7 +753,7 @@ unsigned int Console::nchain() const
   }
 }
 
-bool Console::adaptOff() 
+bool Console::adaptOff(int &status) 
 {
   if (_model == 0) {
     _err << "Can't update. No model!" << endl;
@@ -769,7 +769,7 @@ bool Console::adaptOff()
   }
 
   try {
-    _model->adaptOff();
+      status =  _model->adaptOff();
   }
   catch (NodeError except) {
     _err << "Error in node " << _model->symtab().getName(except.node) << '\n';

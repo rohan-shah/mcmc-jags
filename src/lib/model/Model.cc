@@ -311,16 +311,22 @@ unsigned int Model::iteration(unsigned int chain) const
   return _chain_info[chain].iteration;
 }
 
-void Model::adaptOff() 
+AdaptStatus Model::adaptOff() 
 {
+  AdaptStatus status = ADAPT_NULL;
+
   for (unsigned int n = 0; n < _nchain; ++n) {
     for (vector<Sampler*>::iterator p = _chain_info[n].samplers.begin();
 	 p != _chain_info[n].samplers.end(); ++p)
       {
-	(*p)->adaptOff();
+	AdaptStatus pstatus = (*p)->adaptOff();
+        if (pstatus > status) {
+           status = pstatus;
+        }
       }
   }
   _adapt = false;
+  return status;
 }
 
 void Model::setMonitor(Node *node, int thin)

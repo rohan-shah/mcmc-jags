@@ -93,7 +93,13 @@ public:
     /**
      * Turns off adaptive mode
      */
-    void adaptOff();
+    AdaptStatus adaptOff();
+    /**
+     * Tests whether adaptive mode has been successful (e.g. by testing
+     * that the acceptance rate lies in an interval around the target 
+     * value). This function is called by Metropolis##adaptOff;
+     */
+    virtual bool checkAdaptation() const = 0;
     /*
      * Transforms the supplied values to a legitimate values for the
      * sampled nodes, and then calsl Sampler##setValue with the

@@ -2,11 +2,13 @@
 #define MODEL_H_
 
 #include <graph/Graph.h>
+//For AdaptStatus enum
+#include <sampler/Sampler.h>
 
 #include <vector>
 #include <list>
 
-class Sampler;
+//class Sampler;
 class TraceMonitor;
 class SamplerFactory;
 class RNG;
@@ -154,9 +156,12 @@ public:
    */
   bool setRNG(RNG *rng, unsigned int chain);
   /**
-   * Turns off adaptive phase of all samplers
+   * Turns off adaptive phase of all samplers.
+   *
+   * @return the highest value of AdaptStatus returned by any of
+   * the samplers.
    */
-  void adaptOff();
+  AdaptStatus adaptOff();
 };
 
 #endif /* MODEL_H_ */

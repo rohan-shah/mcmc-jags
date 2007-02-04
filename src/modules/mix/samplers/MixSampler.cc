@@ -280,3 +280,8 @@ void MixSampler::rescale(double prob, bool accept)
 	_global_n++;
     }
 }
+
+bool MixSampler::checkAdaptation() const
+{
+    return true; //FIXME
+}

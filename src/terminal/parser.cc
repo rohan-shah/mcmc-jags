@@ -2737,11 +2737,15 @@ static void updatestar(long niter, long refresh, int width)
 {
   if (refresh == 0) {
     console->update(niter/2);
-    if (!console->adaptOff()) {
+    int status = 0;
+    if (!console->adaptOff(status)) {
        errordump();
        return;
     }
     console->update(niter - niter/2);
+    if (status == 2) {
+       std::cerr << "WARNING: Adaptation test failed\n";
+    }
     return;
   }
 
@@ -2757,10 +2761,11 @@ static void updatestar(long niter, long refresh, int width)
 
   int col = 0;
   bool adapt = true;
+  int status = 0;
   for (long n = niter; n > 0; n -= refresh) {
     if (adapt && n <= niter/2) {
       // Turn off adaptive mode half way through burnin
-      if (console->adaptOff()) {
+      if (console->adaptOff(status)) {
 	adapt = false;
       }
       else {
@@ -2785,6 +2790,9 @@ static void updatestar(long niter, long refresh, int width)
 	col = 0;
       }
     }
+  }
+  if (status == 2) {
+     std::cerr << "WARNING: Adaptation test failed\n";
   }
 }
 

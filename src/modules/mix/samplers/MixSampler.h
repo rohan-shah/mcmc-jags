@@ -33,6 +33,7 @@ public:
     static void readValues(std::vector<StochasticNode *> const &snodes,
                            unsigned int chain, double *value,
                            unsigned int length);
+    bool checkAdaptation() const;
 };
 
 #endif /* MIX_SAMPLER_H_ */

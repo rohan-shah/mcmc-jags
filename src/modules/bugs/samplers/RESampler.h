@@ -32,6 +32,7 @@ public:
     void rescale(double, bool);
     void transformValues(const double*, unsigned int, double*, unsigned int) 
 	const;
+    bool checkAdaptation() const;
 };
 
 #endif /* RANDOM_EFFECT_SAMPLER_H_ */

@@ -23,7 +23,7 @@ MNormSampler::MNormSampler(StochasticNode * node,
 			       double const *value, unsigned int N)
     : Metropolis(vector<StochasticNode*>(1,node), graph, chain, value, N),
       _mean(0), _var(0), _prec(0), _n(0), _n_isotonic(0), 
-      _sump(0), _lstep(0), _nstep(10), _p_over_target(true)
+      _sump(0), _meanp(0), _lstep(0), _nstep(10), _p_over_target(true)
 {
     _mean = new double[N];
     _var = new double[N * N];
@@ -71,35 +71,42 @@ void MNormSampler::rescale(double p, bool accept)
 {
     ++_n;
     p = fmin(p, 1.0);
+    _sump += p;
 
-    //Adjust scale of proposal distribution to get optimal acceptance
-    //rate using a noisy gradient algorithm
-    _lstep += (p - 0.234) / _nstep;
-    if ((p > 0.234) != _p_over_target) {
-	_p_over_target = !_p_over_target;
-	++_nstep;
+    if (_n % N_REFRESH == 0) {
+	//Calculate the running mean acceptance rate 
+	_meanp = _sump / N_REFRESH;    
+	_sump = 0;
     }
 
     if (_n_isotonic == 0) {
+	//Adjust scale of proposal distribution to get optimal acceptance
+	//rate using a noisy gradient algorithm
+	_lstep += (p - 0.234) / _nstep;
+	if ((p > 0.234) != _p_over_target) {
+	    _p_over_target = !_p_over_target;
+	    ++_nstep;
+	}
 	/* 
 	   Isotonic random walk. Use the identity matrix (scaled by
 	   the _lstep parameter) as the precision of the proposal
 	   distribution until the acceptance rate lies in an interval
 	   around the optimum.
 	*/
-	_sump += p;
-	if (_n % N_REFRESH == 0) {
-	    double meanp = _sump / N_REFRESH;
-	    if (meanp >= 0.15 && meanp <= 0.40) {
-		_n_isotonic = _n;
-		_nstep = 10; //reset the step size as we adapt proposal
-	    }
-	    else {
-		_sump = 0;
-	    }
+	if (_n % N_REFRESH == 0 && _meanp >= 0.15 && _meanp <= 0.40) {
+	    _n_isotonic = _n;
+	    _nstep = 100; //reset the step size as we adapt proposal
 	}
     }
     else {
+	_lstep += (p - 0.234) / sqrt(_nstep); //testing
+        _nstep++;
+/*
+	if ((p > 0.234) != _p_over_target) {
+	    _p_over_target = !_p_over_target;
+	    ++_nstep;
+	}
+*/
 	/* 
 	   Adaptive random walk: The variance of the proposal
 	   distribution is adapted to the empirical variance of the
@@ -142,4 +149,9 @@ void MNormSampler::transformValues(double const *v, unsigned int length,
 	throw logic_error("Invalid length in MNormSampler::transformValues");
     }
     copy(v, v + length, nv);
+}
+
+bool MNormSampler::checkAdaptation() const
+{
+    return (_meanp >= 0.15) && (_meanp <= 0.35);
 }

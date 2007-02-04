@@ -245,7 +245,13 @@ bool Slicer::accept(double xold, double xnew, double z, double L, double R,
   return true;
 }  
 
-void Slicer::adaptOff()
+AdaptStatus Slicer::adaptOff()
 {
   _adapt = false;
+  if (_iter <= MIN_ADAPT) {
+      return ADAPT_FAIL;
+  }
+  else {
+      return ADAPT_PASS;
+  }
 }
