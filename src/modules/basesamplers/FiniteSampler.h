@@ -16,7 +16,10 @@ public:
 
     void update(RNG *rng);
     static bool canSample(StochasticNode const *node, Graph const &graph);
-    AdaptStatus adaptOff();
+    /**
+     * FiniteSampler has no adaptive mode. This function simply returns true
+     */
+    bool adaptOff();
 };
 
 #endif /* FINITE_SAMPLER_H_ */

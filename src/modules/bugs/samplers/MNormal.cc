@@ -93,7 +93,7 @@ void MNormSampler::rescale(double p, bool accept)
 	   distribution until the acceptance rate lies in an interval
 	   around the optimum.
 	*/
-	if (_n % N_REFRESH == 0 && _meanp >= 0.15 && _meanp <= 0.40) {
+	if (_n % N_REFRESH == 0 && _meanp >= 0.15 && _meanp <= 0.35) {
 	    _n_isotonic = _n;
 	    _nstep = 100; //reset the step size as we adapt proposal
 	}
@@ -153,5 +153,5 @@ void MNormSampler::transformValues(double const *v, unsigned int length,
 
 bool MNormSampler::checkAdaptation() const
 {
-    return (_meanp >= 0.15) && (_meanp <= 0.35);
+    return (_n_isotonic > 0) && (_meanp >= 0.15) && (_meanp <= 0.35);
 }

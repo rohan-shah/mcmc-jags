@@ -753,7 +753,7 @@ unsigned int Console::nchain() const
   }
 }
 
-bool Console::adaptOff(int &status) 
+bool Console::adaptOff(bool &status) 
 {
   if (_model == 0) {
     _err << "Can't update. No model!" << endl;
@@ -788,6 +788,11 @@ bool Console::adaptOff(int &status)
     return false;
   }
   return true;
+}
+
+bool Console::isAdapting() const
+{
+  return _model->isAdapting();
 }
 
 /*

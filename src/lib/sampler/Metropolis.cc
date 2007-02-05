@@ -71,10 +71,10 @@ bool Metropolis::accept(RNG *rng, double prob)
     return accept;
 }
 
-AdaptStatus Metropolis::adaptOff()
+bool Metropolis::adaptOff()
 {
     _adapt = false;
-    return checkAdaptation() ? ADAPT_PASS : ADAPT_FAIL;
+    return checkAdaptation(); 
 }
 
 unsigned int Metropolis::value_length() const

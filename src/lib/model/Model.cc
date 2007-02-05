@@ -311,29 +311,32 @@ unsigned int Model::iteration(unsigned int chain) const
   return _chain_info[chain].iteration;
 }
 
-AdaptStatus Model::adaptOff() 
+bool Model::adaptOff() 
 {
-  AdaptStatus status = ADAPT_NULL;
+  bool status = true;
 
   for (unsigned int n = 0; n < _nchain; ++n) {
     for (vector<Sampler*>::iterator p = _chain_info[n].samplers.begin();
 	 p != _chain_info[n].samplers.end(); ++p)
       {
-	AdaptStatus pstatus = (*p)->adaptOff();
-        if (pstatus > status) {
-           status = pstatus;
-        }
+	if(!(*p)->adaptOff())
+           status = false;
       }
   }
   _adapt = false;
   return status;
 }
 
+bool Model::isAdapting() const
+{
+  return _adapt;
+}
+
 void Model::setMonitor(Node *node, int thin)
 {
 
   if (_adapt) {
-    adaptOff();
+    adaptOff(); //FIXME: Efficiency test ignored
   }
   
   if (_monitored_nodes.count(node)) {

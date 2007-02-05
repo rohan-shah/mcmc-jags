@@ -54,7 +54,7 @@ class Slicer : public Sampler
    * Gets the lowest and highest possible values of the sampler
    */
   virtual void getLimits(double *lower, double *upper) const = 0;
-  AdaptStatus adaptOff();
+  bool adaptOff();
   virtual double logFullConditional() const = 0;
 };
 

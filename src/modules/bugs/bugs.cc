@@ -119,10 +119,10 @@ BUGSModule::BUGSModule() {
     insert(new Step);
     insert(new Sum);
 
+    insert(new MNormalFactory);
     insert(new ConjugateFactory);
     //insert(new REFactory);
     insert(new DSumFactory);
-    insert(new MNormalFactory);
 }
 
 BUGSModule::~BUGSModule() {

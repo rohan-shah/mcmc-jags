@@ -181,8 +181,10 @@ public:
   unsigned int nchain() const;
   bool getMonitoredValues(std::map<std::string,SArray> &data_table,
 			  unsigned int chain);
-  /* Turns off adaptive mode of all samplers */
-  bool adaptOff(int &status);
+  /** Turns off adaptive mode of the model */
+  bool adaptOff(bool &status);
+  /** Indicates whether model is in adaptive mode */
+  bool isAdapting() const;
 };
 
 #endif /* CONSOLE_H_ */

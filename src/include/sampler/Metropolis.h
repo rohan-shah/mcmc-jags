@@ -93,7 +93,7 @@ public:
     /**
      * Turns off adaptive mode
      */
-    AdaptStatus adaptOff();
+    bool adaptOff();
     /**
      * Tests whether adaptive mode has been successful (e.g. by testing
      * that the acceptance rate lies in an interval around the target 

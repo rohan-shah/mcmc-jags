@@ -818,65 +818,66 @@ static void errordump()
 
 static void updatestar(long niter, long refresh, int width)
 {
-  if (refresh == 0) {
-    console->update(niter/2);
-    int status = 0;
-    if (!console->adaptOff(status)) {
-       errordump();
-       return;
-    }
-    console->update(niter - niter/2);
-    if (status == 2) {
-       std::cerr << "WARNING: Adaptation test failed\n";
-    }
-    return;
-  }
-
-  if (width > niter / refresh + 1)
-    width = niter / refresh + 1;
-
-  std::cout << "Updating " << niter << std::endl;
-  for (int i = 0; i < width - 1; ++i) {
-    std::cout << "-";
-  }
-  std::cout << "| " << std::min(width * refresh, niter) << std::endl 
-	    << std::flush;
-
-  int col = 0;
-  bool adapt = true;
-  int status = 0;
-  for (long n = niter; n > 0; n -= refresh) {
-    if (adapt && n <= niter/2) {
-      // Turn off adaptive mode half way through burnin
-      if (console->adaptOff(status)) {
-	adapt = false;
-      }
-      else {
-	std::cout << std::endl;
-	errordump();
+    bool adapt = console->isAdapting();
+	
+    if (refresh == 0) {
+	console->update(niter/2);
+	bool status = true;
+	if (adapt && !console->adaptOff(status)) {
+	    errordump();
+	    return;
+	}
+	console->update(niter - niter/2);
+	if (!status) {
+	    std::cerr << "WARNING: Adaptation incomplete\n";
+	}
 	return;
-      }
     }
-    long nupdate = std::min(n, refresh);
-    if(console->update(nupdate))
-      std::cout << "*" << std::flush;
-    else {
-      std::cout << std::endl;
-      errordump();
-      return;
+
+    if (width > niter / refresh + 1)
+	width = niter / refresh + 1;
+
+    std::cout << "Updating " << niter << std::endl;
+    for (int i = 0; i < width - 1; ++i) {
+	std::cout << "-";
     }
-    col++;
-    if (col == width || n <= nupdate) {
-      int percent = 100 - (n-nupdate) * 100/niter;
-      std::cout << " " << percent << "%" << std::endl;
-      if (n > nupdate) {
-	col = 0;
-      }
+    std::cout << "| " << std::min(width * refresh, niter) << std::endl 
+	      << std::flush;
+
+    int col = 0;
+    bool status = true;
+    for (long n = niter; n > 0; n -= refresh) {
+	if (adapt && n <= niter/2) {
+	    // Turn off adaptive mode half way through burnin
+	    if (console->adaptOff(status)) {
+		adapt = false;
+	    }
+	    else {
+		std::cout << std::endl;
+		errordump();
+		return;
+	    }
+	}
+	long nupdate = std::min(n, refresh);
+	if(console->update(nupdate))
+	    std::cout << "*" << std::flush;
+	else {
+	    std::cout << std::endl;
+	    errordump();
+	    return;
+	}
+	col++;
+	if (col == width || n <= nupdate) {
+	    int percent = 100 - (n-nupdate) * 100/niter;
+	    std::cout << " " << percent << "%" << std::endl;
+	    if (n > nupdate) {
+		col = 0;
+	    }
+	}
     }
-  }
-  if (status == 2) {
-     std::cerr << "WARNING: Adaptation test failed\n";
-  }
+    if (!status) {
+	std::cerr << "WARNING: Adaptation incomplete\n";
+    }
 }
 
 static void loadModule(std::string const &name)

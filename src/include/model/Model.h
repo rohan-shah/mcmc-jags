@@ -2,13 +2,11 @@
 #define MODEL_H_
 
 #include <graph/Graph.h>
-//For AdaptStatus enum
-#include <sampler/Sampler.h>
 
 #include <vector>
 #include <list>
 
-//class Sampler;
+class Sampler;
 class TraceMonitor;
 class SamplerFactory;
 class RNG;
@@ -158,10 +156,17 @@ public:
   /**
    * Turns off adaptive phase of all samplers.
    *
-   * @return the highest value of AdaptStatus returned by any of
-   * the samplers.
+   * @return True if all samplers passed the efficiency test. Otherwise
+   * false.
+   *
+   * @see Sampler##adaptOff
    */
-  AdaptStatus adaptOff();
+  bool adaptOff();
+  /**
+   * Indicates whether the model is in adaptive mode (before the adaptOff
+   * function has been called).
+   */
+  bool isAdapting() const;
 };
 
 #endif /* MODEL_H_ */
