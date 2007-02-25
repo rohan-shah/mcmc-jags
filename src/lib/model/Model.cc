@@ -48,24 +48,24 @@ Model::~Model()
 {
     while(!_chain_info[0].samplers.empty()) {
 
-	/* Delete sampler from chain 0 */
-
-	Sampler *sampler0 = _chain_info[0].samplers.back();
-	delete sampler0;
-	_chain_info[0].samplers.pop_back();
-
 	/* Delete samplers from other chains. A single sampler may be
 	   responsible for updating more than one chain. We need to
 	   ensure that we don't delete it twice */
 
+	Sampler *sampler0 = _chain_info[0].samplers.back();
+
 	for (unsigned int n = 1; n < _nchain; ++n) {
-    	    vector<Sampler*> samplers_n = _chain_info[n].samplers;
-	    Sampler *last_sampler = samplers_n.back();
+	    Sampler *last_sampler = _chain_info[n].samplers.back();
 	    if (last_sampler != sampler0) {
 		delete last_sampler;
 	    }
-	    samplers_n.pop_back();
+	    _chain_info[n].samplers.pop_back();
 	}
+
+	/* Delete sampler from chain 0 */
+	delete sampler0;
+	_chain_info[0].samplers.pop_back();
+
     }
 
     for (unsigned int n = 0; n < _nchain; ++n) {
