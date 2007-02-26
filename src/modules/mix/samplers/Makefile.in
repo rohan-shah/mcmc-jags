@@ -52,7 +52,8 @@ CONFIG_HEADER = $(top_builddir)/src/include/config.h
 CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 mixsamp_la_LIBADD =
-am_mixsamp_la_OBJECTS = MixSampler.lo MixSamplerFactory.lo
+am_mixsamp_la_OBJECTS = MixSampler.lo MixSamplerFactory.lo \
+	MixSamplerBasic.lo
 mixsamp_la_OBJECTS = $(am_mixsamp_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/src/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -188,8 +189,8 @@ target_alias = @target_alias@
 INCLUDES = -I $(top_srcdir)/src/include 
 noinst_LTLIBRARIES = mixsamp.la
 mixsamp_la_LDFLAGS = -no-undefined -module -avoid-version
-mixsamp_la_SOURCES = MixSampler.cc MixSamplerFactory.cc
-noinst_HEADERS = MixSampler.h MixSamplerFactory.h
+mixsamp_la_SOURCES = MixSampler.cc MixSamplerFactory.cc MixSamplerBasic.cc
+noinst_HEADERS = MixSampler.h MixSamplerFactory.h MixSamplerBasic.h
 all: all-am
 
 .SUFFIXES:
@@ -242,6 +243,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MixSampler.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MixSamplerBasic.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MixSamplerFactory.Plo@am__quote@
 
 .cc.o:
