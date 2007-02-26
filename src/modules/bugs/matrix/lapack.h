@@ -14,11 +14,13 @@
 #define F77_DSCAL  F77_FUNC(dscal,DSCAL)
 
 extern "C" {
+/*
 	void F77_DGEEV (const char* jobvl, const char* jobvr,
 			const int* n, double* a, const int* lda,
 			double* wr, double* wi, double* vl, const int* ldvl,
 			double* vr, const int* ldvr,
 			double* work, const int* lwork, int* info);
+*/
 
 	void F77_DSYEV (const char* jobz, const char* uplo,
 			const int* n, double* a, const int* lda,
@@ -39,22 +41,11 @@ extern "C" {
 			double* a, const int *lda, double* b, const int* ldb,
 			int* info);
 
-	/*
-	void F77_DGEQP3 (const int* m, const int* n, double* a,
-			 const int *lda, int *jpvt, double *tau,
-			 double *work, const int *lwork, int *info);
-
-	void F77_DGEQRF (const int *m, const *int n, double *a,
-			 const int *lda, double *tau, double *work,
-			 const int *lwork);
-	*/
-
 	void F77_DPOTRF (const char *uplo, const int *n, double *a,
 			 const int *lda, const int *info);
 
   double F77_DLANGE (const char *norm, const int *m, const int *n,
 		     const double *a, const int *lda, double *work);
-
 
   /* BLAS routines */
 
