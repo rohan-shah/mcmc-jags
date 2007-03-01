@@ -53,9 +53,10 @@ MixSampler::MixSampler(vector<StochasticNode *> const &snodes,
       _target_prob(target_prob),
       _lower(0), _upper(0),
       _n(_nlevels), 
-      _lscale(_nlevels), 
+      _lstep(_nlevels), 
       _p_over_target(_nlevels),
-      _global_lscale(-10),
+      _p(_nlevels),
+      _global_lstep(-10),
       _global_p_over_target(false),
       _global_n(INIT_N)
 {
@@ -68,7 +69,7 @@ MixSampler::MixSampler(vector<StochasticNode *> const &snodes,
 
     for (unsigned int j = 0; j < _nlevels; ++j) {
 	_n[j] = INIT_N;
-	_lscale[j] = -10;
+	_lstep[j] = -10;
 	_p_over_target[j] = false;
     }
 
@@ -194,13 +195,15 @@ void MixSampler::update(RNG *rng)
     //We first do a non-tempered update
 
     double lprob = -logFullConditional(ch);
-    double scale = exp(_global_lscale);
+    double scale = exp(_global_lstep);
     for (unsigned int j = 0;j < length; ++j) {
         proposal[j] = last_proposal[j] + rng->normal() * scale;
     }
     propose(proposal, length);
     lprob += logFullConditional(ch);
-    accept(rng, exp(lprob));
+    if(accept(rng, exp(lprob))) {
+	copy(proposal, proposal + length, last_proposal);
+    }
 
     //Now do a tempered update
 
@@ -216,9 +219,9 @@ void MixSampler::update(RNG *rng)
 	double pwr = exp(_log_min_power * level / _nlevels);
 
 	// Generate new proposal
-	double scale = exp(_lscale[level]);
+	double step = exp(_lstep[level]);
 	for (unsigned int j = 0; j < length; ++j) {
-	    proposal[j] = last_proposal[j] + rng->normal() * scale;
+	    proposal[j] = last_proposal[j] + rng->normal() * step;
 	}
 	propose(proposal, length);
 
@@ -237,11 +240,13 @@ void MixSampler::update(RNG *rng)
 	    llik0 = llik1;
 	}
         else if (t == nstep - 1) {
-            //On the last iteration, we must reset the value of the sampler
+            //On the last step, we must reset the value of the sampler
             //to the last good proposal if the current one fails.
 	    propose(last_proposal, length); 
 	}
-	localRescale(prob, t);
+	if (t < _nlevels) {
+	    _p[t] = prob;
+	}
     }
     log_global_prob += lprior0 + llik0;
 
@@ -251,30 +256,25 @@ void MixSampler::update(RNG *rng)
     accept(rng, exp(log_global_prob));
 }
 
-void MixSampler::localRescale(double prob, unsigned int t)
-{
-    /* 
-       Each step has its own scale: we use the same scales for the
-       "up" and "down" phases. But, crucially, the adaptation is
-       based only on the "up" phase.
-    */
-    
-    if (t >= _nlevels)
-	return;
-    
-    double pdiff = fmin(prob, 1.0) - _target_prob;
-    _lscale[t] +=  pdiff / _n[t]; 
-    
-    if ((pdiff >= 0) != _p_over_target[t]) {
-	_p_over_target[t] = !_p_over_target[t];
-	_n[t]++;
-    }
-}
-    
 void MixSampler::rescale(double prob, bool accept)
 {
+    /* 
+       Rescaling of tempered updates. We base the adaptation only
+       on the "up" phase
+    */
+    for (unsigned t = 0; t < _nlevels; ++t) {
+	double pdiff = fmin(_p[t], 1.0) - _target_prob;
+	_lstep[t] +=  pdiff / _n[t]; 
+	
+	if ((pdiff >= 0) != _p_over_target[t]) {
+	    _p_over_target[t] = !_p_over_target[t];
+	    _n[t]++;
+	}
+    }
+
+    /* Rescaling of non-tempered update */
     double pdiff = fmin(prob, 1.0) - _target_prob;
-    _global_lscale += pdiff / _global_n;
+    _global_lstep += pdiff / _global_n;
     if ((pdiff >= 0) != _global_p_over_target) {
 	_global_p_over_target = !_global_p_over_target;
 	_global_n++;

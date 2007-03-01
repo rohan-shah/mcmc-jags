@@ -18,6 +18,7 @@ using std::logic_error;
 using std::invalid_argument;
 
 #define INIT_N 10
+#define N_REFRESH 100
 
 static void read_bounds(vector<StochasticNode*> const &snodes, 
 			unsigned int chain,
@@ -51,7 +52,13 @@ MixSamplerBasic::MixSamplerBasic(vector<StochasticNode *> const &snodes,
       _lower(0), _upper(0),
       _lstep(-10),
       _p_over_target(false),
-      _n(INIT_N)
+      _n(INIT_N),
+      _n_isotonic(0),
+      _nstep(10),
+      _sump(0),
+      _meanp(0),
+      _mean(length),
+      _var(length)
 {
     if (!canSample(snodes, graph)) {
 	throw invalid_argument("Can't construct Mixture sampler");
@@ -60,6 +67,11 @@ MixSamplerBasic::MixSamplerBasic(vector<StochasticNode *> const &snodes,
     _lower = new double[value_length()];
     _upper = new double[value_length()];
     read_bounds(snodes, chain, _lower, _upper, value_length());
+
+    for (unsigned int i = 0; i < length; ++i) {
+	_mean[i] = 0;
+	_var[i] = 1;
+    }
 }
 
 MixSamplerBasic::~MixSamplerBasic()
@@ -175,9 +187,9 @@ void MixSamplerBasic::update(RNG *rng)
 
     unsigned int ch = chain();
     double lprob = -logFullConditional(ch);
-    double scale = exp(_lstep);
+    double step = exp(_lstep);
     for (unsigned int j = 0; j < length; ++j) {
-        proposal[j] += rng->normal() * scale;
+        proposal[j] += rng->normal() * sqrt(_var[j]) * step;
     }
     propose(proposal, length);
     delete [] proposal;
@@ -185,17 +197,56 @@ void MixSamplerBasic::update(RNG *rng)
     accept(rng, exp(lprob));
 }
     
-void MixSamplerBasic::rescale(double prob, bool accept)
+void MixSamplerBasic::rescale(double p, bool accept)
 {
-    double pdiff = fmin(prob, 1.0) - _target_prob;
-    _lstep += pdiff / _n;
-    if ((pdiff >= 0) != _p_over_target) {
-	_p_over_target = !_p_over_target;
-	_n++;
+    ++_n;
+    p = fmin(p, 1.0);
+    _sump += p;
+
+    if (_n % N_REFRESH == 0) {
+	//Calculate the running mean acceptance rate 
+	_meanp = _sump / N_REFRESH;    
+	_sump = 0;
+    }
+
+    if (_n_isotonic == 0) {
+	//Adjust scale of proposal distribution to get optimal acceptance
+	//rate using a noisy gradient algorithm
+	_lstep += (p - 0.234) / _nstep;
+	if ((p > 0.234) != _p_over_target) {
+	    _p_over_target = !_p_over_target;
+	    ++_nstep;
+	}
+	/* 
+	   Isotonic random walk. Use the identity matrix (scaled by
+	   the _lstep parameter) as the precision of the proposal
+	   distribution until the acceptance rate lies in an interval
+	   around the optimum.
+	*/
+	if (_n % N_REFRESH == 0 && _meanp >= 0.15 && _meanp <= 0.35) {
+	    _n_isotonic = _n;
+	    _nstep = 100; //reset the step size as we adapt proposal
+	}
+    }
+    else {
+	_lstep += (p - 0.234) / sqrt(_nstep); //testing
+        _nstep++;
+	/* 
+	   Adaptive random walk: The variance of the proposal
+	   distribution is adapted to the empirical variance of the
+	   posterior distribution.
+	*/
+	unsigned int N = length();
+	double const *x = value();
+	for (unsigned int i = 0; i < N; ++i) {
+	    _mean[i] += 2 * (x[i] - _mean[i]) / (_n - _n_isotonic + 1);
+	    _var[i] += 2 * ((x[i] - _mean[i]) * (x[i] - _mean[i]) -
+			    _var[i]) / _n;
+	}
     }
 }
 
 bool MixSamplerBasic::checkAdaptation() const
 {
-    return true; //FIXME
+    return (_n_isotonic > 0) && (_meanp >= 0.15) && (_meanp <= 0.35);
 }

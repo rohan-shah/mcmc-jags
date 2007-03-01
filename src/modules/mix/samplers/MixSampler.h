@@ -11,9 +11,10 @@ class MixSampler : public Metropolis
     double *_lower;
     double *_upper;
     std::vector<unsigned int> _n;
-    std::vector<double> _lscale;
+    std::vector<double> _lstep;
     std::vector<bool> _p_over_target;
-    double _global_lscale;
+    std::vector<double> _p;
+    double _global_lstep;
     double _global_p_over_target;
     unsigned int _global_n;
     bool _temper;

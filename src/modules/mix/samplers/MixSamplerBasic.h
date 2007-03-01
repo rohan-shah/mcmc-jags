@@ -12,6 +12,12 @@ class MixSamplerBasic : public Metropolis
     double _lstep;
     bool _p_over_target;
     unsigned int _n;
+    unsigned int _n_isotonic;
+    unsigned int _nstep;
+    double _sump;
+    double _meanp;
+    std::vector<double> _mean;
+    std::vector<double> _var;
 public:
     MixSamplerBasic(std::vector<StochasticNode *> const &snodes,
                     Graph const &graph,
