@@ -18,8 +18,7 @@ class MixSampler : public Metropolis
 public:
     MixSampler(std::vector<StochasticNode *> const &snodes, Graph const &graph,
                unsigned int chain, double const *value, unsigned int length,
-	       unsigned int max_level=70, double delta = 0.10);
-	       //unsigned int max_level=50, double delta = 0.10);
+	       unsigned int max_level=50, double delta = 0.10);
     ~MixSampler();
     void update(RNG *rng);
     void rescale(double prob, bool accept);

@@ -292,7 +292,7 @@ void MixSampler::rescale(double prob, bool accept)
 	}
 	if (adapted && _level < _max_level) {
 	    _level++;
-	    std::cout << "Moving to level " << _level << "\n";
+	    //std::cout << "Moving to level " << _level << "\n";
 	    _lstep[_level] = _lstep[_level - 1] + _delta/2;
 	    _pmean[_level] = 0;
 	}
