@@ -46,6 +46,7 @@
 
     static void errordump();
     static void updatestar(long niter, long refresh, int width);
+    static void adaptstar(long niter, long refresh, int width);
     static void setParameters(ParseTree *p, ParseTree *param1);
     static void setParameters(ParseTree *p, std::vector<ParseTree*> *parameters);
     static void setParameters(ParseTree *p, ParseTree *param1, ParseTree *param2);
@@ -80,6 +81,7 @@
 
 %token <intval> COMPILE
 %token <intval> INITIALIZE
+%token <intval> ADAPT
 %token <intval> UPDATE
 %token <intval> BY
 %token <intval> MONITOR
@@ -133,6 +135,7 @@ command: model
 | parameters_to
 | compile
 | initialize
+| adapt
 | update
 | monitor
 | coda
@@ -261,6 +264,15 @@ initialize: INITIALIZE {
   if (!console->initialize()) {
     errordump();
   }
+}
+;
+
+adapt: ADAPT INT {
+    long refresh = $2/40;
+    adaptstar($2, refresh, 40);
+}
+| ADAPT INT ',' BY '(' INT ')' {
+    adaptstar($2,$6,40);
 }
 ;
 
@@ -874,6 +886,64 @@ static void updatestar(long niter, long refresh, int width)
 		col = 0;
 	    }
 	}
+    }
+    if (!status) {
+	std::cerr << "WARNING: Adaptation incomplete\n";
+    }
+}
+
+static void adaptstar(long niter, long refresh, int width)
+{
+    if (!console->isAdapting()) {
+	std::cerr << "ERROR: Model is not in adaptive mode\n";
+    }
+	
+    bool status = true;
+    if (refresh == 0) {
+	console->update(niter);
+	if (!console->adaptOff(status)) {
+	    errordump();
+	    return;
+	}
+	if (!status) {
+	    std::cerr << "WARNING: Adaptation incomplete\n";
+	}
+	return;
+    }
+
+    if (width > niter / refresh + 1)
+	width = niter / refresh + 1;
+
+    std::cout << "Adapting " << niter << std::endl;
+    for (int i = 0; i < width - 1; ++i) {
+	std::cout << "-";
+    }
+    std::cout << "| " << std::min(width * refresh, niter) << std::endl 
+	      << std::flush;
+
+    int col = 0;
+    for (long n = niter; n > 0; n -= refresh) {
+	long nupdate = std::min(n, refresh);
+	if(console->update(nupdate))
+	    std::cout << "+" << std::flush;
+	else {
+	    std::cout << std::endl;
+	    errordump();
+	    return;
+	}
+	col++;
+	if (col == width || n <= nupdate) {
+	    int percent = 100 - (n-nupdate) * 100/niter;
+	    std::cout << " " << percent << "%" << std::endl;
+	    if (n > nupdate) {
+		col = 0;
+	    }
+	}
+    }
+    if (!console->adaptOff(status)) {
+	std::cout << std::endl;
+	errordump();
+	return;
     }
     if (!status) {
 	std::cerr << "WARNING: Adaptation incomplete\n";

@@ -31,6 +31,7 @@ initialize              zzlval.intval=INITIALIZE; return INITIALIZE;
 chain                   zzlval.intval=CHAIN; return CHAIN;
 
 update			zzlval.intval=UPDATE; return UPDATE;
+adapt			zzlval.intval=ADAPT; return ADAPT;
 by                      zzlval.intval=BY; return BY;
 
 monitor			zzlval.intval=MONITOR; return MONITOR;
