@@ -119,12 +119,12 @@ void MixSamplerFactory::makeSampler(set<StochasticNode*> &nodes,
 	double *ivalue = new double[ilength];
 	for (unsigned int ch = 0; ch < samplers.size(); ++ch) {
 	    MixSampler::readValues(sample_nodes, ch, ivalue, ilength);
-/*
 	    MixSampler *mix = new MixSampler(sample_nodes, graph, ch,
 						 ivalue, ilength);
-*/
+/*
 	    MixSamplerBasic *mix = new MixSamplerBasic(sample_nodes, graph, ch,
 						       ivalue, ilength);
+*/
 	    samplers[ch].push_back(mix);
 	}
 	delete [] ivalue;

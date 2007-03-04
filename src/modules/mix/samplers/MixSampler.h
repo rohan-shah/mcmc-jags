@@ -5,25 +5,21 @@
 
 class MixSampler : public Metropolis
 {
-    const unsigned int _nlevels;
-    const double _log_min_power;
-    const double _target_prob;
+    const unsigned int _max_level;
+    const double _delta; 
+    unsigned int _level;
     double *_lower;
     double *_upper;
-    std::vector<unsigned int> _n;
+    unsigned int _n;
     std::vector<double> _lstep;
-    std::vector<bool> _p_over_target;
-    std::vector<double> _p;
-    double _global_lstep;
-    double _global_p_over_target;
-    unsigned int _global_n;
+    std::vector<double> _pmean;
     bool _temper;
-    void localRescale(double prob, unsigned int t);
+    
 public:
     MixSampler(std::vector<StochasticNode *> const &snodes, Graph const &graph,
                unsigned int chain, double const *value, unsigned int length,
-	       unsigned int nlevels=50, 
-               double min_power=0.01, double target_prob = 0.234);
+	       unsigned int max_level=70, double delta = 0.10);
+	       //unsigned int max_level=50, double delta = 0.10);
     ~MixSampler();
     void update(RNG *rng);
     void rescale(double prob, bool accept);
