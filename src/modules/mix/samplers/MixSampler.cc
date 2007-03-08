@@ -18,7 +18,6 @@ using std::logic_error;
 using std::invalid_argument;
 
 #define N_REFRESH 100
-#define NREP 1
 
 #include <iostream>
 
@@ -48,10 +47,11 @@ static void read_bounds(vector<StochasticNode*> const &snodes,
 MixSampler::MixSampler(vector<StochasticNode *> const &snodes, 
 		       Graph const &graph, unsigned int chain,
                        double const *value, unsigned int length, 
-		       unsigned int max_level, double delta)
+		       unsigned int max_level, double delta, unsigned int nrep)
     : Metropolis(snodes, graph, chain, value, length), 
       _max_level(max_level), 
       _delta(delta),
+      _nrep(nrep),
       _level(0),
       _lower(0), _upper(0),
       _n(0), 
@@ -61,6 +61,9 @@ MixSampler::MixSampler(vector<StochasticNode *> const &snodes,
 {
     if (!canSample(snodes, graph)) {
 	throw invalid_argument("Can't construct Mixture sampler");
+    }
+    if (_delta <= 0) {
+	throw invalid_argument("delta must be positive in MixSampler");
     }
 
     _lstep[0] = -5;
@@ -189,19 +192,23 @@ void MixSampler::update(RNG *rng)
     //We first do a non-tempered update
 
     _temper = false;
+    double pmean = 0;
+    for (unsigned int i = 0; i < _nrep; ++i) {
+	double lprob = -logFullConditional(ch);
+	double step = exp(_lstep[0]);
+	for (unsigned int j = 0; j < length; ++j) {
+	    proposal[j] = last_proposal[j] + rng->normal() * step;
+	}
+	propose(proposal, length);
+	lprob += logFullConditional(ch);
+	double prob = fmin(exp(lprob), 1);
+	if(accept(rng, prob)) {
+	    copy(proposal, proposal + length, last_proposal);
+	}
+	pmean += prob / _nrep;
+    }
+    _pmean[0] += pmean / N_REFRESH;
 
-    double lprob = -logFullConditional(ch);
-    double step = exp(_lstep[0]);
-    for (unsigned int j = 0; j < length; ++j) {
-        proposal[j] = last_proposal[j] + rng->normal() * step;
-    }
-    propose(proposal, length);
-    lprob += logFullConditional(ch);
-    double prob = fmin(exp(lprob), 1);
-    if(accept(rng, prob)) {
-	copy(proposal, proposal + length, last_proposal);
-    }
-    _pmean[0] += prob / N_REFRESH;
 
     //Now do a tempered update
 
@@ -213,7 +220,8 @@ void MixSampler::update(RNG *rng)
     unsigned int nstep = 2 * _level;
     vector<double> pwr(nstep + 2);
     for (unsigned int t = 0; t <= _level; ++t) {
-        // NB Operator precedence here!
+        // NB Operator precedence here! Since t is an unsigned integer
+	// you get something very nasty if you try exp(-t * _delta)
 	pwr[t] = pwr[nstep + 1 - t] = exp(-(t * _delta));
     }
 
@@ -224,8 +232,8 @@ void MixSampler::update(RNG *rng)
 	unsigned int l = (t <= _level) ? t : (nstep + 1 - t);
 	double step = exp(_lstep[l]);
 
-	double pmean = 0;
-	for (unsigned int i = 0; i < NREP; ++i) {
+	pmean = 0;
+	for (unsigned int i = 0; i < _nrep; ++i) {
 	    // Generate new proposal
 	    for (unsigned int j = 0; j < length; ++j) {
 		proposal[j] = last_proposal[j] + rng->normal() * step;
@@ -245,7 +253,7 @@ void MixSampler::update(RNG *rng)
 		lprior0 = lprior1;
 		llik0 = llik1;
 	    }
-	    pmean += fmin(prob, 1) / NREP;
+	    pmean += fmin(prob, 1) / _nrep;
 	}
 	log_global_prob += (pwr[t+1] - pwr[t]) * llik0;
 	if (t <= _level) {
@@ -292,7 +300,7 @@ void MixSampler::rescale(double prob, bool accept)
 	}
 	if (adapted && _level < _max_level) {
 	    _level++;
-	    //std::cout << "Moving to level " << _level << "\n";
+	    std::cout << "Moving to level " << _level << "\n";
 	    _lstep[_level] = _lstep[_level - 1] + _delta/2;
 	    _pmean[_level] = 0;
 	}
