@@ -52,44 +52,11 @@ Node *BUGSModel::getNode(string const &name, Range const &target_range,
     if (graph().size() != NNode) {
        addExtraNode(node); // Node was newly allocated
     }
+    _node_map.insert(pair<Node const*, pair<string,Range> >(node, pair<string,Range>(name,target_range)));
+
     return node;
   }
 }
-
-bool BUGSModel::setMonitor(string const &name, Range const &range, 
-			   unsigned int thin, string &message)
-{
-  Node *node = getNode(name, range, message);
-  if (node) {
-    _node_map.insert(pair<Node const*, pair<string,Range> >(node, pair<string,Range>(name,range)));
-    Model::setMonitor(node, thin);
-    return true;
-  }
-  else {
-    return false;
-  }
-
-}
-
-/*
-TraceMonitor const *BUGSModel::getMonitor(string const &name, Range const &range, unsigned int chain)
-{
-  Node *get
-  NodeArray *array = _symtab.getVariable(name);
-  if (!array) {
-    throw runtime_error(string("Unknown variable ") + print(range));
-  }
-  if (array->range().contains(range)) {
-    Node const *node = array->getSubset(range);
-    if(node)
-      Model::clearMonitor(node);
-  }
-  else {
-    throw runtime_error(string("Requested invalid subset ") + name
-			+ print(range));
-  }
-}
-*/
 
 #include <sarray/nainf.h>
 static void writeDouble(double x, std::ostream &out)
@@ -126,6 +93,7 @@ void BUGSModel::coda(vector<Node const*> const &nodes, ofstream &index,
     for (unsigned int i = 0; i < nodes.size(); i++) {
 
 	Node const *node = nodes[i];
+//FIXME! What if node map entry doesn't exist? Ignore?
 	string const &name = _node_map[node].first;
 	Range const &range = _node_map[node].second;
 	unsigned int nvar = node->length();
@@ -222,11 +190,6 @@ void BUGSModel::setParameters(std::map<std::string, SArray> const &param_table,
 	throw runtime_error(".RNG.seed must be non-negative");
       }
       int iseed = static_cast<int>(*seed.value());
-      /*
-      if (rng(chain) == 0) {
-          getNextRNG();
-      }
-      */
       rng(chain)->init(iseed);
     }
 

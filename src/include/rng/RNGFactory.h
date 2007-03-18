@@ -6,7 +6,7 @@
 class RNG;
 
 /**
- * @short Factory object for Random Number Generators
+ * @short Factory for RNG objects
  */
 class RNGFactory
 {

@@ -6,7 +6,9 @@
 class StochasticNode;
 
 /**
- * Base class for univariate slice sampler (Neal R, Slice Sampling,
+ * @short Slice Sampler 
+ * 
+ * The slice sampler is defined by (Neal R, Slice Sampling,
  * Ann. Statist.  31 (2003), no. 3, 705-767)
  *
  * The Slicer class is written with a high level of abstraction to

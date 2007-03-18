@@ -5,12 +5,12 @@
 #include <vector>
 
 /**
+ * @short Range of array indices 
+ *
  * A Range object represents a range of indices used to take a subset
  * of a multi-dimensional array. For example, A[1:2,4,4:5] is a subset
  * of the array A defined by a range with lower boundary (1,4,4) and
  * upper boundary (2,4,5).
- *
- * @short Range of indices 
  */
 class Range {
     std::vector<int> _lower, _upper;
@@ -68,14 +68,14 @@ public:
     bool contains(Range const &test_range) const;
     /**
      * Returns the value of a RangeIterator after n iterations of
-     * RangeIterator##nextLeft 
+     * RangeIterator#nextLeft 
      *
      * @see RangeIterator
      */
     std::vector<int> leftIndex(unsigned int n) const;
     /**
      * The inverse of leftIndex. Returns the number of iterations of 
-     * RangeIterator##nextLeft required to reach index.
+     * RangeIterator#nextLeft required to reach index.
      *
      * @param index Index vector to convert to offset. An out_of_range
      * exception is thrown if the index is not contained in the range.
@@ -85,13 +85,13 @@ public:
     unsigned int leftOffset(std::vector<int> const &index) const;
     /**
      * Returns the value of a RangeIterator after n iterations of
-     * RangeIterator##nextRight 
+     * RangeIterator#nextRight 
      * @see RangeIterator
      */
     std::vector<int> rightIndex(unsigned int n) const;
     /**
      * The inverse of rightIndex. Returns the number of iterations of 
-     * RangeIterator##nextRight required to reach index.
+     * RangeIterator#nextRight required to reach index.
      *
      * @param index Index vector to convert to offset. An out_of_range
      * exception is thrown if the index is not contained in the range.  

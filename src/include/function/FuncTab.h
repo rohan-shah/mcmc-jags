@@ -8,11 +8,13 @@ class Function;
 class InverseLinkFunc;
 
 /** 
- * The FuncTab class provides a convenient way of storing Function
- * objects and referencing them by name.
+ * @short Look-up table for Function objects
  *
- * @short Function table
- * @see Function
+ * Since all member functions of the JAGS Function class are constant, only
+ * one instance of a Function object is required. The FuncTab class 
+ * provides a means of storing Functions and looking them up by name.
+ *
+ * @see Function DistTab 
  */
 class FuncTab
 {

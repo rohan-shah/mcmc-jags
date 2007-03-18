@@ -10,6 +10,9 @@
 class Model;
 class StochasticNode;
 
+/**
+ * @short Special node to calculate deviance statistic
+ */
 class DevianceNode : public DeterministicNode
 {
     std::vector<StochasticNode const*> _parameters;

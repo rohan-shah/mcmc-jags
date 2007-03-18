@@ -4,13 +4,11 @@
 #include <sampler/Metropolis.h>
 
 /**
- * @short Random Walk Metropolis Sampler
+ * @short Random Walk Metropolis-Hastings Sampler
  *
- * Base class for random walk Metropolis sampler.  This class provides
- * a scale function, which gives a scale by which random walk steps
- * should be multiplied. The scale is adapted to achieve the target
- * acceptance rate using a noisy gradient algorithm whose theoretical
- * properties are unknown.
+ * This class provides a scale function, which gives a scale by which
+ * random walk steps should be multiplied. The scale is adapted to 
+ * achieve the target acceptance rate using a noisy gradient algorithm.
  */
 class RWMetropolis : public Metropolis
 {
@@ -20,9 +18,6 @@ class RWMetropolis : public Metropolis
     unsigned int _n;
 public:
     /**
-     * Constructor. Most of the arguments are passed directly to the
-     * Metropolis constructor.
-     *
      * @param scale Initial scale for the random walk updates.
      * @param prob  Target acceptance probability. The default value seems
      *              to be a fairly robust optimal value.

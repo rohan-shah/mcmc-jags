@@ -4,7 +4,7 @@
 #include <sampler/Sampler.h>
 
 /** 
- * @short Metropolis Hastings Sampler
+ * @short Metropolis-Hastings Sampler
  *
  * This is a base class for Metropolis Hastings samplers.  It provides
  * only basic infrastructure.
@@ -17,12 +17,12 @@
  * on log-transformed values of the sampled node.
  *
  * A Subclass of Metropolis must provide an implementation of the
- * the virtual functions Metropolis##setValue and Metropolis##rescale.
+ * the virtual functions Metropolis#setValue and Metropolis#rescale.
  *
  * The Metropolis class provides no update member function. A subclass
  * of Metropolis must provide this. It should contain one or more
- * calls to Metropolis##propose, then calculate the acceptance
- * probability, and then call the function Metropolis##accept.
+ * calls to Metropolis#propose, then calculate the acceptance
+ * probability, and then call the function Metropolis#accept.
  */
 class Metropolis : public Sampler
 {
@@ -51,7 +51,7 @@ public:
     /**
      * Returns the length of the value array. This is the sum of the
      * degrees of freedom of the sampled nodes
-     * @see Distribution##df
+     * @see Distribution#df
      */
     unsigned int value_length() const;
     /**
@@ -82,7 +82,7 @@ public:
     bool accept(RNG *rng, double p);
     /**
      * Rescales the proposal distribution. This function is called by
-     * Metropolis##accept when the sampler is in adaptive
+     * Metropolis#accept when the sampler is in adaptive
      * mode. Rescaling may optionally depend on the acceptance
      * probability, or empirical acceptance rate.
      *
@@ -97,13 +97,13 @@ public:
     /**
      * Tests whether adaptive mode has been successful (e.g. by testing
      * that the acceptance rate lies in an interval around the target 
-     * value). This function is called by Metropolis##adaptOff;
+     * value). This function is called by Metropolis#adaptOff;
      */
     virtual bool checkAdaptation() const = 0;
     /*
      * Transforms the supplied values to a legitimate values for the
-     * sampled nodes, and then calsl Sampler##setValue with the
-     * transformed values.  This function is called by Metropolis##propose
+     * sampled nodes, and then calsl Sampler#setValue with the
+     * transformed values.  This function is called by Metropolis#propose
      */
     virtual void transformValues(double const *v, unsigned int length,
                                  double *nv, unsigned int nlength) const = 0;

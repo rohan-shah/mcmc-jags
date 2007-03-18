@@ -6,15 +6,20 @@
 enum NormKind {AHRENS_DIETER, BOX_MULLER, KINDERMAN_RAMAGE};
 
 /**
- *
+ * @short RNG object based on the rmath library
  * 
- * 
+ * An RmathRNG object implements the normal and exponential functions
+ * using code from the R math library.  
  */
 class RmathRNG : public RNG
 {
     NormKind _N01_kind;
     double _BM_norm_keep;
 public:
+    /**
+     * @param norm_kind Defines the algorithm for producing normal random
+     * variables
+     */
     RmathRNG(std::string const &name, NormKind norm_kind);
     double normal();
     double exponential();

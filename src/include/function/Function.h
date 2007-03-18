@@ -97,7 +97,7 @@ public:
      * @param mask Vector indicating whether parameters are discrete
      * or not. 
      *
-     * @see SArray##isDiscreteValued
+     * @see SArray#isDiscreteValued
      */
     virtual bool isDiscreteValued(std::vector<bool> const &mask) const;
     /**
@@ -120,7 +120,7 @@ public:
      * if the parameters of the coefficients are fixed, except for the
      * intercept, which may vary.
      *
-     * @see DeterministicNode##isLinear
+     * @see DeterministicNode#isLinear
      */
     virtual bool isLinear(std::vector<bool> const &mask,
 			  std::vector<bool> const &isfixed) const;
@@ -141,7 +141,7 @@ public:
      * case the test is more restrictive, and the function returns true
      * only if the parameter B is fixed.
      *
-     * @see DeterministicNode##isScale
+     * @see DeterministicNode#isScale
      */
     virtual bool isScale(unsigned int index,
 			 std::vector<bool> const &isfixed) const;

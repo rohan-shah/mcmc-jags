@@ -163,7 +163,7 @@ public:
      * Returns the number of degrees of freedom of the distribution
      * given the dimensions of the parameters. By default this is the
      * product of the elements of the dimension vector returned by
-     * Distribution##dim. However, some distributions are constrained:
+     * Distribution#dim. However, some distributions are constrained:
      * and the support occupies a lower dimensional subspace. In this
      * case, the df member function must be overrideen.
      */

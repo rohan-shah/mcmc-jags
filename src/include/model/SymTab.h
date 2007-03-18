@@ -10,7 +10,7 @@
 #include <map>
 
 /**
- * @short Symbol table
+ * @short Associates a NodeArray object with a BUGS-language name
  *
  * The SymTab class stores the names of variables used in the BUGS
  * language representation of the model.

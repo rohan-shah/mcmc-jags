@@ -6,10 +6,10 @@
 class Node;
 
 /**
- * @short Lookup table for node names
+ * @short Abstract lookup table for Node names
  *
  * An abstract base class that provides a name for a given node.
- * @see Node##name
+ * @see Node#name
  */
 class NodeNameTab {
 public:

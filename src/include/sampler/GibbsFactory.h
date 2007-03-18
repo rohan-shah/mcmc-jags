@@ -21,7 +21,7 @@ public:
 				      Graph const &graph,
 				      unsigned int chain) const = 0;
     /**
-     * Implementation of SamplerFactory##makeSampler. This traverses
+     * Implementation of SamplerFactory#makeSampler. This traverses
      * the graph, creating GibbsSampler, when possible, for each
      * individual node
      */

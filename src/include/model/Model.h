@@ -12,6 +12,9 @@ class SamplerFactory;
 class RNG;
 class RNGFactory;
 
+/**
+ * @short Current status of a chain
+ */
 struct ChainInfo
 {
   RNG *rng;
@@ -56,13 +59,13 @@ public:
   /**
    * Initializes the model.  
    *
-   * Firstly, the Node##initialize function is called for all nodes in
+   * Firstly, the Node#initialize function is called for all nodes in
    * forward sampling order.
    * 
    * Secondly, any chain without a random number generator is assigned
    * an RNG object by traversing the list of RNGFactories.
    *
-   * @see Node##initialize, Model##rngFactories
+   * @see Node#initialize, Model#rngFactories
    */
   void initialize();
   /** Returns true if the model has been initialized */
@@ -73,7 +76,7 @@ public:
    * any informative stochastic nodes left without samplers after all
    * factories have been tried, then a runtime error is thrown
    *
-   * @see Model##samplerFactories
+   * @see Model#samplerFactories
    */
   void chooseSamplers();
   /**
@@ -94,7 +97,7 @@ public:
   unsigned int iteration(unsigned int chain) const;
   /**
    * Creates a monitor for the given node, with given thinning
-   * interval. This can only be done if Model##adaptOff() has been
+   * interval. This can only be done if Model#adaptOff() has been
    * successfully called. Otherwise, a logic_error is thrown.  If the
    * node is already being monitored, a NodeError is thrown.
    */
@@ -123,7 +126,7 @@ public:
    * Access the list of sampler factories, which is common to all
    * models. This is used during initialization to choose samplers.
    *
-   * @seealso Model##chooseSamplers
+   * @seealso Model#chooseSamplers
    */
   static std::list<SamplerFactory const *> &samplerFactories();
   /**
@@ -159,7 +162,7 @@ public:
    * @return True if all samplers passed the efficiency test. Otherwise
    * false.
    *
-   * @see Sampler##adaptOff
+   * @see Sampler#adaptOff
    */
   bool adaptOff();
   /**

@@ -9,19 +9,19 @@ class NodeNameTab;
 class RNG;
 
 /**
- * Abstract base class for nodes in a directed graphical model.
+ * @short Node in a directed acyclic graph representing a probability 
+ * distribution
  *
  * Nodes are reference managed and will delete themselves when the
  * reference count reaches zero.  Referencing and dereferencing
  * takes place automatically when a node is inserted into/removed
- * from a graph, but can also be done by calling the ref() and
- * unref() member functions.
+ * from a graph, but can also be done by calling the ref and
+ * unref member functions.
  *
  * Nodes should be dynamically allocated, and should be inserted
  * into a Graph as soon as they are created.  
  *
  * @see Graph
- * @short Node in a directed graphical model
  */
 class Node {
   std::vector<Node const *> _parents;
@@ -153,17 +153,17 @@ public:
    * @param length Length of the value array
    * @param chain number of chain (starting from zero) to modify
    *
-   * @see SArray##setValue
+   * @see SArray#setValue
    */
   void setValue(double const *value, unsigned int length, unsigned int chain);
   /**
    * Indicates whether a node is discrete-valued or not.
-   * @see SArray##isDiscreteValued
+   * @see SArray#isDiscreteValued
    */
   bool isDiscreteValued() const;
   /**
    * Permanently sets the node to be discrete-valued for all chains.
-   * @see SArray##isDiscreteValued
+   * @see SArray#isDiscreteValued
    */
   void setDiscreteValued();
   /**

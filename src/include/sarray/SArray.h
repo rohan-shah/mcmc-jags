@@ -4,8 +4,9 @@
 #include <sarray/Range.h>
 
 /**
+ * @short multi-dimensional real-valued array
+ *
  * An SArray represents a multi-dimensional array of double precision floats
- * @short multi-dimensional array
 */
 class SArray 
 {

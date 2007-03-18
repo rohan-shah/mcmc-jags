@@ -11,6 +11,8 @@ class Graph;
 class RNG;
 
 /**
+ * @short Updates a set of stochastic nodes
+ *
  * A sampler updates a set of stochastic nodes.  It is also
  * responsible for updating the immediate deterministic descendants of
  * those nodes (see below for a definition).  Sampling takes place in

@@ -386,8 +386,11 @@ bool Console::setMonitor(string const &name, Range const &range,
     }
     else {
       string message;
-      bool status = _model->setMonitor(name, range, thin, message);
-      if (!status) {
+      Node *node  = _model->getNode(name, range, message);
+      if (node) {
+	  _model->setMonitor(node, thin);
+      }
+      else {
          _err << message << endl;
          return false;
       }

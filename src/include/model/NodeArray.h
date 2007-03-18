@@ -10,11 +10,13 @@
 class SArray;
 
 /**
+ * @short Multi-dimensional array that can be tiled with Node objects
+ * 
  * A NodeArray is a container class for nodes with a dimension
- * attribute.  The array can be tiled with nodes using the insert()
- * function.  Inserted nodes can be retrieved using the find()
+ * attribute.  The array can be tiled with nodes using the insert
+ * function.  Inserted nodes can be retrieved using the find
  * function.  Arbitrary subsets of the NodeArray can be returned with
- * the getSubSet() function.
+ * the getSubSet function.
  */
 class NodeArray {
   std::string _name;

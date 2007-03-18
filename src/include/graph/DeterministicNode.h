@@ -4,8 +4,9 @@
 #include <graph/Node.h>
 
 /**
- * Base class for deterministic nodes, i.e. a node whose value is
- * exactly determined by its parents.
+ * @short Base class for deterministic Node objects
+ *
+ * The value of a deterministic node is exactly by the values of its parents.
  */
 class DeterministicNode : public Node {
 public:
@@ -13,6 +14,8 @@ public:
 		      std::vector<Node const *> const &parents);
     /**
      * Random samples from a Deterministic node are not random.
+     * This function simply calculates the value of the node from its
+     * parent values and leaves the RNG object untouched.
      */
     void randomSample(RNG*, unsigned int nchain);
     /**
@@ -24,7 +27,7 @@ public:
      * Tests whether the value of the node is a linear function of the
      * ancestor nodes X1, X2, ... Xn of form A + B %*% X1 + B2 %*% X2
      * + ...  + Bn %*% Xn. Preservation of linearity is a criterion
-     * used by some Samplers used to determine if they can act on a
+     * used by some Samplers to determine if they can act on a
      * set of stochastic nodes.
      *
      * False negative responses are permitted: i.e. the value false may
@@ -46,7 +49,7 @@ public:
     /**
      * Tests whether the value of the node is a scale function of the
      * ancestor node X. A scale function is a trivial linear function
-     * of the form A + B %*% X where eithter A or B is zero (or both).
+     * of the form A + B %*% X where either A or B is zero (or both).
      * Preservation of scale is used by some Samplers to determine
      * if they can act on a set of stochastic nodes.
      * 

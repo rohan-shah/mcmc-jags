@@ -4,8 +4,7 @@
 class Node;
 
 /**
- * A trace monitor stores every single sampled value of a given
- * node.
+ * @short Stores sampled values of a given Node
  */
 class TraceMonitor {
   Node const *_node;                  

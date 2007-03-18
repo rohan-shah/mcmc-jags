@@ -7,11 +7,11 @@
 class Function;
 
 /**
+ * @short Node defined by the BUGS-language operator <-
+ *
  * A LogicalNode is a type of DeterministicNode that is defined by a
  * function, and a vector of parents as parameters. In the BUGS
  * language the function may be represented as an operator.
- *
- * @short Logical Node
  */
 class LogicalNode : public DeterministicNode {
     Function const * const _func;
@@ -31,13 +31,13 @@ public:
     ~LogicalNode();
     /** 
      * Calculates the value of the node based on the parameters. This
-     * function calls Function##checkParameterValue and will throw an
+     * function calls Function#checkParameterValue and will throw an
      * exception if the result is false.
      * @exception NodeError
      */
     void deterministicSample(unsigned int chain);
     /**
-     * @see Function##checkParameterValue.
+     * @see Function#checkParameterValue.
      */
     bool checkParentValues(unsigned int chain) const;
     /**
@@ -49,12 +49,12 @@ public:
     std::string name(NodeNameTab const &name_table) const;
     /**
      * A logical node preserves linearity if its function is linear.
-     * @see Function##isLinear
+     * @see Function#isLinear
      */
     bool isLinear(std::set<Node const*> const &parameters, bool fixed) const;
     /**
      * A logical node preserves scale if its function is a scale function.
-     * @see Function##isScale
+     * @see Function#isScale
      */
     bool isScale(std::set<Node const*> const &parameters, bool fixed) const;
 };

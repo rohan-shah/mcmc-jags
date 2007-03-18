@@ -6,6 +6,8 @@
 #include <sarray/Range.h>
 
 /**
+ * @short Mutable index that traverses a Range
+ *
  * A RangeIterator is a numeric vector that is bound to be inside a given
  * Range.  It has operators to allow traversing the Range in row- or
  * column-major order.

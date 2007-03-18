@@ -9,7 +9,7 @@ class StochasticNode;
 class Graph;
 
 /**
- * @short Factory object for samplers
+ * @short Factory for Sampler objects
  */
 class SamplerFactory
 {

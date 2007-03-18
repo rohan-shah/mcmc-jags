@@ -4,9 +4,10 @@
 #include <graph/Node.h>
 
 /**
- * Constant nodes represent the top level parameters in any directed
- * graphical model.  They are always scalar, and should not have
- * parents.
+ * @short Top-level Node representing data
+ *
+ * Constant nodes are the top-level nodes in any directed acyclic graph.
+ * They are always scalar, and have no parents.
  */
 class ConstantNode : public Node {
 public:

@@ -7,7 +7,7 @@ class Distribution;
 class RNG;
 
 /**
- * 
+ * @short Node defined by the BUGS-language operator ~
  */
 class StochasticNode : public Node {
     Distribution const * const _dist;
@@ -78,7 +78,7 @@ public:
      */
     void deterministicSample(unsigned int chain);
     /**
-     * @see Distribution##checkParameterValue
+     * @see Distribution#checkParameterValue
      */
     bool checkParentValues(unsigned int chain) const;
     /**
@@ -92,7 +92,7 @@ public:
      *
      * @param chain Chain number to check parameters for
      *
-     * @see Distribution##checkParameterValue
+     * @see Distribution#checkParameterValue
      */
     bool checkParameterValue(unsigned int chain) const;    
     /**
@@ -111,7 +111,7 @@ public:
 StochasticNode const *asStochastic(Node const *node);
 /**
  * Number of degrees of freedom of a node
- * @see Distribution##df
+ * @see Distribution#df
  */
 unsigned int df(StochasticNode const *snode);
 

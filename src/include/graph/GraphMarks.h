@@ -6,13 +6,14 @@ class Node;
 class Graph;
 
 /**
+ * @short Annotates the Nodes in a Graph with integer values.
+ * 
  * A GraphMarks object associates each node in the graph with an
  * integer mark.  This is useful for algorithms in which we traverse
  * a graph and need to keep track of previously visited nodes. The
  * GraphMarks object allows such algorithms to be implemented on a 
  * constant graph.
  * 
- * @short Mark a graph.
  * @see Graph
  */
 class GraphMarks {
