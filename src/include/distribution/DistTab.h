@@ -7,12 +7,14 @@
 class Distribution;
 
 /** 
- * A DistTab is a table which can be used to look up distributions by
- * name. 
+ * @short Look-up table for Distribution objects
  *
- * @short Distribution table 
- * 
- * @see Distribution
+ * Since all member functions of the Distribution class are constant,
+ * only one instance of a Distribution object is required. The DistTab
+ * class provides a means of storing Distributions and looking them up
+ * by name.
+ *
+ * @see FuncTab
  */
 class DistTab {
     std::list<Distribution const *> _dist_list;
