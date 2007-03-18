@@ -4,7 +4,7 @@
 #include <sarray/RangeIterator.h>
 
 /**
- * @short indices for for loops
+ * @short Mutable index that traverses a BUGS-language "for" loop
  *
  * The Counter class is used to represent counters in "for" loops in the
  * BUGS language. A Counter is a scalar RangeIterator.
