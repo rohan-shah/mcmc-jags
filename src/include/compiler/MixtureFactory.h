@@ -16,6 +16,9 @@ MixPair;
 
 bool compMixPair(MixPair const &, MixPair const &);
 
+/**
+ * @short STL function object for the map class using MixPair as a key
+ */
 struct ltmixpair
 {
   bool operator()(MixPair const &arg1, MixPair const &arg2)
@@ -25,7 +28,7 @@ struct ltmixpair
 };
 
 /**
- * @short Factory object for mixture nodes 
+ * @short Factory for MixtureNode objects
  * 
  * The purpose of a MixtureFactory is to avoid unnecessary duplication
  * of mixture nodes by having a container class and factory object

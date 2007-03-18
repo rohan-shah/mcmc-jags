@@ -17,20 +17,24 @@ class LogicalNode;
  * uniquely defines a logical node.
  */
 typedef std::pair<Function const*,std::vector<Node const *> > LogicalPair;
+
 /**
- * "Less than" operator for LogicalPairs. Two LogicalPairs A and B are
- * considered to be equivalent (i.e. lt(A,B) and lt(B,A) are both
- * false) if they have the same function, and the same vector of
- * parameters. Observed parameters are considered equal if they have
- * the same value (within a certain numerical tolerance).
+ * @short "Less than" operator for LogicalPair objects. 
+ *
+ * Two LogicalPairs A and B are considered to be equivalent
+ * (i.e. lt(A,B) and lt(B,A) are both false) if they have the same
+ * function, and the same vector of parameters. Observed parameters
+ * are considered equal if they have the same value (within a certain
+ * numerical tolerance).
  *
  * For non-equivalent LogicalPairs, the ordering is unique, but 
  * arbitrary. The only use of this function is for the STL map class
  * with LogicalPair as key.
  */
 bool lt(LogicalPair const &arg1, LogicalPair const &arg2);
+
 /**
- * Function object for the STL map class using LogicalPair as a key
+ * @short STL function object for the map class using LogicalPair as a key
  */
 struct ltlogical
 {

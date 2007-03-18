@@ -6,7 +6,7 @@
 struct RNG;
 
 /**
- * Base class for scalar valued distributions.
+ * @short Scalar Distribution using R math library infrastructure.
  *
  * A subclass of DistScalar has to implement the d,p,q, and r virtual
  * member functions. These are based on the d-p-q-r functions provided
@@ -16,7 +16,6 @@ struct RNG;
  * the distribution families in libRmath by allowing the distribution
  * to be bounded.
  *
- * @short Real valued distributions
  */
 class DistScalarRmath : public DistScalar
 {

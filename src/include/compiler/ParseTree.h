@@ -15,6 +15,8 @@ enum Operator {
 };
 
 /**
+ * @short Represents a model described in the BUGS language 
+ * 
  * ParseTree objects are used to represent a BUGS model description
  * after it has been processed by the parser.
  *

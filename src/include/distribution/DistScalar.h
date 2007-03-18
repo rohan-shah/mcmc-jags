@@ -65,7 +65,7 @@ class DistScalar : public Distribution
      const;
   /**
    * This implementation of lowerSupport calculates the lower limit
-   * based on the bounds and on the DistScalar##l function.
+   * based on the bounds and on the DistScalar#l function.
    */
   void support(double *lower, double *upper, unsigned int length, 
 	       std::vector<double const *> const &parameters,
