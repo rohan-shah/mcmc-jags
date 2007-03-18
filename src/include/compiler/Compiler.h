@@ -25,6 +25,9 @@ class NodeAlias;
 class Compiler;
 typedef void (Compiler::*CompilerMemFn) (ParseTree const *);
 
+/**
+ * @short Creates a BUGSModel from a ParseTree
+ */
 class Compiler {
   BUGSModel &_model;
   CounterTab _countertab;

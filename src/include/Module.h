@@ -9,6 +9,18 @@ class Distribution;
 class SamplerFactory;
 class RNGFactory;
 
+/**
+ * @short Memory management for dynamically loadable modules
+ *
+ * Dynamically loadable modules may extend the capabilities of the JAGS library
+ * by defining new subclasses of Function, Distribution, SamplerFactory, 
+ * and RNGFactory. 
+ *
+ * Each module must instantiate a subclass of Module. The constructor for
+ * this subcluass must dynamically allocate instances of the sub-classes 
+ * defined by the module, and store them with the appropriate insert 
+ * member function.
+ */
 class Module {
     std::vector<Function*> _functions;
     std::vector<InverseLinkFunc*> _link_functions;

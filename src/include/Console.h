@@ -13,12 +13,12 @@ class ParseTree;
 class RNG;
 
 /**
- * Flags for the function Console##dumpState
+ * Flags for the function Console#dumpState
  */
 enum DumpType {DUMP_DATA, DUMP_PARAMETERS, DUMP_ALL};
 
 /**
- *
+ * @short Interface to the JAGS library
  */
 class Console
 {
@@ -98,7 +98,7 @@ public:
    *
    * @returns true on success, false on failure.
    *
-   * @see Model##samplerFactories, Model##rngFactories
+   * @see Model#samplerFactories, Model#rngFactories
    */
   bool initialize();
   /**

@@ -8,7 +8,7 @@ class ConstantNode;
 class Graph;
 
 /**
- * Function object for the STL map class using double as a key
+ * @short STL function object for the map class using double as a key
  */
 struct ltdouble
 {
@@ -19,11 +19,11 @@ struct ltdouble
 };
 
 /**
- * @short Factory object for constant nodes 
+ * @short Factory for ConstantNode objects
  *
  * The purpose of a ConstantFactory is to avoid unnecessary
  * duplication of constant nodes by having a container class and
- * factory object for them that will create and/or lookup constant
+ * factory for them that will create and/or lookup constant
  * nodes based on their value.
  */
 class ConstantFactory 
