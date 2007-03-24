@@ -2588,14 +2588,18 @@ void doCoda (ParseTree const *var, std::string const &stem)
         }
     }
 
+    //FIXME: Allow list of several nodes
+
+    std::vector<std::pair<std::string, Range> > dmp;
     if (var->parameters().empty()) {
-      /* Requesting the whole node */
-	console->coda(var->name(), Range(), ind, output);
+	/* Requesting the whole node */
+	dmp.push_back(std::pair<std::string,Range>(var->name(), Range()));
     }
     else {
-      /* Requesting subset of a multivariate node */
-	console->coda(var->name(), getRange(var), ind, output);
+	/* Requesting subset of a multivariate node */
+	dmp.push_back(std::pair<std::string,Range>(var->name(), getRange(var)));
     }
+    console->coda(dmp, ind, output);
 
     ind.close();
     for (unsigned int i = 0; i < output.size(); ++i) {
