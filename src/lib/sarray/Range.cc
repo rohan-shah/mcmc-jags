@@ -269,6 +269,9 @@ bool Range::operator!=(Range const &range) const
 
 string print(Range const &range)
 {
+    if (isNULL(range))
+        return "";
+
     ostringstream ostr;
     ostr << "[";
     for (unsigned int i = 0; i < range.ndim(false); ++i) {
