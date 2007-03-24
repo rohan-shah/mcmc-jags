@@ -10,59 +10,20 @@ using std::min;
 using std::runtime_error;
 using std::invalid_argument;
 using std::logic_error;
+using std::vector;
 
-static void align(unsigned int &start, unsigned int &end, unsigned int thin)
+TraceMonitor::TraceMonitor(Node const *node, unsigned int start, 
+			   unsigned int thin)
+    : Monitor(node), _start(start), _thin(thin), _values(node->nchain()),
+      _niter(node->nchain(), 0)
 {
-    /* Ensure that (start % thin == 0) and (end % thin == 0) */
-
-    if (start <= 0)
-	start = 1;
-
-    if (end < start)
-	end = start;
-	
-    start = (1 + (start - 1) / thin) * thin;
-    end = (end / thin) * thin;
-  
-    if ((end - start) % thin != 0) {
-        throw logic_error("Unable to align start end and thin");
+    if (thin == 0) {
+	throw invalid_argument("Illegal thinning interval");
     }
-}
-
-TraceMonitor::TraceMonitor(Node const *node, unsigned int start, unsigned int end, unsigned int thin)
-{
-  _node = node;
-  if (thin <= 0) {
-    throw invalid_argument("Illegal thinning interval");
-  }
-  _thin = thin;
-  align (start, end, thin);
-  _start = start;
-  _end = end;
-  _size =  (end - start) / thin + 1;
-  _values = (double*) calloc(_node->length() * _size, sizeof(double));
-  _current = 0;
-}
-
-TraceMonitor::TraceMonitor(Node const *node, unsigned int start, unsigned int thin)
-{
-    const unsigned int initsize = 128;
-
-    _node = node;
-    if (thin <= 0) {
-      throw invalid_argument("Illegal thinning interval");
-    }
-    _thin = thin;
-    _size = initsize;
-    _start = start;
-    _end = start + thin * (_size - 1);
-    _values = (double*) calloc (node->length() * _size, sizeof(double));
-    _current = 0;
 }
 
 TraceMonitor::~TraceMonitor ()
 {
-  free (_values);
 }
 
 unsigned int TraceMonitor::start() const
@@ -70,9 +31,9 @@ unsigned int TraceMonitor::start() const
     return _start;
 }
 
-unsigned int TraceMonitor::end() const
+unsigned int TraceMonitor::end(unsigned int chain) const
 {
-    return _end;
+    return _start + _thin * _values[chain].size();
 }
 
 unsigned int TraceMonitor::thin() const
@@ -80,64 +41,44 @@ unsigned int TraceMonitor::thin() const
     return _thin;
 }
 
-unsigned int TraceMonitor::size() const
+unsigned int TraceMonitor::niter(unsigned int chain) const
 {
-    /* current sample size */
-    return _current;
-}
-
-unsigned int TraceMonitor::size(unsigned int start, unsigned int end) const
-{
-  /* sample size between start and end */
-  if (end < start)
-    return 0;
-
-  if (_current == 0)
-    return 0;
-
-  unsigned int last_monitored = _start + (_current - 1) * _thin;    
-  align (start, end, _thin);
-
-  if (start <= last_monitored && end >= _start) {
-    start = max (start, _start);
-    end = min (end, last_monitored);
-    return (end - start) / _thin + 1;
-  }
-  else {
-    return 0;
-  }
+    return _niter[chain];
 }
 
 void TraceMonitor::update(unsigned int iteration, unsigned int chain)
 {
-    if (iteration != _start + _thin * _current) {
+    if (iteration < _start || (iteration - _start) % _thin != 0) {
 	return;
     }
-
-    unsigned int node_length = _node->length();
-
-    /* Reallocate vector _values if it is full */
-    if (_current == _size) {
-      _size = _size * 2;
-      _values = (double*) 
-	realloc(_values,  node_length * _size * sizeof(double));
-      _end = _start + _thin * (_size - 1);
+    if (chain >= _values.size()) {
+	throw logic_error("Invalid chain in TraceMonitor::update");
     }
-    for (unsigned int i = 0; i < node_length; i++) {
-      _values[node_length * _current + i] = _node->value(chain)[i];
+
+    double const *node_value = node()->value(chain);
+    for (unsigned int i = 0; i < node()->length(); i++) {
+	_values[chain].push_back(node_value[i]);
     }
-    _current++;
+    _niter[chain]++;
 }
 
-double const *TraceMonitor::values() const
+vector<double> const &TraceMonitor::values(unsigned int chain) const
 {
-  return _values;
+    return _values[chain];
 }
 
-Node const *TraceMonitor::node() const
+void TraceMonitor::reserve(unsigned int niter)
 {
-  return _node;
+    for (unsigned int ch = 0; ch < _values.size(); ++ch) {
+	_values[ch].reserve((_niter[ch] + niter) * node()->length());
+    }
 }
 
-
-
+bool isSynchronized(TraceMonitor const *monitor)
+{
+    for (unsigned int ch = 1; ch < monitor->node()->nchain(); ++ch) {
+	if (monitor->niter(ch) != monitor->niter(0))
+            return false;
+    }
+    return true;
+}

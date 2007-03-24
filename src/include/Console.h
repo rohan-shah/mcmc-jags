@@ -156,27 +156,18 @@ public:
    * The parameters name and range must correspond to a previous
    * call to setMonitor.
    *
-   * @param name Name of array containing monitored nodes.
+   * @param node Vector of monitored nodes to be dumped, each node
+   * is described by the variable name and index range. If the vector
+   * is empty then ALL monitored nodes will be dumped.
    * 
-   * @param range Range describing subset of named array to monitor.
-   * A NULL range may be given, in which case the whole array is
-   * selected.
-   *
    * @param index Index file stream
    *
    * @param output Output file stream
    *
    */
-  bool coda(std::string const &name, Range const &range,
-	    std::ofstream &index, std::vector<std::ofstream*> &output);
-  /**
-   * Dumps the contents of all monitored nodes in CODA format
-   *
-   * @param index Index file stream
-   *
-   * @param output Output file stream
-   */
-  bool  coda(std::ofstream &index, std::vector<std::ofstream*> &output);
+  bool coda(std::vector<std::pair<std::string, Range> > const &nodes,
+	    std::ofstream &index, std::vector<std::ofstream*> const &output);
+  bool coda(std::ofstream &index, std::vector<std::ofstream*> const &output);
   BUGSModel const *model();
   unsigned int nchain() const;
   bool getMonitoredValues(std::map<std::string,SArray> &data_table,

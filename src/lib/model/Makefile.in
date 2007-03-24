@@ -50,7 +50,7 @@ CONFIG_HEADER = $(top_builddir)/src/include/config.h
 CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 libmodel_la_LIBADD =
-am_libmodel_la_OBJECTS = SymTab.lo NodeArray.lo Model.lo \
+am_libmodel_la_OBJECTS = SymTab.lo NodeArray.lo Model.lo Monitor.lo \
 	TraceMonitor.lo BUGSModel.lo
 libmodel_la_OBJECTS = $(am_libmodel_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/src/include
@@ -185,7 +185,7 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 INCLUDES = -I $(top_srcdir)/src/include
 noinst_LTLIBRARIES = libmodel.la
-libmodel_la_SOURCES = SymTab.cc NodeArray.cc Model.cc TraceMonitor.cc \
+libmodel_la_SOURCES = SymTab.cc NodeArray.cc Model.cc Monitor.cc TraceMonitor.cc \
 BUGSModel.cc 
 
 all: all-am
@@ -241,6 +241,7 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/BUGSModel.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Model.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Monitor.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NodeArray.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SymTab.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TraceMonitor.Plo@am__quote@

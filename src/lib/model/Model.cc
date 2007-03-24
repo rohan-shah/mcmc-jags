@@ -70,11 +70,14 @@ Model::~Model()
 
     for (unsigned int n = 0; n < _nchain; ++n) {
 	
+	//Monitor do not belong to the model
+	/*
 	list<TraceMonitor*> &monitors = _chain_info[n].monitors;
 	while(!monitors.empty()) {
-	    delete monitors.back();
+	    //delete monitors.back();
 	    monitors.pop_back();
-	}
+	    }
+	*/
 
 	//RNGs belong to the factory objects and are deleted by them
     }
@@ -277,13 +280,16 @@ void Model::update(unsigned int niter)
         throw logic_error("Attempt to update model with no samplers");
     }
 
+    list<Monitor*>::const_iterator p;
+    for (p = _monitors.begin(); p != _monitors.end(); ++p) {
+	(*p)->reserve(niter);
+    }
 
     for (unsigned int iter = 0; iter < niter; ++iter) {    
 	
 	for (unsigned int n = 0; n < _nchain; ++n) {
 	    
 	    vector<Sampler*> &samplers = _chain_info[n].samplers;
-	    list<TraceMonitor*> &monitors = _chain_info[n].monitors;
 	    RNG *rng = _chain_info[n].rng;
 	    
 	    for (vector<Sampler*>::iterator i = samplers.begin(); 
@@ -297,8 +303,8 @@ void Model::update(unsigned int niter)
 		(*k)->randomSample(rng, n);
 	    }
 	    _chain_info[n].iteration++;
-	    for (list<TraceMonitor*>::iterator k = monitors.begin(); 
-		 k != monitors.end(); k++) 
+	    for (list<Monitor*>::iterator k = _monitors.begin(); 
+		 k != _monitors.end(); k++) 
 	    {
 		(*k)->update(_chain_info[n].iteration, n);
 	    }
@@ -332,63 +338,66 @@ bool Model::isAdapting() const
   return _adapt;
 }
 
-void Model::setMonitor(Node *node, int thin)
+void Model::addMonitor(Monitor *monitor)
 {
 
-  if (_adapt) {
-    adaptOff(); //FIXME: Efficiency test ignored
-  }
-  
-  if (_monitored_nodes.count(node)) {
-    //Nothing to do. Node is already being monitored.
-    return;
-  }
+    if (_adapt) {
+	adaptOff(); //FIXME: Efficiency test ignored
+    }
+    
+    // FIXME: Need to do this where the new node is generated
+    /*
+    if(!_graph.contains(node)) {
+	addExtraNode(node);
+    }
+    */
 
-  if(!_graph.contains(node)) {
-    addExtraNode(node);
-  }
+    _monitors.push_back(monitor);
 
-  for (unsigned int n = 0; n < _nchain; ++n) {
-     TraceMonitor *monitor = new TraceMonitor(node, iteration(n) + 1, thin);
-     _chain_info[n].monitors.push_back(monitor);
-  }   
-  _monitored_nodes.insert(node);
+    // Recalculate the vector of uninformative nodes that need sampling
 
-  // Recalculate the vector of uninformative nodes that need sampling
-
-  //Insert extra nodes into a new graph
-  Graph egraph;
-  for (set<Node *>::const_iterator p = _extra_nodes.begin(); 
-       p != _extra_nodes.end(); ++p)
-      {
-	  egraph.add(*p);
-      }
-  //Mark the ancestors of all monitored nodes in this graph
-  GraphMarks emarks(egraph);
-  for (set<Node*>::const_iterator j = _monitored_nodes.begin();
-       j != _monitored_nodes.end(); ++j)
+    //Insert extra nodes into a new graph
+    Graph egraph;
+    for (set<Node *>::const_iterator p = _extra_nodes.begin(); 
+	 p != _extra_nodes.end(); ++p)
     {
-        if (egraph.contains(*j)) {
-            emarks.mark(*j,1);
-	    emarks.markAncestors(*j, 1);
+	egraph.add(*p);
+    }
+    //Mark the ancestors of all monitored nodes in this graph
+    GraphMarks emarks(egraph);
+    for (list<Monitor*>::const_iterator p = _monitors.begin();
+	 p != _monitors.end(); ++p)
+    {
+	Node const *node = (*p)->node();
+        if (egraph.contains(node)) {
+            emarks.mark(node, 1);
+	    emarks.markAncestors(node, 1);
         }
     }
-  //Remove unmarked nodes from graph
-  for (set<Node *>::const_iterator p = _extra_nodes.begin(); 
-       p != _extra_nodes.end(); ++p)
-      {
-	  if (emarks.mark(*p) == 0)
-	      egraph.remove(*p);
-      }
-  //Replace vector of sampled extra nodes
-  _sampled_extra.clear();
-  egraph.getSortedNodes(_sampled_extra);
+    //Remove unmarked nodes from graph
+    for (set<Node *>::const_iterator p = _extra_nodes.begin(); 
+	 p != _extra_nodes.end(); ++p)
+    {
+	if (emarks.mark(*p) == 0)
+	    egraph.remove(*p);
+    }
+    //Replace vector of sampled extra nodes
+    _sampled_extra.clear();
+    egraph.getSortedNodes(_sampled_extra);
+
+
 }
 
+void Model::removeMonitor(Monitor *monitor)
+{
+    _monitors.remove(monitor);
+}
+
+/*
 void Model::clearMonitor(Node *node)
 {
   for (unsigned int n = 0; n < _nchain; ++n) {
-    list<TraceMonitor*> &monitors = _chain_info[n].monitors;
+    list<Monitor*> &monitors = _chain_info[n].monitors;
     for (list<TraceMonitor*>::iterator j = monitors.begin();
          j != monitors.end(); j++) 
       {
@@ -401,11 +410,14 @@ void Model::clearMonitor(Node *node)
 
   _monitored_nodes.erase(node);
 }
+*/
 
+/*
 list<TraceMonitor*> const &Model::monitors(unsigned int chain) const
 {
   return _chain_info[chain].monitors;
 }
+*/
 
 void Model::addExtraNode(Node *node)
 {
@@ -493,3 +505,12 @@ bool Model::setRNG(RNG *rng, unsigned int chain)
   return true;
 }
 
+bool isSynchronized(Model const *model)
+{
+    for (unsigned int ch = 1; ch < model->nchain(); ++ch) {
+        if (model->iteration(ch) != model->iteration(0)) {
+	    return false;
+        }
+    }
+    return true;
+}

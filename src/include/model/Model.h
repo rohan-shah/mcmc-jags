@@ -7,7 +7,7 @@
 #include <list>
 
 class Sampler;
-class TraceMonitor;
+class Monitor;
 class SamplerFactory;
 class RNG;
 class RNGFactory;
@@ -19,7 +19,6 @@ struct ChainInfo
 {
   RNG *rng;
   std::vector<Sampler*> samplers;
-  std::list<TraceMonitor*> monitors;
   unsigned int iteration;
 };
 
@@ -36,7 +35,8 @@ class Model {
   std::vector<Node*> _nodes;
   std::set<Node*> _extra_nodes;
   std::vector<Node*> _sampled_extra;
-  std::set<Node*>  _monitored_nodes;
+  //std::set<Node*>  _monitored_nodes;
+  std::list<Monitor*> _monitors;
   bool _is_graph_checked;
   bool _is_initialized;
   bool _can_sample;
@@ -96,21 +96,17 @@ public:
    */
   unsigned int iteration(unsigned int chain) const;
   /**
-   * Creates a monitor for the given node, with given thinning
-   * interval. This can only be done if Model#adaptOff() has been
-   * successfully called. Otherwise, a logic_error is thrown.  If the
-   * node is already being monitored, a NodeError is thrown.
+   * Adds a monitor to the model so that it will be updated at each
+   * iteration.  This can only be done if Model#adaptOff() has been
+   * successfully called. Otherwise, a logic_error is thrown.
    */
-  void setMonitor(Node *node, int thin);
+  void addMonitor(Monitor *monitor);
   /**
-   * Clears the monitor associated with the given node. If there is no
-   * such monitor, then the function has no effect.
+   * Clears the monitor from the model, so that it will no longer
+   * be updated. If the monitor has not previously been added to the
+   * model, this function has no effect.
    */
-  void clearMonitor(Node *node);
-  /**
-   * Returns the list of monitors
-   */
-  std::list<TraceMonitor*> const &monitors(unsigned int chain) const;
+  void removeMonitor(Monitor *monitor);
   /**
    * After the model is initialized, extra uninformative nodes may be
    * added to the graph (For example, a node may be added that
@@ -171,5 +167,8 @@ public:
    */
   bool isAdapting() const;
 };
+
+/** Returns true if all the iteration number is the same for all chains */
+bool isSynchronized(Model const *model);
 
 #endif /* MODEL_H_ */

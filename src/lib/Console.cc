@@ -339,17 +339,20 @@ bool Console::update(unsigned int n)
     catch (NodeError except) {
 	_err << "Error in node " << _model->symtab().getName(except.node) << '\n';
 	_err << except.what() << endl;
+	clearModel();
 	return false;
     }
     catch (std::runtime_error except) {
 	_err << "RUNTIME ERROR:\n";
 	_err << except.what() << endl;
+	clearModel();
 	return false;
     }
     catch (std::logic_error except) {
 	_err << "LOGIC ERROR:\n";
 	_err << except.what() << '\n';
 	_err << "Please send a bug report to " << PACKAGE_BUGREPORT << endl;
+	clearModel();
 	return false;
     }
     return true;
@@ -374,37 +377,20 @@ bool Console::setMonitor(string const &name, Range const &range,
   }
 
   try {
-    if (isNULL(range)) {
-      NodeArray *array = _model->symtab().getVariable(name);
-      if (array) {
-	return setMonitor(name, array->range(), thin);
-      }
-      else {
-	_err << "Variable " << name << " not found" << endl;
-	return false;
-      }
-    }
-    else {
-      string message;
-      Node *node  = _model->getNode(name, range, message);
-      if (node) {
-	  _model->setMonitor(node, thin);
-      }
-      else {
-         _err << message << endl;
-         return false;
-      }
-    }
+      //FIXME: return message
+      _model->setMonitor(name, range, thin);
   }
   catch (std::logic_error except) {
     _err << "LOGIC ERROR:\n";
     _err << except.what() << '\n';
     _err << "Please send a bug report to " << PACKAGE_BUGREPORT << endl;
+    clearModel();
     return false;
   }
   catch (std::runtime_error except) {
     _err << "RUNTIME ERROR:\n";
     _err << except.what() << endl;
+    clearModel();
     return false;
   }
   return true;
@@ -418,39 +404,20 @@ bool Console::clearMonitor(string const &name, Range const &range)
   }
 
   try {
-    Node *node = 0;
-    string message;
-    if (isNULL(range)) {
-      NodeArray *array = _model->symtab().getVariable(name);
-      if (array) {
-        node = _model->getNode(name, array->range(), message);
-      }
-      else {
-	_err << "Variable " << name << " not found" << endl;
-	return false;
-      }
-    }
-    else {
-      node = _model->getNode(name, range, message);
-    }
-
-    if (node) {
-      _model->clearMonitor(node);	  
-    }
-    else {
-      _err << message << endl;
-      return false;
-    }
+      //FIXME. Return message
+      _model->clearMonitor(name, range);      
   }
   catch (std::logic_error except) {
     _err << "LOGIC ERROR:" << endl;
     _err << except.what() << endl;
     _err << "Please send a bug report to " << PACKAGE_BUGREPORT << endl;
+    clearModel();
     return false;
   }
   catch (std::runtime_error except) {
     _err << "RUNTIME ERROR:" << endl;
     _err << except.what() << endl;
+    clearModel();
     return false;
   }
   return true;
@@ -545,44 +512,6 @@ bool Console::dumpState(map<string,SArray> &data_table,
   return true;
 }
 
-bool Console::coda(ofstream &index, vector<ofstream*> &output)
-{
-  if (!_model) {
-     _err << "Can't dump CODA output. No model!" << endl;
-     return false;
-  }
-
-  vector<Node const *> nodes;
-  list<TraceMonitor*> const &monitors = _model->monitors(0);
-  for (list<TraceMonitor*>::const_iterator i = monitors.begin();
-       i != monitors.end(); i++) 
-    {
-      nodes.push_back((*i)->node());
-    }
-
-  try {
-    _model->coda(nodes, index, output);
-  }
-  catch (NodeError except) {
-    _err << "Error in node " <<
-      _model->symtab().getName(except.node) << "\n";
-    _err << except.what() << endl;
-    return false;
-  }
-  catch (std::runtime_error except) {
-    _err << "RUNTIME ERROR:\n";
-    _err << except.what() << endl;
-    return false;
-  }
-  catch (std::logic_error except) {
-    _err << "LOGIC ERROR:\n";
-      _err << except.what() << '\n';
-      _err << "Please send a bug report to " << PACKAGE_BUGREPORT << endl;            return false;
-  }
-  
-  return true;
-}
-
 bool Console::getMonitoredValues(map<string,SArray> &data_table,
 				 unsigned int chain)
 {
@@ -590,20 +519,21 @@ bool Console::getMonitoredValues(map<string,SArray> &data_table,
     _err << "Invalid chain number" << endl;
     return false;
   }
+  chain -= 1;
 
   try {
-    list<TraceMonitor*> const &monitors = _model->monitors(chain - 1);
-    list<TraceMonitor*>::const_iterator p;
+    list<TraceMonitor const *> const &monitors = _model->traceMonitors();
+    list<TraceMonitor const*>::const_iterator p;
     for (p = monitors.begin(); p != monitors.end(); ++p) {
       TraceMonitor const *monitor = *p;
-      if (monitor->size() > 0) {
+      if (monitor->niter(chain) > 0) {
 	Node const *node = monitor->node();
 	string name = _model->symtab().getName(node);
 
 	//The new SArray has the same dimensions as the
 	//monitored node, plus an extra one for the 
 	//iterations. We put the extra dimension first.
-	unsigned int niter = monitor->size();
+	unsigned int niter = monitor->niter(chain);
 	unsigned int ndim = node->dim().size();
 	vector<unsigned int> dim(ndim + 1);
 	dim[0] = niter;
@@ -615,7 +545,7 @@ bool Console::getMonitoredValues(map<string,SArray> &data_table,
 	//Create a new SArray and insert it into the table
 	SArray ans(dim);
 	double *values = new double[length * niter];
-	double const *monitor_values = monitor->values();
+	vector<double> const &monitor_values = monitor->values(chain);
 	for (unsigned int i = 0; i < length; ++i) {
 	    for (unsigned int j = 0; j < niter; ++j) {
 		values[niter * i + j] = monitor_values[length * j + i];
@@ -648,14 +578,48 @@ bool Console::getMonitoredValues(map<string,SArray> &data_table,
   return true;
 }
 
-bool Console::coda(string const &name, Range const &range,
-		   ofstream &index, vector<ofstream*> &output)
+bool Console::coda(ofstream &index, vector<ofstream*> const &output)
 {
     if (!_model) {
 	_err << "Can't dump CODA output. No model!" << endl;
 	return false;
     }
 
+    try {
+        string warn;
+	_model->coda(index, output, warn);
+        if (!warn.empty()) {
+            _err << "WARNING:\n" << warn;
+        }
+    }
+    catch (NodeError except) {
+	_err << "Error in node " <<
+	    _model->symtab().getName(except.node) << "\n";
+	_err << except.what() << endl;
+	return false;
+    }
+    catch (std::runtime_error except) {
+	_err << "RUNTIME ERROR:\n";
+	_err << except.what() << endl;
+	return false;
+    }
+    catch (std::logic_error except) {
+	_err << "LOGIC ERROR:\n";
+	_err << except.what() << '\n';
+	_err << "Please send a bug report to " << PACKAGE_BUGREPORT << endl;            return false;
+    }
+    return true;
+}
+
+bool Console::coda(vector<pair<string, Range> > const &nodes,
+		   ofstream &index, vector<ofstream*> const &output)
+{
+    if (!_model) {
+	_err << "Can't dump CODA output. No model!" << endl;
+	return false;
+    }
+
+    /*
     NodeArray *array = _model->symtab().getVariable(name);
     if (!array) {
 	_err << name << " not found" << endl;
@@ -677,9 +641,14 @@ bool Console::coda(string const &name, Range const &range,
 	_err << "Node is not being monitored" << endl;
 	return false;
     }
+    */
 
     try {
-	_model->coda(vector<Node const*>(1, node), index, output);
+        string warn;
+	_model->coda(nodes, index, output, warn);
+        if (!warn.empty()) {
+            _err << "WARNINGS:\n" << warn;
+        }
     }
     catch (NodeError except) {
 	_err << "Error in node " <<
@@ -700,27 +669,6 @@ bool Console::coda(string const &name, Range const &range,
     return true;
 }
 
-/*
-bool Console::coda(string const &name, ofstream &index, ofstream &output)
-{
-  if (!_model) {
-    _err << "Can't dump CODA output. No model!" << endl;
-    return false;
-  }
-  
-  NodeArray *array = _model->symtab().getVariable(name);
-  if (array) {
-    vector<Node const *> nodes(1, array->getSubset(array->range()));
-    _model->coda(nodes, index, output);
-    return true;
-  }
-  else {
-    _err << name << " not found" << endl;
-    return false;
-  }
-}
-*/
-  
 BUGSModel const *Console::model()
 {
   return _model;
@@ -795,7 +743,7 @@ bool Console::adaptOff(bool &status)
 
 bool Console::isAdapting() const
 {
-  return _model->isAdapting();
+    return _model ? _model->isAdapting() : false;
 }
 
 /*
