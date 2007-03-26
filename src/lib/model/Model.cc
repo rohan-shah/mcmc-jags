@@ -39,7 +39,6 @@ Model::Model(unsigned int nchain)
     _chain_info[n].rng = 0;
     _chain_info[n].iteration = 0;
   }
-  _is_graph_checked = false;
   _is_initialized = false;
   _adapt = true;
 }
@@ -134,8 +133,6 @@ void Model::initialize(bool random)
 	throw runtime_error("Graph not closed");
     if (_graph.hasCycle()) 
 	throw runtime_error("Directed cycle in graph");
-    _is_graph_checked = true; //fixme redundant
-
     
     //Get nodes in forward-sampling order
     vector<Node*> sorted_nodes;
@@ -153,24 +150,6 @@ void Model::initialize(bool random)
     _is_initialized = true;
 }
 
-/*
-void Model::checkGraph()
-{
-  if (_is_graph_checked) {
-    throw logic_error("Already checked ability to sample");
-  }
-  if (!_graph.isClosed())
-    throw runtime_error("Graph not closed");
-  if (_graph.hasCycle()) 
-    throw runtime_error("Directed cycle in graph");
-  if (_nodes.empty()) {
-    _graph.getSortedNodes(_nodes);
-  }
-
-  _is_graph_checked = true;
-}
-*/
-
 void Model::initializeNodes(vector<Node*> const &sorted_nodes,
 			    bool random)
 {
@@ -185,7 +164,7 @@ void Model::initializeNodes(vector<Node*> const &sorted_nodes,
 	if (!node->initialize()) {
 	    throw NodeError(node, "Initialization failure");
 	} 
-	if (random) {
+	if (random && !node->isObserved()) {
 	    for (unsigned int ch = 0; ch < _nchain; ++ch) {
 		node->randomSample(_chain_info[ch].rng, ch);
 	    }
@@ -222,8 +201,6 @@ void Model::chooseSamplers(vector<Node*> const &sorted_nodes)
      *
      * @see Model#samplerFactories
      */
-    if (!_is_graph_checked) 
-	throw logic_error("Graph not checked");
 
     // Mark observed nodes
     GraphMarks marks(_graph);
@@ -311,17 +288,12 @@ void Model::chooseSamplers(vector<Node*> const &sorted_nodes)
 	stable_sort(_chain_info[n].samplers.begin(), 
 		    _chain_info[n].samplers.end(), less_sampler(node_map));
     }
-
-    _can_sample = true;
 }
 
 void Model::update(unsigned int niter)
 {
     if (!_is_initialized) {
 	throw logic_error("Attempt to update uninitialized model");
-    }
-    if (!_can_sample) {
-        throw logic_error("Attempt to update model with no samplers");
     }
 
     list<Monitor*>::const_iterator p;
@@ -435,32 +407,6 @@ void Model::removeMonitor(Monitor *monitor)
     _monitors.remove(monitor);
 }
 
-/*
-void Model::clearMonitor(Node *node)
-{
-  for (unsigned int n = 0; n < _nchain; ++n) {
-    list<Monitor*> &monitors = _chain_info[n].monitors;
-    for (list<TraceMonitor*>::iterator j = monitors.begin();
-         j != monitors.end(); j++) 
-      {
-        if ((*j)->node() == node) {
-          list<TraceMonitor*>::iterator k = j++;
-	  monitors.erase(k);
-        }
-      }
-  }
-
-  _monitored_nodes.erase(node);
-}
-*/
-
-/*
-list<TraceMonitor*> const &Model::monitors(unsigned int chain) const
-{
-  return _chain_info[chain].monitors;
-}
-*/
-
 void Model::addExtraNode(Node *node)
 {
   if (!_is_initialized) 
@@ -506,11 +452,6 @@ list<RNGFactory *> &Model::rngFactories()
 unsigned int Model::nchain() const
 {
   return _nchain;
-}
-
-bool Model::canSample() const
-{
-  return _can_sample;
 }
 
 RNG *Model::rng(unsigned int chain) const

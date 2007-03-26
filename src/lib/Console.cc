@@ -105,12 +105,8 @@ bool Console::compile(map<string, SArray> &data_table, unsigned int nchain,
       compiler.undeclaredVariables(_pdata);
       _out << "   Allocating nodes" << endl;
       compiler.writeRelations(_pdata);
-/*
-      _out << "   Checking graph" << endl;
-      datagen_model.checkGraph();
-*/
       
-      //FIXME: Datagen model should have no observed stochastic nodes
+      /* Check validity of data generating model */
       vector<Node*> nodes;
       datagen_model.graph().getNodes(nodes);
       for (unsigned int i = 0; i < nodes.size(); ++i) {
@@ -131,15 +127,9 @@ bool Console::compile(map<string, SArray> &data_table, unsigned int nchain,
 	}
       }
       _out << "   Initializing" << endl;
-      datagen_model.initialize();
+      datagen_model.initialize(true);
+      //Save data generating RNG for later use
       datagen_rng = datagen_model.rng(0);
-      vector <Node*> data_nodes;
-      datagen_model.graph().getSortedNodes(data_nodes);
-      for (unsigned int i = 0; i < data_nodes.size(); ++i) {
-	if (!data_nodes[i]->isObserved()) {
-	  data_nodes[i]->randomSample(datagen_rng, 0);
-	}
-      }
       _out << "   Reading data back into data table" << endl;
       datagen_model.symtab().readValues(data_table, 0, alwaysTrue);
     }
@@ -328,10 +318,6 @@ bool Console::update(unsigned int n)
     if (!_model->isInitialized()) {
 	_err << "Model not initialized" << endl;
 	return false;
-    }
-    if (!_model->canSample()) {
-	_err << "Model has no samplers" << endl;
-        return false;
     }
     try {
 	_model->update(n);
@@ -712,10 +698,6 @@ bool Console::adaptOff(bool &status)
   }
   if (!_model->isInitialized()) {
     _err << "Model not initialized" << endl;
-    return false;
-  }
-  if (!_model->canSample()) {
-    _err << "Model has no samplers" << endl;
     return false;
   }
 

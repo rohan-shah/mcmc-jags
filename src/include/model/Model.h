@@ -35,9 +35,7 @@ class Model {
   std::set<Node*> _extra_nodes;
   std::vector<Node*> _sampled_extra;
   std::list<Monitor*> _monitors;
-  bool _is_graph_checked;
   bool _is_initialized;
-  bool _can_sample;
   bool _adapt;
   void initializeNodes(std::vector<Node*> const &sorted_nodes, bool random);
   void chooseRNGs();
@@ -64,17 +62,13 @@ public:
    * Node#initialize. Random initialization, using Node#randomSample,
    * may be obtained by setting the random parameter to true.
    *
-   * Finally, samplers are chosen for informative nodes in the graph
+   * Finally, samplers are chosen for informative nodes in the graph.
    *
    * @see Node#initialize, Model#rngFactories
    */
   void initialize(bool random = false);
   /** Returns true if the model has been initialized */
   bool isInitialized();
-  /**
-   * Returns true if chooseSamplers has been called.
-   */
-  bool canSample() const;
   /** 
    * Updates the model by the given number of iterations. A
    * logic_error is thrown if the model is uninitialized.
