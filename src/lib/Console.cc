@@ -105,9 +105,12 @@ bool Console::compile(map<string, SArray> &data_table, unsigned int nchain,
       compiler.undeclaredVariables(_pdata);
       _out << "   Allocating nodes" << endl;
       compiler.writeRelations(_pdata);
+/*
       _out << "   Checking graph" << endl;
       datagen_model.checkGraph();
+*/
       
+      //FIXME: Datagen model should have no observed stochastic nodes
       vector<Node*> nodes;
       datagen_model.graph().getNodes(nodes);
       for (unsigned int i = 0; i < nodes.size(); ++i) {
@@ -179,8 +182,6 @@ bool Console::compile(map<string, SArray> &data_table, unsigned int nchain,
        return false;
      }
      if (_model) {
-       _out << "   Checking graph" << endl;
-       _model->checkGraph();
        _out << "   Graph Size: " << _model->graph().size() << endl;
        if (datagen_rng) {
           // Reuse the data-generation RNG, if there is one, for chain 0 
@@ -226,7 +227,6 @@ bool Console::initialize()
     }
     try {
 	_model->initialize();
-	_model->chooseSamplers();
 	_model->addDevianceNode();
     }
     catch (NodeError except) {
