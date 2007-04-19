@@ -363,8 +363,11 @@ bool Console::setMonitor(string const &name, Range const &range,
   }
 
   try {
-      //FIXME: return message
-      _model->setMonitor(name, range, thin);
+      bool ok = _model->setMonitor(name, range, thin);
+      if (!ok) {
+	  _err << "Failed to set monitor " << name << print(range) << endl;
+	  return false;
+      }
   }
   catch (std::logic_error except) {
     _err << "LOGIC ERROR:\n";
@@ -385,13 +388,16 @@ bool Console::setMonitor(string const &name, Range const &range,
 bool Console::clearMonitor(string const &name, Range const &range)
 {
   if (!_model) {
-    _out << "Can't clear monitor. No model!" << endl;    
+    _err << "Can't clear monitor. No model!" << endl;    
     return false;
   }
 
   try {
-      //FIXME. Return message
-      _model->clearMonitor(name, range);      
+      bool ok = _model->clearMonitor(name, range);      
+      if (!ok) {
+	  _err << "Failed to clear monitor " << name << print(range) << endl;
+	  return false;
+      }
   }
   catch (std::logic_error except) {
     _err << "LOGIC ERROR:" << endl;

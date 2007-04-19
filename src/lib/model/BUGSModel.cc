@@ -267,36 +267,44 @@ void BUGSModel::setParameters(std::map<std::string, SArray> const &param_table,
 }
 
 
-void BUGSModel::setMonitor(string const &name, Range const &range,
+bool BUGSModel::setMonitor(string const &name, Range const &range,
 	        unsigned int thin)
 {
     pair<string, Range> nodeid(name, range);
     if (_trace_map.find(nodeid) != _trace_map.end()) {
-	return; //Nothing to do. Node is already being monitored.
+	return false; //Node is already being monitored.
     }
     if (!isSynchronized(this)) {
         throw logic_error("Model not synchronized in BUGSModel::setMonitor");
     }
     string msg;
     Node *node = getNode(name, range, msg);
-    if (node) { //FIXME: Need error message
-       TraceMonitor *monitor = new TraceMonitor(node, iteration(0) + 1, thin);
-       _trace_monitors.push_back(monitor);
-       _trace_map[nodeid] = monitor;
-       addMonitor(monitor);
+    if (node) { 
+	TraceMonitor *monitor = new TraceMonitor(node, iteration(0) + 1, thin);
+	_trace_monitors.push_back(monitor);
+	_trace_map[nodeid] = monitor;
+	addMonitor(monitor);
+	return true;
+    }
+    else {
+	return false;
     }
 }
 
-void BUGSModel::clearMonitor(string const &name, Range const &range)
+bool BUGSModel::clearMonitor(string const &name, Range const &range)
 {
     pair<string, Range> nodeid(name, range);
     map<pair<string, Range>, TraceMonitor*>::iterator p =
 	_trace_map.find(nodeid);
     
-    if (p != _trace_map.end()) {
+    if (p == _trace_map.end()) {
+	return false;
+    }
+    else {
 	removeMonitor(p->second);
 	_trace_map.erase(p);
 	_trace_monitors.remove(p->second);
+	return true;
     }
 }
 

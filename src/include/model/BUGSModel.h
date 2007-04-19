@@ -106,9 +106,9 @@ public:
      */
     void setParameters(std::map<std::string, SArray> const &param_table,
 		       unsigned int chain);
-    void setMonitor(std::string const &name, Range const &range,
+    bool setMonitor(std::string const &name, Range const &range,
                     unsigned int thin);
-    void clearMonitor(std::string const &name, Range const &range);
+    bool clearMonitor(std::string const &name, Range const &range);
     std::list<TraceMonitor const *> const &traceMonitors() const;
 };
 
