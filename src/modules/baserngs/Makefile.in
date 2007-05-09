@@ -60,9 +60,10 @@ am__installdirs = "$(DESTDIR)$(jagsmoddir)"
 jagsmodLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(jagsmod_LTLIBRARIES)
 baserngs_la_DEPENDENCIES = $(top_builddir)/src/lib/libjags.la
-am_baserngs_la_OBJECTS = MarsagliaRNG.lo WichmannHillRNG.lo \
-	SuperDuperRNG.lo MersenneTwisterRNG.lo BaseRNGFactory.lo \
-	module.lo
+am_baserngs_la_OBJECTS = baserngs_la-MarsagliaRNG.lo \
+	baserngs_la-WichmannHillRNG.lo baserngs_la-SuperDuperRNG.lo \
+	baserngs_la-MersenneTwisterRNG.lo \
+	baserngs_la-BaseRNGFactory.lo baserngs_la-module.lo
 baserngs_la_OBJECTS = $(am_baserngs_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/src/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -195,8 +196,8 @@ sharedstatedir = @sharedstatedir@
 subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
-INCLUDES = -I $(top_srcdir)/src/include
 jagsmod_LTLIBRARIES = baserngs.la
+baserngs_la_CPPFLAGS = -I$(top_srcdir)/src/include
 baserngs_la_LDFLAGS = -no-undefined -module -avoid-version
 baserngs_la_LIBADD = $(top_builddir)/src/lib/libjags.la
 baserngs_la_SOURCES = MarsagliaRNG.cc WichmannHillRNG.cc SuperDuperRNG.cc \
@@ -274,12 +275,12 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/BaseRNGFactory.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MarsagliaRNG.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MersenneTwisterRNG.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SuperDuperRNG.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/WichmannHillRNG.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/module.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/baserngs_la-BaseRNGFactory.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/baserngs_la-MarsagliaRNG.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/baserngs_la-MersenneTwisterRNG.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/baserngs_la-SuperDuperRNG.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/baserngs_la-WichmannHillRNG.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/baserngs_la-module.Plo@am__quote@
 
 .cc.o:
 @am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -301,6 +302,48 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LTCXXCOMPILE) -c -o $@ $<
+
+baserngs_la-MarsagliaRNG.lo: MarsagliaRNG.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(baserngs_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT baserngs_la-MarsagliaRNG.lo -MD -MP -MF "$(DEPDIR)/baserngs_la-MarsagliaRNG.Tpo" -c -o baserngs_la-MarsagliaRNG.lo `test -f 'MarsagliaRNG.cc' || echo '$(srcdir)/'`MarsagliaRNG.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/baserngs_la-MarsagliaRNG.Tpo" "$(DEPDIR)/baserngs_la-MarsagliaRNG.Plo"; else rm -f "$(DEPDIR)/baserngs_la-MarsagliaRNG.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='MarsagliaRNG.cc' object='baserngs_la-MarsagliaRNG.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(baserngs_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o baserngs_la-MarsagliaRNG.lo `test -f 'MarsagliaRNG.cc' || echo '$(srcdir)/'`MarsagliaRNG.cc
+
+baserngs_la-WichmannHillRNG.lo: WichmannHillRNG.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(baserngs_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT baserngs_la-WichmannHillRNG.lo -MD -MP -MF "$(DEPDIR)/baserngs_la-WichmannHillRNG.Tpo" -c -o baserngs_la-WichmannHillRNG.lo `test -f 'WichmannHillRNG.cc' || echo '$(srcdir)/'`WichmannHillRNG.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/baserngs_la-WichmannHillRNG.Tpo" "$(DEPDIR)/baserngs_la-WichmannHillRNG.Plo"; else rm -f "$(DEPDIR)/baserngs_la-WichmannHillRNG.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='WichmannHillRNG.cc' object='baserngs_la-WichmannHillRNG.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(baserngs_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o baserngs_la-WichmannHillRNG.lo `test -f 'WichmannHillRNG.cc' || echo '$(srcdir)/'`WichmannHillRNG.cc
+
+baserngs_la-SuperDuperRNG.lo: SuperDuperRNG.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(baserngs_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT baserngs_la-SuperDuperRNG.lo -MD -MP -MF "$(DEPDIR)/baserngs_la-SuperDuperRNG.Tpo" -c -o baserngs_la-SuperDuperRNG.lo `test -f 'SuperDuperRNG.cc' || echo '$(srcdir)/'`SuperDuperRNG.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/baserngs_la-SuperDuperRNG.Tpo" "$(DEPDIR)/baserngs_la-SuperDuperRNG.Plo"; else rm -f "$(DEPDIR)/baserngs_la-SuperDuperRNG.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='SuperDuperRNG.cc' object='baserngs_la-SuperDuperRNG.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(baserngs_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o baserngs_la-SuperDuperRNG.lo `test -f 'SuperDuperRNG.cc' || echo '$(srcdir)/'`SuperDuperRNG.cc
+
+baserngs_la-MersenneTwisterRNG.lo: MersenneTwisterRNG.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(baserngs_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT baserngs_la-MersenneTwisterRNG.lo -MD -MP -MF "$(DEPDIR)/baserngs_la-MersenneTwisterRNG.Tpo" -c -o baserngs_la-MersenneTwisterRNG.lo `test -f 'MersenneTwisterRNG.cc' || echo '$(srcdir)/'`MersenneTwisterRNG.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/baserngs_la-MersenneTwisterRNG.Tpo" "$(DEPDIR)/baserngs_la-MersenneTwisterRNG.Plo"; else rm -f "$(DEPDIR)/baserngs_la-MersenneTwisterRNG.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='MersenneTwisterRNG.cc' object='baserngs_la-MersenneTwisterRNG.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(baserngs_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o baserngs_la-MersenneTwisterRNG.lo `test -f 'MersenneTwisterRNG.cc' || echo '$(srcdir)/'`MersenneTwisterRNG.cc
+
+baserngs_la-BaseRNGFactory.lo: BaseRNGFactory.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(baserngs_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT baserngs_la-BaseRNGFactory.lo -MD -MP -MF "$(DEPDIR)/baserngs_la-BaseRNGFactory.Tpo" -c -o baserngs_la-BaseRNGFactory.lo `test -f 'BaseRNGFactory.cc' || echo '$(srcdir)/'`BaseRNGFactory.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/baserngs_la-BaseRNGFactory.Tpo" "$(DEPDIR)/baserngs_la-BaseRNGFactory.Plo"; else rm -f "$(DEPDIR)/baserngs_la-BaseRNGFactory.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='BaseRNGFactory.cc' object='baserngs_la-BaseRNGFactory.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(baserngs_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o baserngs_la-BaseRNGFactory.lo `test -f 'BaseRNGFactory.cc' || echo '$(srcdir)/'`BaseRNGFactory.cc
+
+baserngs_la-module.lo: module.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(baserngs_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT baserngs_la-module.lo -MD -MP -MF "$(DEPDIR)/baserngs_la-module.Tpo" -c -o baserngs_la-module.lo `test -f 'module.cc' || echo '$(srcdir)/'`module.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/baserngs_la-module.Tpo" "$(DEPDIR)/baserngs_la-module.Plo"; else rm -f "$(DEPDIR)/baserngs_la-module.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='module.cc' object='baserngs_la-module.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(baserngs_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o baserngs_la-module.lo `test -f 'module.cc' || echo '$(srcdir)/'`module.cc
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -482,7 +525,6 @@ uninstall-am: uninstall-info-am uninstall-jagsmodLTLIBRARIES
 	tags uninstall uninstall-am uninstall-info-am \
 	uninstall-jagsmodLTLIBRARIES
 
-dnl AM_CPPFLAGS = -I @top_srcdir@/include
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

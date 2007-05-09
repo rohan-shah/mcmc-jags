@@ -60,8 +60,11 @@ am__installdirs = "$(DESTDIR)$(jagsmoddir)"
 jagsmodLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(jagsmod_LTLIBRARIES)
 basesamplers_la_DEPENDENCIES = $(top_builddir)/src/lib/libjags.la
-am_basesamplers_la_OBJECTS = DiscreteSliceSampler.lo FiniteFactory.lo \
-	FiniteSampler.lo RealSliceSampler.lo SliceFactory.lo module.lo
+am_basesamplers_la_OBJECTS = basesamplers_la-DiscreteSliceSampler.lo \
+	basesamplers_la-FiniteFactory.lo \
+	basesamplers_la-FiniteSampler.lo \
+	basesamplers_la-RealSliceSampler.lo \
+	basesamplers_la-SliceFactory.lo basesamplers_la-module.lo
 basesamplers_la_OBJECTS = $(am_basesamplers_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/src/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -194,13 +197,13 @@ sharedstatedir = @sharedstatedir@
 subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
-AM_CPPFLAGS = -I @top_srcdir@/src/include
 jagsmod_LTLIBRARIES = basesamplers.la
-basesamplers_la_LDFLAGS = -no-undefined -module -avoid-version
-basesamplers_la_LIBADD = $(top_builddir)/src/lib/libjags.la
 basesamplers_la_SOURCES = DiscreteSliceSampler.cc FiniteFactory.cc	\
 FiniteSampler.cc RealSliceSampler.cc SliceFactory.cc module.cc
 
+basesamplers_la_CPPFLAGS = -I$(top_srcdir)/src/include
+basesamplers_la_LDFLAGS = -no-undefined -module -avoid-version
+basesamplers_la_LIBADD = $(top_builddir)/src/lib/libjags.la
 noinst_HEADERS = DiscreteSliceSampler.h FiniteFactory.h		\
 FiniteSampler.h RealSliceSampler.h SliceFactory.h 
 
@@ -273,12 +276,12 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DiscreteSliceSampler.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FiniteFactory.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FiniteSampler.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RealSliceSampler.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SliceFactory.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/module.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/basesamplers_la-DiscreteSliceSampler.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/basesamplers_la-FiniteFactory.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/basesamplers_la-FiniteSampler.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/basesamplers_la-RealSliceSampler.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/basesamplers_la-SliceFactory.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/basesamplers_la-module.Plo@am__quote@
 
 .cc.o:
 @am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -300,6 +303,48 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LTCXXCOMPILE) -c -o $@ $<
+
+basesamplers_la-DiscreteSliceSampler.lo: DiscreteSliceSampler.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(basesamplers_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT basesamplers_la-DiscreteSliceSampler.lo -MD -MP -MF "$(DEPDIR)/basesamplers_la-DiscreteSliceSampler.Tpo" -c -o basesamplers_la-DiscreteSliceSampler.lo `test -f 'DiscreteSliceSampler.cc' || echo '$(srcdir)/'`DiscreteSliceSampler.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/basesamplers_la-DiscreteSliceSampler.Tpo" "$(DEPDIR)/basesamplers_la-DiscreteSliceSampler.Plo"; else rm -f "$(DEPDIR)/basesamplers_la-DiscreteSliceSampler.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='DiscreteSliceSampler.cc' object='basesamplers_la-DiscreteSliceSampler.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(basesamplers_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o basesamplers_la-DiscreteSliceSampler.lo `test -f 'DiscreteSliceSampler.cc' || echo '$(srcdir)/'`DiscreteSliceSampler.cc
+
+basesamplers_la-FiniteFactory.lo: FiniteFactory.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(basesamplers_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT basesamplers_la-FiniteFactory.lo -MD -MP -MF "$(DEPDIR)/basesamplers_la-FiniteFactory.Tpo" -c -o basesamplers_la-FiniteFactory.lo `test -f 'FiniteFactory.cc' || echo '$(srcdir)/'`FiniteFactory.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/basesamplers_la-FiniteFactory.Tpo" "$(DEPDIR)/basesamplers_la-FiniteFactory.Plo"; else rm -f "$(DEPDIR)/basesamplers_la-FiniteFactory.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='FiniteFactory.cc' object='basesamplers_la-FiniteFactory.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(basesamplers_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o basesamplers_la-FiniteFactory.lo `test -f 'FiniteFactory.cc' || echo '$(srcdir)/'`FiniteFactory.cc
+
+basesamplers_la-FiniteSampler.lo: FiniteSampler.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(basesamplers_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT basesamplers_la-FiniteSampler.lo -MD -MP -MF "$(DEPDIR)/basesamplers_la-FiniteSampler.Tpo" -c -o basesamplers_la-FiniteSampler.lo `test -f 'FiniteSampler.cc' || echo '$(srcdir)/'`FiniteSampler.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/basesamplers_la-FiniteSampler.Tpo" "$(DEPDIR)/basesamplers_la-FiniteSampler.Plo"; else rm -f "$(DEPDIR)/basesamplers_la-FiniteSampler.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='FiniteSampler.cc' object='basesamplers_la-FiniteSampler.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(basesamplers_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o basesamplers_la-FiniteSampler.lo `test -f 'FiniteSampler.cc' || echo '$(srcdir)/'`FiniteSampler.cc
+
+basesamplers_la-RealSliceSampler.lo: RealSliceSampler.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(basesamplers_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT basesamplers_la-RealSliceSampler.lo -MD -MP -MF "$(DEPDIR)/basesamplers_la-RealSliceSampler.Tpo" -c -o basesamplers_la-RealSliceSampler.lo `test -f 'RealSliceSampler.cc' || echo '$(srcdir)/'`RealSliceSampler.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/basesamplers_la-RealSliceSampler.Tpo" "$(DEPDIR)/basesamplers_la-RealSliceSampler.Plo"; else rm -f "$(DEPDIR)/basesamplers_la-RealSliceSampler.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='RealSliceSampler.cc' object='basesamplers_la-RealSliceSampler.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(basesamplers_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o basesamplers_la-RealSliceSampler.lo `test -f 'RealSliceSampler.cc' || echo '$(srcdir)/'`RealSliceSampler.cc
+
+basesamplers_la-SliceFactory.lo: SliceFactory.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(basesamplers_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT basesamplers_la-SliceFactory.lo -MD -MP -MF "$(DEPDIR)/basesamplers_la-SliceFactory.Tpo" -c -o basesamplers_la-SliceFactory.lo `test -f 'SliceFactory.cc' || echo '$(srcdir)/'`SliceFactory.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/basesamplers_la-SliceFactory.Tpo" "$(DEPDIR)/basesamplers_la-SliceFactory.Plo"; else rm -f "$(DEPDIR)/basesamplers_la-SliceFactory.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='SliceFactory.cc' object='basesamplers_la-SliceFactory.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(basesamplers_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o basesamplers_la-SliceFactory.lo `test -f 'SliceFactory.cc' || echo '$(srcdir)/'`SliceFactory.cc
+
+basesamplers_la-module.lo: module.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(basesamplers_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT basesamplers_la-module.lo -MD -MP -MF "$(DEPDIR)/basesamplers_la-module.Tpo" -c -o basesamplers_la-module.lo `test -f 'module.cc' || echo '$(srcdir)/'`module.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/basesamplers_la-module.Tpo" "$(DEPDIR)/basesamplers_la-module.Plo"; else rm -f "$(DEPDIR)/basesamplers_la-module.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='module.cc' object='basesamplers_la-module.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(basesamplers_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o basesamplers_la-module.lo `test -f 'module.cc' || echo '$(srcdir)/'`module.cc
 
 mostlyclean-libtool:
 	-rm -f *.lo
