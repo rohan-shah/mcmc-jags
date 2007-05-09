@@ -61,7 +61,7 @@ libjags_la_DEPENDENCIES = model/libmodel.la sarray/libsarray.la \
 	function/libfunc.la sampler/libsampler.la \
 	distribution/libdist.la graph/libgraph.la \
 	compiler/libcompiler.la rng/librng.la
-am_libjags_la_OBJECTS = Console.lo Module.lo
+am_libjags_la_OBJECTS = libjags_la-Console.lo libjags_la-Module.lo
 libjags_la_OBJECTS = $(am_libjags_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/src/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -200,9 +200,9 @@ sharedstatedir = @sharedstatedir@
 subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
-INCLUDES = -I $(top_srcdir)/src/include
 jagslib_LTLIBRARIES = libjags.la
 libjags_la_SOURCES = Console.cc Module.cc
+libjags_la_CPPFLAGS = -I$(top_srcdir)/src/include
 libjags_la_LIBADD = model/libmodel.la		\
         sarray/libsarray.la			\
         function/libfunc.la			\
@@ -285,8 +285,8 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Console.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Module.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjags_la-Console.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjags_la-Module.Plo@am__quote@
 
 .cc.o:
 @am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -308,6 +308,20 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LTCXXCOMPILE) -c -o $@ $<
+
+libjags_la-Console.lo: Console.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjags_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libjags_la-Console.lo -MD -MP -MF "$(DEPDIR)/libjags_la-Console.Tpo" -c -o libjags_la-Console.lo `test -f 'Console.cc' || echo '$(srcdir)/'`Console.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libjags_la-Console.Tpo" "$(DEPDIR)/libjags_la-Console.Plo"; else rm -f "$(DEPDIR)/libjags_la-Console.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Console.cc' object='libjags_la-Console.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjags_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libjags_la-Console.lo `test -f 'Console.cc' || echo '$(srcdir)/'`Console.cc
+
+libjags_la-Module.lo: Module.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjags_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libjags_la-Module.lo -MD -MP -MF "$(DEPDIR)/libjags_la-Module.Tpo" -c -o libjags_la-Module.lo `test -f 'Module.cc' || echo '$(srcdir)/'`Module.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libjags_la-Module.Tpo" "$(DEPDIR)/libjags_la-Module.Plo"; else rm -f "$(DEPDIR)/libjags_la-Module.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Module.cc' object='libjags_la-Module.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjags_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libjags_la-Module.lo `test -f 'Module.cc' || echo '$(srcdir)/'`Module.cc
 
 mostlyclean-libtool:
 	-rm -f *.lo

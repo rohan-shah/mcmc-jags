@@ -1,8 +1,8 @@
-INCLUDES = -I $(top_srcdir)/src/include
-
 jagslib_LTLIBRARIES = libjags.la
 
 libjags_la_SOURCES = Console.cc Module.cc
+
+libjags_la_CPPFLAGS = -I$(top_srcdir)/src/include
 
 libjags_la_LIBADD = model/libmodel.la		\
         sarray/libsarray.la			\

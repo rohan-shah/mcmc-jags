@@ -178,7 +178,9 @@ subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 distribincludedir = $(jagsincludedir)/distribution
-distribinclude_HEADERS = Distribution.h DistTab.h DistScalar.h DistScalarRmath.h
+distribinclude_HEADERS = Distribution.h DistTab.h DistScalar.h	\
+DistScalarRmath.h
+
 all: all-am
 
 .SUFFIXES:

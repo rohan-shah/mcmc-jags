@@ -37,8 +37,8 @@ build_triplet = @build@
 host_triplet = @host@
 DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(top_srcdir)/configure AUTHORS COPYING \
-	ChangeLog INSTALL NEWS TODO config.guess config.sub depcomp \
-	install-sh ltmain.sh missing mkinstalldirs ylwrap
+	ChangeLog INSTALL NEWS TODO compile config.guess config.sub \
+	depcomp install-sh ltmain.sh missing mkinstalldirs ylwrap
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/R.m4 \

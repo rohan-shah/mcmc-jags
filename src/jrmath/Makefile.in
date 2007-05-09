@@ -60,19 +60,43 @@ am__installdirs = "$(DESTDIR)$(jagslibdir)"
 jagslibLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(jagslib_LTLIBRARIES)
 libjrmath_la_LIBADD =
-am_libjrmath_la_OBJECTS = callbacks.lo mlutils.lo stirlerr.lo bd0.lo \
-	choose.lo gamma.lo lgamma.lo toms708.lo d1mach.lo i1mach.lo \
-	fsign.lo imax2.lo imin2.lo fmin2.lo fmax2.lo ftrunc.lo \
-	chebyshev.lo lgammacor.lo log1p.lo lbeta.lo rbeta.lo dbeta.lo \
-	pbeta.lo qbeta.lo rbinom.lo dbinom.lo pbinom.lo qbinom.lo \
-	rchisq.lo dchisq.lo pchisq.lo qchisq.lo rexp.lo dexp.lo \
-	pexp.lo qexp.lo rgamma.lo dgamma.lo pgamma.lo qgamma.lo \
-	rhyper.lo dhyper.lo phyper.lo qhyper.lo rlnorm.lo dlnorm.lo \
-	plnorm.lo qlnorm.lo rlogis.lo dlogis.lo plogis.lo qlogis.lo \
-	rnbinom.lo dnbinom.lo pnbinom.lo qnbinom.lo rnorm.lo dnorm.lo \
-	pnorm.lo qnorm.lo rpois.lo dpois.lo ppois.lo qpois.lo rt.lo \
-	dt.lo pt.lo qt.lo runif.lo dunif.lo punif.lo qunif.lo \
-	rweibull.lo dweibull.lo pweibull.lo qweibull.lo
+am_libjrmath_la_OBJECTS = libjrmath_la-callbacks.lo \
+	libjrmath_la-mlutils.lo libjrmath_la-stirlerr.lo \
+	libjrmath_la-bd0.lo libjrmath_la-choose.lo \
+	libjrmath_la-gamma.lo libjrmath_la-lgamma.lo \
+	libjrmath_la-toms708.lo libjrmath_la-d1mach.lo \
+	libjrmath_la-i1mach.lo libjrmath_la-fsign.lo \
+	libjrmath_la-imax2.lo libjrmath_la-imin2.lo \
+	libjrmath_la-fmin2.lo libjrmath_la-fmax2.lo \
+	libjrmath_la-ftrunc.lo libjrmath_la-chebyshev.lo \
+	libjrmath_la-lgammacor.lo libjrmath_la-log1p.lo \
+	libjrmath_la-lbeta.lo libjrmath_la-rbeta.lo \
+	libjrmath_la-dbeta.lo libjrmath_la-pbeta.lo \
+	libjrmath_la-qbeta.lo libjrmath_la-rbinom.lo \
+	libjrmath_la-dbinom.lo libjrmath_la-pbinom.lo \
+	libjrmath_la-qbinom.lo libjrmath_la-rchisq.lo \
+	libjrmath_la-dchisq.lo libjrmath_la-pchisq.lo \
+	libjrmath_la-qchisq.lo libjrmath_la-rexp.lo \
+	libjrmath_la-dexp.lo libjrmath_la-pexp.lo libjrmath_la-qexp.lo \
+	libjrmath_la-rgamma.lo libjrmath_la-dgamma.lo \
+	libjrmath_la-pgamma.lo libjrmath_la-qgamma.lo \
+	libjrmath_la-rhyper.lo libjrmath_la-dhyper.lo \
+	libjrmath_la-phyper.lo libjrmath_la-qhyper.lo \
+	libjrmath_la-rlnorm.lo libjrmath_la-dlnorm.lo \
+	libjrmath_la-plnorm.lo libjrmath_la-qlnorm.lo \
+	libjrmath_la-rlogis.lo libjrmath_la-dlogis.lo \
+	libjrmath_la-plogis.lo libjrmath_la-qlogis.lo \
+	libjrmath_la-rnbinom.lo libjrmath_la-dnbinom.lo \
+	libjrmath_la-pnbinom.lo libjrmath_la-qnbinom.lo \
+	libjrmath_la-rnorm.lo libjrmath_la-dnorm.lo \
+	libjrmath_la-pnorm.lo libjrmath_la-qnorm.lo \
+	libjrmath_la-rpois.lo libjrmath_la-dpois.lo \
+	libjrmath_la-ppois.lo libjrmath_la-qpois.lo libjrmath_la-rt.lo \
+	libjrmath_la-dt.lo libjrmath_la-pt.lo libjrmath_la-qt.lo \
+	libjrmath_la-runif.lo libjrmath_la-dunif.lo \
+	libjrmath_la-punif.lo libjrmath_la-qunif.lo \
+	libjrmath_la-rweibull.lo libjrmath_la-dweibull.lo \
+	libjrmath_la-pweibull.lo libjrmath_la-qweibull.lo
 libjrmath_la_OBJECTS = $(am_libjrmath_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/src/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -213,8 +237,9 @@ sharedstatedir = @sharedstatedir@
 subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
-INCLUDES = -I $(top_srcdir)/src/include
 jagslib_LTLIBRARIES = libjrmath.la
+libjrmath_la_CPPFLAGS = -I$(top_srcdir)/src/include
+libjrmath_la_LDFLAGS = -no-undefined 
 libjrmath_la_SOURCES = callbacks.cc \
 mlutils.c stirlerr.c bd0.c choose.c gamma.c lgamma.c toms708.c \
 d1mach.c i1mach.c fsign.c imax2.c imin2.c \
@@ -235,7 +260,6 @@ rt.c dt.c pt.c qt.c \
 runif.c dunif.c punif.c qunif.c \
 rweibull.c dweibull.c pweibull.c qweibull.c 
 
-libjrmath_la_LDFLAGS = -no-undefined 
 noinst_HEADERS = nmath.h dpq.h 
 EXTRA_DIST = README
 all: all-am
@@ -307,82 +331,82 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bd0.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/callbacks.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/chebyshev.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/choose.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/d1mach.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dbeta.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dbinom.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dchisq.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dexp.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dgamma.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dhyper.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dlnorm.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dlogis.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dnbinom.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dnorm.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dpois.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dt.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dunif.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dweibull.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fmax2.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fmin2.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fsign.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ftrunc.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gamma.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/i1mach.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/imax2.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/imin2.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lbeta.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lgamma.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lgammacor.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/log1p.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mlutils.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pbeta.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pbinom.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pchisq.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pexp.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pgamma.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/phyper.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plnorm.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plogis.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pnbinom.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pnorm.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ppois.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pt.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/punif.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pweibull.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/qbeta.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/qbinom.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/qchisq.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/qexp.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/qgamma.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/qhyper.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/qlnorm.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/qlogis.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/qnbinom.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/qnorm.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/qpois.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/qt.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/qunif.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/qweibull.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rbeta.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rbinom.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rchisq.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rexp.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rgamma.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rhyper.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rlnorm.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rlogis.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rnbinom.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rnorm.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rpois.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rt.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/runif.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rweibull.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/stirlerr.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/toms708.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-bd0.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-callbacks.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-chebyshev.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-choose.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-d1mach.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-dbeta.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-dbinom.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-dchisq.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-dexp.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-dgamma.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-dhyper.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-dlnorm.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-dlogis.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-dnbinom.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-dnorm.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-dpois.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-dt.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-dunif.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-dweibull.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-fmax2.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-fmin2.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-fsign.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-ftrunc.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-gamma.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-i1mach.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-imax2.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-imin2.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-lbeta.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-lgamma.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-lgammacor.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-log1p.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-mlutils.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-pbeta.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-pbinom.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-pchisq.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-pexp.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-pgamma.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-phyper.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-plnorm.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-plogis.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-pnbinom.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-pnorm.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-ppois.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-pt.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-punif.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-pweibull.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-qbeta.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-qbinom.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-qchisq.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-qexp.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-qgamma.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-qhyper.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-qlnorm.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-qlogis.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-qnbinom.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-qnorm.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-qpois.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-qt.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-qunif.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-qweibull.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-rbeta.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-rbinom.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-rchisq.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-rexp.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-rgamma.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-rhyper.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-rlnorm.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-rlogis.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-rnbinom.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-rnorm.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-rpois.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-rt.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-runif.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-rweibull.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-stirlerr.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjrmath_la-toms708.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -405,6 +429,531 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ $<
 
+libjrmath_la-mlutils.lo: mlutils.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-mlutils.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-mlutils.Tpo" -c -o libjrmath_la-mlutils.lo `test -f 'mlutils.c' || echo '$(srcdir)/'`mlutils.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-mlutils.Tpo" "$(DEPDIR)/libjrmath_la-mlutils.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-mlutils.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='mlutils.c' object='libjrmath_la-mlutils.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-mlutils.lo `test -f 'mlutils.c' || echo '$(srcdir)/'`mlutils.c
+
+libjrmath_la-stirlerr.lo: stirlerr.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-stirlerr.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-stirlerr.Tpo" -c -o libjrmath_la-stirlerr.lo `test -f 'stirlerr.c' || echo '$(srcdir)/'`stirlerr.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-stirlerr.Tpo" "$(DEPDIR)/libjrmath_la-stirlerr.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-stirlerr.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='stirlerr.c' object='libjrmath_la-stirlerr.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-stirlerr.lo `test -f 'stirlerr.c' || echo '$(srcdir)/'`stirlerr.c
+
+libjrmath_la-bd0.lo: bd0.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-bd0.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-bd0.Tpo" -c -o libjrmath_la-bd0.lo `test -f 'bd0.c' || echo '$(srcdir)/'`bd0.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-bd0.Tpo" "$(DEPDIR)/libjrmath_la-bd0.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-bd0.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='bd0.c' object='libjrmath_la-bd0.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-bd0.lo `test -f 'bd0.c' || echo '$(srcdir)/'`bd0.c
+
+libjrmath_la-choose.lo: choose.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-choose.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-choose.Tpo" -c -o libjrmath_la-choose.lo `test -f 'choose.c' || echo '$(srcdir)/'`choose.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-choose.Tpo" "$(DEPDIR)/libjrmath_la-choose.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-choose.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='choose.c' object='libjrmath_la-choose.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-choose.lo `test -f 'choose.c' || echo '$(srcdir)/'`choose.c
+
+libjrmath_la-gamma.lo: gamma.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-gamma.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-gamma.Tpo" -c -o libjrmath_la-gamma.lo `test -f 'gamma.c' || echo '$(srcdir)/'`gamma.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-gamma.Tpo" "$(DEPDIR)/libjrmath_la-gamma.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-gamma.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gamma.c' object='libjrmath_la-gamma.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-gamma.lo `test -f 'gamma.c' || echo '$(srcdir)/'`gamma.c
+
+libjrmath_la-lgamma.lo: lgamma.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-lgamma.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-lgamma.Tpo" -c -o libjrmath_la-lgamma.lo `test -f 'lgamma.c' || echo '$(srcdir)/'`lgamma.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-lgamma.Tpo" "$(DEPDIR)/libjrmath_la-lgamma.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-lgamma.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='lgamma.c' object='libjrmath_la-lgamma.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-lgamma.lo `test -f 'lgamma.c' || echo '$(srcdir)/'`lgamma.c
+
+libjrmath_la-toms708.lo: toms708.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-toms708.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-toms708.Tpo" -c -o libjrmath_la-toms708.lo `test -f 'toms708.c' || echo '$(srcdir)/'`toms708.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-toms708.Tpo" "$(DEPDIR)/libjrmath_la-toms708.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-toms708.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='toms708.c' object='libjrmath_la-toms708.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-toms708.lo `test -f 'toms708.c' || echo '$(srcdir)/'`toms708.c
+
+libjrmath_la-d1mach.lo: d1mach.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-d1mach.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-d1mach.Tpo" -c -o libjrmath_la-d1mach.lo `test -f 'd1mach.c' || echo '$(srcdir)/'`d1mach.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-d1mach.Tpo" "$(DEPDIR)/libjrmath_la-d1mach.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-d1mach.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='d1mach.c' object='libjrmath_la-d1mach.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-d1mach.lo `test -f 'd1mach.c' || echo '$(srcdir)/'`d1mach.c
+
+libjrmath_la-i1mach.lo: i1mach.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-i1mach.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-i1mach.Tpo" -c -o libjrmath_la-i1mach.lo `test -f 'i1mach.c' || echo '$(srcdir)/'`i1mach.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-i1mach.Tpo" "$(DEPDIR)/libjrmath_la-i1mach.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-i1mach.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='i1mach.c' object='libjrmath_la-i1mach.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-i1mach.lo `test -f 'i1mach.c' || echo '$(srcdir)/'`i1mach.c
+
+libjrmath_la-fsign.lo: fsign.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-fsign.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-fsign.Tpo" -c -o libjrmath_la-fsign.lo `test -f 'fsign.c' || echo '$(srcdir)/'`fsign.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-fsign.Tpo" "$(DEPDIR)/libjrmath_la-fsign.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-fsign.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='fsign.c' object='libjrmath_la-fsign.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-fsign.lo `test -f 'fsign.c' || echo '$(srcdir)/'`fsign.c
+
+libjrmath_la-imax2.lo: imax2.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-imax2.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-imax2.Tpo" -c -o libjrmath_la-imax2.lo `test -f 'imax2.c' || echo '$(srcdir)/'`imax2.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-imax2.Tpo" "$(DEPDIR)/libjrmath_la-imax2.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-imax2.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='imax2.c' object='libjrmath_la-imax2.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-imax2.lo `test -f 'imax2.c' || echo '$(srcdir)/'`imax2.c
+
+libjrmath_la-imin2.lo: imin2.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-imin2.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-imin2.Tpo" -c -o libjrmath_la-imin2.lo `test -f 'imin2.c' || echo '$(srcdir)/'`imin2.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-imin2.Tpo" "$(DEPDIR)/libjrmath_la-imin2.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-imin2.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='imin2.c' object='libjrmath_la-imin2.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-imin2.lo `test -f 'imin2.c' || echo '$(srcdir)/'`imin2.c
+
+libjrmath_la-fmin2.lo: fmin2.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-fmin2.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-fmin2.Tpo" -c -o libjrmath_la-fmin2.lo `test -f 'fmin2.c' || echo '$(srcdir)/'`fmin2.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-fmin2.Tpo" "$(DEPDIR)/libjrmath_la-fmin2.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-fmin2.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='fmin2.c' object='libjrmath_la-fmin2.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-fmin2.lo `test -f 'fmin2.c' || echo '$(srcdir)/'`fmin2.c
+
+libjrmath_la-fmax2.lo: fmax2.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-fmax2.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-fmax2.Tpo" -c -o libjrmath_la-fmax2.lo `test -f 'fmax2.c' || echo '$(srcdir)/'`fmax2.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-fmax2.Tpo" "$(DEPDIR)/libjrmath_la-fmax2.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-fmax2.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='fmax2.c' object='libjrmath_la-fmax2.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-fmax2.lo `test -f 'fmax2.c' || echo '$(srcdir)/'`fmax2.c
+
+libjrmath_la-ftrunc.lo: ftrunc.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-ftrunc.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-ftrunc.Tpo" -c -o libjrmath_la-ftrunc.lo `test -f 'ftrunc.c' || echo '$(srcdir)/'`ftrunc.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-ftrunc.Tpo" "$(DEPDIR)/libjrmath_la-ftrunc.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-ftrunc.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='ftrunc.c' object='libjrmath_la-ftrunc.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-ftrunc.lo `test -f 'ftrunc.c' || echo '$(srcdir)/'`ftrunc.c
+
+libjrmath_la-chebyshev.lo: chebyshev.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-chebyshev.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-chebyshev.Tpo" -c -o libjrmath_la-chebyshev.lo `test -f 'chebyshev.c' || echo '$(srcdir)/'`chebyshev.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-chebyshev.Tpo" "$(DEPDIR)/libjrmath_la-chebyshev.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-chebyshev.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='chebyshev.c' object='libjrmath_la-chebyshev.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-chebyshev.lo `test -f 'chebyshev.c' || echo '$(srcdir)/'`chebyshev.c
+
+libjrmath_la-lgammacor.lo: lgammacor.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-lgammacor.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-lgammacor.Tpo" -c -o libjrmath_la-lgammacor.lo `test -f 'lgammacor.c' || echo '$(srcdir)/'`lgammacor.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-lgammacor.Tpo" "$(DEPDIR)/libjrmath_la-lgammacor.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-lgammacor.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='lgammacor.c' object='libjrmath_la-lgammacor.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-lgammacor.lo `test -f 'lgammacor.c' || echo '$(srcdir)/'`lgammacor.c
+
+libjrmath_la-log1p.lo: log1p.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-log1p.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-log1p.Tpo" -c -o libjrmath_la-log1p.lo `test -f 'log1p.c' || echo '$(srcdir)/'`log1p.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-log1p.Tpo" "$(DEPDIR)/libjrmath_la-log1p.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-log1p.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='log1p.c' object='libjrmath_la-log1p.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-log1p.lo `test -f 'log1p.c' || echo '$(srcdir)/'`log1p.c
+
+libjrmath_la-lbeta.lo: lbeta.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-lbeta.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-lbeta.Tpo" -c -o libjrmath_la-lbeta.lo `test -f 'lbeta.c' || echo '$(srcdir)/'`lbeta.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-lbeta.Tpo" "$(DEPDIR)/libjrmath_la-lbeta.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-lbeta.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='lbeta.c' object='libjrmath_la-lbeta.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-lbeta.lo `test -f 'lbeta.c' || echo '$(srcdir)/'`lbeta.c
+
+libjrmath_la-rbeta.lo: rbeta.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-rbeta.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-rbeta.Tpo" -c -o libjrmath_la-rbeta.lo `test -f 'rbeta.c' || echo '$(srcdir)/'`rbeta.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-rbeta.Tpo" "$(DEPDIR)/libjrmath_la-rbeta.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-rbeta.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='rbeta.c' object='libjrmath_la-rbeta.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-rbeta.lo `test -f 'rbeta.c' || echo '$(srcdir)/'`rbeta.c
+
+libjrmath_la-dbeta.lo: dbeta.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-dbeta.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-dbeta.Tpo" -c -o libjrmath_la-dbeta.lo `test -f 'dbeta.c' || echo '$(srcdir)/'`dbeta.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-dbeta.Tpo" "$(DEPDIR)/libjrmath_la-dbeta.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-dbeta.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='dbeta.c' object='libjrmath_la-dbeta.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-dbeta.lo `test -f 'dbeta.c' || echo '$(srcdir)/'`dbeta.c
+
+libjrmath_la-pbeta.lo: pbeta.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-pbeta.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-pbeta.Tpo" -c -o libjrmath_la-pbeta.lo `test -f 'pbeta.c' || echo '$(srcdir)/'`pbeta.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-pbeta.Tpo" "$(DEPDIR)/libjrmath_la-pbeta.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-pbeta.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pbeta.c' object='libjrmath_la-pbeta.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-pbeta.lo `test -f 'pbeta.c' || echo '$(srcdir)/'`pbeta.c
+
+libjrmath_la-qbeta.lo: qbeta.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-qbeta.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-qbeta.Tpo" -c -o libjrmath_la-qbeta.lo `test -f 'qbeta.c' || echo '$(srcdir)/'`qbeta.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-qbeta.Tpo" "$(DEPDIR)/libjrmath_la-qbeta.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-qbeta.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='qbeta.c' object='libjrmath_la-qbeta.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-qbeta.lo `test -f 'qbeta.c' || echo '$(srcdir)/'`qbeta.c
+
+libjrmath_la-rbinom.lo: rbinom.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-rbinom.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-rbinom.Tpo" -c -o libjrmath_la-rbinom.lo `test -f 'rbinom.c' || echo '$(srcdir)/'`rbinom.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-rbinom.Tpo" "$(DEPDIR)/libjrmath_la-rbinom.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-rbinom.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='rbinom.c' object='libjrmath_la-rbinom.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-rbinom.lo `test -f 'rbinom.c' || echo '$(srcdir)/'`rbinom.c
+
+libjrmath_la-dbinom.lo: dbinom.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-dbinom.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-dbinom.Tpo" -c -o libjrmath_la-dbinom.lo `test -f 'dbinom.c' || echo '$(srcdir)/'`dbinom.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-dbinom.Tpo" "$(DEPDIR)/libjrmath_la-dbinom.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-dbinom.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='dbinom.c' object='libjrmath_la-dbinom.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-dbinom.lo `test -f 'dbinom.c' || echo '$(srcdir)/'`dbinom.c
+
+libjrmath_la-pbinom.lo: pbinom.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-pbinom.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-pbinom.Tpo" -c -o libjrmath_la-pbinom.lo `test -f 'pbinom.c' || echo '$(srcdir)/'`pbinom.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-pbinom.Tpo" "$(DEPDIR)/libjrmath_la-pbinom.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-pbinom.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pbinom.c' object='libjrmath_la-pbinom.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-pbinom.lo `test -f 'pbinom.c' || echo '$(srcdir)/'`pbinom.c
+
+libjrmath_la-qbinom.lo: qbinom.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-qbinom.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-qbinom.Tpo" -c -o libjrmath_la-qbinom.lo `test -f 'qbinom.c' || echo '$(srcdir)/'`qbinom.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-qbinom.Tpo" "$(DEPDIR)/libjrmath_la-qbinom.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-qbinom.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='qbinom.c' object='libjrmath_la-qbinom.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-qbinom.lo `test -f 'qbinom.c' || echo '$(srcdir)/'`qbinom.c
+
+libjrmath_la-rchisq.lo: rchisq.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-rchisq.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-rchisq.Tpo" -c -o libjrmath_la-rchisq.lo `test -f 'rchisq.c' || echo '$(srcdir)/'`rchisq.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-rchisq.Tpo" "$(DEPDIR)/libjrmath_la-rchisq.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-rchisq.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='rchisq.c' object='libjrmath_la-rchisq.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-rchisq.lo `test -f 'rchisq.c' || echo '$(srcdir)/'`rchisq.c
+
+libjrmath_la-dchisq.lo: dchisq.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-dchisq.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-dchisq.Tpo" -c -o libjrmath_la-dchisq.lo `test -f 'dchisq.c' || echo '$(srcdir)/'`dchisq.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-dchisq.Tpo" "$(DEPDIR)/libjrmath_la-dchisq.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-dchisq.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='dchisq.c' object='libjrmath_la-dchisq.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-dchisq.lo `test -f 'dchisq.c' || echo '$(srcdir)/'`dchisq.c
+
+libjrmath_la-pchisq.lo: pchisq.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-pchisq.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-pchisq.Tpo" -c -o libjrmath_la-pchisq.lo `test -f 'pchisq.c' || echo '$(srcdir)/'`pchisq.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-pchisq.Tpo" "$(DEPDIR)/libjrmath_la-pchisq.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-pchisq.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pchisq.c' object='libjrmath_la-pchisq.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-pchisq.lo `test -f 'pchisq.c' || echo '$(srcdir)/'`pchisq.c
+
+libjrmath_la-qchisq.lo: qchisq.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-qchisq.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-qchisq.Tpo" -c -o libjrmath_la-qchisq.lo `test -f 'qchisq.c' || echo '$(srcdir)/'`qchisq.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-qchisq.Tpo" "$(DEPDIR)/libjrmath_la-qchisq.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-qchisq.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='qchisq.c' object='libjrmath_la-qchisq.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-qchisq.lo `test -f 'qchisq.c' || echo '$(srcdir)/'`qchisq.c
+
+libjrmath_la-rexp.lo: rexp.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-rexp.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-rexp.Tpo" -c -o libjrmath_la-rexp.lo `test -f 'rexp.c' || echo '$(srcdir)/'`rexp.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-rexp.Tpo" "$(DEPDIR)/libjrmath_la-rexp.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-rexp.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='rexp.c' object='libjrmath_la-rexp.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-rexp.lo `test -f 'rexp.c' || echo '$(srcdir)/'`rexp.c
+
+libjrmath_la-dexp.lo: dexp.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-dexp.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-dexp.Tpo" -c -o libjrmath_la-dexp.lo `test -f 'dexp.c' || echo '$(srcdir)/'`dexp.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-dexp.Tpo" "$(DEPDIR)/libjrmath_la-dexp.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-dexp.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='dexp.c' object='libjrmath_la-dexp.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-dexp.lo `test -f 'dexp.c' || echo '$(srcdir)/'`dexp.c
+
+libjrmath_la-pexp.lo: pexp.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-pexp.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-pexp.Tpo" -c -o libjrmath_la-pexp.lo `test -f 'pexp.c' || echo '$(srcdir)/'`pexp.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-pexp.Tpo" "$(DEPDIR)/libjrmath_la-pexp.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-pexp.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pexp.c' object='libjrmath_la-pexp.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-pexp.lo `test -f 'pexp.c' || echo '$(srcdir)/'`pexp.c
+
+libjrmath_la-qexp.lo: qexp.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-qexp.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-qexp.Tpo" -c -o libjrmath_la-qexp.lo `test -f 'qexp.c' || echo '$(srcdir)/'`qexp.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-qexp.Tpo" "$(DEPDIR)/libjrmath_la-qexp.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-qexp.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='qexp.c' object='libjrmath_la-qexp.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-qexp.lo `test -f 'qexp.c' || echo '$(srcdir)/'`qexp.c
+
+libjrmath_la-rgamma.lo: rgamma.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-rgamma.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-rgamma.Tpo" -c -o libjrmath_la-rgamma.lo `test -f 'rgamma.c' || echo '$(srcdir)/'`rgamma.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-rgamma.Tpo" "$(DEPDIR)/libjrmath_la-rgamma.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-rgamma.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='rgamma.c' object='libjrmath_la-rgamma.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-rgamma.lo `test -f 'rgamma.c' || echo '$(srcdir)/'`rgamma.c
+
+libjrmath_la-dgamma.lo: dgamma.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-dgamma.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-dgamma.Tpo" -c -o libjrmath_la-dgamma.lo `test -f 'dgamma.c' || echo '$(srcdir)/'`dgamma.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-dgamma.Tpo" "$(DEPDIR)/libjrmath_la-dgamma.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-dgamma.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='dgamma.c' object='libjrmath_la-dgamma.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-dgamma.lo `test -f 'dgamma.c' || echo '$(srcdir)/'`dgamma.c
+
+libjrmath_la-pgamma.lo: pgamma.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-pgamma.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-pgamma.Tpo" -c -o libjrmath_la-pgamma.lo `test -f 'pgamma.c' || echo '$(srcdir)/'`pgamma.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-pgamma.Tpo" "$(DEPDIR)/libjrmath_la-pgamma.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-pgamma.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pgamma.c' object='libjrmath_la-pgamma.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-pgamma.lo `test -f 'pgamma.c' || echo '$(srcdir)/'`pgamma.c
+
+libjrmath_la-qgamma.lo: qgamma.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-qgamma.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-qgamma.Tpo" -c -o libjrmath_la-qgamma.lo `test -f 'qgamma.c' || echo '$(srcdir)/'`qgamma.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-qgamma.Tpo" "$(DEPDIR)/libjrmath_la-qgamma.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-qgamma.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='qgamma.c' object='libjrmath_la-qgamma.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-qgamma.lo `test -f 'qgamma.c' || echo '$(srcdir)/'`qgamma.c
+
+libjrmath_la-rhyper.lo: rhyper.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-rhyper.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-rhyper.Tpo" -c -o libjrmath_la-rhyper.lo `test -f 'rhyper.c' || echo '$(srcdir)/'`rhyper.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-rhyper.Tpo" "$(DEPDIR)/libjrmath_la-rhyper.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-rhyper.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='rhyper.c' object='libjrmath_la-rhyper.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-rhyper.lo `test -f 'rhyper.c' || echo '$(srcdir)/'`rhyper.c
+
+libjrmath_la-dhyper.lo: dhyper.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-dhyper.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-dhyper.Tpo" -c -o libjrmath_la-dhyper.lo `test -f 'dhyper.c' || echo '$(srcdir)/'`dhyper.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-dhyper.Tpo" "$(DEPDIR)/libjrmath_la-dhyper.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-dhyper.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='dhyper.c' object='libjrmath_la-dhyper.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-dhyper.lo `test -f 'dhyper.c' || echo '$(srcdir)/'`dhyper.c
+
+libjrmath_la-phyper.lo: phyper.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-phyper.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-phyper.Tpo" -c -o libjrmath_la-phyper.lo `test -f 'phyper.c' || echo '$(srcdir)/'`phyper.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-phyper.Tpo" "$(DEPDIR)/libjrmath_la-phyper.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-phyper.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='phyper.c' object='libjrmath_la-phyper.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-phyper.lo `test -f 'phyper.c' || echo '$(srcdir)/'`phyper.c
+
+libjrmath_la-qhyper.lo: qhyper.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-qhyper.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-qhyper.Tpo" -c -o libjrmath_la-qhyper.lo `test -f 'qhyper.c' || echo '$(srcdir)/'`qhyper.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-qhyper.Tpo" "$(DEPDIR)/libjrmath_la-qhyper.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-qhyper.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='qhyper.c' object='libjrmath_la-qhyper.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-qhyper.lo `test -f 'qhyper.c' || echo '$(srcdir)/'`qhyper.c
+
+libjrmath_la-rlnorm.lo: rlnorm.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-rlnorm.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-rlnorm.Tpo" -c -o libjrmath_la-rlnorm.lo `test -f 'rlnorm.c' || echo '$(srcdir)/'`rlnorm.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-rlnorm.Tpo" "$(DEPDIR)/libjrmath_la-rlnorm.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-rlnorm.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='rlnorm.c' object='libjrmath_la-rlnorm.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-rlnorm.lo `test -f 'rlnorm.c' || echo '$(srcdir)/'`rlnorm.c
+
+libjrmath_la-dlnorm.lo: dlnorm.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-dlnorm.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-dlnorm.Tpo" -c -o libjrmath_la-dlnorm.lo `test -f 'dlnorm.c' || echo '$(srcdir)/'`dlnorm.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-dlnorm.Tpo" "$(DEPDIR)/libjrmath_la-dlnorm.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-dlnorm.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='dlnorm.c' object='libjrmath_la-dlnorm.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-dlnorm.lo `test -f 'dlnorm.c' || echo '$(srcdir)/'`dlnorm.c
+
+libjrmath_la-plnorm.lo: plnorm.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-plnorm.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-plnorm.Tpo" -c -o libjrmath_la-plnorm.lo `test -f 'plnorm.c' || echo '$(srcdir)/'`plnorm.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-plnorm.Tpo" "$(DEPDIR)/libjrmath_la-plnorm.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-plnorm.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='plnorm.c' object='libjrmath_la-plnorm.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-plnorm.lo `test -f 'plnorm.c' || echo '$(srcdir)/'`plnorm.c
+
+libjrmath_la-qlnorm.lo: qlnorm.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-qlnorm.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-qlnorm.Tpo" -c -o libjrmath_la-qlnorm.lo `test -f 'qlnorm.c' || echo '$(srcdir)/'`qlnorm.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-qlnorm.Tpo" "$(DEPDIR)/libjrmath_la-qlnorm.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-qlnorm.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='qlnorm.c' object='libjrmath_la-qlnorm.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-qlnorm.lo `test -f 'qlnorm.c' || echo '$(srcdir)/'`qlnorm.c
+
+libjrmath_la-rlogis.lo: rlogis.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-rlogis.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-rlogis.Tpo" -c -o libjrmath_la-rlogis.lo `test -f 'rlogis.c' || echo '$(srcdir)/'`rlogis.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-rlogis.Tpo" "$(DEPDIR)/libjrmath_la-rlogis.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-rlogis.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='rlogis.c' object='libjrmath_la-rlogis.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-rlogis.lo `test -f 'rlogis.c' || echo '$(srcdir)/'`rlogis.c
+
+libjrmath_la-dlogis.lo: dlogis.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-dlogis.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-dlogis.Tpo" -c -o libjrmath_la-dlogis.lo `test -f 'dlogis.c' || echo '$(srcdir)/'`dlogis.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-dlogis.Tpo" "$(DEPDIR)/libjrmath_la-dlogis.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-dlogis.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='dlogis.c' object='libjrmath_la-dlogis.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-dlogis.lo `test -f 'dlogis.c' || echo '$(srcdir)/'`dlogis.c
+
+libjrmath_la-plogis.lo: plogis.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-plogis.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-plogis.Tpo" -c -o libjrmath_la-plogis.lo `test -f 'plogis.c' || echo '$(srcdir)/'`plogis.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-plogis.Tpo" "$(DEPDIR)/libjrmath_la-plogis.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-plogis.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='plogis.c' object='libjrmath_la-plogis.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-plogis.lo `test -f 'plogis.c' || echo '$(srcdir)/'`plogis.c
+
+libjrmath_la-qlogis.lo: qlogis.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-qlogis.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-qlogis.Tpo" -c -o libjrmath_la-qlogis.lo `test -f 'qlogis.c' || echo '$(srcdir)/'`qlogis.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-qlogis.Tpo" "$(DEPDIR)/libjrmath_la-qlogis.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-qlogis.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='qlogis.c' object='libjrmath_la-qlogis.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-qlogis.lo `test -f 'qlogis.c' || echo '$(srcdir)/'`qlogis.c
+
+libjrmath_la-rnbinom.lo: rnbinom.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-rnbinom.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-rnbinom.Tpo" -c -o libjrmath_la-rnbinom.lo `test -f 'rnbinom.c' || echo '$(srcdir)/'`rnbinom.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-rnbinom.Tpo" "$(DEPDIR)/libjrmath_la-rnbinom.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-rnbinom.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='rnbinom.c' object='libjrmath_la-rnbinom.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-rnbinom.lo `test -f 'rnbinom.c' || echo '$(srcdir)/'`rnbinom.c
+
+libjrmath_la-dnbinom.lo: dnbinom.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-dnbinom.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-dnbinom.Tpo" -c -o libjrmath_la-dnbinom.lo `test -f 'dnbinom.c' || echo '$(srcdir)/'`dnbinom.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-dnbinom.Tpo" "$(DEPDIR)/libjrmath_la-dnbinom.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-dnbinom.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='dnbinom.c' object='libjrmath_la-dnbinom.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-dnbinom.lo `test -f 'dnbinom.c' || echo '$(srcdir)/'`dnbinom.c
+
+libjrmath_la-pnbinom.lo: pnbinom.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-pnbinom.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-pnbinom.Tpo" -c -o libjrmath_la-pnbinom.lo `test -f 'pnbinom.c' || echo '$(srcdir)/'`pnbinom.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-pnbinom.Tpo" "$(DEPDIR)/libjrmath_la-pnbinom.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-pnbinom.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pnbinom.c' object='libjrmath_la-pnbinom.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-pnbinom.lo `test -f 'pnbinom.c' || echo '$(srcdir)/'`pnbinom.c
+
+libjrmath_la-qnbinom.lo: qnbinom.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-qnbinom.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-qnbinom.Tpo" -c -o libjrmath_la-qnbinom.lo `test -f 'qnbinom.c' || echo '$(srcdir)/'`qnbinom.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-qnbinom.Tpo" "$(DEPDIR)/libjrmath_la-qnbinom.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-qnbinom.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='qnbinom.c' object='libjrmath_la-qnbinom.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-qnbinom.lo `test -f 'qnbinom.c' || echo '$(srcdir)/'`qnbinom.c
+
+libjrmath_la-rnorm.lo: rnorm.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-rnorm.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-rnorm.Tpo" -c -o libjrmath_la-rnorm.lo `test -f 'rnorm.c' || echo '$(srcdir)/'`rnorm.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-rnorm.Tpo" "$(DEPDIR)/libjrmath_la-rnorm.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-rnorm.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='rnorm.c' object='libjrmath_la-rnorm.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-rnorm.lo `test -f 'rnorm.c' || echo '$(srcdir)/'`rnorm.c
+
+libjrmath_la-dnorm.lo: dnorm.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-dnorm.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-dnorm.Tpo" -c -o libjrmath_la-dnorm.lo `test -f 'dnorm.c' || echo '$(srcdir)/'`dnorm.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-dnorm.Tpo" "$(DEPDIR)/libjrmath_la-dnorm.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-dnorm.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='dnorm.c' object='libjrmath_la-dnorm.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-dnorm.lo `test -f 'dnorm.c' || echo '$(srcdir)/'`dnorm.c
+
+libjrmath_la-pnorm.lo: pnorm.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-pnorm.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-pnorm.Tpo" -c -o libjrmath_la-pnorm.lo `test -f 'pnorm.c' || echo '$(srcdir)/'`pnorm.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-pnorm.Tpo" "$(DEPDIR)/libjrmath_la-pnorm.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-pnorm.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pnorm.c' object='libjrmath_la-pnorm.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-pnorm.lo `test -f 'pnorm.c' || echo '$(srcdir)/'`pnorm.c
+
+libjrmath_la-qnorm.lo: qnorm.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-qnorm.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-qnorm.Tpo" -c -o libjrmath_la-qnorm.lo `test -f 'qnorm.c' || echo '$(srcdir)/'`qnorm.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-qnorm.Tpo" "$(DEPDIR)/libjrmath_la-qnorm.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-qnorm.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='qnorm.c' object='libjrmath_la-qnorm.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-qnorm.lo `test -f 'qnorm.c' || echo '$(srcdir)/'`qnorm.c
+
+libjrmath_la-rpois.lo: rpois.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-rpois.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-rpois.Tpo" -c -o libjrmath_la-rpois.lo `test -f 'rpois.c' || echo '$(srcdir)/'`rpois.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-rpois.Tpo" "$(DEPDIR)/libjrmath_la-rpois.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-rpois.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='rpois.c' object='libjrmath_la-rpois.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-rpois.lo `test -f 'rpois.c' || echo '$(srcdir)/'`rpois.c
+
+libjrmath_la-dpois.lo: dpois.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-dpois.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-dpois.Tpo" -c -o libjrmath_la-dpois.lo `test -f 'dpois.c' || echo '$(srcdir)/'`dpois.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-dpois.Tpo" "$(DEPDIR)/libjrmath_la-dpois.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-dpois.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='dpois.c' object='libjrmath_la-dpois.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-dpois.lo `test -f 'dpois.c' || echo '$(srcdir)/'`dpois.c
+
+libjrmath_la-ppois.lo: ppois.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-ppois.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-ppois.Tpo" -c -o libjrmath_la-ppois.lo `test -f 'ppois.c' || echo '$(srcdir)/'`ppois.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-ppois.Tpo" "$(DEPDIR)/libjrmath_la-ppois.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-ppois.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='ppois.c' object='libjrmath_la-ppois.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-ppois.lo `test -f 'ppois.c' || echo '$(srcdir)/'`ppois.c
+
+libjrmath_la-qpois.lo: qpois.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-qpois.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-qpois.Tpo" -c -o libjrmath_la-qpois.lo `test -f 'qpois.c' || echo '$(srcdir)/'`qpois.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-qpois.Tpo" "$(DEPDIR)/libjrmath_la-qpois.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-qpois.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='qpois.c' object='libjrmath_la-qpois.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-qpois.lo `test -f 'qpois.c' || echo '$(srcdir)/'`qpois.c
+
+libjrmath_la-rt.lo: rt.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-rt.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-rt.Tpo" -c -o libjrmath_la-rt.lo `test -f 'rt.c' || echo '$(srcdir)/'`rt.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-rt.Tpo" "$(DEPDIR)/libjrmath_la-rt.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-rt.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='rt.c' object='libjrmath_la-rt.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-rt.lo `test -f 'rt.c' || echo '$(srcdir)/'`rt.c
+
+libjrmath_la-dt.lo: dt.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-dt.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-dt.Tpo" -c -o libjrmath_la-dt.lo `test -f 'dt.c' || echo '$(srcdir)/'`dt.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-dt.Tpo" "$(DEPDIR)/libjrmath_la-dt.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-dt.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='dt.c' object='libjrmath_la-dt.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-dt.lo `test -f 'dt.c' || echo '$(srcdir)/'`dt.c
+
+libjrmath_la-pt.lo: pt.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-pt.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-pt.Tpo" -c -o libjrmath_la-pt.lo `test -f 'pt.c' || echo '$(srcdir)/'`pt.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-pt.Tpo" "$(DEPDIR)/libjrmath_la-pt.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-pt.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pt.c' object='libjrmath_la-pt.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-pt.lo `test -f 'pt.c' || echo '$(srcdir)/'`pt.c
+
+libjrmath_la-qt.lo: qt.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-qt.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-qt.Tpo" -c -o libjrmath_la-qt.lo `test -f 'qt.c' || echo '$(srcdir)/'`qt.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-qt.Tpo" "$(DEPDIR)/libjrmath_la-qt.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-qt.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='qt.c' object='libjrmath_la-qt.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-qt.lo `test -f 'qt.c' || echo '$(srcdir)/'`qt.c
+
+libjrmath_la-runif.lo: runif.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-runif.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-runif.Tpo" -c -o libjrmath_la-runif.lo `test -f 'runif.c' || echo '$(srcdir)/'`runif.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-runif.Tpo" "$(DEPDIR)/libjrmath_la-runif.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-runif.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='runif.c' object='libjrmath_la-runif.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-runif.lo `test -f 'runif.c' || echo '$(srcdir)/'`runif.c
+
+libjrmath_la-dunif.lo: dunif.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-dunif.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-dunif.Tpo" -c -o libjrmath_la-dunif.lo `test -f 'dunif.c' || echo '$(srcdir)/'`dunif.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-dunif.Tpo" "$(DEPDIR)/libjrmath_la-dunif.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-dunif.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='dunif.c' object='libjrmath_la-dunif.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-dunif.lo `test -f 'dunif.c' || echo '$(srcdir)/'`dunif.c
+
+libjrmath_la-punif.lo: punif.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-punif.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-punif.Tpo" -c -o libjrmath_la-punif.lo `test -f 'punif.c' || echo '$(srcdir)/'`punif.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-punif.Tpo" "$(DEPDIR)/libjrmath_la-punif.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-punif.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='punif.c' object='libjrmath_la-punif.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-punif.lo `test -f 'punif.c' || echo '$(srcdir)/'`punif.c
+
+libjrmath_la-qunif.lo: qunif.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-qunif.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-qunif.Tpo" -c -o libjrmath_la-qunif.lo `test -f 'qunif.c' || echo '$(srcdir)/'`qunif.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-qunif.Tpo" "$(DEPDIR)/libjrmath_la-qunif.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-qunif.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='qunif.c' object='libjrmath_la-qunif.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-qunif.lo `test -f 'qunif.c' || echo '$(srcdir)/'`qunif.c
+
+libjrmath_la-rweibull.lo: rweibull.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-rweibull.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-rweibull.Tpo" -c -o libjrmath_la-rweibull.lo `test -f 'rweibull.c' || echo '$(srcdir)/'`rweibull.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-rweibull.Tpo" "$(DEPDIR)/libjrmath_la-rweibull.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-rweibull.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='rweibull.c' object='libjrmath_la-rweibull.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-rweibull.lo `test -f 'rweibull.c' || echo '$(srcdir)/'`rweibull.c
+
+libjrmath_la-dweibull.lo: dweibull.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-dweibull.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-dweibull.Tpo" -c -o libjrmath_la-dweibull.lo `test -f 'dweibull.c' || echo '$(srcdir)/'`dweibull.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-dweibull.Tpo" "$(DEPDIR)/libjrmath_la-dweibull.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-dweibull.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='dweibull.c' object='libjrmath_la-dweibull.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-dweibull.lo `test -f 'dweibull.c' || echo '$(srcdir)/'`dweibull.c
+
+libjrmath_la-pweibull.lo: pweibull.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-pweibull.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-pweibull.Tpo" -c -o libjrmath_la-pweibull.lo `test -f 'pweibull.c' || echo '$(srcdir)/'`pweibull.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-pweibull.Tpo" "$(DEPDIR)/libjrmath_la-pweibull.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-pweibull.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pweibull.c' object='libjrmath_la-pweibull.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-pweibull.lo `test -f 'pweibull.c' || echo '$(srcdir)/'`pweibull.c
+
+libjrmath_la-qweibull.lo: qweibull.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libjrmath_la-qweibull.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-qweibull.Tpo" -c -o libjrmath_la-qweibull.lo `test -f 'qweibull.c' || echo '$(srcdir)/'`qweibull.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-qweibull.Tpo" "$(DEPDIR)/libjrmath_la-qweibull.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-qweibull.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='qweibull.c' object='libjrmath_la-qweibull.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libjrmath_la-qweibull.lo `test -f 'qweibull.c' || echo '$(srcdir)/'`qweibull.c
+
 .cc.o:
 @am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
 @am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/$*.Tpo" "$(DEPDIR)/$*.Po"; else rm -f "$(DEPDIR)/$*.Tpo"; exit 1; fi
@@ -425,6 +974,13 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LTCXXCOMPILE) -c -o $@ $<
+
+libjrmath_la-callbacks.lo: callbacks.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libjrmath_la-callbacks.lo -MD -MP -MF "$(DEPDIR)/libjrmath_la-callbacks.Tpo" -c -o libjrmath_la-callbacks.lo `test -f 'callbacks.cc' || echo '$(srcdir)/'`callbacks.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libjrmath_la-callbacks.Tpo" "$(DEPDIR)/libjrmath_la-callbacks.Plo"; else rm -f "$(DEPDIR)/libjrmath_la-callbacks.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='callbacks.cc' object='libjrmath_la-callbacks.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libjrmath_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libjrmath_la-callbacks.lo `test -f 'callbacks.cc' || echo '$(srcdir)/'`callbacks.cc
 
 mostlyclean-libtool:
 	-rm -f *.lo

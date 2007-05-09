@@ -52,10 +52,14 @@ CONFIG_HEADER = $(top_builddir)/src/include/config.h
 CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 libcompiler_la_LIBADD =
-am_libcompiler_la_OBJECTS = parser.lo scanner.lo Compiler.lo \
-	LogicalFactory.lo ParseTree.lo Counter.lo CounterTab.lo \
-	ConstantFactory.lo MixtureFactory.lo MixCompiler.lo \
-	NodeFactory.lo StochasticFactory.lo
+am_libcompiler_la_OBJECTS = libcompiler_la-parser.lo \
+	libcompiler_la-scanner.lo libcompiler_la-Compiler.lo \
+	libcompiler_la-LogicalFactory.lo libcompiler_la-ParseTree.lo \
+	libcompiler_la-Counter.lo libcompiler_la-CounterTab.lo \
+	libcompiler_la-ConstantFactory.lo \
+	libcompiler_la-MixtureFactory.lo libcompiler_la-MixCompiler.lo \
+	libcompiler_la-NodeFactory.lo \
+	libcompiler_la-StochasticFactory.lo
 libcompiler_la_OBJECTS = $(am_libcompiler_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/src/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -201,10 +205,10 @@ sharedstatedir = @sharedstatedir@
 subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
-INCLUDES = -I $(top_srcdir)/src/include
 noinst_LTLIBRARIES = libcompiler.la
 AM_YFLAGS = -d
 BUILT_SOURCES = parser.h
+libcompiler_la_CPPFLAGS = -I$(top_srcdir)/src/include
 libcompiler_la_SOURCES = parser.yy scanner.ll Compiler.cc		\
 LogicalFactory.cc ParseTree.cc Counter.cc CounterTab.cc			\
 ConstantFactory.cc MixtureFactory.cc MixCompiler.cc NodeFactory.cc	\
@@ -268,18 +272,18 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Compiler.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ConstantFactory.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Counter.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CounterTab.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LogicalFactory.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MixCompiler.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MixtureFactory.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NodeFactory.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ParseTree.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/StochasticFactory.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/parser.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/scanner.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libcompiler_la-Compiler.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libcompiler_la-ConstantFactory.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libcompiler_la-Counter.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libcompiler_la-CounterTab.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libcompiler_la-LogicalFactory.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libcompiler_la-MixCompiler.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libcompiler_la-MixtureFactory.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libcompiler_la-NodeFactory.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libcompiler_la-ParseTree.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libcompiler_la-StochasticFactory.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libcompiler_la-parser.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libcompiler_la-scanner.Plo@am__quote@
 
 .cc.o:
 @am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -301,6 +305,90 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LTCXXCOMPILE) -c -o $@ $<
+
+libcompiler_la-parser.lo: parser.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libcompiler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libcompiler_la-parser.lo -MD -MP -MF "$(DEPDIR)/libcompiler_la-parser.Tpo" -c -o libcompiler_la-parser.lo `test -f 'parser.cc' || echo '$(srcdir)/'`parser.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libcompiler_la-parser.Tpo" "$(DEPDIR)/libcompiler_la-parser.Plo"; else rm -f "$(DEPDIR)/libcompiler_la-parser.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='parser.cc' object='libcompiler_la-parser.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libcompiler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libcompiler_la-parser.lo `test -f 'parser.cc' || echo '$(srcdir)/'`parser.cc
+
+libcompiler_la-scanner.lo: scanner.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libcompiler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libcompiler_la-scanner.lo -MD -MP -MF "$(DEPDIR)/libcompiler_la-scanner.Tpo" -c -o libcompiler_la-scanner.lo `test -f 'scanner.cc' || echo '$(srcdir)/'`scanner.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libcompiler_la-scanner.Tpo" "$(DEPDIR)/libcompiler_la-scanner.Plo"; else rm -f "$(DEPDIR)/libcompiler_la-scanner.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='scanner.cc' object='libcompiler_la-scanner.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libcompiler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libcompiler_la-scanner.lo `test -f 'scanner.cc' || echo '$(srcdir)/'`scanner.cc
+
+libcompiler_la-Compiler.lo: Compiler.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libcompiler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libcompiler_la-Compiler.lo -MD -MP -MF "$(DEPDIR)/libcompiler_la-Compiler.Tpo" -c -o libcompiler_la-Compiler.lo `test -f 'Compiler.cc' || echo '$(srcdir)/'`Compiler.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libcompiler_la-Compiler.Tpo" "$(DEPDIR)/libcompiler_la-Compiler.Plo"; else rm -f "$(DEPDIR)/libcompiler_la-Compiler.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Compiler.cc' object='libcompiler_la-Compiler.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libcompiler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libcompiler_la-Compiler.lo `test -f 'Compiler.cc' || echo '$(srcdir)/'`Compiler.cc
+
+libcompiler_la-LogicalFactory.lo: LogicalFactory.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libcompiler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libcompiler_la-LogicalFactory.lo -MD -MP -MF "$(DEPDIR)/libcompiler_la-LogicalFactory.Tpo" -c -o libcompiler_la-LogicalFactory.lo `test -f 'LogicalFactory.cc' || echo '$(srcdir)/'`LogicalFactory.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libcompiler_la-LogicalFactory.Tpo" "$(DEPDIR)/libcompiler_la-LogicalFactory.Plo"; else rm -f "$(DEPDIR)/libcompiler_la-LogicalFactory.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='LogicalFactory.cc' object='libcompiler_la-LogicalFactory.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libcompiler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libcompiler_la-LogicalFactory.lo `test -f 'LogicalFactory.cc' || echo '$(srcdir)/'`LogicalFactory.cc
+
+libcompiler_la-ParseTree.lo: ParseTree.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libcompiler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libcompiler_la-ParseTree.lo -MD -MP -MF "$(DEPDIR)/libcompiler_la-ParseTree.Tpo" -c -o libcompiler_la-ParseTree.lo `test -f 'ParseTree.cc' || echo '$(srcdir)/'`ParseTree.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libcompiler_la-ParseTree.Tpo" "$(DEPDIR)/libcompiler_la-ParseTree.Plo"; else rm -f "$(DEPDIR)/libcompiler_la-ParseTree.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='ParseTree.cc' object='libcompiler_la-ParseTree.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libcompiler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libcompiler_la-ParseTree.lo `test -f 'ParseTree.cc' || echo '$(srcdir)/'`ParseTree.cc
+
+libcompiler_la-Counter.lo: Counter.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libcompiler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libcompiler_la-Counter.lo -MD -MP -MF "$(DEPDIR)/libcompiler_la-Counter.Tpo" -c -o libcompiler_la-Counter.lo `test -f 'Counter.cc' || echo '$(srcdir)/'`Counter.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libcompiler_la-Counter.Tpo" "$(DEPDIR)/libcompiler_la-Counter.Plo"; else rm -f "$(DEPDIR)/libcompiler_la-Counter.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Counter.cc' object='libcompiler_la-Counter.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libcompiler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libcompiler_la-Counter.lo `test -f 'Counter.cc' || echo '$(srcdir)/'`Counter.cc
+
+libcompiler_la-CounterTab.lo: CounterTab.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libcompiler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libcompiler_la-CounterTab.lo -MD -MP -MF "$(DEPDIR)/libcompiler_la-CounterTab.Tpo" -c -o libcompiler_la-CounterTab.lo `test -f 'CounterTab.cc' || echo '$(srcdir)/'`CounterTab.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libcompiler_la-CounterTab.Tpo" "$(DEPDIR)/libcompiler_la-CounterTab.Plo"; else rm -f "$(DEPDIR)/libcompiler_la-CounterTab.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='CounterTab.cc' object='libcompiler_la-CounterTab.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libcompiler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libcompiler_la-CounterTab.lo `test -f 'CounterTab.cc' || echo '$(srcdir)/'`CounterTab.cc
+
+libcompiler_la-ConstantFactory.lo: ConstantFactory.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libcompiler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libcompiler_la-ConstantFactory.lo -MD -MP -MF "$(DEPDIR)/libcompiler_la-ConstantFactory.Tpo" -c -o libcompiler_la-ConstantFactory.lo `test -f 'ConstantFactory.cc' || echo '$(srcdir)/'`ConstantFactory.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libcompiler_la-ConstantFactory.Tpo" "$(DEPDIR)/libcompiler_la-ConstantFactory.Plo"; else rm -f "$(DEPDIR)/libcompiler_la-ConstantFactory.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='ConstantFactory.cc' object='libcompiler_la-ConstantFactory.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libcompiler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libcompiler_la-ConstantFactory.lo `test -f 'ConstantFactory.cc' || echo '$(srcdir)/'`ConstantFactory.cc
+
+libcompiler_la-MixtureFactory.lo: MixtureFactory.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libcompiler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libcompiler_la-MixtureFactory.lo -MD -MP -MF "$(DEPDIR)/libcompiler_la-MixtureFactory.Tpo" -c -o libcompiler_la-MixtureFactory.lo `test -f 'MixtureFactory.cc' || echo '$(srcdir)/'`MixtureFactory.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libcompiler_la-MixtureFactory.Tpo" "$(DEPDIR)/libcompiler_la-MixtureFactory.Plo"; else rm -f "$(DEPDIR)/libcompiler_la-MixtureFactory.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='MixtureFactory.cc' object='libcompiler_la-MixtureFactory.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libcompiler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libcompiler_la-MixtureFactory.lo `test -f 'MixtureFactory.cc' || echo '$(srcdir)/'`MixtureFactory.cc
+
+libcompiler_la-MixCompiler.lo: MixCompiler.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libcompiler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libcompiler_la-MixCompiler.lo -MD -MP -MF "$(DEPDIR)/libcompiler_la-MixCompiler.Tpo" -c -o libcompiler_la-MixCompiler.lo `test -f 'MixCompiler.cc' || echo '$(srcdir)/'`MixCompiler.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libcompiler_la-MixCompiler.Tpo" "$(DEPDIR)/libcompiler_la-MixCompiler.Plo"; else rm -f "$(DEPDIR)/libcompiler_la-MixCompiler.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='MixCompiler.cc' object='libcompiler_la-MixCompiler.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libcompiler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libcompiler_la-MixCompiler.lo `test -f 'MixCompiler.cc' || echo '$(srcdir)/'`MixCompiler.cc
+
+libcompiler_la-NodeFactory.lo: NodeFactory.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libcompiler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libcompiler_la-NodeFactory.lo -MD -MP -MF "$(DEPDIR)/libcompiler_la-NodeFactory.Tpo" -c -o libcompiler_la-NodeFactory.lo `test -f 'NodeFactory.cc' || echo '$(srcdir)/'`NodeFactory.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libcompiler_la-NodeFactory.Tpo" "$(DEPDIR)/libcompiler_la-NodeFactory.Plo"; else rm -f "$(DEPDIR)/libcompiler_la-NodeFactory.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='NodeFactory.cc' object='libcompiler_la-NodeFactory.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libcompiler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libcompiler_la-NodeFactory.lo `test -f 'NodeFactory.cc' || echo '$(srcdir)/'`NodeFactory.cc
+
+libcompiler_la-StochasticFactory.lo: StochasticFactory.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libcompiler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libcompiler_la-StochasticFactory.lo -MD -MP -MF "$(DEPDIR)/libcompiler_la-StochasticFactory.Tpo" -c -o libcompiler_la-StochasticFactory.lo `test -f 'StochasticFactory.cc' || echo '$(srcdir)/'`StochasticFactory.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libcompiler_la-StochasticFactory.Tpo" "$(DEPDIR)/libcompiler_la-StochasticFactory.Plo"; else rm -f "$(DEPDIR)/libcompiler_la-StochasticFactory.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='StochasticFactory.cc' object='libcompiler_la-StochasticFactory.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libcompiler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libcompiler_la-StochasticFactory.lo `test -f 'StochasticFactory.cc' || echo '$(srcdir)/'`StochasticFactory.cc
 
 .ll.cc:
 	$(LEXCOMPILE) $<

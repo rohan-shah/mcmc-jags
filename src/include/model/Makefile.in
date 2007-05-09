@@ -178,8 +178,8 @@ subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 modelincludedir = $(jagsincludedir)/model
-modelinclude_HEADERS = SymTab.h NodeArray.h Model.h Monitor.h TraceMonitor.h \
-BUGSModel.h 
+modelinclude_HEADERS = SymTab.h NodeArray.h Model.h Monitor.h	\
+TraceMonitor.h BUGSModel.h
 
 all: all-am
 

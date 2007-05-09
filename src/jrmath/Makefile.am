@@ -1,6 +1,8 @@
-INCLUDES = -I $(top_srcdir)/src/include
-
 jagslib_LTLIBRARIES = libjrmath.la
+
+libjrmath_la_CPPFLAGS = -I$(top_srcdir)/src/include
+
+libjrmath_la_LDFLAGS = -no-undefined 
 
 libjrmath_la_SOURCES = callbacks.cc \
 mlutils.c stirlerr.c bd0.c choose.c gamma.c lgamma.c toms708.c \
@@ -21,8 +23,6 @@ rpois.c dpois.c ppois.c qpois.c \
 rt.c dt.c pt.c qt.c \
 runif.c dunif.c punif.c qunif.c \
 rweibull.c dweibull.c pweibull.c qweibull.c 
-
-libjrmath_la_LDFLAGS = -no-undefined 
 
 noinst_HEADERS = nmath.h dpq.h 
 

@@ -50,8 +50,8 @@ CONFIG_HEADER = $(top_builddir)/src/include/config.h
 CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 libfunc_la_LIBADD =
-am_libfunc_la_OBJECTS = FuncTab.lo Function.lo ScalarFunc.lo \
-	InverseLinkFunc.lo
+am_libfunc_la_OBJECTS = libfunc_la-FuncTab.lo libfunc_la-Function.lo \
+	libfunc_la-ScalarFunc.lo libfunc_la-InverseLinkFunc.lo
 libfunc_la_OBJECTS = $(am_libfunc_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/src/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -183,8 +183,8 @@ sharedstatedir = @sharedstatedir@
 subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
-INCLUDES = -I $(top_srcdir)/src/include
 noinst_LTLIBRARIES = libfunc.la
+libfunc_la_CPPFLAGS = -I$(top_srcdir)/src/include
 libfunc_la_SOURCES = FuncTab.cc Function.cc ScalarFunc.cc	\
 InverseLinkFunc.cc
 
@@ -239,10 +239,10 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FuncTab.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Function.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/InverseLinkFunc.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ScalarFunc.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfunc_la-FuncTab.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfunc_la-Function.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfunc_la-InverseLinkFunc.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfunc_la-ScalarFunc.Plo@am__quote@
 
 .cc.o:
 @am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -264,6 +264,34 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LTCXXCOMPILE) -c -o $@ $<
+
+libfunc_la-FuncTab.lo: FuncTab.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libfunc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libfunc_la-FuncTab.lo -MD -MP -MF "$(DEPDIR)/libfunc_la-FuncTab.Tpo" -c -o libfunc_la-FuncTab.lo `test -f 'FuncTab.cc' || echo '$(srcdir)/'`FuncTab.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libfunc_la-FuncTab.Tpo" "$(DEPDIR)/libfunc_la-FuncTab.Plo"; else rm -f "$(DEPDIR)/libfunc_la-FuncTab.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='FuncTab.cc' object='libfunc_la-FuncTab.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libfunc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libfunc_la-FuncTab.lo `test -f 'FuncTab.cc' || echo '$(srcdir)/'`FuncTab.cc
+
+libfunc_la-Function.lo: Function.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libfunc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libfunc_la-Function.lo -MD -MP -MF "$(DEPDIR)/libfunc_la-Function.Tpo" -c -o libfunc_la-Function.lo `test -f 'Function.cc' || echo '$(srcdir)/'`Function.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libfunc_la-Function.Tpo" "$(DEPDIR)/libfunc_la-Function.Plo"; else rm -f "$(DEPDIR)/libfunc_la-Function.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Function.cc' object='libfunc_la-Function.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libfunc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libfunc_la-Function.lo `test -f 'Function.cc' || echo '$(srcdir)/'`Function.cc
+
+libfunc_la-ScalarFunc.lo: ScalarFunc.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libfunc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libfunc_la-ScalarFunc.lo -MD -MP -MF "$(DEPDIR)/libfunc_la-ScalarFunc.Tpo" -c -o libfunc_la-ScalarFunc.lo `test -f 'ScalarFunc.cc' || echo '$(srcdir)/'`ScalarFunc.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libfunc_la-ScalarFunc.Tpo" "$(DEPDIR)/libfunc_la-ScalarFunc.Plo"; else rm -f "$(DEPDIR)/libfunc_la-ScalarFunc.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='ScalarFunc.cc' object='libfunc_la-ScalarFunc.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libfunc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libfunc_la-ScalarFunc.lo `test -f 'ScalarFunc.cc' || echo '$(srcdir)/'`ScalarFunc.cc
+
+libfunc_la-InverseLinkFunc.lo: InverseLinkFunc.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libfunc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libfunc_la-InverseLinkFunc.lo -MD -MP -MF "$(DEPDIR)/libfunc_la-InverseLinkFunc.Tpo" -c -o libfunc_la-InverseLinkFunc.lo `test -f 'InverseLinkFunc.cc' || echo '$(srcdir)/'`InverseLinkFunc.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libfunc_la-InverseLinkFunc.Tpo" "$(DEPDIR)/libfunc_la-InverseLinkFunc.Plo"; else rm -f "$(DEPDIR)/libfunc_la-InverseLinkFunc.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='InverseLinkFunc.cc' object='libfunc_la-InverseLinkFunc.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libfunc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libfunc_la-InverseLinkFunc.lo `test -f 'InverseLinkFunc.cc' || echo '$(srcdir)/'`InverseLinkFunc.cc
 
 mostlyclean-libtool:
 	-rm -f *.lo

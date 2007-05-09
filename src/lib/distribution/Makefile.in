@@ -52,8 +52,9 @@ CONFIG_HEADER = $(top_builddir)/src/include/config.h
 CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 libdist_la_LIBADD =
-am_libdist_la_OBJECTS = Distribution.lo DistScalar.lo \
-	DistScalarRmath.lo DistTab.lo Bounds.lo
+am_libdist_la_OBJECTS = libdist_la-Distribution.lo \
+	libdist_la-DistScalar.lo libdist_la-DistScalarRmath.lo \
+	libdist_la-DistTab.lo libdist_la-Bounds.lo
 libdist_la_OBJECTS = $(am_libdist_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/src/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -186,8 +187,8 @@ sharedstatedir = @sharedstatedir@
 subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
-INCLUDES = -I $(top_srcdir)/src/include
 noinst_LTLIBRARIES = libdist.la
+libdist_la_CPPFLAGS = -I$(top_srcdir)/src/include
 libdist_la_SOURCES = Distribution.cc DistScalar.cc DistScalarRmath.cc	\
 DistTab.cc Bounds.cc
 
@@ -243,11 +244,11 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Bounds.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DistScalar.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DistScalarRmath.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DistTab.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Distribution.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libdist_la-Bounds.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libdist_la-DistScalar.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libdist_la-DistScalarRmath.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libdist_la-DistTab.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libdist_la-Distribution.Plo@am__quote@
 
 .cc.o:
 @am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -269,6 +270,41 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LTCXXCOMPILE) -c -o $@ $<
+
+libdist_la-Distribution.lo: Distribution.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libdist_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libdist_la-Distribution.lo -MD -MP -MF "$(DEPDIR)/libdist_la-Distribution.Tpo" -c -o libdist_la-Distribution.lo `test -f 'Distribution.cc' || echo '$(srcdir)/'`Distribution.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libdist_la-Distribution.Tpo" "$(DEPDIR)/libdist_la-Distribution.Plo"; else rm -f "$(DEPDIR)/libdist_la-Distribution.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Distribution.cc' object='libdist_la-Distribution.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libdist_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libdist_la-Distribution.lo `test -f 'Distribution.cc' || echo '$(srcdir)/'`Distribution.cc
+
+libdist_la-DistScalar.lo: DistScalar.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libdist_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libdist_la-DistScalar.lo -MD -MP -MF "$(DEPDIR)/libdist_la-DistScalar.Tpo" -c -o libdist_la-DistScalar.lo `test -f 'DistScalar.cc' || echo '$(srcdir)/'`DistScalar.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libdist_la-DistScalar.Tpo" "$(DEPDIR)/libdist_la-DistScalar.Plo"; else rm -f "$(DEPDIR)/libdist_la-DistScalar.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='DistScalar.cc' object='libdist_la-DistScalar.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libdist_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libdist_la-DistScalar.lo `test -f 'DistScalar.cc' || echo '$(srcdir)/'`DistScalar.cc
+
+libdist_la-DistScalarRmath.lo: DistScalarRmath.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libdist_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libdist_la-DistScalarRmath.lo -MD -MP -MF "$(DEPDIR)/libdist_la-DistScalarRmath.Tpo" -c -o libdist_la-DistScalarRmath.lo `test -f 'DistScalarRmath.cc' || echo '$(srcdir)/'`DistScalarRmath.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libdist_la-DistScalarRmath.Tpo" "$(DEPDIR)/libdist_la-DistScalarRmath.Plo"; else rm -f "$(DEPDIR)/libdist_la-DistScalarRmath.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='DistScalarRmath.cc' object='libdist_la-DistScalarRmath.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libdist_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libdist_la-DistScalarRmath.lo `test -f 'DistScalarRmath.cc' || echo '$(srcdir)/'`DistScalarRmath.cc
+
+libdist_la-DistTab.lo: DistTab.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libdist_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libdist_la-DistTab.lo -MD -MP -MF "$(DEPDIR)/libdist_la-DistTab.Tpo" -c -o libdist_la-DistTab.lo `test -f 'DistTab.cc' || echo '$(srcdir)/'`DistTab.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libdist_la-DistTab.Tpo" "$(DEPDIR)/libdist_la-DistTab.Plo"; else rm -f "$(DEPDIR)/libdist_la-DistTab.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='DistTab.cc' object='libdist_la-DistTab.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libdist_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libdist_la-DistTab.lo `test -f 'DistTab.cc' || echo '$(srcdir)/'`DistTab.cc
+
+libdist_la-Bounds.lo: Bounds.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libdist_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libdist_la-Bounds.lo -MD -MP -MF "$(DEPDIR)/libdist_la-Bounds.Tpo" -c -o libdist_la-Bounds.lo `test -f 'Bounds.cc' || echo '$(srcdir)/'`Bounds.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libdist_la-Bounds.Tpo" "$(DEPDIR)/libdist_la-Bounds.Plo"; else rm -f "$(DEPDIR)/libdist_la-Bounds.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Bounds.cc' object='libdist_la-Bounds.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libdist_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libdist_la-Bounds.lo `test -f 'Bounds.cc' || echo '$(srcdir)/'`Bounds.cc
 
 mostlyclean-libtool:
 	-rm -f *.lo
