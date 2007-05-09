@@ -60,7 +60,7 @@ LTLIBRARIES = $(jagsmod_LTLIBRARIES)
 mix_la_DEPENDENCIES = distributions/mixdist.la samplers/mixsamp.la \
 	$(top_builddir)/src/jrmath/libjrmath.la \
 	$(top_builddir)/src/lib/libjags.la
-am_mix_la_OBJECTS = mix.lo
+am_mix_la_OBJECTS = mix_la-mix.lo
 mix_la_OBJECTS = $(am_mix_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/src/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -200,9 +200,9 @@ subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 SUBDIRS = distributions samplers
-INCLUDES = -I $(top_srcdir)/src/include
 jagsmod_LTLIBRARIES = mix.la
 mix_la_SOURCES = mix.cc
+mix_la_CPPFLAGS = -I$(top_srcdir)/src/include
 mix_la_LIBADD = distributions/mixdist.la               \
         samplers/mixsamp.la         			\
         $(top_builddir)/src/jrmath/libjrmath.la		\
@@ -278,7 +278,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mix.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mix_la-mix.Plo@am__quote@
 
 .cc.o:
 @am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -300,6 +300,13 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LTCXXCOMPILE) -c -o $@ $<
+
+mix_la-mix.lo: mix.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(mix_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT mix_la-mix.lo -MD -MP -MF "$(DEPDIR)/mix_la-mix.Tpo" -c -o mix_la-mix.lo `test -f 'mix.cc' || echo '$(srcdir)/'`mix.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/mix_la-mix.Tpo" "$(DEPDIR)/mix_la-mix.Plo"; else rm -f "$(DEPDIR)/mix_la-mix.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='mix.cc' object='mix_la-mix.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(mix_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o mix_la-mix.lo `test -f 'mix.cc' || echo '$(srcdir)/'`mix.cc
 
 mostlyclean-libtool:
 	-rm -f *.lo

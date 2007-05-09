@@ -52,7 +52,7 @@ CONFIG_HEADER = $(top_builddir)/src/include/config.h
 CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 mixdist_la_LIBADD =
-am_mixdist_la_OBJECTS = DNormMix.lo
+am_mixdist_la_OBJECTS = mixdist_la-DNormMix.lo
 mixdist_la_OBJECTS = $(am_mixdist_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/src/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -185,8 +185,8 @@ sharedstatedir = @sharedstatedir@
 subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
-INCLUDES = -I $(top_srcdir)/src/include 
 noinst_LTLIBRARIES = mixdist.la
+mixdist_la_CPPFLAGS = -I$(top_srcdir)/src/include
 mixdist_la_LDFLAGS = -no-undefined -module -avoid-version
 mixdist_la_SOURCES = DNormMix.cc 
 noinst_HEADERS = DNormMix.h
@@ -241,7 +241,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DNormMix.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mixdist_la-DNormMix.Plo@am__quote@
 
 .cc.o:
 @am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -263,6 +263,13 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LTCXXCOMPILE) -c -o $@ $<
+
+mixdist_la-DNormMix.lo: DNormMix.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(mixdist_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT mixdist_la-DNormMix.lo -MD -MP -MF "$(DEPDIR)/mixdist_la-DNormMix.Tpo" -c -o mixdist_la-DNormMix.lo `test -f 'DNormMix.cc' || echo '$(srcdir)/'`DNormMix.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/mixdist_la-DNormMix.Tpo" "$(DEPDIR)/mixdist_la-DNormMix.Plo"; else rm -f "$(DEPDIR)/mixdist_la-DNormMix.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='DNormMix.cc' object='mixdist_la-DNormMix.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(mixdist_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o mixdist_la-DNormMix.lo `test -f 'DNormMix.cc' || echo '$(srcdir)/'`DNormMix.cc
 
 mostlyclean-libtool:
 	-rm -f *.lo
