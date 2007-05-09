@@ -1,6 +1,6 @@
-INCLUDES = -I $(top_srcdir)/src/include 
-
 noinst_LTLIBRARIES = mixdist.la
+
+mixdist_la_CPPFLAGS = -I$(top_srcdir)/src/include
 
 mixdist_la_LDFLAGS = -no-undefined -module -avoid-version
 
