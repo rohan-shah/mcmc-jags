@@ -52,10 +52,15 @@ CONFIG_HEADER = $(top_builddir)/src/include/config.h
 CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 bugsfunc_la_LIBADD =
-am_bugsfunc_la_OBJECTS = Max.lo Probit.lo InProd.lo Mean.lo SD.lo \
-	ICLogLog.lo Min.lo Sqrt.lo CLogLog.lo ILogit.lo Step.lo Log.lo \
-	Sum.lo Exp.lo LogFact.lo LogGam.lo Phi.lo Logit.lo Inverse.lo \
-	LogDet.lo Mexp.lo Sort.lo Rank.lo
+am_bugsfunc_la_OBJECTS = bugsfunc_la-Max.lo bugsfunc_la-Probit.lo \
+	bugsfunc_la-InProd.lo bugsfunc_la-Mean.lo bugsfunc_la-SD.lo \
+	bugsfunc_la-ICLogLog.lo bugsfunc_la-Min.lo bugsfunc_la-Sqrt.lo \
+	bugsfunc_la-CLogLog.lo bugsfunc_la-ILogit.lo \
+	bugsfunc_la-Step.lo bugsfunc_la-Log.lo bugsfunc_la-Sum.lo \
+	bugsfunc_la-Exp.lo bugsfunc_la-LogFact.lo \
+	bugsfunc_la-LogGam.lo bugsfunc_la-Phi.lo bugsfunc_la-Logit.lo \
+	bugsfunc_la-Inverse.lo bugsfunc_la-LogDet.lo \
+	bugsfunc_la-Mexp.lo bugsfunc_la-Sort.lo bugsfunc_la-Rank.lo
 bugsfunc_la_OBJECTS = $(am_bugsfunc_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/src/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -188,20 +193,19 @@ sharedstatedir = @sharedstatedir@
 subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
-INCLUDES = -I $(top_srcdir)/src/include  -I $(top_srcdir)/src/modules/bugs/matrix 
 noinst_LTLIBRARIES = bugsfunc.la
+bugsfunc_la_CPPFLAGS = -I$(top_srcdir)/src/include	\
+-I$(top_srcdir)/src/modules/bugs/matrix
+
 bugsfunc_la_LDFLAGS = -no-undefined -module -avoid-version
-bugsfunc_la_SOURCES = Max.cc Probit.cc InProd.cc Mean.cc SD.cc	\
-ICLogLog.cc Min.cc Sqrt.cc CLogLog.cc ILogit.cc		\
-Step.cc Log.cc Sum.cc	\
-Exp.cc LogFact.cc LogGam.cc Phi.cc Logit.cc	\
-Inverse.cc LogDet.cc	\
+bugsfunc_la_SOURCES = Max.cc Probit.cc InProd.cc Mean.cc SD.cc		\
+ICLogLog.cc Min.cc Sqrt.cc CLogLog.cc ILogit.cc Step.cc Log.cc Sum.cc	\
+Exp.cc LogFact.cc LogGam.cc Phi.cc Logit.cc Inverse.cc LogDet.cc	\
 Mexp.cc Sort.cc Rank.cc
 
-noinst_HEADERS = LogGam.h Phi.h Sum.h Log.h Logit.h		\
-Probit.h CLogLog.h InProd.h Max.h SD.h ICLogLog.h Mean.h	\
-Sqrt.h ILogit.h Min.h Step.h Exp.h LogFact.h 	\
-Inverse.h LogDet.h Mexp.h Sort.h Rank.h
+noinst_HEADERS = LogGam.h Phi.h Sum.h Log.h Logit.h Probit.h CLogLog.h	\
+InProd.h Max.h SD.h ICLogLog.h Mean.h Sqrt.h ILogit.h Min.h Step.h	\
+Exp.h LogFact.h Inverse.h LogDet.h Mexp.h Sort.h Rank.h
 
 all: all-am
 
@@ -254,29 +258,29 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CLogLog.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Exp.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ICLogLog.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ILogit.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/InProd.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Inverse.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Log.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LogDet.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LogFact.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LogGam.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Logit.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Max.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Mean.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Mexp.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Min.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Phi.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Probit.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Rank.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SD.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Sort.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Sqrt.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Step.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Sum.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bugsfunc_la-CLogLog.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bugsfunc_la-Exp.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bugsfunc_la-ICLogLog.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bugsfunc_la-ILogit.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bugsfunc_la-InProd.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bugsfunc_la-Inverse.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bugsfunc_la-Log.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bugsfunc_la-LogDet.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bugsfunc_la-LogFact.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bugsfunc_la-LogGam.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bugsfunc_la-Logit.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bugsfunc_la-Max.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bugsfunc_la-Mean.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bugsfunc_la-Mexp.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bugsfunc_la-Min.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bugsfunc_la-Phi.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bugsfunc_la-Probit.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bugsfunc_la-Rank.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bugsfunc_la-SD.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bugsfunc_la-Sort.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bugsfunc_la-Sqrt.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bugsfunc_la-Step.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bugsfunc_la-Sum.Plo@am__quote@
 
 .cc.o:
 @am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -298,6 +302,167 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LTCXXCOMPILE) -c -o $@ $<
+
+bugsfunc_la-Max.lo: Max.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugsfunc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT bugsfunc_la-Max.lo -MD -MP -MF "$(DEPDIR)/bugsfunc_la-Max.Tpo" -c -o bugsfunc_la-Max.lo `test -f 'Max.cc' || echo '$(srcdir)/'`Max.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/bugsfunc_la-Max.Tpo" "$(DEPDIR)/bugsfunc_la-Max.Plo"; else rm -f "$(DEPDIR)/bugsfunc_la-Max.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Max.cc' object='bugsfunc_la-Max.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugsfunc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o bugsfunc_la-Max.lo `test -f 'Max.cc' || echo '$(srcdir)/'`Max.cc
+
+bugsfunc_la-Probit.lo: Probit.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugsfunc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT bugsfunc_la-Probit.lo -MD -MP -MF "$(DEPDIR)/bugsfunc_la-Probit.Tpo" -c -o bugsfunc_la-Probit.lo `test -f 'Probit.cc' || echo '$(srcdir)/'`Probit.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/bugsfunc_la-Probit.Tpo" "$(DEPDIR)/bugsfunc_la-Probit.Plo"; else rm -f "$(DEPDIR)/bugsfunc_la-Probit.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Probit.cc' object='bugsfunc_la-Probit.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugsfunc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o bugsfunc_la-Probit.lo `test -f 'Probit.cc' || echo '$(srcdir)/'`Probit.cc
+
+bugsfunc_la-InProd.lo: InProd.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugsfunc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT bugsfunc_la-InProd.lo -MD -MP -MF "$(DEPDIR)/bugsfunc_la-InProd.Tpo" -c -o bugsfunc_la-InProd.lo `test -f 'InProd.cc' || echo '$(srcdir)/'`InProd.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/bugsfunc_la-InProd.Tpo" "$(DEPDIR)/bugsfunc_la-InProd.Plo"; else rm -f "$(DEPDIR)/bugsfunc_la-InProd.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='InProd.cc' object='bugsfunc_la-InProd.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugsfunc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o bugsfunc_la-InProd.lo `test -f 'InProd.cc' || echo '$(srcdir)/'`InProd.cc
+
+bugsfunc_la-Mean.lo: Mean.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugsfunc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT bugsfunc_la-Mean.lo -MD -MP -MF "$(DEPDIR)/bugsfunc_la-Mean.Tpo" -c -o bugsfunc_la-Mean.lo `test -f 'Mean.cc' || echo '$(srcdir)/'`Mean.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/bugsfunc_la-Mean.Tpo" "$(DEPDIR)/bugsfunc_la-Mean.Plo"; else rm -f "$(DEPDIR)/bugsfunc_la-Mean.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Mean.cc' object='bugsfunc_la-Mean.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugsfunc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o bugsfunc_la-Mean.lo `test -f 'Mean.cc' || echo '$(srcdir)/'`Mean.cc
+
+bugsfunc_la-SD.lo: SD.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugsfunc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT bugsfunc_la-SD.lo -MD -MP -MF "$(DEPDIR)/bugsfunc_la-SD.Tpo" -c -o bugsfunc_la-SD.lo `test -f 'SD.cc' || echo '$(srcdir)/'`SD.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/bugsfunc_la-SD.Tpo" "$(DEPDIR)/bugsfunc_la-SD.Plo"; else rm -f "$(DEPDIR)/bugsfunc_la-SD.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='SD.cc' object='bugsfunc_la-SD.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugsfunc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o bugsfunc_la-SD.lo `test -f 'SD.cc' || echo '$(srcdir)/'`SD.cc
+
+bugsfunc_la-ICLogLog.lo: ICLogLog.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugsfunc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT bugsfunc_la-ICLogLog.lo -MD -MP -MF "$(DEPDIR)/bugsfunc_la-ICLogLog.Tpo" -c -o bugsfunc_la-ICLogLog.lo `test -f 'ICLogLog.cc' || echo '$(srcdir)/'`ICLogLog.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/bugsfunc_la-ICLogLog.Tpo" "$(DEPDIR)/bugsfunc_la-ICLogLog.Plo"; else rm -f "$(DEPDIR)/bugsfunc_la-ICLogLog.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='ICLogLog.cc' object='bugsfunc_la-ICLogLog.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugsfunc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o bugsfunc_la-ICLogLog.lo `test -f 'ICLogLog.cc' || echo '$(srcdir)/'`ICLogLog.cc
+
+bugsfunc_la-Min.lo: Min.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugsfunc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT bugsfunc_la-Min.lo -MD -MP -MF "$(DEPDIR)/bugsfunc_la-Min.Tpo" -c -o bugsfunc_la-Min.lo `test -f 'Min.cc' || echo '$(srcdir)/'`Min.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/bugsfunc_la-Min.Tpo" "$(DEPDIR)/bugsfunc_la-Min.Plo"; else rm -f "$(DEPDIR)/bugsfunc_la-Min.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Min.cc' object='bugsfunc_la-Min.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugsfunc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o bugsfunc_la-Min.lo `test -f 'Min.cc' || echo '$(srcdir)/'`Min.cc
+
+bugsfunc_la-Sqrt.lo: Sqrt.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugsfunc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT bugsfunc_la-Sqrt.lo -MD -MP -MF "$(DEPDIR)/bugsfunc_la-Sqrt.Tpo" -c -o bugsfunc_la-Sqrt.lo `test -f 'Sqrt.cc' || echo '$(srcdir)/'`Sqrt.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/bugsfunc_la-Sqrt.Tpo" "$(DEPDIR)/bugsfunc_la-Sqrt.Plo"; else rm -f "$(DEPDIR)/bugsfunc_la-Sqrt.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Sqrt.cc' object='bugsfunc_la-Sqrt.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugsfunc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o bugsfunc_la-Sqrt.lo `test -f 'Sqrt.cc' || echo '$(srcdir)/'`Sqrt.cc
+
+bugsfunc_la-CLogLog.lo: CLogLog.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugsfunc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT bugsfunc_la-CLogLog.lo -MD -MP -MF "$(DEPDIR)/bugsfunc_la-CLogLog.Tpo" -c -o bugsfunc_la-CLogLog.lo `test -f 'CLogLog.cc' || echo '$(srcdir)/'`CLogLog.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/bugsfunc_la-CLogLog.Tpo" "$(DEPDIR)/bugsfunc_la-CLogLog.Plo"; else rm -f "$(DEPDIR)/bugsfunc_la-CLogLog.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='CLogLog.cc' object='bugsfunc_la-CLogLog.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugsfunc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o bugsfunc_la-CLogLog.lo `test -f 'CLogLog.cc' || echo '$(srcdir)/'`CLogLog.cc
+
+bugsfunc_la-ILogit.lo: ILogit.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugsfunc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT bugsfunc_la-ILogit.lo -MD -MP -MF "$(DEPDIR)/bugsfunc_la-ILogit.Tpo" -c -o bugsfunc_la-ILogit.lo `test -f 'ILogit.cc' || echo '$(srcdir)/'`ILogit.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/bugsfunc_la-ILogit.Tpo" "$(DEPDIR)/bugsfunc_la-ILogit.Plo"; else rm -f "$(DEPDIR)/bugsfunc_la-ILogit.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='ILogit.cc' object='bugsfunc_la-ILogit.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugsfunc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o bugsfunc_la-ILogit.lo `test -f 'ILogit.cc' || echo '$(srcdir)/'`ILogit.cc
+
+bugsfunc_la-Step.lo: Step.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugsfunc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT bugsfunc_la-Step.lo -MD -MP -MF "$(DEPDIR)/bugsfunc_la-Step.Tpo" -c -o bugsfunc_la-Step.lo `test -f 'Step.cc' || echo '$(srcdir)/'`Step.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/bugsfunc_la-Step.Tpo" "$(DEPDIR)/bugsfunc_la-Step.Plo"; else rm -f "$(DEPDIR)/bugsfunc_la-Step.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Step.cc' object='bugsfunc_la-Step.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugsfunc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o bugsfunc_la-Step.lo `test -f 'Step.cc' || echo '$(srcdir)/'`Step.cc
+
+bugsfunc_la-Log.lo: Log.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugsfunc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT bugsfunc_la-Log.lo -MD -MP -MF "$(DEPDIR)/bugsfunc_la-Log.Tpo" -c -o bugsfunc_la-Log.lo `test -f 'Log.cc' || echo '$(srcdir)/'`Log.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/bugsfunc_la-Log.Tpo" "$(DEPDIR)/bugsfunc_la-Log.Plo"; else rm -f "$(DEPDIR)/bugsfunc_la-Log.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Log.cc' object='bugsfunc_la-Log.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugsfunc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o bugsfunc_la-Log.lo `test -f 'Log.cc' || echo '$(srcdir)/'`Log.cc
+
+bugsfunc_la-Sum.lo: Sum.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugsfunc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT bugsfunc_la-Sum.lo -MD -MP -MF "$(DEPDIR)/bugsfunc_la-Sum.Tpo" -c -o bugsfunc_la-Sum.lo `test -f 'Sum.cc' || echo '$(srcdir)/'`Sum.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/bugsfunc_la-Sum.Tpo" "$(DEPDIR)/bugsfunc_la-Sum.Plo"; else rm -f "$(DEPDIR)/bugsfunc_la-Sum.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Sum.cc' object='bugsfunc_la-Sum.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugsfunc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o bugsfunc_la-Sum.lo `test -f 'Sum.cc' || echo '$(srcdir)/'`Sum.cc
+
+bugsfunc_la-Exp.lo: Exp.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugsfunc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT bugsfunc_la-Exp.lo -MD -MP -MF "$(DEPDIR)/bugsfunc_la-Exp.Tpo" -c -o bugsfunc_la-Exp.lo `test -f 'Exp.cc' || echo '$(srcdir)/'`Exp.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/bugsfunc_la-Exp.Tpo" "$(DEPDIR)/bugsfunc_la-Exp.Plo"; else rm -f "$(DEPDIR)/bugsfunc_la-Exp.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Exp.cc' object='bugsfunc_la-Exp.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugsfunc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o bugsfunc_la-Exp.lo `test -f 'Exp.cc' || echo '$(srcdir)/'`Exp.cc
+
+bugsfunc_la-LogFact.lo: LogFact.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugsfunc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT bugsfunc_la-LogFact.lo -MD -MP -MF "$(DEPDIR)/bugsfunc_la-LogFact.Tpo" -c -o bugsfunc_la-LogFact.lo `test -f 'LogFact.cc' || echo '$(srcdir)/'`LogFact.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/bugsfunc_la-LogFact.Tpo" "$(DEPDIR)/bugsfunc_la-LogFact.Plo"; else rm -f "$(DEPDIR)/bugsfunc_la-LogFact.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='LogFact.cc' object='bugsfunc_la-LogFact.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugsfunc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o bugsfunc_la-LogFact.lo `test -f 'LogFact.cc' || echo '$(srcdir)/'`LogFact.cc
+
+bugsfunc_la-LogGam.lo: LogGam.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugsfunc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT bugsfunc_la-LogGam.lo -MD -MP -MF "$(DEPDIR)/bugsfunc_la-LogGam.Tpo" -c -o bugsfunc_la-LogGam.lo `test -f 'LogGam.cc' || echo '$(srcdir)/'`LogGam.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/bugsfunc_la-LogGam.Tpo" "$(DEPDIR)/bugsfunc_la-LogGam.Plo"; else rm -f "$(DEPDIR)/bugsfunc_la-LogGam.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='LogGam.cc' object='bugsfunc_la-LogGam.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugsfunc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o bugsfunc_la-LogGam.lo `test -f 'LogGam.cc' || echo '$(srcdir)/'`LogGam.cc
+
+bugsfunc_la-Phi.lo: Phi.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugsfunc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT bugsfunc_la-Phi.lo -MD -MP -MF "$(DEPDIR)/bugsfunc_la-Phi.Tpo" -c -o bugsfunc_la-Phi.lo `test -f 'Phi.cc' || echo '$(srcdir)/'`Phi.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/bugsfunc_la-Phi.Tpo" "$(DEPDIR)/bugsfunc_la-Phi.Plo"; else rm -f "$(DEPDIR)/bugsfunc_la-Phi.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Phi.cc' object='bugsfunc_la-Phi.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugsfunc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o bugsfunc_la-Phi.lo `test -f 'Phi.cc' || echo '$(srcdir)/'`Phi.cc
+
+bugsfunc_la-Logit.lo: Logit.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugsfunc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT bugsfunc_la-Logit.lo -MD -MP -MF "$(DEPDIR)/bugsfunc_la-Logit.Tpo" -c -o bugsfunc_la-Logit.lo `test -f 'Logit.cc' || echo '$(srcdir)/'`Logit.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/bugsfunc_la-Logit.Tpo" "$(DEPDIR)/bugsfunc_la-Logit.Plo"; else rm -f "$(DEPDIR)/bugsfunc_la-Logit.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Logit.cc' object='bugsfunc_la-Logit.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugsfunc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o bugsfunc_la-Logit.lo `test -f 'Logit.cc' || echo '$(srcdir)/'`Logit.cc
+
+bugsfunc_la-Inverse.lo: Inverse.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugsfunc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT bugsfunc_la-Inverse.lo -MD -MP -MF "$(DEPDIR)/bugsfunc_la-Inverse.Tpo" -c -o bugsfunc_la-Inverse.lo `test -f 'Inverse.cc' || echo '$(srcdir)/'`Inverse.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/bugsfunc_la-Inverse.Tpo" "$(DEPDIR)/bugsfunc_la-Inverse.Plo"; else rm -f "$(DEPDIR)/bugsfunc_la-Inverse.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Inverse.cc' object='bugsfunc_la-Inverse.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugsfunc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o bugsfunc_la-Inverse.lo `test -f 'Inverse.cc' || echo '$(srcdir)/'`Inverse.cc
+
+bugsfunc_la-LogDet.lo: LogDet.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugsfunc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT bugsfunc_la-LogDet.lo -MD -MP -MF "$(DEPDIR)/bugsfunc_la-LogDet.Tpo" -c -o bugsfunc_la-LogDet.lo `test -f 'LogDet.cc' || echo '$(srcdir)/'`LogDet.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/bugsfunc_la-LogDet.Tpo" "$(DEPDIR)/bugsfunc_la-LogDet.Plo"; else rm -f "$(DEPDIR)/bugsfunc_la-LogDet.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='LogDet.cc' object='bugsfunc_la-LogDet.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugsfunc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o bugsfunc_la-LogDet.lo `test -f 'LogDet.cc' || echo '$(srcdir)/'`LogDet.cc
+
+bugsfunc_la-Mexp.lo: Mexp.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugsfunc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT bugsfunc_la-Mexp.lo -MD -MP -MF "$(DEPDIR)/bugsfunc_la-Mexp.Tpo" -c -o bugsfunc_la-Mexp.lo `test -f 'Mexp.cc' || echo '$(srcdir)/'`Mexp.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/bugsfunc_la-Mexp.Tpo" "$(DEPDIR)/bugsfunc_la-Mexp.Plo"; else rm -f "$(DEPDIR)/bugsfunc_la-Mexp.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Mexp.cc' object='bugsfunc_la-Mexp.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugsfunc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o bugsfunc_la-Mexp.lo `test -f 'Mexp.cc' || echo '$(srcdir)/'`Mexp.cc
+
+bugsfunc_la-Sort.lo: Sort.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugsfunc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT bugsfunc_la-Sort.lo -MD -MP -MF "$(DEPDIR)/bugsfunc_la-Sort.Tpo" -c -o bugsfunc_la-Sort.lo `test -f 'Sort.cc' || echo '$(srcdir)/'`Sort.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/bugsfunc_la-Sort.Tpo" "$(DEPDIR)/bugsfunc_la-Sort.Plo"; else rm -f "$(DEPDIR)/bugsfunc_la-Sort.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Sort.cc' object='bugsfunc_la-Sort.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugsfunc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o bugsfunc_la-Sort.lo `test -f 'Sort.cc' || echo '$(srcdir)/'`Sort.cc
+
+bugsfunc_la-Rank.lo: Rank.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugsfunc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT bugsfunc_la-Rank.lo -MD -MP -MF "$(DEPDIR)/bugsfunc_la-Rank.Tpo" -c -o bugsfunc_la-Rank.lo `test -f 'Rank.cc' || echo '$(srcdir)/'`Rank.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/bugsfunc_la-Rank.Tpo" "$(DEPDIR)/bugsfunc_la-Rank.Plo"; else rm -f "$(DEPDIR)/bugsfunc_la-Rank.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Rank.cc' object='bugsfunc_la-Rank.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugsfunc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o bugsfunc_la-Rank.lo `test -f 'Rank.cc' || echo '$(srcdir)/'`Rank.cc
 
 mostlyclean-libtool:
 	-rm -f *.lo

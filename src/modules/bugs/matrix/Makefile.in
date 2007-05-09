@@ -52,7 +52,8 @@ CONFIG_HEADER = $(top_builddir)/src/include/config.h
 CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 bugsmatrix_la_LIBADD =
-am_bugsmatrix_la_OBJECTS = matexp.lo matrix.lo
+am_bugsmatrix_la_OBJECTS = bugsmatrix_la-matexp.lo \
+	bugsmatrix_la-matrix.lo
 bugsmatrix_la_OBJECTS = $(am_bugsmatrix_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/src/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -185,10 +186,10 @@ sharedstatedir = @sharedstatedir@
 subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
-INCLUDES = -I $(top_srcdir)/src/include
 noinst_LTLIBRARIES = bugsmatrix.la
-bugsmatrix_la_SOURCES = matexp.cc matrix.cc
+bugsmatrix_la_CPPFLAGS = -I$(top_srcdir)/src/include
 bugsmatrix_la_LDFLAGS = -no-undefined -module -avoid-version
+bugsmatrix_la_SOURCES = matexp.cc matrix.cc
 noinst_HEADERS = matexp.h lapack.h matrix.h
 all: all-am
 
@@ -241,8 +242,8 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/matexp.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/matrix.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bugsmatrix_la-matexp.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bugsmatrix_la-matrix.Plo@am__quote@
 
 .cc.o:
 @am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -264,6 +265,20 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LTCXXCOMPILE) -c -o $@ $<
+
+bugsmatrix_la-matexp.lo: matexp.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugsmatrix_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT bugsmatrix_la-matexp.lo -MD -MP -MF "$(DEPDIR)/bugsmatrix_la-matexp.Tpo" -c -o bugsmatrix_la-matexp.lo `test -f 'matexp.cc' || echo '$(srcdir)/'`matexp.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/bugsmatrix_la-matexp.Tpo" "$(DEPDIR)/bugsmatrix_la-matexp.Plo"; else rm -f "$(DEPDIR)/bugsmatrix_la-matexp.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='matexp.cc' object='bugsmatrix_la-matexp.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugsmatrix_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o bugsmatrix_la-matexp.lo `test -f 'matexp.cc' || echo '$(srcdir)/'`matexp.cc
+
+bugsmatrix_la-matrix.lo: matrix.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugsmatrix_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT bugsmatrix_la-matrix.lo -MD -MP -MF "$(DEPDIR)/bugsmatrix_la-matrix.Tpo" -c -o bugsmatrix_la-matrix.lo `test -f 'matrix.cc' || echo '$(srcdir)/'`matrix.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/bugsmatrix_la-matrix.Tpo" "$(DEPDIR)/bugsmatrix_la-matrix.Plo"; else rm -f "$(DEPDIR)/bugsmatrix_la-matrix.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='matrix.cc' object='bugsmatrix_la-matrix.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugsmatrix_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o bugsmatrix_la-matrix.lo `test -f 'matrix.cc' || echo '$(srcdir)/'`matrix.cc
 
 mostlyclean-libtool:
 	-rm -f *.lo

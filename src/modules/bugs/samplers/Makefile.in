@@ -52,11 +52,19 @@ CONFIG_HEADER = $(top_builddir)/src/include/config.h
 CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 bugssampler_la_LIBADD =
-am_bugssampler_la_OBJECTS = Censored.lo ConjugateGamma.lo \
-	ConjugateWishart.lo ConjugateBeta.lo ConjugateMNormal.lo \
-	ConjugateDirichlet.lo ConjugateNormal.lo DSumFactory.lo \
-	ConjugateFactory.lo ConjugateSampler.lo DSumSampler.lo \
-	RESampler.lo REFactory.lo MNormal.lo MNormalFactory.lo
+am_bugssampler_la_OBJECTS = bugssampler_la-Censored.lo \
+	bugssampler_la-ConjugateGamma.lo \
+	bugssampler_la-ConjugateWishart.lo \
+	bugssampler_la-ConjugateBeta.lo \
+	bugssampler_la-ConjugateMNormal.lo \
+	bugssampler_la-ConjugateDirichlet.lo \
+	bugssampler_la-ConjugateNormal.lo \
+	bugssampler_la-DSumFactory.lo \
+	bugssampler_la-ConjugateFactory.lo \
+	bugssampler_la-ConjugateSampler.lo \
+	bugssampler_la-DSumSampler.lo bugssampler_la-RESampler.lo \
+	bugssampler_la-REFactory.lo bugssampler_la-MNormal.lo \
+	bugssampler_la-MNormalFactory.lo
 bugssampler_la_OBJECTS = $(am_bugssampler_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/src/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -189,28 +197,22 @@ sharedstatedir = @sharedstatedir@
 subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
-INCLUDES = -I $(top_srcdir)/src/include \
--I$(top_srcdir)/src/modules/bugs/distributions \
--I$(top_srcdir)/src/modules/bugs/matrix 
-
 noinst_LTLIBRARIES = bugssampler.la
+bugssampler_la_CPPFLAGS = -I$(top_srcdir)/src/include	\
+-I$(top_srcdir)/src/modules/bugs/distributions		\
+-I$(top_srcdir)/src/modules/bugs/matrix
+
 bugssampler_la_LDFLAGS = -no-undefined -module -avoid-version
-bugssampler_la_SOURCES = Censored.cc ConjugateGamma.cc		\
-ConjugateWishart.cc ConjugateBeta.cc		\
-ConjugateMNormal.cc 	\
-ConjugateDirichlet.cc ConjugateNormal.cc DSumFactory.cc		\
-ConjugateFactory.cc ConjugateSampler.cc	\
-DSumSampler.cc  \
-RESampler.cc REFactory.cc \
-MNormal.cc MNormalFactory.cc
+bugssampler_la_SOURCES = Censored.cc ConjugateGamma.cc			\
+ConjugateWishart.cc ConjugateBeta.cc ConjugateMNormal.cc		\
+ConjugateDirichlet.cc ConjugateNormal.cc DSumFactory.cc			\
+ConjugateFactory.cc ConjugateSampler.cc DSumSampler.cc RESampler.cc	\
+REFactory.cc MNormal.cc MNormalFactory.cc
 
 noinst_HEADERS = Censored.h ConjugateFactory.h ConjugateNormal.h	\
-	\
 ConjugateBeta.h ConjugateGamma.h ConjugateSampler.h DSumFactory.h	\
-ConjugateDirichlet.h ConjugateMNormal.h	\
-ConjugateWishart.h DSumSampler.h \
-RESampler.h REFactory.h \
-MNormal.h MNormalFactory.h
+ConjugateDirichlet.h ConjugateMNormal.h ConjugateWishart.h		\
+DSumSampler.h RESampler.h REFactory.h MNormal.h MNormalFactory.h
 
 all: all-am
 
@@ -263,21 +265,21 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Censored.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ConjugateBeta.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ConjugateDirichlet.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ConjugateFactory.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ConjugateGamma.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ConjugateMNormal.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ConjugateNormal.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ConjugateSampler.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ConjugateWishart.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DSumFactory.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DSumSampler.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MNormal.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MNormalFactory.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/REFactory.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RESampler.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bugssampler_la-Censored.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bugssampler_la-ConjugateBeta.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bugssampler_la-ConjugateDirichlet.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bugssampler_la-ConjugateFactory.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bugssampler_la-ConjugateGamma.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bugssampler_la-ConjugateMNormal.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bugssampler_la-ConjugateNormal.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bugssampler_la-ConjugateSampler.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bugssampler_la-ConjugateWishart.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bugssampler_la-DSumFactory.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bugssampler_la-DSumSampler.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bugssampler_la-MNormal.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bugssampler_la-MNormalFactory.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bugssampler_la-REFactory.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bugssampler_la-RESampler.Plo@am__quote@
 
 .cc.o:
 @am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -299,6 +301,111 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LTCXXCOMPILE) -c -o $@ $<
+
+bugssampler_la-Censored.lo: Censored.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugssampler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT bugssampler_la-Censored.lo -MD -MP -MF "$(DEPDIR)/bugssampler_la-Censored.Tpo" -c -o bugssampler_la-Censored.lo `test -f 'Censored.cc' || echo '$(srcdir)/'`Censored.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/bugssampler_la-Censored.Tpo" "$(DEPDIR)/bugssampler_la-Censored.Plo"; else rm -f "$(DEPDIR)/bugssampler_la-Censored.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Censored.cc' object='bugssampler_la-Censored.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugssampler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o bugssampler_la-Censored.lo `test -f 'Censored.cc' || echo '$(srcdir)/'`Censored.cc
+
+bugssampler_la-ConjugateGamma.lo: ConjugateGamma.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugssampler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT bugssampler_la-ConjugateGamma.lo -MD -MP -MF "$(DEPDIR)/bugssampler_la-ConjugateGamma.Tpo" -c -o bugssampler_la-ConjugateGamma.lo `test -f 'ConjugateGamma.cc' || echo '$(srcdir)/'`ConjugateGamma.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/bugssampler_la-ConjugateGamma.Tpo" "$(DEPDIR)/bugssampler_la-ConjugateGamma.Plo"; else rm -f "$(DEPDIR)/bugssampler_la-ConjugateGamma.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='ConjugateGamma.cc' object='bugssampler_la-ConjugateGamma.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugssampler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o bugssampler_la-ConjugateGamma.lo `test -f 'ConjugateGamma.cc' || echo '$(srcdir)/'`ConjugateGamma.cc
+
+bugssampler_la-ConjugateWishart.lo: ConjugateWishart.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugssampler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT bugssampler_la-ConjugateWishart.lo -MD -MP -MF "$(DEPDIR)/bugssampler_la-ConjugateWishart.Tpo" -c -o bugssampler_la-ConjugateWishart.lo `test -f 'ConjugateWishart.cc' || echo '$(srcdir)/'`ConjugateWishart.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/bugssampler_la-ConjugateWishart.Tpo" "$(DEPDIR)/bugssampler_la-ConjugateWishart.Plo"; else rm -f "$(DEPDIR)/bugssampler_la-ConjugateWishart.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='ConjugateWishart.cc' object='bugssampler_la-ConjugateWishart.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugssampler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o bugssampler_la-ConjugateWishart.lo `test -f 'ConjugateWishart.cc' || echo '$(srcdir)/'`ConjugateWishart.cc
+
+bugssampler_la-ConjugateBeta.lo: ConjugateBeta.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugssampler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT bugssampler_la-ConjugateBeta.lo -MD -MP -MF "$(DEPDIR)/bugssampler_la-ConjugateBeta.Tpo" -c -o bugssampler_la-ConjugateBeta.lo `test -f 'ConjugateBeta.cc' || echo '$(srcdir)/'`ConjugateBeta.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/bugssampler_la-ConjugateBeta.Tpo" "$(DEPDIR)/bugssampler_la-ConjugateBeta.Plo"; else rm -f "$(DEPDIR)/bugssampler_la-ConjugateBeta.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='ConjugateBeta.cc' object='bugssampler_la-ConjugateBeta.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugssampler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o bugssampler_la-ConjugateBeta.lo `test -f 'ConjugateBeta.cc' || echo '$(srcdir)/'`ConjugateBeta.cc
+
+bugssampler_la-ConjugateMNormal.lo: ConjugateMNormal.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugssampler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT bugssampler_la-ConjugateMNormal.lo -MD -MP -MF "$(DEPDIR)/bugssampler_la-ConjugateMNormal.Tpo" -c -o bugssampler_la-ConjugateMNormal.lo `test -f 'ConjugateMNormal.cc' || echo '$(srcdir)/'`ConjugateMNormal.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/bugssampler_la-ConjugateMNormal.Tpo" "$(DEPDIR)/bugssampler_la-ConjugateMNormal.Plo"; else rm -f "$(DEPDIR)/bugssampler_la-ConjugateMNormal.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='ConjugateMNormal.cc' object='bugssampler_la-ConjugateMNormal.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugssampler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o bugssampler_la-ConjugateMNormal.lo `test -f 'ConjugateMNormal.cc' || echo '$(srcdir)/'`ConjugateMNormal.cc
+
+bugssampler_la-ConjugateDirichlet.lo: ConjugateDirichlet.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugssampler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT bugssampler_la-ConjugateDirichlet.lo -MD -MP -MF "$(DEPDIR)/bugssampler_la-ConjugateDirichlet.Tpo" -c -o bugssampler_la-ConjugateDirichlet.lo `test -f 'ConjugateDirichlet.cc' || echo '$(srcdir)/'`ConjugateDirichlet.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/bugssampler_la-ConjugateDirichlet.Tpo" "$(DEPDIR)/bugssampler_la-ConjugateDirichlet.Plo"; else rm -f "$(DEPDIR)/bugssampler_la-ConjugateDirichlet.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='ConjugateDirichlet.cc' object='bugssampler_la-ConjugateDirichlet.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugssampler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o bugssampler_la-ConjugateDirichlet.lo `test -f 'ConjugateDirichlet.cc' || echo '$(srcdir)/'`ConjugateDirichlet.cc
+
+bugssampler_la-ConjugateNormal.lo: ConjugateNormal.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugssampler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT bugssampler_la-ConjugateNormal.lo -MD -MP -MF "$(DEPDIR)/bugssampler_la-ConjugateNormal.Tpo" -c -o bugssampler_la-ConjugateNormal.lo `test -f 'ConjugateNormal.cc' || echo '$(srcdir)/'`ConjugateNormal.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/bugssampler_la-ConjugateNormal.Tpo" "$(DEPDIR)/bugssampler_la-ConjugateNormal.Plo"; else rm -f "$(DEPDIR)/bugssampler_la-ConjugateNormal.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='ConjugateNormal.cc' object='bugssampler_la-ConjugateNormal.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugssampler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o bugssampler_la-ConjugateNormal.lo `test -f 'ConjugateNormal.cc' || echo '$(srcdir)/'`ConjugateNormal.cc
+
+bugssampler_la-DSumFactory.lo: DSumFactory.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugssampler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT bugssampler_la-DSumFactory.lo -MD -MP -MF "$(DEPDIR)/bugssampler_la-DSumFactory.Tpo" -c -o bugssampler_la-DSumFactory.lo `test -f 'DSumFactory.cc' || echo '$(srcdir)/'`DSumFactory.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/bugssampler_la-DSumFactory.Tpo" "$(DEPDIR)/bugssampler_la-DSumFactory.Plo"; else rm -f "$(DEPDIR)/bugssampler_la-DSumFactory.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='DSumFactory.cc' object='bugssampler_la-DSumFactory.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugssampler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o bugssampler_la-DSumFactory.lo `test -f 'DSumFactory.cc' || echo '$(srcdir)/'`DSumFactory.cc
+
+bugssampler_la-ConjugateFactory.lo: ConjugateFactory.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugssampler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT bugssampler_la-ConjugateFactory.lo -MD -MP -MF "$(DEPDIR)/bugssampler_la-ConjugateFactory.Tpo" -c -o bugssampler_la-ConjugateFactory.lo `test -f 'ConjugateFactory.cc' || echo '$(srcdir)/'`ConjugateFactory.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/bugssampler_la-ConjugateFactory.Tpo" "$(DEPDIR)/bugssampler_la-ConjugateFactory.Plo"; else rm -f "$(DEPDIR)/bugssampler_la-ConjugateFactory.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='ConjugateFactory.cc' object='bugssampler_la-ConjugateFactory.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugssampler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o bugssampler_la-ConjugateFactory.lo `test -f 'ConjugateFactory.cc' || echo '$(srcdir)/'`ConjugateFactory.cc
+
+bugssampler_la-ConjugateSampler.lo: ConjugateSampler.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugssampler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT bugssampler_la-ConjugateSampler.lo -MD -MP -MF "$(DEPDIR)/bugssampler_la-ConjugateSampler.Tpo" -c -o bugssampler_la-ConjugateSampler.lo `test -f 'ConjugateSampler.cc' || echo '$(srcdir)/'`ConjugateSampler.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/bugssampler_la-ConjugateSampler.Tpo" "$(DEPDIR)/bugssampler_la-ConjugateSampler.Plo"; else rm -f "$(DEPDIR)/bugssampler_la-ConjugateSampler.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='ConjugateSampler.cc' object='bugssampler_la-ConjugateSampler.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugssampler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o bugssampler_la-ConjugateSampler.lo `test -f 'ConjugateSampler.cc' || echo '$(srcdir)/'`ConjugateSampler.cc
+
+bugssampler_la-DSumSampler.lo: DSumSampler.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugssampler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT bugssampler_la-DSumSampler.lo -MD -MP -MF "$(DEPDIR)/bugssampler_la-DSumSampler.Tpo" -c -o bugssampler_la-DSumSampler.lo `test -f 'DSumSampler.cc' || echo '$(srcdir)/'`DSumSampler.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/bugssampler_la-DSumSampler.Tpo" "$(DEPDIR)/bugssampler_la-DSumSampler.Plo"; else rm -f "$(DEPDIR)/bugssampler_la-DSumSampler.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='DSumSampler.cc' object='bugssampler_la-DSumSampler.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugssampler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o bugssampler_la-DSumSampler.lo `test -f 'DSumSampler.cc' || echo '$(srcdir)/'`DSumSampler.cc
+
+bugssampler_la-RESampler.lo: RESampler.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugssampler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT bugssampler_la-RESampler.lo -MD -MP -MF "$(DEPDIR)/bugssampler_la-RESampler.Tpo" -c -o bugssampler_la-RESampler.lo `test -f 'RESampler.cc' || echo '$(srcdir)/'`RESampler.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/bugssampler_la-RESampler.Tpo" "$(DEPDIR)/bugssampler_la-RESampler.Plo"; else rm -f "$(DEPDIR)/bugssampler_la-RESampler.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='RESampler.cc' object='bugssampler_la-RESampler.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugssampler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o bugssampler_la-RESampler.lo `test -f 'RESampler.cc' || echo '$(srcdir)/'`RESampler.cc
+
+bugssampler_la-REFactory.lo: REFactory.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugssampler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT bugssampler_la-REFactory.lo -MD -MP -MF "$(DEPDIR)/bugssampler_la-REFactory.Tpo" -c -o bugssampler_la-REFactory.lo `test -f 'REFactory.cc' || echo '$(srcdir)/'`REFactory.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/bugssampler_la-REFactory.Tpo" "$(DEPDIR)/bugssampler_la-REFactory.Plo"; else rm -f "$(DEPDIR)/bugssampler_la-REFactory.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='REFactory.cc' object='bugssampler_la-REFactory.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugssampler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o bugssampler_la-REFactory.lo `test -f 'REFactory.cc' || echo '$(srcdir)/'`REFactory.cc
+
+bugssampler_la-MNormal.lo: MNormal.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugssampler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT bugssampler_la-MNormal.lo -MD -MP -MF "$(DEPDIR)/bugssampler_la-MNormal.Tpo" -c -o bugssampler_la-MNormal.lo `test -f 'MNormal.cc' || echo '$(srcdir)/'`MNormal.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/bugssampler_la-MNormal.Tpo" "$(DEPDIR)/bugssampler_la-MNormal.Plo"; else rm -f "$(DEPDIR)/bugssampler_la-MNormal.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='MNormal.cc' object='bugssampler_la-MNormal.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugssampler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o bugssampler_la-MNormal.lo `test -f 'MNormal.cc' || echo '$(srcdir)/'`MNormal.cc
+
+bugssampler_la-MNormalFactory.lo: MNormalFactory.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugssampler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT bugssampler_la-MNormalFactory.lo -MD -MP -MF "$(DEPDIR)/bugssampler_la-MNormalFactory.Tpo" -c -o bugssampler_la-MNormalFactory.lo `test -f 'MNormalFactory.cc' || echo '$(srcdir)/'`MNormalFactory.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/bugssampler_la-MNormalFactory.Tpo" "$(DEPDIR)/bugssampler_la-MNormalFactory.Plo"; else rm -f "$(DEPDIR)/bugssampler_la-MNormalFactory.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='MNormalFactory.cc' object='bugssampler_la-MNormalFactory.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugssampler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o bugssampler_la-MNormalFactory.lo `test -f 'MNormalFactory.cc' || echo '$(srcdir)/'`MNormalFactory.cc
 
 mostlyclean-libtool:
 	-rm -f *.lo
