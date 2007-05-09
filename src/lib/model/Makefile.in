@@ -50,8 +50,10 @@ CONFIG_HEADER = $(top_builddir)/src/include/config.h
 CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 libmodel_la_LIBADD =
-am_libmodel_la_OBJECTS = SymTab.lo NodeArray.lo Model.lo Monitor.lo \
-	TraceMonitor.lo BUGSModel.lo
+am_libmodel_la_OBJECTS = libmodel_la-SymTab.lo \
+	libmodel_la-NodeArray.lo libmodel_la-Model.lo \
+	libmodel_la-Monitor.lo libmodel_la-TraceMonitor.lo \
+	libmodel_la-BUGSModel.lo
 libmodel_la_OBJECTS = $(am_libmodel_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/src/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -183,10 +185,10 @@ sharedstatedir = @sharedstatedir@
 subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
-INCLUDES = -I $(top_srcdir)/src/include
 noinst_LTLIBRARIES = libmodel.la
-libmodel_la_SOURCES = SymTab.cc NodeArray.cc Model.cc Monitor.cc TraceMonitor.cc \
-BUGSModel.cc 
+libmodel_la_CPPFLAGS = -I$(top_srcdir)/src/include
+libmodel_la_SOURCES = SymTab.cc NodeArray.cc Model.cc Monitor.cc	\
+TraceMonitor.cc BUGSModel.cc
 
 all: all-am
 
@@ -239,12 +241,12 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/BUGSModel.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Model.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Monitor.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NodeArray.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SymTab.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TraceMonitor.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmodel_la-BUGSModel.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmodel_la-Model.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmodel_la-Monitor.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmodel_la-NodeArray.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmodel_la-SymTab.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmodel_la-TraceMonitor.Plo@am__quote@
 
 .cc.o:
 @am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -266,6 +268,48 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LTCXXCOMPILE) -c -o $@ $<
+
+libmodel_la-SymTab.lo: SymTab.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmodel_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libmodel_la-SymTab.lo -MD -MP -MF "$(DEPDIR)/libmodel_la-SymTab.Tpo" -c -o libmodel_la-SymTab.lo `test -f 'SymTab.cc' || echo '$(srcdir)/'`SymTab.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libmodel_la-SymTab.Tpo" "$(DEPDIR)/libmodel_la-SymTab.Plo"; else rm -f "$(DEPDIR)/libmodel_la-SymTab.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='SymTab.cc' object='libmodel_la-SymTab.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmodel_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libmodel_la-SymTab.lo `test -f 'SymTab.cc' || echo '$(srcdir)/'`SymTab.cc
+
+libmodel_la-NodeArray.lo: NodeArray.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmodel_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libmodel_la-NodeArray.lo -MD -MP -MF "$(DEPDIR)/libmodel_la-NodeArray.Tpo" -c -o libmodel_la-NodeArray.lo `test -f 'NodeArray.cc' || echo '$(srcdir)/'`NodeArray.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libmodel_la-NodeArray.Tpo" "$(DEPDIR)/libmodel_la-NodeArray.Plo"; else rm -f "$(DEPDIR)/libmodel_la-NodeArray.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='NodeArray.cc' object='libmodel_la-NodeArray.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmodel_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libmodel_la-NodeArray.lo `test -f 'NodeArray.cc' || echo '$(srcdir)/'`NodeArray.cc
+
+libmodel_la-Model.lo: Model.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmodel_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libmodel_la-Model.lo -MD -MP -MF "$(DEPDIR)/libmodel_la-Model.Tpo" -c -o libmodel_la-Model.lo `test -f 'Model.cc' || echo '$(srcdir)/'`Model.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libmodel_la-Model.Tpo" "$(DEPDIR)/libmodel_la-Model.Plo"; else rm -f "$(DEPDIR)/libmodel_la-Model.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Model.cc' object='libmodel_la-Model.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmodel_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libmodel_la-Model.lo `test -f 'Model.cc' || echo '$(srcdir)/'`Model.cc
+
+libmodel_la-Monitor.lo: Monitor.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmodel_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libmodel_la-Monitor.lo -MD -MP -MF "$(DEPDIR)/libmodel_la-Monitor.Tpo" -c -o libmodel_la-Monitor.lo `test -f 'Monitor.cc' || echo '$(srcdir)/'`Monitor.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libmodel_la-Monitor.Tpo" "$(DEPDIR)/libmodel_la-Monitor.Plo"; else rm -f "$(DEPDIR)/libmodel_la-Monitor.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Monitor.cc' object='libmodel_la-Monitor.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmodel_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libmodel_la-Monitor.lo `test -f 'Monitor.cc' || echo '$(srcdir)/'`Monitor.cc
+
+libmodel_la-TraceMonitor.lo: TraceMonitor.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmodel_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libmodel_la-TraceMonitor.lo -MD -MP -MF "$(DEPDIR)/libmodel_la-TraceMonitor.Tpo" -c -o libmodel_la-TraceMonitor.lo `test -f 'TraceMonitor.cc' || echo '$(srcdir)/'`TraceMonitor.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libmodel_la-TraceMonitor.Tpo" "$(DEPDIR)/libmodel_la-TraceMonitor.Plo"; else rm -f "$(DEPDIR)/libmodel_la-TraceMonitor.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='TraceMonitor.cc' object='libmodel_la-TraceMonitor.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmodel_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libmodel_la-TraceMonitor.lo `test -f 'TraceMonitor.cc' || echo '$(srcdir)/'`TraceMonitor.cc
+
+libmodel_la-BUGSModel.lo: BUGSModel.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmodel_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libmodel_la-BUGSModel.lo -MD -MP -MF "$(DEPDIR)/libmodel_la-BUGSModel.Tpo" -c -o libmodel_la-BUGSModel.lo `test -f 'BUGSModel.cc' || echo '$(srcdir)/'`BUGSModel.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libmodel_la-BUGSModel.Tpo" "$(DEPDIR)/libmodel_la-BUGSModel.Plo"; else rm -f "$(DEPDIR)/libmodel_la-BUGSModel.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='BUGSModel.cc' object='libmodel_la-BUGSModel.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmodel_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libmodel_la-BUGSModel.lo `test -f 'BUGSModel.cc' || echo '$(srcdir)/'`BUGSModel.cc
 
 mostlyclean-libtool:
 	-rm -f *.lo

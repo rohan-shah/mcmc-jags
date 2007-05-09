@@ -50,7 +50,7 @@ CONFIG_HEADER = $(top_builddir)/src/include/config.h
 CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 librng_la_LIBADD =
-am_librng_la_OBJECTS = RNG.lo RmathRNG.lo
+am_librng_la_OBJECTS = librng_la-RNG.lo librng_la-RmathRNG.lo
 librng_la_OBJECTS = $(am_librng_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/src/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -182,8 +182,8 @@ sharedstatedir = @sharedstatedir@
 subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
-INCLUDES = -I $(top_srcdir)/src/include
 noinst_LTLIBRARIES = librng.la
+librng_la_CPPFLAGS = -I$(top_srcdir)/src/include
 librng_la_SOURCES = RNG.cc RmathRNG.cc
 all: all-am
 
@@ -236,8 +236,8 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RNG.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RmathRNG.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/librng_la-RNG.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/librng_la-RmathRNG.Plo@am__quote@
 
 .cc.o:
 @am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -259,6 +259,20 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LTCXXCOMPILE) -c -o $@ $<
+
+librng_la-RNG.lo: RNG.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librng_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT librng_la-RNG.lo -MD -MP -MF "$(DEPDIR)/librng_la-RNG.Tpo" -c -o librng_la-RNG.lo `test -f 'RNG.cc' || echo '$(srcdir)/'`RNG.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/librng_la-RNG.Tpo" "$(DEPDIR)/librng_la-RNG.Plo"; else rm -f "$(DEPDIR)/librng_la-RNG.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='RNG.cc' object='librng_la-RNG.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librng_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o librng_la-RNG.lo `test -f 'RNG.cc' || echo '$(srcdir)/'`RNG.cc
+
+librng_la-RmathRNG.lo: RmathRNG.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librng_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT librng_la-RmathRNG.lo -MD -MP -MF "$(DEPDIR)/librng_la-RmathRNG.Tpo" -c -o librng_la-RmathRNG.lo `test -f 'RmathRNG.cc' || echo '$(srcdir)/'`RmathRNG.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/librng_la-RmathRNG.Tpo" "$(DEPDIR)/librng_la-RmathRNG.Plo"; else rm -f "$(DEPDIR)/librng_la-RmathRNG.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='RmathRNG.cc' object='librng_la-RmathRNG.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librng_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o librng_la-RmathRNG.lo `test -f 'RmathRNG.cc' || echo '$(srcdir)/'`RmathRNG.cc
 
 mostlyclean-libtool:
 	-rm -f *.lo

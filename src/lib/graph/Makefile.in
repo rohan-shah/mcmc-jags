@@ -50,10 +50,13 @@ CONFIG_HEADER = $(top_builddir)/src/include/config.h
 CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 libgraph_la_LIBADD =
-am_libgraph_la_OBJECTS = Node.lo DeterministicNode.lo AggNode.lo \
-	MixtureNode.lo LogicalNode.lo ConstantNode.lo \
-	StochasticNode.lo Graph.lo GraphMarks.lo NodeError.lo \
-	DevianceNode.lo NodeNameTab.lo
+am_libgraph_la_OBJECTS = libgraph_la-Node.lo \
+	libgraph_la-DeterministicNode.lo libgraph_la-AggNode.lo \
+	libgraph_la-MixtureNode.lo libgraph_la-LogicalNode.lo \
+	libgraph_la-ConstantNode.lo libgraph_la-StochasticNode.lo \
+	libgraph_la-Graph.lo libgraph_la-GraphMarks.lo \
+	libgraph_la-NodeError.lo libgraph_la-DevianceNode.lo \
+	libgraph_la-NodeNameTab.lo
 libgraph_la_OBJECTS = $(am_libgraph_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/src/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -185,11 +188,11 @@ sharedstatedir = @sharedstatedir@
 subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
-INCLUDES = -I $(top_srcdir)/src/include
 noinst_LTLIBRARIES = libgraph.la
-libgraph_la_SOURCES = Node.cc DeterministicNode.cc AggNode.cc MixtureNode.cc \
-LogicalNode.cc ConstantNode.cc StochasticNode.cc Graph.cc	\
-GraphMarks.cc NodeError.cc DevianceNode.cc NodeNameTab.cc
+libgraph_la_CPPFLAGS = -I$(top_srcdir)/src/include
+libgraph_la_SOURCES = Node.cc DeterministicNode.cc AggNode.cc		\
+MixtureNode.cc LogicalNode.cc ConstantNode.cc StochasticNode.cc		\
+Graph.cc GraphMarks.cc NodeError.cc DevianceNode.cc NodeNameTab.cc
 
 all: all-am
 
@@ -242,18 +245,18 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AggNode.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ConstantNode.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DeterministicNode.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DevianceNode.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Graph.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GraphMarks.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LogicalNode.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MixtureNode.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Node.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NodeError.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NodeNameTab.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/StochasticNode.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgraph_la-AggNode.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgraph_la-ConstantNode.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgraph_la-DeterministicNode.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgraph_la-DevianceNode.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgraph_la-Graph.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgraph_la-GraphMarks.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgraph_la-LogicalNode.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgraph_la-MixtureNode.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgraph_la-Node.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgraph_la-NodeError.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgraph_la-NodeNameTab.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgraph_la-StochasticNode.Plo@am__quote@
 
 .cc.o:
 @am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -275,6 +278,90 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LTCXXCOMPILE) -c -o $@ $<
+
+libgraph_la-Node.lo: Node.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgraph_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libgraph_la-Node.lo -MD -MP -MF "$(DEPDIR)/libgraph_la-Node.Tpo" -c -o libgraph_la-Node.lo `test -f 'Node.cc' || echo '$(srcdir)/'`Node.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libgraph_la-Node.Tpo" "$(DEPDIR)/libgraph_la-Node.Plo"; else rm -f "$(DEPDIR)/libgraph_la-Node.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Node.cc' object='libgraph_la-Node.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgraph_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libgraph_la-Node.lo `test -f 'Node.cc' || echo '$(srcdir)/'`Node.cc
+
+libgraph_la-DeterministicNode.lo: DeterministicNode.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgraph_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libgraph_la-DeterministicNode.lo -MD -MP -MF "$(DEPDIR)/libgraph_la-DeterministicNode.Tpo" -c -o libgraph_la-DeterministicNode.lo `test -f 'DeterministicNode.cc' || echo '$(srcdir)/'`DeterministicNode.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libgraph_la-DeterministicNode.Tpo" "$(DEPDIR)/libgraph_la-DeterministicNode.Plo"; else rm -f "$(DEPDIR)/libgraph_la-DeterministicNode.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='DeterministicNode.cc' object='libgraph_la-DeterministicNode.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgraph_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libgraph_la-DeterministicNode.lo `test -f 'DeterministicNode.cc' || echo '$(srcdir)/'`DeterministicNode.cc
+
+libgraph_la-AggNode.lo: AggNode.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgraph_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libgraph_la-AggNode.lo -MD -MP -MF "$(DEPDIR)/libgraph_la-AggNode.Tpo" -c -o libgraph_la-AggNode.lo `test -f 'AggNode.cc' || echo '$(srcdir)/'`AggNode.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libgraph_la-AggNode.Tpo" "$(DEPDIR)/libgraph_la-AggNode.Plo"; else rm -f "$(DEPDIR)/libgraph_la-AggNode.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='AggNode.cc' object='libgraph_la-AggNode.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgraph_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libgraph_la-AggNode.lo `test -f 'AggNode.cc' || echo '$(srcdir)/'`AggNode.cc
+
+libgraph_la-MixtureNode.lo: MixtureNode.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgraph_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libgraph_la-MixtureNode.lo -MD -MP -MF "$(DEPDIR)/libgraph_la-MixtureNode.Tpo" -c -o libgraph_la-MixtureNode.lo `test -f 'MixtureNode.cc' || echo '$(srcdir)/'`MixtureNode.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libgraph_la-MixtureNode.Tpo" "$(DEPDIR)/libgraph_la-MixtureNode.Plo"; else rm -f "$(DEPDIR)/libgraph_la-MixtureNode.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='MixtureNode.cc' object='libgraph_la-MixtureNode.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgraph_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libgraph_la-MixtureNode.lo `test -f 'MixtureNode.cc' || echo '$(srcdir)/'`MixtureNode.cc
+
+libgraph_la-LogicalNode.lo: LogicalNode.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgraph_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libgraph_la-LogicalNode.lo -MD -MP -MF "$(DEPDIR)/libgraph_la-LogicalNode.Tpo" -c -o libgraph_la-LogicalNode.lo `test -f 'LogicalNode.cc' || echo '$(srcdir)/'`LogicalNode.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libgraph_la-LogicalNode.Tpo" "$(DEPDIR)/libgraph_la-LogicalNode.Plo"; else rm -f "$(DEPDIR)/libgraph_la-LogicalNode.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='LogicalNode.cc' object='libgraph_la-LogicalNode.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgraph_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libgraph_la-LogicalNode.lo `test -f 'LogicalNode.cc' || echo '$(srcdir)/'`LogicalNode.cc
+
+libgraph_la-ConstantNode.lo: ConstantNode.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgraph_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libgraph_la-ConstantNode.lo -MD -MP -MF "$(DEPDIR)/libgraph_la-ConstantNode.Tpo" -c -o libgraph_la-ConstantNode.lo `test -f 'ConstantNode.cc' || echo '$(srcdir)/'`ConstantNode.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libgraph_la-ConstantNode.Tpo" "$(DEPDIR)/libgraph_la-ConstantNode.Plo"; else rm -f "$(DEPDIR)/libgraph_la-ConstantNode.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='ConstantNode.cc' object='libgraph_la-ConstantNode.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgraph_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libgraph_la-ConstantNode.lo `test -f 'ConstantNode.cc' || echo '$(srcdir)/'`ConstantNode.cc
+
+libgraph_la-StochasticNode.lo: StochasticNode.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgraph_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libgraph_la-StochasticNode.lo -MD -MP -MF "$(DEPDIR)/libgraph_la-StochasticNode.Tpo" -c -o libgraph_la-StochasticNode.lo `test -f 'StochasticNode.cc' || echo '$(srcdir)/'`StochasticNode.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libgraph_la-StochasticNode.Tpo" "$(DEPDIR)/libgraph_la-StochasticNode.Plo"; else rm -f "$(DEPDIR)/libgraph_la-StochasticNode.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='StochasticNode.cc' object='libgraph_la-StochasticNode.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgraph_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libgraph_la-StochasticNode.lo `test -f 'StochasticNode.cc' || echo '$(srcdir)/'`StochasticNode.cc
+
+libgraph_la-Graph.lo: Graph.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgraph_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libgraph_la-Graph.lo -MD -MP -MF "$(DEPDIR)/libgraph_la-Graph.Tpo" -c -o libgraph_la-Graph.lo `test -f 'Graph.cc' || echo '$(srcdir)/'`Graph.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libgraph_la-Graph.Tpo" "$(DEPDIR)/libgraph_la-Graph.Plo"; else rm -f "$(DEPDIR)/libgraph_la-Graph.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Graph.cc' object='libgraph_la-Graph.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgraph_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libgraph_la-Graph.lo `test -f 'Graph.cc' || echo '$(srcdir)/'`Graph.cc
+
+libgraph_la-GraphMarks.lo: GraphMarks.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgraph_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libgraph_la-GraphMarks.lo -MD -MP -MF "$(DEPDIR)/libgraph_la-GraphMarks.Tpo" -c -o libgraph_la-GraphMarks.lo `test -f 'GraphMarks.cc' || echo '$(srcdir)/'`GraphMarks.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libgraph_la-GraphMarks.Tpo" "$(DEPDIR)/libgraph_la-GraphMarks.Plo"; else rm -f "$(DEPDIR)/libgraph_la-GraphMarks.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='GraphMarks.cc' object='libgraph_la-GraphMarks.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgraph_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libgraph_la-GraphMarks.lo `test -f 'GraphMarks.cc' || echo '$(srcdir)/'`GraphMarks.cc
+
+libgraph_la-NodeError.lo: NodeError.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgraph_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libgraph_la-NodeError.lo -MD -MP -MF "$(DEPDIR)/libgraph_la-NodeError.Tpo" -c -o libgraph_la-NodeError.lo `test -f 'NodeError.cc' || echo '$(srcdir)/'`NodeError.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libgraph_la-NodeError.Tpo" "$(DEPDIR)/libgraph_la-NodeError.Plo"; else rm -f "$(DEPDIR)/libgraph_la-NodeError.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='NodeError.cc' object='libgraph_la-NodeError.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgraph_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libgraph_la-NodeError.lo `test -f 'NodeError.cc' || echo '$(srcdir)/'`NodeError.cc
+
+libgraph_la-DevianceNode.lo: DevianceNode.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgraph_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libgraph_la-DevianceNode.lo -MD -MP -MF "$(DEPDIR)/libgraph_la-DevianceNode.Tpo" -c -o libgraph_la-DevianceNode.lo `test -f 'DevianceNode.cc' || echo '$(srcdir)/'`DevianceNode.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libgraph_la-DevianceNode.Tpo" "$(DEPDIR)/libgraph_la-DevianceNode.Plo"; else rm -f "$(DEPDIR)/libgraph_la-DevianceNode.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='DevianceNode.cc' object='libgraph_la-DevianceNode.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgraph_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libgraph_la-DevianceNode.lo `test -f 'DevianceNode.cc' || echo '$(srcdir)/'`DevianceNode.cc
+
+libgraph_la-NodeNameTab.lo: NodeNameTab.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgraph_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libgraph_la-NodeNameTab.lo -MD -MP -MF "$(DEPDIR)/libgraph_la-NodeNameTab.Tpo" -c -o libgraph_la-NodeNameTab.lo `test -f 'NodeNameTab.cc' || echo '$(srcdir)/'`NodeNameTab.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libgraph_la-NodeNameTab.Tpo" "$(DEPDIR)/libgraph_la-NodeNameTab.Plo"; else rm -f "$(DEPDIR)/libgraph_la-NodeNameTab.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='NodeNameTab.cc' object='libgraph_la-NodeNameTab.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgraph_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libgraph_la-NodeNameTab.lo `test -f 'NodeNameTab.cc' || echo '$(srcdir)/'`NodeNameTab.cc
 
 mostlyclean-libtool:
 	-rm -f *.lo
