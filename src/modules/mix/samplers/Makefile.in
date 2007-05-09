@@ -52,8 +52,8 @@ CONFIG_HEADER = $(top_builddir)/src/include/config.h
 CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 mixsamp_la_LIBADD =
-am_mixsamp_la_OBJECTS = MixSampler.lo MixSamplerFactory.lo \
-	MixSamplerBasic.lo
+am_mixsamp_la_OBJECTS = mixsamp_la-MixSampler.lo \
+	mixsamp_la-MixSamplerFactory.lo mixsamp_la-MixSamplerBasic.lo
 mixsamp_la_OBJECTS = $(am_mixsamp_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/src/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -186,8 +186,8 @@ sharedstatedir = @sharedstatedir@
 subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
-INCLUDES = -I $(top_srcdir)/src/include 
 noinst_LTLIBRARIES = mixsamp.la
+mixsamp_la_CPPFLAGS = -I$(top_srcdir)/src/include 
 mixsamp_la_LDFLAGS = -no-undefined -module -avoid-version
 mixsamp_la_SOURCES = MixSampler.cc MixSamplerFactory.cc MixSamplerBasic.cc
 noinst_HEADERS = MixSampler.h MixSamplerFactory.h MixSamplerBasic.h
@@ -242,9 +242,9 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MixSampler.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MixSamplerBasic.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MixSamplerFactory.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mixsamp_la-MixSampler.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mixsamp_la-MixSamplerBasic.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mixsamp_la-MixSamplerFactory.Plo@am__quote@
 
 .cc.o:
 @am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -266,6 +266,27 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LTCXXCOMPILE) -c -o $@ $<
+
+mixsamp_la-MixSampler.lo: MixSampler.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(mixsamp_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT mixsamp_la-MixSampler.lo -MD -MP -MF "$(DEPDIR)/mixsamp_la-MixSampler.Tpo" -c -o mixsamp_la-MixSampler.lo `test -f 'MixSampler.cc' || echo '$(srcdir)/'`MixSampler.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/mixsamp_la-MixSampler.Tpo" "$(DEPDIR)/mixsamp_la-MixSampler.Plo"; else rm -f "$(DEPDIR)/mixsamp_la-MixSampler.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='MixSampler.cc' object='mixsamp_la-MixSampler.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(mixsamp_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o mixsamp_la-MixSampler.lo `test -f 'MixSampler.cc' || echo '$(srcdir)/'`MixSampler.cc
+
+mixsamp_la-MixSamplerFactory.lo: MixSamplerFactory.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(mixsamp_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT mixsamp_la-MixSamplerFactory.lo -MD -MP -MF "$(DEPDIR)/mixsamp_la-MixSamplerFactory.Tpo" -c -o mixsamp_la-MixSamplerFactory.lo `test -f 'MixSamplerFactory.cc' || echo '$(srcdir)/'`MixSamplerFactory.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/mixsamp_la-MixSamplerFactory.Tpo" "$(DEPDIR)/mixsamp_la-MixSamplerFactory.Plo"; else rm -f "$(DEPDIR)/mixsamp_la-MixSamplerFactory.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='MixSamplerFactory.cc' object='mixsamp_la-MixSamplerFactory.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(mixsamp_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o mixsamp_la-MixSamplerFactory.lo `test -f 'MixSamplerFactory.cc' || echo '$(srcdir)/'`MixSamplerFactory.cc
+
+mixsamp_la-MixSamplerBasic.lo: MixSamplerBasic.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(mixsamp_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT mixsamp_la-MixSamplerBasic.lo -MD -MP -MF "$(DEPDIR)/mixsamp_la-MixSamplerBasic.Tpo" -c -o mixsamp_la-MixSamplerBasic.lo `test -f 'MixSamplerBasic.cc' || echo '$(srcdir)/'`MixSamplerBasic.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/mixsamp_la-MixSamplerBasic.Tpo" "$(DEPDIR)/mixsamp_la-MixSamplerBasic.Plo"; else rm -f "$(DEPDIR)/mixsamp_la-MixSamplerBasic.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='MixSamplerBasic.cc' object='mixsamp_la-MixSamplerBasic.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(mixsamp_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o mixsamp_la-MixSamplerBasic.lo `test -f 'MixSamplerBasic.cc' || echo '$(srcdir)/'`MixSamplerBasic.cc
 
 mostlyclean-libtool:
 	-rm -f *.lo

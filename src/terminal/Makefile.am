@@ -11,7 +11,7 @@ jags_SOURCES = jags.in
 noinst_HEADERS = ReadData.h 
 
 jags_bin_LDADD = @LIBLTDL@ ${top_builddir}/src/lib/libjags.la
-jags_bin_CPPFLAGS= -I $(top_srcdir)/src/include @INCLTDL@
+jags_bin_CPPFLAGS= -I$(top_srcdir)/src/include @INCLTDL@
 
 LEX_OUTPUT_ROOT=lex.zz
 

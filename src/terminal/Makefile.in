@@ -214,7 +214,7 @@ jags_bin_SOURCES = parser.yy scanner.ll ReadData.cc
 jags_SOURCES = jags.in
 noinst_HEADERS = ReadData.h 
 jags_bin_LDADD = @LIBLTDL@ ${top_builddir}/src/lib/libjags.la
-jags_bin_CPPFLAGS = -I $(top_srcdir)/src/include @INCLTDL@
+jags_bin_CPPFLAGS = -I$(top_srcdir)/src/include @INCLTDL@
 edit = sed					\
         -e 's,@libdir\@,$(libdir),g'		\
         -e 's,@jagsmoddir\@,$(jagsmoddir),g'	\
