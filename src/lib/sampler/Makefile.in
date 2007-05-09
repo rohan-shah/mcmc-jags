@@ -50,8 +50,9 @@ CONFIG_HEADER = $(top_builddir)/src/include/config.h
 CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 libsampler_la_LIBADD =
-am_libsampler_la_OBJECTS = Sampler.lo GibbsFactory.lo Slicer.lo \
-	Metropolis.lo RWMetropolis.lo
+am_libsampler_la_OBJECTS = libsampler_la-Sampler.lo \
+	libsampler_la-GibbsFactory.lo libsampler_la-Slicer.lo \
+	libsampler_la-Metropolis.lo libsampler_la-RWMetropolis.lo
 libsampler_la_OBJECTS = $(am_libsampler_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/src/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -183,10 +184,10 @@ sharedstatedir = @sharedstatedir@
 subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
-INCLUDES = -I $(top_srcdir)/src/include
 noinst_LTLIBRARIES = libsampler.la
-libsampler_la_SOURCES = Sampler.cc GibbsFactory.cc	\
-Slicer.cc Metropolis.cc RWMetropolis.cc
+libsampler_la_CPPFLAGS = -I$(top_srcdir)/src/include
+libsampler_la_SOURCES = Sampler.cc GibbsFactory.cc Slicer.cc	\
+Metropolis.cc RWMetropolis.cc
 
 all: all-am
 
@@ -239,11 +240,11 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GibbsFactory.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Metropolis.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RWMetropolis.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Sampler.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Slicer.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libsampler_la-GibbsFactory.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libsampler_la-Metropolis.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libsampler_la-RWMetropolis.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libsampler_la-Sampler.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libsampler_la-Slicer.Plo@am__quote@
 
 .cc.o:
 @am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -265,6 +266,41 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LTCXXCOMPILE) -c -o $@ $<
+
+libsampler_la-Sampler.lo: Sampler.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsampler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libsampler_la-Sampler.lo -MD -MP -MF "$(DEPDIR)/libsampler_la-Sampler.Tpo" -c -o libsampler_la-Sampler.lo `test -f 'Sampler.cc' || echo '$(srcdir)/'`Sampler.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libsampler_la-Sampler.Tpo" "$(DEPDIR)/libsampler_la-Sampler.Plo"; else rm -f "$(DEPDIR)/libsampler_la-Sampler.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Sampler.cc' object='libsampler_la-Sampler.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsampler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libsampler_la-Sampler.lo `test -f 'Sampler.cc' || echo '$(srcdir)/'`Sampler.cc
+
+libsampler_la-GibbsFactory.lo: GibbsFactory.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsampler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libsampler_la-GibbsFactory.lo -MD -MP -MF "$(DEPDIR)/libsampler_la-GibbsFactory.Tpo" -c -o libsampler_la-GibbsFactory.lo `test -f 'GibbsFactory.cc' || echo '$(srcdir)/'`GibbsFactory.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libsampler_la-GibbsFactory.Tpo" "$(DEPDIR)/libsampler_la-GibbsFactory.Plo"; else rm -f "$(DEPDIR)/libsampler_la-GibbsFactory.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='GibbsFactory.cc' object='libsampler_la-GibbsFactory.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsampler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libsampler_la-GibbsFactory.lo `test -f 'GibbsFactory.cc' || echo '$(srcdir)/'`GibbsFactory.cc
+
+libsampler_la-Slicer.lo: Slicer.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsampler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libsampler_la-Slicer.lo -MD -MP -MF "$(DEPDIR)/libsampler_la-Slicer.Tpo" -c -o libsampler_la-Slicer.lo `test -f 'Slicer.cc' || echo '$(srcdir)/'`Slicer.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libsampler_la-Slicer.Tpo" "$(DEPDIR)/libsampler_la-Slicer.Plo"; else rm -f "$(DEPDIR)/libsampler_la-Slicer.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Slicer.cc' object='libsampler_la-Slicer.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsampler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libsampler_la-Slicer.lo `test -f 'Slicer.cc' || echo '$(srcdir)/'`Slicer.cc
+
+libsampler_la-Metropolis.lo: Metropolis.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsampler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libsampler_la-Metropolis.lo -MD -MP -MF "$(DEPDIR)/libsampler_la-Metropolis.Tpo" -c -o libsampler_la-Metropolis.lo `test -f 'Metropolis.cc' || echo '$(srcdir)/'`Metropolis.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libsampler_la-Metropolis.Tpo" "$(DEPDIR)/libsampler_la-Metropolis.Plo"; else rm -f "$(DEPDIR)/libsampler_la-Metropolis.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Metropolis.cc' object='libsampler_la-Metropolis.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsampler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libsampler_la-Metropolis.lo `test -f 'Metropolis.cc' || echo '$(srcdir)/'`Metropolis.cc
+
+libsampler_la-RWMetropolis.lo: RWMetropolis.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsampler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libsampler_la-RWMetropolis.lo -MD -MP -MF "$(DEPDIR)/libsampler_la-RWMetropolis.Tpo" -c -o libsampler_la-RWMetropolis.lo `test -f 'RWMetropolis.cc' || echo '$(srcdir)/'`RWMetropolis.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libsampler_la-RWMetropolis.Tpo" "$(DEPDIR)/libsampler_la-RWMetropolis.Plo"; else rm -f "$(DEPDIR)/libsampler_la-RWMetropolis.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='RWMetropolis.cc' object='libsampler_la-RWMetropolis.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsampler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libsampler_la-RWMetropolis.lo `test -f 'RWMetropolis.cc' || echo '$(srcdir)/'`RWMetropolis.cc
 
 mostlyclean-libtool:
 	-rm -f *.lo

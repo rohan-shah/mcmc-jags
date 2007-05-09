@@ -50,8 +50,9 @@ CONFIG_HEADER = $(top_builddir)/src/include/config.h
 CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 libsarray_la_LIBADD =
-am_libsarray_la_OBJECTS = Range.lo RangeIterator.lo SArray.lo util.lo \
-	nainf.lo
+am_libsarray_la_OBJECTS = libsarray_la-Range.lo \
+	libsarray_la-RangeIterator.lo libsarray_la-SArray.lo \
+	libsarray_la-util.lo libsarray_la-nainf.lo
 libsarray_la_OBJECTS = $(am_libsarray_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/src/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -183,8 +184,8 @@ sharedstatedir = @sharedstatedir@
 subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
-INCLUDES = -I $(top_srcdir)/src/include 
 noinst_LTLIBRARIES = libsarray.la
+libsarray_la_CPPFLAGS = -I$(top_srcdir)/src/include 
 libsarray_la_SOURCES = Range.cc RangeIterator.cc SArray.cc util.cc nainf.cc
 all: all-am
 
@@ -237,11 +238,11 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Range.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RangeIterator.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SArray.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nainf.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/util.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libsarray_la-Range.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libsarray_la-RangeIterator.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libsarray_la-SArray.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libsarray_la-nainf.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libsarray_la-util.Plo@am__quote@
 
 .cc.o:
 @am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -263,6 +264,41 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LTCXXCOMPILE) -c -o $@ $<
+
+libsarray_la-Range.lo: Range.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsarray_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libsarray_la-Range.lo -MD -MP -MF "$(DEPDIR)/libsarray_la-Range.Tpo" -c -o libsarray_la-Range.lo `test -f 'Range.cc' || echo '$(srcdir)/'`Range.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libsarray_la-Range.Tpo" "$(DEPDIR)/libsarray_la-Range.Plo"; else rm -f "$(DEPDIR)/libsarray_la-Range.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Range.cc' object='libsarray_la-Range.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsarray_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libsarray_la-Range.lo `test -f 'Range.cc' || echo '$(srcdir)/'`Range.cc
+
+libsarray_la-RangeIterator.lo: RangeIterator.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsarray_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libsarray_la-RangeIterator.lo -MD -MP -MF "$(DEPDIR)/libsarray_la-RangeIterator.Tpo" -c -o libsarray_la-RangeIterator.lo `test -f 'RangeIterator.cc' || echo '$(srcdir)/'`RangeIterator.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libsarray_la-RangeIterator.Tpo" "$(DEPDIR)/libsarray_la-RangeIterator.Plo"; else rm -f "$(DEPDIR)/libsarray_la-RangeIterator.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='RangeIterator.cc' object='libsarray_la-RangeIterator.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsarray_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libsarray_la-RangeIterator.lo `test -f 'RangeIterator.cc' || echo '$(srcdir)/'`RangeIterator.cc
+
+libsarray_la-SArray.lo: SArray.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsarray_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libsarray_la-SArray.lo -MD -MP -MF "$(DEPDIR)/libsarray_la-SArray.Tpo" -c -o libsarray_la-SArray.lo `test -f 'SArray.cc' || echo '$(srcdir)/'`SArray.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libsarray_la-SArray.Tpo" "$(DEPDIR)/libsarray_la-SArray.Plo"; else rm -f "$(DEPDIR)/libsarray_la-SArray.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='SArray.cc' object='libsarray_la-SArray.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsarray_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libsarray_la-SArray.lo `test -f 'SArray.cc' || echo '$(srcdir)/'`SArray.cc
+
+libsarray_la-util.lo: util.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsarray_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libsarray_la-util.lo -MD -MP -MF "$(DEPDIR)/libsarray_la-util.Tpo" -c -o libsarray_la-util.lo `test -f 'util.cc' || echo '$(srcdir)/'`util.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libsarray_la-util.Tpo" "$(DEPDIR)/libsarray_la-util.Plo"; else rm -f "$(DEPDIR)/libsarray_la-util.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='util.cc' object='libsarray_la-util.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsarray_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libsarray_la-util.lo `test -f 'util.cc' || echo '$(srcdir)/'`util.cc
+
+libsarray_la-nainf.lo: nainf.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsarray_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libsarray_la-nainf.lo -MD -MP -MF "$(DEPDIR)/libsarray_la-nainf.Tpo" -c -o libsarray_la-nainf.lo `test -f 'nainf.cc' || echo '$(srcdir)/'`nainf.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libsarray_la-nainf.Tpo" "$(DEPDIR)/libsarray_la-nainf.Plo"; else rm -f "$(DEPDIR)/libsarray_la-nainf.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='nainf.cc' object='libsarray_la-nainf.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsarray_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libsarray_la-nainf.lo `test -f 'nainf.cc' || echo '$(srcdir)/'`nainf.cc
 
 mostlyclean-libtool:
 	-rm -f *.lo
