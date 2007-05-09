@@ -1,9 +1,10 @@
 SUBDIRS = distributions samplers
-INCLUDES = -I $(top_srcdir)/src/include
 
 jagsmod_LTLIBRARIES = mix.la
 
 mix_la_SOURCES = mix.cc
+
+mix_la_CPPFLAGS = -I$(top_srcdir)/src/include
 
 mix_la_LIBADD = distributions/mixdist.la               \
         samplers/mixsamp.la         			\
