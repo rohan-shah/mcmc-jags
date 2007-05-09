@@ -1,7 +1,6 @@
-dnl AM_CPPFLAGS = -I @top_srcdir@/include
-INCLUDES = -I $(top_srcdir)/src/include
-
 jagsmod_LTLIBRARIES = baserngs.la
+
+baserngs_la_CPPFLAGS = -I$(top_srcdir)/src/include
 
 baserngs_la_LDFLAGS = -no-undefined -module -avoid-version
 
