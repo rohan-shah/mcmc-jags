@@ -5,10 +5,12 @@
 
 #include <functional>
 #include <iostream>
+#include <algorithm>
 
 using std::list;
 using std::string;
 using std::binary_function;
+using std::find_if;
 
 typedef std::list<Function const*> FuncList;
 typedef std::list<InverseLinkFunc const*> LinkList;
