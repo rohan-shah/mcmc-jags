@@ -17,7 +17,6 @@
 #include <stdexcept>
 #include <fstream>
 #include <vector>
-#include <algorithm>
 
 using std::ostream;
 using std::ofstream;

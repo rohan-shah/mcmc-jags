@@ -14,6 +14,7 @@ using std::string;
 using std::vector;
 using std::length_error;
 using std::logic_error;
+using std::count_if;
 
 DistScalar::DistScalar(string const &name, unsigned int npar, Support support, 
 		       bool canbound, bool discrete)

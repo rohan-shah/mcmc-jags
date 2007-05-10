@@ -12,7 +12,7 @@
  */
 inline bool allTrue (std::vector<bool> const &mask)
 {
-   return find(mask.begin(), mask.end(), false) == mask.end();
+   return std::find(mask.begin(), mask.end(), false) == mask.end();
 }
 
 /**
@@ -20,7 +20,7 @@ inline bool allTrue (std::vector<bool> const &mask)
  */
 inline bool anyTrue (std::vector<bool> const &mask)
 {
-   return find(mask.begin(), mask.end(), true) != mask.end();
+   return std::find(mask.begin(), mask.end(), true) != mask.end();
 }
 
 /**

@@ -8,10 +8,7 @@
 
 #include <stdexcept>
 #include <cmath>
-#include <algorithm>
 
-using std::max;
-using std::min;
 using std::string;
 using std::vector;
 using std::length_error;
