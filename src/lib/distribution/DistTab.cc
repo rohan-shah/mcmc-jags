@@ -5,6 +5,7 @@
 
 using std::string;
 using std::binary_function;
+using std::find_if;
 
 typedef std::list<Distribution const*> DistList;
 
@@ -32,8 +33,7 @@ void DistTab::insert(Distribution const *dist)
 
 Distribution const *DistTab::find(string const &distname) const
 {
-    //Note scoping operator to distinguish std::find from DistTab::find
-    DistList::const_iterator p = std::find_if(_dist_list.begin(), 
+    DistList::const_iterator p = find_if(_dist_list.begin(), 
 					      _dist_list.end(),
 					      bind2nd(isName(), &distname));
 
@@ -43,6 +43,7 @@ Distribution const *DistTab::find(string const &distname) const
 void DistTab::erase(Distribution *dist)
 {
     //Erase from the main list.
+    //Note scoping operator to distinguish std::find from DistTab::find
     DistList::iterator p = std::find(_dist_list.begin(), _dist_list.end(),
 				     dist);
     bool move_masked = false;
