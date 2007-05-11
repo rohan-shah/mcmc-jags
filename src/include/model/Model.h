@@ -5,6 +5,7 @@
 
 #include <vector>
 #include <list>
+#include <string>
 
 class Sampler;
 class Monitor;

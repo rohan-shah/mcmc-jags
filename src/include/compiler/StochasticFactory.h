@@ -53,7 +53,7 @@ bool lt(StochasticTrio const &arg1, StochasticTrio const &arg2);
  */
 struct ltstochastic
 {
-  bool operator()(StochasticTrio const &arg1, StochasticTrio const &arg2)
+  bool operator()(StochasticTrio const &arg1, StochasticTrio const &arg2) const
   {
     return lt(arg1, arg2);
   }

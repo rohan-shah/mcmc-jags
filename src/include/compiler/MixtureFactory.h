@@ -21,7 +21,7 @@ bool compMixPair(MixPair const &, MixPair const &);
  */
 struct ltmixpair
 {
-  bool operator()(MixPair const &arg1, MixPair const &arg2)
+  bool operator()(MixPair const &arg1, MixPair const &arg2) const
   {
     return compMixPair(arg1, arg2);
   }
