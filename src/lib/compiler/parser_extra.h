@@ -16,7 +16,7 @@
  * pvariables will point to a newly allocated ParseTree representing
  * the stochastic and logical relationships between declared nodes.
  */
-int parse_bugs(FILE *file, std::vector<ParseTree*> **pvariables, 
+int parse_bugs(std::FILE *file, std::vector<ParseTree*> **pvariables, 
 	       ParseTree **pdata, ParseTree **prelations);
 
 #endif /* PARSER_EXTRA_H_ */
