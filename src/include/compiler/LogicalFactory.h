@@ -38,7 +38,7 @@ bool lt(LogicalPair const &arg1, LogicalPair const &arg2);
  */
 struct ltlogical
 {
-  bool operator()(LogicalPair const &arg1, LogicalPair const &arg2)
+  bool operator()(LogicalPair const &arg1, LogicalPair const &arg2) const
   {
     return lt(arg1, arg2);
   }
