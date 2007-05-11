@@ -12,7 +12,7 @@ class Graph;
  */
 struct ltdouble
 {
-  bool operator()(double arg1, double arg2)
+  bool operator()(double arg1, double arg2) const
   {
     return lt(arg1, arg2);
   }
