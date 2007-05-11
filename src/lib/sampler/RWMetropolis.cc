@@ -7,6 +7,8 @@
 
 using std::logic_error;
 using std::vector;
+using std::log;
+using std::exp;
 
 /* 
    The value _n controls the reduction in the step size when rescale is

@@ -13,6 +13,7 @@ using std::string;
 using std::vector;
 using std::logic_error;
 using std::copy;
+using std::find;
 
 Node::Node(vector<unsigned int> const &dim, unsigned int nchain)
     : _parents(0), _children(0), _ref(0), _isobserved(false),

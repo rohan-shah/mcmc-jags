@@ -12,6 +12,7 @@
 #define MIN_ADAPT 50
 
 using std::vector;
+using std::fabs;
 
 Slicer::Slicer(vector<StochasticNode *> const &nodes, Graph const &graph,
 	       double width, unsigned int max)

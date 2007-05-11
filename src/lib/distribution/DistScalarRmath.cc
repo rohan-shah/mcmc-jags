@@ -13,6 +13,7 @@ using std::string;
 using std::vector;
 using std::length_error;
 using std::logic_error;
+using std::log;
 
 DistScalarRmath::DistScalarRmath(string const &name, unsigned int npar, Support support, 
 		       bool canbound, bool discrete)

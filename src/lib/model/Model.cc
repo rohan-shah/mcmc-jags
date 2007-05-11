@@ -31,6 +31,7 @@ using std::logic_error;
 using std::runtime_error;
 using std::string;
 using std::ostringstream;
+using std::stable_sort;
 
 Model::Model(unsigned int nchain)
   : _nchain(nchain), _chain_info(nchain)
