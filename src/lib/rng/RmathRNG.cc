@@ -7,6 +7,14 @@
 #define repeat for(;;)
 
 using std::string;
+using std::log;
+using std::exp;
+using std::sin;
+using std::cos;
+using std::sqrt;
+using std::fabs;
+
+#define PI 3.141592653589793238462643383280
 
 static inline double fmin2(double x, double y) {
         return (x < y) ? x : y;
@@ -226,7 +234,7 @@ double RmathRNG::normal()
 	    _BM_norm_keep = 0.0;
 	    return s;
 	} else {
-	    theta = 2 * M_PI * uniform();
+	    theta = 2 * PI * uniform();
 	    R = sqrt(-2 * log(uniform())) + 10*DBL_MIN; /* ensure non-zero */
 	    _BM_norm_keep = R * sin(theta);
 	    return R * cos(theta);
