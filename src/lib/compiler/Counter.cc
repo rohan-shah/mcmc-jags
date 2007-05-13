@@ -1,6 +1,8 @@
 #include <config.h>
 #include <compiler/Counter.h>
+
 #include <stdexcept>
+#include <string>
 
 using std::logic_error;
  
