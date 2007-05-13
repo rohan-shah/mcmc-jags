@@ -17,6 +17,9 @@
 using std::vector;
 using std::copy;
 using std::logic_error;
+using std::exp;
+using std::sqrt;
+using std::min;
 
 MNormSampler::MNormSampler(StochasticNode * node, 
 			       Graph const &graph, unsigned int chain, 
@@ -70,7 +73,7 @@ void MNormSampler::update(RNG *rng)
 void MNormSampler::rescale(double p, bool accept)
 {
     ++_n;
-    p = fmin(p, 1.0);
+    p = min(p, 1.0);
     _sump += p;
 
     if (_n % N_REFRESH == 0) {
@@ -99,7 +102,7 @@ void MNormSampler::rescale(double p, bool accept)
 	}
     }
     else {
-	_lstep += (p - 0.234) / sqrt(_nstep); //testing
+	_lstep += (p - 0.234) / sqrt(static_cast<double>(_nstep)); //testing
         _nstep++;
 /*
 	if ((p > 0.234) != _p_over_target) {

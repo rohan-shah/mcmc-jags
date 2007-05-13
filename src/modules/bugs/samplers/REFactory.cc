@@ -15,6 +15,7 @@
 using std::set;
 using std::vector;
 using std::runtime_error;
+using std::log;
 
 /* Smallest number of random effects that will be sampled */
 #define N_MIN 20

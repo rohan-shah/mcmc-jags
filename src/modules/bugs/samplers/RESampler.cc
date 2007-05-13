@@ -16,6 +16,10 @@ using std::vector;
 using std::logic_error;
 using std::copy;
 
+using std::exp;
+using std::sqrt;
+using std::min;
+
 static vector<StochasticNode*> merg(StochasticNode *variance,
 			     vector<StochasticNode*> const &effects)
 {
@@ -132,7 +136,7 @@ void RESampler::update(RNG* rng)
  
 void RESampler::rescale(double p, bool accept)
 {
-    p = fmin(p, 1.0);
+    p = min(p, 1.0);
     double ptarget = (_mode == RE_SHUFFLE) ? 0.234 : 0.45;
 
     switch(_mode) {

@@ -16,6 +16,9 @@ using std::vector;
 using std::copy;
 using std::logic_error;
 using std::invalid_argument;
+using std::log;
+using std::exp;
+using std::min;
 
 #define N_REFRESH 100
 
@@ -201,7 +204,7 @@ void MixSampler::update(RNG *rng)
 	}
 	propose(proposal, length);
 	lprob += logFullConditional(ch);
-	double prob = fmin(exp(lprob), 1);
+	double prob = min(exp(lprob), 1.0);
 	if(accept(rng, prob)) {
 	    copy(proposal, proposal + length, last_proposal);
 	}
@@ -253,7 +256,7 @@ void MixSampler::update(RNG *rng)
 		lprior0 = lprior1;
 		llik0 = llik1;
 	    }
-	    pmean += fmin(prob, 1) / _nrep;
+	    pmean += min(prob, 1.0) / _nrep;
 	}
 	log_global_prob += (pwr[t+1] - pwr[t]) * llik0;
 	if (t <= _level) {

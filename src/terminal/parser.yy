@@ -144,7 +144,7 @@ command: model
 ;
 
 model: MODEL IN file_name {
-    FILE *file = fopen(($3)->c_str(), "r");
+    std::FILE *file = std::fopen(($3)->c_str(), "r");
     if (!file) {
 	std::cerr << "Failed to open file " << *($3) << std::endl;
     }
@@ -687,10 +687,10 @@ static void writeValue(double x, std::ostream &out, bool isdiscrete)
   if (x == JAGS_NA) {
     out << "NA";
   }
-  else if (isnan(x)) {
+  else if (jags_isnan(x)) {
     out << "NaN";
   }
-  else if (isinf(x)) {
+  else if (!jags_finite(x)) {
     if (x > 0)
       out << "Inf";
     else
@@ -983,15 +983,15 @@ static void loadModule(std::string const &name)
 
 int main (int argc, char **argv)
 {
-  extern FILE *zzin;
+  extern std::FILE *zzin;
 
-  FILE *cmdfile = 0;
+  std::FILE *cmdfile = 0;
   if (argc > 2) {
     std::cerr << "Too many arguments" << std::endl;
   }
   else if (argc == 2) {
     interactive = false;
-    cmdfile = fopen(argv[1],"r");
+    cmdfile = std::fopen(argv[1],"r");
     if (cmdfile) {
       zzin = cmdfile;
     }

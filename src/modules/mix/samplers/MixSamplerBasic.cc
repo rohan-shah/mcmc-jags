@@ -16,6 +16,10 @@ using std::vector;
 using std::copy;
 using std::logic_error;
 using std::invalid_argument;
+using std::log;
+using std::exp;
+using std::sqrt;
+using std::min;
 
 #define INIT_N 10
 #define N_REFRESH 100
@@ -200,7 +204,7 @@ void MixSamplerBasic::update(RNG *rng)
 void MixSamplerBasic::rescale(double p, bool accept)
 {
     ++_n;
-    p = fmin(p, 1.0);
+    p = min(p, 1.0);
     _sump += p;
 
     if (_n % N_REFRESH == 0) {
@@ -229,7 +233,7 @@ void MixSamplerBasic::rescale(double p, bool accept)
 	}
     }
     else {
-	_lstep += (p - 0.234) / sqrt(_nstep); //testing
+	_lstep += (p - 0.234) / sqrt(static_cast<double>(_nstep)); //testing
         _nstep++;
 	/* 
 	   Adaptive random walk: The variance of the proposal
