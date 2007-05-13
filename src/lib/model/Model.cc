@@ -34,14 +34,12 @@ using std::ostringstream;
 using std::stable_sort;
 
 Model::Model(unsigned int nchain)
-  : _nchain(nchain), _chain_info(nchain)
+  : _nchain(nchain), _chain_info(nchain), _is_initialized(false), _adapt(true)
 {
   for (unsigned int n = 0; n < _nchain; ++n) {
     _chain_info[n].rng = 0;
     _chain_info[n].iteration = 0;
   }
-  _is_initialized = false;
-  _adapt = true;
 }
 
 Model::~Model()

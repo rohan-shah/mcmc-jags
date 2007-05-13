@@ -114,9 +114,9 @@ DistScalar::randomSample(double *x, unsigned int length,
 }
 
 void 
-DistScalar::typicalValue(double *x, unsigned int length,
-			 std::vector<double const *> const &parameters,
-			 std::vector<std::vector<unsigned int> > const &dims) const
+DistScalar::typicalValue (double *x, unsigned int length,
+			  std::vector<double const *> const &parameters,
+			  std::vector<std::vector<unsigned int> > const &dims) const
 {
     *x = typicalValue(parameters);
 }
