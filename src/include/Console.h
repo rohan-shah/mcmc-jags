@@ -47,7 +47,7 @@ public:
    *
    * @return true on success or false on error.
    */
-  bool checkModel(FILE *file);
+  bool checkModel(std::FILE *file);
   /**
    * Compiles the model.
    *

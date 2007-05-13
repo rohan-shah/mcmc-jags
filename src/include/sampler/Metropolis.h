@@ -31,6 +31,8 @@ class Metropolis : public Sampler
     double *_value;
     double *_last_value;
     const unsigned int _value_length;
+    Metropolis(Metropolis const &);
+    Metropolis &operator=(Metropolis const &);
 public:
     /**
      * Constructs a Metropolis Hastings sampler

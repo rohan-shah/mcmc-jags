@@ -28,6 +28,7 @@ using std::map;
 using std::list;
 using std::set;
 using std::pair;
+using std::FILE;
 
 /* Helper functions for dumpState */
 

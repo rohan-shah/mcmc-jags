@@ -65,37 +65,53 @@ class Compiler {
   void addDevianceNode();
 public:
   bool indexExpression(ParseTree const *t, int &value);
-  MixtureFactory &mixtureFactory();
   BUGSModel &model() const;
   Node* getParameter(ParseTree const *t);
   /**
-   * Constructor
-   * @param model To be created by the compiler.
-   * @param datatab Data table. This is required since some constant
-   * expressions in the BUGS language may depend on data values.
+   * @param model Model to be created by the compiler.
+   *
+   * @param datatab Data table, mapping a variable name onto a
+   * multi-dimensional array of values. This is required since some
+   * constant expressions in the BUGS language may depend on data
+   * values.
    */
   Compiler(BUGSModel &model, std::map<std::string, SArray> const &data_table);
+  /**
+   * Adds variables to the symbol table.
+   *
+   * @param pvariables vector of ParseTree pointers, each one corresponding
+   * to a parsed variable declaration.
+   */
   void declareVariables(std::vector<ParseTree*> const &pvariables);
   /**
    * Adds variables without an explicit declaration to the symbol
    * table.  Variables supplied in the data table are added, then
    * any variables that appear on the left hand side of a relation
+   *
+   * @param prelations ParseTree corresponding to a parsed model block
    */
   void undeclaredVariables(ParseTree const *prelations);
   /**
    * Traverses the ParseTree creating nodes.
+   *
+   * @param prelations ParseTree corresponding to a parsed model block
    */
   void writeRelations(ParseTree const *prelations);
   /** 
    * The function table used by the compiler to look up functions by
    * name.  It is shared by all Compiler objects.
+   *
+   * @see Module
    */
   static FuncTab &funcTab();
   /** 
    * The distribution table used by the compiler to look up
    * distributions by name.  It is shared by all Compiler objects.
+   *
+   * @see Module
    */
   static DistTab &distTab();
+  MixtureFactory &mixtureFactory();
 };
 
 

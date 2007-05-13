@@ -15,7 +15,7 @@
 class Range {
     std::vector<int> _lower, _upper;
     std::vector<unsigned int> _dim, _dim_dropped;
-    unsigned int _length, _ref;
+    unsigned int _length;
 public:
     /**
      * Default constructor which constructs a NULL range, with zero-length
