@@ -5,6 +5,8 @@
 #include <cfloat>
 
 using std::vector;
+using std::exp;
+using std::log;
 
 ILogit::ILogit ()
     : InverseLinkFunc ("ilogit", "logit")

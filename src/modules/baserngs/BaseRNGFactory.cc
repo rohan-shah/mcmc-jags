@@ -7,6 +7,7 @@
 #include <ctime>
 
 using std::vector;
+using std::time;
 
 #define DEFAULT_NORM_KIND KINDERMAN_RAMAGE
 

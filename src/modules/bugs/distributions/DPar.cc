@@ -7,6 +7,8 @@
 #include <cfloat>
 
 using std::vector;
+using std::exp;
+using std::log;
 
 #define ALPHA(par) (*par[0])
 #define C(par) (*par[1])

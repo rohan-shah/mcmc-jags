@@ -4,6 +4,7 @@
 #include "DiscreteSliceSampler.h"
 #include "SliceFactory.h"
 
+#include <string>
 #include <stdexcept>
 
 using std::logic_error;

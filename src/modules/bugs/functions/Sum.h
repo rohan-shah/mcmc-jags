@@ -21,7 +21,7 @@ public:
       const;
   bool isDiscreteValued(std::vector<bool> const &mask) const;
   bool isLinear(std::vector<bool> const &mask,
-                std::vector<bool> const &mask) const;
+                std::vector<bool> const &isfixed) const;
   bool isScale(unsigned int index, std::vector<bool> const &mask) const;
 };
 

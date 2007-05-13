@@ -12,6 +12,7 @@
 
 #include <config.h>
 
+#include <string>
 #include <stdexcept>
 #include <cmath>
 

@@ -9,27 +9,23 @@ using std::logic_error;
 using std::length_error;
 
 SArray::SArray(vector<unsigned int> const &dim)
-    : _range(dim)
+    : _range(dim), _value(0), _discrete(false)
 {
     unsigned int n = _range.length();
     _value = new double[n];
     for (unsigned int i = 0; i < n; ++i) {
 	_value[i] = JAGS_NA;
     }
-    //_fixed = false;
-    _discrete = false;
 }
 
 SArray::SArray(SArray const &orig)
-  : _range(orig._range)
+    : _range(orig._range), _value(0), _discrete(orig._discrete)
 {
     unsigned int n = _range.length();
     _value = new double[n];
     for (unsigned int i = 0; i < n; ++i) {
 	_value[i] = orig._value[i];
     }
-    //_fixed = false;
-    _discrete = orig._discrete;
 }
 
 SArray::~SArray()

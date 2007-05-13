@@ -15,6 +15,7 @@
 using std::logic_error;
 using std::string;
 using std::vector;
+using std::exp;
 
 FiniteSampler::FiniteSampler(StochasticNode *node, Graph const &graph, 
 			     unsigned int chain)

@@ -28,7 +28,8 @@ static unsigned int sumLength(vector<StochasticNode *> const &nodes)
 }
 
 Sampler::Sampler(vector<StochasticNode *> const &nodes, Graph const &graph)
-    : _length(sumLength(nodes)), _nodes(nodes)
+    : _length(sumLength(nodes)), _nodes(nodes), _stoch_children(0),
+      _determ_children(0)
 {
   classifyChildren(nodes, graph, _stoch_children, _determ_children);
 
