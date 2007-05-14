@@ -109,5 +109,5 @@ bool FiniteSampler::canSample(StochasticNode const *node,
 
 bool FiniteSampler::adaptOff()
 {
-    return false;
+    return true;
 }
