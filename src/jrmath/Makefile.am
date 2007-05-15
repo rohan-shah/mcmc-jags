@@ -2,7 +2,7 @@ jagslib_LTLIBRARIES = libjrmath.la
 
 libjrmath_la_CPPFLAGS = -I$(top_srcdir)/src/include
 
-libjrmath_la_LDFLAGS = -no-undefined 
+libjrmath_la_LDFLAGS = -no-undefined -version-info 0:0:0
 
 libjrmath_la_SOURCES = callbacks.cc \
 mlutils.c stirlerr.c bd0.c choose.c gamma.c lgamma.c toms708.c \
