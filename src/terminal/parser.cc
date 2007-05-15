@@ -1668,7 +1668,7 @@ yyreduce:
     }
     else {
 	console->checkModel(file);
-	fclose(file);
+	std::fclose(file);
     }
     delete (yyvsp[(3) - (3)].stringptr);
 }
@@ -2973,7 +2973,7 @@ int main (int argc, char **argv)
 
   zzparse();
   if (argc==2) {
-    fclose(cmdfile);
+      std::fclose(cmdfile);
   }
   delete console;
   //We have to unload modules *AFTER* deleting the console. 
