@@ -17,18 +17,7 @@ class TraceMonitor : public Monitor {
     std::vector<unsigned int> _niter;
  public:
   /**
-   * Constructor for a TraceMonitor of finite size
-   * @param node Node to sample
-   * @param start Iteration at which to start monitoring
-   * @param end Iteration at which to end monitoring
-   * @param thin Thinning interval for monitor.  The monitor only
-   * stores iteration for which (iteration number)%thin == 0.
-   */
-   //TraceMonitor(Node const *node, unsigned int start, unsigned int end,
-   //unsigned int thin); FIXME
-  /**
-   * Constructor for an open-ended TraceMonitor. The Monitor will
-   * continue to sample values until it is deleted
+   * Constructs a TraceMonitor. 
    * @param node Node to sample
    * @param start Iteration at which to start monitoring
    * @param thin Thinning interval for monitor.  The monitor only
@@ -37,15 +26,15 @@ class TraceMonitor : public Monitor {
   TraceMonitor(Node const *node, unsigned int start, unsigned int thin);
   ~TraceMonitor();
   /**
-   * Iteration number at which the node started monitoring.  
+   * @returns the iteration number at which the node started monitoring.  
    */
   unsigned int start() const; 
   /**
-   * Last monitored iteration
+   * @returns The last monitored iteration
    */
   unsigned int end(unsigned int chain) const;
   /**
-   * Thinning interval of monitor
+   * @returns the thinning interval of the monitor
    */
   unsigned int thin() const;
   /**
@@ -53,19 +42,25 @@ class TraceMonitor : public Monitor {
    */
   unsigned int niter(unsigned int chain) const;                       
   /**
-   * The number of monitored iterations between two limits
-   */
-  //unsigned int size(unsigned int start, unsigned int end) const;
-  /**
-   * Updates the monitor
+   * Updates the monitor. If the iteration number coincides with
+   * the thinning interval, then the current value of the node
+   * is pushed onto the back of the value vector for the monitor.
+   *
    * @param iteration The current iteration number.
+   * @param chain Chain number to record.
    */
   void update(unsigned int iteration, unsigned int chain);
   /**
-   * Returns a reference to the vector of monitored values for the
-   * given chain
+   * @returns a the vector of monitored values for the given chain
    */
   std::vector<double> const &values(unsigned int chain) const; 
+  /**
+   * Reserves memory for future updates. Sufficient memory is 
+   * reserved for storage of future samples avoiding re-allocation
+   * of memory for the next niter iterations.
+   *
+   * @param niter number of future iterations to reserve. 
+   */
   void reserve(unsigned int niter);
 };
 
