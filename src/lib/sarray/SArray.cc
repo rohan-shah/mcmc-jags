@@ -56,7 +56,7 @@ void SArray::setValue(double const *value, unsigned int n)
     }
 }
 
-void SArray::setValue(double const value, unsigned int i)
+void SArray::setValue(double value, unsigned int i)
 {
     /*
     if (_fixed) {
