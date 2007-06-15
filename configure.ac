@@ -28,6 +28,7 @@ case "${host_os}" in
 esac
 
 dnl libtool dynamic loading
+AC_DISABLE_STATIC
 AC_LIBTOOL_DLOPEN
 AC_LIBLTDL_CONVENIENCE
 AC_PROG_LIBTOOL
