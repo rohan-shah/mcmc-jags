@@ -184,7 +184,7 @@ padeseries (double *Sum, double const *A, int n, int order,
 }
 
 void 
-MatrixExpPade(double *ExpAt, double const *A, const int n, double t)
+MatrixExpPade(double *ExpAt, double const *A, int n, double t)
 {
   /* Calculate exp(A*t) by diagonal Pade approximation with scaling and
      squaring */
