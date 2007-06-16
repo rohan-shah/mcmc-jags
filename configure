@@ -22928,7 +22928,7 @@ if { as_var=$as_ac_Lib; eval "test \"\${$as_var+set}\" = set"; }; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
   ac_check_lib_save_LIBS=$LIBS
-LIBS="-lsunperf -xlic_lib=sunperf -lsunmath $LIBS"
+LIBS="-lsunperf -lsunperf -lsunmath $LIBS"
 cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
 _ACEOF
@@ -22993,7 +22993,7 @@ ac_res=`eval echo '${'$as_ac_Lib'}'`
 	       { echo "$as_me:$LINENO: result: $ac_res" >&5
 echo "${ECHO_T}$ac_res" >&6; }
 if test `eval echo '${'$as_ac_Lib'}'` = yes; then
-  BLAS_LIBS="-xlic_lib=sunperf -lsunmath"
+  BLAS_LIBS="-lsunperf -lsunmath"
                                  acx_blas_ok=yes
 fi
 
