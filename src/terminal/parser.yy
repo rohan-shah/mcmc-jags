@@ -250,8 +250,6 @@ parameters: PARAMETERS IN file_name {
 }
 ;
 
-;
-
 compile: COMPILE {
   console->compile(_data_table, 1, true);
 }

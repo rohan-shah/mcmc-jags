@@ -120,7 +120,7 @@
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
-#line 59 "../../../JAGS/src/terminal/parser.yy"
+#line 59 "parser.yy"
 {
   int intval;
   double val;
@@ -131,7 +131,7 @@ typedef union YYSTYPE
   std::vector<long> *ivec;
 }
 /* Line 1489 of yacc.c.  */
-#line 135 "../../../JAGS/src/terminal/parser.h"
+#line 135 "parser.h"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
