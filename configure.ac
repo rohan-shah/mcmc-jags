@@ -1,5 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 AC_INIT([JAGS], [0.98.0], [jags@iarc.fr], [JAGS])
+AC_CANONICAL_HOST
 AC_CONFIG_SRCDIR(src/lib/Console.cc)
 AM_INIT_AUTOMAKE(AC_PACKAGE_NAME, AC_PACKAGE_VERSION)
 
@@ -26,6 +27,14 @@ case "${host_os}" in
   *)
     ;;
 esac
+
+case "${host_os}" in
+  mingw*)
+    win=true ;;
+  *)
+    win=false ;;
+esac
+AM_CONDITIONAL(WINDOWS, test x$win = xtrue)
 
 dnl libtool dynamic loading
 AC_DISABLE_STATIC

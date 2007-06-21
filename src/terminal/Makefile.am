@@ -3,17 +3,26 @@ AM_YFLAGS = -d
 
 jagsbindir = @jagshomedir@/bin
 jagsbin_PROGRAMS = jags.bin 
+
 jags_bin_SOURCES = parser.yy scanner.ll ReadData.cc 
-
-bin_PROGRAMS = jags
-jags_SOURCES = jags.in
-
-noinst_HEADERS = ReadData.h 
-
 jags_bin_LDADD = @LIBLTDL@ ${top_builddir}/src/lib/libjags.la
 jags_bin_CPPFLAGS= -I$(top_srcdir)/src/include @INCLTDL@
 
 LEX_OUTPUT_ROOT=lex.zz
+
+noinst_HEADERS = ReadData.h 
+
+## The shell script is not required under Windows, so we do not
+## build or install it. Instead, we install a batch files into
+## jagsbindir
+
+if WINDOWS
+
+dist_jagsbin_SCRIPTS = jags.bat
+
+else
+
+bin_SCRIPTS = jags
 
 edit = sed					\
         -e 's,@libdir\@,$(libdir),g'		\
@@ -26,3 +35,11 @@ jags: Makefile $(srcdir)/jags.in
 	$(edit) $(srcdir)/jags.in >jags.tmp
 	chmod +x jags.tmp
 	mv jags.tmp jags
+
+endif
+
+## We need to give Automake some additional hints for distribution
+## and cleaning of the jags shell script and its source.
+
+EXTRA_DIST = jags.in
+CLEANFILES = jags
