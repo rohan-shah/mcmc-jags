@@ -40,6 +40,16 @@ public:
      * conditioning on.
      */
     bool isVariable() const { return true;}
+    /**
+     * Constant nodes are trivial fixed linear functions. This function
+     * always returns true.
+     */
+    bool isLinear(std::set<Node const*> const &parameters, bool fixed) const;
+    /**
+     * Constant nodes are trivial fixed scale functions. This function
+     * always returns true.
+     */
+    bool isScale(std::set<Node const*> const &parameters, bool fixed) const;
 };
 
 #endif /* CONSTANT_NODE_H_ */

@@ -7,6 +7,7 @@
 #include <iostream>
 #include <string>
 #include <map>
+#include <cstdio>
 
 class BUGSModel;
 class ParseTree;

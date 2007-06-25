@@ -5,7 +5,6 @@
 #include <set>
 
 class StochasticNode;
-class DeterministicNode;
 class Node;
 class Graph;
 class RNG;
@@ -38,7 +37,7 @@ class Sampler {
   unsigned int _length;
   std::vector<StochasticNode *> _nodes;
   std::vector<StochasticNode const *> _stoch_children;
-  std::vector<DeterministicNode*> _determ_children;
+  std::vector<Node*> _determ_children;
 public:
   /**
    * Constructs a sampler for the given vector of nodes.  
@@ -78,7 +77,7 @@ public:
    * Returns the immediate deterministic descendendants of the sampled
    * nodes, in forward sampling order
    */
-  std::vector<DeterministicNode*> const &deterministicChildren() const;
+  std::vector<Node*> const &deterministicChildren() const;
   /**
    * Calculates the log conditional density of the sampled nodes,
    * given all other nodes in the graph that was supplied to the
@@ -137,7 +136,7 @@ public:
   static void classifyChildren(std::vector<StochasticNode *> const &nodes,
 			       Graph const &graph,
 			       std::vector<StochasticNode const*> &stoch_nodes,
-			       std::vector<DeterministicNode*> &dtrm_nodes);
+			       std::vector<Node*> &dtrm_nodes);
 };
 
 #endif /* SAMPLER_H_ */

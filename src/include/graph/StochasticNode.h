@@ -106,6 +106,15 @@ public:
      * Increments the repCount of a stochastic node by 1.
      */
     void replicate();
+    /**
+     * Stochastic nodes are never linear. This function always returns false.
+     */
+    bool isLinear(std::set<Node const*> const &parameters, bool fixed) const;
+    /**
+     * Stochastic nodes are never scale functions. This function
+     * always returns false
+     */
+    bool isScale(std::set<Node const*> const &parameters, bool fixed) const;
 };
 
 StochasticNode const *asStochastic(Node const *node);
