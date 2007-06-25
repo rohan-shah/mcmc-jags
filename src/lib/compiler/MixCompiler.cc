@@ -155,13 +155,7 @@ static void classifyParents(vector<Node const *> const &indices,
 	}
     }
     /* Get deterministic nodes in forward sampling order */
-    vector<Node*> dvector;
-    dgraph.getSortedNodes(dvector);
-    for (vector<Node*>::iterator i = dvector.begin(); i != dvector.end();
-	 ++i)
-    {
-	dtrm_nodes.push_back(dynamic_cast<Node*>(*i));
-    }
+    dgraph.getSortedNodes(dtrm_nodes);
 }
 
 static Node* 
