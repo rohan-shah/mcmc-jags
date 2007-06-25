@@ -1,7 +1,5 @@
 #include <config.h>
 #include <graph/StochasticNode.h>
-//fixme: temporarily needed
-#include <graph/DeterministicNode.h>
 #include <graph/NodeError.h>
 #include <distribution/Distribution.h>
 
@@ -39,9 +37,8 @@ void DiscreteSliceSampler::setValue(double x)
   _x = x;
   x = floor(x);
   nodes().front()->setValue(&x, 1, _chain);
-  vector<DeterministicNode*> const &dc = deterministicChildren();
-  for (vector<DeterministicNode*>::const_iterator i(dc.begin()); 
-       i != dc.end(); ++i) 
+  vector<Node*> const &dc = deterministicChildren();
+  for (vector<Node*>::const_iterator i(dc.begin()); i != dc.end(); ++i) 
     {
       (*i)->deterministicSample(_chain);
     }

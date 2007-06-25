@@ -35,7 +35,7 @@ ConjugateGamma::ConjugateGamma(StochasticNode *snode, Graph const &graph, unsign
     
 	// Check for constant scale transformation
 	set<Node const*> paramset;
-	vector<DeterministicNode*> const &dtrm = deterministicChildren();
+	vector<Node*> const &dtrm = deterministicChildren();
 	paramset.insert(snode);
 	for (unsigned int j = 0; j < dtrm.size(); ++j) {
 	    paramset.insert(dtrm[j]);
@@ -111,7 +111,7 @@ bool ConjugateGamma::canSample(StochasticNode *snode, Graph const &graph)
     }
 
     vector<StochasticNode const*> stoch_nodes;
-    vector<DeterministicNode*> dtrm_nodes;
+    vector<Node*> dtrm_nodes;
     classifyChildren(vector<StochasticNode*>(1,snode), 
 		     graph, stoch_nodes, dtrm_nodes);
     /* 

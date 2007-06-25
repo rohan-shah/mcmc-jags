@@ -47,7 +47,7 @@ ConjugateMNormal::ConjugateMNormal(StochasticNode *snode,
 	// Check for constant linear terms
 	bool fixed_beta = true;
 	set<Node const *> paramset;
-	vector<DeterministicNode*> const &dtrm = deterministicChildren();
+	vector<Node*> const &dtrm = deterministicChildren();
 	paramset.insert(snode);
 	for (unsigned int j = 0; j < dtrm.size(); ++j) {
 	    paramset.insert(dtrm[j]);
@@ -128,7 +128,7 @@ bool ConjugateMNormal::canSample(StochasticNode *snode, Graph const &graph)
 	return false;
 
     vector<StochasticNode const*> stoch_nodes;
-    vector<DeterministicNode*> dtrm_nodes, extra_nodes;
+    vector<Node*> dtrm_nodes, extra_nodes;
     classifyChildren(vector<StochasticNode*>(1,snode), 
 		     graph, stoch_nodes, dtrm_nodes);
     /* 

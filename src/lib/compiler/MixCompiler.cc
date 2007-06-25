@@ -30,7 +30,6 @@
 #include <compiler/ParseTree.h>
 #include <model/SymTab.h>
 #include <graph/StochasticNode.h>
-#include <graph/DeterministicNode.h>
 #include <distribution/DistScalar.h>
 #include <model/NodeArray.h>
 #include <graph/MixtureNode.h>
@@ -129,7 +128,7 @@ static void markParents(Node const *node, GraphMarks &marks)
 static void classifyParents(vector<Node const *> const &indices, 
 			    Graph const &graph,
 			    vector<StochasticNode *> &stoch_nodes,
-			    vector<DeterministicNode *> &dtrm_nodes)
+			    vector<Node *> &dtrm_nodes)
 {
     GraphMarks marks(graph);
 
@@ -161,7 +160,7 @@ static void classifyParents(vector<Node const *> const &indices,
     for (vector<Node*>::iterator i = dvector.begin(); i != dvector.end();
 	 ++i)
     {
-	dtrm_nodes.push_back(dynamic_cast<DeterministicNode*>(*i));
+	dtrm_nodes.push_back(dynamic_cast<Node*>(*i));
     }
 }
 
@@ -188,7 +187,7 @@ getMixtureNode1(NodeArray *array, vector<SSI> const &limits, Compiler *compiler)
      forward sampling order */
   
   vector<StochasticNode*> stoch_parents;
-  vector<DeterministicNode*> dtrm_nodes;
+  vector<Node*> dtrm_nodes;
   classifyParents(indices, compiler_graph, stoch_parents, dtrm_nodes);
 
   /* Test to see if all stochastic parents are discrete, scalar, with

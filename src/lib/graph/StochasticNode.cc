@@ -289,6 +289,18 @@ void StochasticNode::replicate()
    _nrep++;
 }
 
+bool StochasticNode::isLinear(std::set<Node const*> const &parameters, 
+			      bool fixed) const
+{
+    return false;
+}
+
+bool StochasticNode::isScale(std::set<Node const*> const &parameters, 
+			     bool fixed) const
+{
+    return false;
+}
+
 unsigned int df(StochasticNode const *snode)
 {
     return snode->distribution()->df(snode->parameterDims());

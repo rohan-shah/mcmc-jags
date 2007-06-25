@@ -1,7 +1,5 @@
 #include <config.h>
 #include <graph/StochasticNode.h>
-//temporarily required
-#include <graph/DeterministicNode.h>
 #include <graph/NodeError.h>
 #include <distribution/Distribution.h>
 #include "RealSliceSampler.h"

@@ -1,7 +1,6 @@
 #include <config.h>
 #include <sampler/Sampler.h>
 #include <graph/StochasticNode.h>
-#include <graph/DeterministicNode.h>
 #include <graph/Graph.h>
 #include <graph/NodeError.h>
 #include <sarray/nainf.h>
@@ -67,7 +66,7 @@ static void classifyNode(Node *node, Graph const &sample_graph,
 void Sampler::classifyChildren(vector<StochasticNode *> const &nodes,
 			       Graph const &graph,
 			       vector<StochasticNode const*> &stoch_nodes,
-			       vector<DeterministicNode*> &dtrm_nodes)
+			       vector<Node*> &dtrm_nodes)
 {
   Graph dgraph, sgraph;
 
@@ -101,13 +100,7 @@ void Sampler::classifyChildren(vector<StochasticNode *> const &nodes,
       stoch_nodes.push_back(asStochastic(*i));
     }
   
-  vector<Node*> dvector;
-  dgraph.getSortedNodes(dvector);
-  for (vector<Node*>::iterator i = dvector.begin(); i != dvector.end();
-       ++i)
-    {
-      dtrm_nodes.push_back(dynamic_cast<DeterministicNode*>(*i));
-    }
+  dgraph.getSortedNodes(dtrm_nodes);
 }
 
 double Sampler::logFullConditional(unsigned int chain) const
@@ -196,7 +189,7 @@ vector<StochasticNode const*> const &Sampler::stochasticChildren() const
   return _stoch_children;
 }
 
-vector<DeterministicNode*> const &Sampler::deterministicChildren() const
+vector<Node*> const &Sampler::deterministicChildren() const
 {
   return _determ_children;
 }
@@ -214,7 +207,7 @@ void Sampler::setValue(double const * value, unsigned int length,
 	value += node->length();
     }
 
-    for (vector<DeterministicNode*>::iterator p(_determ_children.begin());
+    for (vector<Node*>::iterator p(_determ_children.begin());
 	 p != _determ_children.end(); ++p) {
       (*p)->deterministicSample(chain);
     }

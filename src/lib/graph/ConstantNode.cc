@@ -34,3 +34,15 @@ string ConstantNode::name(NodeNameTab const &name_table) const
   os << *value(0);
   return os.str();
 }
+
+bool ConstantNode::isLinear(std::set<Node const*> const &parameters, 
+			      bool fixed) const
+{
+    return false;
+}
+
+bool ConstantNode::isScale(std::set<Node const*> const &parameters, 
+			     bool fixed) const
+{
+    return false;
+}

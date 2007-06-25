@@ -73,7 +73,7 @@ bool DSumSampler::canSample(vector<StochasticNode *> const &nodes,
     /* Nodes must be direct parents of a single observed stochastic
        node with distribution DSum  */
     vector<StochasticNode const*> stoch_nodes;
-    vector<DeterministicNode*> dtrm_nodes;
+    vector<Node*> dtrm_nodes;
     classifyChildren(nodes, graph, stoch_nodes, dtrm_nodes);
     if (!dtrm_nodes.empty())
 	return false;
