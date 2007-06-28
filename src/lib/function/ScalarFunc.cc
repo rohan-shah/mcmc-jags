@@ -2,8 +2,11 @@
 #include <function/ScalarFunc.h>
 #include <sarray/util.h>
 
+#include <algorithm>
+
 using std::vector;
 using std::string;
+using std::find_if;
 
 ScalarFunc::ScalarFunc (string const &name, unsigned int npar)
   : Function (name, npar)

@@ -101,10 +101,11 @@ void Model::chooseRNGs()
     }
 }
 
+/*
 static Node *checkDataGen(vector<Node*> const &nodes)
 {
-    /* A data generating model is valid if there are no observed
-       nodes with unobserved parents */
+    // A data generating model is valid if there are no observed
+    //   nodes with unobserved parents 
     
     //FIXME: Not using the fact that vector of nodes is sorted
 
@@ -122,6 +123,7 @@ static Node *checkDataGen(vector<Node*> const &nodes)
     }
     return 0;
 }
+*/
 
 void Model::initialize(bool random)
 {

@@ -9,7 +9,7 @@
 
 #include <string>
 #include <stdexcept>
-#include <climits>
+#include <limits>
 
 using std::vector;
 using std::map;
@@ -17,6 +17,7 @@ using std::string;
 using std::runtime_error;
 using std::logic_error;
 using std::set;
+using std::numeric_limits;
 
 NodeArray::NodeArray(string const &name, vector<unsigned int> const &dim, 
 		     unsigned int nchain)
@@ -27,7 +28,7 @@ NodeArray::NodeArray(string const &name, vector<unsigned int> const &dim,
   _offsets = new unsigned int[length];
   for (unsigned int i = 0; i < length; i++) {
     _node_pointers[i] = 0;
-    _offsets[i] = UINT_MAX;
+    _offsets[i] = numeric_limits<unsigned int>::max();
   }
 }
 
@@ -175,7 +176,7 @@ void NodeArray::setValue(SArray const &value, unsigned int chain,
 	//Get vector of values for this node
 	for (unsigned int i = 0; i < N; ++i) {
 	    if (_node_pointers[i] == node) {
-		if (_offsets[i] < 0 || _offsets[i] > node->length()) {
+		if (_offsets[i] > node->length()) {
 		    throw logic_error("Invalid offset in NodeArray::setValue");
 		}
 		else {
@@ -261,7 +262,7 @@ void NodeArray::setData(SArray const &value, Graph &graph)
     //Get vector of values for this node
     for (unsigned int i = 0; i < N; ++i) {
       if (_node_pointers[i] == node) {
-	if (_offsets[i] < 0 || _offsets[i] > node->length()) {
+	if (_offsets[i] > node->length()) {
 	  throw logic_error("Invalid offset in NodeArray::setValue");
 	}
 	else {

@@ -203,7 +203,7 @@ static double q(double p, int initial, double time, unsigned int nstate,
     
     /* Categorize */
     double sump = 0.0;
-    for (long j = 1; j < nstate; j++) {
+    for (unsigned int j = 1; j < nstate; j++) {
 	sump += P[(initial - 1) + nstate * (j - 1)];
 	if (p <= sump) {
 	    delete [] P;

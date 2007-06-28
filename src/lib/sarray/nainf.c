@@ -28,7 +28,7 @@ int jags_finite(double x)
   return finite(x);
 # else
   /* neither finite nor isfinite work */
-  return (!jags_isnan(x) & (x != JAGS_POSINF) & (x != JAGS_NEGINF));
+  return (!isnan(x) & (x != JAGS_POSINF) & (x != JAGS_NEGINF));
 #endif
 }
 
