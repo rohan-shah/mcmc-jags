@@ -1,7 +1,7 @@
 #ifndef FUNC_MEAN_H_
 #define FUNC_MEAN_H_
 
-#include <function/ScalarFunc.h>
+#include <function/Function.h>
 
 /**
  * @short Mean function

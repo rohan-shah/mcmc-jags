@@ -1,7 +1,7 @@
 #ifndef FUNC_MIN_H_
 #define FUNC_MIN_H_
 
-#include <function/ScalarFunc.h>
+#include <function/Function.h>
 
 /**
  * @short Minimum element of a vector

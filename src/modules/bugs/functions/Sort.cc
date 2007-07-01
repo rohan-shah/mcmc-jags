@@ -18,7 +18,7 @@ Sort::Sort ()
 void Sort::evaluate (double *value, vector <double const *> const &args,
                      vector<vector<unsigned int> > const &dims) const
 {
-  long len = product(dims[0]);
+  unsigned int len = product(dims[0]);
   for (unsigned int i = 0; i < len; ++i) {
     value[i] = args[0][i];
   }

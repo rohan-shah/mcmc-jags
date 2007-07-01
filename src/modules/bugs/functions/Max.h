@@ -1,7 +1,7 @@
 #ifndef FUNC_MAX_H_
 #define FUNC_MAX_H_
 
-#include <function/ScalarFunc.h>
+#include <function/Function.h>
 
 /**
  * @short Maximum element of a vector

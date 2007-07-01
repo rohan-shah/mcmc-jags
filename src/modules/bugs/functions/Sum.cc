@@ -16,7 +16,7 @@ void Sum::evaluate(double *x, vector <double const *> const &args,
 {
     unsigned int len = product(dims[0]);
     double value = 0;
-    for (long i = 0; i < len; i++) {
+    for (unsigned long i = 0; i < len; i++) {
 	value += args[0][i];
     }
     *x = value;

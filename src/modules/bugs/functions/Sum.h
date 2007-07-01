@@ -1,7 +1,7 @@
 #ifndef FUNC_SUM_H_
 #define FUNC_SUM_H_
 
-#include <function/ScalarFunc.h>
+#include <function/Function.h>
 
 /**
  * @short Sum of an array

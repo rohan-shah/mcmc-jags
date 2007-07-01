@@ -1,7 +1,7 @@
 #ifndef LOG_DET_H_
 #define LOG_DET_H_
 
-#include <function/ScalarFunc.h>
+#include <function/Function.h>
 
 /**
  * @short Log determinant 

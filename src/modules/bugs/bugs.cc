@@ -29,7 +29,9 @@
 #include <distributions/DHyper.h>
 #include <distributions/DSum.h>
 
+#include <functions/Abs.h>
 #include <functions/CLogLog.h>
+#include <functions/Cos.h>
 #include <functions/Exp.h>
 #include <functions/ICLogLog.h>
 #include <functions/ILogit.h>
@@ -48,6 +50,7 @@
 #include <functions/Probit.h>
 #include <functions/Rank.h>
 #include <functions/SD.h>
+#include <functions/Sin.h>
 #include <functions/Sort.h>
 #include <functions/Sqrt.h>
 #include <functions/Step.h>
@@ -95,6 +98,8 @@ BUGSModule::BUGSModule() {
     insert(new DHyper);
     insert(new DSum); 
 
+    insert(new Abs);
+    insert(new Cos);
     insert(new CLogLog);
     insert(new Exp);
     insert(new ICLogLog);
@@ -114,6 +119,7 @@ BUGSModule::BUGSModule() {
     insert(new Probit);
     insert(new Rank);
     insert(new SD);
+    insert(new Sin);
     insert(new Sort);
     insert(new Sqrt);
     insert(new Step);
