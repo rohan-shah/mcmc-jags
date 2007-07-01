@@ -36,6 +36,7 @@
 #include <functions/ICLogLog.h>
 #include <functions/ILogit.h>
 #include <functions/InProd.h>
+#include <functions/InterpLin.h>
 #include <functions/Inverse.h>
 #include <functions/LogDet.h>
 #include <functions/LogFact.h>
@@ -105,6 +106,7 @@ BUGSModule::BUGSModule() {
     insert(new ICLogLog);
     insert(new ILogit);
     insert(new InProd);
+    insert(new InterpLin);
     insert(new Inverse);
     insert(new Log);
     insert(new LogDet);
