@@ -21,9 +21,6 @@ public:
     bool checkParameterValue(std::vector <double const *> const &args,
 			     std::vector<std::vector<unsigned int> > const &dims) 
         const;
-    
-    std::vector<unsigned int> 
-	dim(std::vector<std::vector<unsigned int> > const &dims) const;
 };
 
 #endif /* FUNC_INTERP_LIN_H_ */
