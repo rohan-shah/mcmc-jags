@@ -50,12 +50,14 @@
 #include <functions/Phi.h>
 #include <functions/Probit.h>
 #include <functions/Rank.h>
+#include <functions/Round.h>
 #include <functions/SD.h>
 #include <functions/Sin.h>
 #include <functions/Sort.h>
 #include <functions/Sqrt.h>
 #include <functions/Step.h>
 #include <functions/Sum.h>
+#include <functions/Trunc.h>
 
 #include <samplers/ConjugateFactory.h>
 #include <samplers/DSumFactory.h>
@@ -120,12 +122,14 @@ BUGSModule::BUGSModule() {
     insert(new Phi);
     insert(new Probit);
     insert(new Rank);
+    insert(new Round);
     insert(new SD);
     insert(new Sin);
     insert(new Sort);
     insert(new Sqrt);
     insert(new Step);
     insert(new Sum);
+    insert(new Trunc);
 
     insert(new MNormalFactory);
     insert(new ConjugateFactory);
