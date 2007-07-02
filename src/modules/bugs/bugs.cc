@@ -17,6 +17,7 @@
 #include <distributions/DLogis.h>
 #include <distributions/DMNorm.h>
 #include <distributions/DMState.h>
+#include <distributions/DMT.h>
 #include <distributions/DMulti.h>
 #include <distributions/DNegBin.h>
 #include <distributions/DNorm.h>
@@ -89,6 +90,7 @@ BUGSModule::BUGSModule() {
     insert(new DLogis);
     insert(new DMNorm);
     insert(new DMState);
+    insert(new DMT);
     insert(new DMulti);
     insert(new DNegBin);
     insert(new DNorm);
