@@ -85,6 +85,9 @@ exit			zzlval.intval=EXIT; return EXIT;
 <RDATA>"-"?[0-9]+  {
   zzlval.val = atof(zztext); return DOUBLE;
 }
+<RDATA>"-"?[0-9]+"L" {
+  zzlval.val = atof(zztext); return DOUBLE;
+}
 <INITIAL>"-"?[0-9]+	{
   zzlval.intval = atoi(zztext); return INT;
 }
