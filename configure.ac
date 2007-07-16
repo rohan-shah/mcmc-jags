@@ -20,16 +20,6 @@ R_FUNC_ISFINITE
 fi
 
 case "${host_os}" in
-  darwin*)
-    ## Allow linking of code compiled with Apple GCC and code
-    ## compiled with GNU GCC.
-    AC_CHECK_LIB(cc_dynamic, main)
-    ;;
-  *)
-    ;;
-esac
-
-case "${host_os}" in
   mingw*)
     win=true ;;
   *)

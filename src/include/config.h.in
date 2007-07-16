@@ -46,9 +46,6 @@
 /* Define if you have LAPACK library. */
 #undef HAVE_LAPACK
 
-/* Define to 1 if you have the `cc_dynamic' library (-lcc_dynamic). */
-#undef HAVE_LIBCC_DYNAMIC
-
 /* Define to 1 if you have the `m' library (-lm). */
 #undef HAVE_LIBM
 
