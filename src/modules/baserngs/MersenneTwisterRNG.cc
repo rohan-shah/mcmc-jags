@@ -163,6 +163,6 @@ void MersenneTwisterRNG::getState(std::vector<int> &state) const
   state.clear();
   state.reserve(625);
   for (unsigned int j = 0; j < 625; ++j) {
-    state[j] = static_cast<int>(dummy[j]);
+    state.push_back(static_cast<int>(dummy[j]));
   }
 }
