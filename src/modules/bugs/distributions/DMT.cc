@@ -1,6 +1,7 @@
 #include <config.h>
 #include <sarray/util.h>
 #include <sarray/nainf.h>
+#include "DMNorm.h"
 #include "DMT.h"
 
 #include <lapack.h>
@@ -55,7 +56,7 @@ void DMT::randomSample(double *x, unsigned int length,
     double const * T = parameters[1];
     double k = *parameters[2];
 
-    DMT::randomsample(x, mu, T, true, length, rng);
+    DMNorm::randomsample(x, mu, T, true, length, rng);
     double C = rchisq(k, rng);
     for (unsigned int i = 0; i < length; ++i) {
 	x[i] /= C;

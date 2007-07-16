@@ -36,8 +36,6 @@ public:
       const;
   std::vector<unsigned int> 
       dim(std::vector<std::vector<unsigned int> > const &dims) const;
-  static void randomsample(double *x, double const *mu, double const *tau,
-			   bool prec, int nrow, RNG *rng);
   void support(double *lower, double *upper, unsigned int length,
 	       std::vector<double const *> const &parameters,
                std::vector<std::vector<unsigned int> > const &dims) const;
