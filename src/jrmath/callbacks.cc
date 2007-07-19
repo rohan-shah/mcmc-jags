@@ -1,3 +1,4 @@
+#include <config.h>
 #include <rng/RNG.h>
 #include "nmath.h"
 
