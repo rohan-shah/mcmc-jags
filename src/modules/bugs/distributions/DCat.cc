@@ -1,4 +1,3 @@
-
 #include <config.h>
 #include "DCat.h"
 #include <rng/RNG.h>
