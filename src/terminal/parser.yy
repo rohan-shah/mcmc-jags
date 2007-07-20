@@ -1050,3 +1050,4 @@ int main (int argc, char **argv)
   }
   lt_dlexit();
 }
+
