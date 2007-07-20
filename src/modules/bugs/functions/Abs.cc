@@ -4,6 +4,7 @@
 #include <cmath>
 
 using std::vector;
+using std::fabs;
 
 Abs::Abs ():ScalarFunc ("abs", 1)
 {
