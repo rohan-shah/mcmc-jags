@@ -117,124 +117,134 @@ double Compiler::constFromNode(ParseTree const*p)
 
 bool Compiler::constantExpression(ParseTree const *p, double &value)
 {
-  /* 
-     Try to evaluate a constant expression.  An expression can
-     only be evaluated if it is a function of
-     1) Counters, or
-     2) a value given in the data table, or
-     3) a fixed Node.
-     Functions are not allowed, but inline operators ("*", "/", "+", "-") 
-     are.
+    /* 
+       Try to evaluate a constant expression.  An expression can
+       only be evaluated if it is a function of
+       1) Counters, or
+       2) a value given in the data table, or
+       3) a fixed Node.
+       Functions are not allowed, but inline operators ("*", "/", "+", "-") 
+       are.
 
-     If the expression can be evaluated, then we return true and the
-     expression value is written to the value argument. If it cannot
-     be evaluated (because it depends on missing data) then we return
-     false.
-  */
-  Counter *counter;
-  double arg1, arg2;
-  vector<ParseTree*> const &parameters = p->parameters();
+       If the expression can be evaluated, then we return true and the
+       expression value is written to the value argument. If it cannot
+       be evaluated (because it depends on missing data) then we return
+       false.
+    */
+    Counter *counter;
+    double arg1, arg2;
+    vector<ParseTree*> const &parameters = p->parameters();
 
-  switch (p->treeClass()) {
-  case P_VAR: 
-    // Is it a counter?
-    counter = _countertab.getCounter(p->name());
-    if (counter) {
-      value = (*counter)[0];
-      return true;
-    }
-    else {
-      // Is it a variable? Try reading value from the data table
-      value = constFromTable(p);
-      if (value != JAGS_NA) {
+    switch (p->treeClass()) {
+    case P_VAR: 
+	// Is it a counter?
+	counter = _countertab.getCounter(p->name());
+	if (counter) {
+	    value = (*counter)[0];
+	    return true;
+	}
+	else {
+	    // Is it a variable? Try reading value from the data table
+	    value = constFromTable(p);
+	    if (value != JAGS_NA) {
+		return true;
+	    }
+	    else {
+		// Failing that, see if it is a node with a fixed value
+		value = constFromNode(p);
+		return (value != JAGS_NA);
+	    }
+	}
+	break;
+    case P_VALUE:
+	value =  p->value();
 	return true;
-      }
-      else {
-	// Failing that, see if it is a node with a fixed value
-	value = constFromNode(p);
-	return (value != JAGS_NA);
-      }
-    }
-    break;
-  case P_VALUE:
-    value =  p->value();
-    return true;
-    break;
-  case P_OPERATOR:
-    switch(p->getOperator()) {
-    case OP_ADD:
-      if (parameters.size() < 2) {
-	throw logic_error("ADD must have at least two arguments in constant expression");
-      }
-      arg1 = 0;
-      for (unsigned int i = 0; i < parameters.size(); ++i) {
-	if (!constantExpression(parameters[i], arg2)) {
-	  return false;
+	break;
+    case P_OPERATOR:
+	switch(p->getOperator()) {
+	case OP_ADD:
+	    if (parameters.size() < 2) {
+		throw logic_error("ADD must have at least two arguments in constant expression");
+	    }
+	    arg1 = 0;
+	    for (unsigned int i = 0; i < parameters.size(); ++i) {
+		if (!constantExpression(parameters[i], arg2)) {
+		    return false;
+		}
+		arg1 += arg2;
+	    }
+	    value = arg1;
+	    return true;
+	    break;
+	case OP_SUBTRACT:
+	    if (parameters.size() != 2) {
+		throw logic_error("SUBTRACT must have two arguments in constant expression");
+	    }
+	    if (!constantExpression(parameters[0], arg1)) {
+		return false;
+	    }
+	    if (!constantExpression(parameters[1], arg2)) {
+		return false;
+	    }
+	    value = arg1 - arg2;
+	    return true;
+	    break;
+	case OP_MULTIPLY:
+	    if (parameters.size() < 2) {
+		throw logic_error("MULTIPLY must have at least two arguments in constant expression");
+	    }
+	    arg1 = 1;
+	    for (unsigned int i = 0; i < parameters.size(); ++i) {
+		if (!constantExpression(parameters[i], arg2)) {
+		    return false;
+		}
+		arg1 *= arg2;
+	    }
+	    value = arg1;
+	    return true;
+	    break;
+	case OP_DIVIDE:
+	    if (parameters.size() != 2) {
+		throw logic_error("DIVIDE must have two arguments in constant expression");
+	    }
+	    if (!constantExpression(parameters[0], arg1)) {
+		return false;
+	    }
+	    if (!constantExpression(parameters[1], arg2)) {
+		return false;
+	    }
+	    value = arg1/arg2;
+	    return true;
+	    break;
+	case OP_NEG:
+	    if (parameters.size() != 1) {
+		throw logic_error("NEG must have 1 argument in constant expression");
+	    }
+	    if (!constantExpression(parameters[0], arg1)) {
+		return false;
+	    }
+	    value = -arg1;
+	    return true;
+	    break;
+	case OP_OR:
+	case OP_AND:
+	case OP_NOT:
+	case OP_GT:
+	case OP_GE:
+	case OP_LT:
+	case OP_LE:
+	case OP_EQ:
+	case OP_NE:
+	case OP_POW:
+	case OP_NONE:
+	    throw logic_error("Bad constant expression");
+	    break;
 	}
-	arg1 += arg2;
-      }
-      value = arg1;
-      return true;
-      break;
-    case OP_SUBTRACT:
-      if (parameters.size() != 2) {
-	throw logic_error("SUBTRACT must have two arguments in constant expression");
-      }
-      if (!constantExpression(parameters[0], arg1)) {
 	return false;
-      }
-      if (!constantExpression(parameters[1], arg2)) {
-	return false;
-      }
-      value = arg1 - arg2;
-      return true;
-      break;
-    case OP_MULTIPLY:
-      if (parameters.size() < 2) {
-	throw logic_error("MULTIPLY must have at least two arguments in constant expression");
-      }
-      arg1 = 1;
-      for (unsigned int i = 0; i < parameters.size(); ++i) {
-	if (!constantExpression(parameters[i], arg2)) {
-	  return false;
-	}
-	arg1 *= arg2;
-      }
-      value = arg1;
-      return true;
-      break;
-    case OP_DIVIDE:
-      if (parameters.size() != 2) {
-	throw logic_error("DIVIDE must have two arguments in constant expression");
-      }
-      if (!constantExpression(parameters[0], arg1)) {
-	return false;
-      }
-      if (!constantExpression(parameters[1], arg2)) {
-	return false;
-      }
-      value = arg1/arg2;
-      return true;
-      break;
-    case OP_NEG:
-      if (parameters.size() != 1) {
-	throw logic_error("NEG must have 1 argument in constant expression");
-      }
-      if (!constantExpression(parameters[0], arg1)) {
-	return false;
-      }
-      value = -arg1;
-      return true;
-      break;
-    case OP_NONE:
-      throw logic_error("Bad constant expression");
-      break;
+	break;
+    default:
+	throw logic_error("Expected variable, value or expression");
     }
-    return false;
-    break;
-  default:
-    throw logic_error("Expected variable, value or expression");
-  }
 }
 
 bool Compiler::indexExpression(ParseTree const *p, int &value)
@@ -518,46 +528,76 @@ static Function const *getLink(ParseTree const *t, FuncTab const &functab)
 
 static Function const *getFunction(ParseTree const *t, FuncTab const &functab)
 {
-  Function const *func = 0;
+    Function const *func = 0;
   
-  switch (t->treeClass()) {
-  case P_FUNCTION:
-    func = functab.find(t->name());
-    if (func == 0) {
-      string msg("Unable to find function ");
-      msg.append(t->name());
-      throw runtime_error(msg);
-    }    
-    break;
-  case P_OPERATOR:
-    switch(t->getOperator()) {
-    case OP_ADD:
-      func = functab.find("+");
-      break;
-    case OP_SUBTRACT:
-      func = functab.find("-");
-      break;
-    case OP_MULTIPLY:
-      func = functab.find("*");
-      break;
-    case OP_DIVIDE:
-      func = functab.find("/");
-      break;
-    case OP_NEG:
-      func = functab.find("NEG");
-      break;
-    case OP_NONE:
-      throw logic_error("Bad operator expression");
-      break;
+    switch (t->treeClass()) {
+    case P_FUNCTION:
+	func = functab.find(t->name());
+	if (func == 0) {
+	    string msg("Unable to find function ");
+	    msg.append(t->name());
+	    throw runtime_error(msg);
+	}    
+	break;
+    case P_OPERATOR:
+	switch(t->getOperator()) {
+	case OP_ADD:
+	    func = functab.find("+");
+	    break;
+	case OP_SUBTRACT:
+	    func = functab.find("-");
+	    break;
+	case OP_MULTIPLY:
+	    func = functab.find("*");
+	    break;
+	case OP_DIVIDE:
+	    func = functab.find("/");
+	    break;
+	case OP_NEG:
+	    func = functab.find("NEG");
+	    break;
+	case OP_OR:
+	    func = functab.find("|");
+	    break;
+	case OP_AND:
+	    func = functab.find("&");
+	    break;
+	case OP_NOT:
+	    func = functab.find("!");
+	    break;
+	case OP_GT:
+	    func = functab.find(">");
+	    break;
+	case OP_GE:
+	    func = functab.find(">=");
+	    break;
+	case OP_LT:
+	    func = functab.find("<");
+	    break;
+	case OP_LE:
+	    func = functab.find("<=");
+	    break;
+	case OP_EQ:
+	    func = functab.find("==");
+	    break;
+	case OP_NE:
+	    func = functab.find("!=");
+	    break;
+	case OP_POW:
+	    func = functab.find("^");
+	    break;
+	case OP_NONE:
+	    throw logic_error("Bad operator expression");
+	    break;
+	}
+	if (func == 0) {
+	    throw logic_error("Unable to find operator");
+	}
+	break;
+    default:
+	throw logic_error("Malformed parse tree: Expected expression");
     }
-    if (func == 0) {
-      throw logic_error("Unable to find operator");
-    }
-    break;
-  default:
-    throw logic_error("Malformed parse tree: Expected expression");
-  }
-  return func;
+    return func;
 }
 
 static Distribution const *getDistribution(ParseTree const *pstoch_rel, 
