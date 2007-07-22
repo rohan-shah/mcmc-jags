@@ -4,6 +4,8 @@
 using std::vector;
 using std::string;
 
+namespace basefunctions {
+
 Infix::Infix(string const &name, unsigned int npar)
     : ScalarFunc (name, npar)
 {
@@ -22,3 +24,4 @@ string Infix::deparse(vector<string> const &par) const
     return name;
 }
 
+}
