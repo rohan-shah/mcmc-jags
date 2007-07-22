@@ -49,6 +49,7 @@
 #include <functions/Mexp.h>
 #include <functions/Min.h>
 #include <functions/Phi.h>
+#include <functions/Pow.h>
 #include <functions/Probit.h>
 #include <functions/Rank.h>
 #include <functions/Round.h>
@@ -122,6 +123,7 @@ BUGSModule::BUGSModule() {
     insert(new Mexp);
     insert(new Min);
     insert(new Phi);
+    insert(new Pow);
     insert(new Probit);
     insert(new Rank);
     insert(new Round);
