@@ -56,13 +56,21 @@
 %token IN
 %token ARROW
 %token FOR
+%token GT GE LT LE EQ NE 
+%token AND OR
 
 %token <val> DOUBLE
 %token <val> INT
 
-%left  '+' '-'
-%left  '*' '/'
+%left OR
+%left AND
+%left NOT
+%nonassoc GT GE LT LE EQ NE
+%left '+' '-'
+%left '*' '/'
 %left NEG
+%right '^'
+
 
 %token ENDL
 
@@ -234,6 +242,42 @@ expression: var
 | '-' expression %prec NEG {
   $$ = new ParseTree(P_OPERATOR); $$->setOperator(OP_NEG);
   setParameters($$, $2);
+}
+| expression GT expression {
+    $$ = new ParseTree(P_OPERATOR); $$->setOperator(OP_GT);
+    setParameters($$, $1, $3);
+ }      
+| expression GE expression {
+    $$ = new ParseTree(P_OPERATOR); $$->setOperator(OP_GE);
+    setParameters($$, $1, $3);
+ }      
+| expression LT expression {
+    $$ = new ParseTree(P_OPERATOR); $$->setOperator(OP_LT);
+    setParameters($$, $1, $3);
+ }      
+| expression LE expression {
+    $$ = new ParseTree(P_OPERATOR); $$->setOperator(OP_LE);
+    setParameters($$, $1, $3);
+ }      
+| expression EQ expression {
+    $$ = new ParseTree(P_OPERATOR); $$->setOperator(OP_EQ);
+    setParameters($$, $1, $3);
+ }      
+| expression NE expression {
+    $$ = new ParseTree(P_OPERATOR); $$->setOperator(OP_NE);
+    setParameters($$, $1, $3);
+}      
+| expression AND expression {
+    $$ = new ParseTree(P_OPERATOR); $$->setOperator(OP_AND);
+    setParameters($$, $1, $3);
+ }      
+| expression OR expression {
+    $$ = new ParseTree(P_OPERATOR); $$->setOperator(OP_OR);
+    setParameters($$, $1, $3);
+}
+| expression '^' expression {
+    $$ = new ParseTree(P_OPERATOR); $$->setOperator(OP_POW);
+    setParameters($$, $1, $3);
 }
 | '(' expression ')' { $$ = $2; }
 ;
