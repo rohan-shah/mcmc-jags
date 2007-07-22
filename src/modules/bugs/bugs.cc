@@ -34,6 +34,7 @@
 #include <functions/CLogLog.h>
 #include <functions/Cos.h>
 #include <functions/Exp.h>
+#include <functions/Equals.h>
 #include <functions/ICLogLog.h>
 #include <functions/ILogit.h>
 #include <functions/InProd.h>
@@ -108,6 +109,7 @@ BUGSModule::BUGSModule() {
     insert(new Cos);
     insert(new CLogLog);
     insert(new Exp);
+    insert(new Equals);
     insert(new ICLogLog);
     insert(new ILogit);
     insert(new InProd);
