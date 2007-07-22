@@ -4,6 +4,8 @@
 
 using std::vector;
 
+namespace basefunctions {
+
 Multiply::Multiply () : Infix ("*", 0)
 {
 }
@@ -71,4 +73,6 @@ bool Multiply::isScale(unsigned int index, vector<bool> const &fix) const
     }
 
     return true;
+}
+
 }

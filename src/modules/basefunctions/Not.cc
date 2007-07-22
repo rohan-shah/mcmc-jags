@@ -4,6 +4,8 @@
 using std::vector;
 using std::string;
 
+namespace basefunctions {
+
 Not::Not () : ScalarFunc ("!", 1)
 {
 }
@@ -21,4 +23,6 @@ bool Not::isDiscreteValued(vector<bool> const &mask) const
 string Not::deparse(vector<string> const &par) const
 {
     return string("!") + par[0];
+}
+
 }

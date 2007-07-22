@@ -3,6 +3,8 @@
 
 #include <function/ScalarFunc.h>
 
+namespace basefunctions {
+
 /**
  * @short Unary minus operator
  * UnaryMinus implements the prefix operator "-"
@@ -20,5 +22,7 @@ public:
     std::string deparse(std::vector<std::string> const &par) const;
 
 };
+
+}
 
 #endif /* FUNC_NEG_H_ */

@@ -17,6 +17,7 @@
 #include "Subtract.h"
 
 using std::vector;
+using namespace basefunctions;
 
 class BaseFuncModule : public Module {
 public:

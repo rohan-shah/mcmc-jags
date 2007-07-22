@@ -9,6 +9,8 @@ using std::vector;
 using std::logic_error;
 using std::string;
 
+namespace basefunctions {
+
 Neg::Neg () : ScalarFunc ("NEG", 1)
 {
 }
@@ -36,4 +38,6 @@ bool Neg::isScale(unsigned int index, vector<bool> const &fix) const
 string Neg::deparse(vector<string> const &par) const
 {
     return string("-") + par[0];
+}
+
 }

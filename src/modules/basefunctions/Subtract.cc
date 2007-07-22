@@ -7,6 +7,8 @@
 using std::vector;
 using std::logic_error;
 
+namespace basefunctions {
+
 Subtract::Subtract () : Infix ("-")
 {
 }
@@ -26,4 +28,6 @@ bool
 Subtract::isLinear(vector<bool> const &mask, vector<bool> const &fix) const
 {
     return true;
+}
+
 }

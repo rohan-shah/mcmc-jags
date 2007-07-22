@@ -3,6 +3,8 @@
 
 #include <function/ScalarFunc.h>
 
+namespace basefunctions {
+
 /**
  * Base class for infix operators, providing a deparse method.
  *  
@@ -15,5 +17,7 @@ public:
     Infix(std::string const &name, unsigned int npar=2);
     std::string deparse(std::vector<std::string> const &par) const;
 };
+
+}
 
 #endif /* INFIX_H_ */

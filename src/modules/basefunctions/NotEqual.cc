@@ -6,6 +6,8 @@
 
 using std::vector;
 
+namespace basefunctions {
+
 NotEqual::NotEqual () : Infix ("!=")
 {
 }
@@ -18,4 +20,6 @@ double NotEqual::eval (vector<double const *> const &args) const
 bool NotEqual::isDiscreteValued(std::vector<bool> const &mask) const
 {
   return true;
+}
+
 }

@@ -3,6 +3,8 @@
 
 #include "Infix.h"
 
+namespace basefunctions {
+    
 /**
  * @short Power function using infix notation
  * If y <- x^z and x is negative, then z must be an integer
@@ -14,5 +16,7 @@ public:
     double eval(std::vector<double const *> const &args) const;
     bool checkParameterValue(std::vector<double const*> const &args) const;
 };
+
+}
 
 #endif /* FUNC_POW_H_ */

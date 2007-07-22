@@ -8,6 +8,8 @@ using std::vector;
 using std::fabs;
 using std::pow;
 
+namespace basefunctions {
+
 Pow::Pow () : Infix ("^")
 {
 }
@@ -27,4 +29,6 @@ bool Pow::checkParameterValue(vector<double const *> const &args) const
 	int iarg2 = static_cast<int>(arg2 + DBL_EPSILON);
 	return fabs(arg2 - iarg2) < DBL_EPSILON;
     }
+}
+
 }

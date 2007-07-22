@@ -3,6 +3,8 @@
 
 #include "Infix.h"
 
+namespace basefunctions {
+
 /**
  * @short Difference of two scalars 
  * 
@@ -21,5 +23,7 @@ public:
     bool isLinear(std::vector<bool> const &mask, 
 		  std::vector<bool> const &fixmask) const;
 };
+
+}
 
 #endif /* FUNC_SUBTRACT_H_ */

@@ -6,6 +6,8 @@
 
 using std::vector;
 
+namespace basefunctions {
+
 LessOrEqual::LessOrEqual () : Infix ("<=")
 {
 }
@@ -18,4 +20,6 @@ double LessOrEqual::eval (vector<double const *> const &args) const
 bool LessOrEqual::isDiscreteValued(std::vector<bool> const &mask) const
 {
   return true;
+}
+
 }

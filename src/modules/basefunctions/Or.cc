@@ -3,6 +3,8 @@
 
 using std::vector;
 
+namespace basefunctions {
+
 Or::Or () : Infix ("||")
 {
 }
@@ -17,3 +19,4 @@ bool Or::isDiscreteValued(std::vector<bool> const &mask) const
   return true;
 }
 
+}

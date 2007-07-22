@@ -3,6 +3,8 @@
 
 #include "Infix.h"
 
+namespace basefunctions {
+
 /**
  * @short Product of two scalars 
  * 
@@ -20,5 +22,7 @@ public:
 		  std::vector<bool> const &fixmask) const;
     bool isScale(unsigned int index, std::vector<bool> const &fixmask) const;
 };
+
+}
 
 #endif /* FUNC_MULTIPLY_H_ */

@@ -3,6 +3,8 @@
 
 #include "Infix.h"
 
+namespace basefunctions {
+
 /**
  * @short Numeric comparison
  * <pre>
@@ -19,5 +21,7 @@ public:
     /** Returns true */
     bool isDiscreteValued(std::vector<bool> const &mask) const;
 };
+
+}
 
 #endif /* FUNC_LESS_OR_EQUAL_H_ */
