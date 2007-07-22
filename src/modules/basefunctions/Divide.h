@@ -1,7 +1,7 @@
 #ifndef FUNC_DIVIDE_H_
 #define FUNC_DIVIDE_H_
 
-#include <function/ScalarFunc.h>
+#include "Infix.h"
 
 /**
  * The Divide function implements the infix operator "/" in the BUGS 
@@ -12,7 +12,7 @@
  * y = a/b for b != 0
  * </pre>
  */
-class Divide:public ScalarFunc
+class Divide:public Infix
 {
 public:
     Divide ();

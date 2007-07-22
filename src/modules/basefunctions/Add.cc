@@ -4,7 +4,7 @@
 
 using std::vector;
 
-Add::Add ():ScalarFunc ("+", 0)
+Add::Add () : Infix ("+", 0)
 {
 }
 

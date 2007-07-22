@@ -1,7 +1,7 @@
 #ifndef FUNC_ADD_H_
 #define FUNC_ADD_H_
 
-#include <function/ScalarFunc.h>
+#include "Infix.h"
 
 /**
  * The Add function implements the infix operator "+" in the BUGS language.
@@ -12,7 +12,7 @@
  * y <- a + b
  * </pre>
  */
-class Add:public ScalarFunc
+class Add : public Infix
 {
 public:
     Add ();

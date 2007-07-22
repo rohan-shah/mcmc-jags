@@ -3,7 +3,7 @@
 
 using std::vector;
 
-Divide::Divide ():ScalarFunc ("/", 2)
+Divide::Divide () : Infix ("/")
 {
 }
 
