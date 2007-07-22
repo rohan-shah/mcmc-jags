@@ -11,7 +11,9 @@ enum TreeClass {
 };
 
 enum Operator {
-  OP_ADD, OP_SUBTRACT, OP_MULTIPLY, OP_DIVIDE, OP_NEG, OP_NONE
+    OP_ADD, OP_SUBTRACT, OP_MULTIPLY, OP_DIVIDE, OP_NEG, OP_OR,
+    OP_AND, OP_NOT, OP_GT, OP_GE, OP_LT, OP_LE, OP_EQ, OP_NE, OP_POW,
+    OP_NONE
 };
 
 /**
