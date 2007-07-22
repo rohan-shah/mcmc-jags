@@ -44,13 +44,23 @@
      MODEL = 260,
      NAME = 261,
      FUNC = 262,
-     IN = 263,
-     ARROW = 264,
-     FOR = 265,
-     DOUBLE = 266,
-     INT = 267,
-     NEG = 268,
-     ENDL = 269
+     SPECIAL = 263,
+     IN = 264,
+     ARROW = 265,
+     FOR = 266,
+     GT = 267,
+     GE = 268,
+     LT = 269,
+     LE = 270,
+     EQ = 271,
+     NE = 272,
+     AND = 273,
+     OR = 274,
+     DOUBLE = 275,
+     INT = 276,
+     NOT = 277,
+     NEG = 278,
+     ENDL = 279
    };
 #endif
 /* Tokens.  */
@@ -59,13 +69,23 @@
 #define MODEL 260
 #define NAME 261
 #define FUNC 262
-#define IN 263
-#define ARROW 264
-#define FOR 265
-#define DOUBLE 266
-#define INT 267
-#define NEG 268
-#define ENDL 269
+#define SPECIAL 263
+#define IN 264
+#define ARROW 265
+#define FOR 266
+#define GT 267
+#define GE 268
+#define LT 269
+#define LE 270
+#define EQ 271
+#define NE 272
+#define AND 273
+#define OR 274
+#define DOUBLE 275
+#define INT 276
+#define NOT 277
+#define NEG 278
+#define ENDL 279
 
 
 
@@ -88,8 +108,8 @@ typedef union YYSTYPE
   ParseTree *ptree;
   std::vector<ParseTree*> *pvec;
 }
-/* Line 1529 of yacc.c.  */
-#line 93 "parser.h"
+/* Line 1489 of yacc.c.  */
+#line 113 "../../../../JAGS/src/lib/compiler/parser.h"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
