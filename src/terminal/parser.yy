@@ -196,12 +196,18 @@ parameters_in: parameters r_assignment_list ENDDATA
     std::string rngname;
     readRData($2, parameter_table, rngname);
     delete $2;
-    /* We have to set the name first, because the state or seed
-       might be embedded in the parameter_table */
-    if (rngname.size() != 0) {
-        console->setRNGname(rngname, 1);
+    /* Set all chains to the same state. If the user sets the
+       RNG state in addition to the parameter values then all
+       chains will be identical!
+    */
+    for (unsigned int i = 1; i <= console->nchain(); ++i) {
+	/* We have to set the name first, because the state or seed
+	   might be embedded in the parameter_table */
+	if (rngname.size() != 0) {
+	    console->setRNGname(rngname, i);
+	}
+	console->setParameters(parameter_table, i);
     }
-    console->setParameters(parameter_table, 1);
 }
 | parameters r_assignment_list ENDDATA ',' CHAIN '(' INT ')' 
 {
