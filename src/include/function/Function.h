@@ -145,6 +145,15 @@ public:
      */
     virtual bool isScale(unsigned int index,
 			 std::vector<bool> const &isfixed) const;
+    /**
+     * Returns a BUGS-language expression representing the function call.
+     * The default behaviour for a function named "foo" is to return
+     * "foo(arg1,arg2)". Functions that are represented as prefix or infix
+     * operators need to override this function.
+     *
+     * @param par Vector of parameter names for the function
+     */
+    virtual std::string deparse(std::vector<std::string> const &par) const;
 };
 
 #endif /* FUNCTION_H_ */
