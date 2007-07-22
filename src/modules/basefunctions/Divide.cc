@@ -3,6 +3,8 @@
 
 using std::vector;
 
+namespace basefunctions {
+
 Divide::Divide () : Infix ("/")
 {
 }
@@ -39,4 +41,6 @@ bool Divide::isScale(unsigned int index, vector<bool> const &fix) const
 	return true;
     else
 	return fix[1];
+}
+
 }

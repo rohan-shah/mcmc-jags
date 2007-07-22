@@ -6,6 +6,8 @@
 
 using std::vector;
 
+namespace basefunctions {
+
 GreaterThan::GreaterThan () : Infix (">")
 {
 }
@@ -18,4 +20,6 @@ double GreaterThan::eval (vector<double const *> const &args) const
 bool GreaterThan::isDiscreteValued(std::vector<bool> const &mask) const
 {
   return true;
+}
+
 }

@@ -6,6 +6,8 @@
 
 using std::vector;
 
+namespace basefunctions {
+
 Equal::Equal () : Infix ("==")
 {
 }
@@ -18,4 +20,6 @@ double Equal::eval (vector<double const *> const &args) const
 bool Equal::isDiscreteValued(std::vector<bool> const &mask) const
 {
   return true;
+}
+
 }

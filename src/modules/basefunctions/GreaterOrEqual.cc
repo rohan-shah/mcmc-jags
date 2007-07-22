@@ -6,6 +6,8 @@
 
 using std::vector;
 
+namespace basefunctions {
+
 GreaterOrEqual::GreaterOrEqual () : Infix (">=")
 {
 }
@@ -18,4 +20,6 @@ double GreaterOrEqual::eval (vector<double const *> const &args) const
 bool GreaterOrEqual::isDiscreteValued(std::vector<bool> const &mask) const
 {
   return true;
+}
+
 }

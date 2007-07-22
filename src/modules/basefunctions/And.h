@@ -3,6 +3,8 @@
 
 #include "Infix.h"
 
+namespace basefunctions {
+
 /**
  * The And function implements the infix operator "&" in the BUGS 
  * language
@@ -20,5 +22,7 @@ public:
     double eval(std::vector<double const *> const &args) const;
     bool isDiscreteValued(std::vector<bool> const &mask) const;
 };
+
+}
 
 #endif /* FUNC_AND_H_ */

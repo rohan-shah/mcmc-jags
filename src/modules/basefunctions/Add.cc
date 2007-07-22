@@ -4,6 +4,8 @@
 
 using std::vector;
 
+namespace basefunctions {
+
 Add::Add () : Infix ("+", 0)
 {
 }
@@ -28,3 +30,4 @@ bool Add::isLinear(vector<bool> const &mask, vector<bool> const &fix) const
     return true;
 }
 
+}

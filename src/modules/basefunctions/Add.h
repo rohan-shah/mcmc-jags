@@ -3,6 +3,8 @@
 
 #include "Infix.h"
 
+namespace basefunctions {
+
 /**
  * The Add function implements the infix operator "+" in the BUGS language.
  * The expression a + b + c is broken down into ((a + b) + c), so two
@@ -21,5 +23,7 @@ public:
     bool isLinear(std::vector<bool> const &mask,
 		  std::vector<bool> const &fixmask) const;
 };
+
+}
 
 #endif /* FUNC_ADD_H_ */

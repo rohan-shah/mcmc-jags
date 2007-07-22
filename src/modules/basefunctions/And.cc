@@ -3,6 +3,8 @@
 
 using std::vector;
 
+namespace basefunctions {
+
 And::And () : Infix ("&&")
 {
 }
@@ -15,4 +17,6 @@ double And::eval(vector <double const *> const &args) const
 bool And::isDiscreteValued(std::vector<bool> const &mask) const
 {
   return true;
+}
+
 }
