@@ -80,37 +80,16 @@ string LogicalNode::name(NodeNameTab const &name_table) const
     return name;
 
   vector<Node const *> const &par = parents();
-  string const &fname = _func->name();
-  if (fname == "*" || fname == "/" || fname == "+" || fname == "-")
-    {
-      name.append("(");
-      for (unsigned int i = 0; i < par.size(); ++i) {
-	if (i > 0) {
-	  name.append(fname);
-	}
-	name.append(par[i]->name(name_table));
-      }
-      name.append(")");
-    }
-  else if (fname == "NEG") 
-    {
-      name.append("(-");
-      name.append(par[0]->name(name_table));
-      name.append(")");
-    }
-  else
-    {
-      name.append(fname);
-      name.append("(");
-      for (unsigned int i = 0; i < par.size(); ++i) {
-	if (i > 0) {
-	  name.append(",");
-	}
-	name.append(par[i]->name(name_table));
-      }
-      name.append(")");
-    }
 
+  vector<string> parnames(par.size());
+  for (unsigned int i = 0; i < par.size(); ++i) {
+      parnames[i] = par[i]->name(name_table);
+  }
+  
+  name.append("(");
+  name.append(_func->deparse(parnames));
+  name.append(")");
+	      
   return name;
 }
 
