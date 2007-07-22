@@ -8,8 +8,7 @@ using std::vector;
 using std::fabs;
 using std::pow;
 
-Pow::Pow ()
-  : ScalarFunc ("pow", 2)
+Pow::Pow () : Infix ("^")
 {
 }
 

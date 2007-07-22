@@ -7,9 +7,9 @@
 
 using std::vector;
 using std::logic_error;
+using std::string;
 
-Neg::Neg ()
-  : ScalarFunc ("NEG", 1)
+Neg::Neg () : ScalarFunc ("NEG", 1)
 {
 }
 
@@ -31,4 +31,9 @@ bool Neg::isLinear(vector<bool> const &mask, vector<bool> const &fix) const
 bool Neg::isScale(unsigned int index, vector<bool> const &fix) const
 {
     return true;
+}
+
+string Neg::deparse(vector<string> const &par) const
+{
+    return string("-") + par[0];
 }

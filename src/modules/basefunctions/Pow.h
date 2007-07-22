@@ -1,17 +1,13 @@
 #ifndef FUNC_POW_H_
 #define FUNC_POW_H_
 
-#include <function/ScalarFunc.h>
+#include "Infix.h"
 
 /**
- * @short Power function
- * If y <- pow(x,z) and x is negative, then z must be an integer
- * <pre>
- * y <- pow(x,z)
- * y = x^z
- * </pre>
+ * @short Power function using infix notation
+ * If y <- x^z and x is negative, then z must be an integer
  */
-class Pow : public ScalarFunc
+class Pow : public Infix
 {
 public:
     Pow ();

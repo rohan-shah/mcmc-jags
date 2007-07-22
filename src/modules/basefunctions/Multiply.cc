@@ -4,8 +4,7 @@
 
 using std::vector;
 
-Multiply::Multiply ()
-  : ScalarFunc ("*", 0)
+Multiply::Multiply () : Infix ("*", 0)
 {
 }
 

@@ -7,8 +7,7 @@
 using std::vector;
 using std::logic_error;
 
-Subtract::Subtract ()
-  : ScalarFunc ("-", 2)
+Subtract::Subtract () : Infix ("-")
 {
 }
 

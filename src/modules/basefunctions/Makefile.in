@@ -56,10 +56,15 @@ am__installdirs = "$(DESTDIR)$(jagsmoddir)"
 jagsmodLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(jagsmod_LTLIBRARIES)
 basefunctions_la_DEPENDENCIES = $(top_builddir)/src/lib/libjags.la
-am_basefunctions_la_OBJECTS = basefunctions_la-Add.lo \
-	basefunctions_la-Divide.lo basefunctions_la-Equals.lo \
-	basefunctions_la-Multiply.lo basefunctions_la-Neg.lo \
-	basefunctions_la-Pow.lo basefunctions_la-Subtract.lo \
+am_basefunctions_la_OBJECTS = basefunctions_la-Infix.lo \
+	basefunctions_la-Add.lo basefunctions_la-Subtract.lo \
+	basefunctions_la-Divide.lo basefunctions_la-Multiply.lo \
+	basefunctions_la-Neg.lo basefunctions_la-Pow.lo \
+	basefunctions_la-And.lo basefunctions_la-Or.lo \
+	basefunctions_la-Not.lo basefunctions_la-Equal.lo \
+	basefunctions_la-NotEqual.lo basefunctions_la-GreaterThan.lo \
+	basefunctions_la-GreaterOrEqual.lo \
+	basefunctions_la-LessThan.lo basefunctions_la-LessOrEqual.lo \
 	basefunctions_la-module.lo
 basefunctions_la_OBJECTS = $(am_basefunctions_la_OBJECTS)
 basefunctions_la_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
@@ -212,10 +217,14 @@ jagsmod_LTLIBRARIES = basefunctions.la
 basefunctions_la_CPPFLAGS = -I$(top_srcdir)/src/include
 basefunctions_la_LDFLAGS = -no-undefined -module -avoid-version
 basefunctions_la_LIBADD = $(top_builddir)/src/lib/libjags.la
-basefunctions_la_SOURCES = Add.cc Divide.cc Equals.cc Multiply.cc	\
-Neg.cc Pow.cc Subtract.cc module.cc
+basefunctions_la_SOURCES = Infix.cc Add.cc Subtract.cc Divide.cc	\
+Multiply.cc Neg.cc Pow.cc And.cc Or.cc Not.cc Equal.cc NotEqual.cc	\
+GreaterThan.cc GreaterOrEqual.cc LessThan.cc LessOrEqual.cc module.cc
 
-noinst_HEADERS = Add.h Divide.h Equals.h Multiply.h Neg.h Pow.h Subtract.h 
+noinst_HEADERS = Infix.h Add.h Subtract.h Divide.h Multiply.h Neg.h	\
+Pow.h And.h Or.h Not.h Equal.h NotEqual.h GreaterThan.h			\
+GreaterOrEqual.h LessThan.h LessOrEqual.h
+
 all: all-am
 
 .SUFFIXES:
@@ -286,10 +295,19 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/basefunctions_la-Add.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/basefunctions_la-And.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/basefunctions_la-Divide.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/basefunctions_la-Equals.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/basefunctions_la-Equal.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/basefunctions_la-GreaterOrEqual.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/basefunctions_la-GreaterThan.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/basefunctions_la-Infix.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/basefunctions_la-LessOrEqual.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/basefunctions_la-LessThan.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/basefunctions_la-Multiply.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/basefunctions_la-Neg.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/basefunctions_la-Not.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/basefunctions_la-NotEqual.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/basefunctions_la-Or.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/basefunctions_la-Pow.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/basefunctions_la-Subtract.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/basefunctions_la-module.Plo@am__quote@
@@ -315,6 +333,13 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LTCXXCOMPILE) -c -o $@ $<
 
+basefunctions_la-Infix.lo: Infix.cc
+@am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(basefunctions_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT basefunctions_la-Infix.lo -MD -MP -MF $(DEPDIR)/basefunctions_la-Infix.Tpo -c -o basefunctions_la-Infix.lo `test -f 'Infix.cc' || echo '$(srcdir)/'`Infix.cc
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/basefunctions_la-Infix.Tpo $(DEPDIR)/basefunctions_la-Infix.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Infix.cc' object='basefunctions_la-Infix.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(basefunctions_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o basefunctions_la-Infix.lo `test -f 'Infix.cc' || echo '$(srcdir)/'`Infix.cc
+
 basefunctions_la-Add.lo: Add.cc
 @am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(basefunctions_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT basefunctions_la-Add.lo -MD -MP -MF $(DEPDIR)/basefunctions_la-Add.Tpo -c -o basefunctions_la-Add.lo `test -f 'Add.cc' || echo '$(srcdir)/'`Add.cc
 @am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/basefunctions_la-Add.Tpo $(DEPDIR)/basefunctions_la-Add.Plo
@@ -322,19 +347,19 @@ basefunctions_la-Add.lo: Add.cc
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(basefunctions_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o basefunctions_la-Add.lo `test -f 'Add.cc' || echo '$(srcdir)/'`Add.cc
 
+basefunctions_la-Subtract.lo: Subtract.cc
+@am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(basefunctions_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT basefunctions_la-Subtract.lo -MD -MP -MF $(DEPDIR)/basefunctions_la-Subtract.Tpo -c -o basefunctions_la-Subtract.lo `test -f 'Subtract.cc' || echo '$(srcdir)/'`Subtract.cc
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/basefunctions_la-Subtract.Tpo $(DEPDIR)/basefunctions_la-Subtract.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Subtract.cc' object='basefunctions_la-Subtract.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(basefunctions_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o basefunctions_la-Subtract.lo `test -f 'Subtract.cc' || echo '$(srcdir)/'`Subtract.cc
+
 basefunctions_la-Divide.lo: Divide.cc
 @am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(basefunctions_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT basefunctions_la-Divide.lo -MD -MP -MF $(DEPDIR)/basefunctions_la-Divide.Tpo -c -o basefunctions_la-Divide.lo `test -f 'Divide.cc' || echo '$(srcdir)/'`Divide.cc
 @am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/basefunctions_la-Divide.Tpo $(DEPDIR)/basefunctions_la-Divide.Plo
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Divide.cc' object='basefunctions_la-Divide.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(basefunctions_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o basefunctions_la-Divide.lo `test -f 'Divide.cc' || echo '$(srcdir)/'`Divide.cc
-
-basefunctions_la-Equals.lo: Equals.cc
-@am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(basefunctions_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT basefunctions_la-Equals.lo -MD -MP -MF $(DEPDIR)/basefunctions_la-Equals.Tpo -c -o basefunctions_la-Equals.lo `test -f 'Equals.cc' || echo '$(srcdir)/'`Equals.cc
-@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/basefunctions_la-Equals.Tpo $(DEPDIR)/basefunctions_la-Equals.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Equals.cc' object='basefunctions_la-Equals.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(basefunctions_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o basefunctions_la-Equals.lo `test -f 'Equals.cc' || echo '$(srcdir)/'`Equals.cc
 
 basefunctions_la-Multiply.lo: Multiply.cc
 @am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(basefunctions_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT basefunctions_la-Multiply.lo -MD -MP -MF $(DEPDIR)/basefunctions_la-Multiply.Tpo -c -o basefunctions_la-Multiply.lo `test -f 'Multiply.cc' || echo '$(srcdir)/'`Multiply.cc
@@ -357,12 +382,68 @@ basefunctions_la-Pow.lo: Pow.cc
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(basefunctions_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o basefunctions_la-Pow.lo `test -f 'Pow.cc' || echo '$(srcdir)/'`Pow.cc
 
-basefunctions_la-Subtract.lo: Subtract.cc
-@am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(basefunctions_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT basefunctions_la-Subtract.lo -MD -MP -MF $(DEPDIR)/basefunctions_la-Subtract.Tpo -c -o basefunctions_la-Subtract.lo `test -f 'Subtract.cc' || echo '$(srcdir)/'`Subtract.cc
-@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/basefunctions_la-Subtract.Tpo $(DEPDIR)/basefunctions_la-Subtract.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Subtract.cc' object='basefunctions_la-Subtract.lo' libtool=yes @AMDEPBACKSLASH@
+basefunctions_la-And.lo: And.cc
+@am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(basefunctions_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT basefunctions_la-And.lo -MD -MP -MF $(DEPDIR)/basefunctions_la-And.Tpo -c -o basefunctions_la-And.lo `test -f 'And.cc' || echo '$(srcdir)/'`And.cc
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/basefunctions_la-And.Tpo $(DEPDIR)/basefunctions_la-And.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='And.cc' object='basefunctions_la-And.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(basefunctions_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o basefunctions_la-Subtract.lo `test -f 'Subtract.cc' || echo '$(srcdir)/'`Subtract.cc
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(basefunctions_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o basefunctions_la-And.lo `test -f 'And.cc' || echo '$(srcdir)/'`And.cc
+
+basefunctions_la-Or.lo: Or.cc
+@am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(basefunctions_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT basefunctions_la-Or.lo -MD -MP -MF $(DEPDIR)/basefunctions_la-Or.Tpo -c -o basefunctions_la-Or.lo `test -f 'Or.cc' || echo '$(srcdir)/'`Or.cc
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/basefunctions_la-Or.Tpo $(DEPDIR)/basefunctions_la-Or.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Or.cc' object='basefunctions_la-Or.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(basefunctions_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o basefunctions_la-Or.lo `test -f 'Or.cc' || echo '$(srcdir)/'`Or.cc
+
+basefunctions_la-Not.lo: Not.cc
+@am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(basefunctions_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT basefunctions_la-Not.lo -MD -MP -MF $(DEPDIR)/basefunctions_la-Not.Tpo -c -o basefunctions_la-Not.lo `test -f 'Not.cc' || echo '$(srcdir)/'`Not.cc
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/basefunctions_la-Not.Tpo $(DEPDIR)/basefunctions_la-Not.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Not.cc' object='basefunctions_la-Not.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(basefunctions_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o basefunctions_la-Not.lo `test -f 'Not.cc' || echo '$(srcdir)/'`Not.cc
+
+basefunctions_la-Equal.lo: Equal.cc
+@am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(basefunctions_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT basefunctions_la-Equal.lo -MD -MP -MF $(DEPDIR)/basefunctions_la-Equal.Tpo -c -o basefunctions_la-Equal.lo `test -f 'Equal.cc' || echo '$(srcdir)/'`Equal.cc
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/basefunctions_la-Equal.Tpo $(DEPDIR)/basefunctions_la-Equal.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Equal.cc' object='basefunctions_la-Equal.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(basefunctions_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o basefunctions_la-Equal.lo `test -f 'Equal.cc' || echo '$(srcdir)/'`Equal.cc
+
+basefunctions_la-NotEqual.lo: NotEqual.cc
+@am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(basefunctions_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT basefunctions_la-NotEqual.lo -MD -MP -MF $(DEPDIR)/basefunctions_la-NotEqual.Tpo -c -o basefunctions_la-NotEqual.lo `test -f 'NotEqual.cc' || echo '$(srcdir)/'`NotEqual.cc
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/basefunctions_la-NotEqual.Tpo $(DEPDIR)/basefunctions_la-NotEqual.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='NotEqual.cc' object='basefunctions_la-NotEqual.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(basefunctions_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o basefunctions_la-NotEqual.lo `test -f 'NotEqual.cc' || echo '$(srcdir)/'`NotEqual.cc
+
+basefunctions_la-GreaterThan.lo: GreaterThan.cc
+@am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(basefunctions_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT basefunctions_la-GreaterThan.lo -MD -MP -MF $(DEPDIR)/basefunctions_la-GreaterThan.Tpo -c -o basefunctions_la-GreaterThan.lo `test -f 'GreaterThan.cc' || echo '$(srcdir)/'`GreaterThan.cc
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/basefunctions_la-GreaterThan.Tpo $(DEPDIR)/basefunctions_la-GreaterThan.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='GreaterThan.cc' object='basefunctions_la-GreaterThan.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(basefunctions_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o basefunctions_la-GreaterThan.lo `test -f 'GreaterThan.cc' || echo '$(srcdir)/'`GreaterThan.cc
+
+basefunctions_la-GreaterOrEqual.lo: GreaterOrEqual.cc
+@am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(basefunctions_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT basefunctions_la-GreaterOrEqual.lo -MD -MP -MF $(DEPDIR)/basefunctions_la-GreaterOrEqual.Tpo -c -o basefunctions_la-GreaterOrEqual.lo `test -f 'GreaterOrEqual.cc' || echo '$(srcdir)/'`GreaterOrEqual.cc
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/basefunctions_la-GreaterOrEqual.Tpo $(DEPDIR)/basefunctions_la-GreaterOrEqual.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='GreaterOrEqual.cc' object='basefunctions_la-GreaterOrEqual.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(basefunctions_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o basefunctions_la-GreaterOrEqual.lo `test -f 'GreaterOrEqual.cc' || echo '$(srcdir)/'`GreaterOrEqual.cc
+
+basefunctions_la-LessThan.lo: LessThan.cc
+@am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(basefunctions_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT basefunctions_la-LessThan.lo -MD -MP -MF $(DEPDIR)/basefunctions_la-LessThan.Tpo -c -o basefunctions_la-LessThan.lo `test -f 'LessThan.cc' || echo '$(srcdir)/'`LessThan.cc
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/basefunctions_la-LessThan.Tpo $(DEPDIR)/basefunctions_la-LessThan.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='LessThan.cc' object='basefunctions_la-LessThan.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(basefunctions_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o basefunctions_la-LessThan.lo `test -f 'LessThan.cc' || echo '$(srcdir)/'`LessThan.cc
+
+basefunctions_la-LessOrEqual.lo: LessOrEqual.cc
+@am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(basefunctions_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT basefunctions_la-LessOrEqual.lo -MD -MP -MF $(DEPDIR)/basefunctions_la-LessOrEqual.Tpo -c -o basefunctions_la-LessOrEqual.lo `test -f 'LessOrEqual.cc' || echo '$(srcdir)/'`LessOrEqual.cc
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/basefunctions_la-LessOrEqual.Tpo $(DEPDIR)/basefunctions_la-LessOrEqual.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='LessOrEqual.cc' object='basefunctions_la-LessOrEqual.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(basefunctions_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o basefunctions_la-LessOrEqual.lo `test -f 'LessOrEqual.cc' || echo '$(srcdir)/'`LessOrEqual.cc
 
 basefunctions_la-module.lo: module.cc
 @am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(basefunctions_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT basefunctions_la-module.lo -MD -MP -MF $(DEPDIR)/basefunctions_la-module.Tpo -c -o basefunctions_la-module.lo `test -f 'module.cc' || echo '$(srcdir)/'`module.cc

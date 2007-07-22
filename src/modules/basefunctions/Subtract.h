@@ -1,7 +1,7 @@
 #ifndef FUNC_SUBTRACT_H_
 #define FUNC_SUBTRACT_H_
 
-#include <function/ScalarFunc.h>
+#include "Infix.h"
 
 /**
  * @short Difference of two scalars 
@@ -12,7 +12,7 @@
  * y <- x - z
  * </pre>
  */
-class Subtract : public ScalarFunc 
+class Subtract : public Infix 
 { 
 public:
     Subtract ();

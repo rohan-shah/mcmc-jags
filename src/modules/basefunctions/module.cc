@@ -1,10 +1,18 @@
 #include <Module.h>
 
 #include "Add.h"
+#include "And.h"
 #include "Divide.h"
-#include "Equals.h"
+#include "Equal.h"
+#include "GreaterOrEqual.h"
+#include "GreaterThan.h"
+#include "LessOrEqual.h"
+#include "LessThan.h"
 #include "Multiply.h"
 #include "Neg.h"
+#include "Not.h"
+#include "NotEqual.h"
+#include "Or.h"
 #include "Pow.h"
 #include "Subtract.h"
 
@@ -19,10 +27,18 @@ public:
 BaseFuncModule::BaseFuncModule() {
 
     insert(new Add);
+    insert(new And);
     insert(new Divide);
-    insert(new Equals);
+    insert(new Equal);
+    insert(new GreaterOrEqual);
+    insert(new GreaterThan);
+    insert(new LessOrEqual);
+    insert(new LessThan);
     insert(new Multiply);
     insert(new Neg);
+    insert(new Not);
+    insert(new NotEqual);
+    insert(new Or);
     insert(new Pow);
     insert(new Subtract);
 }

@@ -1,7 +1,7 @@
 #ifndef FUNC_MULTIPLY_H_
 #define FUNC_MULTIPLY_H_
 
-#include <function/ScalarFunc.h>
+#include "Infix.h"
 
 /**
  * @short Product of two scalars 
@@ -10,7 +10,7 @@
  * BUGS language.  The expression a * b * c is broken down into ((a *
  * b) * c), so two separate calls to Multiply are made.
  */
-class Multiply:public ScalarFunc
+class Multiply: public Infix
 {
 public:
     Multiply ();
