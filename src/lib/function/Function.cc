@@ -49,7 +49,22 @@ bool Function::isScale(unsigned int index,
 }
 
 vector<unsigned int> 
-Function::dim(std::vector <std::vector<unsigned int> > const &dims) const
+Function::dim(vector <vector<unsigned int> > const &dims) const
 {
     return vector<unsigned int>(1,1);
+}
+
+string Function::deparse(vector<string> const &par) const
+{
+    string name = this->name();
+    name.append("(");
+    for (unsigned int i = 0; i < par.size(); ++i) {
+	if (i > 0) {
+	    name.append(",");
+	}
+	name.append(par[i]);
+    }
+    name.append(")");
+
+    return name;
 }
