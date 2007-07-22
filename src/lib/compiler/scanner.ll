@@ -36,17 +36,34 @@ BRACKET		[ \t]*\(
 ")"			return ')';
 "{"			return '{';
 "}"			return '}';
+"<="                    return LE;
+"<"                     return LT;
+">="                    return GE;
+">"                     return GT;
+"&&"                    return AND;
+"||"                    return OR;
+"!="                    return NE;
+"!"                     return NOT;
+"=="                    return EQ;
 "="			return '=';
 "~"			return '~';
 "<-"			return ARROW;
 "+"			return '+';
 "-"			return '-';
+"^"                     return '^';
+"**"                    return '^';
 "*"			return '*';
 "/"			return '/';
 
 "T"/{BRACKET}           return 'T';
 
-"/*"                    BEGIN(COMMENT);
+"%"+[^% \t\r\n]*"%" {
+    /* Special operators, e.g. %*% for matrix multiplication */
+    yylval.stringptr = new std::string(yytext);
+    return SPECIAL;
+}
+
+"/*"           BEGIN(COMMENT);
 <COMMENT>[^*]*          /* Eat up anything that's not a '*'   */
 <COMMENT>"*"+[^*/n]*    /* Eat up '*'s not followed by a '/'  */
 <COMMENT>"*"+"/"        BEGIN(INITIAL);

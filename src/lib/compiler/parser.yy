@@ -53,6 +53,7 @@
 %token MODEL
 %token <stringptr> NAME
 %token <stringptr> FUNC
+%token <stringptr> SPECIAL
 %token IN
 %token ARROW
 %token FOR
@@ -68,6 +69,7 @@
 %nonassoc GT GE LT LE EQ NE
 %left '+' '-'
 %left '*' '/'
+%left SPECIAL
 %left NEG
 %right '^'
 
@@ -278,7 +280,11 @@ expression: var
 | expression '^' expression {
     $$ = new ParseTree(P_OPERATOR); $$->setOperator(OP_POW);
     setParameters($$, $1, $3);
-}
+  }
+| expression SPECIAL expression {
+    $$ = new ParseTree(P_FUNCTION); setName($$, $2);
+    setParameters($$, $1, $3);
+ }
 | '(' expression ')' { $$ = $2; }
 ;
 
