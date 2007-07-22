@@ -6,7 +6,10 @@ basefunctions_la_LDFLAGS = -no-undefined -module -avoid-version
 
 basefunctions_la_LIBADD = $(top_builddir)/src/lib/libjags.la
 
-basefunctions_la_SOURCES = Add.cc Divide.cc Equals.cc Multiply.cc	\
-Neg.cc Pow.cc Subtract.cc module.cc
+basefunctions_la_SOURCES = Infix.cc Add.cc Subtract.cc Divide.cc	\
+Multiply.cc Neg.cc Pow.cc And.cc Or.cc Not.cc Equal.cc NotEqual.cc	\
+GreaterThan.cc GreaterOrEqual.cc LessThan.cc LessOrEqual.cc module.cc
 
-noinst_HEADERS = Add.h Divide.h Equals.h Multiply.h Neg.h Pow.h Subtract.h 
+noinst_HEADERS = Infix.h Add.h Subtract.h Divide.h Multiply.h Neg.h	\
+Pow.h And.h Or.h Not.h Equal.h NotEqual.h GreaterThan.h			\
+GreaterOrEqual.h LessThan.h LessOrEqual.h
