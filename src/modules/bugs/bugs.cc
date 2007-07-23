@@ -52,7 +52,7 @@
 #include <functions/Phi.h>
 #include <functions/Pow.h>
 #include <functions/Probit.h>
-#include <functions/Prod.h>
+//#include <functions/Prod.h>
 #include <functions/Rank.h>
 #include <functions/Round.h>
 #include <functions/SD.h>
@@ -128,7 +128,7 @@ BUGSModule::BUGSModule() {
     insert(new Phi);
     insert(new Pow);
     insert(new Probit);
-    insert(new Prod);
+    //insert(new Prod);
     insert(new Rank);
     insert(new Round);
     insert(new SD);
