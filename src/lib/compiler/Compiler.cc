@@ -65,7 +65,8 @@ static long asInteger(double fval)
 
 Node * Compiler::constFromTable(ParseTree const *p)
 {
-    // Try evaluating constant expression from data table
+    // Get a scalar constant value directly from the data table
+
     map<string,SArray>::const_iterator i = _data_table.find(p->name());
     if (i == _data_table.end()) {
 	return 0;
@@ -112,8 +113,9 @@ bool Compiler::indexExpression(ParseTree const *p, int &value)
        parameter value.
     */
     
-    /* The flag _index_expression tells is non-zero if we are inside
-       an Index expression. This invokes special rules in the function
+    /* 
+       The flag _index_expression is non-zero if we are inside an
+       Index expression. This invokes special rules in the function
        getArraySubset.  The counter tracks the levels of nesting of
        index expressions.
     */
@@ -369,9 +371,8 @@ Node *Compiler::getArraySubset(ParseTree const *p)
 	}
 	
 	if (!node && _index_expression) {
-	    //Index expressions may depend on data in the data
-	    //table, and must be calculated before any Nodes have
-	    //been defined.
+	    //It is possible to evaluate an index expression before
+	    //any Nodes are available from the symbol table.
 	    node = constFromTable(p);
 	}
     }
@@ -446,7 +447,7 @@ Node* Compiler::getParameter(ParseTree const *t)
 	node = getArraySubset(t);
 	break;
     case P_FUNCTION: 
-	if (getLogicalParameterVector(t, parents)) {
+	if (getParameterVector(t, parents)) {
 	    node = _logicalfactory.getLogicalNode(getFunction(t, funcTab()), 
 						  parents, _model.graph());
 	}
@@ -464,11 +465,11 @@ Node* Compiler::getParameter(ParseTree const *t)
     return node;
 }
 
-bool Compiler::getLogicalParameterVector(ParseTree const *t,
+bool Compiler::getParameterVector(ParseTree const *t,
 					 vector<Node const *> &parents)
 {
   if (!parents.empty()) {
-    throw logic_error("parent vector must be empty in getLogicalParameterVector");
+    throw logic_error("parent vector must be empty in getParameterVector");
   }
 
   switch (t->treeClass()) {
@@ -586,10 +587,10 @@ Node * Compiler::allocateLogical(ParseTree const *rel)
       node = getParameter(expression);
     break;
   case P_LINK:
-      if (getLogicalParameterVector(expression, parents)) {
-      node = _logicalfactory.getLogicalNode(getLink(expression, funcTab()), 
-					    parents, _model.graph());
-    }
+      if (getParameterVector(expression, parents)) {
+	  node = _logicalfactory.getLogicalNode(getLink(expression, funcTab()), 
+						parents, _model.graph());
+      }
     break;
   default:
     throw logic_error("Malformed parse tree in Compiler::allocateLogical");
@@ -860,7 +861,8 @@ void Compiler::undeclaredVariables(ParseTree const *prelations)
 
   // Infer the dimension of remaining nodes from the relations
   traverseTree(prelations, &Compiler::getArrayDim);
-  map<string, vector<vector<int> > >::const_iterator i = _node_array_ranges.begin(); 
+  map<string, vector<vector<int> > >::const_iterator i = 
+      _node_array_ranges.begin(); 
   for (; i != _node_array_ranges.end(); ++i) {
     if (_model.symtab().getVariable(i->first)) {
        //Node already declared. Check consistency 
@@ -896,7 +898,6 @@ void Compiler::undeclaredVariables(ParseTree const *prelations)
 	_model.symtab().addVariable(i->first, dim);
     }
   }
-  //_node_array_ranges.clear(); (Need to keep this now)
 }
 
 DistTab &Compiler::distTab()

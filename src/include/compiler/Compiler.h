@@ -57,7 +57,7 @@ class Compiler {
   void setConstantMask(ParseTree const *rel);
   void writeConstantData(ParseTree const *rel);
   void getArrayDim(ParseTree const *p);
-  bool getLogicalParameterVector(ParseTree const *t,
+  bool getParameterVector(ParseTree const *t,
 				 std::vector<Node const *> &parents);
   Node * getSubsetNode(ParseTree const *var);
   Node * constFromTable(ParseTree const *p);
