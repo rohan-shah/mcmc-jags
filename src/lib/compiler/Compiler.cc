@@ -112,6 +112,11 @@ bool Compiler::indexExpression(ParseTree const *p, int &value)
        parameter value.
     */
     
+    /* The flag _index_expression tells is non-zero if we are inside
+       an Index expression. This invokes special rules in the function
+       getArraySubset.  The counter tracks the levels of nesting of
+       index expressions.
+    */
     _index_expression++;
     Node *node = getParameter(p);
     _index_expression--;
@@ -307,7 +312,7 @@ Range Compiler::CounterRange(ParseTree const *var)
   }
 }
 
-Node * Compiler::getSubSetNode(ParseTree const *var)
+Node * Compiler::getSubsetNode(ParseTree const *var)
 {
   if (var->treeClass() != P_VAR) {
     throw logic_error("Expecting variable expression");
@@ -338,45 +343,39 @@ Node *Compiler::getArraySubset(ParseTree const *p)
 {
     Node *node = 0;
     
-    switch(p->treeClass()) {
-    case P_VALUE:
-	node = _constantfactory.getConstantNode(p->value(), _model.graph());
-	break;
-    case P_VAR:
-    {
-	Counter *counter = _countertab.getCounter(p->name()); //A counter
-	if (counter) {
-	    node = _constantfactory.getConstantNode((*counter)[0], 
-						    _model.graph());
-	}
-	else {
-	    NodeArray *array = _model.symtab().getVariable(p->name());
-	    if (array) {
-		Range subset_range = getRange(p, array->range());
-		if (!isNULL(subset_range)) {
-		    node = getSubSetNode(p); //A fixed subset
-		}
-		else if (!_index_expression) {
-		    node = getMixtureNode(p, this); //A stochastic subset
-		} 
-	    }
-	    else if (_strict_resolution) {
-		//Give an informative error message in case of failure
-		throw runtime_error(string("Unknown parameter ") + p->name());
-	    }
+    switch(p->treeClass() != P_VAR) {
+	throw logic_error("Expecting expression");
+    }
 
-	    if (!node && _index_expression) {
-		//Index expressions may depend on data in the data
-		//table, and must be calculated before any Nodes have
-		//been defined.
-		node = constFromTable(p);
+    Counter *counter = _countertab.getCounter(p->name()); //A counter
+    if (counter) {
+	node = _constantfactory.getConstantNode((*counter)[0], 
+						_model.graph());
+    }
+    else {
+	NodeArray *array = _model.symtab().getVariable(p->name());
+	if (array) {
+	    Range subset_range = getRange(p, array->range());
+	    if (!isNULL(subset_range)) {
+		node = getSubsetNode(p); //A fixed subset
 	    }
+	    else if (!_index_expression) {
+		node = getMixtureNode(p, this); //A stochastic subset
+	    } 
+	}
+	else if (_strict_resolution) {
+	    //Give an informative error message in case of failure
+	    throw runtime_error(string("Unknown parameter ") + p->name());
+	}
+	
+	if (!node && _index_expression) {
+	    //Index expressions may depend on data in the data
+	    //table, and must be calculated before any Nodes have
+	    //been defined.
+	    node = constFromTable(p);
 	}
     }
-    break;
-    default:
-	throw logic_error("Expecting value or variable expression");
-    }
+
     return node;
 }
 
@@ -516,13 +515,13 @@ Node * Compiler::allocateStochastic(ParseTree const *stoch_relation)
     ParseTree const *ll = truncated->parameters()[0];
     ParseTree const *ul = truncated->parameters()[1];
     if (ll) {
-	lBound = getArraySubset(ll);
+	lBound = getParameter(ll);
       if (!lBound) {
 	return 0;
       }
     }
     if (ul) {
-	uBound = getArraySubset(ul);
+	uBound = getParameter(ul);
       if (!uBound) {
 	return 0;
       }
