@@ -226,59 +226,59 @@ expression: var
   setParameters($$, $3);
 }
 | product {
-  $$ = new ParseTree(P_OPERATOR); $$->setOperator(OP_MULTIPLY);
-  setParameters($$, $1);
+    $$ = new ParseTree(P_FUNCTION); $$->setName("*");
+    setParameters($$, $1);
 }
 | expression '/' expression {
-  $$ = new ParseTree(P_OPERATOR); $$->setOperator(OP_DIVIDE);
-  setParameters($$, $1, $3);
+    $$ = new ParseTree(P_FUNCTION); $$->setName("/");
+    setParameters($$, $1, $3);
 }
 | sum {
-  $$ = new ParseTree(P_OPERATOR); $$->setOperator(OP_ADD);
-  setParameters($$, $1);
+    $$ = new ParseTree(P_FUNCTION); $$->setName("+");
+    setParameters($$, $1);
 }
 | expression '-' expression {
-  $$ = new ParseTree(P_OPERATOR); $$->setOperator(OP_SUBTRACT);
-  setParameters($$, $1, $3);
+    $$ = new ParseTree(P_FUNCTION); $$->setName("-");
+    setParameters($$, $1, $3);
 }
 | '-' expression %prec NEG {
-  $$ = new ParseTree(P_OPERATOR); $$->setOperator(OP_NEG);
-  setParameters($$, $2);
+    $$ = new ParseTree(P_FUNCTION); $$->setName("NEG");
+    setParameters($$, $2);
 }
 | expression GT expression {
-    $$ = new ParseTree(P_OPERATOR); $$->setOperator(OP_GT);
+    $$ = new ParseTree(P_FUNCTION); $$->setName(">");
     setParameters($$, $1, $3);
  }      
 | expression GE expression {
-    $$ = new ParseTree(P_OPERATOR); $$->setOperator(OP_GE);
+    $$ = new ParseTree(P_FUNCTION); $$->setName(">=");
     setParameters($$, $1, $3);
  }      
 | expression LT expression {
-    $$ = new ParseTree(P_OPERATOR); $$->setOperator(OP_LT);
+    $$ = new ParseTree(P_FUNCTION); $$->setName("<");
     setParameters($$, $1, $3);
  }      
 | expression LE expression {
-    $$ = new ParseTree(P_OPERATOR); $$->setOperator(OP_LE);
+    $$ = new ParseTree(P_FUNCTION); $$->setName("<=");
     setParameters($$, $1, $3);
  }      
 | expression EQ expression {
-    $$ = new ParseTree(P_OPERATOR); $$->setOperator(OP_EQ);
+    $$ = new ParseTree(P_FUNCTION); $$->setName("==");
     setParameters($$, $1, $3);
  }      
 | expression NE expression {
-    $$ = new ParseTree(P_OPERATOR); $$->setOperator(OP_NE);
+    $$ = new ParseTree(P_FUNCTION); $$->setName("!=");
     setParameters($$, $1, $3);
 }      
 | expression AND expression {
-    $$ = new ParseTree(P_OPERATOR); $$->setOperator(OP_AND);
+    $$ = new ParseTree(P_FUNCTION); $$->setName("&&");
     setParameters($$, $1, $3);
  }      
 | expression OR expression {
-    $$ = new ParseTree(P_OPERATOR); $$->setOperator(OP_OR);
+    $$ = new ParseTree(P_FUNCTION); $$->setName("||");
     setParameters($$, $1, $3);
 }
 | expression '^' expression {
-    $$ = new ParseTree(P_OPERATOR); $$->setOperator(OP_POW);
+    $$ = new ParseTree(P_FUNCTION); $$->setName("^");
     setParameters($$, $1, $3);
   }
 | expression SPECIAL expression {
