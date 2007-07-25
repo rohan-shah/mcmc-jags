@@ -77,7 +77,7 @@
 %token ENDL
 
 %type <ptree> node_dec
-%type <ptree> expression param var
+%type <ptree> expression var
 %type <ptree> relation for_loop counter
 %type <ptree> determ_relation stoch_relation  
 %type <ptree> range_element
@@ -310,15 +310,10 @@ distribution: FUNC '(' expression_list ')'
 }
 ;
 
-truncated: 'T' '(' param ','  param ')' {$$ = Truncated($3,$5);}
-| 'T' '(' ',' param ')' {$$ = Truncated(0,$4);}
-| 'T' '(' param ',' ')' {$$ = Truncated($3,0);}
+truncated: 'T' '(' expression ','  expression ')' {$$ = Truncated($3,$5);}
+| 'T' '(' ',' expression ')' {$$ = Truncated(0,$4);}
+| 'T' '(' expression ',' ')' {$$ = Truncated($3,0);}
 | 'T' '(' ',' ')' {$$ = Truncated(0,0);}
-;
-
-param: var 
-| DOUBLE {$$ = new ParseTree(P_VALUE); $$->setValue($1);}
-| '-' DOUBLE {$$ = new ParseTree(P_VALUE); $$->setValue(-$2);}
 ;
 
 var: NAME {
