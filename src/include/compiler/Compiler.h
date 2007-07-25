@@ -36,6 +36,7 @@ class Compiler {
   unsigned int _n_resolved, _n_relations;
   bool *_is_resolved;
   bool _strict_resolution;
+  bool _index_expression;
   ConstantFactory _constantfactory;
   LogicalFactory _logicalfactory;
   StochasticFactory _stochasticfactory;
@@ -43,7 +44,6 @@ class Compiler {
   std::map<std::string, std::vector<std::vector<int> > > _node_array_ranges;
 
   Node *getArraySubset(ParseTree const *t);
-  bool constantExpression(ParseTree const *p, double &value);
   Range VariableSubsetRange(ParseTree const *var);
   Range CounterRange(ParseTree const *var);
   Node* VarGetNode(ParseTree const *var);
@@ -58,10 +58,9 @@ class Compiler {
   void writeConstantData(ParseTree const *rel);
   void getArrayDim(ParseTree const *p);
   bool getLogicalParameterVector(ParseTree const *t,
-			      std::vector<Node const *> &parents);
+				 std::vector<Node const *> &parents);
   Node * getSubSetNode(ParseTree const *var);
-  double constFromTable(ParseTree const *p);
-  double constFromNode(ParseTree const *p);
+  Node * constFromTable(ParseTree const *p);
   void addDevianceNode();
 public:
   bool indexExpression(ParseTree const *t, int &value);

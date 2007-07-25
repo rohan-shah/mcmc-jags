@@ -1728,47 +1728,47 @@ yyreduce:
   case 38:
 #line 228 "parser.yy"
     {
-  (yyval.ptree) = new ParseTree(P_OPERATOR); (yyval.ptree)->setOperator(OP_MULTIPLY);
-  setParameters((yyval.ptree), (yyvsp[(1) - (1)].pvec));
+    (yyval.ptree) = new ParseTree(P_FUNCTION); (yyval.ptree)->setName("*");
+    setParameters((yyval.ptree), (yyvsp[(1) - (1)].pvec));
 }
     break;
 
   case 39:
 #line 232 "parser.yy"
     {
-  (yyval.ptree) = new ParseTree(P_OPERATOR); (yyval.ptree)->setOperator(OP_DIVIDE);
-  setParameters((yyval.ptree), (yyvsp[(1) - (3)].ptree), (yyvsp[(3) - (3)].ptree));
+    (yyval.ptree) = new ParseTree(P_FUNCTION); (yyval.ptree)->setName("/");
+    setParameters((yyval.ptree), (yyvsp[(1) - (3)].ptree), (yyvsp[(3) - (3)].ptree));
 }
     break;
 
   case 40:
 #line 236 "parser.yy"
     {
-  (yyval.ptree) = new ParseTree(P_OPERATOR); (yyval.ptree)->setOperator(OP_ADD);
-  setParameters((yyval.ptree), (yyvsp[(1) - (1)].pvec));
+    (yyval.ptree) = new ParseTree(P_FUNCTION); (yyval.ptree)->setName("+");
+    setParameters((yyval.ptree), (yyvsp[(1) - (1)].pvec));
 }
     break;
 
   case 41:
 #line 240 "parser.yy"
     {
-  (yyval.ptree) = new ParseTree(P_OPERATOR); (yyval.ptree)->setOperator(OP_SUBTRACT);
-  setParameters((yyval.ptree), (yyvsp[(1) - (3)].ptree), (yyvsp[(3) - (3)].ptree));
+    (yyval.ptree) = new ParseTree(P_FUNCTION); (yyval.ptree)->setName("-");
+    setParameters((yyval.ptree), (yyvsp[(1) - (3)].ptree), (yyvsp[(3) - (3)].ptree));
 }
     break;
 
   case 42:
 #line 244 "parser.yy"
     {
-  (yyval.ptree) = new ParseTree(P_OPERATOR); (yyval.ptree)->setOperator(OP_NEG);
-  setParameters((yyval.ptree), (yyvsp[(2) - (2)].ptree));
+    (yyval.ptree) = new ParseTree(P_FUNCTION); (yyval.ptree)->setName("NEG");
+    setParameters((yyval.ptree), (yyvsp[(2) - (2)].ptree));
 }
     break;
 
   case 43:
 #line 248 "parser.yy"
     {
-    (yyval.ptree) = new ParseTree(P_OPERATOR); (yyval.ptree)->setOperator(OP_GT);
+    (yyval.ptree) = new ParseTree(P_FUNCTION); (yyval.ptree)->setName(">");
     setParameters((yyval.ptree), (yyvsp[(1) - (3)].ptree), (yyvsp[(3) - (3)].ptree));
  }
     break;
@@ -1776,7 +1776,7 @@ yyreduce:
   case 44:
 #line 252 "parser.yy"
     {
-    (yyval.ptree) = new ParseTree(P_OPERATOR); (yyval.ptree)->setOperator(OP_GE);
+    (yyval.ptree) = new ParseTree(P_FUNCTION); (yyval.ptree)->setName(">=");
     setParameters((yyval.ptree), (yyvsp[(1) - (3)].ptree), (yyvsp[(3) - (3)].ptree));
  }
     break;
@@ -1784,7 +1784,7 @@ yyreduce:
   case 45:
 #line 256 "parser.yy"
     {
-    (yyval.ptree) = new ParseTree(P_OPERATOR); (yyval.ptree)->setOperator(OP_LT);
+    (yyval.ptree) = new ParseTree(P_FUNCTION); (yyval.ptree)->setName("<");
     setParameters((yyval.ptree), (yyvsp[(1) - (3)].ptree), (yyvsp[(3) - (3)].ptree));
  }
     break;
@@ -1792,7 +1792,7 @@ yyreduce:
   case 46:
 #line 260 "parser.yy"
     {
-    (yyval.ptree) = new ParseTree(P_OPERATOR); (yyval.ptree)->setOperator(OP_LE);
+    (yyval.ptree) = new ParseTree(P_FUNCTION); (yyval.ptree)->setName("<=");
     setParameters((yyval.ptree), (yyvsp[(1) - (3)].ptree), (yyvsp[(3) - (3)].ptree));
  }
     break;
@@ -1800,7 +1800,7 @@ yyreduce:
   case 47:
 #line 264 "parser.yy"
     {
-    (yyval.ptree) = new ParseTree(P_OPERATOR); (yyval.ptree)->setOperator(OP_EQ);
+    (yyval.ptree) = new ParseTree(P_FUNCTION); (yyval.ptree)->setName("==");
     setParameters((yyval.ptree), (yyvsp[(1) - (3)].ptree), (yyvsp[(3) - (3)].ptree));
  }
     break;
@@ -1808,7 +1808,7 @@ yyreduce:
   case 48:
 #line 268 "parser.yy"
     {
-    (yyval.ptree) = new ParseTree(P_OPERATOR); (yyval.ptree)->setOperator(OP_NE);
+    (yyval.ptree) = new ParseTree(P_FUNCTION); (yyval.ptree)->setName("!=");
     setParameters((yyval.ptree), (yyvsp[(1) - (3)].ptree), (yyvsp[(3) - (3)].ptree));
 }
     break;
@@ -1816,7 +1816,7 @@ yyreduce:
   case 49:
 #line 272 "parser.yy"
     {
-    (yyval.ptree) = new ParseTree(P_OPERATOR); (yyval.ptree)->setOperator(OP_AND);
+    (yyval.ptree) = new ParseTree(P_FUNCTION); (yyval.ptree)->setName("&&");
     setParameters((yyval.ptree), (yyvsp[(1) - (3)].ptree), (yyvsp[(3) - (3)].ptree));
  }
     break;
@@ -1824,7 +1824,7 @@ yyreduce:
   case 50:
 #line 276 "parser.yy"
     {
-    (yyval.ptree) = new ParseTree(P_OPERATOR); (yyval.ptree)->setOperator(OP_OR);
+    (yyval.ptree) = new ParseTree(P_FUNCTION); (yyval.ptree)->setName("||");
     setParameters((yyval.ptree), (yyvsp[(1) - (3)].ptree), (yyvsp[(3) - (3)].ptree));
 }
     break;
@@ -1832,7 +1832,7 @@ yyreduce:
   case 51:
 #line 280 "parser.yy"
     {
-    (yyval.ptree) = new ParseTree(P_OPERATOR); (yyval.ptree)->setOperator(OP_POW);
+    (yyval.ptree) = new ParseTree(P_FUNCTION); (yyval.ptree)->setName("^");
     setParameters((yyval.ptree), (yyvsp[(1) - (3)].ptree), (yyvsp[(3) - (3)].ptree));
   }
     break;

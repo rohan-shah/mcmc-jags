@@ -5,15 +5,9 @@
 #include <vector>
 
 enum TreeClass { 
-  P_VAR, P_RANGE, P_OPERATOR, P_BOUNDS, P_DENSITY, P_LINK, P_COUNTER, 
-  P_VALUE, P_STOCHREL, P_DETRMREL, P_FOR,  P_FUNCTION, P_RELATIONS,
-  P_VECTOR, P_ARRAY
-};
-
-enum Operator {
-    OP_ADD, OP_SUBTRACT, OP_MULTIPLY, OP_DIVIDE, OP_NEG, OP_OR,
-    OP_AND, OP_NOT, OP_GT, OP_GE, OP_LT, OP_LE, OP_EQ, OP_NE, OP_POW,
-    OP_NONE
+    P_VAR, P_RANGE, P_BOUNDS, P_DENSITY, P_LINK, P_COUNTER, 
+    P_VALUE, P_STOCHREL, P_DETRMREL, P_FOR,  P_FUNCTION, P_RELATIONS,
+    P_VECTOR, P_ARRAY
 };
 
 /**
@@ -39,7 +33,6 @@ class ParseTree {
   ParseTree const *_parent;
   std::string _name;
   double _value;
-  Operator _operator;
 public:
   /**
    * Constructor, which sets the treeClass of the ParseTree node.  The
@@ -54,9 +47,9 @@ public:
   ~ParseTree();
 
   /**
-   * Sets the name, which can later be queried with
-   * ParrseTree::name().  The treeClass of the ParseTree node must be
-   * one of P_VAR, P_COUNTER, P_FUNCTION, P_DISTRIBUTION, P_LINK, or P_ARRAY
+   * Sets the name, which can later be queried with ParseTree#name.
+   * The treeClass of the ParseTree node must be one of P_VAR,
+   * P_COUNTER, P_FUNCTION, P_DISTRIBUTION, P_LINK, or P_ARRAY
    */
   void setName(std::string const &name);
   /**
@@ -64,11 +57,6 @@ public:
    * The treeClass of the ParseTree node must be P_VALUE.
    */
   void setValue(double value);
-  /**
-   * Sets the operator, which can later be queried with
-   * ParseTree::getOperator().  The treeClass must be P_OPERATOR.
-   */
-  void setOperator(Operator op);
   /** 
    * Sets the parameters. As a side effect, "this" becomes the parent
    * node of each of the parameters.
@@ -97,12 +85,6 @@ public:
    * Returns the value for a ParseTree with treeClass P_VALUE.
    */
   double value() const;
-  /**
-   * Returns the operator for a ParseTree with treeClass P_OPERATOR.
-   * Note that the functionsn is called getOperator, because the name
-   * "operator" is reserved.
-   */
-  Operator getOperator() const;
 };
 
 #endif /* PARSE_TREE_H_ */

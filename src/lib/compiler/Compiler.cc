@@ -63,215 +63,74 @@ static long asInteger(double fval)
   return ival;
 }
 
-double Compiler::constFromTable(ParseTree const *p)
+Node * Compiler::constFromTable(ParseTree const *p)
 {
     // Try evaluating constant expression from data table
     map<string,SArray>::const_iterator i = _data_table.find(p->name());
     if (i == _data_table.end()) {
-	return JAGS_NA;
+	return 0;
     }
-    Range subset_range = getRange(p, i->second.range());
+    SArray const &sarray = i->second;
+    Range subset_range = getRange(p, sarray.range());
     if (isNULL(subset_range)) {
-	return JAGS_NA;
+	return 0;
     }
     else {
 	// Range expression successfully evaluated
 	if (subset_range.length() > 1) {
+            /*
 	    throw runtime_error(string("Vector value ") + p->name() +
 				print(subset_range) + 
-                                " in constant expression");
+				" in constant expression");
+            */
+            return 0;
 	}
-	long offset = i->second.range().leftOffset(subset_range.lower());
-	return i->second.value()[offset];
-    }
-}
-
-double Compiler::constFromNode(ParseTree const*p)
-{
-    //Evaluate constant expression if it corresponds to a node with
-    //a fixed value
-
-    NodeArray *array = _model.symtab().getVariable(p->name());
-    if (!array) {
-	return JAGS_NA;
-    }
-    Range subset_range = getRange(p, array->range());
-    if (isNULL(subset_range)) {
-	return JAGS_NA;
-    }
-    else if (subset_range.length() > 1) {
-	throw runtime_error(string("Vector value ") + p->name() +
-			    print(subset_range) + " in constant expression");
-    }
-    else {
-	Node *node = array->getSubset(subset_range, _model.graph());
-	if (node && node->isObserved()) {
-	    return *node->value(0);
+	unsigned int offset = sarray.range().leftOffset(subset_range.lower());  
+	double value = sarray.value()[offset];
+	if (value != JAGS_NA) {
+	    return _constantfactory.getConstantNode(value, _model.graph());
 	}
 	else {
-	    return JAGS_NA;
+	    return 0;
 	}
-    }
-}
-
-
-bool Compiler::constantExpression(ParseTree const *p, double &value)
-{
-    /* 
-       Try to evaluate a constant expression.  An expression can
-       only be evaluated if it is a function of
-       1) Counters, or
-       2) a value given in the data table, or
-       3) a fixed Node.
-       Functions are not allowed, but inline operators ("*", "/", "+", "-") 
-       are.
-
-       If the expression can be evaluated, then we return true and the
-       expression value is written to the value argument. If it cannot
-       be evaluated (because it depends on missing data) then we return
-       false.
-    */
-    Counter *counter;
-    double arg1, arg2;
-    vector<ParseTree*> const &parameters = p->parameters();
-
-    switch (p->treeClass()) {
-    case P_VAR: 
-	// Is it a counter?
-	counter = _countertab.getCounter(p->name());
-	if (counter) {
-	    value = (*counter)[0];
-	    return true;
-	}
-	else {
-	    // Is it a variable? Try reading value from the data table
-	    value = constFromTable(p);
-	    if (value != JAGS_NA) {
-		return true;
-	    }
-	    else {
-		// Failing that, see if it is a node with a fixed value
-		value = constFromNode(p);
-		return (value != JAGS_NA);
-	    }
-	}
-	break;
-    case P_VALUE:
-	value =  p->value();
-	return true;
-	break;
-    case P_OPERATOR:
-	switch(p->getOperator()) {
-	case OP_ADD:
-	    if (parameters.size() < 2) {
-		throw logic_error("ADD must have at least two arguments in constant expression");
-	    }
-	    arg1 = 0;
-	    for (unsigned int i = 0; i < parameters.size(); ++i) {
-		if (!constantExpression(parameters[i], arg2)) {
-		    return false;
-		}
-		arg1 += arg2;
-	    }
-	    value = arg1;
-	    return true;
-	    break;
-	case OP_SUBTRACT:
-	    if (parameters.size() != 2) {
-		throw logic_error("SUBTRACT must have two arguments in constant expression");
-	    }
-	    if (!constantExpression(parameters[0], arg1)) {
-		return false;
-	    }
-	    if (!constantExpression(parameters[1], arg2)) {
-		return false;
-	    }
-	    value = arg1 - arg2;
-	    return true;
-	    break;
-	case OP_MULTIPLY:
-	    if (parameters.size() < 2) {
-		throw logic_error("MULTIPLY must have at least two arguments in constant expression");
-	    }
-	    arg1 = 1;
-	    for (unsigned int i = 0; i < parameters.size(); ++i) {
-		if (!constantExpression(parameters[i], arg2)) {
-		    return false;
-		}
-		arg1 *= arg2;
-	    }
-	    value = arg1;
-	    return true;
-	    break;
-	case OP_DIVIDE:
-	    if (parameters.size() != 2) {
-		throw logic_error("DIVIDE must have two arguments in constant expression");
-	    }
-	    if (!constantExpression(parameters[0], arg1)) {
-		return false;
-	    }
-	    if (!constantExpression(parameters[1], arg2)) {
-		return false;
-	    }
-	    value = arg1/arg2;
-	    return true;
-	    break;
-	case OP_NEG:
-	    if (parameters.size() != 1) {
-		throw logic_error("NEG must have 1 argument in constant expression");
-	    }
-	    if (!constantExpression(parameters[0], arg1)) {
-		return false;
-	    }
-	    value = -arg1;
-	    return true;
-	    break;
-	case OP_OR:
-	case OP_AND:
-	case OP_NOT:
-	case OP_GT:
-	case OP_GE:
-	case OP_LT:
-	case OP_LE:
-	case OP_EQ:
-	case OP_NE:
-	case OP_POW:
-	case OP_NONE:
-	    throw logic_error("Bad constant expression");
-	    break;
-	}
-	return false;
-	break;
-    default:
-	throw logic_error("Expected variable, value or expression");
     }
 }
 
 bool Compiler::indexExpression(ParseTree const *p, int &value)
 {
-  /* 
-     Evaluate an index expression.
-     
-     Index expressions occur in three contexts:
-     1) In the limits of a "for" loop
-     2) On the left hand side of a relation
-     3) On the right hand side of a relation
-     
-     In cases 1) and 2) we expect to be able to evaluate the index
-     expression, and an exception will be thrown if it cannot be
-     evaluated (strict == true). In case 3) it is not an error if an
-     index expression cannot be evaluated (strict == false), but we try
-     anyway for efficiency reasons.
-  */
+    /* 
+       Evaluates an index expression.
 
-  double fvalue;
-  if (!constantExpression(p, fvalue)) {
-    return false;
-  }
-  else {
-    value = asInteger(fvalue);
-    return true;
-  }
+       Index expressions occur in three contexts:
+       1) In the limits of a "for" loop
+       2) On the left hand side of a relation
+       3) On the right hand side of a relation
+     
+       They are scalar, integer-valued, constant expressions.  We
+       return true on success and the result is written to the
+       parameter value.
+    */
+    
+    _index_expression = true;
+    Node *node = getParameter(p);
+    _index_expression = false;
+
+    if (!node) {
+	return false;
+    }
+    vector<unsigned int> const &dim = node->dim();
+    if (dim.size() != 1 || dim[0] != 1) {
+	string msg = string("Vector value in index expression:\n") + 
+	    node->name(_model.symtab());
+	throw runtime_error(msg);
+    }
+    if (node->isObserved()) {
+	value = asInteger(node->value(0)[0]);
+	return true;
+    }
+    else {
+	return false;
+    }
 }
 
 Range Compiler::getRange(ParseTree const *p, Range const &default_range)
@@ -476,37 +335,48 @@ Node * Compiler::getSubSetNode(ParseTree const *var)
 
 Node *Compiler::getArraySubset(ParseTree const *p)
 {
-  Node *node = 0;
-
-  switch(p->treeClass()) {
-  case P_VALUE:
-      node = _constantfactory.getConstantNode(p->value(), _model.graph());
-    break;
-  case P_VAR:
+    Node *node = 0;
+    
+    switch(p->treeClass()) {
+    case P_VALUE:
+	node = _constantfactory.getConstantNode(p->value(), _model.graph());
+	break;
+    case P_VAR:
     {
-      Counter *counter = _countertab.getCounter(p->name()); //A counter
-      if (counter) {
-	node = _constantfactory.getConstantNode((*counter)[0], _model.graph());
-      }
-      else {
-	NodeArray *array = _model.symtab().getVariable(p->name());
-	if (array == 0) {
-	  throw runtime_error(string("Unknown parameter ") + p->name());
+	Counter *counter = _countertab.getCounter(p->name()); //A counter
+	if (counter) {
+	    node = _constantfactory.getConstantNode((*counter)[0], 
+						    _model.graph());
 	}
-	Range subset_range = getRange(p, array->range());
-	if (isNULL(subset_range)) {
-	  node = getMixtureNode(p, this); //A stochastic subset
-	} 
 	else {
-	  node = getSubSetNode(p); //A fixed subset
-	} 
-      }
+	    NodeArray *array = _model.symtab().getVariable(p->name());
+	    if (array) {
+		Range subset_range = getRange(p, array->range());
+		if (!isNULL(subset_range)) {
+		    node = getSubSetNode(p); //A fixed subset
+		}
+		else if (!_index_expression) {
+		    node = getMixtureNode(p, this); //A stochastic subset
+		} 
+	    }
+	    else if (_strict_resolution) {
+		//Give an informative error message in case of failure
+		throw runtime_error(string("Unknown parameter ") + p->name());
+	    }
+
+	    if (!node && _index_expression) {
+		//Index expressions may depend on data in the data
+		//table, and must be calculated before any Nodes have
+		//been defined.
+		node = constFromTable(p);
+	    }
+	}
     }
     break;
-  default:
-    throw logic_error("Expecting value or variable expression");
-  }
-  return node;
+    default:
+	throw logic_error("Expecting value or variable expression");
+    }
+    return node;
 }
 
 static Function const *getLink(ParseTree const *t, FuncTab const &functab)
@@ -528,75 +398,16 @@ static Function const *getLink(ParseTree const *t, FuncTab const &functab)
 
 static Function const *getFunction(ParseTree const *t, FuncTab const &functab)
 {
-    Function const *func = 0;
-  
-    switch (t->treeClass()) {
-    case P_FUNCTION:
-	func = functab.find(t->name());
-	if (func == 0) {
-	    string msg("Unable to find function ");
-	    msg.append(t->name());
-	    throw runtime_error(msg);
-	}    
-	break;
-    case P_OPERATOR:
-	switch(t->getOperator()) {
-	case OP_ADD:
-	    func = functab.find("+");
-	    break;
-	case OP_SUBTRACT:
-	    func = functab.find("-");
-	    break;
-	case OP_MULTIPLY:
-	    func = functab.find("*");
-	    break;
-	case OP_DIVIDE:
-	    func = functab.find("/");
-	    break;
-	case OP_NEG:
-	    func = functab.find("NEG");
-	    break;
-	case OP_OR:
-	    func = functab.find("|");
-	    break;
-	case OP_AND:
-	    func = functab.find("&");
-	    break;
-	case OP_NOT:
-	    func = functab.find("!");
-	    break;
-	case OP_GT:
-	    func = functab.find(">");
-	    break;
-	case OP_GE:
-	    func = functab.find(">=");
-	    break;
-	case OP_LT:
-	    func = functab.find("<");
-	    break;
-	case OP_LE:
-	    func = functab.find("<=");
-	    break;
-	case OP_EQ:
-	    func = functab.find("==");
-	    break;
-	case OP_NE:
-	    func = functab.find("!=");
-	    break;
-	case OP_POW:
-	    func = functab.find("^");
-	    break;
-	case OP_NONE:
-	    throw logic_error("Bad operator expression");
-	    break;
-	}
-	if (func == 0) {
-	    throw logic_error("Unable to find operator");
-	}
-	break;
-    default:
-	throw logic_error("Malformed parse tree: Expected expression");
-    }
+    if (t->treeClass() != P_FUNCTION) 
+	throw logic_error("Malformed parse tree: Expected function");
+
+    Function const *func = functab.find(t->name());
+    if (func == 0) {
+	string msg("Unable to find function ");
+	msg.append(t->name());
+	throw runtime_error(msg);
+    }    
+
     return func;
 }
 
@@ -634,9 +445,10 @@ Node* Compiler::getParameter(ParseTree const *t)
     case P_VAR:
 	node = getArraySubset(t);
 	break;
-    case P_FUNCTION: case P_OPERATOR:
+    case P_FUNCTION: 
 	if (getLogicalParameterVector(t, parents)) {
-	    node = _logicalfactory.getLogicalNode(getFunction(t, funcTab()), parents, _model.graph());
+	    node = _logicalfactory.getLogicalNode(getFunction(t, funcTab()), 
+						  parents, _model.graph());
 	}
 	break;
     default:
@@ -660,9 +472,9 @@ bool Compiler::getLogicalParameterVector(ParseTree const *t,
   }
 
   switch (t->treeClass()) {
-  case P_FUNCTION: case P_LINK: case P_OPERATOR:
+  case P_FUNCTION: case P_LINK:
     for (unsigned int i = 0; i < t->parameters().size(); ++i) {
-      Node *node = getParameter(t->parameters()[i]);
+	Node *node = getParameter(t->parameters()[i]);
       if (node) {
 	parents.push_back(node);
       }
@@ -688,7 +500,7 @@ Node * Compiler::allocateStochastic(ParseTree const *stoch_relation)
   // Create the parameter vector
   vector<ParseTree*> const &param_list = distribution->parameters();
   for (unsigned int i = 0; i < param_list.size(); ++i) {
-    Node *param = getParameter(param_list[i]);
+      Node *param = getParameter(param_list[i]);
     if (param) {
       parameters.push_back(param);
     }
@@ -703,13 +515,13 @@ Node * Compiler::allocateStochastic(ParseTree const *stoch_relation)
     ParseTree const *ll = truncated->parameters()[0];
     ParseTree const *ul = truncated->parameters()[1];
     if (ll) {
-      lBound = getArraySubset(ll);
+	lBound = getArraySubset(ll);
       if (!lBound) {
 	return 0;
       }
     }
     if (ul) {
-      uBound = getArraySubset(ul);
+	uBound = getArraySubset(ul);
       if (!uBound) {
 	return 0;
       }
@@ -770,11 +582,11 @@ Node * Compiler::allocateLogical(ParseTree const *rel)
     /* The reason we aren't using a ConstantFactory here is to ensure
        that the nodes are correctly named */
     break;
-  case P_VAR: case P_FUNCTION: case P_OPERATOR:
-    node = getParameter(expression);
+  case P_VAR: case P_FUNCTION: 
+      node = getParameter(expression);
     break;
   case P_LINK:
-    if (getLogicalParameterVector(expression, parents)) {
+      if (getLogicalParameterVector(expression, parents)) {
       node = _logicalfactory.getLogicalNode(getLink(expression, funcTab()), 
 					    parents, _model.graph());
     }
@@ -989,6 +801,7 @@ Compiler::Compiler(BUGSModel &model, map<string, SArray> const &data_table)
     : _model(model), _countertab(), 
       _data_table(data_table), _n_resolved(0), 
       _n_relations(0), _is_resolved(0), _strict_resolution(false),
+      _index_expression(false),
       _constantfactory(model.nchain())
 {
   if (_model.graph().size() != 0)
