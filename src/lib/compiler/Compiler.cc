@@ -71,6 +71,7 @@ Node * Compiler::constFromTable(ParseTree const *p)
 	return 0;
     }
     SArray const &sarray = i->second;
+
     Range subset_range = getRange(p, sarray.range());
     if (isNULL(subset_range)) {
 	return 0;
@@ -78,12 +79,12 @@ Node * Compiler::constFromTable(ParseTree const *p)
     else {
 	// Range expression successfully evaluated
 	if (subset_range.length() > 1) {
-            /*
+
 	    throw runtime_error(string("Vector value ") + p->name() +
 				print(subset_range) + 
-				" in constant expression");
-            */
-            return 0;
+				" in index expression");
+
+            //return 0;
 	}
 	unsigned int offset = sarray.range().leftOffset(subset_range.lower());  
 	double value = sarray.value()[offset];
@@ -111,9 +112,9 @@ bool Compiler::indexExpression(ParseTree const *p, int &value)
        parameter value.
     */
     
-    _index_expression = true;
+    _index_expression++;
     Node *node = getParameter(p);
-    _index_expression = false;
+    _index_expression--;
 
     if (!node) {
 	return false;
@@ -801,7 +802,7 @@ Compiler::Compiler(BUGSModel &model, map<string, SArray> const &data_table)
     : _model(model), _countertab(), 
       _data_table(data_table), _n_resolved(0), 
       _n_relations(0), _is_resolved(0), _strict_resolution(false),
-      _index_expression(false),
+      _index_expression(0),
       _constantfactory(model.nchain())
 {
   if (_model.graph().size() != 0)

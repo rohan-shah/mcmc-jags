@@ -36,7 +36,7 @@ class Compiler {
   unsigned int _n_resolved, _n_relations;
   bool *_is_resolved;
   bool _strict_resolution;
-  bool _index_expression;
+  int _index_expression;
   ConstantFactory _constantfactory;
   LogicalFactory _logicalfactory;
   StochasticFactory _stochasticfactory;
