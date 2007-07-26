@@ -20,6 +20,7 @@ string const & Function::name () const
 }
 
 bool Function::checkParameterValue(vector<double const *> const &args,
+                                   vector<unsigned int> const &lengths,
 			           vector<vector<unsigned int> > const &dims)
 const
 {
