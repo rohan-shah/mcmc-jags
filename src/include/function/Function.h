@@ -46,8 +46,10 @@ public:
      * the dimension of value.
      */
     virtual void
-	evaluate(double *value, std::vector<double const *> const &args,
-		 std::vector<std::vector<unsigned int> > const &dim) const = 0;
+	evaluate(double *value, 
+		 std::vector<double const *> const &args,
+		 std::vector<unsigned int> const &lengths,
+		 std::vector<std::vector<unsigned int> > const &dims) const = 0;
     /**
      * Checks that a vector of parameters of length npar is consistent
      * with the function.
@@ -72,6 +74,7 @@ public:
      */
     virtual bool
 	checkParameterValue(std::vector <double const *> const &args,
+			    std::vector <unsigned int> const &lengths,
                             std::vector<std::vector<unsigned int> > const &dims) 
         const;
     /**

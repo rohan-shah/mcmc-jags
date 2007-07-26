@@ -18,8 +18,9 @@ public:
      * Implementation of the virtual function Function#evaluate, which
      * calls ScalarFunc#eval.
      */
-    void evaluate(double *value,
+    void evaluate(double *value, 
 		  std::vector <double const *> const &args,
+		  std::vector <unsigned int> const &lengths,
                   std::vector<std::vector<unsigned int> > const &dims) const;
     /**
      * Scalar functions need to implement this simplified function,
@@ -42,6 +43,7 @@ public:
      * simplified version below.
      */
     bool checkParameterValue(std::vector<double const *> const &args,
+                             std::vector<unsigned int> const &lengths,
 			     std::vector<std::vector<unsigned int> > const &dim)
 	const;
     /**
