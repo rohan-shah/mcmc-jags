@@ -16,9 +16,9 @@ Transpose::evaluate (double *value, vector<double const *> const &args,
                      vector<vector<unsigned int> > const &dims) const
 {
     unsigned int nrow = dims[0][0];
-    unsigned int ncol = dims[0][1];
+    unsigned int ncol = dims[0].size() == 2 ? dims[0][1] : 1;
     for (unsigned int i = 0; i < lengths[0]; ++i) {
-	value[i] = value[(i / ncol) + (i % ncol) * nrow];
+	value[i] = args[0][(i / ncol) + (i % ncol) * nrow];
     }
 }
 
@@ -26,7 +26,7 @@ vector<unsigned int>
 Transpose::dim (vector <vector<unsigned int> > const &dims) const
 {
     vector<unsigned int> ans(2);
-    ans[0] = dims[0][1];
+    ans[0] = dims[0].size() == 2 ? dims[0][1] : 1;
     ans[1] = dims[0][0];
     return ans;
 }
@@ -34,5 +34,5 @@ Transpose::dim (vector <vector<unsigned int> > const &dims) const
 bool 
 Transpose::checkParameterDim (vector <vector<unsigned int> > const &dims) const
 {
-    return isMatrix(dims[0]);
+    return dims[0].size() == 1 || dims[0].size() == 2;
 }

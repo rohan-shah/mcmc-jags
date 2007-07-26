@@ -79,5 +79,9 @@ inline bool isSquareMatrix(std::vector<unsigned int> const &dim)
  */
 unsigned int product(std::vector<unsigned int> const &arg);
 
+/**
+ * Drops redundant dimensions
+ */
+std::vector<unsigned int> drop(std::vector<unsigned int> const &dims);
 
 #endif /* UTIL_H_ */

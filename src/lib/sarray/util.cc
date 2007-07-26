@@ -14,3 +14,16 @@ unsigned int product(vector<unsigned int> const &x)
    }
    return y;
 }
+
+vector<unsigned int> drop(vector<unsigned int> const &dims)
+{
+    vector<unsigned int> ans;
+    for (unsigned int i = 0; i < dims.size(); ++i) {
+	if (dims[i] > 1) 
+	    ans.push_back(dims[i]);
+    }
+    if (ans.empty())
+	ans.push_back(1);
+
+    return ans;
+}
