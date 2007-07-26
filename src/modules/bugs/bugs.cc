@@ -49,6 +49,7 @@
 #include <functions/Mean.h>
 #include <functions/Mexp.h>
 #include <functions/Min.h>
+#include <functions/MatMult.h>
 #include <functions/Phi.h>
 #include <functions/Pow.h>
 #include <functions/Probit.h>
@@ -121,6 +122,7 @@ BUGSModule::BUGSModule() {
     insert(new LogFact);
     insert(new LogGam);
     insert(new Logit);
+    insert(new MatMult);
     insert(new Max);
     insert(new Mean);
     insert(new Mexp);
