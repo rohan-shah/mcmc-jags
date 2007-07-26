@@ -53,7 +53,20 @@ MatMult::dim (vector <vector<unsigned int> > const &dims) const
 	ans[1] = dims[1][1];
     }
 
-    return ans;
+    /* Drop redundant dimensions
+ *     FIXME: There should be a generic mechanism for doing this
+ *     
+ *     */
+
+    if (ans[0] == 1) {
+        return vector<unsigned int>(1, ans[1]);
+    }
+    else if (ans[1] == 1) {
+        return vector<unsigned int> (1, ans[0]);
+    }
+    else {
+       return ans;
+    }
 }
 
 bool 

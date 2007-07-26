@@ -62,6 +62,7 @@
 #include <functions/Sqrt.h>
 #include <functions/Step.h>
 #include <functions/Sum.h>
+#include <functions/Transpose.h>
 #include <functions/Trunc.h>
 
 #include <samplers/ConjugateFactory.h>
@@ -139,6 +140,7 @@ BUGSModule::BUGSModule() {
     insert(new Sqrt);
     insert(new Step);
     insert(new Sum);
+    insert(new Transpose);
     insert(new Trunc);
 
     insert(new MNormalFactory);
