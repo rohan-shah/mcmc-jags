@@ -9,11 +9,11 @@ Prod::Prod () : Function("prod", 1)
 }
 
 void Prod::evaluate(double *x, vector <double const *> const &args,
-	      vector<vector<unsigned int> > const &dims) const
+		    vector<unsigned int> const &lengths,
+		    vector<vector<unsigned int> > const &dims) const
 {
     double value = args[0][0];
-    unsigned int len = product(dims[0]);
-    for (unsigned int i = 1; i < len; ++i) {
+    for (unsigned int i = 1; i < lengths[0]; ++i) {
 	value *= args[0][i];
     }
     *x = value;

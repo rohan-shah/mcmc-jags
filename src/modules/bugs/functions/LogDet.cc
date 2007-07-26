@@ -13,6 +13,7 @@ LogDet::LogDet ()
 }
 
 void LogDet::evaluate (double *x, vector<double const *> const &args,
+		       vector<unsigned int> const &lengths,
                        vector<vector<unsigned int> > const &dims) const
 {
   *x = logdet(args[0], dims[0][0]);

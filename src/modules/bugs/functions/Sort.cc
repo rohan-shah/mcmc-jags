@@ -16,13 +16,13 @@ Sort::Sort ()
 }
 
 void Sort::evaluate (double *value, vector <double const *> const &args,
+		     vector<unsigned int> const &lengths, 
                      vector<vector<unsigned int> > const &dims) const
 {
-  unsigned int len = product(dims[0]);
-  for (unsigned int i = 0; i < len; ++i) {
+  for (unsigned int i = 0; i < lengths[0]; ++i) {
     value[i] = args[0][i];
   }
-  sort(value, value + len);
+  sort(value, value + lengths[0]);
 }
 
 vector<unsigned int>  Sort::dim (vector <vector<unsigned int> > const &dims) const

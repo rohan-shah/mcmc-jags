@@ -2,7 +2,6 @@
 #define FUNC_SUM_H_
 
 #include <function/Function.h>
-
 /**
  * @short Sum of an array
  * Sum calculates the sum of the elements of an array
@@ -16,6 +15,7 @@ class Sum : public Function
 public:
   Sum ();
   void evaluate (double *x, std::vector <double const *> const &args,
+		 std::vector<unsigned int> const &lengths,
 		 std::vector<std::vector<unsigned int> > const &dims) const;
   bool checkParameterDim (std::vector<std::vector<unsigned int> > const &dims)
       const;

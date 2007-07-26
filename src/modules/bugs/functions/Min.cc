@@ -14,18 +14,13 @@ Min::Min ()
 }
 
 void Min::evaluate(double *value,  vector<double const *> const &args,
-                     vector<vector<unsigned int> > const &dims) const
+		   vector<unsigned int> const &lengths,
+		   vector<vector<unsigned int> > const &dims) const
 {
-  double ans;
-  for (unsigned int i = 0; i < args.size(); ++i) {
-    unsigned int len = product(dims[i]);
-    double mini = *min_element(args[i], args[i] + len);
-    if (i == 0) {
-      ans = mini;
-    }
-    else {
-      ans = min(ans, mini);
-    }
+  double ans = *min_element(args[0], args[0] + lengths[0]);
+  for (unsigned int i = 1; i < args.size(); ++i) {
+    double mini = *min_element(args[i], args[i] + lengths[i]);
+    ans = min(ans, mini);
   }
   *value = ans;
 }

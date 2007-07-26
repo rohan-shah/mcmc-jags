@@ -17,6 +17,7 @@ Rank::Rank ()
 }
 
 void Rank::evaluate(double *value, vector<double const *> const &args,
+		    vector<unsigned int> const &lengths,
                     vector<vector<unsigned int> > const &dims) const
 {
   long len = product(dims[0]);

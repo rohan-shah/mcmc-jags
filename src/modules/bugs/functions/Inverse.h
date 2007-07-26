@@ -13,8 +13,8 @@ class Inverse:public Function
 {
 public:
     Inverse ();
-    void evaluate (double *value,
-		   std::vector <double const *> const &args,
+    void evaluate (double *value, std::vector <double const *> const &args,
+		   std::vector<unsigned int> const &lengths,
 		   std::vector<std::vector<unsigned int> > const &dims) const;
     std::vector<unsigned int> 
 	dim(std::vector<std::vector<unsigned int> > const &args) const;

@@ -48,8 +48,10 @@ LogicalNode::LogicalNode(Function const *function,
 {
   
     _dims.reserve(parameters.size());
+    _lengths.reserve(parameters.size());
     for (unsigned int j = 0; j < parameters.size(); ++j) {
 	_dims.push_back(parameters[j]->dim());
+	_lengths.push_back(parameters[j]->length());
     }
 
     for (unsigned int n = 0; n < nchain(); ++n) {
@@ -95,10 +97,10 @@ string LogicalNode::name(NodeNameTab const &name_table) const
 
 void LogicalNode::deterministicSample(unsigned int chain)
 {
-  if (!_func->checkParameterValue(_parameters[chain], _dims)) {
+  if (!_func->checkParameterValue(_parameters[chain], _lengths, _dims)) {
     throw NodeError(this, "Invalid parameter values for LogicalNode");
   }
-  _func->evaluate(_data + chain * _length, _parameters[chain], _dims);
+  _func->evaluate(_data + chain * _length, _parameters[chain], _lengths, _dims);
 }
 
 LogicalNode const *asLogical(Node const *node)
@@ -155,5 +157,5 @@ bool LogicalNode::isScale(std::set<Node const *> const &parameters, bool fixed) 
 
 bool LogicalNode::checkParentValues(unsigned int chain) const
 {
-    return _func->checkParameterValue(_parameters[chain], _dims);
+    return _func->checkParameterValue(_parameters[chain], _lengths, _dims);
 }

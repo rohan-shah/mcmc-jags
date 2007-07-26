@@ -10,6 +10,7 @@ Inverse::Inverse ():Function ("inverse", 1)
 }
 
 void Inverse::evaluate (double *value, vector<double const *> const &args,
+			vector<unsigned int> const &lengths,
                         vector<vector<unsigned int> > const &dims) const
 {
     inverse (value, args[0], dims[0][0], false);

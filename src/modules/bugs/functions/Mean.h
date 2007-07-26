@@ -16,6 +16,7 @@ class Mean : public Function
 public:
     Mean ();
     void evaluate(double *x, std::vector<double const *> const &args,
+		  std::vector<unsigned int> const &lengths,
 		  std::vector<std::vector<unsigned int> > const &dims) const;
     bool checkParameterDim (std::vector<std::vector<unsigned int> > const &dims) const;
     bool isLinear(std::vector<bool> const &mask,

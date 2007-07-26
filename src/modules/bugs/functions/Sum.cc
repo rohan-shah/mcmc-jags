@@ -9,11 +9,11 @@ Sum::Sum () : Function("sum", 1)
 }
 
 void Sum::evaluate(double *x, vector <double const *> const &args,
-	      vector<vector<unsigned int> > const &dims) const
+		   vector<unsigned int> const &lengths,
+		   vector<vector<unsigned int> > const &dims) const
 {
-    double value = 0;
-    unsigned int len = product(dims[0]);
-    for (unsigned long i = 0; i < len; ++i) {
+    double value = args[0][0];
+    for (unsigned long i = 1; i < lengths[0]; ++i) {
 	value += args[0][i];
     }
     *x = value;

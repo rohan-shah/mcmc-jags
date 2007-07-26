@@ -10,14 +10,14 @@ Mean::Mean ()
 }
 
 void Mean::evaluate (double *x, vector<double const*> const &args,
+		     vector<unsigned int> const &lengths,
                      vector<vector<unsigned int> > const &dims) const
 {
-    unsigned int len = product(dims[0]);
     double svalue = 0;
-    for (unsigned int i = 0; i < len; i++) {
-       svalue += args[0][i];
+    for (unsigned int i = 0; i < lengths[0]; i++) {
+	svalue += args[0][i];
     }
-    svalue /= len;
+    svalue /= lengths[0];
     *x = svalue;
 }
 

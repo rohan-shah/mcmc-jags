@@ -1,5 +1,4 @@
 #include <config.h>
-#include <sarray/util.h>
 #include "SD.h"
 
 #include <cmath>
@@ -13,23 +12,23 @@ SD::SD ()
 }
 
 void SD::evaluate (double *x, vector<double const *>const &args,
+		   vector<unsigned int> const &lengths,
 		   vector<vector<unsigned int> > const &dims) const
 {
-    unsigned int len = product(dims[0]);
     double svalue = 0;
-    if (len > 1) {
+    if (lengths[0] > 1) {
 	unsigned int i;
 	double sum = 0;
-	for (unsigned i = 0; i < len; i++) {
+	for (unsigned i = 0; i < lengths[0]; i++) {
 	    sum += args[0][i];
 	}
-	double mean = sum / len;
+	double mean = sum / lengths[0];
 
 	double var = 0;
-	for (i = 0; i < len; i++) {
+	for (i = 0; i < lengths[0]; i++) {
 	    var += (args[0][i] - mean) * (args[0][i] - mean);
 	}
-	svalue = sqrt (var / len);
+	svalue = sqrt (var / lengths[0]);
     }
     *x = svalue;
 }

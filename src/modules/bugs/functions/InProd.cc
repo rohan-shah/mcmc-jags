@@ -9,11 +9,11 @@ InProd::InProd () : Function ("inprod", 2)
 }
 
 void InProd::evaluate(double *x, vector<double const *> const &args,
+		      vector<unsigned int> const &lengths,
 		      vector<vector<unsigned int> > const &dims) const
 {
-    long len = product(dims[0]);
     double svalue = 0;
-    for (long i = 0; i < len; i++)
+    for (long i = 0; i < lengths[0]; i++)
     {
 	svalue += args[0][i] * args[1][i];
     }

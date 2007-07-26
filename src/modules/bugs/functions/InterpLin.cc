@@ -10,7 +10,8 @@ InterpLin::InterpLin() : Function("interp.lin", 3)
 {}
 
 void InterpLin::evaluate(double *value, vector<double const *> const &args,
-	        vector<vector<unsigned int> > const &dims) const
+			 vector<unsigned int> const &lengths,
+			 vector<vector<unsigned int> > const &dims) const
 {
     double const *x = args[1];
     double const *y = args[2];
