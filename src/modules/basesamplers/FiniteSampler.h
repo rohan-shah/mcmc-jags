@@ -4,6 +4,8 @@
 #include <sampler/Sampler.h>
 class StochasticNode;
 
+namespace basesamplers {
+
 /**
  * Sampler for discrete distributions with support on a finite set.
  */
@@ -21,5 +23,7 @@ public:
      */
     bool adaptOff();
 };
+
+}
 
 #endif /* FINITE_SAMPLER_H_ */

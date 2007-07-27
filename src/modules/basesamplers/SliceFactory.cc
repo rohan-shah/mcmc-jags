@@ -9,6 +9,8 @@
 
 using std::logic_error;
 
+namespace basesamplers {
+
 bool SliceFactory::canSample(StochasticNode * snode, Graph const &graph) const
 {
     return RealSliceSampler::canSample(snode, graph) || 
@@ -28,4 +30,6 @@ Sampler *SliceFactory::makeGibbsSampler(StochasticNode *snode,
     else {
 	throw logic_error("Unable to construct slice sampler");
     }
+}
+
 }

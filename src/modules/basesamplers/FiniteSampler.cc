@@ -17,6 +17,8 @@ using std::string;
 using std::vector;
 using std::exp;
 
+namespace basesamplers {
+
 FiniteSampler::FiniteSampler(StochasticNode *node, Graph const &graph, 
 			     unsigned int chain)
   : Sampler(vector<StochasticNode*>(1,node), graph), _chain(chain)
@@ -110,4 +112,6 @@ bool FiniteSampler::canSample(StochasticNode const *node,
 bool FiniteSampler::adaptOff()
 {
     return true;
+}
+
 }

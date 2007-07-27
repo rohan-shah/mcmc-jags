@@ -8,6 +8,8 @@
 
 using std::vector;
 
+namespace basesamplers {
+
 RealSliceSampler::RealSliceSampler(StochasticNode *node, Graph const &graph,
                                    unsigned int chain,
 				   double width, long maxwidth)
@@ -53,4 +55,6 @@ void RealSliceSampler::update(RNG *rng)
 double RealSliceSampler::logFullConditional() const
 {
   return Sampler::logFullConditional(_chain);
+}
+
 }

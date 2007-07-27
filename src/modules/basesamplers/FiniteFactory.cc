@@ -3,6 +3,8 @@
 //#include <graph/StochasticNode.h>
 #include "FiniteFactory.h"
 
+namespace basesamplers {
+
 bool FiniteFactory::canSample(StochasticNode * snode, Graph const &graph) const
 {
   return FiniteSampler::canSample(snode, graph);
@@ -13,4 +15,6 @@ Sampler *FiniteFactory::makeGibbsSampler(StochasticNode *snode,
                                          unsigned int chain) const
 {
   return new FiniteSampler(snode, graph, chain);
+}
+
 }

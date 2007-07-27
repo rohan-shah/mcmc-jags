@@ -5,6 +5,8 @@
 class StochasticNode;
 class Graph;
 
+namespace basesamplers {
+
 /**
  * @short Factory object for finite samplers
  */
@@ -15,5 +17,7 @@ class FiniteFactory : public GibbsFactory
   Sampler *makeGibbsSampler(StochasticNode *snode, Graph const &graph,
                             unsigned int nchain) const;
 };
+
+}
 
 #endif /* FINITE_FACTORY_H_ */

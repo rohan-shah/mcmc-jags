@@ -5,6 +5,8 @@
 class StochasticNode;
 class Graph;
 
+namespace basesamplers {
+
 /**
  * @short Factory object for slice samplers
  */
@@ -14,5 +16,7 @@ class SliceFactory : public GibbsFactory
   bool canSample(StochasticNode *snode, Graph const &graph) const;
   Sampler *makeGibbsSampler(StochasticNode *snode, Graph const &graph, unsigned int chain) const;
 };
+
+}
 
 #endif /* SLICE_FACTORY_H_ */

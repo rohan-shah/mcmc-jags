@@ -10,6 +10,8 @@
 using std::floor;
 using std::vector;
 
+namespace basesamplers {
+
 DiscreteSliceSampler::DiscreteSliceSampler(StochasticNode *node, 
 					   Graph const &graph,
                                            unsigned int chain,
@@ -65,4 +67,6 @@ void DiscreteSliceSampler::update(RNG *rng)
 double DiscreteSliceSampler::logFullConditional() const
 {
   return Sampler::logFullConditional(_chain);
+}
+
 }

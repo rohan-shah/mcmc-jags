@@ -6,6 +6,8 @@
 class StochasticNode;
 struct RNG;
 
+namespace basesamplers {
+
 /**
  * Slice sampler for real-valued distributions
  */
@@ -32,3 +34,5 @@ public:
 };
 
 #endif /* REAL_SLICE_SAMPLER_H_ */
+
+}

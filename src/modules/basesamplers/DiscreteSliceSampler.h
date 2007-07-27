@@ -6,6 +6,8 @@
 class StochasticNode;
 struct RNG;
 
+namespace basesamplers {
+
 /**
  * @short Discrete slice sampler
  *
@@ -36,5 +38,7 @@ class DiscreteSliceSampler : public Slicer {
   void update(RNG*);
   double logFullConditional() const;
 };
+
+}
 
 #endif /* DISCRETE_SLICE_SAMPLER_H_ */
