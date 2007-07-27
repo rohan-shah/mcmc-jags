@@ -1,5 +1,7 @@
 #include "WichmannHillRNG.h"
 
+namespace baserngs {
+
 void WichmannHillRNG::fixupSeeds()
 {
   I[0] = I[0] % 30269; I[1] = I[1] % 30307; I[2] = I[2] % 30323;
@@ -57,4 +59,6 @@ void WichmannHillRNG::getState(std::vector<int> &state) const
   for (unsigned int i = 0; i < 3; ++i) {
     state.push_back(static_cast<int>(I[i]));
   }
+}
+
 }

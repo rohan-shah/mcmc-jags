@@ -3,6 +3,8 @@
 
 #include <rng/RmathRNG.h>
 
+namespace baserngs {
+
 class MersenneTwisterRNG : public RmathRNG
 {
   unsigned int dummy[625];
@@ -17,5 +19,7 @@ class MersenneTwisterRNG : public RmathRNG
   void getState(std::vector<int> &state) const;
   double uniform();
 };
+
+}
 
 #endif

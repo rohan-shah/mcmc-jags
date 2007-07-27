@@ -42,6 +42,8 @@
 #define TEMPERING_SHIFT_T(y)  (y << 15)
 #define TEMPERING_SHIFT_L(y)  (y >> 18)
 
+namespace baserngs {
+
 MersenneTwisterRNG::MersenneTwisterRNG(unsigned int seed, NormKind norm_kind)
   : RmathRNG("base::Mersenne-Twister", norm_kind), mt(dummy+1), mti(N+1)
 {
@@ -165,4 +167,6 @@ void MersenneTwisterRNG::getState(std::vector<int> &state) const
   for (unsigned int j = 0; j < 625; ++j) {
     state.push_back(static_cast<int>(dummy[j]));
   }
+}
+
 }

@@ -4,6 +4,8 @@
 
 using std::vector;
 
+namespace baserngs {
+
 class BaseRNGModule : public Module {
 public:
     BaseRNGModule();
@@ -23,5 +25,6 @@ BaseRNGModule::~BaseRNGModule() {
     }
 }
 
-BaseRNGModule _base_rng_module;
+}
 
+baserngs::BaseRNGModule _base_rng_module;

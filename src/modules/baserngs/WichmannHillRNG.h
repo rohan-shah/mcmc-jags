@@ -3,6 +3,8 @@
 
 #include <rng/RmathRNG.h>
 
+namespace baserngs {
+
 class WichmannHillRNG : public RmathRNG
 {
     unsigned int I[3];
@@ -14,5 +16,7 @@ public:
     bool setState(std::vector<int> const &state);
     void getState(std::vector<int> &state) const;
 };
+
+}
 
 #endif

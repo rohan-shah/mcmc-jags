@@ -11,6 +11,8 @@ using std::time;
 
 #define DEFAULT_NORM_KIND KINDERMAN_RAMAGE
 
+namespace baserngs {
+
 BaseRNGFactory::BaseRNGFactory()
     : _index(0)
 {
@@ -69,4 +71,6 @@ RNG * BaseRNGFactory::makeRNG(std::string const &name)
 
     _rngvec.push_back(rng);
     return rng;
+}
+
 }

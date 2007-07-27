@@ -3,6 +3,8 @@
 
 #include <rng/RmathRNG.h>
 
+namespace baserngs {
+
 class MarsagliaRNG : public RmathRNG
 {
     unsigned int I[2];
@@ -14,5 +16,7 @@ public:
     void getState(std::vector<int> &state) const;
     double uniform();
 };
+
+}
 
 #endif

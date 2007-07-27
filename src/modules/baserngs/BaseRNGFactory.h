@@ -7,6 +7,8 @@
 
 class RNG;
 
+namespace baserngs {
+
 /**
  * @short Factory object for Random Number Generators
  */
@@ -20,5 +22,7 @@ public:
     RNG * makeRNG();
     RNG * makeRNG(std::string const &name);
 };
+
+}
 
 #endif /* BASE_RNG_FACTORY_H_ */

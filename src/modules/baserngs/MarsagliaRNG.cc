@@ -5,6 +5,8 @@ using std::vector;
 
 #define i2_32m1 2.328306437080797e-10/* = 1/(2^32 - 1) */
 
+namespace baserngs {
+
 MarsagliaRNG::MarsagliaRNG(unsigned int seed, NormKind normkind)
     : RmathRNG("base::Marsaglia-Multicarry", normkind)
 {
@@ -54,4 +56,6 @@ double MarsagliaRNG::uniform()
   I[1]= 18000*(I[1] & 0177777) + (I[1]>>16);
   /* result in in [0,1) */
   return fixup(((I[0] << 16)^(I[1] & 0177777)) * i2_32m1); 
+}
+
 }
