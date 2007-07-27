@@ -5,6 +5,8 @@
 
 using std::vector;
 
+namespace basesamplers {
+
 class BaseSamplerModule : public Module {
 public:
     BaseSamplerModule();
@@ -25,4 +27,6 @@ BaseSamplerModule::~BaseSamplerModule() {
     }
 }
 
-BaseSamplerModule _base_sampler_module;
+}
+
+basesamplers::BaseSamplerModule _base_sampler_module;
