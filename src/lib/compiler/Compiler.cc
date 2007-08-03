@@ -322,7 +322,12 @@ Node * Compiler::getSubsetNode(ParseTree const *var)
 
   NodeArray *array = _model.symtab().getVariable(var->name());
   if (array == 0) {
-    throw runtime_error(string("Unknown variable ") + var->name());
+      if (_strict_resolution) {
+	  throw runtime_error(string("Unknown variable ") + var->name());
+      }
+      else {
+	  return 0;
+      }
   }
   Range subset_range = getRange(var, array->range());
   if (isNULL(subset_range)) {
