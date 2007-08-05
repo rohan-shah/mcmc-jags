@@ -45,21 +45,54 @@ vector<StochasticNode *> const &Sampler::nodes() const
   return _nodes;
 }
 
+static bool isInformative(Node *node, Graph const &sample_graph)
+{
+    /* Recursively test whether a node is informative (is observed or
+       has an observed descendant in the graph) */
+
+    if (!sample_graph.contains(node))
+	return false;
+    
+    if (node->isObserved())
+	return true;
+
+    for (set<Node*>::iterator p = node->children()->begin();
+	 p != node->children()->end(); ++p) {
+	if (isInformative(*p, sample_graph)) {
+	    return true;
+	}
+    }    
+    return false;
+}
+
 static bool classifyNode(Node *node, Graph const &sample_graph, 
 			 Graph &sgraph, Graph &dgraph)
 {
     /*
      * Recursive classification function for node and its descendants.
      *
-     * Stochastic nodes are added to sgraph. Deterministic nodes are
-     * added to dgraph if (and only if) they are informative.
+     * If a node is informative, it is added to either sgraph (for
+     * stochastic nodes representing random variables) or dgraph (
+     * for other nodes). The recursion stops with stochastic nodes.
      */
     if (!sample_graph.contains(node))
 	return false;
 
-    if (node->isVariable() && asStochastic(node)) {
-	sgraph.add(node);
-	return true;
+    if (asStochastic(node) && node->isVariable()) {
+	/* This might look redundant, but we want to leave open
+	   the possibility that stochastic nodes may not
+	   represent random variables */
+
+	if (sgraph.contains(node)) 
+	    return true;
+
+	if (isInformative(node, sample_graph)) {
+	    sgraph.add(node);
+	    return true;
+	}
+	else {
+	    return false;
+	}
     }
     else if (!dgraph.contains(node)) {
 	bool isinformative = false;
