@@ -1,6 +1,7 @@
 #include <config.h>
 
 #include "MatMult.h"
+#include <sarray/util.h>
 
 using std::vector;
 
