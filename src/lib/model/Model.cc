@@ -34,7 +34,8 @@ using std::ostringstream;
 using std::stable_sort;
 
 Model::Model(unsigned int nchain)
-  : _nchain(nchain), _chain_info(nchain), _is_initialized(false), _adapt(true)
+    : _nchain(nchain), _chain_info(nchain), _is_initialized(false), 
+      _adapt(true), _data_gen(false)
 {
   for (unsigned int n = 0; n < _nchain; ++n) {
     _chain_info[n].rng = 0;
@@ -125,7 +126,7 @@ static Node *checkDataGen(vector<Node*> const &nodes)
 }
 */
 
-void Model::initialize(bool random)
+void Model::initialize(bool datagen)
 {
     if (_is_initialized)
 	throw logic_error("Model already initialized");
@@ -143,32 +144,38 @@ void Model::initialize(bool random)
     chooseRNGs();
 
     //Initialize nodes
-    initializeNodes(sorted_nodes, random);
+    initializeNodes(sorted_nodes);
 
     // Choose Samplers
     chooseSamplers(sorted_nodes);
+    
+    if (datagen) {
+	Graph egraph;
+	for (set<Node *>::const_iterator p = _extra_nodes.begin(); 
+	     p != _extra_nodes.end(); ++p)
+	{
+	    egraph.add(*p);
+	}
+	_sampled_extra.clear();
+	egraph.getSortedNodes(_sampled_extra);
+	_data_gen = true;
+    }
 
     _is_initialized = true;
 }
 
-void Model::initializeNodes(vector<Node*> const &sorted_nodes,
-			    bool random)
+void Model::initializeNodes(vector<Node*> const &sorted_nodes)
 {
     vector<Node*>::const_iterator i;
-    for (i = sorted_nodes.begin(); i != sorted_nodes.end(); i++) {
+    for (i = sorted_nodes.begin(); i != sorted_nodes.end(); ++i) {
 	Node *node = *i;
 	for (unsigned int n = 0; n < _nchain; ++n) {
 	    if (!node->checkParentValues(n)) {
 		throw NodeError(node, "Invalid parent values");
 	    }
-	}
-	if (!node->initialize()) {
-	    throw NodeError(node, "Initialization failure");
-	} 
-	if (random && !node->isObserved()) {
-	    for (unsigned int ch = 0; ch < _nchain; ++ch) {
-		node->randomSample(_chain_info[ch].rng, ch);
-	    }
+	    if (!node->initialize(_chain_info[n].rng, n)) {
+		throw NodeError(node, "Initialization failure");
+	    } 
 	}
     }
 }
@@ -355,24 +362,23 @@ bool Model::isAdapting() const
   return _adapt;
 }
 
-void Model::addMonitor(Monitor *monitor)
+
+void Model::setSampledExtra()
 {
-
-    if (_adapt) {
-	adaptOff(); //FIXME: Efficiency test ignored
-    }
-    
-    // FIXME: Need to do this where the new node is generated
-    /*
-    if(!_graph.contains(node)) {
-	addExtraNode(node);
-    }
+    /* If a mode is not a data generating model, uninformative nodes
+       do not need to be updated, unless they have a descendant that 
+       is being monitored. This function finds those nodes and adds
+       them to the vector _sampled_extra.
     */
-
-    _monitors.push_back(monitor);
+       
+    if (_data_gen) {
+	// In a data generating model, all uninformative nodes are
+	// sampled, so nothing to be done
+	return;
+    }
 
     // Recalculate the vector of uninformative nodes that need sampling
-
+	
     //Insert extra nodes into a new graph
     Graph egraph;
     for (set<Node *>::const_iterator p = _extra_nodes.begin(); 
@@ -386,10 +392,10 @@ void Model::addMonitor(Monitor *monitor)
 	 p != _monitors.end(); ++p)
     {
 	Node const *node = (*p)->node();
-        if (egraph.contains(node)) {
-            emarks.mark(node, 1);
+	if (egraph.contains(node)) {
+	    emarks.mark(node, 1);
 	    emarks.markAncestors(node, 1);
-        }
+	}
     }
     //Remove unmarked nodes from graph
     for (set<Node *>::const_iterator p = _extra_nodes.begin(); 
@@ -403,39 +409,57 @@ void Model::addMonitor(Monitor *monitor)
     egraph.getSortedNodes(_sampled_extra);
 }
 
+
+
+void Model::addMonitor(Monitor *monitor)
+{
+    if (_adapt) {
+	throw logic_error("Cannot add monitor to adapting model");
+    }
+    
+    _monitors.push_back(monitor);
+    setSampledExtra();
+}
+
 void Model::removeMonitor(Monitor *monitor)
 {
     _monitors.remove(monitor);
+    setSampledExtra();
 }
 
 void Model::addExtraNode(Node *node)
 {
-  if (!_is_initialized) 
-    throw logic_error("Attempt to add extra node to uninitialized model");
-  if (node->isObserved()) {
-    throw logic_error("Cannot add observed node to initialized model");
-  }
-  if (!node->children()->empty()) {
-    throw logic_error("Cannot add extra node with children");
-  }
-  for (vector<Node const *>::const_iterator p = node->parents().begin(); 
-       p != node->parents().end(); ++p)
-    {
-      if (!_graph.contains(*p)) {
-	throw logic_error("Extra node has parents not in model");
-      }
+    if (!_is_initialized) {
+	throw logic_error("Attempt to add extra node to uninitialized model");
+    }
+    if (node->isObserved()) {
+	throw logic_error("Cannot add observed node to initialized model");
+    }
+    if (!node->children()->empty()) {
+	throw logic_error("Cannot add extra node with children");
     }
 
-  if (_extra_nodes.count(node)) {
-    throw logic_error("Extra node already in model");
-  }
-  else {
-     _extra_nodes.insert(node);
-  }
-  if (!_graph.contains(node)) {
-     _graph.add(node);
-  }
+    if (_extra_nodes.count(node)) {
+	throw logic_error("Extra node already in model");
+    }
+    
+    for (vector<Node const *>::const_iterator p = node->parents().begin(); 
+	 p != node->parents().end(); ++p)
+    {
+	if (!_graph.contains(*p)) {
+	throw logic_error("Extra node has parents not in model");
+	}
+    }
 
+    if (!_graph.contains(node)) {
+	_graph.add(node);
+    }
+
+    _extra_nodes.insert(node);
+    if (_data_gen) {
+	//Extra nodes are automatically sampled
+	_sampled_extra.push_back(node);
+    }
 }
 
 list<SamplerFactory const *> &Model::samplerFactories()

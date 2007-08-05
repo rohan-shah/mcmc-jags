@@ -83,7 +83,7 @@ public:
      * Vector of parents.
      */
     std::vector<Node const *> const &parents() const;
-    /** 
+    /**
      * Set of children.
      *
      * This is not a constant member function of the Node class for a 
@@ -110,17 +110,28 @@ public:
      */
     virtual bool checkParentValues(unsigned int chain) const = 0;
     /**
-     * Attempts to initialize the node. If the parents are observed and
-     * the node is non-variable, its value is fixed.
+     * Initializes the node for the given chain. The value vector of a
+     * newly constructed Node consists of missing values.  This
+     * function sets the value of the node by forward sampling from
+     * its parents.  If the Node has previously had its value set, the
+     * function will do nothing and return the value true.
+     * Initialization will fail if any of the parent nodes is
+     * uninitialized, and in this case the return value is false.
      *
-     * Initialization will fail if any parents are non-initialized. 
-     * An unobserved node that does not represent a variable in the model
-     * may be re-initialized. For other nodes, reinitialization will
-     * have no effect, but the function will still return the value true.
+     * @param rng random number generator
+     * @param n chain number
      *
      * @returns a logical value indicating success
      */
-    bool initialize();
+    bool initialize(RNG *rng, unsigned int n);
+    /**
+     * Initializes a node, in all chains, if it is not a random
+     * variable and if all of its parents are observed. In this case,
+     * the value of the node is also fixed. Otherwise the function
+     * has no effect.
+     * @see initialize
+     */
+    void initializeData();
     /**
      * Returns the name of the node.  The default implementation looks up
      * the node in the supplied name table and returns an empty string if it
@@ -143,8 +154,7 @@ public:
      */
     void setObserved(double const *value, unsigned int length);
     /**
-     * Indicates whether node is observed. This is only true if a call
-     * to setObserved has previously been used to set the value.
+     * Indicates whether node is observed. 
      */
     bool isObserved() const;
     /**

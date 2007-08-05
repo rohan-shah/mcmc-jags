@@ -128,6 +128,8 @@ bool Console::compile(map<string, SArray> &data_table, unsigned int nchain,
       }
       _out << "   Initializing" << endl;
       datagen_model.initialize(true);
+      // Do a single update (by forward sampling)
+      datagen_model.update(1);
       //Save data generating RNG for later use
       datagen_rng = datagen_model.rng(0);
       _out << "   Reading data back into data table" << endl;
@@ -216,7 +218,7 @@ bool Console::initialize()
 	return false;
     }
     try {
-	_model->initialize();
+	_model->initialize(false);
 	_model->addDevianceNode();
     }
     catch (NodeError except) {

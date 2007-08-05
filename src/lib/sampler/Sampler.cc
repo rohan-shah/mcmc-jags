@@ -45,21 +45,34 @@ vector<StochasticNode *> const &Sampler::nodes() const
   return _nodes;
 }
 
-static void classifyNode(Node *node, Graph const &sample_graph, 
+static bool classifyNode(Node *node, Graph const &sample_graph, 
 			 Graph &sgraph, Graph &dgraph)
 {
+    /*
+     * Recursive classification function for node and its descendants.
+     *
+     * Stochastic nodes are added to sgraph. Deterministic nodes are
+     * added to dgraph if (and only if) they are informative.
+     */
     if (!sample_graph.contains(node))
-	return;
+	return false;
 
     if (node->isVariable() && asStochastic(node)) {
 	sgraph.add(node);
+	return true;
     }
     else if (!dgraph.contains(node)) {
-	dgraph.add(node);      
+	bool isinformative = false;
 	for (set<Node*>::iterator p = node->children()->begin();
 	     p != node->children()->end(); ++p) {
-	    classifyNode(*p, sample_graph, sgraph, dgraph);
+	    if (classifyNode(*p, sample_graph, sgraph, dgraph)) {
+		isinformative = true;
+	    }
 	}
+	if (isinformative) {
+	    dgraph.add(node);
+	}
+	return isinformative;
     }
 }
 

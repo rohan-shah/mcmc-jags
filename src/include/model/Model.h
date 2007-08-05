@@ -38,9 +38,11 @@ class Model {
   std::list<Monitor*> _monitors;
   bool _is_initialized;
   bool _adapt;
-  void initializeNodes(std::vector<Node*> const &sorted_nodes, bool random);
+  bool _data_gen;
+  void initializeNodes(std::vector<Node*> const &sorted_nodes);
   void chooseRNGs();
   void chooseSamplers(std::vector<Node*> const &sorted_nodes);
+  void setSampledExtra();
 public:
   /**
    * @param nchain Number of parallel chains in the model.
@@ -59,15 +61,20 @@ public:
    * doesn not already have an RNG.
    * 
    * Secondly, all nodes in the graph are initialized in forward
-   * sampling order. By default, this is done deterministically using
-   * Node#initialize. Random initialization, using Node#randomSample,
-   * may be obtained by setting the random parameter to true.
+   * sampling order. 
    *
    * Finally, samplers are chosen for informative nodes in the graph.
    *
+   * @param datagen Boolean flag indicating whether the model should
+   * be considered a data generating model. If false, then
+   * non-informative nodes will not be updated unless they are being
+   * monitored.  This makes sampling more efficient by avoiding
+   * redundant updates.  If true, then all nodes in the graph will be
+   * updated in each iteration.
+   *
    * @see Node#initialize, Model#rngFactories
    */
-  void initialize(bool random = false);
+  void initialize(bool datagen);
   /** Returns true if the model has been initialized */
   bool isInitialized();
   /** 

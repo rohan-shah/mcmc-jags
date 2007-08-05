@@ -110,46 +110,62 @@ set<Node*> const *Node::children()
   return _children;
 }
 
-static bool isInitialized(Node const *node)
+static bool isInitialized(Node const *node, unsigned int n)
 {
-   for (unsigned int n = 0; n < node->nchain(); ++n) {
-       double const *value = node->value(n);
-       for (unsigned int i = 0; i < node->length(); ++i) {
-           if (value[i] == JAGS_NA) 
-               return false;
-       }
-   }
-   return true;
+    double const *value = node->value(n);
+    for (unsigned int i = 0; i < node->length(); ++i) {
+	if (value[i] == JAGS_NA) 
+	    return false;
+    }
+    return true;
 }
 
-bool Node::initialize()
+void Node::initializeData()
+{
+    if (this->isVariable() || this->isObserved())
+	return;
+    
+    //Test whether all parents are observed
+    for (unsigned int i = 0; i < _parents.size(); ++i) {
+	if (!_parents[i]->isObserved()) {
+            return; //Not observed
+	}
+    }
+
+    for (unsigned int n = 0; n < _nchain; ++n) {
+        deterministicSample(n);
+    }
+    _isobserved = true;
+}
+    
+bool Node::initialize(RNG * rng, unsigned int n)
 {
     // Test whether node is already initialized and, if so, skip it
-    if (isInitialized(this))
+    if (isInitialized(this, n))
         return true;
 
     // Check that parents are initialized
     for (unsigned int i = 0; i < _parents.size(); ++i) {
-        if (!isInitialized(_parents[i])) {
+        if (!isInitialized(_parents[i], n)) {
 	    return false; // Uninitialized parent
         }
     }
-    for (unsigned int n = 0; n < _nchain; ++n) {
-        deterministicSample(n);
-    }
 
-    if (isVariable())
-        return true; // Nothing more to do for variable nodes
-
-    //Check if non-variable node is a function
-    //of observed parents. In this case, it is observed also 
+    bool isfixed = true;
     for (unsigned int i = 0; i < _parents.size(); ++i) {
 	if (!_parents[i]->isObserved()) {
-            return true; //Not observed
+            isfixed = false; //Not observed
+	    break;
 	}
     }
-    _isobserved = true;
-    return true;
+
+    if (isfixed) {
+	deterministicSample(n);
+    }
+    else {
+	randomSample(rng, n);
+    }
+    return true; 
 }
     
 string Node::name(NodeNameTab const &name_table) const
