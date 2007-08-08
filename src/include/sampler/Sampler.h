@@ -29,9 +29,10 @@ class RNG;
  * are the children of S in the graph where all deterministic nodes
  * have been marginalized out.
  *
- * A vector of nodes is in "forward sampling order" if node B always
- * appears after node A when there is a path from A to B. Note that
- * forward sampling order is not uniquely determined.
+ * A vector of nodes in an acyclic Graph is in "forward sampling
+ * order" if node B always appears after node A when there is a path
+ * from A to B. Note that forward sampling order is not uniquely
+ * determined.
  */
 class Sampler {
   unsigned int _length;
@@ -43,9 +44,9 @@ public:
    * Constructs a sampler for the given vector of nodes.  
    *
    * @param nodes Vector of Nodes to be sampled 
+   *
    * @param graph  Graph within which sampling is to take place. It is
    * an error if this Graph does not contain all of the Nodes to be sampled.
-   * @param chain  Index of chain sampled by this sampler.
    */
   Sampler(std::vector<StochasticNode *> const &nodes, Graph const &graph);
   virtual ~Sampler();
@@ -60,8 +61,10 @@ public:
    *
    * @param value Array of concatenated values to be applied to the sampled
    * nodes.
+   *
    * @param length Length of the value array. This must be equal to the
    * sum of the  lengths of the sampled nodes.
+   *
    * @param chain Number of the chain (starting from zero) to be modified.
    */
   void setValue(double const * value, unsigned int length, unsigned int chain);
@@ -84,6 +87,8 @@ public:
    * constructor, plus the parents of the nodes (which may be outside
    * the graph).  The log full conditional is calculated up to an
    * additive constant.
+   *
+   * @param chain Number of the chain (starting from zero) to query.
    */
   double logFullConditional(unsigned int chain) const;
   /**
@@ -126,11 +131,14 @@ public:
    * within the given graph.
    *
    * @param nodes Set of Nodes whose descendants are to be classified.
+   *
    * @param graph Graph within which calculations are to take place.
    * Nodes outside of this graph will be ignored.
-   * @param stoch_nodes Empty vector which will contain the Marginal
+   *
+   * @param stoch_nodes Vector which will contain the Marginal
    * Stochastic Children on exit.
-   * @param dtrm_nodes Empty vector which will contain the Immediate 
+   *
+   * @param dtrm_nodes Vector which will contain the Immediate 
    * Deterministic Descendants, in forward sampling order, on exit.
    */
   static void classifyChildren(std::vector<StochasticNode *> const &nodes,

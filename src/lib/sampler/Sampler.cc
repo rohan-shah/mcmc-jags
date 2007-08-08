@@ -114,39 +114,41 @@ void Sampler::classifyChildren(vector<StochasticNode *> const &nodes,
 			       vector<StochasticNode const*> &stoch_nodes,
 			       vector<Node*> &dtrm_nodes)
 {
-  Graph dgraph, sgraph;
+    Graph dgraph, sgraph;
 
-  /* Classify children of each node */
-  vector<StochasticNode  *>::const_iterator p = nodes.begin();
-  for (; p != nodes.end(); ++p) {
-    StochasticNode *snode = *p;
-    if (!graph.contains(snode)) {
-      throw logic_error("Sampled node outside of sampling graph");
+    /* Classify children of each node */
+    vector<StochasticNode  *>::const_iterator p = nodes.begin();
+    for (; p != nodes.end(); ++p) {
+	StochasticNode *snode = *p;
+	if (!graph.contains(snode)) {
+	    throw logic_error("Sampled node outside of sampling graph");
+	}
+	for (set<Node*>::const_iterator q = snode->children()->begin(); 
+	     q != snode->children()->end(); ++q) 
+	{
+	    classifyNode(*q, graph, sgraph, dgraph);
+	}
     }
-    for (set<Node*>::const_iterator q = snode->children()->begin(); 
-	 q != snode->children()->end(); ++q) 
-      {
-	classifyNode(*q, graph, sgraph, dgraph);
-      }
-  }
 
-  /* Strip nodes to be sampled out of the graph of stochastic
-     children. Such nodes would contribute to both the prior
-     AND the likelihood, causing incorrect calculation of the
-     log full conditional */
-  for (p = nodes.begin(); p != nodes.end(); ++p) {
-    sgraph.remove(*p);
-  }
+    /* Strip nodes to be sampled out of the graph of stochastic
+       children. Such nodes would contribute to both the prior
+       AND the likelihood, causing incorrect calculation of the
+       log full conditional */
+    for (p = nodes.begin(); p != nodes.end(); ++p) {
+	sgraph.remove(*p);
+    }
 
-  vector<Node*> svector;
-  sgraph.getNodes(svector);
-  for (vector<Node*>::iterator i = svector.begin(); i != svector.end(); 
-       ++i) 
+    vector<Node*> svector;
+    sgraph.getNodes(svector);
+    stoch_nodes.clear();
+    for (vector<Node*>::iterator i = svector.begin(); i != svector.end(); 
+	 ++i)
     {
-      stoch_nodes.push_back(asStochastic(*i));
+	stoch_nodes.push_back(asStochastic(*i));
     }
-  
-  dgraph.getSortedNodes(dtrm_nodes);
+
+    dtrm_nodes.clear();
+    dgraph.getSortedNodes(dtrm_nodes);
 }
 
 double Sampler::logFullConditional(unsigned int chain) const
