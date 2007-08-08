@@ -30,7 +30,7 @@ public:
   void setValue(double value);
   void getLimits(double *lower, double *upper) const;
   void update(RNG *rng);
-  double logFullConditional() const;
+  double logDensity() const;
 };
 
 #endif /* REAL_SLICE_SAMPLER_H_ */

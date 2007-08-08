@@ -24,7 +24,7 @@ Slicer::Slicer(vector<StochasticNode *> const &nodes, Graph const &graph,
 void Slicer::updateStep(RNG *rng)
 {
   // Test current value
-  double g0 = logFullConditional();
+  double g0 = logDensity();
   if (!jags_finite(g0)) {
     if (g0 > 0) {
       return;
@@ -58,7 +58,7 @@ void Slicer::updateStep(RNG *rng)
   }
   else {
     setValue(L);
-    while (j-- > 0 && logFullConditional() > z) {
+    while (j-- > 0 && logDensity() > z) {
       L -= _width;
       if (L < lower) {
 	L = lower;
@@ -73,7 +73,7 @@ void Slicer::updateStep(RNG *rng)
   }
   else {
     setValue(R);
-    while (k-- > 0 && logFullConditional() > z) {
+    while (k-- > 0 && logDensity() > z) {
       R += _width;
       if (R > upper) {
 	R = upper;
@@ -89,7 +89,7 @@ void Slicer::updateStep(RNG *rng)
   for(;;) {
     xnew =  L + rng->uniform() * (R - L);
     setValue(xnew);
-    double g = logFullConditional();
+    double g = logDensity();
     if (g >= z - DBL_EPSILON) {
       // Accept point
       break;
@@ -119,7 +119,7 @@ void Slicer::updateDouble(RNG *rng)
   using namespace std;
 
   // Test current value
-  double g0 = logFullConditional();
+  double g0 = logDensity();
   if (!jags_finite(g0)) {
     if (g0 < 0) {
       throw NodeError(nodes()[0], "Current value is inconsistent with data");
@@ -151,7 +151,7 @@ void Slicer::updateDouble(RNG *rng)
         }
         else {
 	   setValue(L);
-	   left_ok = logFullConditional() < z;
+	   left_ok = logDensity() < z;
         }
       }
       else {
@@ -166,7 +166,7 @@ void Slicer::updateDouble(RNG *rng)
         }
         else {
 	   setValue(R);
-	   right_ok = logFullConditional() < z;
+	   right_ok = logDensity() < z;
         }
       }
       else {
@@ -185,7 +185,7 @@ void Slicer::updateDouble(RNG *rng)
     xnew =  Lbar + rng->uniform() * (Rbar - Lbar);
     if (xnew >= lower && xnew <= upper) {
 	setValue(xnew);
-	double g = logFullConditional();
+	double g = logDensity();
 	if (g >= z && accept(xold, xnew, z, L, R, lower, upper)) {
 	    // The accept function will alter the current value. So we
 	    // must reset it.
@@ -231,12 +231,12 @@ bool Slicer::accept(double xold, double xnew, double z, double L, double R,
       bool right_ok = true;
       if (R <= upper) {
          setValue(R);
-         right_ok = logFullConditional() < z;
+         right_ok = logDensity() < z;
       }
       bool left_ok = true;
       if (L >= lower) {
          setValue(L);
-         left_ok = logFullConditional() < z;
+         left_ok = logDensity() < z;
       }
       if (left_ok && right_ok) {
 	return false;

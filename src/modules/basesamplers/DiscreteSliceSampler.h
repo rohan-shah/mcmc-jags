@@ -36,7 +36,7 @@ class DiscreteSliceSampler : public Slicer {
   static bool canSample(StochasticNode const *node, Graph const &graph);
   void getLimits(double *lower, double *upper) const;
   void update(RNG*);
-  double logFullConditional() const;
+  double logDensity() const;
 };
 
 }

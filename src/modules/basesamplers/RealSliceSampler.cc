@@ -52,7 +52,7 @@ void RealSliceSampler::update(RNG *rng)
   updateStep(rng);
 }
 
-double RealSliceSampler::logFullConditional() const
+double RealSliceSampler::logDensity() const
 {
   return Sampler::logFullConditional(_chain);
 }

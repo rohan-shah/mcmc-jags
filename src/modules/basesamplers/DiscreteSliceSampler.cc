@@ -64,7 +64,7 @@ void DiscreteSliceSampler::update(RNG *rng)
   updateDouble(rng);
 }
 
-double DiscreteSliceSampler::logFullConditional() const
+double DiscreteSliceSampler::logDensity() const
 {
   return Sampler::logFullConditional(_chain);
 }

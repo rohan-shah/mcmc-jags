@@ -28,7 +28,7 @@ public:
   void getLimits(double *lower, double *upper) const;
   static bool canSample(std::vector<StochasticNode *> const &nodes, 
 			Graph const &graph);
-  double logFullConditional() const;
+  double logDensity() const;
 
 };
 

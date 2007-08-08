@@ -174,7 +174,7 @@ void DSumSampler::update(RNG *rng)
   updateDouble(rng);
 }
 
-double DSumSampler::logFullConditional() const
+double DSumSampler::logDensity() const
 {
   return Sampler::logFullConditional(_chain);
 }
