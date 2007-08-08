@@ -74,7 +74,7 @@ public:
      * Metropolis-Hastings updates, and a single tempered transition.
      */
     void update(RNG *rng);
-    void rescale(double prob, bool accept);
+    void rescale(double prob);
     void transformValues(double const *v, unsigned int length,
                                      double *nv, unsigned int nlength) const;
     static bool canSample(std::vector<StochasticNode *> const &snodes, 

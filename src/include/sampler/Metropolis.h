@@ -86,12 +86,11 @@ public:
      * Rescales the proposal distribution. This function is called by
      * Metropolis#accept when the sampler is in adaptive
      * mode. Rescaling may optionally depend on the acceptance
-     * probability, or empirical acceptance rate.
+     * probability.
      *
      * @param p Acceptance probability
-     * @param accept Success indicator for the current acceptance step.
      */
-    virtual void rescale(double p, bool accept) = 0;
+    virtual void rescale(double p) = 0;
     /**
      * Turns off adaptive mode
      */

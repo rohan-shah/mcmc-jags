@@ -34,7 +34,7 @@ RWMetropolis::~RWMetropolis()
 {
 }
 
-void RWMetropolis::rescale(double p, bool accept)
+void RWMetropolis::rescale(double p)
 {
     _lscale +=  (p - _prob) / _n; //We work on a log scale
     if ((p > _prob) != _p_over_target) {

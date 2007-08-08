@@ -36,7 +36,7 @@ public:
      * Rescaling depends only on the acceptance probability p; the accept
      * parameter is ignored.
      */
-    void rescale(double p, bool accept);
+    void rescale(double p);
     void update(RNG *rng);
 };
 

@@ -66,7 +66,7 @@ bool Metropolis::accept(RNG *rng, double prob)
 	propose(_last_value, _value_length);
     }
     if (_adapt) {
-	rescale(prob, accept);
+	rescale(prob);
     }
     return accept;
 }

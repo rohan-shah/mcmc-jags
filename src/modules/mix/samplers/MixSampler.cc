@@ -271,7 +271,7 @@ void MixSampler::update(RNG *rng)
     delete [] last_proposal;
 }
 
-void MixSampler::rescale(double prob, bool accept)
+void MixSampler::rescale(double prob)
 {
     if (_temper) {
 

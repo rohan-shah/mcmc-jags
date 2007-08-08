@@ -29,7 +29,7 @@ public:
 	      double const *initial_value, unsigned int length);
     ~RESampler();
     void update(RNG*);
-    void rescale(double, bool);
+    void rescale(double);
     void transformValues(const double*, unsigned int, double*, unsigned int) 
 	const;
     bool checkAdaptation() const;

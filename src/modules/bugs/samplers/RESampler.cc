@@ -134,7 +134,7 @@ void RESampler::update(RNG* rng)
     accept(rng, exp(logdensity1 - logdensity0));
 }
  
-void RESampler::rescale(double p, bool accept)
+void RESampler::rescale(double p)
 {
     p = min(p, 1.0);
     double ptarget = (_mode == RE_SHUFFLE) ? 0.234 : 0.45;

@@ -70,7 +70,7 @@ void MNormSampler::update(RNG *rng)
     delete [] x;
 }
 
-void MNormSampler::rescale(double p, bool accept)
+void MNormSampler::rescale(double p)
 {
     ++_n;
     p = min(p, 1.0);

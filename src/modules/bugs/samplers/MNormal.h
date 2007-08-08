@@ -19,7 +19,7 @@ public:
 		 Graph const &graph, unsigned int chain, 
 		 double const *value, unsigned int length);
     ~MNormSampler();
-    void rescale(double p, bool accept);
+    void rescale(double p);
     void transformValues(double const *v, unsigned int length,
 			 double *nv, unsigned int nlength) const;
     void update(RNG *rng);
