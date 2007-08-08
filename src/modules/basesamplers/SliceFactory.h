@@ -1,7 +1,7 @@
 #ifndef SLICE_FACTORY_H_
 #define SLICE_FACTORY_H_
 
-#include <sampler/GibbsFactory.h>
+#include <sampler/SingletonFactory.h>
 class StochasticNode;
 class Graph;
 
@@ -10,12 +10,13 @@ namespace basesamplers {
 /**
  * @short Factory object for slice samplers
  */
-class SliceFactory : public GibbsFactory
-{
- public:
-  bool canSample(StochasticNode *snode, Graph const &graph) const;
-  Sampler *makeGibbsSampler(StochasticNode *snode, Graph const &graph, unsigned int chain) const;
-};
+    class SliceFactory : public SingletonFactory
+    {
+    public:
+	bool canSample(StochasticNode *snode, Graph const &graph) const;
+	Sampler *makeSingletonSampler(StochasticNode *snode, Graph const &graph,
+				      unsigned int chain) const;
+    };
 
 }
 

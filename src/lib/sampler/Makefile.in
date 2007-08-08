@@ -47,7 +47,7 @@ CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 libsampler_la_LIBADD =
 am_libsampler_la_OBJECTS = libsampler_la-Sampler.lo \
-	libsampler_la-GibbsFactory.lo libsampler_la-Slicer.lo \
+	libsampler_la-SingletonFactory.lo libsampler_la-Slicer.lo \
 	libsampler_la-Metropolis.lo libsampler_la-RWMetropolis.lo
 libsampler_la_OBJECTS = $(am_libsampler_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(top_builddir)/src/include@am__isrc@
@@ -194,7 +194,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 noinst_LTLIBRARIES = libsampler.la
 libsampler_la_CPPFLAGS = -I$(top_srcdir)/src/include
-libsampler_la_SOURCES = Sampler.cc GibbsFactory.cc Slicer.cc	\
+libsampler_la_SOURCES = Sampler.cc SingletonFactory.cc Slicer.cc	\
 Metropolis.cc RWMetropolis.cc
 
 all: all-am
@@ -248,10 +248,10 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libsampler_la-GibbsFactory.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libsampler_la-Metropolis.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libsampler_la-RWMetropolis.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libsampler_la-Sampler.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libsampler_la-SingletonFactory.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libsampler_la-Slicer.Plo@am__quote@
 
 .cc.o:
@@ -282,12 +282,12 @@ libsampler_la-Sampler.lo: Sampler.cc
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsampler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libsampler_la-Sampler.lo `test -f 'Sampler.cc' || echo '$(srcdir)/'`Sampler.cc
 
-libsampler_la-GibbsFactory.lo: GibbsFactory.cc
-@am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsampler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libsampler_la-GibbsFactory.lo -MD -MP -MF $(DEPDIR)/libsampler_la-GibbsFactory.Tpo -c -o libsampler_la-GibbsFactory.lo `test -f 'GibbsFactory.cc' || echo '$(srcdir)/'`GibbsFactory.cc
-@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/libsampler_la-GibbsFactory.Tpo $(DEPDIR)/libsampler_la-GibbsFactory.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='GibbsFactory.cc' object='libsampler_la-GibbsFactory.lo' libtool=yes @AMDEPBACKSLASH@
+libsampler_la-SingletonFactory.lo: SingletonFactory.cc
+@am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsampler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libsampler_la-SingletonFactory.lo -MD -MP -MF $(DEPDIR)/libsampler_la-SingletonFactory.Tpo -c -o libsampler_la-SingletonFactory.lo `test -f 'SingletonFactory.cc' || echo '$(srcdir)/'`SingletonFactory.cc
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/libsampler_la-SingletonFactory.Tpo $(DEPDIR)/libsampler_la-SingletonFactory.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='SingletonFactory.cc' object='libsampler_la-SingletonFactory.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsampler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libsampler_la-GibbsFactory.lo `test -f 'GibbsFactory.cc' || echo '$(srcdir)/'`GibbsFactory.cc
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsampler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libsampler_la-SingletonFactory.lo `test -f 'SingletonFactory.cc' || echo '$(srcdir)/'`SingletonFactory.cc
 
 libsampler_la-Slicer.lo: Slicer.cc
 @am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsampler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libsampler_la-Slicer.lo -MD -MP -MF $(DEPDIR)/libsampler_la-Slicer.Tpo -c -o libsampler_la-Slicer.lo `test -f 'Slicer.cc' || echo '$(srcdir)/'`Slicer.cc

@@ -15,8 +15,8 @@ MNormalFactory::canSample(StochasticNode * snode, Graph const &graph) const
 }
 
 Sampler *
-MNormalFactory::makeGibbsSampler(StochasticNode *snode, Graph const &graph,
-				 unsigned int chain) const
+MNormalFactory::makeSingletonSampler(StochasticNode *snode, Graph const &graph,
+				     unsigned int chain) const
 {
     return new MNormSampler(snode, graph, chain, snode->value(chain), 
 			      snode->length());

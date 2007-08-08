@@ -53,9 +53,9 @@ bool ConjugateFactory::canSample(StochasticNode * snode,
 }
 
 Sampler 
-*ConjugateFactory::makeGibbsSampler(StochasticNode *snode, Graph const &graph,
-                                    unsigned int chain)
-    const
+*ConjugateFactory::makeSingletonSampler(StochasticNode *snode, 
+					Graph const &graph,
+					unsigned int chain) const
 {
   /*
   if (Censored::canSample(snode, graph))

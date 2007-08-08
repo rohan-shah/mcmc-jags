@@ -3,7 +3,7 @@
 
 #include "ConjugateSampler.h"
 
-#include <sampler/GibbsFactory.h>
+#include <sampler/SingletonFactory.h>
 #include <map>
 #include <string>
 class StochasticNode;
@@ -12,7 +12,7 @@ class StochasticNode;
 /**
  * @short Factory object for conjugate samplers
  */
-class ConjugateFactory : public GibbsFactory
+class ConjugateFactory : public SingletonFactory
 {
     std::map<const std::string, bool (*)(StochasticNode *,
 					 Graph const &)> _func_table;
@@ -28,7 +28,8 @@ public:
     /**
      * Creates a ConjugateSampler for a stochastic node. 
      */
-    Sampler *makeGibbsSampler(StochasticNode *snode, Graph const &graph, unsigned int chain) const;
+    Sampler *makeSingletonSampler(StochasticNode *snode, Graph const &graph,
+				  unsigned int chain) const;
 };
 
 #endif /* CONJUGATE_FACTORY_H_ */

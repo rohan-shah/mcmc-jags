@@ -185,7 +185,7 @@ target_alias = @target_alias@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 samplerincludedir = $(jagsincludedir)/sampler
-samplerinclude_HEADERS = Sampler.h SamplerFactory.h GibbsFactory.h	\
+samplerinclude_HEADERS = Sampler.h SamplerFactory.h SingletonFactory.h	\
 Slicer.h Metropolis.h RWMetropolis.h
 
 all: all-am
