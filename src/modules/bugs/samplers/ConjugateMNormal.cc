@@ -25,70 +25,26 @@ using std::set;
 using std::sqrt;
 using std::invalid_argument;
 
-ConjugateMNormal::ConjugateMNormal(StochasticNode *snode, 
-				   Graph const &graph, unsigned int chain)
-    : ConjugateSampler(snode, graph, chain), _betas(0), _length_betas(0)
+static void calBeta(double *betas, ConjugateSampler *sampler,
+                    unsigned int chain)
 {
-    if (!canSample(snode, graph)) {
-	string msg("Can't construct ConjugateMNormal sampler");
-	throw invalid_argument(msg);
-    }
-
-    if (!deterministicChildren().empty()) {
-
-	vector<StochasticNode const *> const &children = stochasticChildren();
-
-	unsigned int N = 0;
-	for (unsigned int i = 0; i < children.size(); ++i) {
-	    N += children[i]->length();
-	}
-	_length_betas = N * snode->length();
-
-	// Check for constant linear terms
-	bool fixed_beta = true;
-	set<Node const *> paramset;
-	vector<Node*> const &dtrm = deterministicChildren();
-	paramset.insert(snode);
-	for (unsigned int j = 0; j < dtrm.size(); ++j) {
-	    paramset.insert(dtrm[j]);
-	}
-	for (unsigned int j = 0; j < dtrm.size(); ++j) {
-	    if (!dtrm[j]->isLinear(paramset, true)) {
-		fixed_beta = false;
-		break;
-	    }
-	}
-	
-	if (fixed_beta) {
-	    _betas = new double[_length_betas];
-	    calBeta();
-	}
-    }
-}
-
-ConjugateMNormal::~ConjugateMNormal()
-{
-    delete [] _betas;
-}
-
-
-void ConjugateMNormal::calBeta()
-{
-    double const *xold = node()->value(_chain);
-    unsigned int nrow = node()->length();
+    StochasticNode *snode = sampler->node();
+    double const *xold = snode->value(chain);
+    unsigned int nrow = snode->length();
 
     double *xnew = new double[nrow];
     for (unsigned int i = 0; i < nrow; ++i) {
 	xnew[i] = xold[i];
     }
 
-    vector<StochasticNode const*> const &stoch_children = stochasticChildren();
+    vector<StochasticNode const*> const &stoch_children = 
+        sampler->stochasticChildren();
 
     unsigned long nchildren = stoch_children.size();
-    double *beta_j = _betas;
+    double *beta_j = betas;
     for (unsigned int j = 0; j < nchildren; ++j) {
 	StochasticNode const *snode = stoch_children[j];
-	double const *mu = snode->parents()[0]->value(_chain);
+	double const *mu = snode->parents()[0]->value(chain);
 	unsigned int nrow_child = snode->length();
 	for (unsigned int k = 0; k < nrow_child; ++k) {
 	    for (unsigned int i = 0; i < nrow; ++i) {
@@ -100,11 +56,11 @@ void ConjugateMNormal::calBeta()
 
     for (unsigned int i = 0; i < nrow; ++i) {
 	xnew[i] += 1;
-	setValue(xnew, nrow, _chain);
-	beta_j = _betas;
+	sampler->setValue(xnew, nrow, chain);
+	beta_j = betas;
 	for (unsigned int j = 0; j < nchildren; ++j) {
 	    StochasticNode const *snode = stoch_children[j];
-	    double const *mu = snode->parents()[0]->value(_chain);
+	    double const *mu = snode->parents()[0]->value(chain);
 	    unsigned int nrow_child = snode->length();
 	    for (unsigned int k = 0; k < nrow_child; ++k) {
 		beta_j[nrow * k + i] += mu[k];
@@ -113,11 +69,52 @@ void ConjugateMNormal::calBeta()
 	}
 	xnew[i] -= 1;
     }
-    setValue(xnew, nrow, _chain);
+    sampler->setValue(xnew, nrow, chain);
 
     delete [] xnew;
 }
 
+ConjugateMNormal::ConjugateMNormal()
+    : _betas(0), _length_betas(0)
+{
+}
+
+ConjugateMNormal::~ConjugateMNormal()
+{
+    delete [] _betas;
+}
+
+void ConjugateMNormal::initialize(ConjugateSampler *sampler)
+{
+    if(sampler->deterministicChildren().empty())
+	return; //Nothing to do
+
+    StochasticNode const *snode = sampler->node();
+    vector<StochasticNode const *> const &children = 
+	sampler->stochasticChildren();
+    unsigned int N = 0;
+    for (unsigned int i = 0; i < children.size(); ++i) {
+	N += children[i]->length();
+    }
+    _length_betas = N * snode->length();
+
+    // Check for constant linear terms
+    set<Node const *> paramset;
+    vector<Node*> const &dtrm = sampler->deterministicChildren();
+    paramset.insert(snode);
+    for (unsigned int j = 0; j < dtrm.size(); ++j) {
+	paramset.insert(dtrm[j]);
+    }
+    for (unsigned int j = 0; j < dtrm.size(); ++j) {
+	if (!dtrm[j]->isLinear(paramset, true)) {
+	    return; //Coefficients not fixed
+	}
+    }
+	
+    //Onetime calculation of fixed coefficients
+    _betas = new double[_length_betas];
+    calBeta(_betas, sampler, 0);
+}
 
 bool ConjugateMNormal::canSample(StochasticNode *snode, Graph const &graph)
 {
@@ -129,8 +126,8 @@ bool ConjugateMNormal::canSample(StochasticNode *snode, Graph const &graph)
 
     vector<StochasticNode const*> stoch_nodes;
     vector<Node*> dtrm_nodes, extra_nodes;
-    classifyChildren(vector<StochasticNode*>(1,snode), 
-		     graph, stoch_nodes, dtrm_nodes);
+    Sampler::classifyChildren(vector<StochasticNode*>(1,snode), 
+		              graph, stoch_nodes, dtrm_nodes);
     /* 
        Create a set of nodes containing snode and its deterministic
        descendants for the checks below.
@@ -166,15 +163,18 @@ bool ConjugateMNormal::canSample(StochasticNode *snode, Graph const &graph)
     return true; //We made it!
 }
 
-void ConjugateMNormal::update(RNG *rng)
+void ConjugateMNormal::update(ConjugateSampler *sampler, unsigned int chain, 
+			      RNG *rng) const
 {
-    vector<StochasticNode const*> const &stoch_children = stochasticChildren();
+    vector<StochasticNode const*> const &stoch_children = 
+          sampler->stochasticChildren();
     unsigned int nchildren = stoch_children.size();
     
-    double const *xold = node()->value(_chain);
-    double const *priormean = node()->parents()[0]->value(_chain); 
-    double const *priorprec = node()->parents()[1]->value(_chain);
-    int nrow = node()->length();
+    StochasticNode *snode = sampler->node();
+    double const *xold = snode->value(chain);
+    double const *priormean = snode->parents()[0]->value(chain); 
+    double const *priorprec = snode->parents()[1]->value(chain);
+    int nrow = snode->length();
     /* 
        The log of the full conditional density takes the form
        -1/2(t(x) %*% A %*% x - 2 * b %*% x)
@@ -195,15 +195,15 @@ void ConjugateMNormal::update(RNG *rng)
 	A[i] = priorprec[i];
     }
     
-    if (deterministicChildren().empty()) {
+    if (sampler->deterministicChildren().empty()) {
       
 	// This can only happen if the stochastic children are all
 	// multivariate normal with the same number of rows and 
 	// columns normal. We know alpha = 0, beta = I.
 	
 	for (unsigned int j = 0; j < nchildren; ++j) {
-	    double const *Y = stoch_children[j]->value(_chain);
-	    double const *tau = stoch_children[j]->parents()[1]->value(_chain);
+	    double const *Y = stoch_children[j]->value(chain);
+	    double const *tau = stoch_children[j]->parents()[1]->value(chain);
 	    for (int i = 0; i < nrow; ++i) {
 		for (int i2 = 0; i2 < nrow; ++i2) {
 		    A[i * nrow + i2] += tau[i * nrow + i2];
@@ -216,19 +216,23 @@ void ConjugateMNormal::update(RNG *rng)
     else {
 	
 	bool temp_beta = (_betas == 0);
+        double *betas = 0;
 	if (temp_beta) {
-	    _betas = new double[_length_betas];
-	    calBeta();
+	    betas = new double[_length_betas];
+	    calBeta(betas, sampler, chain);
 	}
+        else {
+            betas = _betas;
+        }
 	
 	/* Now add the contribution of each term to A, b */
-	double const *beta_j = _betas;
+	double const *beta_j = betas;
 	for (unsigned int j = 0; j < nchildren; ++j) {
 	    
 	    StochasticNode const *snode = stoch_children[j];
-	    double const *Y = snode->value(_chain);
-	    double const *mu = snode->parents()[0]->value(_chain);
-	    double const *tau = snode->parents()[1]->value(_chain);
+	    double const *Y = snode->value(chain);
+	    double const *mu = snode->parents()[0]->value(chain);
+	    double const *tau = snode->parents()[1]->value(chain);
 	    int nrow_child = snode->length();
 	    unsigned int Nrep = snode->repCount();
 
@@ -255,8 +259,7 @@ void ConjugateMNormal::update(RNG *rng)
 	}
 
 	if (temp_beta) {
-	    delete _betas;
-	    _betas = 0;
+	    delete betas;
 	}
     }
 
@@ -278,7 +281,7 @@ void ConjugateMNormal::update(RNG *rng)
     F77_DSYSV ("L", &nrow, &one, Acopy, &nrow, ipiv, b, &nrow, &worktest, 
 	       &lwork, &info);
     if (info != 0) {
-	throw NodeError(node(),
+	throw NodeError(snode,
 			"unable to solve linear equations in Conjugate mnorm sampler");
   }
     lwork = static_cast<int>(worktest) + 1;
@@ -286,7 +289,7 @@ void ConjugateMNormal::update(RNG *rng)
     F77_DSYSV ("L", &nrow, &one, Acopy, &nrow, ipiv, b, &nrow, work, &lwork,
 	       &info);
     if (info != 0) {
-	throw NodeError(node(),
+	throw NodeError(snode,
 			"unable to solve linear equations in Conjugate MNorm sampler");
     }
     delete [] work;
@@ -300,7 +303,7 @@ void ConjugateMNormal::update(RNG *rng)
     }
     double *xnew = new double[nrow];
     DMNorm::randomsample(xnew, b, A, true, nrow, rng);
-    setValue(xnew, nrow, _chain);
+    sampler->setValue(xnew, nrow, chain);
     
     delete [] b;
     delete [] A;

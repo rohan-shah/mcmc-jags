@@ -4,6 +4,7 @@
 #include <graph/StochasticNode.h>
 #include <graph/Graph.h>
 #include <graph/NodeError.h>
+#include <sampler/ParallelDensitySampler.h>
 
 #include "DSumFactory.h"
 #include "DSumSampler.h"
@@ -14,55 +15,9 @@ using std::set;
 using std::vector;
 using std::runtime_error;
 
-/*
-static bool isDSumNode(Node const *node)
-{
-  StochasticNode const *snode = asStochastic(node);
-  if (snode) {
-    return snode->distribution()->name() == "dsum";
-  }
-  else {
-    return false;
-  }
-}
-
-
-static bool isDiscreteScalar(StochasticNode const *snode)
-{
-    return (node->length() == 1) && node->isDiscreteValued();
-}
-
-static bool 
-canSample(vector<StochasticNode*> const &parameters, Graph const &graph)
-{
-
-    vector<StochasticNode*>::const_iterator p;
-    for (p = parameters.begin(); p != parameters.end(); ++p) {
-
-	if (!isDiscreteScalar(*p))
-	    return false;
-	
-	//  Check that there is only a single child of param within the graph, 
-	//  and that it is a dsum node
-	int nchild = 0;
-	for (set<Node*>::const_iterator i = param->children()->begin();
-	     i != param->children()->end(); ++i)
-	    {
-		if (!isDSumNode(*i))
-		    return false;
-		
-		++nchild;
-	    }
-	if (nchild != 1)
-	    return false;
-    }
-    return true;
-}
-*/
-
 void DSumFactory::makeSampler(set<StochasticNode*> &nodes,
 			      Graph const &graph,
-			      vector<vector<Sampler*> > &samplers) const
+			      vector<Sampler*> &samplers) const
 {
     set<StochasticNode*> dsum_nodes;
     set<StochasticNode*>::const_iterator p;
@@ -94,13 +49,18 @@ void DSumFactory::makeSampler(set<StochasticNode*> &nodes,
 	    }
 	}
 
-	if (cansample && DSumSampler::canSample(parameters, graph)) {
+	if (cansample && DSumMethod::canSample(parameters, graph)) {
 	    for (unsigned int i = 0; i < parameters.size(); ++i) {
 		nodes.erase(parameters[i]);
 	    }
-	    for (unsigned int ch = 0; ch < samplers.size(); ++ch) {
-		samplers[ch].push_back(new DSumSampler(parameters, graph, ch));
+	    
+	    unsigned int nchain = parameters[0]->nchain();
+	    vector<DensityMethod*> methods(nchain, 0);
+	    for (unsigned int ch = 0; ch < nchain; ++ch) {
+		methods[ch] = new DSumMethod;
 	    }
+	    Sampler *sampler = new ParallelDensitySampler(parameters, graph, methods);
+	    samplers.push_back(sampler);
 	}
     }
 }

@@ -1,7 +1,9 @@
 #ifndef CONJUGATE_M_NORMAL_H_
 #define CONJUGATE_M_NORMAL_H_
 
-#include "ConjugateSampler.h"
+#include "ConjugateMethod.h"
+
+class Graph;
 
 /**
  * Conjugate sampler for multivariate normal distribution
@@ -16,16 +18,15 @@
  * children that are normally distribution and where the mean of the
  * children is a linear function of (some element of) snode.
  */
-class ConjugateMNormal : public ConjugateSampler {
+class ConjugateMNormal : public ConjugateMethod {
   double *_betas;
   unsigned int _length_betas;
-  void calBeta();
  public:
-  ConjugateMNormal(StochasticNode *snode, Graph const &graph, unsigned int chain);
+  ConjugateMNormal();
   ~ConjugateMNormal();
-
+  void initialize(ConjugateSampler *sampler);
+  void update(ConjugateSampler *sampler, unsigned int chain, RNG *rng) const;
   static bool canSample(StochasticNode *snode, Graph const &graph);
-  void update(RNG *rng);
 };
 
 #endif /* CONJUGATE_M_NORMAL_H_ */

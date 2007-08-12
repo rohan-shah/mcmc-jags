@@ -1,6 +1,7 @@
 #include <config.h>
 
 #include "ConjugateGamma.h"
+#include "ConjugateSampler.h"
 
 #include <graph/LogicalNode.h>
 #include <graph/StochasticNode.h>
@@ -24,43 +25,6 @@ using std::logic_error;
 using std::max;
 using std::sort;
 
-ConjugateGamma::ConjugateGamma(StochasticNode *snode, Graph const &graph, unsigned int chain)
-    : ConjugateSampler(snode, graph, chain), _coef(0)
-{
-    if (!canSample(snode, graph)) {
-	throw invalid_argument("Can't construct ConjugateGamma sampler");
-    }
-
-    if (!deterministicChildren().empty()) {
-    
-	// Check for constant scale transformation
-	set<Node const*> paramset;
-	vector<Node*> const &dtrm = deterministicChildren();
-	paramset.insert(snode);
-	for (unsigned int j = 0; j < dtrm.size(); ++j) {
-	    paramset.insert(dtrm[j]);
-	}
-
-	bool fixed_coef = true;
-	for (unsigned int j = 0; j < dtrm.size(); ++j) {
-	    if (!dtrm[j]->isScale(paramset, true)) {
-		fixed_coef = false;
-		break;
-	    }
-	}
-	
-	if (fixed_coef) {
-	    _coef = new double[stochasticChildren().size()];
-	    calCoef();
-	}
-    }
-}
-
-ConjugateGamma::~ConjugateGamma()
-{
-    delete [] _coef;
-}
-
 static double 
 getScale(StochasticNode const *snode, ConjugateDist d, unsigned int chain)
 {
@@ -78,21 +42,58 @@ getScale(StochasticNode const *snode, ConjugateDist d, unsigned int chain)
     } 
 }
 
-void ConjugateGamma::calCoef()
-{
-    const double xold = *node()->value(_chain);
-    vector<StochasticNode const*> const &stoch_children = stochasticChildren();
+static void calCoef(double *coef, ConjugateSampler *sampler, unsigned int chain)
+{   
+    const double xold = sampler->node()->value(chain)[0];
+    vector<StochasticNode const*> const &stoch_children =
+        sampler->stochasticChildren();
     unsigned long nchildren = stoch_children.size();
-
+    vector<ConjugateDist> const &child_dist = sampler->childDist();
+    
     for (unsigned int i = 0; i < nchildren; ++i) {
-	_coef[i] = -getScale(stoch_children[i], _child_dist[i], _chain);
+        coef[i] = -getScale(stoch_children[i], child_dist[i], chain);
     }
     double val = xold + 1;
-    setValue(&val, 1, _chain);
+    sampler->setValue(&val, 1, chain);
     for (unsigned int i = 0; i < nchildren; ++i) {
-	_coef[i] += getScale(stoch_children[i], _child_dist[i], _chain);
+        coef[i] += getScale(stoch_children[i], child_dist[i], chain);
     }
-    setValue(&xold, 1, _chain);
+    sampler->setValue(&xold, 1, chain);
+}
+
+ConjugateGamma::ConjugateGamma() 
+    : _coef(0) 
+{
+}
+
+void ConjugateGamma::initialize(ConjugateSampler *sampler)
+{
+    // Check for constant scale transformation
+    
+    if (sampler->deterministicChildren().empty())
+	return; //trivial case: all coefficients are 1
+
+    set<Node const*> paramset;
+    vector<Node*> const &dtrm = sampler->deterministicChildren();
+    paramset.insert(sampler->node());
+    for (unsigned int j = 0; j < dtrm.size(); ++j) {
+	paramset.insert(dtrm[j]);
+    }
+    
+    for (unsigned int j = 0; j < dtrm.size(); ++j) {
+	if (!dtrm[j]->isScale(paramset, true)) {
+	    return; //Not a fixed scale transformation
+	}
+    }
+	
+    // Allocate _coef and do one-time calculation of coefficients 
+    _coef = new double[sampler->stochasticChildren().size()];
+    calCoef(_coef, sampler, 0);
+}
+
+ConjugateGamma::~ConjugateGamma()
+{
+    delete [] _coef;
 }
 
 
@@ -100,11 +101,9 @@ bool ConjugateGamma::canSample(StochasticNode *snode, Graph const &graph)
 {
     switch (getDist(snode)) {
     case GAMMA: case EXP: case CHISQ:
-	/* 
-	   The exponential and chisquare distributions are both special
-	   cases of the gamma distribution and are handled by the conjugate
-	   gamma sampler.
-	*/
+	//The exponential and chisquare distributions are both special
+	//cases of the gamma distribution and are handled by the conjugate
+	//gamma sampler.
 	break;
     default:
 	return false;
@@ -112,12 +111,10 @@ bool ConjugateGamma::canSample(StochasticNode *snode, Graph const &graph)
 
     vector<StochasticNode const*> stoch_nodes;
     vector<Node*> dtrm_nodes;
-    classifyChildren(vector<StochasticNode*>(1,snode), 
+    Sampler::classifyChildren(vector<StochasticNode*>(1,snode), 
 		     graph, stoch_nodes, dtrm_nodes);
-    /* 
-       Create a set of nodes containing snode and its deterministic
-       descendants for the checks below.
-    */
+    // Create a set of nodes containing snode and its deterministic
+    // descendants for the checks below.
     set<Node const *> paramset;
     paramset.insert(snode);
     for (unsigned int j = 0; j < dtrm_nodes.size(); ++j) {
@@ -143,74 +140,38 @@ bool ConjugateGamma::canSample(StochasticNode *snode, Graph const &graph)
 	}
     }
 
-  // Check deterministic descendants are scale transformations 
-  for (unsigned int j = 0; j < dtrm_nodes.size(); ++j) {
-    if (!dtrm_nodes[j]->isScale(paramset, false))
-      return false;
-  }
-
-    /*
-    // Check deterministic descendants
+    // Check deterministic descendants are scale transformations 
     for (unsigned int j = 0; j < dtrm_nodes.size(); ++j) {
-	LogicalNode const *lnode = asLogical(dtrm_nodes[j]);
-	if (lnode) {
-	    unsigned int nfactor = 0;
-	    vector<Node*> const &param = lnode->parents();
-	    switch(getOp(lnode)) {
-	    case DIVIDE:
-		if (paramset.count(param[1]))
-		    return false; //reciprocal term
-		break;
-	    case MULTIPLY:
-		for (unsigned int k = 0; k < param.size(); ++k) {
-		    nfactor += paramset.count(param[k]);
-		}
-		if (nfactor > 1)
-		    return false; //quadratic or higher term
-		break;
-	    default:
-		return false;
-	    }
-	}
-	else if (isMixture(dtrm_nodes[j])) {
-	    // Check that indices do not depend on snode
-	    if (!dtrm_nodes[j]->isLinear(paramset, false)) {
-		return false;
-	    }
-	}
-	else {
+	if (!dtrm_nodes[j]->isScale(paramset, false))
 	    return false;
-	}
     }
-    */
-
-
     return true; //We made it!
 }
 
 
-
-void ConjugateGamma::update(RNG *rng)
+void ConjugateGamma::update(ConjugateSampler *sampler,
+			    unsigned int chain, RNG *rng) const
 {
-    vector<StochasticNode const*> const &stoch_children = stochasticChildren();
+    vector<StochasticNode const*> const &stoch_children = 
+	sampler->stochasticChildren();
     unsigned int nchildren = stoch_children.size();
 
     double r; // shape
     double mu; // 1/scale
 
     //Prior
-    vector<Node const *> const &param = node()->parents();
-    switch(_target_dist) {
+    vector<Node const *> const &param = sampler->node()->parents();
+    switch(sampler->targetDist()) {
     case GAMMA:
-	r = *param[0]->value(_chain);
-	mu = *param[1]->value(_chain);
+	r = *param[0]->value(chain);
+	mu = *param[1]->value(chain);
 	break;
     case EXP:
 	r = 1;
-	mu = *param[0]->value(_chain);
+	mu = *param[0]->value(chain);
 	break;
     case CHISQ:
-	r = *param[0]->value(_chain)/2;
+	r = *param[0]->value(chain)/2;
 	mu = 1/2;
 	break;
     default:
@@ -218,28 +179,32 @@ void ConjugateGamma::update(RNG *rng)
     }
 
     // likelihood 
-    bool empty = deterministicChildren().empty();
+    double *coef = 0;
+    bool empty = sampler->deterministicChildren().empty();
     bool temp_coef = false;
-    if (!empty) {
-	if (_coef == 0) {
+    if (!empty && _coef == 0) {
 	    temp_coef = true;
-	    _coef = new double[nchildren];
-	}
-	calCoef();
+	    coef = new double[nchildren];
+	    calCoef(coef, sampler, chain);
     }
+    else {
+	coef = _coef;
+    }
+
+    vector<ConjugateDist> const &child_dist = sampler->childDist();
     for (unsigned int i = 0; i < nchildren; ++i) {
 
-	double coef_i = empty ? 1 : _coef[i];
+	double coef_i = empty ? 1 : coef[i];
 	if (coef_i > 0) {
 
 	    StochasticNode const *schild = stoch_children[i];
 	    vector<Node const*> const &cparam = schild->parents();
-	    double Y = *schild->value(_chain);
+	    double Y = *schild->value(chain);
 	    double ymean; //normal mean
 	    unsigned int Nrep = schild->repCount();
-	    switch(_child_dist[i]) {
+	    switch(child_dist[i]) {
 	    case GAMMA:
-		r += *cparam[0]->value(_chain) * Nrep;
+		r += *cparam[0]->value(chain) * Nrep;
 		mu += coef_i * Y * Nrep;
 		break;
 	    case EXP:
@@ -248,7 +213,7 @@ void ConjugateGamma::update(RNG *rng)
 		break;
 	    case NORM:
 		r += 0.5 * Nrep;
-		ymean = *cparam[0]->value(_chain);
+		ymean = *cparam[0]->value(chain);
 		mu += coef_i * (Y - ymean) * (Y - ymean)  * Nrep / 2;
 		break;
 	    case POIS:
@@ -257,12 +222,12 @@ void ConjugateGamma::update(RNG *rng)
 		break;
 	    case DEXP:
 		r += Nrep;
-		ymean = *cparam[0]->value(_chain);
+		ymean = *cparam[0]->value(chain);
 		mu += coef_i * fabs(Y - ymean) * Nrep;
 		break;
 	    case WEIB:
 		r += Nrep; 
-		mu += coef_i * pow(Y, *cparam[0]->value(_chain)) * Nrep;
+		mu += coef_i * pow(Y, *cparam[0]->value(chain)) * Nrep;
 		break;
 	    default:
 		throw logic_error("Invalid distribution in Conjugate Gamma sampler");
@@ -270,27 +235,26 @@ void ConjugateGamma::update(RNG *rng)
 	}
     }
     if (temp_coef) {
-	delete [] _coef;
-	_coef = 0;
+	delete [] coef;
     }
 
     // Sample from the posterior
     double xnew;
-    if (node()->isBounded()) {
+    if (sampler->node()->isBounded()) {
 	// Use inversion to get random sample
 	double lower = 0;
-	Node const *lb = node()->lowerBound();
+	Node const *lb = sampler->node()->lowerBound();
 	if (lb) {
-	    lower = max(lower, *lb->value(_chain));
+	    lower = max(lower, *lb->value(chain));
 	}
-	Node const *ub = node()->upperBound();
-	double plower = lb ? pgamma(lower,               r, 1/mu, 1, 0) : 0;
-	double pupper = ub ? pgamma(*ub->value(_chain), r, 1/mu, 1, 0) : 1;
+	Node const *ub = sampler->node()->upperBound();
+	double plower = lb ? pgamma(lower,             r, 1/mu, 1, 0) : 0;
+	double pupper = ub ? pgamma(*ub->value(chain), r, 1/mu, 1, 0) : 1;
 	double p = runif(plower, pupper, rng);
 	xnew = qgamma(p, r, 1/mu, 1, 0);    
     }
     else {
 	xnew = rgamma(r, 1/mu, rng);
     }
-    setValue(&xnew, 1, _chain);  
+    sampler->setValue(&xnew, 1, chain);  
 }

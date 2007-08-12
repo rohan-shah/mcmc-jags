@@ -36,52 +36,55 @@ ConjugateFactory::ConjugateFactory()
 bool ConjugateFactory::canSample(StochasticNode * snode,
 				 Graph const &graph) const
 {
-  /*
-  if (Censored::canSample(snode, graph))
-    return true;
-  */
+    /*
+      if (Censored::canSample(snode, graph))
+      return true;
+    */
 
-  //FIXME: Could use a typedef here to make it readable
+    //FIXME: Could use a typedef here to make it readable
     map<const string, bool (*)(StochasticNode *, Graph const &)>::const_iterator
 	p = _func_table.find(snode->distribution()->name());
 
     if (p == _func_table.end())
 	return false;
     else {
-      return p->second(snode, graph);
+	return p->second(snode, graph);
     }
 }
 
-Sampler 
-*ConjugateFactory::makeSingletonSampler(StochasticNode *snode, 
-					Graph const &graph,
-					unsigned int chain) const
+Sampler *ConjugateFactory::makeSingletonSampler(StochasticNode *snode, 
+						Graph const &graph) const
 {
-  /*
-  if (Censored::canSample(snode, graph))
-    return new Censored(snode, graph);
-  */
-  
-  switch (getDist(snode)) {
-  case NORM:
-    return new ConjugateNormal(snode, graph, chain);
-    break;
-  case GAMMA: case EXP: case CHISQ:
-    return new ConjugateGamma(snode, graph, chain);
-    break;
-  case BETA:
-    return new ConjugateBeta(snode, graph, chain);
-    break;
-  case DIRCH:
-    return new ConjugateDirichlet(snode, graph, chain);
-    break;
-  case MNORM:
-    return new ConjugateMNormal(snode, graph, chain);
-    break;
-  case WISH:
-    return new ConjugateWishart(snode, graph, chain);
-    break;
-  default:
-    throw invalid_argument("Unable to create conjugate sampler");
-  }
+    /*
+      if (Censored::canSample(snode, graph))
+      return new Censored(snode, graph);
+    */
+    
+    unsigned int nchain = snode->nchain();
+
+    ConjugateMethod* method = 0;
+    switch (getDist(snode)) {
+    case NORM:
+	method = new ConjugateNormal();
+	break;
+    case GAMMA: case EXP: case CHISQ:
+	method = new ConjugateGamma();
+	break;
+    case BETA:
+	method = new ConjugateBeta();
+	break;
+    case DIRCH:
+	method = new ConjugateDirichlet();
+	break;
+    case MNORM:
+	method = new ConjugateMNormal();
+	break;
+    case WISH:
+	method = new ConjugateWishart();
+	break;
+    default:
+	throw invalid_argument("Unable to create conjugate sampler");
+    }
+    
+    return new ConjugateSampler(snode, graph, method);
 }

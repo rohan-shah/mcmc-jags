@@ -1,7 +1,10 @@
 #ifndef CONJUGATE_BETA_H_
 #define CONJUGATE_BETA_H_
 
-#include "ConjugateSampler.h"
+#include "ConjugateMethod.h"
+
+class StochasticNode;
+class Graph;
 
 /**
  * @short Conjugate sampler for the beta distribution
@@ -12,13 +15,11 @@
  * the probability parameter. In the case of binomial children, the
  * sample size parameter must not depend on snode.
  */
-class ConjugateBeta : public ConjugateSampler {
- public:
-  ConjugateBeta(StochasticNode *snode, Graph const &graph, unsigned int chain);
-  ~ConjugateBeta();
-  
-  static bool canSample(StochasticNode *snode, Graph const &graph);
-  void update(RNG *rng);
+class ConjugateBeta : public ConjugateMethod {
+public:
+    void initialize(ConjugateSampler *sampler);
+    void update(ConjugateSampler *sampler, unsigned int chain, RNG *rng) const;
+    static bool canSample(StochasticNode *snode, Graph const &graph);
 };
 
 #endif /* CONJUGATE_BETA_H_ */

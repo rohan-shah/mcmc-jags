@@ -21,41 +21,48 @@ using std::set;
 using std::sqrt;
 using std::invalid_argument;
 
-ConjugateNormal::ConjugateNormal(StochasticNode *snode, Graph const &graph, 
-				 unsigned int chain)
-    : ConjugateSampler(snode, graph, chain), _betas(0), _length_betas(0)
+
+static void calBeta(double *beta, ConjugateSampler *sampler, unsigned int chain)
 {
-    if (!canSample(snode, graph)) {
-	throw invalid_argument("Can't construct ConjugateNormal sampler");
+    StochasticNode *snode = sampler->node();
+
+    const double xold = *snode->value(chain);
+    vector<StochasticNode const*> const &stoch_children = 
+	sampler->stochasticChildren();
+
+    double xnew = xold + 1;
+    sampler->setValue(&xnew, 1, chain);
+
+    double *bp = beta;    
+    for (unsigned int i = 0; i < stoch_children.size(); ++i) {
+	StochasticNode const *child = stoch_children[i];
+	unsigned int nrow = child->length();
+	double const *mu = child->parents()[0]->value(chain);
+	for (unsigned int j = 0; j < nrow; ++j) {
+	    bp[j] = mu[j];
+	}
+	bp += nrow;
     }
 
-    if (!deterministicChildren().empty()) {
-	vector<StochasticNode const *> const &children = stochasticChildren();
-	for (unsigned int i = 0; i < children.size(); ++i) {
-	    _length_betas += children[i]->length();
+    sampler->setValue(&xold, 1, chain);
+
+    bp = beta;    
+    for (unsigned int i = 0; i < stoch_children.size(); ++i) {
+	StochasticNode const *child = stoch_children[i];
+	unsigned int nrow = child->length();
+	double const *mu = child->parents()[0]->value(chain);
+	for (unsigned int j = 0; j < nrow; ++j) {
+	    bp[j] -= mu[j];
 	}
+	bp += nrow;
+    }
+}
+
+
+ConjugateNormal::ConjugateNormal()
+    : _betas(0), _length_betas(0)
+{
     
-	// Check for constant linear terms
-	set<Node const*> paramset;
-	vector<Node*> const &dtrm = deterministicChildren();
-	paramset.insert(snode);
-	for (unsigned int j = 0; j < dtrm.size(); ++j) {
-	    paramset.insert(dtrm[j]);
-	}
-
-	bool fixed_beta = true;
-	for (unsigned int j = 0; j < dtrm.size(); ++j) {
-	    if (!dtrm[j]->isLinear(paramset, true)) {
-		fixed_beta = false;
-		break;
-	    }
-	}
-	
-	if (fixed_beta) {
-	    _betas = new double[_length_betas];
-	    calBeta();
-	}
-    }
 }
 
 ConjugateNormal::~ConjugateNormal()
@@ -63,115 +70,115 @@ ConjugateNormal::~ConjugateNormal()
     delete [] _betas;
 }
 
-void ConjugateNormal::calBeta()
+void ConjugateNormal::initialize(ConjugateSampler *sampler)
 {
-    const double xold = *node()->value(_chain);
-    vector<StochasticNode const*> const &stoch_children = stochasticChildren();
+    if (sampler->deterministicChildren().empty()) 
+	return;
 
-    double xnew = xold + 1;
-    setValue(&xnew, 1, _chain);
-
-    double *beta = _betas;    
-    for (unsigned int i = 0; i < stoch_children.size(); ++i) {
-	StochasticNode const *snode = stoch_children[i];
-	unsigned int nrow = snode->length();
-	double const *mu = snode->parents()[0]->value(_chain);
-	for (unsigned int j = 0; j < nrow; ++j) {
-	    beta[j] = mu[j];
-	}
-	beta += nrow;
+    vector<StochasticNode const *> const &children = 
+	sampler->stochasticChildren();
+    for (unsigned int i = 0; i < children.size(); ++i) {
+	_length_betas += children[i]->length();
     }
-
-    setValue(&xold, 1, _chain);
-
-    beta = _betas;    
-    for (unsigned int i = 0; i < stoch_children.size(); ++i) {
-	StochasticNode const *snode = stoch_children[i];
-	unsigned int nrow = snode->length();
-	double const *mu = snode->parents()[0]->value(_chain);
-	for (unsigned int j = 0; j < nrow; ++j) {
-	    beta[j] -= mu[j];
-	}
-	beta += nrow;
+    
+    // Check for constant linear terms
+    set<Node const*> paramset;
+    paramset.insert(sampler->nodes()[0]);
+    vector<Node*> const &dtrm = sampler->deterministicChildren();
+    for (unsigned int j = 0; j < dtrm.size(); ++j) {
+	paramset.insert(dtrm[j]);
     }
+    
+    for (unsigned int j = 0; j < dtrm.size(); ++j) {
+	if (!dtrm[j]->isLinear(paramset, true)) {
+	    return; //Not a constant linear term
+	}
+    }
+    
+    //One-time calculation of fixed coefficients
+    _betas = new double[_length_betas];
+    calBeta(_betas, sampler, 0);
 }
 
 
 bool ConjugateNormal::canSample(StochasticNode *snode, Graph const &graph)
 {
-  /*
-    1) Stochastic children of sampled node must be normal, must not
-    be truncated, and must depend on snode only via the mean parameter
-    2) The mean parameter must be a linear function of snode. 
-  */
+    /*
+      1) Stochastic children of sampled node must be normal, must not
+      be truncated, and must depend on snode only via the mean parameter
+      2) The mean parameter must be a linear function of snode. 
+    */
 
-  if (getDist(snode) != NORM)
-    return false;
+    if (getDist(snode) != NORM)
+	return false;
 
-  vector<StochasticNode const*> stoch_nodes;
-  vector<Node*> dtrm_nodes;
-  classifyChildren(vector<StochasticNode*>(1,snode), 
-		   graph, stoch_nodes, dtrm_nodes);
+    vector<StochasticNode const*> stoch_nodes;
+    vector<Node*> dtrm_nodes;
+    Sampler::classifyChildren(vector<StochasticNode*>(1,snode), 
+		              graph, stoch_nodes, dtrm_nodes);
 
-  /* 
-     Create a set of nodes containing snode and its deterministic
-     descendants for the checks below.
-  */
-  set<Node const*> paramset;
-  paramset.insert(snode);
-  for (unsigned int j = 0; j < dtrm_nodes.size(); ++j) {
-    paramset.insert(dtrm_nodes[j]);
-  }
+    /* 
+       Create a set of nodes containing snode and its deterministic
+       descendants for the checks below.
+    */
+    set<Node const*> paramset;
+    paramset.insert(snode);
+    for (unsigned int j = 0; j < dtrm_nodes.size(); ++j) {
+	paramset.insert(dtrm_nodes[j]);
+    }
 
-  // Check stochastic children
-  for (unsigned int i = 0; i < stoch_nodes.size(); ++i) {
-      switch (getDist(stoch_nodes[i])) {
-      case NORM: case MNORM:
-	  break;
-      default:
-	  return false; //Not normal
-      }
-      if (stoch_nodes[i]->isBounded()) {
-	  return false; //Truncated distribution
-      }
-      vector<Node const*> const &param = stoch_nodes[i]->parents();
-      if (paramset.count(param[1])) {
-	  return false; //Precision depends on snode
-      }
-  }
+    // Check stochastic children
+    for (unsigned int i = 0; i < stoch_nodes.size(); ++i) {
+	switch (getDist(stoch_nodes[i])) {
+	case NORM: case MNORM:
+	    break;
+	default:
+	    return false; //Not normal
+	}
+	if (stoch_nodes[i]->isBounded()) {
+	    return false; //Truncated distribution
+	}
+	vector<Node const*> const &param = stoch_nodes[i]->parents();
+	if (paramset.count(param[1])) {
+	    return false; //Precision depends on snode
+	}
+    }
   
-  // Check linearity of deterministic descendants
-  for (unsigned int j = 0; j < dtrm_nodes.size(); ++j) {
-    if (!dtrm_nodes[j]->isLinear(paramset, false))
-      return false;
-  }
+    // Check linearity of deterministic descendants
+    for (unsigned int j = 0; j < dtrm_nodes.size(); ++j) {
+	if (!dtrm_nodes[j]->isLinear(paramset, false))
+	    return false;
+    }
 
-  return true; //We made it!
+    return true; //We made it!
 }
 
-void ConjugateNormal::update(RNG *rng)
+void ConjugateNormal::update(ConjugateSampler *sampler, unsigned int chain, 
+			     RNG *rng) const
 {
-    vector<StochasticNode const*> const &stoch_children = stochasticChildren();
+    vector<StochasticNode const*> const &stoch_children = 
+	sampler->stochasticChildren();
     unsigned int nchildren = stoch_children.size();
+    StochasticNode *snode = sampler->node();
 
     /* For convenience in the following computations, we shift the
        origin to xold, the previous value of the node */
 
-    const double xold = *node()->value(_chain);
-    const double priormean = *node()->parents()[0]->value(_chain) - xold; 
-    const double priorprec = *node()->parents()[1]->value(_chain); 
+    const double xold = *snode->value(chain);
+    const double priormean = *snode->parents()[0]->value(chain) - xold; 
+    const double priorprec = *snode->parents()[1]->value(chain); 
 
     double A = priormean * priorprec; //Weighted sum of means
     double B = priorprec; //Sum of weights
 
-    if (deterministicChildren().empty()) {
+    if (sampler->deterministicChildren().empty()) {
 
 	// This can only happen if the stochastic children are all
 	// univariate normal. We know alpha = 0, beta = 1.
 
 	for (unsigned int i = 0; i < nchildren; ++i) {
-	    double Y = *stoch_children[i]->value(_chain);
-	    double tau = *stoch_children[i]->parents()[1]->value(_chain);
+	    double Y = *stoch_children[i]->value(chain);
+	    double tau = *stoch_children[i]->parents()[1]->value(chain);
 	    unsigned int Nrep = stoch_children[i]->repCount();
 	    A += (Y - xold) * tau * Nrep;
 	    B += tau * Nrep;
@@ -180,40 +187,42 @@ void ConjugateNormal::update(RNG *rng)
     }
     else {
 
+	double *beta;
 	bool temp_beta = (_betas == 0);
 	if (temp_beta) {
-	    _betas = new double[_length_betas];
-	    calBeta();
+	    beta = new double[_length_betas];
+	    calBeta(beta, sampler, chain);
+	}
+	else {
+	    beta = _betas;
 	}
 
-	double const *beta = _betas;
+	double const *bp = beta;
 	for (unsigned long i = 0; i < nchildren; ++i) {
 
-	    StochasticNode const *snode = stoch_children[i];
+	    StochasticNode const *child = stoch_children[i];
 
-	    double const *Y = snode->value(_chain);
-	    double const *tau = snode->parents()[1]->value(_chain);
-	    double const *alpha = snode->parents()[0]->value(_chain);
-	    unsigned int nrow = snode->length();
-	    unsigned int Nrep = snode->repCount();
+	    double const *Y = child->value(chain);
+	    double const *tau = child->parents()[1]->value(chain);
+	    double const *alpha = child->parents()[0]->value(chain);
+	    unsigned int nrow = child->length();
+	    unsigned int Nrep = child->repCount();
 
 	    for (unsigned int k = 0; k < nrow; ++k) {
 		double tau_beta_k = 0;
 		for (unsigned int k2 = 0; k2 < nrow; ++k2) {
-		    tau_beta_k += tau[k * nrow + k2] * beta[k2];
+		    tau_beta_k += tau[k * nrow + k2] * bp[k2];
 		}
 		A += (Y[k] - alpha[k]) * tau_beta_k * Nrep;
-		B += beta[k] * tau_beta_k * Nrep;
+		B += bp[k] * tau_beta_k * Nrep;
 	    }
 	    
-	    beta += nrow;
+	    bp += nrow;
 	}
 
 	if (temp_beta) {
-	    delete [] _betas;
-	    _betas = 0;
+	    delete [] beta;
 	}
-    
     }
 
     // Draw the sample
@@ -221,17 +230,17 @@ void ConjugateNormal::update(RNG *rng)
     double postsd = sqrt(1/B);
     double xnew;
 
-    if (node()->isBounded()) {
-	Node const *lb = node()->lowerBound();
-	Node const *ub = node()->upperBound();
-	double plower = lb ? pnorm(*lb->value(_chain), postmean, postsd, 1, 0) : 0;
-	double pupper = ub ? pnorm(*ub->value(_chain), postmean, postsd, 1, 0) : 1;
+    if (snode->isBounded()) {
+	Node const *lb = snode->lowerBound();
+	Node const *ub = snode->upperBound();
+	double plower = lb ? pnorm(*lb->value(chain), postmean, postsd, 1, 0) : 0;
+	double pupper = ub ? pnorm(*ub->value(chain), postmean, postsd, 1, 0) : 1;
 	double p = runif(plower, pupper, rng);
 	xnew = qnorm(p, postmean, postsd, 1, 0);
     }
     else {
 	xnew = rnorm(postmean, postsd, rng);  
     }
-    setValue(&xnew, 1, _chain);
+    sampler->setValue(&xnew, 1, chain);
 
 }

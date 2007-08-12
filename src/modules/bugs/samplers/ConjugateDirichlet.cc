@@ -5,6 +5,7 @@
 #include <rng/RNG.h>
 #include <graph/MixtureNode.h>
 #include <graph/StochasticNode.h>
+#include "ConjugateSampler.h"
 
 #include <set>
 #include <stdexcept>
@@ -19,90 +20,82 @@ using std::sqrt;
 using std::invalid_argument;
 using std::logic_error;
 
-ConjugateDirichlet::ConjugateDirichlet(StochasticNode *snode, 
-				       Graph const &graph,
-                                       unsigned int chain)
-  : ConjugateSampler(snode, graph, chain)
-{
-  if (!canSample(snode, graph)) {
-    throw invalid_argument("Can't construct ConjugateDirichlet sampler");
-  }
-}
-
-ConjugateDirichlet::~ConjugateDirichlet()
-{
-}
-
 bool ConjugateDirichlet::canSample(StochasticNode *snode, Graph const &graph)
 {
-  if(getDist(snode) != DIRCH)
-    return false;
-
-  if (snode->isBounded())
-    return false;
-
-  vector<StochasticNode const*> stoch_nodes;
-  vector<Node*> dtrm_nodes;
-  classifyChildren(vector<StochasticNode*>(1,snode), 
-		   graph, stoch_nodes, dtrm_nodes);
-  /* 
-     Create a set of nodes containing snode and its deterministic
-     descendants for the checks below.
-  */
-  set<Node const *> paramset;
-  paramset.insert(snode);
-  for (unsigned int j = 0; j < dtrm_nodes.size(); ++j) {
-    paramset.insert(dtrm_nodes[j]);
-  }
-
-  // Check stochastic children
-  for (unsigned int i = 0; i < stoch_nodes.size(); ++i) {
-    vector<Node const *> const &param = stoch_nodes[i]->parents();
-    if (stoch_nodes[i]->isBounded()) {
-      return false; //Truncated
-    }
-    switch(getDist(stoch_nodes[i])) {
-    case CAT:
-      break;
-    case MULTI:
-      if (param[1] == snode)
+    if(getDist(snode) != DIRCH)
 	return false;
-      break;
-    default:
-      return false;
-    }
-  }
 
-  // Check deterministic descendants
-  for (unsigned int j = 0; j < dtrm_nodes.size(); ++j) {
-    if (isMixture(dtrm_nodes[j])) {
-      // Check that indices do not depend on snode
-      if(!dtrm_nodes[j]->isLinear(paramset, false)) {
+    if (snode->isBounded())
 	return false;
-      }
+
+    vector<StochasticNode const*> stoch_nodes;
+    vector<Node*> dtrm_nodes;
+    Sampler::classifyChildren(vector<StochasticNode*>(1,snode), 
+			      graph, stoch_nodes, dtrm_nodes);
+    /* 
+       Create a set of nodes containing snode and its deterministic
+       descendants for the checks below.
+    */
+    set<Node const *> paramset;
+    paramset.insert(snode);
+    for (unsigned int j = 0; j < dtrm_nodes.size(); ++j) {
+	paramset.insert(dtrm_nodes[j]);
     }
-    else {
-      return false;
+
+    // Check stochastic children
+    for (unsigned int i = 0; i < stoch_nodes.size(); ++i) {
+	vector<Node const *> const &param = stoch_nodes[i]->parents();
+	if (stoch_nodes[i]->isBounded()) {
+	    return false; //Truncated
+	}
+	switch(getDist(stoch_nodes[i])) {
+	case CAT:
+	    break;
+	case MULTI:
+	    if (param[1] == snode)
+		return false;
+	    break;
+	default:
+	    return false;
+	}
     }
-  }
+
+    // Check deterministic descendants
+    for (unsigned int j = 0; j < dtrm_nodes.size(); ++j) {
+	if (isMixture(dtrm_nodes[j])) {
+	    // Check that indices do not depend on snode
+	    if(!dtrm_nodes[j]->isLinear(paramset, false)) {
+		return false;
+	    }
+	}
+	else {
+	    return false;
+	}
+    }
   
-  return true;
+    return true;
 }
 
 static bool allzero(double const *x, long length)
 {
-  for (long i = 0; i < length; ++i) {
-    if (x[i])
-      return false;
-  }
-  return true;
+    for (long i = 0; i < length; ++i) {
+	if (x[i])
+	    return false;
+    }
+    return true;
 }
 
-void ConjugateDirichlet::update(RNG *rng)
+void ConjugateDirichlet::initialize(ConjugateSampler *sampler)
 {
-    unsigned long size = node()->length();
+}
+
+void ConjugateDirichlet::update(ConjugateSampler *sampler, unsigned int chain, 
+				RNG *rng) const
+{
+    StochasticNode *snode = sampler->node();
+    unsigned long size = snode->length();
     double *alpha = new double[size];
-    double const *prior = node()->parents()[0]->value(_chain);
+    double const *prior = snode->parents()[0]->value(chain);
     for (unsigned long i = 0; i < size; ++i) {
 	alpha[i] = prior[i];
     }
@@ -116,39 +109,41 @@ void ConjugateDirichlet::update(RNG *rng)
     for (unsigned long i = 0; i < size; ++i) {
 	xnew[i] = 0;
     }
-    setValue(xnew, size, _chain);
+    sampler->setValue(xnew, size, chain);
 
-    vector<StochasticNode const*> const &stoch_children = stochasticChildren();
+    vector<StochasticNode const*> const &stoch_children = 
+	sampler->stochasticChildren();
+    vector<ConjugateDist> const &child_dist = sampler->childDist();
     unsigned int nchildren = stoch_children.size();
     for (unsigned int i = 0; i < nchildren; ++i) {
 	StochasticNode const *schild = stoch_children[i];
 	long index = 0;
 	double const *N = 0;
-	if (allzero(schild->parents()[0]->value(_chain), 
+	if (allzero(schild->parents()[0]->value(chain), 
 		    schild->parents()[0]->length())) {
 	    unsigned int Nrep = schild->repCount();
-	    switch(_child_dist[i]) {
+	    switch(child_dist[i]) {
 	    case MULTI:
-	      N = schild->value(_chain);
-	      for (unsigned long i = 0; i < size; ++i) {
-		alpha[i] += N[i] * Nrep;
-	      }
-	      break;
+		N = schild->value(chain);
+		for (unsigned long i = 0; i < size; ++i) {
+		    alpha[i] += N[i] * Nrep;
+		}
+		break;
 	    case CAT:
-	      index = static_cast<long>(*schild->value(_chain) + 1.0E-6);
-	      alpha[index - 1] += Nrep;
-	      break;
+		index = static_cast<long>(*schild->value(chain) + 1.0E-6);
+		alpha[index - 1] += Nrep;
+		break;
 	    default:
-	      throw logic_error("Invalid distribution in Conjugate Dirichlet sampler");
+		throw logic_error("Invalid distribution in Conjugate Dirichlet sampler");
 	    }
 	}
     }
     
     /* Check structural zeros */
     for (unsigned long i = 0; i < size; ++i) {
-      if (prior[i] == 0 && alpha[i] != 0) {
-	throw invalid_argument("Invalid likelihood for Dirichlet distribution with structural zeros");
-      }
+	if (prior[i] == 0 && alpha[i] != 0) {
+	    throw invalid_argument("Invalid likelihood for Dirichlet distribution with structural zeros");
+	}
     }
   
     /* 
@@ -170,7 +165,7 @@ void ConjugateDirichlet::update(RNG *rng)
 	xnew[i] /= sum;
     }
 
-    setValue(xnew, size, _chain);
+    sampler->setValue(xnew, size, chain);
 
     delete [] xnew;
     delete [] alpha;

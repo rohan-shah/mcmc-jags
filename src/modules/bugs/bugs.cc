@@ -67,7 +67,7 @@
 
 #include <samplers/ConjugateFactory.h>
 #include <samplers/DSumFactory.h>
-#include <samplers/REFactory.h>
+//#include <samplers/REFactory.h>
 #include <samplers/MNormalFactory.h>
 
 using std::vector;

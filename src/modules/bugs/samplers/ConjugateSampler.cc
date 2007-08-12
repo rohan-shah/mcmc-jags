@@ -43,32 +43,61 @@ static void init_tables ()
   initialized = true;
 }
 
+/* FIXME: _child_dist should be const */
 
 ConjugateDist getDist(StochasticNode const *snode)
 {
-  if(!initialized)
-    init_tables();
+    if(!initialized)
+	init_tables();
   
-  string const &name = snode->distribution()->name();
-  map<const string, ConjugateDist>::iterator p(_dist_table.find(name));
+    string const &name = snode->distribution()->name();
+    map<const string, ConjugateDist>::iterator p(_dist_table.find(name));
 
-  if (p == _dist_table.end())
-    return OTHERDIST;
-  else
-    return p->second;
+    if (p == _dist_table.end())
+	return OTHERDIST;
+    else
+	return p->second;
 }
 
-ConjugateSampler::ConjugateSampler(StochasticNode *node, Graph const &graph, unsigned int chain)
-  : Sampler(vector<StochasticNode*>(1,node), graph), _chain(chain),
-    _target_dist(getDist(node))
+ConjugateSampler::ConjugateSampler(StochasticNode *node, Graph const &graph, 
+				   ConjugateMethod *method)
+    : Sampler(vector<StochasticNode*>(1,node), graph),
+      _snode(node),
+      _method(method),
+      _target_dist(getDist(node))
 {
-  vector<StochasticNode const*> const &children = stochasticChildren();
-  for (unsigned int i = 0; i < children.size(); ++i) {
-    _child_dist.push_back(getDist(children[i]));
-  }
+    vector<StochasticNode const*> const &children = stochasticChildren();
+    for (unsigned int i = 0; i < children.size(); ++i) {
+	_child_dist.push_back(getDist(children[i]));
+    }
+    
+    method->initialize(this);
+}
+
+void ConjugateSampler::update(vector<RNG*> const &rngs)
+{
+    unsigned int nchain = _snode->nchain();
+    for (unsigned int ch = 0; ch < nchain; ++ch) {
+	_method->update(this, ch, rngs[ch]);
+    }
 }
 
 bool ConjugateSampler::adaptOff()
 {
-  return true;
+    return true;
+}
+
+StochasticNode *ConjugateSampler::node() const
+{
+    return _snode;
+}
+
+vector<ConjugateDist> const &ConjugateSampler::childDist() const
+{
+    return _child_dist;
+}
+
+ConjugateDist ConjugateSampler::targetDist() const
+{
+    return _target_dist;
 }

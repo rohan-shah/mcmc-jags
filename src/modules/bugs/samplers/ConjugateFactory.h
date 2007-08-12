@@ -28,8 +28,8 @@ public:
     /**
      * Creates a ConjugateSampler for a stochastic node. 
      */
-    Sampler *makeSingletonSampler(StochasticNode *snode, Graph const &graph,
-				  unsigned int chain) const;
+    Sampler *makeSingletonSampler(StochasticNode *snode, Graph const &graph)
+                                  const;
 };
 
 #endif /* CONJUGATE_FACTORY_H_ */

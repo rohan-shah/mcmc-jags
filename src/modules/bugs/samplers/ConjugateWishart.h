@@ -1,7 +1,10 @@
 #ifndef CONJUGATE_WISHART_H_
 #define CONJUGATE_WISHART_H_
 
-#include "ConjugateSampler.h"
+#include "ConjugateMethod.h"
+
+class StochasticNode;
+class Graph;
 
 /**
  * Conjugate sampler for the Wishart distribution
@@ -11,14 +14,11 @@
  * stochastic children are multivariate normal with precision matrix
  * snode. The mean of the children may not depend on snode.
  */
-class ConjugateWishart : public ConjugateSampler {
-  bool _fast;
+class ConjugateWishart : public ConjugateMethod {
 public:
-  ConjugateWishart(StochasticNode *snode, Graph const &graph, unsigned int chain);
-  ~ConjugateWishart();
-  
-  static bool canSample(StochasticNode *snode, Graph const &graph);
-  void update(RNG *);
+    void initialize(ConjugateSampler *sampler);
+    void update(ConjugateSampler *sampler, unsigned int chain, RNG *rng) const;
+    static bool canSample(StochasticNode *snode, Graph const &graph);
 };
 
 #endif /* CONJUGATE_WISHART_H_ */

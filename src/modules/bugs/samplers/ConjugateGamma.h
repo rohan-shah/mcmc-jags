@@ -1,17 +1,19 @@
 #ifndef CONJUGATE_GAMMA_H_
 #define CONJUGATE_GAMMA_H_
 
-#include "ConjugateSampler.h"
+#include "ConjugateMethod.h"
 
-class ConjugateGamma : public ConjugateSampler {
+class StochasticNode;
+class Graph;
+
+class ConjugateGamma : public ConjugateMethod {
     double *_coef;
-    void calCoef();
- public:
-  ConjugateGamma(StochasticNode *snode, Graph const &graph, unsigned int chain);
-  ~ConjugateGamma();
-	
-  static bool canSample(StochasticNode *snode, Graph const &graph);
-  void update(RNG *rng);
+public:
+    ConjugateGamma();
+    ~ConjugateGamma();
+    static bool canSample(StochasticNode *snode, Graph const &graph);
+    void update(ConjugateSampler *sampler, unsigned int chain, RNG *rng) const;
+    void initialize(ConjugateSampler *sampler);
 };
 
 #endif /* CONJUGATE_GAMMA_H_ */

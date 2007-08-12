@@ -1,7 +1,10 @@
 #ifndef CONJUGATE_DIRICHLET_H_
 #define CONJUGATE_DIRICHLET_H_
 
-#include "ConjugateSampler.h"
+#include "ConjugateMethod.h"
+
+class Graph;
+class StochasticNode;
 
 /**
  * @short Conjugate sampler for Dirichlet distribution.  
@@ -14,13 +17,11 @@
  * must not depend on snode.  The immediate deterministic children
  * must be either identity functions or mixture nodes.
  */
-class ConjugateDirichlet : public ConjugateSampler {
- public:
-  ConjugateDirichlet(StochasticNode *snode, Graph const &graph, unsigned int chain);
-  ~ConjugateDirichlet();
-  
-  static bool canSample(StochasticNode *snode, Graph const &graph);
-  void update(RNG *rng);
+class ConjugateDirichlet : public ConjugateMethod {
+public:
+    void initialize(ConjugateSampler *sampler);
+    void update(ConjugateSampler *sampler, unsigned int chain, RNG *rng) const;
+    static bool canSample(StochasticNode *snode, Graph const &graph);
 };
 
 #endif /* CONJUGATE_DIRICHLET_H_ */

@@ -1,7 +1,10 @@
 #ifndef CONJUGATE_NORMAL_H_
 #define CONJUGATE_NORMAL_H_
 
-#include "ConjugateSampler.h"
+#include "ConjugateMethod.h"
+
+class StochasticNode;
+class Graph;
 
 /**
  * Conjugate sampler for the normal distribution.
@@ -11,16 +14,15 @@
  * (and not the precision) and the mean is a linear function of
  * snode.
  */
-class ConjugateNormal : public ConjugateSampler {
+class ConjugateNormal : public ConjugateMethod {
     double *_betas;
     unsigned long _length_betas;
-    void calBeta();
- public:
-  ConjugateNormal(StochasticNode *snode, Graph const &graph, unsigned int chain);
-  ~ConjugateNormal();
-
-  static bool canSample(StochasticNode *snode, Graph const &graph);
-  void update(RNG *rng);
+public:
+    ConjugateNormal();
+    ~ConjugateNormal();
+    void initialize(ConjugateSampler *sampler);
+    void update(ConjugateSampler *sampler, unsigned int chain, RNG *rng) const;
+    static bool canSample(StochasticNode *snode, Graph const &graph);
 };
 
 #endif /* CONJUGATE_NORMAL_H_ */

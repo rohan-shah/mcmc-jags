@@ -1,15 +1,16 @@
-#ifndef CONJUGATE_H_
-#define CONJUGATE_H_
+#ifndef CONJUGATE_SAMPLER_H_
+#define CONJUGATE_SAMPLER_H_
 
 #include <sampler/Sampler.h>
+#include "ConjugateMethod.h"
 
 class StochasticNode;
 class LogicalNode;
 
 enum ConjugateDist {
-  BERN, BETA, BIN, CAT, CHISQ, DEXP, DIRCH, EXP, GAMMA,
-  LNORM, LOGIS, MNORM, MULTI, NEGBIN, NORM, PAR, POIS,
-  T, UNIF, WEIB, WISH, OTHERDIST
+    BERN, BETA, BIN, CAT, CHISQ, DEXP, DIRCH, EXP, GAMMA,
+    LNORM, LOGIS, MNORM, MULTI, NEGBIN, NORM, PAR, POIS,
+    T, UNIF, WEIB, WISH, OTHERDIST
 };
 
 /**
@@ -21,18 +22,18 @@ ConjugateDist getDist(StochasticNode const *snode);
 
 class ConjugateSampler : public Sampler
 {
- protected:
-  const unsigned int _chain;
-  const ConjugateDist _target_dist;
-  std::vector<ConjugateDist> _child_dist;
- public:
-  ConjugateSampler(StochasticNode *snode, Graph const &graph, unsigned int chain);
-  inline StochasticNode *node() { return nodes().front(); }
-  /**
-   * Conjugate samplers do not have an adaptive phase. This function always
-   * returns true;
-   */
-  bool adaptOff();
+    StochasticNode *_snode;
+    ConjugateMethod *_method;
+    const ConjugateDist _target_dist;
+    std::vector<ConjugateDist> _child_dist;
+public:
+    ConjugateSampler(StochasticNode* const node, Graph const &graph, 
+		     ConjugateMethod *method);
+    StochasticNode *node() const;
+    ConjugateDist targetDist() const;
+    std::vector<ConjugateDist> const &childDist() const;
+    void update(std::vector<RNG*> const &);
+    bool adaptOff();
 };
 
-#endif /* CONJUGATE_H_ */
+#endif /* CONJUGATE_SAMPLER_H_ */
