@@ -7,6 +7,7 @@
 #include <rng/RNG.h>
 #include <sarray/util.h>
 #include <sarray/nainf.h>
+#include <sampler/ParallelDensitySampler.h>
 
 #include <cmath>
 #include <algorithm>
@@ -28,6 +29,7 @@ static void read_bounds(vector<StochasticNode*> const &snodes,
 			unsigned int chain,
 			double *lower, double *upper, unsigned int length)
 {
+
     double *lp = lower;
     double *up = upper;
     unsigned int node_length = 0;
@@ -47,11 +49,9 @@ static void read_bounds(vector<StochasticNode*> const &snodes,
     }
 }
 
-MixSampler::MixSampler(vector<StochasticNode *> const &snodes, 
-		       Graph const &graph, unsigned int chain,
-                       double const *value, unsigned int length, 
+MixSampler::MixSampler(vector<StochasticNode*> const &nodes,
 		       unsigned int max_level, double delta, unsigned int nrep)
-    : Metropolis(snodes, graph, chain, value, length), 
+    : Metropolis(nodes), 
       _max_level(max_level), 
       _delta(delta),
       _nrep(nrep),
@@ -62,9 +62,6 @@ MixSampler::MixSampler(vector<StochasticNode *> const &snodes,
       _pmean(max_level+1),
       _temper(false)
 {
-    if (!canSample(snodes, graph)) {
-	throw invalid_argument("Can't construct Mixture sampler");
-    }
     if (_delta <= 0) {
 	throw invalid_argument("delta must be positive in MixSampler");
     }
@@ -72,9 +69,10 @@ MixSampler::MixSampler(vector<StochasticNode *> const &snodes,
     _lstep[0] = -5;
     _pmean[0] = 0;
 
-    _lower = new double[value_length()];
-    _upper = new double[value_length()];
-    read_bounds(snodes, chain, _lower, _upper, value_length());
+    unsigned int N = value_length();
+    _lower = new double[N];
+    _upper = new double[N];
+    read_bounds(nodes, 0, _lower, _upper, N);
 }
 
 MixSampler::~MixSampler()
@@ -83,11 +81,11 @@ MixSampler::~MixSampler()
     delete [] _upper;
 }
 
-void MixSampler::transformValues(double const *v, unsigned int length,
-				 double *nv, unsigned int nlength) const
+void MixSampler::transform(double const *v, unsigned int length,
+			   double *nv, unsigned int nlength) const
 {
     if (length != value_length() || nlength != length) {
-	throw logic_error("Length error in MixSampler::transformValues");
+	throw logic_error("Length error in MixSampler::transform");
     }
 
     for (unsigned int i = 0; i < length; ++i) {
@@ -109,6 +107,32 @@ void MixSampler::transformValues(double const *v, unsigned int length,
     }
 }
 
+void MixSampler::untransform(double const *nv, unsigned int nlength,
+			     double *v, unsigned int length) const
+{
+    if (length != value_length() || length != nlength) {
+	throw logic_error("Length error in MixSampler::untransform");
+    }
+
+    for (unsigned int i = 0; i < length; ++i) {
+	bool bb = jags_finite(_lower[i]); //bounded below
+	bool ba = jags_finite(_upper[i]); //bounded above
+	if (bb && ba) {
+	    v[i] = log(nv[i] - _lower[i]) - log(_upper[i] - nv[i]);
+	}
+	else if (bb) {
+	    v[i] = log(nv[i] - _lower[i]); 
+	}
+	else if (ba) {
+	    v[i] = log(_upper[i] - nv[i]);
+	}
+	else {
+	    v[i] = nv[i];
+	}
+    }
+}
+
+/*
 void MixSampler::readValues(vector<StochasticNode*> const &snodes,
 			    unsigned int chain,
 			    double *value, unsigned int length)
@@ -150,6 +174,7 @@ void MixSampler::readValues(vector<StochasticNode*> const &snodes,
 	}
     }
 }
+*/
 
 bool MixSampler::canSample(vector<StochasticNode *> const &snodes,
                            Graph const &graph)
@@ -197,13 +222,13 @@ void MixSampler::update(RNG *rng)
     _temper = false;
     double pmean = 0;
     for (unsigned int i = 0; i < _nrep; ++i) {
-	double lprob = -logFullConditional(ch);
+	double lprob = -_sampler->logFullConditional(ch);
 	double step = exp(_lstep[0]);
 	for (unsigned int j = 0; j < length; ++j) {
 	    proposal[j] = last_proposal[j] + rng->normal() * step;
 	}
 	propose(proposal, length);
-	lprob += logFullConditional(ch);
+	lprob += _sampler->logFullConditional(ch);
 	double prob = min(exp(lprob), 1.0);
 	if(accept(rng, prob)) {
 	    copy(proposal, proposal + length, last_proposal);
@@ -217,8 +242,8 @@ void MixSampler::update(RNG *rng)
 
     _temper = true;
 
-    double lprior0 = logPrior(ch);
-    double llik0 = logLikelihood(ch);
+    double lprior0 = _sampler->logPrior(ch);
+    double llik0 = _sampler->logLikelihood(ch);
     
     unsigned int nstep = 2 * _level;
     vector<double> pwr(nstep + 2);
@@ -244,8 +269,8 @@ void MixSampler::update(RNG *rng)
 	    propose(proposal, length);
 	    
 	    // Calculate new prior and likelihood
-	    double lprior1 = logPrior(ch);
-	    double llik1 = logLikelihood(ch);
+	    double lprior1 = _sampler->logPrior(ch);
+	    double llik1 = _sampler->logLikelihood(ch);
 	    
 	    // Calculate acceptance probability for new proposal
 	    double lprob = (lprior1 - lprior0) + pwr[t] * (llik1 - llik0);

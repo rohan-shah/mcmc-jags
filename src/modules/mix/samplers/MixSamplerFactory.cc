@@ -1,11 +1,12 @@
 #include <config.h>
 #include "MixSamplerFactory.h"
 #include "MixSampler.h"
-#include "MixSamplerBasic.h"
+//#include "MixSamplerBasic.h"
 #include <graph/GraphMarks.h>
 #include <graph/Graph.h>
 #include <graph/StochasticNode.h>
 #include <distribution/Distribution.h>
+#include <sampler/ParallelDensitySampler.h>
 
 #include <set>
 
@@ -33,7 +34,7 @@ hasMarkedChild(Node *node, Graph const &graph, GraphMarks const &marks)
 
 void MixSamplerFactory::makeSampler(set<StochasticNode*> &nodes, 
 				    Graph const &graph,
-				    vector<vector<Sampler*> > &samplers) const
+				    vector<Sampler *> &samplers) const
 {
     GraphMarks marks(graph);
 
@@ -110,23 +111,18 @@ void MixSamplerFactory::makeSampler(set<StochasticNode*> &nodes,
 	return; //Nothing to do
     }
     else if (MixSampler::canSample(sample_nodes, graph)) {
-	unsigned int ilength = 0;
+
 	for (unsigned int i = 0; i < sample_nodes.size(); ++i) {
 	    nodes.erase(sample_nodes[i]);
-	    ilength += sample_nodes[i]->length();
 	}
 
-	double *ivalue = new double[ilength];
+	unsigned int nchain = sample_nodes[0]->nchain();
+	vector<DensityMethod*> methods(nchain,0);	    
 	for (unsigned int ch = 0; ch < samplers.size(); ++ch) {
-	    MixSampler::readValues(sample_nodes, ch, ivalue, ilength);
-	    MixSampler *mix = new MixSampler(sample_nodes, graph, ch,
-						 ivalue, ilength);
-/*
-	    MixSamplerBasic *mix = new MixSamplerBasic(sample_nodes, graph, ch,
-						       ivalue, ilength);
-*/
-	    samplers[ch].push_back(mix);
+	    methods[ch] = new MixSampler(sample_nodes);
 	}
-	delete [] ivalue;
+	Sampler *mix = new ParallelDensitySampler(sample_nodes, graph, 
+						  methods);
+	samplers.push_back(mix);
     }
 }

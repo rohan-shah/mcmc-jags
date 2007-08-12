@@ -2761,7 +2761,7 @@ static void errordump()
     for (unsigned int i = 1; i <= console->nchain(); ++i) {
        fname << "jags.dump" << i << ".R";
        std::cout << "Dumping chain " << i << " at iteration " 
-                 << console->iter(i) << " to file " << fname.str() << std::endl;
+                 << console->iter() << " to file " << fname.str() << std::endl;
        doDump(fname.str(), DUMP_ALL, i);
        fname.str("");
     }

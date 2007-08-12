@@ -2,6 +2,11 @@
 #define MIX_SAMPLER_H_
 
 #include <sampler/Metropolis.h>
+#include <graph/StochasticNode.h>
+
+#include <vector>
+
+class Graph;
 
 /**
  * @short Sampler for normal mixture models
@@ -64,8 +69,7 @@ public:
      * maximum temperature reached is thus exp(nlevel * delta).
      * @param nrep Number of Metropolis-Hastings updates to do at each level
      */
-    MixSampler(std::vector<StochasticNode *> const &snodes, Graph const &graph,
-               unsigned int chain, double const *value, unsigned int length,
+    MixSampler(std::vector<StochasticNode*> const &nodes,
 	       unsigned int max_level=50, double delta = 0.10, 
 	       unsigned int nrep = 4);
     ~MixSampler();
@@ -75,13 +79,17 @@ public:
      */
     void update(RNG *rng);
     void rescale(double prob);
-    void transformValues(double const *v, unsigned int length,
-                                     double *nv, unsigned int nlength) const;
+    void transform(double const *v, unsigned int length,
+		   double *nv, unsigned int nlength) const;
+    void untransform(double const *nv, unsigned int nlength,
+		     double *v, unsigned int length) const;
     static bool canSample(std::vector<StochasticNode *> const &snodes, 
 			  Graph const &graph);
+    /*
     static void readValues(std::vector<StochasticNode *> const &snodes,
                            unsigned int chain, double *value,
                            unsigned int length);
+    */
     bool checkAdaptation() const;
 };
 
