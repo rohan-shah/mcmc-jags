@@ -24,15 +24,14 @@ public:
      * function is called by SingletonFactory#makeSampler.
      */
     virtual Sampler *makeSingletonSampler(StochasticNode *node,
-					  Graph const &graph,
-					  unsigned int chain) const = 0;
+					  Graph const &graph) const = 0;
     /**
      * This traverses the graph, creating a Sampler, when possible,
      * for each individual StochasticNode.
      */
     void makeSampler(std::set<StochasticNode*> &nodes, 
 		     Graph const &graph,
-		     std::vector<std::vector<Sampler*> > &samplers) const;
+		     std::vector<Sampler*> &samplers) const;
 };
 
 #endif /* SINGLETON_FACTORY_H */
