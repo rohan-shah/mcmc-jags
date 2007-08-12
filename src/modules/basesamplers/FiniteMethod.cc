@@ -5,7 +5,7 @@
 #include <rng/RNG.h>
 #include <sarray/nainf.h>
 #include <graph/NodeError.h>
-#include "FiniteSampler.h"
+#include "FiniteMethod.h"
 
 #include <cmath>
 #include <string>

@@ -1,7 +1,7 @@
 #include <config.h>
 
 #include "RealSliceSampler.h"
-#include "DiscreteSliceSampler.h"
+#include "DiscreteSlicer.h"
 #include "SliceFactory.h"
 
 #include <sampler/ParallelDensitySampler.h>
@@ -28,7 +28,7 @@ namespace basesamplers {
 
 	for (unsigned int ch = 0; ch < nchain; ++ch) {
 	    if (discrete) {
-		methods[ch] = new DiscreteSlicer();
+		methods[ch] = new DiscreteSlicer(snode, ch);
 	    }
 	    else {
 		methods[ch] = new RealSlicer();
