@@ -1,6 +1,6 @@
 #include <config.h>
 
-#include "RealSliceSampler.h"
+#include "RealSlicer.h"
 #include "DiscreteSlicer.h"
 #include "SliceFactory.h"
 
@@ -14,9 +14,14 @@ using std::vector;
 namespace basesamplers {
 
     bool 
-    SliceFactory::canSample(StochasticNode * snode, Graph const &graph) const
+    SliceFactory::canSample(StochasticNode * node, Graph const &graph) const
     {
-	return snode->length() == 1 && df(snode) != 0;
+        if (node->isDiscreteValued()) {
+            return DiscreteSlicer::canSample(node);
+        }
+        else {
+            return RealSlicer::canSample(node);
+        }
     }
 
     Sampler *SliceFactory::makeSingletonSampler(StochasticNode *snode,
