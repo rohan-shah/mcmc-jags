@@ -1,9 +1,9 @@
 #ifndef SLICER_H_
 #define SLICER_H_
 
-#include <sampler/Sampler.h>
+#include <sampler/DensityMethod.h>
 
-class StochasticNode;
+class Sampler;
 
 /**
  * @short Slice Sampler 
@@ -16,7 +16,7 @@ class StochasticNode;
  * used to sample from a discrete distribution or from a univariate
  * "slice" of a multivariate distribution.
  */
-class Slicer : public Sampler 
+class Slicer : public DensityMethod 
 {
     double _width;
     bool _adapt;
@@ -29,29 +29,26 @@ public:
     /**
      * Constructor for Slice Sampler
      *
-     * @param node StochasticNode to sample
-     *
-     * @param graph Graph containing node within which sampling takes place.
-     *
      * @param width Initial width of slice
      *
      * @param max Maximum number of times initial width of slice will
      * increase at each iteration.
      */
-    Slicer(std::vector<StochasticNode*> const &nodes, Graph const &graph,
-	   double width,  unsigned int max);
+    Slicer(double width, unsigned int max);
     /**
-     * Update the current value using the "stepping" method. A subclass
-     * of Slicer can implement Sampler#update simply by calling this function.
+     * Update the current value using the "stepping" method. A Sampler
+     * that uses the Slicer DensityMethod can implement Sampler#update
+     * by calling this function.
      */
     void updateStep(RNG *rng);
     /**
-     * Update the current value using the "doubling" method. A subclass
-     * of Slicer can implement Sampler#update simply by calling this function.
+     * Update the current value using the "doubling" method. A Sampler
+     * that uses the Slicer DensityMethod can implement Sampler#update
+     * by calling this function.
      */
     void updateDouble(RNG *rng);
     /**
-     * Returns the current value of the sampler. A Slicer may have it's
+     * Returns the current value of the Slicer. A Slicer may have it's
      * own value, distinct from the value of the StochasticNode being
      * updated.
      */
@@ -75,12 +72,6 @@ public:
      * (50) have taken place.
      */
     bool adaptOff();
-    /**
-     * Returns the log probability density function of the target
-     * distribution at the current value of the sampler. This function
-     * is called by updateStep and updateDouble.
-     */
-    virtual double logDensity() const = 0;
 };
 
 #endif /* SLICER_H_ */

@@ -124,12 +124,12 @@ SArray const *StochasticNode::upperBound(unsigned int chain)
 }
 */
 
-Node const *StochasticNode::lowerBound()
+Node const *StochasticNode::lowerBound() const
 {
   return _lower;
 }
 
-Node const *StochasticNode::upperBound()
+Node const *StochasticNode::upperBound() const
 {
   return _upper;
 }

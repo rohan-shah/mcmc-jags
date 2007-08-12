@@ -153,9 +153,6 @@ void BUGSModel::coda(vector<NodeId> const &nodes, ofstream &index,
     if (output.size() != nchain()) {
         throw logic_error("Wrong number of output streams in BUGSModel::coda");
     }
-    if (!isSynchronized(this)) {
-	throw logic_error("Unsynchronized model in BUGSModel::coda");
-    }
 
     warn.clear();
 
@@ -186,9 +183,6 @@ void BUGSModel::coda(ofstream &index, vector<ofstream*> const &output,
 {
     if (output.size() != nchain()) {
         throw logic_error("Wrong number of output streams in BUGSModel::coda");
-    }
-    if (!isSynchronized(this)) {
-	throw logic_error("Unsynchronized model in BUGSModel::coda");
     }
     
     warn.clear();
@@ -274,13 +268,10 @@ bool BUGSModel::setMonitor(string const &name, Range const &range,
     if (_trace_map.find(nodeid) != _trace_map.end()) {
 	return false; //Node is already being monitored.
     }
-    if (!isSynchronized(this)) {
-        throw logic_error("Model not synchronized in BUGSModel::setMonitor");
-    }
     string msg;
     Node *node = getNode(name, range, msg);
     if (node) { 
-	TraceMonitor *monitor = new TraceMonitor(node, iteration(0) + 1, thin);
+	TraceMonitor *monitor = new TraceMonitor(node, iteration() + 1, thin);
 	_trace_monitors.push_back(monitor);
 	_trace_map[nodeid] = monitor;
 	addMonitor(monitor);

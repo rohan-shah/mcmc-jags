@@ -346,13 +346,13 @@ bool Console::update(unsigned int n)
     return true;
 }
 
-unsigned int Console::iter(unsigned int chain) const
+unsigned int Console::iter() const
 {
   if (!_model) {
     return 0;
   }
   else {
-    return _model->iteration(chain - 1);
+    return _model->iteration();
   }
 }
 

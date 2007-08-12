@@ -34,37 +34,17 @@ using std::ostringstream;
 using std::stable_sort;
 
 Model::Model(unsigned int nchain)
-    : _nchain(nchain), _chain_info(nchain), _is_initialized(false), 
-      _adapt(true), _data_gen(false)
+    : _nchain(nchain), _rng(nchain, 0), _samplers(0), _iteration(0),
+      _is_initialized(false), _adapt(true), _data_gen(false)
 {
-  for (unsigned int n = 0; n < _nchain; ++n) {
-    _chain_info[n].rng = 0;
-    _chain_info[n].iteration = 0;
-  }
 }
 
 Model::~Model()
 {
-    while(!_chain_info[0].samplers.empty()) {
-
-	/* Delete samplers from other chains. A single sampler may be
-	   responsible for updating more than one chain. We need to
-	   ensure that we don't delete it twice */
-
-	Sampler *sampler0 = _chain_info[0].samplers.back();
-
-	for (unsigned int n = 1; n < _nchain; ++n) {
-	    Sampler *last_sampler = _chain_info[n].samplers.back();
-	    if (last_sampler != sampler0) {
-		delete last_sampler;
-	    }
-	    _chain_info[n].samplers.pop_back();
-	}
-
-	/* Delete sampler from chain 0 */
+    while(!_samplers.empty()) {
+	Sampler *sampler0 = _samplers.back();
 	delete sampler0;
-	_chain_info[0].samplers.pop_back();
-
+	_samplers.pop_back();
     }
 }
 
@@ -85,15 +65,15 @@ void Model::chooseRNGs()
 
     list<RNGFactory*>::const_iterator p = rngFactories().begin();
     for (unsigned int n = 0; n < _nchain; ++n) {
-	while (_chain_info[n].rng == 0) {
+	while (_rng[n] == 0) {
 	    if (p == rngFactories().end()) {
 		ostringstream msg;
 		msg << "Cannot generate RNG for chain " << n
 		    << ": No further RNGFactory objects loaded";
 		throw runtime_error(msg.str());
 	    }
-	    _chain_info[n].rng = (*p)->makeRNG();
-	    if (_chain_info[n].rng == 0) {
+	    _rng[n] = (*p)->makeRNG();
+	    if (_rng[n] == 0) {
 		//This factory cannot generate any more RNGs. 
 		// Move to the next one.
 		++p;
@@ -173,7 +153,7 @@ void Model::initializeNodes(vector<Node*> const &sorted_nodes)
 	    if (!node->checkParentValues(n)) {
 		throw NodeError(node, "Invalid parent values");
 	    }
-	    if (!node->initialize(_chain_info[n].rng, n)) {
+	    if (!node->initialize(_rng[n], n)) {
 		throw NodeError(node, "Initialization failure");
 	    } 
 	}
@@ -260,15 +240,13 @@ void Model::chooseSamplers(vector<Node*> const &sorted_nodes)
 	}
     }
 
-    vector <vector<Sampler*> > sam(nchain());
-
     set<StochasticNode*> sset = stochastic_nodes;
     // Traverse the list of samplers, selecting nodes that can be sampled
     list<SamplerFactory const *> const &sfactories = samplerFactories();
     for (list<SamplerFactory const *>::const_iterator p = sfactories.begin();
 	 p != sfactories.end(); ++p)
     {
-	(*p)->makeSampler(sset, sample_graph, sam);
+	(*p)->makeSampler(sset, sample_graph, _samplers);
     }
   
     // Make sure we found a sampler for all the nodes
@@ -291,11 +269,7 @@ void Model::chooseSamplers(vector<Node*> const &sorted_nodes)
 	index++;
     }
 
-    for (unsigned int n = 0; n < nchain(); ++n) {
-	_chain_info[n].samplers = sam[n];
-	stable_sort(_chain_info[n].samplers.begin(), 
-		    _chain_info[n].samplers.end(), less_sampler(node_map));
-    }
+    stable_sort(_samplers.begin(), _samplers.end(), less_sampler(node_map));
 }
 
 void Model::update(unsigned int niter)
@@ -311,50 +285,48 @@ void Model::update(unsigned int niter)
 
     for (unsigned int iter = 0; iter < niter; ++iter) {    
 	
+	for (vector<Sampler*>::iterator i = _samplers.begin(); 
+	 i != _samplers.end(); ++i) 
+	{
+	    (*i)->update(_rng);
+	}
+
 	for (unsigned int n = 0; n < _nchain; ++n) {
 	    
-	    vector<Sampler*> &samplers = _chain_info[n].samplers;
-	    RNG *rng = _chain_info[n].rng;
-	    
-	    for (vector<Sampler*>::iterator i = samplers.begin(); 
-		 i != samplers.end(); ++i) 
-	    {
-	      (*i)->update(rng);
-	    }
 	    for (vector<Node*>::const_iterator k = _sampled_extra.begin();
 		 k != _sampled_extra.end(); ++k)
 	    {
-		(*k)->randomSample(rng, n);
+		(*k)->randomSample(_rng[n], n);
 	    }
-	    _chain_info[n].iteration++;
+	    _iteration++;
+
 	    for (list<Monitor*>::iterator k = _monitors.begin(); 
 		 k != _monitors.end(); k++) 
 	    {
-		(*k)->update(_chain_info[n].iteration, n);
+		(*k)->update(_iteration, n);
 	    }
 	}
     }
 }
 
-unsigned int Model::iteration(unsigned int chain) const
+unsigned int Model::iteration() const
 {
-  return _chain_info[chain].iteration;
+  return _iteration;
 }
 
 bool Model::adaptOff() 
 {
-  bool status = true;
+    bool status = true;
 
-  for (unsigned int n = 0; n < _nchain; ++n) {
-    for (vector<Sampler*>::iterator p = _chain_info[n].samplers.begin();
-	 p != _chain_info[n].samplers.end(); ++p)
-      {
-	if(!(*p)->adaptOff())
-           status = false;
-      }
-  }
-  _adapt = false;
-  return status;
+    for (vector<Sampler*>::iterator p = _samplers.begin(); 
+	 p != _samplers.end(); ++p)
+    {
+	if (!(*p)->adaptOff())
+	    status = false;
+    }
+
+    _adapt = false;
+    return status;
 }
 
 bool Model::isAdapting() const
@@ -481,7 +453,7 @@ unsigned int Model::nchain() const
 
 RNG *Model::rng(unsigned int chain) const
 {
-  return _chain_info[chain].rng;
+  return _rng[chain];
 }
 
 bool Model::setRNG(string const &name, unsigned int chain)
@@ -496,7 +468,7 @@ bool Model::setRNG(string const &name, unsigned int chain)
   for (p = rngFactories().begin(); p != rngFactories().end(); ++p) {
     RNG *rng = (*p)->makeRNG(name);
     if (rng) {
-      _chain_info[chain].rng = rng;
+      _rng[chain] = rng;
       return true;
     }
   }
@@ -509,16 +481,6 @@ bool Model::setRNG(RNG *rng, unsigned int chain)
   if (chain >= _nchain)
      throw logic_error("Invalid chain number in Model::setRNG");
 
-  _chain_info[chain].rng = rng;
+  _rng[chain] = rng;
   return true;
-}
-
-bool isSynchronized(Model const *model)
-{
-    for (unsigned int ch = 1; ch < model->nchain(); ++ch) {
-        if (model->iteration(ch) != model->iteration(0)) {
-	    return false;
-        }
-    }
-    return true;
 }

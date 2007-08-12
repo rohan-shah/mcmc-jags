@@ -1,5 +1,6 @@
 #include <config.h>
 #include <sampler/RWMetropolis.h>
+#include <sampler/ParallelDensitySampler.h>
 #include <rng/RNG.h>
 
 #include <cmath>
@@ -19,14 +20,12 @@ using std::exp;
 */
 #define INITIAL_N 10
 
-RWMetropolis::RWMetropolis(vector<StochasticNode *> const &nodes, 
-			   Graph const &graph, unsigned int chain,
-                           double const *value, unsigned int length,
-                           double scale, double prob)
-    : Metropolis(nodes, graph, chain, value, length), 
+RWMetropolis::RWMetropolis(vector<StochasticNode*> const &nodes,
+			   double scale, double prob)
+    : Metropolis(nodes),
       _prob(prob), _lscale(log(scale)), _p_over_target(false), _n(INITIAL_N)
 {
-    if (prob < 0 || prob > 1 || scale < 0 || length == 0)
+    if (prob < 0 || prob > 1 || scale < 0)
 	throw logic_error("Invalid initial values in RWMetropolis");
 }
 
@@ -54,13 +53,13 @@ void RWMetropolis::update(RNG *rng)
     double *new_value = new double[d];
     double const *old_value = value();
 
-    double log_p = -logFullConditional(chain());
+    double log_p = -_sampler->logFullConditional(_chain);
     double scale = exp(_lscale);
     for (unsigned int i = 0; i < d; ++i) {
         new_value[i] = old_value[i] + scale * rng->uniform();
     }
     propose(new_value, d);
-    log_p += logFullConditional(chain());
+    log_p += _sampler->logFullConditional(_chain);
     accept(rng, exp(log_p));
 
     delete [] new_value;
