@@ -4,32 +4,38 @@
 #include "DiscreteSliceSampler.h"
 #include "SliceFactory.h"
 
-#include <string>
-#include <stdexcept>
+#include <sampler/ParallelDensitySampler.h>
+#include <graph/StochasticNode.h>
 
-using std::logic_error;
+#include <vector>
+
+using std::vector;
 
 namespace basesamplers {
 
     bool 
     SliceFactory::canSample(StochasticNode * snode, Graph const &graph) const
     {
-	return (RealSliceSampler::canSample(snode, graph) || 
-		DiscreteSliceSampler::canSample(snode, graph));
+	return snode->length() == 1 && df(snode) != 0;
     }
-    
+
     Sampler *SliceFactory::makeSingletonSampler(StochasticNode *snode,
-					 Graph const &graph,
-					 unsigned int chain) const
+						Graph const &graph) const
     {
-	if (RealSliceSampler::canSample(snode, graph)) {
-	    return new RealSliceSampler(snode, graph, chain);
+	unsigned int nchain = snode->nchain();
+	vector<DensityMethod*> methods(nchain, 0);
+	bool discrete = snode->isDiscreteValued();
+
+	for (unsigned int ch = 0; ch < nchain; ++ch) {
+	    if (discrete) {
+		methods[ch] = new DiscreteSlicer();
+	    }
+	    else {
+		methods[ch] = new RealSlicer();
+	    }
 	}
-	else if (DiscreteSliceSampler::canSample(snode, graph)) {
-	    return new DiscreteSliceSampler(snode, graph, chain);
-	}
-	else {
-	    throw logic_error("Unable to construct slice sampler");
-	}
+
+	vector<StochasticNode*> nodes(1, snode);
+	return new ParallelDensitySampler(nodes, graph, methods);
     }
 }

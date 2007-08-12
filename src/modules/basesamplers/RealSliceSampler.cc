@@ -2,6 +2,8 @@
 #include <graph/StochasticNode.h>
 #include <graph/NodeError.h>
 #include <distribution/Distribution.h>
+#include <sampler/ParallelDensitySampler.h>
+
 #include "RealSliceSampler.h"
 
 #include <cmath>
@@ -10,51 +12,44 @@ using std::vector;
 
 namespace basesamplers {
 
-RealSliceSampler::RealSliceSampler(StochasticNode *node, Graph const &graph,
-                                   unsigned int chain,
-				   double width, long maxwidth)
-  : Slicer(vector<StochasticNode*>(1,node), graph, width, maxwidth),
-    _chain(chain)
-{
-}
+    RealSlicer::RealSlicer(double width, long maxwidth)
+	: Slicer(width, maxwidth)
+    {
+    }
 
-bool 
-RealSliceSampler::canSample(StochasticNode const *node, Graph const &graph)
-{
-  if (node->distribution()->isDiscreteValued() || node->length() != 1)
-     return false;
+/*
+    bool 
+    RealSlicer::canSample(StochasticNode const *node, Graph const &graph)
+    {
+	if (node->distribution()->isDiscreteValued() || node->length() != 1)
+	    return false;
 
-  if (df(node) == 0)
-     return false; 
+	if (df(node) == 0)
+	    return false; 
 
-  return true;
-}
-
-double RealSliceSampler::value() const
-{
-  return *nodes().front()->value(_chain);
-}
+	return true;
+    }
+*/
+    double RealSlicer::value() const
+    {
+	return _sampler->nodes()[0]->value(_chain)[0];
+    }
  
-void RealSliceSampler::setValue(double value)
-{
-    Sampler::setValue(&value, 1, _chain);
-}
+    void RealSlicer::setValue(double value)
+    {
+	_sampler->setValue(&value, 1, _chain);
+    }
 
-void RealSliceSampler::getLimits(double *lower, double *upper) const
-{
-  StochasticNode const *snode = nodes().front();
-  snode->distribution()->support(lower, upper, 1, snode->parameters(_chain),
-                                      snode->parameterDims());
-}
+    void RealSlicer::getLimits(double *lower, double *upper) const
+    {
+	StochasticNode const *snode = _sampler->nodes().front();
+	snode->distribution()->support(lower, upper, 1, 
+				       snode->parameters(_chain),
+				       snode->parameterDims());
+    }
 
-void RealSliceSampler::update(RNG *rng)
-{
-  updateStep(rng);
-}
-
-double RealSliceSampler::logDensity() const
-{
-  return Sampler::logFullConditional(_chain);
-}
-
+    void RealSlicer::update(RNG *rng)
+    {
+	updateStep(rng);
+    }
 }
