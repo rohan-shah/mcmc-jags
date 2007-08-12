@@ -9,11 +9,11 @@ bugssampler_la_LDFLAGS = -no-undefined -module -avoid-version
 bugssampler_la_SOURCES = Censored.cc ConjugateGamma.cc			\
 ConjugateWishart.cc ConjugateBeta.cc ConjugateMNormal.cc		\
 ConjugateDirichlet.cc ConjugateNormal.cc DSumFactory.cc			\
-ConjugateFactory.cc ConjugateSampler.cc DSumSampler.cc RESampler.cc	\
-REFactory.cc MNormal.cc MNormalFactory.cc
+ConjugateFactory.cc ConjugateSampler.cc DSumSampler.cc 			\
+MNormal.cc MNormalFactory.cc
 
 noinst_HEADERS = Censored.h ConjugateFactory.h ConjugateNormal.h	\
 ConjugateBeta.h ConjugateGamma.h ConjugateSampler.h DSumFactory.h	\
 ConjugateDirichlet.h ConjugateMNormal.h ConjugateWishart.h		\
-DSumSampler.h RESampler.h REFactory.h MNormal.h MNormalFactory.h
+DSumSampler.h MNormal.h MNormalFactory.h ConjugateMethod.h
 
