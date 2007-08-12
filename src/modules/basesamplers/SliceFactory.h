@@ -14,8 +14,8 @@ namespace basesamplers {
     {
     public:
 	bool canSample(StochasticNode *snode, Graph const &graph) const;
-	Sampler *makeSingletonSampler(StochasticNode *snode, Graph const &graph,
-				      unsigned int chain) const;
+	Sampler *makeSingletonSampler(StochasticNode *snode, Graph const &graph)
+	    const;
     };
 
 }
