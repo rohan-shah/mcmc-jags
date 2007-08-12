@@ -13,8 +13,8 @@ namespace basesamplers {
     class FiniteFactory : public SingletonFactory {
     public:
 	bool canSample(StochasticNode *snode, Graph const &graph) const;
-	Sampler *makeSingletonSampler(StochasticNode *snode, Graph const &graph,
-				      unsigned int nchain) const;
+	Sampler *makeSingletonSampler(StochasticNode *snode, 
+				      Graph const &graph) const;
     };
 
 }
