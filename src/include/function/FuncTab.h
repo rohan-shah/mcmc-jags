@@ -7,7 +7,7 @@
 class Function;
 class InverseLinkFunc;
 
-/** 
+/**
  * @short Look-up table for Function objects
  *
  * Since all member functions of the JAGS Function class are constant, only
@@ -24,32 +24,23 @@ class FuncTab
     std::list<InverseLinkFunc const *> _masked_link_list;
 public:
   /**
-   * Any functions inserted into the FuncTab should be removed before
-   * it is destroyed. The destructor therefore prints a warning
-   * message to the standard error if the table is non-empty when it
-   * is called
-   */
-  ~FuncTab ();
-  /**
    * Inserts an inverse link function into the table. This function
    * works the same way as the standard insert function (see below)
-   * but additionally registers the function by its link name 
-   * @see InverseLinkFunc
+   * but additionally registers the function by its link name.
    */
   void insert (InverseLinkFunc const *func);
   /**
-   * Inserts a function into the table.
+   * Inserts a function into the table. This function will mask any
+   * function of the same name previously inserted into the table,
+   * making them inaccessible until this function is erased.
    *
-   * @return logical value indicating success.  The insertion will
-   * fail if a function with the same name is already in the FuncTab.
-   *
-   * @param func Pointer to the function to insert, which should
-   * be dynamically allocated. The FuncTab is responsible for freeing
-   * the memory allocated to func.
+   * @param func Function to insert into the table.
    */
   void insert (Function const *func);
   /**
-   * Finds a function by name 
+   * Finds a function by name.  If more than one function with the
+   * same name has been inserted into the table, the most recently
+   * inserted Function will be returned.
    *
    * @return a pointer to the function or 0 if it was not found.
    */

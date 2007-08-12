@@ -17,7 +17,7 @@ class Range;
  * objects and referencing them by name.
  *
  * @see FuncTab
- * @short Function
+ * @short Function or operator
  */
 class Function
 {
@@ -39,11 +39,11 @@ public:
     /**
      * Evaluates the function. 
      *
-     * @param value SArray which is modified to contain the result of
+     * @param value array of doubles which contains the result of
      * the evaluation 
-     * @param args Vector of arguments. This is assumed to satisfy
-     * the requirements of length, dimension, and compatibility with
-     * the dimension of value.
+     * @param args Vector of arguments. 
+     * @param lengths Respective lengths hof each element of args.
+     * @param dims Respective dimensions of each element of args.
      */
     virtual void
 	evaluate(double *value, 
@@ -104,12 +104,13 @@ public:
      */
     virtual bool isDiscreteValued(std::vector<bool> const &mask) const;
     /**
-     * Tests whether the value of the function is linear.  False
-     * negative responses are permitted: i.e. the value false may be
-     * returned when the value is, in fact, a linear function of the
-     * given parameters, but false positives are not allowed. Since most
-     * functions of interest are non-linear, the default method returns
-     * false, so linear functions must overload this.
+     * Tests whether the value of the function is linear, i.e. a
+     * function of the form f(x) = A + B %*% x.  False negative
+     * responses are permitted: i.e. the value false may be returned
+     * when the value is, in fact, a linear function of the given
+     * parameters, but false positives are not allowed. Since most
+     * functions of interest are non-linear, the default method
+     * returns false, so linear Functions must overload this.
      * 
      * @param mask boolean vector of length equal to the number of
      * parameters.  The mask indicates a subset of parameters (those with
@@ -120,19 +121,19 @@ public:
      * it is ignored. A non-empty vector must have length equal to mask,
      * and denotes the parameters whose values are fixed. In this case
      * the test is more restrictive, and the function returns true only
-     * if the parameters of the coefficients are fixed, except for the
-     * intercept, which may vary.
+     * if the coefficient B is fixed.
      *
      * @see DeterministicNode#isLinear
      */
     virtual bool isLinear(std::vector<bool> const &mask,
 			  std::vector<bool> const &isfixed) const;
     /**
-     * Tests whether the value of the function is a scale transformation
-     * of the given parameter, i.e. a trivial linear function of the
-     * form f(x) = A + B %*% x, where A or B is zero..  False negative
-     * responses are permitted.  Since most functions of interest are
-     * not scale transormations, the default method returns false.
+     * Tests whether the value of the function is a scale
+     * transformation of the given scalar parameter, i.e. a trivial
+     * linear function of the form f(x) = A + B %*% x, where A or B is
+     * zero..  False negative responses are permitted.  Since most
+     * functions of interest are not scale transformations, the
+     * default method returns false.
      * 
      * @param index The index of the parameter to be tested. The function
      * may be a non-scale transformation of the other pararameters (e.g.
@@ -142,7 +143,7 @@ public:
      * it is ignored.  A non-empty vector must have length equal to
      * mask, and denotes the parameters whose values are fixed. In this
      * case the test is more restrictive, and the function returns true
-     * only if the parameter B is fixed.
+     * only if the coeffiicent B is fixed.
      *
      * @see DeterministicNode#isScale
      */
