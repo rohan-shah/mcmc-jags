@@ -1,10 +1,13 @@
 #ifndef METROPOLIS_H_
 #define METROPOLIS_H_
 
-#include <sampler/Sampler.h>
+#include <sampler/DensityMethod.h>
+#include <vector>
+
+class StochasticNode;
 
 /** 
- * @short Metropolis-Hastings Sampler
+ * @short Metropolis-Hastings Update method
  *
  * This is a base class for Metropolis Hastings samplers.  It provides
  * only basic infrastructure.
@@ -24,28 +27,18 @@
  * calls to Metropolis#propose, then calculate the acceptance
  * probability, and then call the function Metropolis#accept.
  */
-class Metropolis : public Sampler
+class Metropolis : public DensityMethod
 {
-    const unsigned int _chain;
     bool _adapt;
     double *_value;
     double *_last_value;
-    const unsigned int _value_length;
+    unsigned int _length;
     Metropolis(Metropolis const &);
     Metropolis &operator=(Metropolis const &);
 public:
-    /**
-     * Constructs a Metropolis Hastings sampler
-     * 
-     * @param nodes Vector of Stochastic Nodes to be sampled
-     * @param graph Graph within which sampling is to take place
-     * @param chain Chain number that the sampler will update
-     * @param value Pointer to the beginning of an array of initial values.
-     * @param length Length of initial value array
-     */
-    Metropolis(std::vector<StochasticNode *> const &nodes, Graph const &graph,
-               unsigned int chain, double const *value, unsigned int length);
+    Metropolis(std::vector<StochasticNode *> const &nodes);
     ~Metropolis();
+    void initialize(ParallelDensitySampler *sampler, unsigned int chain);
     /**
      * Returns the current value of the chain. 
      */
@@ -101,13 +94,18 @@ public:
      * value). This function is called by Metropolis#adaptOff;
      */
     virtual bool checkAdaptation() const = 0;
-    /*
-     * Transforms the supplied values to a legitimate values for the
-     * sampled nodes, and then calsl Sampler#setValue with the
-     * transformed values.  This function is called by Metropolis#propose
+    /**
+     * Transforms the value of the to Node values for the sampled nodes.
+     * This function is called by Metropolis#propose
      */
-    virtual void transformValues(double const *v, unsigned int length,
-                                 double *nv, unsigned int nlength) const = 0;
+    virtual void transform(double const *v, unsigned int length,
+			   double *nv, unsigned int nlength) const = 0;
+    /**
+     * Transforms the supplied node values to values for the
+     * sampled nodes.  This function is called by Metropolis#initialize
+     */
+    virtual void untransform(double const *nv, unsigned int nlength,
+			     double *v, unsigned int length) const = 0;
 };
 
 #endif /* METROPOLIS_H_ */

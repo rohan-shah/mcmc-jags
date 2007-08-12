@@ -39,12 +39,12 @@ public:
      * Returns a pointer to the lower bound if the distribution is
      * truncated, or a NULL pointer otherwise.
      */
-    Node const *lowerBound();
+    Node const *lowerBound() const;
     /**
      * Returns a pointer to the upper bound if the distribution is
      * truncated, or a NULL pointer otherwise.
      */
-    Node const *upperBound();
+    Node const *upperBound() const;
     /**
      * Returns a pointer to the Distribution object of the StochasticNode.
      * @see Distribution

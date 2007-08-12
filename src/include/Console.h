@@ -151,7 +151,7 @@ public:
   /**
    * Returns the iteration number of the model.
    */
-  unsigned int iter(unsigned int chain) const;
+  unsigned int iter() const;
   /**
    * Dump the contants of monitored node in CODA format
    * The parameters name and range must correspond to a previous

@@ -105,9 +105,9 @@ public:
    * Every sampler must update the vector of nodes and its immediate
    * deterministic descendants using the update function.
    *
-   * @param rng Pseudo-random number generator function.
+   * @param rng vector of Pseudo-random number generator functions.
    */
-  virtual void update(RNG *rng) = 0;
+  virtual void update(std::vector<RNG *> const &rng) = 0;
   /**
    * When a sampler is constructed, it may be in adaptive mode, which
    * allows it to adapt its behaviour for increased

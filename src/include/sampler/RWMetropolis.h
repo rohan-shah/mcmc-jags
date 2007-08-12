@@ -18,14 +18,15 @@ class RWMetropolis : public Metropolis
     unsigned int _n;
 public:
     /**
+     * Constructs a random walk Metropolis sampler. 
+     *
      * @param scale Initial scale for the random walk updates.
-     * @param prob  Target acceptance probability. The default value seems
-     *              to be a fairly robust optimal value.
+     *
+     * @param prob Target acceptance probability. The default seems to
+     *              be a fairly robust optimal value.
      */
-    RWMetropolis(std::vector<StochasticNode *> const &nodes,
-                 Graph const &graph, 
-		 unsigned int chain, double const *value, unsigned int length,
-		 double scale, double prob = 0.234);
+    RWMetropolis(std::vector<StochasticNode*> const &nodes, double scale, 
+		 double prob = 0.234);
     ~RWMetropolis();
     /**
      * Returns the current scale for the random walk updates.
@@ -33,8 +34,10 @@ public:
     double scale() const;
     /**
      * Modifies the scale to achieve the target acceptance probability.
-     * Rescaling depends only on the acceptance probability p; the accept
-     * parameter is ignored.
+     *
+     * @param p acceptance probability at current update
+     * @param accept boolean flag indicating whether the update was
+     * accepted. This parameter is ignored.
      */
     void rescale(double p);
     void update(RNG *rng);

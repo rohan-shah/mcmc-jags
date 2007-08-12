@@ -14,16 +14,6 @@ class RNG;
 class RNGFactory;
 
 /**
- * @short Current status of a chain
- */
-struct ChainInfo
-{
-  RNG *rng;
-  std::vector<Sampler*> samplers;
-  unsigned int iteration;
-};
-
-/**
  * @short Graphical model 
  *
  * The purpose of the model class is to collect together all the
@@ -31,7 +21,9 @@ struct ChainInfo
  */
 class Model {
   unsigned int _nchain;
-  std::vector<ChainInfo> _chain_info;
+  std::vector<RNG *> _rng;
+  std::vector<Sampler*> _samplers;
+  unsigned int _iteration;
   Graph _graph;
   std::set<Node*> _extra_nodes;
   std::vector<Node*> _sampled_extra;
@@ -85,10 +77,9 @@ public:
    */
   void update(unsigned int niter);
   /**
-   * Returns the current iteration number for the given chain. Chains
-   * are enumerated starting from 0.
+   * Returns the current iteration number 
    */
-  unsigned int iteration(unsigned int chain) const;
+  unsigned int iteration() const;
   /**
    * Adds a monitor to the model so that it will be updated at each
    * iteration.  This can only be done if Model#adaptOff has been
@@ -161,8 +152,5 @@ public:
    */
   bool isAdapting() const;
 };
-
-/** Returns true if the iteration number is the same for all chains */
-bool isSynchronized(Model const *model);
 
 #endif /* MODEL_H_ */
