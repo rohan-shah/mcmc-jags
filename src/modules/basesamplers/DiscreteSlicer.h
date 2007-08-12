@@ -27,13 +27,13 @@ namespace basesamplers {
 	 * @param width Initial width of slice
 	 * @param ndoubles Maximum number of doublings of slice 
 	 */
-	DiscreteSlicer(double width=2, long ndoubles = 10);
-	void initialize(ParallelDensitySampler *sampler, unsigned int chain);
+	DiscreteSlicer(StochasticNode const *snode, unsigned int chain,
+                       double width=2, long ndoubles = 10);
 	void setValue(double x);
 	double value() const;
-	//static bool canSample(StochasticNode const *node, Graph const &graph);
 	void getLimits(double *lower, double *upper) const;
 	void update(RNG*);
+	static bool canSample(StochasticNode const *node);
     };
 
 }

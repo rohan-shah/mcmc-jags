@@ -4,40 +4,38 @@
 #include <distribution/Distribution.h>
 #include <sampler/ParallelDensitySampler.h>
 
-#include "DiscreteSliceSampler.h"
+#include "DiscreteSlicer.h"
 
 #include <cmath>
+#include <stdexcept>
 
 using std::floor;
 using std::vector;
+using std::logic_error;
 
 namespace basesamplers {
 
-    DiscreteSlicer::DiscreteSlicer(double width, long ndoubles)
+    DiscreteSlicer::DiscreteSlicer(StochasticNode const *node, 
+				   unsigned int chain, double width, 
+				   long ndoubles)
 	: Slicer(width, ndoubles), _x(0)
     {
+	if (!canSample(node)) {
+	    throw logic_error("Invalid DiscreteSlicer");
+	}
+
+	_x = node->value(chain)[0];
     }
 
-/* FIXME: BELONGS WITH FACTORY OBJECT
- *
- bool DiscreteSlicer::canSample(StochasticNode const *node,
- Graph const &graph)
- {
- if (!node->distribution()->isDiscreteValued() ||
- node->length() != 1)
- return false;
-
- if (df(node) == 0)
- return false;
-
- return true;
- }
-
-*/
-    void DiscreteSlicer::initialize(ParallelDensitySampler *sampler,
-                                    unsigned int chain)
+    bool DiscreteSlicer::canSample(StochasticNode const *node)
     {
-	_x = sampler->nodes()[0]->value(chain)[0];
+	if (!node->distribution()->isDiscreteValued() || node->length() != 1)
+	    return false;
+	
+	if (df(node) == 0)
+	    return false;
+	
+	return true;
     }
 
     void DiscreteSlicer::setValue(double x)
@@ -45,14 +43,6 @@ namespace basesamplers {
 	_x = x;
 	x = floor(x);
 	_sampler->setValue(&x, 1, _chain);
-	/*
-	  sampler->nodes().front()->setValue(&x, 1, chain);
-	  vector<Node*> const &dc = sampler->deterministicChildren();
-	  for (vector<Node*>::const_iterator i(dc.begin()); i != dc.end(); ++i) 
-	  {
-	  (*i)->deterministicSample(_chain);
-	  }
-	*/
     }
   
     double DiscreteSlicer::value() const
