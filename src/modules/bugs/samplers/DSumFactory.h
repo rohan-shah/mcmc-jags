@@ -11,10 +11,10 @@ class Graph;
 class DSumFactory : public SamplerFactory
 {
  public:
-  virtual void makeSampler(std::set<StochasticNode*> &nodes, 
-			   Graph const &graph,
-			   std::vector<std::vector<Sampler*> > &samplers)
-                          const;
+    void makeSampler(std::set<StochasticNode*> &nodes, 
+		     Graph const &graph,
+		     std::vector<Sampler*> &samplers)
+	const;
 };
 
 #endif /* DSUM_FACTORY_H_ */
