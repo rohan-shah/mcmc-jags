@@ -58,8 +58,7 @@ LTLIBRARIES = $(jagsmod_LTLIBRARIES)
 basesamplers_la_DEPENDENCIES = $(top_builddir)/src/lib/libjags.la
 am_basesamplers_la_OBJECTS = basesamplers_la-DiscreteSlicer.lo \
 	basesamplers_la-FiniteFactory.lo \
-	basesamplers_la-FiniteMethod.lo \
-	basesamplers_la-RealSliceSampler.lo \
+	basesamplers_la-FiniteMethod.lo basesamplers_la-RealSlicer.lo \
 	basesamplers_la-SliceFactory.lo basesamplers_la-module.lo
 basesamplers_la_OBJECTS = $(am_basesamplers_la_OBJECTS)
 basesamplers_la_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
@@ -210,13 +209,13 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 jagsmod_LTLIBRARIES = basesamplers.la
 basesamplers_la_SOURCES = DiscreteSlicer.cc FiniteFactory.cc	\
-FiniteMethod.cc RealSliceSampler.cc SliceFactory.cc module.cc
+FiniteMethod.cc RealSlicer.cc SliceFactory.cc module.cc
 
 basesamplers_la_CPPFLAGS = -I$(top_srcdir)/src/include
 basesamplers_la_LDFLAGS = -no-undefined -module -avoid-version
 basesamplers_la_LIBADD = $(top_builddir)/src/lib/libjags.la
 noinst_HEADERS = DiscreteSlicer.h FiniteFactory.h		\
-FiniteMethod.h RealSliceSampler.h SliceFactory.h 
+FiniteMethod.h RealSlicer.h SliceFactory.h 
 
 all: all-am
 
@@ -290,7 +289,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/basesamplers_la-DiscreteSlicer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/basesamplers_la-FiniteFactory.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/basesamplers_la-FiniteMethod.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/basesamplers_la-RealSliceSampler.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/basesamplers_la-RealSlicer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/basesamplers_la-SliceFactory.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/basesamplers_la-module.Plo@am__quote@
 
@@ -336,12 +335,12 @@ basesamplers_la-FiniteMethod.lo: FiniteMethod.cc
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(basesamplers_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o basesamplers_la-FiniteMethod.lo `test -f 'FiniteMethod.cc' || echo '$(srcdir)/'`FiniteMethod.cc
 
-basesamplers_la-RealSliceSampler.lo: RealSliceSampler.cc
-@am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(basesamplers_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT basesamplers_la-RealSliceSampler.lo -MD -MP -MF $(DEPDIR)/basesamplers_la-RealSliceSampler.Tpo -c -o basesamplers_la-RealSliceSampler.lo `test -f 'RealSliceSampler.cc' || echo '$(srcdir)/'`RealSliceSampler.cc
-@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/basesamplers_la-RealSliceSampler.Tpo $(DEPDIR)/basesamplers_la-RealSliceSampler.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='RealSliceSampler.cc' object='basesamplers_la-RealSliceSampler.lo' libtool=yes @AMDEPBACKSLASH@
+basesamplers_la-RealSlicer.lo: RealSlicer.cc
+@am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(basesamplers_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT basesamplers_la-RealSlicer.lo -MD -MP -MF $(DEPDIR)/basesamplers_la-RealSlicer.Tpo -c -o basesamplers_la-RealSlicer.lo `test -f 'RealSlicer.cc' || echo '$(srcdir)/'`RealSlicer.cc
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/basesamplers_la-RealSlicer.Tpo $(DEPDIR)/basesamplers_la-RealSlicer.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='RealSlicer.cc' object='basesamplers_la-RealSlicer.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(basesamplers_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o basesamplers_la-RealSliceSampler.lo `test -f 'RealSliceSampler.cc' || echo '$(srcdir)/'`RealSliceSampler.cc
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(basesamplers_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o basesamplers_la-RealSlicer.lo `test -f 'RealSlicer.cc' || echo '$(srcdir)/'`RealSlicer.cc
 
 basesamplers_la-SliceFactory.lo: SliceFactory.cc
 @am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(basesamplers_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT basesamplers_la-SliceFactory.lo -MD -MP -MF $(DEPDIR)/basesamplers_la-SliceFactory.Tpo -c -o basesamplers_la-SliceFactory.lo `test -f 'SliceFactory.cc' || echo '$(srcdir)/'`SliceFactory.cc
