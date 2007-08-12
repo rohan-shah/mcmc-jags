@@ -5,7 +5,7 @@
 #include <sampler/ParallelDensitySampler.h>
 #include <sampler/DensityMethod.h>
 
-#include "FiniteSampler.h"
+#include "FiniteMethod.h"
 #include "FiniteFactory.h"
 
 #include <vector>
