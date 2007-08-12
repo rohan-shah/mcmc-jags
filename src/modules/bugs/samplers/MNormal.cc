@@ -6,6 +6,7 @@
 #include <lapack.h>
 
 #include <graph/StochasticNode.h>
+#include <sampler/ParallelDensitySampler.h>
 #include <rng/RNG.h>
 
 #include <cmath>
@@ -21,13 +22,13 @@ using std::exp;
 using std::sqrt;
 using std::min;
 
-MNormSampler::MNormSampler(StochasticNode * node, 
-			       Graph const &graph, unsigned int chain, 
-			       double const *value, unsigned int N)
-    : Metropolis(vector<StochasticNode*>(1,node), graph, chain, value, N),
-      _mean(0), _var(0), _prec(0), _n(0), _n_isotonic(0), 
+MNormUpdate::MNormUpdate(vector<StochasticNode*> const &nodes)
+    : Metropolis(nodes), _mean(0), _var(0), _prec(0), _n(0), _n_isotonic(0), 
       _sump(0), _meanp(0), _lstep(0), _nstep(10), _p_over_target(true)
 {
+    StochasticNode *node = nodes[0];
+    unsigned int N = node->length();
+
     _mean = new double[N];
     _var = new double[N * N];
     _prec = new double[N * N];
@@ -41,19 +42,19 @@ MNormSampler::MNormSampler(StochasticNode * node,
     }
 }
 
-MNormSampler::~MNormSampler()
+MNormUpdate::~MNormUpdate()
 {
     delete [] _mean;
     delete [] _var;
     delete [] _prec;
 }
 
-void MNormSampler::update(RNG *rng)
+void MNormUpdate::update(RNG *rng)
 {
     double const *old_value = value();
     unsigned int N = value_length();
     
-    double logdensity = -logFullConditional(chain());
+    double logdensity = -_sampler->logFullConditional(_chain);
     double step = exp(_lstep);
 
     double *x = new double[N];
@@ -64,13 +65,13 @@ void MNormSampler::update(RNG *rng)
     }
 
     propose(x, N);
-    logdensity += logFullConditional(chain());
+    logdensity += _sampler->logFullConditional(_chain);
     accept(rng, exp(logdensity));
 
     delete [] x;
 }
 
-void MNormSampler::rescale(double p)
+void MNormUpdate::rescale(double p)
 {
     ++_n;
     p = min(p, 1.0);
@@ -102,7 +103,8 @@ void MNormSampler::rescale(double p)
 	}
     }
     else {
-	_lstep += (p - 0.234) / sqrt(static_cast<double>(_nstep)); //testing
+        //This give better adaptation in the orange tree example
+	_lstep += (p - 0.234) / sqrt(static_cast<double>(_nstep));
         _nstep++;
 /*
 	if ((p > 0.234) != _p_over_target) {
@@ -131,7 +133,7 @@ void MNormSampler::rescale(double p)
 	   random walk.
 	*/
 
-	unsigned int N = length();
+	unsigned int N = _sampler->length();
 	double const *x = value();
 	for (unsigned int i = 0; i < N; ++i) {
 	    _mean[i] += 2 * (x[i] - _mean[i]) / (_n - _n_isotonic + 1);
@@ -145,16 +147,25 @@ void MNormSampler::rescale(double p)
     }
 }
 
-void MNormSampler::transformValues(double const *v, unsigned int length,
-				     double *nv, unsigned int nlength) const
+void MNormUpdate::transform(double const *v, unsigned int length,
+			     double *nv, unsigned int nlength) const
 {
     if (length != nlength) {
-	throw logic_error("Invalid length in MNormSampler::transformValues");
+	throw logic_error("Invalid length in MNormUpdate::transformValues");
     }
     copy(v, v + length, nv);
 }
 
-bool MNormSampler::checkAdaptation() const
+void MNormUpdate::untransform(double const *nv, unsigned int nlength,
+			     double *v, unsigned int length) const
+{
+    if (length != nlength) {
+	throw logic_error("Invalid length in MNormUpdate::transformValues");
+    }
+    copy(nv, nv + nlength, v);
+}
+
+bool MNormUpdate::checkAdaptation() const
 {
     return (_n_isotonic > 0) && (_meanp >= 0.15) && (_meanp <= 0.35);
 }

@@ -4,8 +4,12 @@
 #include "MNormalFactory.h"
 #include <graph/StochasticNode.h>
 #include <distribution/Distribution.h>
+#include <sampler/ParallelDensitySampler.h>
 
 #include <string>
+#include <vector>
+
+using std::vector;
 
 
 bool 
@@ -15,9 +19,14 @@ MNormalFactory::canSample(StochasticNode * snode, Graph const &graph) const
 }
 
 Sampler *
-MNormalFactory::makeSingletonSampler(StochasticNode *snode, Graph const &graph,
-				     unsigned int chain) const
+MNormalFactory::makeSingletonSampler(StochasticNode *snode, Graph const &graph)
+				      const
 {
-    return new MNormSampler(snode, graph, chain, snode->value(chain), 
-			      snode->length());
+    unsigned int nchain = snode->nchain();
+    vector<DensityMethod*> methods(nchain, 0);
+    vector<StochasticNode*> nodes(1, snode);
+    for (unsigned int ch = 0; ch < nchain; ++ch) {
+        methods[ch] = new MNormUpdate(nodes);
+    }
+    return new ParallelDensitySampler(nodes, graph, methods);
 }

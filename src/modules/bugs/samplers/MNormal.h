@@ -3,7 +3,9 @@
 
 #include <sampler/Metropolis.h>
 
-class MNormSampler : public Metropolis
+class ParallelDensitySampler;
+
+class MNormUpdate : public Metropolis
 {
     double *_mean;
     double *_var;
@@ -15,13 +17,13 @@ class MNormSampler : public Metropolis
     unsigned int _nstep;
     unsigned int _p_over_target;
 public:
-    MNormSampler(StochasticNode * node, 
-		 Graph const &graph, unsigned int chain, 
-		 double const *value, unsigned int length);
-    ~MNormSampler();
+    MNormUpdate(std::vector<StochasticNode*> const &nodes);
+    ~MNormUpdate();
     void rescale(double p);
-    void transformValues(double const *v, unsigned int length,
-			 double *nv, unsigned int nlength) const;
+    void transform(double const *v, unsigned int length,
+		   double *nv, unsigned int nlength) const;
+    void untransform(double const *nv, unsigned int nlength,
+		     double *v, unsigned int length) const;
     void update(RNG *rng);
     bool checkAdaptation() const;
 };
