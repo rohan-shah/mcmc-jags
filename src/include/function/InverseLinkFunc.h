@@ -20,6 +20,13 @@ class InverseLinkFunc : public ScalarFunc
 {
     const std::string _link;
 public:
+    /**
+     * Constructor
+     * 
+     * @param name Function name
+     * 
+     * @param link Name used by replacement-function notation.
+     */
     InverseLinkFunc (std::string const &name, std::string const &link);
     /**
      * Returns the name of the link function
