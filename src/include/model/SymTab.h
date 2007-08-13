@@ -49,28 +49,29 @@ public:
    */
   void insertNode(Node *node, std::string const &name, Range const &range);
   /**
-   * Adds all the nodes contained in all the NodeArray objects
-   * in the SymTab to the given vector
-   */
-  //void getNodes(std::vector<Node*> &nodes);
-  /**
+   * Writes values from the given data table to the NodeArrays in the
+   * symbol table. All nodes whose values are set are considered as
+   * observed nodes and have the same value in all chains.
    *
+   * @param data_table Data table from which values will be read.
+   *
+   * @see NodeArray#setData
    */
   void writeData(std::map<std::string, SArray> const &data_table);
   /**
-   * Write values from the data table to the NodeArrays in SymTab with
-   * the same name. Non-variable descendants of the nodes whose values
-   * are set are updated.
+   * Write values from the data table to the NodeArrays in the symbol
+   * table with the same name. Unlike the writeData function, the
+   * Nodes are not permanently set to the supplied values, and values
+   * are only written to the given chain.
    *
-   * @param data_table Data table from which results will be read
+   * @param data_table Data table from which values will be read
    *
-   * @param observed Logical flag. If true, then existing nodes will
-   * have their value fixed after being written, and if there is no
-   * existing node corresponding to a value in the data table, a
-   * constant node will be created.
+   * @param chain Index number of chain to which values are written.
+   *
+   * @see NodeArray#setValue
    */
   void writeValues(std::map<std::string, SArray> const &data_table,
-		   unsigned int chain, std::set<Node*> &setnodes);
+		   unsigned int chain);
   /**
    * Reads the current value of selected nodes in the symbol table and
    * writes the result to the data table. The selection is based on
