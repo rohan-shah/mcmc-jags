@@ -6,7 +6,7 @@
 enum NormKind {AHRENS_DIETER, BOX_MULLER, KINDERMAN_RAMAGE};
 
 /**
- * @short RNG object based on the rmath library
+ * @short RNG object based on the R math library
  * 
  * An RmathRNG object implements the normal and exponential functions
  * using code from the R math library.  
