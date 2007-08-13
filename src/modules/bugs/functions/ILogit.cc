@@ -13,7 +13,7 @@ ILogit::ILogit ()
 {
 }
 
-double ILogit::eval (vector<double const *> const &args) const
+double ILogit::evaluateScalar(vector<double const *> const &args) const
 {
     return 1/(1 + exp(-args[0][0]));
 }

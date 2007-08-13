@@ -14,7 +14,7 @@ class Cos : public ScalarFunc
 {
 public:
     Cos ();
-    double eval(std::vector<double const *> const &args) const;
+    double evaluateScalar(std::vector<double const *> const &args) const;
 };
 
 #endif /* FUNC_COS_H_ */

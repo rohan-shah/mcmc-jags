@@ -1,3 +1,4 @@
+
 #include <config.h>
 #include "Trunc.h"
 
@@ -10,7 +11,7 @@ Trunc::Trunc ():ScalarFunc ("trunc", 1)
 {
 }
 
-double Trunc::eval(vector<double const *> const &args) const
+double Trunc::evaluateScalar(vector<double const *> const &args) const
 {
   /* The C99 trunc function does not exist in the current C++ standard. */
   return args[0][0] >= 0 ? floor(args[0][0]) : -floor(-args[0][0]);

@@ -15,7 +15,7 @@ class ICLogLog : public InverseLinkFunc
 {
 public:
     ICLogLog ();
-    double eval(std::vector<double const *> const &args) const;
+    double evaluateScalar(std::vector<double const *> const &args) const;
     double link(double y) const;
     double gradLink(double y) const;
 };

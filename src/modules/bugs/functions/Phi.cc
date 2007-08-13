@@ -9,7 +9,7 @@ Phi::Phi ():InverseLinkFunc ("phi", "probit")
 {
 }
 
-double Phi::eval (vector<double const *> const &args) const
+double Phi::evaluateScalar(vector<double const *> const &args) const
 {
   double q = *args[0];
   if (!R_FINITE (q)) {

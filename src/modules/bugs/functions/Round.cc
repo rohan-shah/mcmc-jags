@@ -10,7 +10,7 @@ Round::Round ():ScalarFunc ("round", 1)
 {
 }
 
-double Round::eval(vector<double const *> const &args) const
+double Round::evaluateScalar(vector<double const *> const &args) const
 {
   /* The C99 round function does not exist in the current C++ standard */
   return floor(*args[0] + 0.5);

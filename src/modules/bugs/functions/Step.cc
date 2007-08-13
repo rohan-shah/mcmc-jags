@@ -9,7 +9,7 @@ Step::Step ()
 }
 
 double
-Step::eval(vector<double const *> const &args) const
+Step::evaluateScalar(vector<double const *> const &args) const
 {
   return *args[0] >= 0 ? 1 : 0;
 }

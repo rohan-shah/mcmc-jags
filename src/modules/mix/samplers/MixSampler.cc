@@ -215,20 +215,18 @@ void MixSampler::update(RNG *rng)
     double *last_proposal = new double[length];
     copy(value(), value() + length, last_proposal);
 
-    unsigned int ch = chain();
-
     //We first do a non-tempered update
 
     _temper = false;
     double pmean = 0;
     for (unsigned int i = 0; i < _nrep; ++i) {
-	double lprob = -_sampler->logFullConditional(ch);
+	double lprob = -_sampler->logFullConditional(_chain);
 	double step = exp(_lstep[0]);
 	for (unsigned int j = 0; j < length; ++j) {
 	    proposal[j] = last_proposal[j] + rng->normal() * step;
 	}
 	propose(proposal, length);
-	lprob += _sampler->logFullConditional(ch);
+	lprob += _sampler->logFullConditional(_chain);
 	double prob = min(exp(lprob), 1.0);
 	if(accept(rng, prob)) {
 	    copy(proposal, proposal + length, last_proposal);
@@ -242,8 +240,8 @@ void MixSampler::update(RNG *rng)
 
     _temper = true;
 
-    double lprior0 = _sampler->logPrior(ch);
-    double llik0 = _sampler->logLikelihood(ch);
+    double lprior0 = _sampler->logPrior(_chain);
+    double llik0 = _sampler->logLikelihood(_chain);
     
     unsigned int nstep = 2 * _level;
     vector<double> pwr(nstep + 2);
@@ -269,8 +267,8 @@ void MixSampler::update(RNG *rng)
 	    propose(proposal, length);
 	    
 	    // Calculate new prior and likelihood
-	    double lprior1 = _sampler->logPrior(ch);
-	    double llik1 = _sampler->logLikelihood(ch);
+	    double lprior1 = _sampler->logPrior(_chain);
+	    double llik1 = _sampler->logLikelihood(_chain);
 	    
 	    // Calculate acceptance probability for new proposal
 	    double lprob = (lprior1 - lprior0) + pwr[t] * (llik1 - llik0);

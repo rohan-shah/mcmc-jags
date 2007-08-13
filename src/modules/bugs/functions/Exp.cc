@@ -12,7 +12,7 @@ Exp::Exp ()
 {
 }
 
-double Exp::eval(vector<double const *> const &args) const
+double Exp::evaluateScalar(vector<double const *> const &args) const
 {
   return exp(*args[0]);
 }

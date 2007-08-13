@@ -11,7 +11,7 @@ Equals::Equals () : ScalarFunc ("equals",2)
 {
 }
 
-double Equals::eval (vector<double const *> const &args) const
+double Equals::evaluateScalar(vector<double const *> const &args) const
 {
   return fabs(*args[0] - *args[1]) < 16 *DBL_EPSILON;
 }

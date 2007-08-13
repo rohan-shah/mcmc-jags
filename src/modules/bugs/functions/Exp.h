@@ -14,7 +14,7 @@ class Exp: public InverseLinkFunc
 {
 public:
     Exp ();
-    double eval(std::vector<double const *> const &args) const;
+    double evaluateScalar(std::vector<double const *> const &args) const;
     double link(double mu) const;
     double gradLink(double mu) const;
 };

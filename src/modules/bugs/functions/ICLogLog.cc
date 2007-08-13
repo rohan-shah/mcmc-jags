@@ -12,7 +12,7 @@ ICLogLog::ICLogLog(): InverseLinkFunc("icloglog", "cloglog")
 }
 
 double
-ICLogLog::eval (vector <double const *> const &args) const
+ICLogLog::evaluateScalar(vector <double const *> const &args) const
 {
   return 1 - exp(-exp(*args[0]));
 }

@@ -13,7 +13,7 @@ class Trunc : public ScalarFunc
 {
 public:
   Trunc ();
-  double eval(std::vector<double const *> const &args) const;
+  double evaluateScalar(std::vector<double const *> const &args) const;
 };
 
 #endif /* FUNC_TRUNC_H_ */

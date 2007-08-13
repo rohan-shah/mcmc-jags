@@ -15,7 +15,7 @@ class Abs: public ScalarFunc
 {
 public:
     Abs ();
-    double eval(std::vector<double const *> const &args) const;
+    double evaluateScalar(std::vector<double const *> const &args) const;
     /** Returns true if argument is true */
     bool isDiscreteValued(std::vector<bool> const &mask) const;
 };

@@ -12,12 +12,12 @@ Log::Log ()
 {
 }
 
-double Log::eval(vector<double const *> const &args) const
+double Log::evaluateScalar(vector<double const *> const &args) const
 {
   return log(*args[0]);
 }
 
-bool Log::checkParameterValue(vector<double const *> const &args) const
+bool Log::checkScalarValue(vector<double const *> const &args) const
 {
   return *args[0] >= 0;
 }

@@ -10,12 +10,12 @@ LogFact::LogFact ()
 {
 }
 
-double LogFact::eval(vector<double const *> const &args) const
+double LogFact::evaluateScalar(vector<double const *> const &args) const
 {
   return lgammafn(*args[0] + 1);
 }
 
-bool LogFact::checkParameterValue(vector<double const *> const &args) const
+bool LogFact::checkScalarValue(vector<double const *> const &args) const
 {
   return *args[0] > -1;
 }

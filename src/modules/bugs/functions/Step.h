@@ -15,7 +15,7 @@ class Step:public ScalarFunc
 {
 public:
   Step ();
-  double eval (std::vector <double const *> const &args) const;
+  double evaluateScalar(std::vector <double const *> const &args) const;
   bool isDiscreteValued(std::vector<bool> const &mask) const;
 };
 

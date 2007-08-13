@@ -14,7 +14,7 @@ class Sin : public ScalarFunc
 {
 public:
     Sin ();
-    double eval(std::vector<double const *> const &args) const;
+    double evaluateScalar(std::vector<double const *> const &args) const;
 };
 
 #endif /* FUNC_SIN_H_ */

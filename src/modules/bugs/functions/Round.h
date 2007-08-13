@@ -13,7 +13,7 @@ class Round : public ScalarFunc
 {
 public:
   Round ();
-  double eval(std::vector<double const *> const &args) const;
+  double evaluateScalar(std::vector<double const *> const &args) const;
 };
 
 #endif /* FUNC_ROUND_H_ */

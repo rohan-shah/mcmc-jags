@@ -16,8 +16,8 @@ class LogFact : public ScalarFunc
 {
 public:
     LogFact ();
-    double eval(std::vector<double const *> const &args) const;
-    bool checkParameterValue(std::vector<double const *> const &args) const;
+    double evaluateScalar(std::vector<double const *> const &args) const;
+    bool checkScalarValue(std::vector<double const *> const &args) const;
 };
 
 #endif /* FUNC_LOGFACT_H_ */

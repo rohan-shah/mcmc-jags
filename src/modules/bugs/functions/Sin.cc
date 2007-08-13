@@ -12,7 +12,7 @@ Sin::Sin ()
 {
 }
 
-double Sin::eval(vector<double const *> const &args) const
+double Sin::evaluateScalar(vector<double const *> const &args) const
 {
   return sin(*args[0]);
 }

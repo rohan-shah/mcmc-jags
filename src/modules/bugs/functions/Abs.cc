@@ -10,7 +10,7 @@ Abs::Abs ():ScalarFunc ("abs", 1)
 {
 }
 
-double Abs::eval(vector<double const *> const &args) const
+double Abs::evaluateScalar(vector<double const *> const &args) const
 {
     return fabs(*args[0]);
 }

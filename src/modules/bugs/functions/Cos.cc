@@ -11,7 +11,7 @@ Cos::Cos ()
 {
 }
 
-double Cos::eval(vector<double const *> const &args) const
+double Cos::evaluateScalar(vector<double const *> const &args) const
 {
   return cos(*args[0]);
 }

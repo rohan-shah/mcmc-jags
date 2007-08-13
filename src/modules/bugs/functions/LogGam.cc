@@ -10,12 +10,12 @@ LogGam::LogGam ()
 {
 }
 
-double LogGam::eval(vector<double const *> const &args) const
+double LogGam::evaluateScalar(vector<double const *> const &args) const
 {
   return lgammafn (*args[0]);
 }
 
-bool LogGam::checkParameterValue(vector<double const *> const &args) const
+bool LogGam::checkScalarValue(vector<double const *> const &args) const
 {
   return *args[0] > 0;
 }
