@@ -10,7 +10,7 @@ Not::Not () : ScalarFunc ("!", 1)
 {
 }
 
-double Not::eval (vector<double const*> const &args) const
+double Not::evaluateScalar(vector<double const*> const &args) const
 {
     return *args[0] != 0;
 }

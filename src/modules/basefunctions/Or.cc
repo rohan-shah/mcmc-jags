@@ -9,7 +9,7 @@ Or::Or () : Infix ("||")
 {
 }
 
-double Or::eval(vector <double const *> const &args) const
+double Or::evaluateScalar(vector <double const *> const &args) const
 {
   return *args[0] || *args[1];
 }

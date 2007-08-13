@@ -15,7 +15,7 @@ Neg::Neg () : ScalarFunc ("NEG", 1)
 {
 }
 
-double Neg::eval (vector<double const*> const &args) const
+double Neg::evaluateScalar(vector<double const*> const &args) const
 {
     return -args[0][0];
 }

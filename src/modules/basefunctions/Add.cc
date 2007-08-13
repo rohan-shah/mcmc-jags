@@ -10,7 +10,7 @@ Add::Add () : Infix ("+", 0)
 {
 }
 
-double Add::eval(vector <double const *> const &args) const
+double Add::evaluateScalar(vector <double const *> const &args) const
 {
     double out = *args[0];
     unsigned int n = args.size();

@@ -9,12 +9,12 @@ Divide::Divide () : Infix ("/")
 {
 }
 
-double Divide::eval(vector <double const *> const &args) const
+double Divide::evaluateScalar(vector <double const *> const &args) const
 {
   return *args[0] / *args[1];
 }
 
-bool Divide::checkParameterValue(vector<double const*> const &args) const
+bool Divide::checkScalarValue(vector<double const*> const &args) const
 {
   return *args[1] != 0;
 }

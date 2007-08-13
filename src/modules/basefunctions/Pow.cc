@@ -14,12 +14,12 @@ Pow::Pow () : Infix ("^")
 {
 }
 
-double Pow::eval(vector<double const *> const &args) const
+double Pow::evaluateScalar(vector<double const *> const &args) const
 {
     return pow (*args[0], *args[1]);
 }
 
-bool Pow::checkParameterValue(vector<double const *> const &args) const
+bool Pow::checkScalarValue(vector<double const *> const &args) const
 {
     if (*args[0] >= 0) {
 	return true;

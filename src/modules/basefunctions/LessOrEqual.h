@@ -17,7 +17,7 @@ class LessOrEqual:public Infix
 {
 public:
     LessOrEqual ();
-    double eval(std::vector<double const *> const &args) const;
+    double evaluateScalar(std::vector<double const *> const &args) const;
     /** Returns true */
     bool isDiscreteValued(std::vector<bool> const &mask) const;
 };

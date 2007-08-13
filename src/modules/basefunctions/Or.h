@@ -19,7 +19,7 @@ class Or:public Infix
 {
 public:
     Or ();
-    double eval(std::vector<double const *> const &args) const;
+    double evaluateScalar(std::vector<double const *> const &args) const;
     bool isDiscreteValued(std::vector<bool> const &mask) const;
 };
 

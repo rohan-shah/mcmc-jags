@@ -12,7 +12,7 @@ GreaterOrEqual::GreaterOrEqual () : Infix (">=")
 {
 }
 
-double GreaterOrEqual::eval (vector<double const *> const &args) const
+double GreaterOrEqual::evaluateScalar(vector<double const *> const &args) const
 {
   return *args[0] >= *args[1];
 }

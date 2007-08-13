@@ -11,7 +11,7 @@ namespace basefunctions {
  * Most infix operators are binary, so we also provide a default of two for
  * the number of parameters.
  */
-class Infix:public ScalarFunc
+class Infix : public ScalarFunc
 {
 public:
     Infix(std::string const &name, unsigned int npar=2);

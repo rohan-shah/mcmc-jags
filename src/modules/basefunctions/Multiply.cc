@@ -11,7 +11,7 @@ Multiply::Multiply () : Infix ("*", 0)
 }
 
 double
-Multiply::eval (vector<double const *>const &args) const
+Multiply::evaluateScalar(vector<double const *>const &args) const
 {
     double val = *args[0];
     /* We adopt the convention that any argument multiplied by zero
