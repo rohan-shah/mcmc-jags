@@ -80,11 +80,10 @@ public:
    *
    * @param value array with dimensions matching the NodeArray containing
    * values.
-   * @param chain Index number of chain to which to apply values
-   * @param Set of nodes whose values have been altered.
+   *
+   * @param chain Index number of chain to which to apply values.
    */
-  void setValue(SArray const &value, unsigned int chain,
-		std::set<Node*> &setnodes);
+  void setValue(SArray const &value, unsigned int chain);
   /**
    * Gets the values of selected nodes that have been inserted into
    * the array.
