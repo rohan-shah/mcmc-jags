@@ -49,7 +49,7 @@ bool lt(StochasticTrio const &arg1, StochasticTrio const &arg2);
 
 
 /**
- * @short function object for the STL map class using StochasticTrio as a key
+ * @short STL function object for the map class using StochasticTrio as a key
  */
 struct ltstochastic
 {

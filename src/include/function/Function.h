@@ -17,7 +17,7 @@ class Range;
  * objects and referencing them by name.
  *
  * @see FuncTab
- * @short Function or operator
+ * @short BUGS-language function or operator
  */
 class Function
 {
