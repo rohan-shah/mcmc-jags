@@ -4,11 +4,12 @@
 class ParallelDensitySampler;
 class RNG;
 
-/*
- * Updates a single chain of a ParallelDensitySampler using a method that
- * depends only on the public member functions of ParallelDensitySampler.
- * Typical DensityMethods use only the log density of the sampled
- * nodes by calling Sampler#logFullConditional.
+/**
+ * @short Updates a Sampler using the log density of the sampled nodes.
+ *
+ * Updates a single chain of a ParallelDensitySampler. A typical
+ * DensityMethods use only the log density of the sampled nodes by
+ * calling Sampler#logFullConditional.
  */
 class DensityMethod
 {
@@ -21,7 +22,7 @@ public:
     /**
      * Sets the values of the protected data members _sampler and _chain
      * so that subclasses of DensityMethod can access them. This
-     * function is called by ParallelDensitySampler
+     * function is called by the constructor of ParallelDensitySampler.
      */
     void setData(ParallelDensitySampler *sampler, unsigned int chain);
     /**
@@ -34,7 +35,8 @@ public:
      */
     virtual void update(RNG *rng) = 0;
     /**
-     * Turn of adaptive mode of all the update methods
+     * Turns off adaptive mode, returning true if an adaptation test is
+     * passed.
      *
      * @see Sampler#adaptOff
      */

@@ -64,11 +64,11 @@ void SymTab::writeData(std::map<std::string, SArray> const &data_table)
 
 
 void SymTab::writeValues(std::map<std::string, SArray> const &data_table,
-		         unsigned int chain, set<Node*> &setnodes)
+		         unsigned int chain)
 {
     for(map<string, SArray>::const_iterator p(data_table.begin()); 
 	p != data_table.end(); ++p) {
-        set<Node*> psetnodes;
+        //set<Node*> psetnodes;
 	NodeArray *array = getVariable(p->first);
 	if (array) {
 	    if (array->range().dim(false) != p->second.dim(false)) {
@@ -76,8 +76,9 @@ void SymTab::writeValues(std::map<std::string, SArray> const &data_table,
 		msg.append(p->first);
 		throw runtime_error(msg);
 	    }
-	    array->setValue(p->second, chain, psetnodes);
-            setnodes.insert(psetnodes.begin(), psetnodes.end());
+	    //array->setValue(p->second, chain, psetnodes);
+	    array->setValue(p->second, chain);
+            //setnodes.insert(psetnodes.begin(), psetnodes.end());
 	}
     }
 }

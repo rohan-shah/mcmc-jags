@@ -137,9 +137,7 @@ Node *NodeArray::getSubset(Range const &target_range, Graph &graph)
   return node;
 }
 
-void NodeArray::setValue(SArray const &value, unsigned int chain,
-			 set<Node*> &setnodes)
-
+void NodeArray::setValue(SArray const &value, unsigned int chain)
 {
     if (!(_range == value.range())) {
 	throw runtime_error(string("Dimension mismatch when setting value of node array ") + name());
@@ -149,6 +147,7 @@ void NodeArray::setValue(SArray const &value, unsigned int chain,
     unsigned int N = value.length();
 
     //Gather all the nodes for which a data value is supplied
+    set<Node*> setnodes; 
     for (unsigned int i = 0; i < _range.length(); ++i) {
 	if (x[i] != JAGS_NA) {
 	    Node *node = _node_pointers[i];

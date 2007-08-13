@@ -223,8 +223,7 @@ void BUGSModel::addDevianceNode()
 void BUGSModel::setParameters(std::map<std::string, SArray> const &param_table,
 			      unsigned int chain)
 {
-    set<Node*> setnodes;
-    _symtab.writeValues(param_table, chain, setnodes);
+    _symtab.writeValues(param_table, chain);
 
 
     //Strip off .RNG.seed (user-supplied random seed)

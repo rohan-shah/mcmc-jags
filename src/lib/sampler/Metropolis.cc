@@ -45,6 +45,13 @@ Metropolis::~Metropolis()
 
 void Metropolis::initialize(ParallelDensitySampler *sampler, unsigned int chain)
 {
+    /* 
+       We can't do this in the constructor because we are relying
+       on virtual functions transform and untransform. These are
+       defined by a subclass of Metropolis which does not yet
+       exist when the constructor is called
+    */
+
     unsigned int n = addLength(sampler->nodes());
     double *node_values = new double[n];
 
@@ -109,7 +116,9 @@ double const *Metropolis::value() const
     return _value;
 }
 
+/*
 unsigned int Metropolis::chain() const
 {
    return _chain;
 }
+*/

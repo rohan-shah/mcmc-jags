@@ -5,7 +5,7 @@
 #include <vector>
 
 /**
- * @short Range of array indices 
+ * @short Represents a range of array indices 
  *
  * A Range object represents a range of indices used to take a subset
  * of a multi-dimensional array. For example, A[1:2,4,4:5] is a subset

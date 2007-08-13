@@ -6,20 +6,22 @@
 
 class StochasticNode;
 
-/** 
- * @short Metropolis-Hastings Update method
+/**
+ * @short Metropolis-Hastings update method
  *
- * This is a base class for Metropolis Hastings samplers.  It provides
+ * This class is used by Metropolis Hastings samplers.  It provides
  * only basic infrastructure.
  *
- * The Metropolis Hasting sampler has its own value, which is distinct
- * from the value of the sampled nodes.  All member functions of the
- * Metropolis class work in terms of this value.  This is done to
- * allow parameter transformations: for example, if a node only takes
- * positive values, it may be more efficient for the sampler to work
- * on log-transformed values of the sampled node.
+ * The Metropolis Hasting update method has its own value, which is
+ * distinct from the value of the sampled nodes.  All member functions
+ * of the Metropolis class work in terms of this value.  This is done
+ * to allow parameter transformations: for example, if a node only
+ * takes positive values, it may be more efficient for the sampler to
+ * work on log-transformed values of the sampled node. Parameter
+ * transformations are defined by the member functions
+ * Metropolis#transform and Metropolis#untransform.
  *
- * A Subclass of Metropolis must provide an implementation of the
+ * A Subclass of Metropolis must provide an implementation of 
  * the virtual functions Metropolis#setValue and Metropolis#rescale.
  *
  * The Metropolis class provides no update member function. A subclass
@@ -38,38 +40,45 @@ class Metropolis : public DensityMethod
 public:
     Metropolis(std::vector<StochasticNode *> const &nodes);
     ~Metropolis();
+    /**
+     * Sets the initial value of the Metropolis object by taking
+     * the current value of the sampled nodes and transforming them with
+     * the Metropolis#untransform function.
+     *
+     * Initialization cannot be done when the Metropolis object is
+     * constructed, as it depends on the virtual untransform function.
+     *
+     * A subclass of Metropolis must not overload this function.  In
+     * extremis, it may be explicitly called by any function that
+     * overloads it.
+     */
     void initialize(ParallelDensitySampler *sampler, unsigned int chain);
     /**
-     * Returns the current value of the chain. 
+     * Returns the current value array of the Metropolis object. 
      */
     double const *value() const;
     /**
      * Returns the length of the value array. This is the sum of the
      * degrees of freedom of the sampled nodes
+     *
      * @see Distribution#df
      */
     unsigned int value_length() const;
     /**
-     * Returns the number of the sampled chain 
-     */
-    unsigned int chain() const;
-    /**
-     * Sets the value of the sampler. This function calls
-     * writeTransfomedValues
-     *
-     * implement this function, which should set the current value of
-
+     * Sets the value of the Metropolis object. 
      *
      * @param value Pointer to the beginning of an array of values
-     * @param length Length of value array
+     *
+     * @param length Length of the supplied value array
      */
     void propose(double const *value, unsigned int length);
     /**
      * Accept current value with probabilty p. If the current value is
-     * not accepted, the sampler reverts to the value at the last
-     * successful call to accept.
+     * not accepted, the Metropolis object reverts to the value at the
+     * last successful call to accept.
      *
      * @param rng Random number generator.
+     *  
      * @param p Probability of accepting the current value.
      *
      * @returns success indicator
@@ -95,14 +104,18 @@ public:
      */
     virtual bool checkAdaptation() const = 0;
     /**
-     * Transforms the value of the to Node values for the sampled nodes.
+     * Transforms the value of the Metropolis object to an array of
+     * concatenated values for the sampled nodes.
+     *
      * This function is called by Metropolis#propose
      */
     virtual void transform(double const *v, unsigned int length,
 			   double *nv, unsigned int nlength) const = 0;
     /**
-     * Transforms the supplied node values to values for the
-     * sampled nodes.  This function is called by Metropolis#initialize
+     * Transforms the concatenated values of the sampled nodes to 
+     * a value for the Metropolis object.
+     *
+     * This function is called by Metropolis#initialize
      */
     virtual void untransform(double const *nv, unsigned int nlength,
 			     double *v, unsigned int length) const = 0;

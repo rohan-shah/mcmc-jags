@@ -26,14 +26,14 @@ ScalarFunc::evaluate (double *value, vector<double const *> const &args,
 	}
     }
 
-    value[0] = eval(args);
+    value[0] = evaluateScalar(args);
     if (N > 1) {
 	vector<double const *> vecargs(args);
 	for (unsigned int j = 1; j < N; ++j) {
 	    for (unsigned int i = 0; i < lengths.size(); ++i) {
 		vecargs[i] += (lengths[i] != 1);
 	    }
-	    value[j] = eval(vecargs);
+	    value[j] = evaluateScalar(vecargs);
 	}
     }
 }
@@ -80,7 +80,7 @@ ScalarFunc::checkParameterValue(vector<double const *> const &args,
 	}
     }
 
-    if (!checkParameterValue(args)) {
+    if (!checkScalarValue(args)) {
 	return false;
     }
     if (N > 1) {
@@ -89,7 +89,7 @@ ScalarFunc::checkParameterValue(vector<double const *> const &args,
 	    for (unsigned int i = 0; i < lengths.size(); ++i) {
 		vecargs[i] += (lengths[i] != 1);
 	    }
-	    if (!checkParameterValue(vecargs)) {
+	    if (!checkScalarValue(vecargs)) {
 		return false;
 	    }
 	}
@@ -98,7 +98,7 @@ ScalarFunc::checkParameterValue(vector<double const *> const &args,
     return true;
 }
 
-bool ScalarFunc::checkParameterValue(vector<double const *> const &args) const
+bool ScalarFunc::checkScalarValue(vector<double const *> const &args) const
 {
     return true;
 }

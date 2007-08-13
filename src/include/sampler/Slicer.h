@@ -6,7 +6,7 @@
 class Sampler;
 
 /**
- * @short Slice Sampler 
+ * @short Slice Sampling updating method
  * 
  * The slice sampler is defined by Neal R (2003) Slice Sampling,
  * Ann. Statist.  31; 3: 705-767.

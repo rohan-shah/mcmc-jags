@@ -15,8 +15,6 @@ using std::find_if;
 typedef std::list<Function const*> FuncList;
 typedef std::list<InverseLinkFunc const*> LinkList;
 
-//FIXME: We should be using templates here
-
 /* Adaptable binary predicate for find_if algorithm */
 struct isFuncName: 
     public binary_function<Function const *, string const *, bool> 
@@ -37,11 +35,6 @@ struct isLinkName:
     }
 };
 
-FuncTab::~FuncTab ()
-{
-
-}
-
 void FuncTab::insert (Function const *func)
 {
     FuncList::iterator p = find_if(_func_list.begin(), _func_list.end(),
@@ -53,17 +46,6 @@ void FuncTab::insert (Function const *func)
 	_func_list.erase(p);
     }
     _func_list.push_front(func);
-
-    /*
-      string const &name = func->name ();
-      if (_table.find (name) == _table.end ()) {
-      _table[name] = func;
-      return true;
-      }
-      else {
-      return false;
-      }
-    */
 }
 
 void FuncTab::insert (InverseLinkFunc const *lfunc)
@@ -87,25 +69,6 @@ void FuncTab::insert (InverseLinkFunc const *lfunc)
 	_link_list.erase(q);
     }
     _link_list.push_front(lfunc);
-
-
-    /*
-    string const &name = lfunc->name ();
-    string const &linkname = lfunc->linkName ();
-    if (_link_table.find (linkname) == _link_table.end () &&
-	_table.find (name) == _table.end ())
-    {
-	_table[name] = lfunc;
-	_link_table[linkname] = lfunc;
-
-	return true;
-    }
-    else
-    {
-	return false;
-    }
-    */
-
 }
 
 Function const * FuncTab::find (string const &funcname) const
@@ -116,18 +79,6 @@ Function const * FuncTab::find (string const &funcname) const
 					      bind2nd(isFuncName(), &funcname));
 
     return (p == _func_list.end()) ? 0 : *p;
-
-    /*
-    map < const string, const Function *>::const_iterator p 
-	= _table.find (name);
-
-    if (p == _table.end ()) {
-	return 0;
-    }
-    else {
-	return p->second;
-    }
-    */
 }
 
 Function const * FuncTab::findInverse (string const &linkname) const
@@ -139,33 +90,11 @@ Function const * FuncTab::findInverse (string const &linkname) const
 					      bind2nd(isLinkName(), &linkname));
     
     return (p == _link_list.end()) ? 0 : *p;
-
-    /*
-    map < const string, const InverseLinkFunc *>::const_iterator 
-	p =_link_table.find (name);
-  
-    if (p == _link_table.end ()) {
-	return 0;
-    }
-    else {
-	return p->second;
-    }
-    */
 }
 
 
 void FuncTab::erase(Function *func)
 {
-    /*
-    string const &name = func->name();
-    map<const string, const Function*>::iterator p = _table.find(name);
-    if (p != _table.end()) {
-	if (p->second == func) {
-	    erase(name);
-	}
-    }
-    */
-
     //Erase from the main list.
     FuncList::iterator p = std::find(_func_list.begin(), _func_list.end(),
 				     func);

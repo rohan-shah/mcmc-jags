@@ -4,7 +4,7 @@
 #include <sampler/Metropolis.h>
 
 /**
- * @short Random Walk Metropolis-Hastings Sampler
+ * @short Random Walk Metropolis-Hastings update method
  *
  * This class provides a scale function, which gives a scale by which
  * random walk steps should be multiplied. The scale is adapted to 
