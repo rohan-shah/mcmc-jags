@@ -9,8 +9,7 @@ class NodeNameTab;
 class RNG;
 
 /**
- * @short Node in a directed acyclic graph representing a probability 
- * distribution
+ * @short Node in a directed acyclic graph representingn a Bayesian model 
  *
  * Nodes are reference managed and will delete themselves when the
  * reference count reaches zero.  Referencing and dereferencing
@@ -51,9 +50,9 @@ public:
      * the same number of chains. Subclasses of Node may give specific
      * meaning to the ordering of the parents.
      *
-     * @ param dim Dimension of new Node.
+     * @param dim Dimension of new Node.
      *
-     * @ param parents vector of parent nodes. A node may not be its own
+     * @param parents vector of parent nodes. A node may not be its own
      * parent.
      */
     Node(std::vector<unsigned int> const &dim, 
@@ -86,12 +85,13 @@ public:
     /**
      * Set of children.
      *
-     * This is not a constant member function of the Node class for a 
-     * good reason.  Even if it were a constant function, you could still
-     * access a non-constant pointer to this node by looking among
-     * the children of its parents. To preserve the spirit of const
-     * correctness we forbid access to the children of a Node when we
-     * are given a constant pointer or reference to it.
+     * Note that if we have write access to a Node, then this function
+     * gives write access to it's children.  This is a necessity:
+     * if we modify the value of the current Node, then we may need to
+     * update it's children to keep consistency of the model. Conversely,
+     * if we do not have write access to the Node (e.g. we have a constant
+     * pointer or reference) then this function cannot be used to obtain
+     * access to it's children.
      */
     std::set<Node*> const *children();
     /**
@@ -110,51 +110,57 @@ public:
      */
     virtual bool checkParentValues(unsigned int chain) const = 0;
     /**
-     * Initializes the node for the given chain. The value vector of a
-     * newly constructed Node consists of missing values.  This
-     * function sets the value of the node by forward sampling from
-     * its parents.  If the Node has previously had its value set, the
-     * function will do nothing and return the value true.
-     * Initialization will fail if any of the parent nodes is
-     * uninitialized, and in this case the return value is false.
+     * Initializes the node for the given chain. The value array of a
+     * newly constructed Node consists of missing values (denoted by
+     * the special value JAGS_NA).  This function sets the value of
+     * the node by forward sampling from its parents.  If the Node has
+     * previously had its value set, the function will do nothing and
+     * return the value true.  Initialization will fail if any of the
+     * parent nodes is uninitialized, and in this case the return
+     * value is false.
      *
-     * @param rng random number generator
-     * @param n chain number
+     * @param rng Random number generator 
+     * 
+     * @param chain Index number of chain to initialize.
      *
      * @returns a logical value indicating success
      */
-    bool initialize(RNG *rng, unsigned int n);
+    bool initialize(RNG *rng, unsigned int chain);
     /**
      * Initializes a node, in all chains, if it is not a random
      * variable and if all of its parents are observed. In this case,
      * the value of the node is also fixed. Otherwise the function
      * has no effect.
+     *
      * @see initialize
      */
     void initializeData();
     /**
-     * Returns the name of the node.  The default implementation looks up
-     * the node in the supplied name table and returns an empty string if it
-     * is not found. Subclasses can overload this function and try to calculate
-     * the Node name based on the names of its parents.
+     * Returns the BUGS-language name of the node.  The default
+     * implementation looks up the node in the supplied name table and
+     * returns an empty string if it is not found. Subclasses can
+     * overload this function and try to calculate the Node name based
+     * on the names of its parents if it is not found int the name table.
      *
      * @param name_table Lookup table for node names.
      */
     virtual std::string name(NodeNameTab const &name_table) const;
     /**
-     * Returns true if the node is to be considered a random variable.
+     * Returns true if the node represents a random variable.
      */
     virtual bool isVariable() const = 0;
     /**
-     * Sets the value of the node, in all chains, to "value", and marks
-     * the node as "observed". This function can only be called once for
-     * a given Node.
+     * Sets the value of the node, in all chains, and marks the node
+     * as observed. This function can only be called once for a given
+     * Node.
+     * 
      * @param value array of doubles
+     *
      * @param length length of the value array
      */
     void setObserved(double const *value, unsigned int length);
     /**
-     * Indicates whether node is observed. 
+     * Indicates whether the node is observed. 
      */
     bool isObserved() const;
     /**
