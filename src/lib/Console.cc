@@ -520,14 +520,14 @@ bool Console::getMonitoredValues(map<string,SArray> &data_table,
     list<TraceMonitor const*>::const_iterator p;
     for (p = monitors.begin(); p != monitors.end(); ++p) {
       TraceMonitor const *monitor = *p;
-      if (monitor->niter(chain) > 0) {
-	Node const *node = monitor->node();
+      if (monitor->niter() > 0) {
+	Node const *node = monitor->nodes()[0];
 	string name = _model->symtab().getName(node);
 
 	//The new SArray has the same dimensions as the
 	//monitored node, plus an extra one for the 
 	//iterations. We put the extra dimension first.
-	unsigned int niter = monitor->niter(chain);
+	unsigned int niter = monitor->niter();
 	unsigned int ndim = node->dim().size();
 	vector<unsigned int> dim(ndim + 1);
 	dim[0] = niter;

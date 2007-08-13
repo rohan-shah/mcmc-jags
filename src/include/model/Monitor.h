@@ -1,6 +1,8 @@
 #ifndef MONITOR_H_
 #define MONITOR_H_
 
+#include <vector>
+
 class Node;
 
 /**
@@ -10,13 +12,13 @@ class Node;
  * values from a given node. 
  */
 class Monitor {
-    Node const *_node;
+    std::vector<Node const *> _nodes;
 public:
-    Monitor(Node const *node);
+    Monitor(std::vector<Node const *> const &nodes);
     virtual ~Monitor();
-    virtual void update(unsigned int iteration, unsigned int chain) = 0;
+    virtual void update(unsigned int iteration) = 0;
     virtual void reserve(unsigned int niter) = 0;
-    Node const *node() const;
+    std::vector<Node const *> const &nodes() const;
 };
 
 #endif

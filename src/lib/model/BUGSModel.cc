@@ -98,37 +98,34 @@ static void CODA(map<NodeId,TraceMonitor*> const &trace_map,
     for (; p != trace_map.end(); ++p) {
 
 	TraceMonitor const *monitor = p->second;
-	if (!isSynchronized(monitor)) {
-	    throw logic_error(" Unsynchronized Monitor in CODA");
-	}
 
 	string const &name = p->first.first;
 	Range const &uni_range = p->first.second;
 	Range multi_range = uni_range;
 	if (isNULL(multi_range)) {
-	    multi_range = Range(monitor->node()->dim());
+	    multi_range = Range(monitor->nodes()[0]->dim());
 	}
-	else if (multi_range.dim(true) != monitor->node()->dim()) {
+	else if (multi_range.dim(true) != monitor->nodes()[0]->dim()) {
 	    throw logic_error("Range does not match Node dimension in CODA");
 	}
 
-	unsigned int nvar = monitor->node()->length();
+	unsigned int nvar = monitor->nodes()[0]->length();
 	if (nvar != 1) {
 	    // Multivariate node
 	    for (unsigned int offset = 0; offset < nvar; ++offset) 
 	    {
 		index << name << print(multi_range.leftIndex(offset)) << " "  
 		      << lineno + 1 << "  "  
-		      << lineno + monitor->niter(0) << '\n';
-		lineno += monitor->niter(0);
+		      << lineno + monitor->niter() << '\n';
+		lineno += monitor->niter();
 	    }
 	}
 	else {
 	    // Univariate node 
 	    index << name << print(uni_range) << "  " 
 		  << lineno + 1 << "  " 
-		  << lineno + monitor->niter(0) << '\n';
-	    lineno += monitor->niter(0);
+		  << lineno + monitor->niter() << '\n';
+	    lineno += monitor->niter();
 	}
 	//Write output files
 	for (unsigned int ch = 0; ch < output.size(); ++ch) {
@@ -136,7 +133,7 @@ static void CODA(map<NodeId,TraceMonitor*> const &trace_map,
 	    vector<double> const &y = monitor->values(ch);
 	    for (unsigned int offset = 0; offset < nvar; ++offset) {
 		unsigned int iter = monitor->start();
-		for (unsigned int k = 0; k < monitor->niter(ch); k++) {
+		for (unsigned int k = 0; k < monitor->niter(); k++) {
 		    out << iter << "  ";
 		    writeDouble(y[k * nvar + offset], out);
 		    out << '\n';

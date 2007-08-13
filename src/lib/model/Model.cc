@@ -286,25 +286,24 @@ void Model::update(unsigned int niter)
     for (unsigned int iter = 0; iter < niter; ++iter) {    
 	
 	for (vector<Sampler*>::iterator i = _samplers.begin(); 
-	 i != _samplers.end(); ++i) 
+	     i != _samplers.end(); ++i) 
 	{
 	    (*i)->update(_rng);
 	}
 
 	for (unsigned int n = 0; n < _nchain; ++n) {
-	    
 	    for (vector<Node*>::const_iterator k = _sampled_extra.begin();
 		 k != _sampled_extra.end(); ++k)
 	    {
 		(*k)->randomSample(_rng[n], n);
 	    }
-	    _iteration++;
+	}
+	_iteration++;
 
-	    for (list<Monitor*>::iterator k = _monitors.begin(); 
-		 k != _monitors.end(); k++) 
-	    {
-		(*k)->update(_iteration, n);
-	    }
+	for (list<Monitor*>::iterator k = _monitors.begin(); 
+	     k != _monitors.end(); k++) 
+	{
+	    (*k)->update(_iteration);
 	}
     }
 }
@@ -363,10 +362,12 @@ void Model::setSampledExtra()
     for (list<Monitor*>::const_iterator p = _monitors.begin();
 	 p != _monitors.end(); ++p)
     {
-	Node const *node = (*p)->node();
-	if (egraph.contains(node)) {
-	    emarks.mark(node, 1);
-	    emarks.markAncestors(node, 1);
+	vector<Node const *> const &nodes = (*p)->nodes();
+	for (unsigned int i = 0; i < nodes.size(); ++i) {
+	    if (egraph.contains(nodes[i])) {
+		emarks.mark(nodes[i], 1);
+		emarks.markAncestors(nodes[i], 1);
+	    }
 	}
     }
     //Remove unmarked nodes from graph

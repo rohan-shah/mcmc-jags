@@ -14,7 +14,7 @@ class TraceMonitor : public Monitor {
     const unsigned int _start;                  
     const unsigned int _thin;      // thinning interval (=1/frequency)
     std::vector<std::vector<double> > _values; // sampled values
-    std::vector<unsigned int> _niter;
+    unsigned int _niter;
  public:
   /**
    * Constructs a TraceMonitor. 
@@ -32,7 +32,7 @@ class TraceMonitor : public Monitor {
   /**
    * @returns The last monitored iteration
    */
-  unsigned int end(unsigned int chain) const;
+  unsigned int end() const;
   /**
    * @returns the thinning interval of the monitor
    */
@@ -40,31 +40,27 @@ class TraceMonitor : public Monitor {
   /**
    * The number of monitored iterations
    */
-  unsigned int niter(unsigned int chain) const;                       
+  unsigned int niter() const;                       
   /**
    * Updates the monitor. If the iteration number coincides with
    * the thinning interval, then the current value of the node
    * is pushed onto the back of the value vector for the monitor.
    *
    * @param iteration The current iteration number.
-   * @param chain Chain number to record.
    */
-  void update(unsigned int iteration, unsigned int chain);
+  void update(unsigned int iteration);
   /**
-   * @returns a the vector of monitored values for the given chain
+   * @returns the vector of monitored values for the given chain
    */
   std::vector<double> const &values(unsigned int chain) const; 
   /**
    * Reserves memory for future updates. Sufficient memory is 
-   * reserved for storage of future samples avoiding re-allocation
+   * reserved for storage of future samples to avoid re-allocation
    * of memory for the next niter iterations.
    *
    * @param niter number of future iterations to reserve. 
    */
   void reserve(unsigned int niter);
 };
-
-/** Returns true if the monitor has the same size for all chains */
-bool isSynchronized(TraceMonitor const *monitor);
 
 #endif
