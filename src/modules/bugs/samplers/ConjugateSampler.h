@@ -27,7 +27,7 @@ class ConjugateSampler : public Sampler
     const ConjugateDist _target_dist;
     std::vector<ConjugateDist> _child_dist;
 public:
-    ConjugateSampler(StochasticNode* const node, Graph const &graph, 
+    ConjugateSampler(StochasticNode* node, Graph const &graph, 
 		     ConjugateMethod *method);
     StochasticNode *node() const;
     ConjugateDist targetDist() const;
