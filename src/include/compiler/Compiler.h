@@ -37,6 +37,7 @@ class Compiler {
   bool *_is_resolved;
   bool _strict_resolution;
   int _index_expression;
+  Graph _index_graph;
   ConstantFactory _constantfactory;
   LogicalFactory _logicalfactory;
   StochasticFactory _stochasticfactory;
@@ -58,7 +59,7 @@ class Compiler {
   void writeConstantData(ParseTree const *rel);
   void getArrayDim(ParseTree const *p);
   bool getParameterVector(ParseTree const *t,
-				 std::vector<Node const *> &parents);
+			  std::vector<Node const *> &parents);
   Node * getSubsetNode(ParseTree const *var);
   Node * constFromTable(ParseTree const *p);
   void addDevianceNode();
@@ -96,14 +97,14 @@ public:
    * @param prelations ParseTree corresponding to a parsed model block
    */
   void writeRelations(ParseTree const *prelations);
-  /** 
+  /**
    * The function table used by the compiler to look up functions by
    * name.  It is shared by all Compiler objects.
    *
    * @see Module
    */
   static FuncTab &funcTab();
-  /** 
+  /**
    * The distribution table used by the compiler to look up
    * distributions by name.  It is shared by all Compiler objects.
    *
