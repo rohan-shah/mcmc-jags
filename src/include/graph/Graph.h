@@ -44,6 +44,10 @@ public:
    */
   bool contains(Node const *node) const;
   /**
+   * Removes all nodes from the graph
+   */
+  void clear();
+  /**
    * The number of nodes in the graph.
    */
   unsigned int size() const;
