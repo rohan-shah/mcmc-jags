@@ -103,13 +103,13 @@ static void CODA(map<NodeId,TraceMonitor*> const &trace_map,
 	Range const &uni_range = p->first.second;
 	Range multi_range = uni_range;
 	if (isNULL(multi_range)) {
-	    multi_range = Range(monitor->nodes()[0]->dim());
+	    multi_range = Range(monitor->node()->dim());
 	}
-	else if (multi_range.dim(true) != monitor->nodes()[0]->dim()) {
+	else if (multi_range.dim(true) != monitor->node()->dim()) {
 	    throw logic_error("Range does not match Node dimension in CODA");
 	}
 
-	unsigned int nvar = monitor->nodes()[0]->length();
+	unsigned int nvar = monitor->node()->length();
 	if (nvar != 1) {
 	    // Multivariate node
 	    for (unsigned int offset = 0; offset < nvar; ++offset) 

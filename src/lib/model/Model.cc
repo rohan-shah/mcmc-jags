@@ -362,12 +362,10 @@ void Model::setSampledExtra()
     for (list<Monitor*>::const_iterator p = _monitors.begin();
 	 p != _monitors.end(); ++p)
     {
-	vector<Node const *> const &nodes = (*p)->nodes();
-	for (unsigned int i = 0; i < nodes.size(); ++i) {
-	    if (egraph.contains(nodes[i])) {
-		emarks.mark(nodes[i], 1);
-		emarks.markAncestors(nodes[i], 1);
-	    }
+	Node const *node = (*p)->node();
+	if (egraph.contains(node)) {
+	    emarks.mark(node, 1);
+	    emarks.markAncestors(node, 1);
 	}
     }
     //Remove unmarked nodes from graph
