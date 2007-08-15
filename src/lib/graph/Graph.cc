@@ -44,6 +44,14 @@ void Graph::remove(Node *node)
   }
 }
 
+void Graph::clear()
+{
+    for (set<Node*>::iterator p = _nodes.begin(); p != _nodes.end(); ++p) {
+	(*p)->unref();
+    }
+    _nodes.clear();
+}
+
 bool Graph::contains(Node const *node) const
 {
   return  _nodes.find(const_cast<Node*>(node)) != _nodes.end();
