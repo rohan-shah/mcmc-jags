@@ -521,7 +521,7 @@ bool Console::getMonitoredValues(map<string,SArray> &data_table,
     for (p = monitors.begin(); p != monitors.end(); ++p) {
       TraceMonitor const *monitor = *p;
       if (monitor->niter() > 0) {
-	Node const *node = monitor->nodes()[0];
+	  Node const *node = monitor->node();
 	string name = _model->symtab().getName(node);
 
 	//The new SArray has the same dimensions as the

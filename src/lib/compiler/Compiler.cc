@@ -89,12 +89,17 @@ Node * Compiler::constFromTable(ParseTree const *p)
 	}
 	unsigned int offset = sarray.range().leftOffset(subset_range.lower());  
 	double value = sarray.value()[offset];
+	Node *cnode = 0;
 	if (value != JAGS_NA) {
-	    return _constantfactory.getConstantNode(value, _model.graph());
+	    if (_index_expression) {
+		cnode = new ConstantNode(value, 1);
+		_index_graph.add(cnode);
+	    }
+	    else {
+		cnode = _constantfactory.getConstantNode(value, _model.graph());
+	    }
 	}
-	else {
-	    return 0;
-	}
+	return cnode;
     }
 }
 
@@ -114,20 +119,31 @@ bool Compiler::indexExpression(ParseTree const *p, int &value)
     */
     
     /* 
-       The flag _index_expression is non-zero if we are inside an
-       Index expression. This invokes special rules in the function
-       getArraySubset.  The counter tracks the levels of nesting of
-       index expressions.
+       The counter _index_expression is non-zero if we are inside an
+       Index expression. This invokes special rules in the functions
+       getParameter and getArraySubset.  The counter tracks the levels
+       of nesting of index expressions.
+       
+       The graph _index_graph holds the Nodes created during the 
+       evaluation of the index expression.
     */
+
     _index_expression++;
     Node *node = getParameter(p);
     _index_expression--;
 
+    Graph tgraph;
+    if (_index_expression == 0) {
+	if (node) {
+	    tgraph.add(node); //Preserves node when _index_graph is cleared
+	}
+        _index_graph.clear();
+    }
+
     if (!node) {
 	return false;
     }
-    vector<unsigned int> const &dim = node->dim();
-    if (dim.size() != 1 || dim[0] != 1) {
+    if (node->length() != 1) {
 	string msg = string("Vector value in index expression:\n") + 
 	    node->name(_model.symtab());
 	throw runtime_error(msg);
@@ -316,34 +332,35 @@ Range Compiler::CounterRange(ParseTree const *var)
 
 Node * Compiler::getSubsetNode(ParseTree const *var)
 {
-  if (var->treeClass() != P_VAR) {
-    throw logic_error("Expecting variable expression");
-  }
+    if (var->treeClass() != P_VAR) {
+	throw logic_error("Expecting variable expression");
+    }
 
-  NodeArray *array = _model.symtab().getVariable(var->name());
-  if (array == 0) {
-      if (_strict_resolution) {
-	  throw runtime_error(string("Unknown variable ") + var->name());
-      }
-      else {
-	  return 0;
-      }
-  }
-  Range subset_range = getRange(var, array->range());
-  if (isNULL(subset_range)) {
-    return 0;
-  }
-  if (!array->range().contains(subset_range)) {
-    throw runtime_error(string("Subset ") + var->name() + print(subset_range)
-			+ " out of range");
-  }
-  Node *node = array->getSubset(subset_range, _model.graph());
-  if (node == 0 && _strict_resolution) {
-    throw runtime_error(string("Unable to resolve parameter ") + 
-			array->name() + print(subset_range) +
-                        " (one of its ancestors may be undefined)");
-  }
-  return node;
+    NodeArray *array = _model.symtab().getVariable(var->name());
+    if (array == 0) {
+	if (_strict_resolution) {
+	    throw runtime_error(string("Unknown variable ") + var->name());
+	}
+	else {
+	    return 0;
+	}
+    }
+    Range subset_range = getRange(var, array->range());
+    if (isNULL(subset_range)) {
+	return 0;
+    }
+    if (!array->range().contains(subset_range)) {
+	throw runtime_error(string("Subset ") + var->name() 
+			    + print(subset_range)
+			    + " out of range");
+    }
+    Node *node = array->getSubset(subset_range, _model.graph());
+    if (node == 0 && _strict_resolution) {
+	throw runtime_error(string("Unable to resolve parameter ") + 
+			    array->name() + print(subset_range) +
+			    " (one of its ancestors may be undefined)");
+    }
+    return node;
 }
 
 Node *Compiler::getArraySubset(ParseTree const *p)
@@ -356,8 +373,14 @@ Node *Compiler::getArraySubset(ParseTree const *p)
 
     Counter *counter = _countertab.getCounter(p->name()); //A counter
     if (counter) {
-	node = _constantfactory.getConstantNode((*counter)[0], 
-						_model.graph());
+	if (_index_expression) {
+	    node = new ConstantNode((*counter)[0], 1);
+	    _index_graph.add(node);
+	}
+	else {
+	    node = _constantfactory.getConstantNode((*counter)[0], 
+						    _model.graph());
+	}
     }
     else {
 	NodeArray *array = _model.symtab().getVariable(p->name());
@@ -439,6 +462,12 @@ static Distribution const *getDistribution(ParseTree const *pstoch_rel,
 }
 
 
+/*
+ * Evaluates the expression t, and returns a pointer to a Node. If the
+ * expression cannot be evaluated, a NULL pointer is returned. Any
+ * newly-allocated Nodes that are created during the evaluation of the
+ * expression are added to the given graph. 
+ */
 Node* Compiler::getParameter(ParseTree const *t)
 {
     vector<Node const *> parents;
@@ -446,19 +475,39 @@ Node* Compiler::getParameter(ParseTree const *t)
 
     switch (t->treeClass()) {
     case P_VALUE:
-	node =  _constantfactory.getConstantNode(t->value(), _model.graph());
+	if (_index_expression) {
+	    node = new ConstantNode(t->value(), 1);
+	    _index_graph.add(node);
+	}
+	else {
+	    node =  _constantfactory.getConstantNode(t->value(), 
+						     _model.graph());
+	}
 	break;
     case P_VAR:
 	node = getArraySubset(t);
 	break;
-    case P_FUNCTION: 
+    case P_FUNCTION: case P_LINK:
 	if (getParameterVector(t, parents)) {
-	    node = _logicalfactory.getLogicalNode(getFunction(t, funcTab()), 
-						  parents, _model.graph());
+	    Function const *func = 0;
+	    if (t->treeClass() == P_FUNCTION) {
+		func = getFunction(t, funcTab());
+	    }
+	    else {
+		func = getLink(t, funcTab());
+	    }
+	    if (_index_expression) {
+		node = new LogicalNode(func, parents);
+		_index_graph.add(node);
+	    }
+	    else {
+		node = _logicalfactory.getLogicalNode(func, parents, 
+						      _model.graph());
+	    }
 	}
 	break;
     default:
-	throw  logic_error("Malformed parse tree. Expected value, variable or expression");
+	throw  logic_error("Malformed parse tree.");
 	break;
     }
 
@@ -467,141 +516,146 @@ Node* Compiler::getParameter(ParseTree const *t)
     if (node && !node->isVariable()) {
       node->initializeData();
     }
-    return node;
+
+    if (_index_expression && !node->isObserved()) {
+	return 0;
+    }
+    else {
+	return node;
+    }
 }
 
+/*
+ * Before creating the node y <- foo(a,b), or z ~ dfoo(a,b), the parent
+ * nodes must a,b be created. This expression evaluates the vector(a,b)
+ * Arguments are the same as for getParameter.
+ */
 bool Compiler::getParameterVector(ParseTree const *t,
-					 vector<Node const *> &parents)
+				  vector<Node const *> &parents)
 {
-  if (!parents.empty()) {
-    throw logic_error("parent vector must be empty in getParameterVector");
-  }
-
-  switch (t->treeClass()) {
-  case P_FUNCTION: case P_LINK:
-    for (unsigned int i = 0; i < t->parameters().size(); ++i) {
-	Node *node = getParameter(t->parameters()[i]);
-      if (node) {
-	parents.push_back(node);
-      }
-      else {
-	parents.clear();
-	return false;
-      }
-			  
+    if (!parents.empty()) {
+	throw logic_error("parent vector must be empty in getParameterVector");
     }
-    break;
-  default:
-    throw logic_error("Invalid Parse Tree.  Expected function or operator.");
-  }
-  return true;
+
+    switch (t->treeClass()) {
+    case P_FUNCTION: case P_LINK:
+	for (unsigned int i = 0; i < t->parameters().size(); ++i) {
+	    Node *node = getParameter(t->parameters()[i]);
+	    if (node) {
+		parents.push_back(node);
+	    }
+	    else {
+		parents.clear();
+		return false;
+	    }
+			  
+	}
+	break;
+    default:
+	throw logic_error("Invalid Parse Tree. Expected function or operator.");
+    }
+    return true;
 }
 
 Node * Compiler::allocateStochastic(ParseTree const *stoch_relation)
 {
-  ParseTree const *distribution = stoch_relation->parameters()[1];  
-  vector<Node const *> parameters;
-  Node *lBound = 0, *uBound = 0;
+    ParseTree const *distribution = stoch_relation->parameters()[1];  
+    vector<Node const *> parameters;
+    Node *lBound = 0, *uBound = 0;
 
-  // Create the parameter vector
-  vector<ParseTree*> const &param_list = distribution->parameters();
-  for (unsigned int i = 0; i < param_list.size(); ++i) {
-      Node *param = getParameter(param_list[i]);
-    if (param) {
-      parameters.push_back(param);
+    // Create the parameter vector
+    vector<ParseTree*> const &param_list = distribution->parameters();
+    for (unsigned int i = 0; i < param_list.size(); ++i) {
+	Node *param = getParameter(param_list[i]);
+	if (param) {
+	    parameters.push_back(param);
+	}
+	else {
+	    return 0;
+	}
     }
-    else {
-      return 0;
-    }
-  }
 
-  // Set upper and lower bounds, if truncated
-  if (stoch_relation->parameters().size() == 3) {
-    ParseTree const *truncated = stoch_relation->parameters()[2];
-    ParseTree const *ll = truncated->parameters()[0];
-    ParseTree const *ul = truncated->parameters()[1];
-    if (ll) {
-	lBound = getParameter(ll);
-      if (!lBound) {
-	return 0;
-      }
+    // Set upper and lower bounds, if truncated
+    if (stoch_relation->parameters().size() == 3) {
+	ParseTree const *truncated = stoch_relation->parameters()[2];
+	ParseTree const *ll = truncated->parameters()[0];
+	ParseTree const *ul = truncated->parameters()[1];
+	if (ll) {
+	    lBound = getParameter(ll);
+	    if (!lBound) {
+		return 0;
+	    }
+	}
+	if (ul) {
+	    uBound = getParameter(ul);
+	    if (!uBound) {
+		return 0;
+	    }
+	}
     }
-    if (ul) {
-	uBound = getParameter(ul);
-      if (!uBound) {
-	return 0;
-      }
-    }
-  }
 
   
-  StochasticNode *snode = 0;
-  Distribution const *dist = getDistribution(stoch_relation, distTab());
+    StochasticNode *snode = 0;
+    Distribution const *dist = getDistribution(stoch_relation, distTab());
 
-  //Search data table to see if this is an observed node
-  ParseTree *var = stoch_relation->parameters()[0];
-  string const &name = var->name();
-  map<string,SArray>::const_iterator q = _data_table.find(name);
-  if (q != _data_table.end() && lBound == 0 && uBound == 0) {
-      /* FIXME: Currently restricted to unbounded nodes */
-      SArray const &data = q->second;
-      double const *data_value = data.value();
-      Range target_range = VariableSubsetRange(var);
-      bool isdata = true;
-      SArray this_data(target_range.dim(true));
-      unsigned int i = 0;
-      for (RangeIterator p(target_range); !p.atEnd(); p.nextLeft()) {
-	  unsigned int j = data.range().leftOffset(p);
-	  if (data_value[j] == JAGS_NA) {
-	      isdata = false;
-	      break;
-	  }
-	  else {
-	      this_data.setValue(data_value[j], i++);
-	  }
-      }
+    //Search data table to see if this is an observed node
+    ParseTree *var = stoch_relation->parameters()[0];
+    string const &name = var->name();
+    map<string,SArray>::const_iterator q = _data_table.find(name);
+    if (q != _data_table.end() && lBound == 0 && uBound == 0) {
+	/* FIXME: Currently restricted to unbounded nodes */
+	SArray const &data = q->second;
+	double const *data_value = data.value();
+	Range target_range = VariableSubsetRange(var);
+	bool isdata = true;
+	SArray this_data(target_range.dim(true));
+	unsigned int i = 0;
+	for (RangeIterator p(target_range); !p.atEnd(); p.nextLeft()) {
+	    unsigned int j = data.range().leftOffset(p);
+	    if (data_value[j] == JAGS_NA) {
+		isdata = false;
+		break;
+	    }
+	    else {
+		this_data.setValue(data_value[j], i++);
+	    }
+	}
 
-      if (isdata) {
-	  snode =  _stochasticfactory.getStochasticNode(dist, parameters,
-							this_data,
-                                                        _model.graph());
-      }
-  }
+	if (isdata) {
+	    snode =  _stochasticfactory.getStochasticNode(dist, parameters,
+							  this_data,
+							  _model.graph());
+	}
+    }
  
-  if (snode == 0) {
-      snode =  new StochasticNode(dist, parameters, lBound, uBound);
-  }
-  _model.graph().add(snode);
-  return snode;
+    if (snode == 0) {
+	snode =  new StochasticNode(dist, parameters, lBound, uBound);
+    }
+    _model.graph().add(snode);
+    return snode;
 }
 
 Node * Compiler::allocateLogical(ParseTree const *rel)
 {
-  ParseTree *expression = rel->parameters()[1];
-  Node *node = 0;
-  vector <Node const *> parents;
+    ParseTree *expression = rel->parameters()[1];
+    Node *node = 0;
+    vector <Node const *> parents;
 
-  switch (expression->treeClass()) {
-  case P_VALUE: 
-    node = new ConstantNode(expression->value(), _model.nchain());
-    _model.graph().add(node); 
-    /* The reason we aren't using a ConstantFactory here is to ensure
-       that the nodes are correctly named */
-    break;
-  case P_VAR: case P_FUNCTION: 
-      node = getParameter(expression);
-    break;
-  case P_LINK:
-      if (getParameterVector(expression, parents)) {
-	  node = _logicalfactory.getLogicalNode(getLink(expression, funcTab()), 
-						parents, _model.graph());
-      }
-    break;
-  default:
-    throw logic_error("Malformed parse tree in Compiler::allocateLogical");
-  }
+    switch (expression->treeClass()) {
+    case P_VALUE: 
+	node = new ConstantNode(expression->value(), _model.nchain());
+	_model.graph().add(node); 
+	/* The reason we aren't using a ConstantFactory here is to ensure
+	   that the nodes are correctly named */
+	break;
+    case P_VAR: case P_FUNCTION: case P_LINK:
+	node = getParameter(expression);
+	break;
+    default:
+	throw logic_error("Malformed parse tree in Compiler::allocateLogical");
+    }
 
-  return node;
+    return node;
 }
 
 void Compiler::allocate(ParseTree const *rel)
@@ -807,7 +861,7 @@ Compiler::Compiler(BUGSModel &model, map<string, SArray> const &data_table)
     : _model(model), _countertab(), 
       _data_table(data_table), _n_resolved(0), 
       _n_relations(0), _is_resolved(0), _strict_resolution(false),
-      _index_expression(0),
+      _index_expression(0), _index_graph(),
       _constantfactory(model.nchain())
 {
   if (_model.graph().size() != 0)

@@ -357,6 +357,7 @@ Node * getMixtureNode(ParseTree const * var, Compiler *compiler)
 			var->name());
   }
 
+  Graph &compiler_graph = compiler->model().graph();
   unsigned int nvi = 0; //Count number of variable indices
   for (unsigned int i = 0; i < ndim; ++i) {
     ParseTree const *range_element = range_list[i];
@@ -379,7 +380,7 @@ Node * getMixtureNode(ParseTree const * var, Compiler *compiler)
 	ssi.upper = ssi.lower;
       }
       else {
-	ssi.node = compiler->getParameter(p0);
+	  ssi.node = compiler->getParameter(p0);
 	if (ssi.node == 0)
 	  return 0;
 	else
@@ -396,8 +397,8 @@ Node * getMixtureNode(ParseTree const * var, Compiler *compiler)
 	}
       }
       else {
-	ssi.node = compiler->getParameter(p0);
-	if (compiler->getParameter(p1) != ssi.node)
+	  ssi.node = compiler->getParameter(p0);
+	  if (compiler->getParameter(p1) != ssi.node)
 	  return 0;
 	else
 	  ++nvi;

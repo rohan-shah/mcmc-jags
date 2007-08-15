@@ -12,13 +12,68 @@ class Node;
  * values from a given node. 
  */
 class Monitor {
-    std::vector<Node const *> _nodes;
+    Node const * _node;
+    unsigned int _start;
+    unsigned int _thin;
+    unsigned int _niter;
 public:
-    Monitor(std::vector<Node const *> const &nodes);
+    Monitor(Node const *nodes, unsigned int start, unsigned int thin);
     virtual ~Monitor();
-    virtual void update(unsigned int iteration) = 0;
+    /**
+     * Updates the monitor. If the iteration number coincides with
+     * the thinning interval, then the doUpdate function is called.
+     *
+     * @param iteration The current iteration number.
+     */
+    void update(unsigned int iteration);
+    /**
+     * Returns the sampled Node
+     */
+    Node const *node() const;
+    /**
+     * @returns the iteration number at which the node started monitoring.  
+     */
+    unsigned int start() const; 
+    /**
+     * @returns The last monitored iteration
+     */
+    unsigned int end() const;
+    /**
+     * @returns the thinning interval of the monitor
+     */
+    unsigned int thin() const;
+    /**
+     * The number of monitored iterations
+     */
+    unsigned int niter() const;      
+    /**
+     * The number of parallel chains of the Monitor.  This does not
+     * have to coincide with the number of chains of the Model: a
+     * Monitor may summarize data from multiple parallel chains in a
+     * single vector.
+     */
+    virtual unsigned int nchain() const  = 0;
+    /**
+     * The dimension of a single sample from one iteration of the
+     * Node. 
+     */
+    virtual std::vector<unsigned int> dim() const = 0;
+    /**
+     * @returns the vector of monitored values for the given chain
+     */
+    virtual std::vector<double> const &values(unsigned int chain) const = 0;
+    /**
+     * Updates the Monitor with Node valus from the current iteration
+     */
+    virtual void doUpdate() = 0;
+    /**
+     * Reserves memory for future updates. Sufficient memory is
+     * reserved for storage of future samples to avoid re-allocation
+     * of memory for the next niter iterations.
+     *
+     * @param niter number of future iterations to reserve. 
+     */
     virtual void reserve(unsigned int niter) = 0;
-    std::vector<Node const *> const &nodes() const;
 };
 
 #endif
