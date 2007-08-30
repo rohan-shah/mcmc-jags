@@ -130,7 +130,7 @@ static void CODA(map<NodeId,TraceMonitor*> const &trace_map,
 	//Write output files
 	for (unsigned int ch = 0; ch < output.size(); ++ch) {
 	    ofstream &out = *output[ch];
-	    vector<double> const &y = monitor->values(ch);
+	    vector<double> const &y = monitor->value(ch);
 	    for (unsigned int offset = 0; offset < nvar; ++offset) {
 		unsigned int iter = monitor->start();
 		for (unsigned int k = 0; k < monitor->niter(); k++) {
@@ -257,7 +257,7 @@ void BUGSModel::setParameters(std::map<std::string, SArray> const &param_table,
 }
 
 
-bool BUGSModel::setMonitor(string const &name, Range const &range,
+bool BUGSModel::setTraceMonitor(string const &name, Range const &range,
 	        unsigned int thin)
 {
     pair<string, Range> nodeid(name, range);
@@ -278,7 +278,7 @@ bool BUGSModel::setMonitor(string const &name, Range const &range,
     }
 }
 
-bool BUGSModel::clearMonitor(string const &name, Range const &range)
+bool BUGSModel::deleteTraceMonitor(string const &name, Range const &range)
 {
     pair<string, Range> nodeid(name, range);
     map<pair<string, Range>, TraceMonitor*>::iterator p =
@@ -291,6 +291,7 @@ bool BUGSModel::clearMonitor(string const &name, Range const &range)
 	removeMonitor(p->second);
 	_trace_map.erase(p);
 	_trace_monitors.remove(p->second);
+	delete p->second;
 	return true;
     }
 }

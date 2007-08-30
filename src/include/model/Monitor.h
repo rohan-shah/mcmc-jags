@@ -2,6 +2,7 @@
 #define MONITOR_H_
 
 #include <vector>
+#include <string>
 
 class Node;
 
@@ -12,12 +13,14 @@ class Node;
  * values from a given node. 
  */
 class Monitor {
+    const std::string _name;
     Node const * _node;
     unsigned int _start;
     unsigned int _thin;
     unsigned int _niter;
 public:
-    Monitor(Node const *nodes, unsigned int start, unsigned int thin);
+    Monitor(std::string const &name, Node const *nodes, unsigned int start, 
+	    unsigned int thin);
     virtual ~Monitor();
     /**
      * Updates the monitor. If the iteration number coincides with
@@ -47,6 +50,10 @@ public:
      */
     unsigned int niter() const;      
     /**
+     * The name of the monitor.
+     */
+    std::string const &name() const;
+    /**
      * The number of parallel chains of the Monitor.  This does not
      * have to coincide with the number of chains of the Model: a
      * Monitor may summarize data from multiple parallel chains in a
@@ -54,14 +61,13 @@ public:
      */
     virtual unsigned int nchain() const  = 0;
     /**
-     * The dimension of a single sample from one iteration of the
-     * Node. 
+     * The dimension of the value vector for a single chain.
      */
     virtual std::vector<unsigned int> dim() const = 0;
     /**
-     * @returns the vector of monitored values for the given chain
+     * The vector of monitored values for the given chain
      */
-    virtual std::vector<double> const &values(unsigned int chain) const = 0;
+    virtual std::vector<double> const &value(unsigned int chain) const = 0;
     /**
      * Updates the Monitor with Node valus from the current iteration
      */

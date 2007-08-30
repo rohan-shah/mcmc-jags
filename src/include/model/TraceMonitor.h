@@ -21,7 +21,7 @@ public:
      */
     TraceMonitor(Node const *node, unsigned int start, unsigned int thin);
     void doUpdate();
-    std::vector<double> const &values(unsigned int chain) const;
+    std::vector<double> const &value(unsigned int chain) const;
     std::vector<unsigned int> dim() const;
     unsigned int nchain() const;
     void reserve(unsigned int niter);

@@ -120,7 +120,7 @@ public:
    * monitored.
    *
    */
-  bool setMonitor(std::string const &name, Range const &range,
+  bool setTraceMonitor(std::string const &name, Range const &range,
 		  unsigned int thin); 
   /**
    * @short Clears a trace monitor. 
@@ -128,7 +128,7 @@ public:
    * The arguments name and range must correspond exactly to a
    * previous call to setMonitor.
    */
-  bool clearMonitor(std::string const &name, Range const &range);
+  bool clearTraceMonitor(std::string const &name, Range const &range);
   /**
    * @short Dumps the state of the model.
    *
@@ -137,13 +137,16 @@ public:
    * @param data_table Data table to receive values. This must be
    * initially empty.
    *
-   * @param chain Number of the chain for which to dump values (starting
-   * from 1). Note that only 1 chain is currently supported.
+   * @param rng_name String which will be overwritten with the name
+   * of the RNG for this chain.
    *
    * @param type Flag describing which values in the model to dump. 
    * DUMP_DATA dumps the observed stochastic nodes, DUMP_PARAMETERS
    * dumps the unobserved stochastic nodes, and DUMP_ALL, dumps the values
    * of all named nodes in the model.
+   *
+   * @param chain Number of the chain for which to dump values (starting
+   * from 1). 
    */
   bool dumpState(std::map<std::string,SArray> &data_table, 
                  std::string &rng_name,
@@ -172,7 +175,7 @@ public:
   BUGSModel const *model();
   unsigned int nchain() const;
   bool getMonitoredValues(std::map<std::string,SArray> &data_table,
-			  unsigned int chain);
+			  unsigned int chain, std::string const &name);
   /** Turns off adaptive mode of the model */
   bool adaptOff(bool &status);
   /** Indicates whether model is in adaptive mode */

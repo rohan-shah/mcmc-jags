@@ -106,9 +106,25 @@ public:
      */
     void setParameters(std::map<std::string, SArray> const &param_table,
 		       unsigned int chain);
-    bool setMonitor(std::string const &name, Range const &range,
-                    unsigned int thin);
-    bool clearMonitor(std::string const &name, Range const &range);
+    /**
+     * Creates a new TraceMonitor. The TraceMonitor subclass has a
+     * special status for historical reasons, due to the need to
+     * support the CODA output format. The BUGSModel maintains it's
+     * own list of TraceMonitors and is also responsible for their
+     * memory management.
+     */
+    bool setTraceMonitor(std::string const &name, Range const &range,
+			 unsigned int thin);
+    /**
+     * Deletes a TraceMonitor.  The TraceMonitor is removed both from
+     * the list of Monitors held by the parent class Monitor, and from
+     * the list of TraceMonitors accessed by the member function
+     * BUGSModel#traceMonitor. It is then deleted.
+     */
+    bool deleteTraceMonitor(std::string const &name, Range const &range);
+    /**
+     * Returns the list of TraceMonitors belonging to the BUGSModel.
+     */
     std::list<TraceMonitor const *> const &traceMonitors() const;
 };
 

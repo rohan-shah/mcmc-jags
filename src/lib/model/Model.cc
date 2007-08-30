@@ -483,3 +483,8 @@ bool Model::setRNG(RNG *rng, unsigned int chain)
   _rng[chain] = rng;
   return true;
 }
+
+list<Monitor*> const &Model::monitors() const
+{
+  return _monitors;
+}

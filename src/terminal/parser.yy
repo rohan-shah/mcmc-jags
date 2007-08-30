@@ -51,6 +51,7 @@
     static void setParameters(ParseTree *p, std::vector<ParseTree*> *parameters);
     static void setParameters(ParseTree *p, ParseTree *param1, ParseTree *param2);
     static void loadModule(std::string const &name);
+    static void monitorDump(std::string const &name);
     %}
 
 %defines
@@ -531,11 +532,11 @@ void setMonitor(ParseTree const *var, int thin)
     std::string const &name = var->name();
     if (var->parameters().empty()) {
 	/* Requesting the whole node */
-	console->setMonitor(name, Range(), thin);
+	console->setTraceMonitor(name, Range(), thin);
     }
     else {
 	/* Requesting subset of a multivariate node */
-	console->setMonitor(name, getRange(var), thin);
+	console->setTraceMonitor(name, getRange(var), thin);
     }
 }
 
@@ -544,11 +545,11 @@ void clearMonitor(ParseTree const *var)
     std::string const &name = var->name();
     if (var->parameters().empty()) {
 	/* Requesting the whole node */
-	console->clearMonitor(name, Range());
+	console->clearTraceMonitor(name, Range());
     }
     else {
 	/* Requesting subset of a multivariate node */
-	console->clearMonitor(name, getRange(var));
+	console->clearTraceMonitor(name, getRange(var));
     }
 }
 
@@ -984,6 +985,12 @@ static void loadModule(std::string const &name)
       }
   }
 }
+
+static void monitorDump(std::string const &name)
+{
+    
+
+} 
 
 int main (int argc, char **argv)
 {

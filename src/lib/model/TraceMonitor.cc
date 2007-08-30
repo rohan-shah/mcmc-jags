@@ -9,7 +9,7 @@ using std::vector;
 
 TraceMonitor::TraceMonitor(Node const *node, unsigned int start, 
 			   unsigned int thin)
-    : Monitor(node, start, thin), _values(node->nchain())
+    : Monitor("trace", node, start, thin), _values(node->nchain())
 {
 }
 
@@ -26,14 +26,16 @@ void TraceMonitor::doUpdate()
     }
 }
 
-vector<double> const &TraceMonitor::values(unsigned int chain) const
+vector<double> const &TraceMonitor::value(unsigned int chain) const
 {
     return _values[chain];
 }
 
 vector<unsigned int> TraceMonitor::dim() const
 {
-    return node()->dim();
+    vector<unsigned int> dim = node()->dim();
+    dim.push_back(niter());
+    return dim;
 }
 
 unsigned int TraceMonitor::nchain() const

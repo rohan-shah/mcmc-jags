@@ -6,9 +6,11 @@
 
 using std::vector;
 using std::invalid_argument;
+using std::string;
 
-Monitor::Monitor(Node const *node, unsigned int start, unsigned int thin)
-    : _node(node), _start(0), _thin(thin), _niter(0)
+Monitor::Monitor(string const &name, Node const *node, unsigned int start,
+                 unsigned int thin)
+    : _name(name), _node(node), _start(0), _thin(thin), _niter(0)
 {
    if (thin == 0) {
 	throw invalid_argument("Illegal thinning interval");
@@ -54,3 +56,7 @@ unsigned int Monitor::niter() const
     return _niter;
 }
 
+string const &Monitor::name() const
+{
+    return _name;
+}

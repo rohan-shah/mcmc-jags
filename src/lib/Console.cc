@@ -11,6 +11,7 @@
 #include <sarray/Range.h>
 #include <sarray/SArray.h>
 #include <rng/RNG.h>
+#include <sarray/util.h>
 
 #include <map>
 #include <list>
@@ -356,8 +357,8 @@ unsigned int Console::iter() const
   }
 }
 
-bool Console::setMonitor(string const &name, Range const &range,
-			 unsigned int thin)
+bool Console::setTraceMonitor(string const &name, Range const &range,
+			      unsigned int thin)
 {
   if (!_model) {
     _err << "Can't set monitor. No model!" << endl;    
@@ -365,7 +366,7 @@ bool Console::setMonitor(string const &name, Range const &range,
   }
 
   try {
-      bool ok = _model->setMonitor(name, range, thin);
+      bool ok = _model->setTraceMonitor(name, range, thin);
       if (!ok) {
 	  _err << "Failed to set monitor " << name << print(range) << endl;
 	  return false;
@@ -387,7 +388,7 @@ bool Console::setMonitor(string const &name, Range const &range,
   return true;
 }
 
-bool Console::clearMonitor(string const &name, Range const &range)
+bool Console::clearTraceMonitor(string const &name, Range const &range)
 {
   if (!_model) {
     _err << "Can't clear monitor. No model!" << endl;    
@@ -395,7 +396,7 @@ bool Console::clearMonitor(string const &name, Range const &range)
   }
 
   try {
-      bool ok = _model->clearMonitor(name, range);      
+      bool ok = _model->deleteTraceMonitor(name, range);      
       if (!ok) {
 	  _err << "Failed to clear monitor " << name << print(range) << endl;
 	  return false;
@@ -506,70 +507,93 @@ bool Console::dumpState(map<string,SArray> &data_table,
   return true;
 }
 
+
 bool Console::getMonitoredValues(map<string,SArray> &data_table,
-				 unsigned int chain)
+				 unsigned int chain, string const &name)
 {
-  if(chain == 0 || chain > nchain()) {
-    _err << "Invalid chain number" << endl;
-    return false;
-  }
-  chain -= 1;
+    if(chain == 0 || chain > nchain()) {
+	_err << "Invalid chain number" << endl;
+	return false;
+    }
+    chain -= 1;
 
-  try {
-    list<TraceMonitor const *> const &monitors = _model->traceMonitors();
-    list<TraceMonitor const*>::const_iterator p;
-    for (p = monitors.begin(); p != monitors.end(); ++p) {
-      TraceMonitor const *monitor = *p;
-      if (monitor->niter() > 0) {
-	  Node const *node = monitor->node();
-	string name = _model->symtab().getName(node);
+    try {
+	list<Monitor*> const &monitors = _model->monitors();
+	list<Monitor*>::const_iterator p;
+	for (p = monitors.begin(); p != monitors.end(); ++p) {
+	    Monitor const *monitor = *p;
+	    if (monitor->niter() > 0 && monitor->name() == name) {
+		Node const *node = monitor->node();
+		string name = _model->symtab().getName(node);
+		
+		/*
+		//The new SArray has the same dimensions as the
+		//monitored node, plus an extra one for the 
+		//iterations. We put the extra dimension first.
+		unsigned int niter = monitor->niter();
+		unsigned int ndim = node->dim().size();
+		vector<unsigned int> dim(ndim + 1);
+		dim[0] = niter;
+		unsigned int length = 1;
+		for (unsigned int i = 1; i <= ndim; ++i) {
+		    dim[i] = node->dim()[i-1];
+		    length *= dim[i];
+		}
+		*/
 
-	//The new SArray has the same dimensions as the
-	//monitored node, plus an extra one for the 
-	//iterations. We put the extra dimension first.
-	unsigned int niter = monitor->niter();
-	unsigned int ndim = node->dim().size();
-	vector<unsigned int> dim(ndim + 1);
-	dim[0] = niter;
-	unsigned int length = 1;
-	for (unsigned int i = 1; i <= ndim; ++i) {
-	    dim[i] = node->dim()[i-1];
-	    length *= dim[i];
-	}
-	//Create a new SArray and insert it into the table
-	SArray ans(dim);
-	double *values = new double[length * niter];
-	vector<double> const &monitor_values = monitor->values(chain);
-	for (unsigned int i = 0; i < length; ++i) {
-	    for (unsigned int j = 0; j < niter; ++j) {
-		values[niter * i + j] = monitor_values[length * j + i];
+		//FIXME: Will need to call aperm in rjags interface
+		//as extra dimension for TraceMonitors now goes LAST.
+
+		vector<unsigned int> dim = monitor->dim();
+		unsigned int length = product(dim);
+
+		/*
+		//Create a new SArray and insert it into the table
+		SArray ans(dim);
+		double *values = new double[length * niter];
+		vector<double> const &monitor_values = monitor->value(chain);
+		for (unsigned int i = 0; i < length; ++i) {
+		    for (unsigned int j = 0; j < niter; ++j) {
+			values[niter * i + j] = monitor_values[length * j + i];
+		    }
+		}
+		ans.setValue(values, length*niter);
+		delete [] values;
+		*/
+
+		//Create a new SArray and insert it into the table
+		SArray ans(dim);
+		double *values = new double[length];
+		vector<double> const &monitor_values = monitor->value(chain);
+		for (unsigned int i = 0; i < length; ++i) {
+		    values[i] = monitor_values[i];
+		}
+		ans.setValue(values, length);
+		delete [] values;
+
+		data_table.insert(pair<string,SArray>(name, ans));
 	    }
 	}
-	ans.setValue(values, length*niter);
-	delete [] values;
-	data_table.insert(pair<string,SArray>(name, ans));
-      }
     }
-  }
-  catch (NodeError except) {
-    _err << "Error in node " <<
-      _model->symtab().getName(except.node) << "\n";
-    _err << except.what() << endl;
-    return false;
-  }
-  catch (std::runtime_error except) {
-    _err << "RUNTIME ERROR:\n";
-    _err << except.what() << endl;
-    return false;
-  }
-  catch (std::logic_error except) {
-    _err << "LOGIC ERROR:\n";
-    _err << except.what() << '\n';
-    _err << "Please send a bug report to " << PACKAGE_BUGREPORT << endl;
-    return false;
-  }
+    catch (NodeError except) {
+	_err << "Error in node " <<
+	    _model->symtab().getName(except.node) << "\n";
+	_err << except.what() << endl;
+	return false;
+    }
+    catch (std::runtime_error except) {
+	_err << "RUNTIME ERROR:\n";
+	_err << except.what() << endl;
+	return false;
+    }
+    catch (std::logic_error except) {
+	_err << "LOGIC ERROR:\n";
+	_err << except.what() << '\n';
+	_err << "Please send a bug report to " << PACKAGE_BUGREPORT << endl;
+	return false;
+    }
 
-  return true;
+    return true;
 }
 
 bool Console::coda(ofstream &index, vector<ofstream*> const &output)

@@ -93,6 +93,10 @@ public:
    */
   void removeMonitor(Monitor *monitor);
   /**
+   * Returns the list of Monitors 
+   */
+  std::list<Monitor*> const &monitors() const;
+  /**
    * After the model is initialized, extra uninformative nodes may be
    * added to the graph (For example, a node may be added that
    * calculates the deviance of the model).  The model takes
