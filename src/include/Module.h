@@ -8,6 +8,7 @@ class Function;
 class Distribution;
 class SamplerFactory;
 class RNGFactory;
+class MonitorFactory;
 
 /**
  * @short Memory management for dynamically loadable modules
@@ -27,6 +28,7 @@ class Module {
     std::vector<Distribution*> _distributions;
     std::vector<SamplerFactory*> _sampler_factories;
     std::vector<RNGFactory*> _rng_factories;
+    std::vector<MonitorFactory*> _monitor_factories;
 public:
     Module();
     virtual ~Module();
@@ -35,10 +37,12 @@ public:
     void insert(Distribution*);
     void insert(SamplerFactory*);
     void insert(RNGFactory*);
+    void insert(MonitorFactory*);
     std::vector<Function*> const &functions() const;
     std::vector<Distribution*> const &distributions() const;
     std::vector<SamplerFactory*> const &samplerFactories() const;
     std::vector<RNGFactory*> const &rngFactories() const;
+    std::vector<MonitorFactory*> const &monitorFactories() const;
 };
 
 #endif /* _MODULE_H_ */
