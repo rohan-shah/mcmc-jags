@@ -79,6 +79,12 @@ void Module::insert(RNGFactory *fac)
     Model::rngFactories().push_front(fac);
 }
 
+void Module::insert(MonitorFactory *fac)
+{
+    _monitor_factories.push_back(fac);
+    Model::monitorFactories().push_front(fac);
+}
+
 vector<Function*> const  &Module::functions() const
 {
     return _functions;
@@ -97,4 +103,9 @@ vector<SamplerFactory*> const  &Module::samplerFactories() const
 vector<RNGFactory*> const &Module::rngFactories() const
 {
     return _rng_factories;
+}
+
+vector<MonitorFactory*> const &Module::monitorFactories() const
+{
+    return _monitor_factories;
 }
