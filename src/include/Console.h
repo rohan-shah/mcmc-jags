@@ -111,7 +111,7 @@ public:
    */ 
   bool update (unsigned int n);
   /**
-   * Sets a trace monitor for a subset of the given variable
+   * Sets a monitor for a subset of the given node array
    *
    * @param name Name of array containing nodes to be monitored
    * 
@@ -119,16 +119,21 @@ public:
    * A NULL range may be given, in which case, the whole array is
    * monitored.
    *
+   * @param thin Thinning interval for the monitor
+   *
+   * @param type Name of the monitor type.
+   *
    */
-  bool setTraceMonitor(std::string const &name, Range const &range,
-		  unsigned int thin); 
+  bool setMonitor(std::string const &name, Range const &range,
+		  unsigned int thin, std::string const &type); 
   /**
-   * @short Clears a trace monitor. 
+   * @short Clears a monitor. 
    * 
-   * The arguments name and range must correspond exactly to a
-   * previous call to setMonitor.
+   * The arguments name, range and type must correspond exactly to
+   * a previous call to setMonitor.
    */
-  bool clearTraceMonitor(std::string const &name, Range const &range);
+  bool clearMonitor(std::string const &name, Range const &range,
+		    std::string const &type);
   /**
    * @short Dumps the state of the model.
    *
@@ -174,8 +179,8 @@ public:
   bool coda(std::ofstream &index, std::vector<std::ofstream*> const &output);
   BUGSModel const *model();
   unsigned int nchain() const;
-  bool getMonitoredValues(std::map<std::string,SArray> &data_table,
-			  unsigned int chain, std::string const &name);
+  bool dumpMonitors(std::map<std::string,SArray> &data_table,
+		    std::string const &type, unsigned int chain);
   /** Turns off adaptive mode of the model */
   bool adaptOff(bool &status);
   /** Indicates whether model is in adaptive mode */
