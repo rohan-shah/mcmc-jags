@@ -3,7 +3,8 @@
 #include <compiler/Compiler.h>
 #include <compiler/parser_extra.h>
 #include <compiler/ParseTree.h>
-#include <model/TraceMonitor.h>
+//#include <model/TraceMonitor.h>
+#include <model/Monitor.h>
 #include <model/BUGSModel.h>
 #include <graph/NodeError.h>
 #include <sampler/SamplerFactory.h>
@@ -357,38 +358,40 @@ unsigned int Console::iter() const
   }
 }
 
-bool Console::setTraceMonitor(string const &name, Range const &range,
-			      unsigned int thin)
+bool Console::setMonitor(string const &name, Range const &range,
+			 unsigned int thin, string const &type)
 {
-  if (!_model) {
-    _err << "Can't set monitor. No model!" << endl;    
-    return false;
-  }
+    if (!_model) {
+	_err << "Can't set monitor. No model!" << endl;    
+	return false;
+    }
 
-  try {
-      bool ok = _model->setTraceMonitor(name, range, thin);
-      if (!ok) {
-	  _err << "Failed to set monitor " << name << print(range) << endl;
-	  return false;
-      }
-  }
-  catch (std::logic_error except) {
-    _err << "LOGIC ERROR:\n";
-    _err << except.what() << '\n';
-    _err << "Please send a bug report to " << PACKAGE_BUGREPORT << endl;
-    clearModel();
-    return false;
-  }
-  catch (std::runtime_error except) {
-    _err << "RUNTIME ERROR:\n";
-    _err << except.what() << endl;
-    clearModel();
-    return false;
-  }
-  return true;
+    try {
+	bool ok = _model->setMonitor(name, range, thin, type);
+	if (!ok) {
+	    _err << "Failed to set " << type << " monitor for node " << 
+		name << print(range) << endl;
+	    return false;
+	}
+    }
+    catch (std::logic_error except) {
+	_err << "LOGIC ERROR:\n";
+	_err << except.what() << '\n';
+	_err << "Please send a bug report to " << PACKAGE_BUGREPORT << endl;
+	clearModel();
+	return false;
+    }
+    catch (std::runtime_error except) {
+	_err << "RUNTIME ERROR:\n";
+	_err << except.what() << endl;
+	clearModel();
+	return false;
+    }
+    return true;
 }
 
-bool Console::clearTraceMonitor(string const &name, Range const &range)
+bool Console::clearMonitor(string const &name, Range const &range,
+			   string const &type)
 {
   if (!_model) {
     _err << "Can't clear monitor. No model!" << endl;    
@@ -396,9 +399,10 @@ bool Console::clearTraceMonitor(string const &name, Range const &range)
   }
 
   try {
-      bool ok = _model->deleteTraceMonitor(name, range);      
+      bool ok = _model->deleteMonitor(name, range, type);      
       if (!ok) {
-	  _err << "Failed to clear monitor " << name << print(range) << endl;
+	  _err << "Failed to clear " << type << " monitor for node " << 
+	      name << print(range) << endl;
 	  return false;
       }
   }
@@ -508,8 +512,8 @@ bool Console::dumpState(map<string,SArray> &data_table,
 }
 
 
-bool Console::getMonitoredValues(map<string,SArray> &data_table,
-				 unsigned int chain, string const &name)
+bool Console::dumpMonitors(map<string,SArray> &data_table,
+			   string const &name, unsigned int chain)
 {
     if(chain == 0 || chain > nchain()) {
 	_err << "Invalid chain number" << endl;

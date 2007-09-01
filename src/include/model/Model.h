@@ -12,6 +12,7 @@ class Monitor;
 class SamplerFactory;
 class RNG;
 class RNGFactory;
+class MonitorFactory;
 
 /**
  * @short Graphical model 
@@ -118,6 +119,10 @@ public:
    * Access the list of RNG factories, which is common to all models
    */
   static std::list<RNGFactory *> &rngFactories();
+  /**
+   * Access the list of monitor factories, which is commmon to all models
+   */
+  static std::list<MonitorFactory *> &monitorFactories();
   /**
    * Returns the number of chains in the model
    */

@@ -21,8 +21,8 @@ class TraceMonitor;
 class BUGSModel : public Model
 {
     SymTab _symtab;
-    std::map<std::pair<std::string, Range>, TraceMonitor*> _trace_map;
-    std::list<TraceMonitor const *> _trace_monitors;
+    std::map<Node const*, std::pair<std::string, Range> > _node_map;
+    std::list<Monitor*> _bugs_monitors;
 public:
     BUGSModel(unsigned int nchain);
     
@@ -113,19 +113,20 @@ public:
      * own list of TraceMonitors and is also responsible for their
      * memory management.
      */
-    bool setTraceMonitor(std::string const &name, Range const &range,
-			 unsigned int thin);
+    bool setMonitor(std::string const &name, Range const &range,
+		    unsigned int thin, std::string const &type);
     /**
      * Deletes a TraceMonitor.  The TraceMonitor is removed both from
      * the list of Monitors held by the parent class Monitor, and from
      * the list of TraceMonitors accessed by the member function
      * BUGSModel#traceMonitor. It is then deleted.
      */
-    bool deleteTraceMonitor(std::string const &name, Range const &range);
+    bool deleteMonitor(std::string const &name, Range const &range,
+		       std::string const &type);
     /**
      * Returns the list of TraceMonitors belonging to the BUGSModel.
      */
-    std::list<TraceMonitor const *> const &traceMonitors() const;
+    //std::list<TraceMonitor const *> const &traceMonitors() const;
 };
 
 #endif /* BUGS_MODEL_H_ */

@@ -186,7 +186,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 modelincludedir = $(jagsincludedir)/model
 modelinclude_HEADERS = SymTab.h NodeArray.h Model.h Monitor.h	\
-TraceMonitor.h BUGSModel.h
+TraceMonitor.h BUGSModel.h MonitorFactory.h
 
 all: all-am
 
