@@ -1,1 +1,1 @@
-SUBDIRS = basefunctions baserngs basesamplers bugs mix
+SUBDIRS = basefunctions baserngs basesamplers bugs mix dic
