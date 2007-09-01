@@ -2,6 +2,7 @@
 #include <model/BUGSModel.h>
 #include <model/TraceMonitor.h>
 #include <model/NodeArray.h>
+#include <model/MonitorFactory.h>
 #include <graph/DevianceNode.h>
 #include <graph/StochasticNode.h>
 #include <graph/GraphMarks.h>
@@ -23,7 +24,7 @@ using std::string;
 using std::logic_error;
 using std::runtime_error;
 using std::set;
-using std::map;
+using std::multimap;
 
 /* 
    Nodes accessible to the user in a BUGSModel are identified
@@ -88,56 +89,58 @@ static void writeDouble(double x, std::ostream &out)
     }
 }
 
-static void CODA(map<NodeId,TraceMonitor*> const &trace_map,
+static void CODA(vector<pair<NodeId, Monitor const*> > const &monitors,
 		 ofstream &index,  vector<ofstream*> const &output)
 {
     //FIXME: Check streams are open and set pointer to beginning.
 
     unsigned int lineno = 0;
-    map<NodeId, TraceMonitor*>::const_iterator p = trace_map.begin();;
-    for (; p != trace_map.end(); ++p) {
+    vector<pair<NodeId, Monitor const*> >::const_iterator p;
+    for (p = monitors.begin(); p != monitors.end(); ++p) {
+	
+	Monitor const *monitor = p->second;
+	if (monitor->name() == "trace") {
+	    
+	    string const &name = p->first.first;
+	    Range const &uni_range = p->first.second;
+	    Range multi_range = uni_range;
+	    if (isNULL(multi_range)) {
+		multi_range = Range(monitor->node()->dim());
+	    }
+	    else if (multi_range.dim(true) != monitor->node()->dim()) {
+		throw logic_error("Range does not match Node dimension in CODA");
+	    }
 
-	TraceMonitor const *monitor = p->second;
-
-	string const &name = p->first.first;
-	Range const &uni_range = p->first.second;
-	Range multi_range = uni_range;
-	if (isNULL(multi_range)) {
-	    multi_range = Range(monitor->node()->dim());
-	}
-	else if (multi_range.dim(true) != monitor->node()->dim()) {
-	    throw logic_error("Range does not match Node dimension in CODA");
-	}
-
-	unsigned int nvar = monitor->node()->length();
-	if (nvar != 1) {
-	    // Multivariate node
-	    for (unsigned int offset = 0; offset < nvar; ++offset) 
-	    {
-		index << name << print(multi_range.leftIndex(offset)) << " "  
-		      << lineno + 1 << "  "  
+	    unsigned int nvar = monitor->node()->length();
+	    if (nvar != 1) {
+		// Multivariate node
+		for (unsigned int offset = 0; offset < nvar; ++offset) 
+		{
+		    index << name << print(multi_range.leftIndex(offset))
+			  << " "  << lineno + 1 << "  "  
+			  << lineno + monitor->niter() << '\n';
+		    lineno += monitor->niter();
+		}
+	    }
+	    else {
+		// Univariate node 
+		index << name << print(uni_range) << "  " 
+		      << lineno + 1 << "  " 
 		      << lineno + monitor->niter() << '\n';
 		lineno += monitor->niter();
 	    }
-	}
-	else {
-	    // Univariate node 
-	    index << name << print(uni_range) << "  " 
-		  << lineno + 1 << "  " 
-		  << lineno + monitor->niter() << '\n';
-	    lineno += monitor->niter();
-	}
-	//Write output files
-	for (unsigned int ch = 0; ch < output.size(); ++ch) {
-	    ofstream &out = *output[ch];
-	    vector<double> const &y = monitor->value(ch);
-	    for (unsigned int offset = 0; offset < nvar; ++offset) {
-		unsigned int iter = monitor->start();
-		for (unsigned int k = 0; k < monitor->niter(); k++) {
-		    out << iter << "  ";
-		    writeDouble(y[k * nvar + offset], out);
-		    out << '\n';
-		    iter += monitor->thin();
+	    //Write output files
+	    for (unsigned int ch = 0; ch < output.size(); ++ch) {
+		ofstream &out = *output[ch];
+		vector<double> const &y = monitor->value(ch);
+		for (unsigned int offset = 0; offset < nvar; ++offset) {
+		    unsigned int iter = monitor->start();
+		    for (unsigned int k = 0; k < monitor->niter(); k++) {
+			out << iter << "  ";
+			writeDouble(y[k * nvar + offset], out);
+			out << '\n';
+			iter += monitor->thin();
+		    }
 		}
 	    }
 	}
@@ -153,18 +156,31 @@ void BUGSModel::coda(vector<NodeId> const &nodes, ofstream &index,
 
     warn.clear();
 
-    // Create a new map with only the selected nodes in it 
-    map<NodeId, TraceMonitor*> dump_nodes;
+    // Create a new vector with only the selected nodes in it 
+    vector<pair<NodeId, Monitor const*> > dump_nodes;
     for (unsigned int i = 0; i < nodes.size(); ++i) {
-	map<NodeId, TraceMonitor*>::const_iterator p = 
-	    _trace_map.find(nodes[i]);
-	if (p == _trace_map.end()) {
-	    string msg  = string("Node ") + p->first.first + 
-                print(p->first.second) + " is not being monitored\n";
+	string msg;
+	string const &name = nodes[i].first;
+	Range const &range = nodes[i].second;
+	Node *node = getNode(name, range, msg);
+	if (!node) {
 	    warn.append(msg);
 	}
 	else {
-	    dump_nodes.insert(*p);
+	    list<Monitor*>::const_iterator p = _bugs_monitors.begin();
+	    for (; p != _bugs_monitors.end(); ++p) {
+		if ((*p)->node() == node && (*p)->name() == "trace") {
+		    pair<NodeId, Monitor*> newpair = 
+			pair<NodeId, Monitor*>(nodes[i], *p);
+		    dump_nodes.push_back(newpair);		    
+		    break;
+		}
+	    }
+	    if (p == _bugs_monitors.end()) {
+		string msg  = string("No trace monitor for node ") + name + 
+		    print(range);
+		warn.append(msg);
+	    }
 	}
     }
 
@@ -183,11 +199,23 @@ void BUGSModel::coda(ofstream &index, vector<ofstream*> const &output,
     }
     
     warn.clear();
-    if (_trace_map.empty()) {
+    
+    vector<pair<NodeId,Monitor const*> > dump_nodes;
+    for(list<Monitor*>::const_iterator p = _bugs_monitors.begin();
+	p != _bugs_monitors.end(); ++p)
+    {
+	Monitor const *monitor = *p;
+	if (monitor->name() == "trace") {
+	    NodeId id = _node_map.find(monitor->node())->second;
+	    dump_nodes.push_back(pair<NodeId,Monitor const*>(id,monitor));
+	}
+    }
+    
+    if (dump_nodes.empty()) {
 	warn.append("There are no monitored nodes\n");
     }
  
-    CODA(_trace_map, index, output);
+    CODA(dump_nodes, index, output);
 }
 
 void BUGSModel::addDevianceNode()
@@ -257,29 +285,80 @@ void BUGSModel::setParameters(std::map<std::string, SArray> const &param_table,
 }
 
 
-bool BUGSModel::setTraceMonitor(string const &name, Range const &range,
-	        unsigned int thin)
+bool BUGSModel::setMonitor(string const &name, Range const &range,
+			   unsigned int thin, string const &type)
 {
-    pair<string, Range> nodeid(name, range);
-    if (_trace_map.find(nodeid) != _trace_map.end()) {
-	return false; //Node is already being monitored.
-    }
     string msg;
     Node *node = getNode(name, range, msg);
-    if (node) { 
-	TraceMonitor *monitor = new TraceMonitor(node, iteration() + 1, thin);
-	_trace_monitors.push_back(monitor);
-	_trace_map[nodeid] = monitor;
+    if (!node) {
+	return false;
+    }
+
+    for (list<Monitor*>::const_iterator i = _bugs_monitors.begin();
+	 i != _bugs_monitors.end(); ++i)
+    {
+	if ((*i)->node() == node && (*i)->name() == type)
+	    return false; //Node is already being monitored.
+    }
+
+    Monitor *monitor = 0;
+
+    if (type == "trace") {
+	//Temporary fix while we build a monitor factor for trace monitors
+	monitor = new TraceMonitor(node, iteration() + 1, thin);
+    }
+    else {
+	list<MonitorFactory*> const &faclist = monitorFactories();
+	for(list<MonitorFactory*>::const_iterator j = faclist.begin();
+	    j != faclist.end(); ++j)
+	{
+	    monitor = (*j)->getMonitor(node, iteration() + 1, thin, type);
+	    if (monitor)
+		break;
+	}
+    }
+
+    if (monitor) {
 	addMonitor(monitor);
+	_bugs_monitors.push_back(monitor);
+	_node_map.insert(pair<Node const*,NodeId>(node, NodeId(name,range)));
 	return true;
     }
     else {
 	return false;
     }
+    /*
+      TraceMonitor *monitor = new TraceMonitor(node, iteration() + 1, thin);
+      _trace_monitors.push_back(monitor);
+      _trace_map[nodeid] = monitor;
+      addMonitor(monitor);
+      return true;
+    */
 }
 
-bool BUGSModel::deleteTraceMonitor(string const &name, Range const &range)
+bool BUGSModel::deleteMonitor(string const &name, Range const &range,
+			      string const &type)
 {
+    string msg;
+    Node *node = getNode(name, range, msg);
+    if (!node) {
+	return false;
+    }
+
+    for (list<Monitor*>::iterator i = _bugs_monitors.begin();
+	 i != _bugs_monitors.end(); ++i)
+    {
+	if ((*i)->node() == node && (*i)->name() == type) {
+	    Monitor *monitor = *i;
+	    removeMonitor(monitor);
+	    _bugs_monitors.erase(i);
+	    delete monitor;
+	    return true;
+	}
+    }
+    return false;
+
+    /*
     pair<string, Range> nodeid(name, range);
     map<pair<string, Range>, TraceMonitor*>::iterator p =
 	_trace_map.find(nodeid);
@@ -294,9 +373,12 @@ bool BUGSModel::deleteTraceMonitor(string const &name, Range const &range)
 	delete p->second;
 	return true;
     }
+    */
 }
 
+/*
 list<TraceMonitor const *> const &BUGSModel::traceMonitors() const
 {
     return _trace_monitors;
 }
+*/

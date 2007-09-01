@@ -43,6 +43,8 @@
     void doCoda (ParseTree const *var, std::string const &stem);
     void doAllCoda (std::string const &stem);
     void doDump (std::string const &file, DumpType type, unsigned int chain);
+    void dumpMonitors(std::string const &file, std::string const &type,
+		      unsigned int chain);
 
     static void errordump();
     static void updatestar(long niter, long refresh, int width);
@@ -51,7 +53,6 @@
     static void setParameters(ParseTree *p, std::vector<ParseTree*> *parameters);
     static void setParameters(ParseTree *p, ParseTree *param1, ParseTree *param2);
     static void loadModule(std::string const &name);
-    static void monitorDump(std::string const &name);
     %}
 
 %defines
@@ -86,6 +87,7 @@
 %token <intval> UPDATE
 %token <intval> BY
 %token <intval> MONITOR
+%token <intval> TYPE
 %token <intval> SET
 %token <intval> CLEAR
 %token <intval> THIN
@@ -139,6 +141,7 @@ command: model
 | adapt
 | update
 | monitor
+| monitor_to
 | coda
 | load
 | exit
@@ -346,6 +349,13 @@ monitor_clear: MONITOR CLEAR var {
 }
 ;
 
+monitor_to: MONITOR TYPE NAME TO file_name ',' CHAIN '(' INT ')' {
+    dumpMonitors(*$5, *$3, $9);
+    delete $3;
+    delete $5; 
+}
+;
+
 /* 
    File names may optionally be enclosed in quotes, and this is required
    if the name includes spaces.
@@ -532,11 +542,11 @@ void setMonitor(ParseTree const *var, int thin)
     std::string const &name = var->name();
     if (var->parameters().empty()) {
 	/* Requesting the whole node */
-	console->setTraceMonitor(name, Range(), thin);
+	console->setMonitor(name, Range(), thin, "trace");
     }
     else {
 	/* Requesting subset of a multivariate node */
-	console->setTraceMonitor(name, getRange(var), thin);
+	console->setMonitor(name, getRange(var), thin, "trace");
     }
 }
 
@@ -545,11 +555,11 @@ void clearMonitor(ParseTree const *var)
     std::string const &name = var->name();
     if (var->parameters().empty()) {
 	/* Requesting the whole node */
-	console->clearTraceMonitor(name, Range());
+	console->clearMonitor(name, Range(), "trace");
     }
     else {
 	/* Requesting subset of a multivariate node */
-	console->clearTraceMonitor(name, getRange(var));
+	console->clearMonitor(name, getRange(var), "trace");
     }
 }
 
@@ -784,6 +794,79 @@ void doDump(std::string const &file, DumpType type, unsigned int chain)
   out.close();
 }  
 
+void dumpMonitors(std::string const &file, std::string const &type, 
+		  unsigned int chain)
+{
+    std::map<std::string,SArray> data_table;
+    std::string rng_name;
+    if (!console->dumpMonitors(data_table, type, chain)) {
+	return;
+    }
+
+    /* Open output file */
+    std::ofstream out(file.c_str());
+    if (!out) {
+	std::cerr << "Failed to open file " << file << std::endl;
+	return;
+    }
+
+    //FIXME: cut-and-paste from doDump
+    for (std::map<std::string, SArray>::const_iterator p = data_table.begin();
+	 p != data_table.end(); ++p) {
+	std::string const &name = p->first;
+	SArray const &sarray = p->second;
+	double const *value = sarray.value();
+	long length = sarray.length();
+	out << "\"" << name << "\" <- " << std::endl;
+	std::vector<unsigned int> const &dim = sarray.dim(false);
+	bool discrete = sarray.isDiscreteValued();
+
+	if (discrete) {
+	    out << "as.integer(";
+	}
+	if (dim.size() == 1) {
+	    // Vector 
+	    if (dim[0] == 1) {
+		// Scalar
+		writeValue(value[0], out, sarray.isDiscreteValued());
+	    }
+	    else {
+		// Vector of length > 1
+		out << "c(";
+		for (int i = 0; i < length; ++i) {
+		    if (i > 0) {
+			out << ",";
+		    }
+		    writeValue(value[i], out, sarray.isDiscreteValued());
+		}
+		out << ")";
+	    }
+	}
+	else {
+	    // Array 
+	    out << "structure(c(";
+	    for (int i = 0; i < length; ++i) {
+		if (i > 0) {
+		    out << ",";
+		}
+		writeValue(value[i], out, sarray.isDiscreteValued());
+	    }
+	    out << "), .Dim = as.integer(c(";
+	    for (unsigned int j = 0; j < dim.size(); ++j) {
+		if (j > 0) {
+		    out << ",";
+		}
+		out << dim[j];
+	    }
+	    out << ")))";
+	}
+	if (discrete) 
+	    out << ")";
+	out << "\n";
+    }
+    out.close();
+}
+
 void setParameters(ParseTree *p, std::vector<ParseTree*> *parameters)
 {
   /* 
@@ -985,12 +1068,6 @@ static void loadModule(std::string const &name)
       }
   }
 }
-
-static void monitorDump(std::string const &name)
-{
-    
-
-} 
 
 int main (int argc, char **argv)
 {

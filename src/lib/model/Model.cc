@@ -445,6 +445,12 @@ list<RNGFactory *> &Model::rngFactories()
   return _rngfac;
 }
 
+list<MonitorFactory *> &Model::monitorFactories()
+{
+    static list<MonitorFactory *> _monitorfac;
+    return _monitorfac;
+}
+
 unsigned int Model::nchain() const
 {
   return _nchain;

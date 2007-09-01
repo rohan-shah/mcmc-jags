@@ -511,9 +511,12 @@ Node* Compiler::getParameter(ParseTree const *t)
 	break;
     }
 
+    if (!node)
+        return 0;
+
     /* Initialize deterministic nodes now, if they are functions of 
        data, to aid in node recycling */
-    if (node && !node->isVariable()) {
+    if (!node->isVariable()) {
       node->initializeData();
     }
 
