@@ -422,6 +422,36 @@ bool Console::clearMonitor(string const &name, Range const &range,
   return true;
 }
 
+bool Console::setDefaultMonitors(string const &type, unsigned int thin)
+{
+    if (!_model) {
+	_err << "Can't set monitors. No model!" << endl;    
+	return false;
+    }
+
+    try {
+	bool ok = _model->setDefaultMonitors(type, thin);
+	if (!ok) {
+	    _err << "Failed to set default monitors of type " << type << endl;
+	    return false;
+	}
+    }
+    catch (std::logic_error except) {
+	_err << "LOGIC ERROR:\n";
+	_err << except.what() << '\n';
+	_err << "Please send a bug report to " << PACKAGE_BUGREPORT << endl;
+	clearModel();
+	return false;
+    }
+    catch (std::runtime_error except) {
+	_err << "RUNTIME ERROR:\n";
+	_err << except.what() << endl;
+	clearModel();
+	return false;
+    }
+    return true;
+}
+
 void Console::clearModel()
 {
     /*

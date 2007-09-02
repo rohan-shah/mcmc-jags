@@ -98,6 +98,16 @@ public:
    */
   std::list<Monitor*> const &monitors() const;
   /**
+   * Traverses the list of monitor factories requesting default
+   * monitors of the given type. The function returns true after the
+   * first monitor factory has added at least one node to the monitor
+   * list. If none of the available monitor factories can create
+   * default monitors of the given type, the return value is false.
+   *
+   * @see MonitorFactory#addDefaultMonitors
+   */
+  bool setDefaultMonitors(std::string const &type, unsigned int thin);
+  /**
    * After the model is initialized, extra uninformative nodes may be
    * added to the graph (For example, a node may be added that
    * calculates the deviance of the model).  The model takes

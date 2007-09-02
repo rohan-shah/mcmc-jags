@@ -24,4 +24,4 @@ public:
     virtual std::string getName(Node const *node) const = 0;
 };
 
-#endif
+#endif /* NODE_NAME_TAB_H_ */

@@ -1,6 +1,7 @@
 #include <config.h>
 #include <model/Model.h>
 #include <model/TraceMonitor.h>
+#include <model/MonitorFactory.h>
 #include <sampler/Sampler.h>
 #include <sampler/SamplerFactory.h>
 #include <rng/RNGFactory.h>
@@ -493,4 +494,20 @@ bool Model::setRNG(RNG *rng, unsigned int chain)
 list<Monitor*> const &Model::monitors() const
 {
   return _monitors;
+}
+
+bool Model::setDefaultMonitors(string const &type, unsigned int thin)
+{
+    unsigned int N = _monitors.size();
+    
+    list<MonitorFactory*> const &faclist = monitorFactories();
+    for(list<MonitorFactory*>::const_iterator j = faclist.begin();
+	j != faclist.end(); ++j)
+    {
+	(*j)->addDefaultMonitors(this, thin, type);
+	if (_monitors.size() > N) {
+	    return true;
+	}
+    }
+    return false;
 }
