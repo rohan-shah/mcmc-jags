@@ -38,8 +38,9 @@
     std::deque<lt_dlhandle> _modules;
     bool open_data_buffer(std::string const *name);
     void return_to_main_buffer();
-    void setMonitor(ParseTree const *var, int thin);
+    void setMonitor(ParseTree const *var, int thin, std::string const &type);
     void clearMonitor(ParseTree const *var);
+    void setDefaultMonitors(std::string const &type, unsigned int thin);
     void doCoda (ParseTree const *var, std::string const &stem);
     void doAllCoda (std::string const &stem);
     void doDump (std::string const &file, DumpType type, unsigned int chain);
@@ -331,16 +332,38 @@ monitor: monitor_set
 ;
 
 monitor_set: MONITOR SET var  { 
-  setMonitor($3, 1); delete $3;
+    setMonitor($3, 1, "trace"); delete $3;
 }
 | MONITOR SET var ',' THIN '(' INT ')' { 
-  setMonitor($3, $7); delete $3;
+    setMonitor($3, $7, "trace"); delete $3;
 }
 | MONITOR var {
-  setMonitor($2, 1); delete $2;
+    setMonitor($2, 1, "trace"); delete $2;
 }
 | MONITOR var ',' THIN '(' INT ')' { 
-  setMonitor($2, $6); delete $2;
+    setMonitor($2, $6, "trace"); delete $2;
+}
+| MONITOR var ',' TYPE '(' NAME ')' {
+    setMonitor($2, 1, *$6);
+    delete $6;
+}
+| MONITOR var ',' TYPE '(' NAME ')' THIN '(' INT ')' {
+    setMonitor($2, $10, *$6); 
+    delete $6;
+}
+| MONITOR var ',' THIN '(' INT ')' TYPE '(' NAME ')' {
+    setMonitor($2, $6, *$10); 
+    delete $10;
+}
+| MONITOR ',' THIN '(' INT ')' TYPE '(' NAME ')' {
+    setDefaultMonitors(*$9, $5);
+    delete $9;
+}
+| MONITOR ',' TYPE '(' NAME ')' THIN '(' INT ')' {
+    setDefaultMonitors(*$5, $9);
+}
+| MONITOR ',' TYPE '(' NAME ')' {
+    setDefaultMonitors(*$5, 1);
 }
 ;
 
@@ -353,6 +376,11 @@ monitor_to: MONITOR TYPE NAME TO file_name ',' CHAIN '(' INT ')' {
     dumpMonitors(*$5, *$3, $9);
     delete $3;
     delete $5; 
+}
+| MONITOR TYPE NAME TO file_name {
+    dumpMonitors(*$5, *$3, 1);
+    delete $3;
+    delete $5;
 }
 ;
 
@@ -537,16 +565,16 @@ static Range getRange(ParseTree const *var)
   return Range(ind_lower, ind_upper);
 }
 
-void setMonitor(ParseTree const *var, int thin)
+void setMonitor(ParseTree const *var, int thin, std::string const &type)
 {
     std::string const &name = var->name();
     if (var->parameters().empty()) {
 	/* Requesting the whole node */
-	console->setMonitor(name, Range(), thin, "trace");
+	console->setMonitor(name, Range(), thin, type);
     }
     else {
 	/* Requesting subset of a multivariate node */
-	console->setMonitor(name, getRange(var), thin, "trace");
+	console->setMonitor(name, getRange(var), thin, type);
     }
 }
 
@@ -561,6 +589,11 @@ void clearMonitor(ParseTree const *var)
 	/* Requesting subset of a multivariate node */
 	console->clearMonitor(name, getRange(var), "trace");
     }
+}
+
+void setDefaultMonitors(std::string const &type, unsigned int thin)
+{
+    console->setDefaultMonitors(type, thin);
 }
 
 /*
@@ -810,14 +843,19 @@ void dumpMonitors(std::string const &file, std::string const &type,
 	return;
     }
 
-    //FIXME: cut-and-paste from doDump
-    for (std::map<std::string, SArray>::const_iterator p = data_table.begin();
-	 p != data_table.end(); ++p) {
+    out << "`" << type << "` <-\nstructure(list(";
+
+    std::map<std::string, SArray>::const_iterator p;
+    for (p = data_table.begin(); p != data_table.end(); ++p) {
 	std::string const &name = p->first;
 	SArray const &sarray = p->second;
 	double const *value = sarray.value();
 	long length = sarray.length();
-	out << "\"" << name << "\" <- " << std::endl;
+
+	if (p != data_table.begin()) {
+	    out << ", \n";
+	}
+	out << "\"" << name << "\" = ";
 	std::vector<unsigned int> const &dim = sarray.dim(false);
 	bool discrete = sarray.isDiscreteValued();
 
@@ -862,8 +900,17 @@ void dumpMonitors(std::string const &file, std::string const &type,
 	}
 	if (discrete) 
 	    out << ")";
-	out << "\n";
     }
+
+    out << "), \n.Names = c(";
+    for (p = data_table.begin(); p != data_table.end(); ++p) {
+	if (p != data_table.begin()) {
+	    out << ", ";
+	}
+	std::string const &name = p->first;
+	out << "\"" << name << "\"";
+    }
+    out << "))";
     out.close();
 }
 

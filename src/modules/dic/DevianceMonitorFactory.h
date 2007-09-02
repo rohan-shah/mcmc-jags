@@ -10,6 +10,8 @@ class DevianceMonitorFactory : public MonitorFactory
 public:
     Monitor *getMonitor(Node const *node, unsigned int start,
 			unsigned int thin, std::string const &type);
+    void addDefaultMonitors(Model *model, unsigned int thin,
+			    std::string const &type);
 };
 
 }
