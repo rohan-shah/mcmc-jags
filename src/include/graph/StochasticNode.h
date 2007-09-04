@@ -82,10 +82,11 @@ public:
      */
     bool checkParentValues(unsigned int chain) const;
     /**
-     * Stochastic nodes are always random variables. This function returns
-     * true.
+     * Stochastic nodes are random variables unless the distribution has
+     * zero degrees of freedom. In this case, Stochastic nodes behave
+     * just like deterministic nodes.
      */
-    bool isVariable() const;
+    bool isRandomVariable() const;
     /**
      * Checks that the parameters are within the valid range determined
      * by the distribution.

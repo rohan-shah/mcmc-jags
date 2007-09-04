@@ -112,7 +112,7 @@ static void markParents(Node const *node, GraphMarks &marks)
     /* Recursively mark node and its parents until we get back to the
        nearest stochastic ancestors */
 
-    if (node->isVariable()) {
+    if (node->isRandomVariable()) {
         if (asStochastic(node)) 
 	    marks.mark(node, 2);
     }

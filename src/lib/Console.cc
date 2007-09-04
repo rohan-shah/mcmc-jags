@@ -36,12 +36,12 @@ using std::FILE;
 
 static bool isData(Node const *node)
 {
-  return node->isVariable() && node->isObserved();
+  return node->isRandomVariable() && node->isObserved();
 }
 
 static bool isParameter(Node const *node)
 {
-  return node->isVariable() && !node->isObserved();
+  return node->isRandomVariable() && !node->isObserved();
 }
 
 static bool alwaysTrue(Node const *node)
@@ -226,17 +226,20 @@ bool Console::initialize()
     catch (NodeError except) {
 	_err << "Error in node " << _model->symtab().getName(except.node) << endl;
 	_err << except.what() << endl;
+        clearModel();
 	return false;
     }
     catch (std::runtime_error except) {
 	_err << "RUNTIME ERROR" << endl;
 	_err << except.what() << endl;
+        clearModel();
 	return false;
     }
     catch (std::logic_error except) {
 	_err << "LOGIC ERROR" << endl;
 	_err << except.what() << endl;
 	_err << "Please send a bug report to " << PACKAGE_BUGREPORT << endl;
+        clearModel();
 	return false;
     }
     return true;

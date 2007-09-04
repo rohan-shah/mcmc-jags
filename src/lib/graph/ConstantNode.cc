@@ -46,3 +46,13 @@ bool ConstantNode::isScale(std::set<Node const*> const &parameters,
 {
     return false;
 }
+
+bool ConstantNode::checkParentValues(unsigned int) const
+{
+    return true;
+}
+
+bool ConstantNode::isRandomVariable() const
+{
+    return true;
+}

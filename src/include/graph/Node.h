@@ -148,7 +148,7 @@ public:
     /**
      * Returns true if the node represents a random variable.
      */
-    virtual bool isVariable() const = 0;
+    virtual bool isRandomVariable() const = 0;
     /**
      * Sets the value of the node, in all chains, and marks the node
      * as observed. This function can only be called once for a given

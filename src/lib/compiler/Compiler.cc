@@ -516,7 +516,7 @@ Node* Compiler::getParameter(ParseTree const *t)
 
     /* Initialize deterministic nodes now, if they are functions of 
        data, to aid in node recycling */
-    if (!node->isVariable()) {
+    if (!node->isRandomVariable()) {
       node->initializeData();
     }
 
