@@ -12,6 +12,6 @@ void DeterministicNode::randomSample(RNG*, unsigned int nchain) {
     deterministicSample(nchain);
 }
 
-bool DeterministicNode::isVariable() const { 
+bool DeterministicNode::isRandomVariable() const { 
     return false; 
 }
