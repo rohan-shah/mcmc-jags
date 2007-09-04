@@ -23,7 +23,7 @@ public:
      * Deterministic nodes are not random variables. This function
      * always returns false.
      */
-    bool isVariable() const;
+    bool isRandomVariable() const;
 };
 
 #endif /* DETERMINISTIC_NODE_H_ */
