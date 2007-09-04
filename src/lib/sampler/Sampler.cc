@@ -78,7 +78,7 @@ static bool classifyNode(Node *node, Graph const &sample_graph,
     if (!sample_graph.contains(node))
 	return false;
 
-    if (asStochastic(node) && node->isVariable()) {
+    if (asStochastic(node) && node->isRandomVariable()) {
 	/* This might look redundant, but we want to leave open
 	   the possibility that stochastic nodes may not
 	   represent random variables */

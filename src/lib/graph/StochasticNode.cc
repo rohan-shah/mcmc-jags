@@ -248,22 +248,18 @@ StochasticNode const *asStochastic(Node const *node)
   return dynamic_cast<StochasticNode const*>(node);
 }
 
-bool StochasticNode::isVariable() const
+bool StochasticNode::isRandomVariable() const
 {
-  return true;
-  /*
-  if (_parameters.empty())
-    throw logic_error("Cannot determine if node with no parameters is stochastic");
+    /* A Distribution with zero degrees of freedom represents an
+       "observable function".  If a stochastic node such a
+       distribution is observed, then we want it to generate a
+       likelihood, so we say that it represents a random variable.
+       However, if the node is unobserved, we want to treat it just
+       like a deterministic node, so we say that it does not represent
+       a random variable
+    */
 
-  if (_dist->isDeterministic() == 0) {
-    //Deterministic distributions are considered stochastic only
-    //if they are observed, in which case they generate a likelihood.
-     return isObserved(this);
-  }
-  else {
-     return true;
-  }
-  */
+    return (_dist->df(_dims) == 0) ? isObserved() : true;
 }
 
 vector<vector<unsigned int> > const &StochasticNode::parameterDims() const

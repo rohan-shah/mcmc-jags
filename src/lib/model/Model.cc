@@ -230,7 +230,7 @@ void Model::chooseSamplers(vector<Node*> const &sorted_nodes)
 	    break;
 	case 1:
 	    sample_graph.add(node);
-	    if (asStochastic(node)) {
+	    if (asStochastic(node) && node->isRandomVariable()) {
 		//FIXME: dynamic casting of non-constant pointer
 		stochastic_nodes.insert(dynamic_cast<StochasticNode*>(node));
 	    }

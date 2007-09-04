@@ -122,7 +122,7 @@ static bool isInitialized(Node const *node, unsigned int n)
 
 void Node::initializeData()
 {
-    if (this->isVariable() || this->isObserved())
+    if (this->isRandomVariable() || this->isObserved())
 	return;
     
     //Test whether all parents are observed

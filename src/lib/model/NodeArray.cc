@@ -1,6 +1,7 @@
 #include <config.h>
 #include <model/NodeArray.h>
 #include <graph/ConstantNode.h>
+#include <graph/StochasticNode.h>
 #include <graph/AggNode.h>
 #include <sarray/RangeIterator.h>
 #include <graph/NodeError.h>
@@ -18,6 +19,10 @@ using std::runtime_error;
 using std::logic_error;
 using std::set;
 using std::numeric_limits;
+
+static ConstantNode const *asConstant(Node const *node) {
+   dynamic_cast<ConstantNode const *>(node);
+}
 
 NodeArray::NodeArray(string const &name, vector<unsigned int> const &dim, 
 		     unsigned int nchain)
@@ -156,7 +161,7 @@ void NodeArray::setValue(SArray const &value, unsigned int chain)
 		throw runtime_error(msg + name() + 
 				    print(value.range().leftIndex(i)));
 	    }
-	    if (node->isVariable()) {
+	    if (asStochastic(node) || asConstant(node)) {
 		setnodes.insert(node);
 	    }
 	    else {
