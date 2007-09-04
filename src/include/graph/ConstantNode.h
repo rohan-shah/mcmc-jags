@@ -27,9 +27,9 @@ public:
      */
     void randomSample(RNG*, unsigned int);
     /**
-     * Constant nodes have no parents.
+     * Constant nodes have no parents. This function always returns true.
      */
-    bool checkParentValues(unsigned int) const {return true;}
+    bool checkParentValues(unsigned int) const;
     /**
      * If a constant node does not have a name in the supplied
      * name table, then it is named after its value.
@@ -37,9 +37,9 @@ public:
     std::string name(NodeNameTab const &name_table) const;
     /**
      * Constant nodes are observed random variables whose values we are
-     * conditioning on.
+     * conditioning on. This function returns true;
      */
-    bool isVariable() const { return true;}
+    bool isRandomVariable() const;
     /**
      * Constant nodes are trivial fixed linear functions. This function
      * always returns true.
