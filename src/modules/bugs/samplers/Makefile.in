@@ -59,7 +59,8 @@ am_bugssampler_la_OBJECTS = bugssampler_la-Censored.lo \
 	bugssampler_la-ConjugateFactory.lo \
 	bugssampler_la-ConjugateSampler.lo \
 	bugssampler_la-DSumSampler.lo bugssampler_la-MNormal.lo \
-	bugssampler_la-MNormalFactory.lo
+	bugssampler_la-MNormalFactory.lo \
+	bugssampler_la-ConjugateMethod.lo
 bugssampler_la_OBJECTS = $(am_bugssampler_la_OBJECTS)
 bugssampler_la_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
@@ -217,7 +218,7 @@ bugssampler_la_SOURCES = Censored.cc ConjugateGamma.cc			\
 ConjugateWishart.cc ConjugateBeta.cc ConjugateMNormal.cc		\
 ConjugateDirichlet.cc ConjugateNormal.cc DSumFactory.cc			\
 ConjugateFactory.cc ConjugateSampler.cc DSumSampler.cc 			\
-MNormal.cc MNormalFactory.cc
+MNormal.cc MNormalFactory.cc ConjugateMethod.cc
 
 noinst_HEADERS = Censored.h ConjugateFactory.h ConjugateNormal.h	\
 ConjugateBeta.h ConjugateGamma.h ConjugateSampler.h DSumFactory.h	\
@@ -281,6 +282,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bugssampler_la-ConjugateFactory.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bugssampler_la-ConjugateGamma.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bugssampler_la-ConjugateMNormal.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bugssampler_la-ConjugateMethod.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bugssampler_la-ConjugateNormal.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bugssampler_la-ConjugateSampler.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bugssampler_la-ConjugateWishart.Plo@am__quote@
@@ -400,6 +402,13 @@ bugssampler_la-MNormalFactory.lo: MNormalFactory.cc
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='MNormalFactory.cc' object='bugssampler_la-MNormalFactory.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugssampler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o bugssampler_la-MNormalFactory.lo `test -f 'MNormalFactory.cc' || echo '$(srcdir)/'`MNormalFactory.cc
+
+bugssampler_la-ConjugateMethod.lo: ConjugateMethod.cc
+@am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugssampler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT bugssampler_la-ConjugateMethod.lo -MD -MP -MF $(DEPDIR)/bugssampler_la-ConjugateMethod.Tpo -c -o bugssampler_la-ConjugateMethod.lo `test -f 'ConjugateMethod.cc' || echo '$(srcdir)/'`ConjugateMethod.cc
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/bugssampler_la-ConjugateMethod.Tpo $(DEPDIR)/bugssampler_la-ConjugateMethod.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='ConjugateMethod.cc' object='bugssampler_la-ConjugateMethod.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bugssampler_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o bugssampler_la-ConjugateMethod.lo `test -f 'ConjugateMethod.cc' || echo '$(srcdir)/'`ConjugateMethod.cc
 
 mostlyclean-libtool:
 	-rm -f *.lo

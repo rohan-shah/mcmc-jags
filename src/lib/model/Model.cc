@@ -498,14 +498,23 @@ list<Monitor*> const &Model::monitors() const
 
 bool Model::setDefaultMonitors(string const &type, unsigned int thin)
 {
-    unsigned int N = _monitors.size();
-    
     list<MonitorFactory*> const &faclist = monitorFactories();
+
     for(list<MonitorFactory*>::const_iterator j = faclist.begin();
 	j != faclist.end(); ++j)
     {
-	(*j)->addDefaultMonitors(this, thin, type);
-	if (_monitors.size() > N) {
+	vector <Node const *> default_nodes = (*j)->defaultNodes(this, type);
+	if (!default_nodes.empty()) {
+	    unsigned int start = iteration() + 1;
+	    for (unsigned int i = 0; i < default_nodes.size(); ++i) {
+		//FIXME: Who owns this?
+		Monitor *monitor = (*j)->getMonitor(default_nodes[i], this,
+						    start, thin, type);
+		if (!monitor) {
+		    throw logic_error("Invalid default monitor");
+		}
+		addMonitor(monitor);
+	    }
 	    return true;
 	}
     }

@@ -6,6 +6,7 @@
 #include <algorithm>
 
 using std::vector;
+using std::string;
 
 TraceMonitor::TraceMonitor(Node const *node, unsigned int start, 
 			   unsigned int thin)
@@ -50,4 +51,3 @@ void TraceMonitor::reserve(unsigned int niter)
         _values[ch].reserve(_values[ch].size() + N);
     }
 }
-

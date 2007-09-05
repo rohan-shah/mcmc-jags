@@ -59,4 +59,6 @@ bool InterpLin::checkParameterValue(vector <double const *> const &args,
     }
     if (args[0][0] < args[1][0] || args[0][0] > args[1][N-1])
 	return false;
+
+    return true;
 }

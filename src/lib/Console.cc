@@ -559,7 +559,7 @@ bool Console::dumpMonitors(map<string,SArray> &data_table,
 	list<Monitor*>::const_iterator p;
 	for (p = monitors.begin(); p != monitors.end(); ++p) {
 	    Monitor const *monitor = *p;
-	    if (monitor->niter() > 0 && monitor->name() == name) {
+	    if (monitor->niter() > 0 && monitor->type() == name) {
 		Node const *node = monitor->node();
 		string name = _model->symtab().getName(node);
 		

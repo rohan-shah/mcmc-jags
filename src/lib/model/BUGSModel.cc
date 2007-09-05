@@ -99,7 +99,7 @@ static void CODA(vector<pair<NodeId, Monitor const*> > const &monitors,
     for (p = monitors.begin(); p != monitors.end(); ++p) {
 	
 	Monitor const *monitor = p->second;
-	if (monitor->name() == "trace") {
+	if (monitor->type() == "trace") {
 	    
 	    string const &name = p->first.first;
 	    Range const &uni_range = p->first.second;
@@ -169,7 +169,7 @@ void BUGSModel::coda(vector<NodeId> const &nodes, ofstream &index,
 	else {
 	    list<Monitor*>::const_iterator p = _bugs_monitors.begin();
 	    for (; p != _bugs_monitors.end(); ++p) {
-		if ((*p)->node() == node && (*p)->name() == "trace") {
+		if ((*p)->node() == node && (*p)->type() == "trace") {
 		    pair<NodeId, Monitor*> newpair = 
 			pair<NodeId, Monitor*>(nodes[i], *p);
 		    dump_nodes.push_back(newpair);		    
@@ -205,7 +205,7 @@ void BUGSModel::coda(ofstream &index, vector<ofstream*> const &output,
 	p != _bugs_monitors.end(); ++p)
     {
 	Monitor const *monitor = *p;
-	if (monitor->name() == "trace") {
+	if (monitor->type() == "trace") {
 	    NodeId id = _node_map.find(monitor->node())->second;
 	    dump_nodes.push_back(pair<NodeId,Monitor const*>(id,monitor));
 	}
@@ -297,7 +297,7 @@ bool BUGSModel::setMonitor(string const &name, Range const &range,
     for (list<Monitor*>::const_iterator i = _bugs_monitors.begin();
 	 i != _bugs_monitors.end(); ++i)
     {
-	if ((*i)->node() == node && (*i)->name() == type)
+	if ((*i)->node() == node && (*i)->type() == type)
 	    return false; //Node is already being monitored.
     }
 
@@ -312,7 +312,7 @@ bool BUGSModel::setMonitor(string const &name, Range const &range,
 	for(list<MonitorFactory*>::const_iterator j = faclist.begin();
 	    j != faclist.end(); ++j)
 	{
-	    monitor = (*j)->getMonitor(node, iteration() + 1, thin, type);
+	    monitor = (*j)->getMonitor(node, this, iteration() + 1, thin, type);
 	    if (monitor)
 		break;
 	}
@@ -348,7 +348,7 @@ bool BUGSModel::deleteMonitor(string const &name, Range const &range,
     for (list<Monitor*>::iterator i = _bugs_monitors.begin();
 	 i != _bugs_monitors.end(); ++i)
     {
-	if ((*i)->node() == node && (*i)->name() == type) {
+	if ((*i)->node() == node && (*i)->type() == type) {
 	    Monitor *monitor = *i;
 	    removeMonitor(monitor);
 	    _bugs_monitors.erase(i);

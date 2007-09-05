@@ -60,8 +60,6 @@ Sampler *ConjugateFactory::makeSingletonSampler(StochasticNode *snode,
       return new Censored(snode, graph);
     */
     
-    unsigned int nchain = snode->nchain();
-
     ConjugateMethod* method = 0;
     switch (getDist(snode)) {
     case NORM:

@@ -21,7 +21,7 @@ using std::set;
 using std::numeric_limits;
 
 static ConstantNode const *asConstant(Node const *node) {
-   dynamic_cast<ConstantNode const *>(node);
+    return dynamic_cast<ConstantNode const *>(node);
 }
 
 NodeArray::NodeArray(string const &name, vector<unsigned int> const &dim, 

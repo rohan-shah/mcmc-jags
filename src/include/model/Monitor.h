@@ -13,14 +13,14 @@ class Node;
  * values from a given node. 
  */
 class Monitor {
-    const std::string _name;
+    std::string _type;
     Node const * _node;
     unsigned int _start;
     unsigned int _thin;
     unsigned int _niter;
 public:
-    Monitor(std::string const &name, Node const *nodes, unsigned int start, 
-	    unsigned int thin);
+    Monitor(std::string const &type, Node const *nodes, unsigned int start,
+            unsigned int thin);
     virtual ~Monitor();
     /**
      * Updates the monitor. If the iteration number coincides with
@@ -50,9 +50,11 @@ public:
      */
     unsigned int niter() const;      
     /**
-     * The name of the monitor.
+     * The type of monitor. Each subclass must define have a unique
+     * type, which is common to all Monitors of that class. The type
+     * is used by the user-interface to identify the subclass of Monitor.
      */
-    std::string const &name() const;
+    std::string const &type() const;
     /**
      * The number of parallel chains of the Monitor.  This does not
      * have to coincide with the number of chains of the Model: a
