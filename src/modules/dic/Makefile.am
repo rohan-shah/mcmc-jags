@@ -6,6 +6,7 @@ dic_la_LDFLAGS = -no-undefined -module -avoid-version
 
 dic_la_LIBADD = $(top_builddir)/src/lib/libjags.la
 
-dic_la_SOURCES = dic.cc DevianceMonitor.cc DevianceMonitorFactory.cc
+dic_la_SOURCES = dic.cc DevianceMonitor.cc DevianceMonitorFactory.cc	\
+PDMonitor.cc PDMonitorFactory.cc
 
-noinst_HEADERS = DevianceMonitor.h DevianceMonitorFactory.h
+noinst_HEADERS = DevianceMonitor.h DevianceMonitorFactory.h PDMonitor.h PDMonitorFactory.h
