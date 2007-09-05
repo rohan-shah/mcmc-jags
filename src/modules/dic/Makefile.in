@@ -57,7 +57,8 @@ jagsmodLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(jagsmod_LTLIBRARIES)
 dic_la_DEPENDENCIES = $(top_builddir)/src/lib/libjags.la
 am_dic_la_OBJECTS = dic_la-dic.lo dic_la-DevianceMonitor.lo \
-	dic_la-DevianceMonitorFactory.lo
+	dic_la-DevianceMonitorFactory.lo dic_la-PDMonitor.lo \
+	dic_la-PDMonitorFactory.lo
 dic_la_OBJECTS = $(am_dic_la_OBJECTS)
 dic_la_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
@@ -209,8 +210,10 @@ jagsmod_LTLIBRARIES = dic.la
 dic_la_CPPFLAGS = -I$(top_srcdir)/src/include
 dic_la_LDFLAGS = -no-undefined -module -avoid-version
 dic_la_LIBADD = $(top_builddir)/src/lib/libjags.la
-dic_la_SOURCES = dic.cc DevianceMonitor.cc DevianceMonitorFactory.cc
-noinst_HEADERS = DevianceMonitor.h DevianceMonitorFactory.h
+dic_la_SOURCES = dic.cc DevianceMonitor.cc DevianceMonitorFactory.cc	\
+PDMonitor.cc PDMonitorFactory.cc
+
+noinst_HEADERS = DevianceMonitor.h DevianceMonitorFactory.h PDMonitor.h PDMonitorFactory.h
 all: all-am
 
 .SUFFIXES:
@@ -282,6 +285,8 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dic_la-DevianceMonitor.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dic_la-DevianceMonitorFactory.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dic_la-PDMonitor.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dic_la-PDMonitorFactory.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dic_la-dic.Plo@am__quote@
 
 .cc.o:
@@ -325,6 +330,20 @@ dic_la-DevianceMonitorFactory.lo: DevianceMonitorFactory.cc
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='DevianceMonitorFactory.cc' object='dic_la-DevianceMonitorFactory.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dic_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o dic_la-DevianceMonitorFactory.lo `test -f 'DevianceMonitorFactory.cc' || echo '$(srcdir)/'`DevianceMonitorFactory.cc
+
+dic_la-PDMonitor.lo: PDMonitor.cc
+@am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dic_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT dic_la-PDMonitor.lo -MD -MP -MF $(DEPDIR)/dic_la-PDMonitor.Tpo -c -o dic_la-PDMonitor.lo `test -f 'PDMonitor.cc' || echo '$(srcdir)/'`PDMonitor.cc
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/dic_la-PDMonitor.Tpo $(DEPDIR)/dic_la-PDMonitor.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='PDMonitor.cc' object='dic_la-PDMonitor.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dic_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o dic_la-PDMonitor.lo `test -f 'PDMonitor.cc' || echo '$(srcdir)/'`PDMonitor.cc
+
+dic_la-PDMonitorFactory.lo: PDMonitorFactory.cc
+@am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dic_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT dic_la-PDMonitorFactory.lo -MD -MP -MF $(DEPDIR)/dic_la-PDMonitorFactory.Tpo -c -o dic_la-PDMonitorFactory.lo `test -f 'PDMonitorFactory.cc' || echo '$(srcdir)/'`PDMonitorFactory.cc
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/dic_la-PDMonitorFactory.Tpo $(DEPDIR)/dic_la-PDMonitorFactory.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='PDMonitorFactory.cc' object='dic_la-PDMonitorFactory.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dic_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o dic_la-PDMonitorFactory.lo `test -f 'PDMonitorFactory.cc' || echo '$(srcdir)/'`PDMonitorFactory.cc
 
 mostlyclean-libtool:
 	-rm -f *.lo
