@@ -119,6 +119,7 @@ AC_CONFIG_FILES([
   src/modules/basefunctions/Makefile
   src/modules/baserngs/Makefile
   src/modules/basesamplers/Makefile
+  src/modules/basemonitors/Makefile
   src/modules/bugs/Makefile	
   src/modules/bugs/functions/Makefile	
   src/modules/bugs/distributions/Makefile	

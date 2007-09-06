@@ -1,6 +1,6 @@
 #include <config.h>
 #include <model/BUGSModel.h>
-#include <model/TraceMonitor.h>
+#include <model/Monitor.h>
 #include <model/NodeArray.h>
 #include <model/MonitorFactory.h>
 #include <graph/DevianceNode.h>
@@ -303,11 +303,13 @@ bool BUGSModel::setMonitor(string const &name, Range const &range,
 
     Monitor *monitor = 0;
 
+/*
     if (type == "trace") {
 	//Temporary fix while we build a monitor factor for trace monitors
 	monitor = new TraceMonitor(node, iteration() + 1, thin);
     }
     else {
+*/
 	list<MonitorFactory*> const &faclist = monitorFactories();
 	for(list<MonitorFactory*>::const_iterator j = faclist.begin();
 	    j != faclist.end(); ++j)
@@ -316,7 +318,9 @@ bool BUGSModel::setMonitor(string const &name, Range const &range,
 	    if (monitor)
 		break;
 	}
+/*
     }
+*/
 
     if (monitor) {
 	addMonitor(monitor);

@@ -48,8 +48,8 @@ LTLIBRARIES = $(noinst_LTLIBRARIES)
 libmodel_la_LIBADD =
 am_libmodel_la_OBJECTS = libmodel_la-SymTab.lo \
 	libmodel_la-NodeArray.lo libmodel_la-Model.lo \
-	libmodel_la-Monitor.lo libmodel_la-TraceMonitor.lo \
-	libmodel_la-BUGSModel.lo libmodel_la-MonitorFactory.lo
+	libmodel_la-Monitor.lo libmodel_la-BUGSModel.lo \
+	libmodel_la-MonitorFactory.lo
 libmodel_la_OBJECTS = $(am_libmodel_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(top_builddir)/src/include@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -196,7 +196,7 @@ top_srcdir = @top_srcdir@
 noinst_LTLIBRARIES = libmodel.la
 libmodel_la_CPPFLAGS = -I$(top_srcdir)/src/include
 libmodel_la_SOURCES = SymTab.cc NodeArray.cc Model.cc Monitor.cc	\
-TraceMonitor.cc BUGSModel.cc MonitorFactory.cc
+BUGSModel.cc MonitorFactory.cc
 
 all: all-am
 
@@ -255,7 +255,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmodel_la-MonitorFactory.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmodel_la-NodeArray.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmodel_la-SymTab.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmodel_la-TraceMonitor.Plo@am__quote@
 
 .cc.o:
 @am__fastdepCXX_TRUE@	$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -305,13 +304,6 @@ libmodel_la-Monitor.lo: Monitor.cc
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Monitor.cc' object='libmodel_la-Monitor.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmodel_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libmodel_la-Monitor.lo `test -f 'Monitor.cc' || echo '$(srcdir)/'`Monitor.cc
-
-libmodel_la-TraceMonitor.lo: TraceMonitor.cc
-@am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmodel_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libmodel_la-TraceMonitor.lo -MD -MP -MF $(DEPDIR)/libmodel_la-TraceMonitor.Tpo -c -o libmodel_la-TraceMonitor.lo `test -f 'TraceMonitor.cc' || echo '$(srcdir)/'`TraceMonitor.cc
-@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/libmodel_la-TraceMonitor.Tpo $(DEPDIR)/libmodel_la-TraceMonitor.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='TraceMonitor.cc' object='libmodel_la-TraceMonitor.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmodel_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libmodel_la-TraceMonitor.lo `test -f 'TraceMonitor.cc' || echo '$(srcdir)/'`TraceMonitor.cc
 
 libmodel_la-BUGSModel.lo: BUGSModel.cc
 @am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmodel_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libmodel_la-BUGSModel.lo -MD -MP -MF $(DEPDIR)/libmodel_la-BUGSModel.Tpo -c -o libmodel_la-BUGSModel.lo `test -f 'BUGSModel.cc' || echo '$(srcdir)/'`BUGSModel.cc
