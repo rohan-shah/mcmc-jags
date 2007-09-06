@@ -303,24 +303,14 @@ bool BUGSModel::setMonitor(string const &name, Range const &range,
 
     Monitor *monitor = 0;
 
-/*
-    if (type == "trace") {
-	//Temporary fix while we build a monitor factor for trace monitors
-	monitor = new TraceMonitor(node, iteration() + 1, thin);
+    list<MonitorFactory*> const &faclist = monitorFactories();
+    for(list<MonitorFactory*>::const_iterator j = faclist.begin();
+	j != faclist.end(); ++j)
+    {
+	monitor = (*j)->getMonitor(node, this, iteration() + 1, thin, type);
+	if (monitor)
+	    break;
     }
-    else {
-*/
-	list<MonitorFactory*> const &faclist = monitorFactories();
-	for(list<MonitorFactory*>::const_iterator j = faclist.begin();
-	    j != faclist.end(); ++j)
-	{
-	    monitor = (*j)->getMonitor(node, this, iteration() + 1, thin, type);
-	    if (monitor)
-		break;
-	}
-/*
-    }
-*/
 
     if (monitor) {
 	addMonitor(monitor);
@@ -331,13 +321,6 @@ bool BUGSModel::setMonitor(string const &name, Range const &range,
     else {
 	return false;
     }
-    /*
-      TraceMonitor *monitor = new TraceMonitor(node, iteration() + 1, thin);
-      _trace_monitors.push_back(monitor);
-      _trace_map[nodeid] = monitor;
-      addMonitor(monitor);
-      return true;
-    */
 }
 
 bool BUGSModel::deleteMonitor(string const &name, Range const &range,
