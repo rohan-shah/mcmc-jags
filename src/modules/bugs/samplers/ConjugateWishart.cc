@@ -101,7 +101,7 @@ void ConjugateWishart::update(ConjugateSampler *sampler, unsigned int chain,
     
 	double const *Y = schild->value(chain);
 	double const *mu = cparam[0]->value(chain);
-	unsigned int Nrep = schild->repCount();
+	unsigned int Nrep = schild->freqWeight();
 
 	for (int j = 0; j < nrow; j++) {
 	    delta[j] = Y[j] - mu[j];

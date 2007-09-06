@@ -201,7 +201,7 @@ void ConjugateGamma::update(ConjugateSampler *sampler,
 	    vector<Node const*> const &cparam = schild->parents();
 	    double Y = *schild->value(chain);
 	    double ymean; //normal mean
-	    unsigned int Nrep = schild->repCount();
+	    unsigned int Nrep = schild->freqWeight();
 	    switch(child_dist[i]) {
 	    case GAMMA:
 		r += *cparam[0]->value(chain) * Nrep;

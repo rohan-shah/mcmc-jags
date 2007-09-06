@@ -121,7 +121,7 @@ void ConjugateDirichlet::update(ConjugateSampler *sampler, unsigned int chain,
 	double const *N = 0;
 	if (allzero(schild->parents()[0]->value(chain), 
 		    schild->parents()[0]->length())) {
-	    unsigned int Nrep = schild->repCount();
+	    unsigned int Nrep = schild->freqWeight();
 	    switch(child_dist[i]) {
 	    case MULTI:
 		N = schild->value(chain);

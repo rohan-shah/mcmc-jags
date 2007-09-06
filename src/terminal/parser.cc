@@ -2824,8 +2824,11 @@ void dumpMonitors(std::string const &file, std::string const &type,
 		  unsigned int chain)
 {
     std::map<std::string,SArray> data_table;
-    std::string rng_name;
-    if (!console->dumpMonitors(data_table, type, chain)) {
+    std::map<std::string,unsigned int> weight_table;
+
+    //std::string rng_name;
+
+    if (!console->dumpMonitors(data_table, weight_table, type, chain)) {
 	return;
     }
 
@@ -2902,6 +2905,14 @@ void dumpMonitors(std::string const &file, std::string const &type,
 	}
 	std::string const &name = p->first;
 	out << "\"" << name << "\"";
+    }
+    out << "), \nweights = c(";
+    std::map<std::string, unsigned int>::const_iterator q;
+    for (q = weight_table.begin(); q != weight_table.end(); ++q) {
+	if (q != weight_table.begin()) {
+	    out << ", ";
+	}
+	out << q->second;
     }
     out << "))";
     out.close();

@@ -234,7 +234,7 @@ void ConjugateMNormal::update(ConjugateSampler *sampler, unsigned int chain,
 	    double const *mu = snode->parents()[0]->value(chain);
 	    double const *tau = snode->parents()[1]->value(chain);
 	    int nrow_child = snode->length();
-	    unsigned int Nrep = snode->repCount();
+	    unsigned int Nrep = snode->freqWeight();
 
 	    for (int i = 0; i < nrow; ++i) {
 		for (int k = 0; k < nrow_child; ++k) {

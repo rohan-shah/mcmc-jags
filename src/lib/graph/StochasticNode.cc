@@ -57,7 +57,7 @@ StochasticNode::StochasticNode(Distribution const *dist,
 			       vector<Node const *> const &parameters,
 			       Node const *lower, Node const *upper)
   : Node(mkDim(dist, parameters), mkParents(parameters, lower, upper)), 
-    _dist(dist), _parameters(nchain()), _lower(lower), _upper(upper), _nrep(1)
+    _dist(dist), _parameters(nchain()), _lower(lower), _upper(upper), _fweight(1)
 {
  
   if (parameters.size() != _dist->npar()) {
@@ -272,9 +272,9 @@ bool StochasticNode::checkParentValues(unsigned int chain) const
     return _dist->checkParameterValue(_parameters[chain], _dims);
 }
 
-unsigned int StochasticNode::repCount() const
+unsigned int StochasticNode::freqWeight() const
 {
-    return _nrep;
+    return _fweight;
 }
 
 void StochasticNode::replicate()
@@ -282,7 +282,7 @@ void StochasticNode::replicate()
    if (!this->isObserved())
        throw logic_error("Attempt to replicate unobserved stochastic node");
 
-   _nrep++;
+   _fweight++;
 }
 
 bool StochasticNode::isLinear(std::set<Node const*> const &parameters, 

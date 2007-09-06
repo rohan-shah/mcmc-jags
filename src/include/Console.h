@@ -188,6 +188,7 @@ public:
   BUGSModel const *model();
   unsigned int nchain() const;
   bool dumpMonitors(std::map<std::string,SArray> &data_table,
+                    std::map<std::string,unsigned int > &weight_table,
 		    std::string const &type, unsigned int chain);
   /** Turns off adaptive mode of the model */
   bool adaptOff(bool &status);

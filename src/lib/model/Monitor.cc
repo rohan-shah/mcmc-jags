@@ -1,5 +1,6 @@
 #include <config.h>
 #include <model/Monitor.h>
+#include <graph/StochasticNode.h>
 #include <graph/Node.h>
 
 #include <stdexcept>
@@ -59,4 +60,12 @@ unsigned int Monitor::niter() const
 string const &Monitor::type() const
 {
     return _type;
+}
+
+unsigned int Monitor::freqWeight() const
+{
+    if(StochasticNode const *snode = asStochastic(_node)) {
+        return snode->freqWeight();
+    }
+    return 1;
 }

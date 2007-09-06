@@ -15,7 +15,7 @@ class StochasticNode : public Node {
     std::vector<std::vector<unsigned int> > _dims;
     Node const *_lower;
     Node const *_upper;
-    unsigned int _nrep;
+    unsigned int _fweight;
     /* Forbid copying of Stochastic Nodes */
     StochasticNode(StochasticNode const &orig);
     StochasticNode &operator=(StochasticNode const &rhs);
@@ -97,14 +97,13 @@ public:
      */
     bool checkParameterValue(unsigned int chain) const;    
     /**
-     * A stochastic node may be replicated, if two or more identically
-     * distributed variables are observed. The repCount records the
-     * number of times a node has been observed. Newly allocated stochastic
-     * Nodes have a repCount of 1.
+     * An observed stochastic node may represent more than one observation.
+     * The frequency weight records the number of observations represented
+     * by a node. Newly allocated stochastic nodes have a freqWeight of 1.
      */
-    unsigned int repCount() const;
+    unsigned int freqWeight() const;
     /**
-     * Increments the repCount of a stochastic node by 1.
+     * Increments the case weight of a stochastic node by 1.
      */
     void replicate();
     /**

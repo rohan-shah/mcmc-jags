@@ -15,9 +15,6 @@ namespace dic {
 	: Monitor("deviance", snode, start, thin), _values(snode->nchain()), 
 	  _snode(snode)
     {
-	for (unsigned int ch = 0; ch < _values.size(); ++ch) {
-	    _values[ch].push_back(snode->repCount());
-	}
     }
 
     unsigned int DevianceMonitor::nchain() const

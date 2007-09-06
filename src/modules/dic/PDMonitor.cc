@@ -22,7 +22,6 @@ namespace dic {
 	if (snode->nchain() < 2) {
 	    throw logic_error("PDMonitor needs at least 2 chains");
 	}
-	_values.push_back(snode->repCount());
     }
 
     unsigned int PDMonitor::nchain() const

@@ -546,6 +546,7 @@ bool Console::dumpState(map<string,SArray> &data_table,
 
 
 bool Console::dumpMonitors(map<string,SArray> &data_table,
+			   map<string,unsigned int> &weight_table,
 			   string const &name, unsigned int chain)
 {
     if(chain == 0 || chain > nchain()) {
@@ -609,6 +610,9 @@ bool Console::dumpMonitors(map<string,SArray> &data_table,
 		delete [] values;
 
 		data_table.insert(pair<string,SArray>(name, ans));
+
+		unsigned int fweight = monitor->freqWeight();
+		weight_table.insert(pair<string,unsigned int>(name, fweight));
 	    }
 	}
     }
