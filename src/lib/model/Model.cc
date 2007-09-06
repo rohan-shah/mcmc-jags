@@ -1,7 +1,7 @@
 #include <config.h>
 #include <model/Model.h>
-#include <model/TraceMonitor.h>
 #include <model/MonitorFactory.h>
+#include <model/Monitor.h>
 #include <sampler/Sampler.h>
 #include <sampler/SamplerFactory.h>
 #include <rng/RNGFactory.h>
