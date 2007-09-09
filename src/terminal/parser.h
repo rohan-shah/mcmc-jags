@@ -55,27 +55,28 @@
      ADAPT = 271,
      UPDATE = 272,
      BY = 273,
-     MONITOR = 274,
-     TYPE = 275,
-     SET = 276,
-     CLEAR = 277,
-     THIN = 278,
-     CODA = 279,
-     STEM = 280,
-     EXIT = 281,
-     NCHAINS = 282,
-     CHAIN = 283,
-     LOAD = 284,
-     LIST = 285,
-     STRUCTURE = 286,
-     DIM = 287,
-     NA = 288,
-     R_NULL = 289,
-     DIMNAMES = 290,
-     ITER = 291,
-     ARROW = 292,
-     ENDDATA = 293,
-     ASINTEGER = 294
+     MONITORS = 274,
+     MONITOR = 275,
+     TYPE = 276,
+     SET = 277,
+     CLEAR = 278,
+     THIN = 279,
+     CODA = 280,
+     STEM = 281,
+     EXIT = 282,
+     NCHAINS = 283,
+     CHAIN = 284,
+     LOAD = 285,
+     LIST = 286,
+     STRUCTURE = 287,
+     DIM = 288,
+     NA = 289,
+     R_NULL = 290,
+     DIMNAMES = 291,
+     ITER = 292,
+     ARROW = 293,
+     ENDDATA = 294,
+     ASINTEGER = 295
    };
 #endif
 /* Tokens.  */
@@ -95,27 +96,28 @@
 #define ADAPT 271
 #define UPDATE 272
 #define BY 273
-#define MONITOR 274
-#define TYPE 275
-#define SET 276
-#define CLEAR 277
-#define THIN 278
-#define CODA 279
-#define STEM 280
-#define EXIT 281
-#define NCHAINS 282
-#define CHAIN 283
-#define LOAD 284
-#define LIST 285
-#define STRUCTURE 286
-#define DIM 287
-#define NA 288
-#define R_NULL 289
-#define DIMNAMES 290
-#define ITER 291
-#define ARROW 292
-#define ENDDATA 293
-#define ASINTEGER 294
+#define MONITORS 274
+#define MONITOR 275
+#define TYPE 276
+#define SET 277
+#define CLEAR 278
+#define THIN 279
+#define CODA 280
+#define STEM 281
+#define EXIT 282
+#define NCHAINS 283
+#define CHAIN 284
+#define LOAD 285
+#define LIST 286
+#define STRUCTURE 287
+#define DIM 288
+#define NA 289
+#define R_NULL 290
+#define DIMNAMES 291
+#define ITER 292
+#define ARROW 293
+#define ENDDATA 294
+#define ASINTEGER 295
 
 
 
@@ -133,7 +135,7 @@ typedef union YYSTYPE
   std::vector<long> *ivec;
 }
 /* Line 1489 of yacc.c.  */
-#line 137 "../../../JAGS/src/terminal/parser.h"
+#line 139 "../../../JAGS/src/terminal/parser.h"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1

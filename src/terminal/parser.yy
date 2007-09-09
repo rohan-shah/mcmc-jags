@@ -39,7 +39,7 @@
     bool open_data_buffer(std::string const *name);
     void return_to_main_buffer();
     void setMonitor(ParseTree const *var, int thin, std::string const &type);
-    void clearMonitor(ParseTree const *var);
+    void clearMonitor(ParseTree const *var, std::string const &type);
     void setDefaultMonitors(std::string const &type, unsigned int thin);
     void doCoda (ParseTree const *var, std::string const &stem);
     void doAllCoda (std::string const &stem);
@@ -87,6 +87,7 @@
 %token <intval> ADAPT
 %token <intval> UPDATE
 %token <intval> BY
+%token <intval> MONITORS
 %token <intval> MONITOR
 %token <intval> TYPE
 %token <intval> SET
@@ -142,7 +143,7 @@ command: model
 | adapt
 | update
 | monitor
-| monitor_to
+| monitors_to
 | coda
 | load
 | exit
@@ -368,19 +369,32 @@ monitor_set: MONITOR SET var  {
 ;
 
 monitor_clear: MONITOR CLEAR var {
-  clearMonitor($3); delete $3;
+    clearMonitor($3, "trace"); delete $3;
+}
+| MONITOR CLEAR var ',' TYPE '(' NAME ')' {
+    clearMonitor($3, *$7);
+    delete $7;
 }
 ;
 
-monitor_to: MONITOR TYPE NAME TO file_name ',' CHAIN '(' INT ')' {
-    dumpMonitors(*$5, *$3, $9);
+monitors_to: MONITORS TO file_name ',' TYPE '(' NAME ')' CHAIN '(' INT ')' {
+    dumpMonitors(*$3, *$7, $11);
     delete $3;
-    delete $5; 
+    delete $7; 
 }
-| MONITOR TYPE NAME TO file_name {
-    dumpMonitors(*$5, *$3, 1);
+monitors_to: MONITORS TO file_name ',' CHAIN '(' INT ')' TYPE '(' NAME ')' {
+    dumpMonitors(*$3, *$11, $7);
     delete $3;
-    delete $5;
+    delete $11; 
+}
+monitors_to: MONITORS TO file_name ',' TYPE '(' NAME ')' {
+    dumpMonitors(*$3, *$7, 1);
+    delete $3;
+    delete $7; 
+}
+monitors_to: MONITORS TO file_name ',' CHAIN '(' INT ')' {
+    dumpMonitors(*$3, "trace", $7);
+    delete $3;
 }
 ;
 
@@ -578,16 +592,16 @@ void setMonitor(ParseTree const *var, int thin, std::string const &type)
     }
 }
 
-void clearMonitor(ParseTree const *var)
+void clearMonitor(ParseTree const *var, std::string const &type)
 {
     std::string const &name = var->name();
     if (var->parameters().empty()) {
 	/* Requesting the whole node */
-	console->clearMonitor(name, Range(), "trace");
+	console->clearMonitor(name, Range(), type);
     }
     else {
 	/* Requesting subset of a multivariate node */
-	console->clearMonitor(name, getRange(var), "trace");
+	console->clearMonitor(name, getRange(var), type);
     }
 }
 

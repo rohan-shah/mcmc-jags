@@ -35,6 +35,7 @@ adapt			zzlval.intval=ADAPT; return ADAPT;
 by                      zzlval.intval=BY; return BY;
 
 monitor			zzlval.intval=MONITOR; return MONITOR;
+monitors		zzlval.intval=MONITORS; return MONITORS;
 type			zzlval.intval=TYPE; return TYPE;
 set			zzlval.intval=SET; return SET;
 clear			zzlval.intval=CLEAR; return CLEAR;
