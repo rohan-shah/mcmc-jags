@@ -6,11 +6,19 @@
 #include <vector>
 
 /**
- * A mixture node copies its value from one of several parents, based
- * on the current values of a set of index nodes, which are also
- * parents.  
- *
  * @short Node for mixture models.
+ *
+ * A mixture node copies its value from one of several parents, based
+ * on the current value of a vector of index nodes.
+ *
+ * In the BUGS language, mixture nodes are represented using nested
+ * indexing. For example, in the deterministic relation
+ *
+ * <pre>y[i] <- x[ind[i]]</pre>
+ *
+ * y[i] is a mixture node if ind[i] is unobserved.  If the possible
+ * values of ind[i] are 1...M, then the parents of y[i] are ind[i],
+ * x[1], ... x[M].
  */
 class MixtureNode : public DeterministicNode {
     std::map<std::vector<int>, Node const *> _map;
@@ -25,7 +33,7 @@ public:
      * of the index.
      */
     MixtureNode(std::vector<Node const *> const &index,
-		std::vector<std::pair<std::vector<int>, Node const *> > const &parameters);
+		std::map<std::vector<int>, Node const *> const &mixmap);
     ~MixtureNode();
     /**
      * Calculates the value of the node based on the current value of the

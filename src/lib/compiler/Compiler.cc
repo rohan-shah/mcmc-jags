@@ -335,7 +335,7 @@ Node * Compiler::getSubsetNode(ParseTree const *var)
     if (var->treeClass() != P_VAR) {
 	throw logic_error("Expecting variable expression");
     }
-
+    
     NodeArray *array = _model.symtab().getVariable(var->name());
     if (array == 0) {
 	if (_strict_resolution) {

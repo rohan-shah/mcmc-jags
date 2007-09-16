@@ -8,6 +8,35 @@ class RNG;
 
 /**
  * @short Node defined by the BUGS-language operator ~
+ *
+ * Stochastic nodes represent the random variables that are the
+ * fundamental building blocks of a Bayesian hierarchical model. In
+ * the BUGS language, they are defined on the left hand side of a
+ * stochastic relation. For example, the relation 
+ *
+ * <pre>y ~ dnorm(mu, tau) T(L, U)</pre> 
+ *
+ * defines y to be a normally distributed random variable with parameters
+ * mu,  tau, L, and U (mean, precision, lower bound, upper bound). The
+ * last two parameters, defined by the T(,) construct, are optional. If
+ * they are supplied, then the distribution of the node is truncated
+ * to lie in the range (L, U). Not all distributions can be truncated.
+ *
+ * JAGS allows you to define stochastic nodes that are, in fact,
+ * not random at all, but are deterministic functions of their parameters.
+ * A common example is the dinterval distribution
+ *
+ * <pre>group[i] ~ dinterval(true[i], cutpoints[1:N])</pre>
+ *
+ * where the value of group[i] is determined by where the value of
+ * true[i] falls in the vector of supplied cutpoints.  In this case,
+ * the stochastic node leads a double life. If it is observed, then it
+ * is considered a random variable, and generates a likelihood for its
+ * stochastic parents.  If it is unobserved then it is treated as a
+ * deterministic function of its parents, just as if it were a
+ * LogicalNode.
+ * 
+ * @see Distribution
  */
 class StochasticNode : public Node {
     Distribution const * const _dist;
@@ -16,23 +45,21 @@ class StochasticNode : public Node {
     Node const *_lower;
     Node const *_upper;
     unsigned int _fweight;
-    /* Forbid copying of Stochastic Nodes */
-    StochasticNode(StochasticNode const &orig);
-    StochasticNode &operator=(StochasticNode const &rhs);
 public:
-    /** 
-     * Constructs a new StochasticNode given a distribution, a set of
-     * parameters and, optionally, upper and lower bounds. If bounds
-     * are given then the distribution of the constructed StochasticNode
-     * is truncated at the current value of the lower and upper bounds.
+    /**
+     * Constructs a new StochasticNode given a distribution, a vector
+     * of parent nodes, considered as parameteres to the distribution,
+     * and, optionally, upper and lower bounds. If bounds are given
+     * then the distribution of the constructed StochasticNode is
+     * truncated at the value of the bounds. 
      */
     StochasticNode(Distribution const *dist, 
                    std::vector<Node const *> const &parameters,
                    Node const *lower=0, Node const *upper=0);
     ~StochasticNode();
     /**
-     * Indicates whether the distribution of the node is bounded above
-     * or below.
+     * Indicates whether the distribution of the node is bounded
+     * either above or below.
      */
     bool isBounded() const;
     /**
@@ -46,52 +73,70 @@ public:
      */
     Node const *upperBound() const;
     /**
-     * Returns a pointer to the Distribution object of the StochasticNode.
-     * @see Distribution
+     * Returns a pointer to the Distribution of the StochasticNode.
      */
     Distribution const *distribution() const;
     /**
-     * Returns a vector of parameter values for the given chain.
+     * Returns a vector of parameter values for the Distribution of
+     * the stochastic node. Each element of the vector is a pointer
+     * to the start of an array of doubles. It is assumed that these
+     * arrays are of the correct size.
+     *
+     * @param chain Index number of the chain for which parameters are
+     * requested.  
      */
     std::vector<double const *> const &parameters(unsigned int chain) const;
     /**
-     * FIXME
+     * Returns a vector of dimensions for the parameters for the
+     * distribution. These are the parameters of the parent Nodes
+     * supplied to the constructor.
      */
     std::vector<std::vector<unsigned int> > const &parameterDims() const;
     /**
-     * Returns the log of the prior density of the StochasticNode given
-     * the current parameter values.
+     * Returns the log of the prior density of the StochasticNode
+     * given the current parameter values.
      */
     double logDensity(unsigned int chain) const;
     /**
-     * Draws a random sample from the Distribution that defines the node
-     * given the current parameter values and sets the Node to that value.
+     * Draws a random sample from the prior distribution of the node
+     * given the current values of it's parents, and sets the Node
+     * to that value.
+     *
      * @param rng Random Number Generator object
-     * @param chain Number of chain to modify (starting from zero).
+     *
+     * @param chain Index umber of chain to modify
      */
     void randomSample(RNG *rng, unsigned int chain);
     /**
      * A deterministic sample for a stochastic node sets it to a
-     * "typical" value of the distribution. The exact behaviour
-     * depends on the Distribution used to define the StochasticNode,
-     * but it will usually be the prior mean, median, or mode.
+     * "typical" value of the prior distribution, given the current
+     * values of its parents. The exact behaviour depends on the
+     * Distribution used to define the StochasticNode, but it will
+     * usually be the prior mean, median, or mode.
      */
     void deterministicSample(unsigned int chain);
     /**
+     * Ensures that the values of the stochastic node parents are valid
+     * 
      * @see Distribution#checkParameterValue
      */
     bool checkParentValues(unsigned int chain) const;
     /**
-     * Stochastic nodes are random variables unless the distribution has
-     * zero degrees of freedom. In this case, Stochastic nodes behave
-     * just like deterministic nodes.
+     * Stochastic nodes are normally considered to represent random
+     * variables in the model. Hence, this function usually returns
+     * true. However, there is an important exception.
+     * 
+     * If the number of degrees of freedom of the node's Distribution
+     * is zero, then the value of the node is a deterministic function
+     * of it's parents. In this case, if the node is unobserved, it is 
+     * not considered to be a random variable.
      */
     bool isRandomVariable() const;
     /**
      * Checks that the parameters are within the valid range determined
-     * by the distribution.
+     * by the Distribution.
      *
-     * @param chain Chain number to check parameters for
+     * @param chain Index number of chain to check
      *
      * @see Distribution#checkParameterValue
      */
@@ -103,11 +148,12 @@ public:
      */
     unsigned int freqWeight() const;
     /**
-     * Increments the case weight of a stochastic node by 1.
+     * Increments the frequency weight of a stochastic node by 1.
      */
     void replicate();
     /**
-     * Stochastic nodes are never linear. This function always returns false.
+     * Stochastic nodes are never linear functions of their
+     * parameters. This function always returns false.
      */
     bool isLinear(std::set<Node const*> const &parameters, bool fixed) const;
     /**
@@ -117,9 +163,15 @@ public:
     bool isScale(std::set<Node const*> const &parameters, bool fixed) const;
 };
 
+/**
+ * Wrapper function that dynamically casts a Node pointer to a
+ * StochasticNode pointer.
+ */
 StochasticNode const *asStochastic(Node const *node);
+
 /**
  * Number of degrees of freedom of a node
+ *
  * @see Distribution#df
  */
 unsigned int df(StochasticNode const *snode);

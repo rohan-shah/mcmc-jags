@@ -8,12 +8,16 @@
  *
  * Constant nodes are the top-level nodes in any directed acyclic graph.
  * They are always scalar, and have no parents.
+ *
+ * In the BUGS language. Constant nodes appear only on the right hand
+ * side of a relation. They are considered to represent observed
+ * random variables.
  */
 class ConstantNode : public Node {
 public:
     /**
-     * Construct node and set its value. The value is fixed and is
-     * shared between all chains.
+     * Constructs a constant node and sets its value. The value is
+     * fixed and is shared between all chains.
      */
     ConstantNode(double value, unsigned int nchain);
     /**
@@ -36,8 +40,8 @@ public:
      */
     std::string name(NodeNameTab const &name_table) const;
     /**
-     * Constant nodes are observed random variables whose values we are
-     * conditioning on. This function returns true;
+     * Constant nodes are observed random variables. This function
+     * returns true.
      */
     bool isRandomVariable() const;
     /**

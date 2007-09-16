@@ -18,10 +18,6 @@ class LogicalNode : public DeterministicNode {
     std::vector<std::vector<double const*> > _parameters;
     std::vector<unsigned int> _lengths;
     std::vector<std::vector<unsigned int> > _dims;
-
-    /* Forbid copying of logical nodes */
-    LogicalNode(LogicalNode const &orig);
-    LogicalNode &operator=(LogicalNode const &rhs);
 public:
     /**
      * A logical node is defined by a function (which may be an inline
