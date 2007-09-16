@@ -4,14 +4,10 @@
 #include <graph/MixtureNode.h>
 #include <model/NodeArray.h>
 
-#include <stdexcept>
 #include <utility>
 
-using std::pair;
-using std::map;
 using std::vector;
-using std::runtime_error;
-using std::logic_error;
+using std::map;
 
 bool compMixPair(MixPair const &arg1, MixPair const &arg2)
 {
@@ -25,49 +21,52 @@ bool compMixPair(MixPair const &arg1, MixPair const &arg2)
 	return false;
     }
 
-    //Same indices. Now compare parameters 
-    vector<pair<vector<int>, Node const *> > const &parameters1 = arg1.second;
-    vector<pair<vector<int>, Node const *> > const &parameters2 = arg2.second;
-    if (parameters1.size() < parameters2.size()) {
+    //Same indices. Now compare mixmaps 
+    MixMap const &mixmap1 = arg1.second;
+    MixMap const &mixmap2 = arg2.second;
+    if (mixmap1.size() < mixmap2.size()) {
 	return true;
     }
-    else if (parameters1.size() > parameters2.size()) {
+    else if (mixmap1.size() > mixmap2.size()) {
 	return false;
     }
     else {
-	for (unsigned int i = 0; i < parameters1.size(); ++i) {
-	    if (parameters1[i].first < parameters2[i].first) {
+	MixMap::const_iterator p1 = mixmap1.begin();
+	MixMap::const_iterator p2 = mixmap2.begin();
+	for (unsigned int i = 0; i < mixmap1.size(); ++i) {
+	    if (p1->first < p2->first) {
 		return true;
 	    }
-	    else if (parameters2[i].first < parameters1[i].first) {
+	    else if (p2->first < p1->first) {
 		return false;
 	    }
-	    else if (lt(parameters1[i].second, parameters2[i].second)) {
+	    else if (lt(p1->second, p2->second)) {
 		return true;
 	    }
-	    else if (lt(parameters2[i].second, parameters1[i].second)) {
+	    else if (lt(p2->second, p1->second)) {
 		return false;
 	    }
+	    ++p1;
+	    ++p2;
 	}
 	return false; //equal
     }
 }
 
-MixtureNode *
-MixtureFactory::getMixtureNode(vector<Node const *> const &index,
-			       vector<pair<vector<int>, Node const*> > const &parameters, Graph &graph)
+MixtureNode * MixtureFactory::getMixtureNode(vector<Node const *> const &index,
+					     MixMap const &mixmap, Graph &graph)
 {
-  MixPair mpair(index, parameters);
-  map<MixPair, MixtureNode*, ltmixpair>::const_iterator p = 
-    _mixmap.find(mpair);
+    MixPair mpair(index, mixmap);
+    map<MixPair, MixtureNode*, ltmixpair>::const_iterator p = 
+	_mixmap.find(mpair);
 
-  if (p != _mixmap.end()) {
-    return p->second;
-  }
-  else {
-    MixtureNode *mix = new MixtureNode(index, parameters);
-    _mixmap[mpair] = mix;
-    graph.add(mix);
-    return mix;
-  }
+    if (p != _mixmap.end()) {
+	return p->second;
+    }
+    else {
+	MixtureNode *mix = new MixtureNode(index, mixmap);
+	_mixmap[mpair] = mix;
+	graph.add(mix);
+	return mix;
+    }
 }
