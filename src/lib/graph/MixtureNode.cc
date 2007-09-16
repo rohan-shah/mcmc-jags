@@ -14,67 +14,71 @@ using std::invalid_argument;
 using std::logic_error;
 using std::set;
 
-static vector<Node const *> 
-mkParents(vector<Node const *> const &index,
-	  vector<pair<vector<int>, Node const *> > const &param)
+static vector<unsigned int> const &
+mkDim(map<vector<int>, Node const *> const &param)
 {
-  vector<Node const *> parents;
-  parents.reserve(index.size() + param.size());
-  for (unsigned int i = 0; i < index.size(); ++i) {
-    parents.push_back(index[i]);
-  }
-  for (unsigned int i = 0; i < param.size(); ++i) {
-    parents.push_back(param[i].second);
-  }
-  return parents;
+    map<vector<int>, Node const *>::const_iterator p = param.begin();
+    vector<unsigned int> const &dim = p->second->dim();
+    for (++p ; p != param.end(); ++p) {
+	if (p->second->dim() != dim) {
+	    throw logic_error("Dimension mismatch in MixtureNode parents");
+	}
+    }
+    return dim;
 }
 
-//debuggin
-#include <iostream>
-
-MixtureNode::MixtureNode(vector<Node const *> const &index,
-			 vector<pair<vector<int>, Node const *> > const &parameters)
-  : DeterministicNode(parameters[0].second->dim(),
-		      mkParents(index, parameters)),
-		      _Nindex(index.size())
+static vector<Node const *> 
+mkParents(vector<Node const *> const &index,
+	  map<vector<int>, Node const *> const &param)
 {
-  for (vector<Node const *>::const_iterator i = index.begin(); 
-       i != index.end(); ++i)
+    vector<Node const *> parents;
+    parents.reserve(index.size() + param.size());
+    for (unsigned int i = 0; i < index.size(); ++i) {
+	parents.push_back(index[i]);
+    }
+    for (map<vector<int>, Node const *>::const_iterator p = param.begin();
+	 p != param.end(); ++p) 
     {
-      Node const *node = *i;
-      if (node->length() != 1 || !node->isDiscreteValued()) {
-         throw NodeError(node, "Invalid index parameter for mixture node");
-      }
+	parents.push_back(p->second);
+    }
+    return parents;
+}
+
+MixtureNode::MixtureNode (vector<Node const *> const &index,
+			  map<vector<int>, Node const *> const &parameters)
+    : DeterministicNode(mkDim(parameters), mkParents(index, parameters)),
+      _map(parameters), _Nindex(index.size())
+{
+    for (vector<Node const *>::const_iterator i = index.begin(); 
+	 i != index.end(); ++i)
+    {
+	Node const *node = *i;
+	if (node->length() != 1 || !node->isDiscreteValued()) {
+	    throw NodeError(node, "Invalid index parameter for mixture node");
+	}
     }
 
-  unsigned int ndim = parameters.size();
-  for (unsigned int i = 0; i < ndim; ++i) {
-    Node const *node = parameters[i].second;
-    if (!node) {
-      throw invalid_argument("Null parameter in MixtureNode");
+    bool isdiscrete = true;
+    vector<unsigned int> const &default_dim = parameters.begin()->second->dim();
+    
+    for (map<vector<int>, Node const *>::const_iterator p = parameters.begin();
+	 p != parameters.end(); ++p)
+    {
+	if (p->first.size() != _Nindex) {
+	    throw invalid_argument("Invalid index in MixtureNode");
+	}
+	Node const *node = p->second;
+	if (node->dim() != default_dim) {
+	    throw invalid_argument("Range mismatch for MixtureNode parameters");
+	}
+	if (!node->isDiscreteValued()) {
+	    isdiscrete = false;
+	}
     }
-    if (parameters[i].first.size() != _Nindex) {
-      std::cout << "Expected " << parameters[i].first.size() << " got " <<
-                  _Nindex << "\n";
-      throw invalid_argument("Invalid index in MixtureNode");
+
+    if (isdiscrete) {
+	setDiscreteValued();
     }
-    _map.insert(parameters[i]);
-  }
-  
-  bool isdiscrete = true;
-  vector<unsigned int> const &default_dim = dim();
-  for (unsigned int i = 0; i < ndim; ++i) {
-    Node const *node = parameters[i].second;
-    if (node->dim() != default_dim) {
-      throw invalid_argument("Range mismatch for MixtureNode parameters");
-    }
-    if (!node->isDiscreteValued()) {
-      isdiscrete = false;
-    }
-  }
-  if (isdiscrete) {
-    setDiscreteValued();
-  }
 }
 
 MixtureNode::~MixtureNode()
@@ -94,12 +98,9 @@ void MixtureNode::deterministicSample(unsigned int chain)
     for (unsigned int j = 0; j < _Nindex; ++j) {
 	i[j] = static_cast<int>(*par[j]->value(chain));
     }
-    map<vector<int>, Node const*>::iterator p = _map.find(i);
-    if (p != _map.end()) {
-	setValue(p->second->value(chain), p->second->length(), chain);
-    }
-    else {
-        /*
+    map<vector<int>, Node const *>::const_iterator p = _map.find(i);
+    if (p == _map.end()) {
+	/*
 	std::cout << "Got " << print(Range(i)) << "\nOriginally\n";
 	for (unsigned int j = 0; j < _Nindex; ++j) {
 	    std::cout << par[j]->value(chain)[0] << "\n";
@@ -110,11 +111,13 @@ void MixtureNode::deterministicSample(unsigned int chain)
 	for (p = _map.begin(); p != _map.end(); ++p) {
 	    std::cout << print(Range(p->first)) << "\n";
 	}
-        throw NodeError(this, "Invalid index");
-        */
-	throw logic_error("Invalid index in MixtureNode");
+	*/
+	throw NodeError(this, "Invalid index in MixtureNode");
     }
-}
+    else {
+	setValue(p->second->value(chain), length(), chain);	
+    }
+    }
 
 unsigned int MixtureNode::index_size() const
 {
@@ -153,10 +156,19 @@ bool MixtureNode::isScale(set<Node const*> const &parameters, bool fixed) const
 
 bool MixtureNode::checkParentValues(unsigned int chain) const
 {
-    vector<int> i(_Nindex);
-    vector <Node const*> const &par = parents();
-    for (unsigned int j = 0; j < _Nindex; ++j) {
-	i[j] = static_cast<int>(*par[j]->value(chain));
-    }
-    return _map.find(i) != _map.end();
+    /* 
+       We ignore the index nodes. There there are no restrictions on
+       the values of the other parents, and the function trivially
+       returns true.
+
+       In principle, we could check whether the index nodes form a
+       valid index. However, this calculation has to be done anyway as
+       part of the calculation for deterministicSample, there is not
+       much point repeating it here.
+
+       This may be considered cheating, but it avoids doing the same
+       calculation twice.
+    */
+       
+    return true;
 }
