@@ -1,0 +1,25 @@
+#include <config.h>
+#include "LessThan.h"
+
+#include <cmath>
+#include <cfloat>
+
+using std::vector;
+
+namespace base {
+
+LessThan::LessThan () : Infix ("<")
+{
+}
+
+double LessThan::evaluateScalar(vector<double const *> const &args) const
+{
+  return *args[0] < *args[1];
+}
+
+bool LessThan::isDiscreteValued(std::vector<bool> const &mask) const
+{
+  return true;
+}
+
+}
