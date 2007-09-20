@@ -75,7 +75,7 @@ namespace base {
 	}
 
 	vector<RNGFactory*> const &rvec = rngFactories();
-	for (unsigned int i = 0; i < fvec.size(); ++i) {
+	for (unsigned int i = 0; i < rvec.size(); ++i) {
 	    delete rvec[i];
 	}
 
