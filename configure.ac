@@ -116,10 +116,11 @@ AC_CONFIG_FILES([
   src/include/compiler/Makefile
   src/include/rng/Makefile
   src/modules/Makefile
-  src/modules/basefunctions/Makefile
-  src/modules/baserngs/Makefile
-  src/modules/basesamplers/Makefile
-  src/modules/basemonitors/Makefile
+  src/modules/base/Makefile
+  src/modules/base/functions/Makefile
+  src/modules/base/rngs/Makefile
+  src/modules/base/samplers/Makefile
+  src/modules/base/monitors/Makefile
   src/modules/bugs/Makefile	
   src/modules/bugs/functions/Makefile	
   src/modules/bugs/distributions/Makefile	
