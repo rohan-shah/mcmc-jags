@@ -51,7 +51,8 @@ bool DInterval::checkParameterValue(vector<double const *> const &par,
 double 
 DInterval::logLikelihood(double const *y, unsigned int length, 
 			 vector<double const *> const &par,
-			 vector<vector<unsigned int> > const &dims) const
+			 vector<vector<unsigned int> > const &dims,
+			 double const *lower, double const *upper) const
 {
     if (*y < 0)
 	return JAGS_NEGINF;
@@ -74,6 +75,7 @@ DInterval::logLikelihood(double const *y, unsigned int length,
 void DInterval::randomSample(double  *x, unsigned int length,
 			     vector<double const *> const &par,
 			     vector<vector<unsigned int> > const &dims,
+			     double const *lower, double const *upper,
 			     RNG *rng) const
 {
     /* 
@@ -85,7 +87,8 @@ void DInterval::randomSample(double  *x, unsigned int length,
 
 void DInterval::typicalValue(double *x, unsigned int length,
 			     vector<double const *> const &par,
-			     vector<vector<unsigned int> > const &dims) const
+			     vector<vector<unsigned int> > const &dims,
+			     double const *lower, double const *upper) const
 {
     *x = static_cast<double>(value(par, NCUT(dims)));
 }
