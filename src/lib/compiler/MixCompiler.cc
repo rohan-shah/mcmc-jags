@@ -192,7 +192,7 @@ getMixtureNode1(NodeArray *array, vector<SSI> const &limits, Compiler *compiler)
     for (unsigned int i = 0; i < nparents; ++i) {
 	StochasticNode const *snode = stoch_parents[i];
 	if (snode->length() != 1 || !snode->isDiscreteValued() ||
-	    snode->isObserved() || snode->isBounded()) 
+	    snode->isObserved() || isBounded(snode)) 
 	{
 	    return 0;
 	}

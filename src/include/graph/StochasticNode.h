@@ -58,20 +58,27 @@ public:
                    Node const *lower=0, Node const *upper=0);
     ~StochasticNode();
     /**
-     * Indicates whether the distribution of the node is bounded
-     * either above or below.
-     */
-    bool isBounded() const;
-    /**
-     * Returns a pointer to the lower bound if the distribution is
-     * truncated, or a NULL pointer otherwise.
+     * Returns a pointer to the Node that defines the lower bound, if
+     * the distribution is truncated, or a NULL pointer otherwise.
      */
     Node const *lowerBound() const;
     /**
-     * Returns a pointer to the upper bound if the distribution is
-     * truncated, or a NULL pointer otherwise.
+     * Returns a pointer to the Node that defines the upper bound, if
+     * the distribution is truncated, or a NULL pointer otherwise.
      */
     Node const *upperBound() const;
+    /**
+     * Returns a pointer to the value of the lower bound for the given
+     * chain, if the distribution is truncated, or a NULL pointer
+     * otherwise.
+     */
+    double const *lowerLimit(unsigned int chain) const;
+    /**
+     * Returns a pointer to the value of the upper bound for the given
+     * chain, if the distribution is truncated, or a NULL pointer
+     * otherwise.
+     */
+    double const *upperLimit(unsigned int chain) const;
     /**
      * Returns a pointer to the Distribution of the StochasticNode.
      */
@@ -158,7 +165,7 @@ public:
     bool isLinear(std::set<Node const*> const &parameters, bool fixed) const;
     /**
      * Stochastic nodes are never scale functions. This function
-     * always returns false
+     * always returns false.
      */
     bool isScale(std::set<Node const*> const &parameters, bool fixed) const;
 };
@@ -175,6 +182,40 @@ StochasticNode const *asStochastic(Node const *node);
  * @see Distribution#df
  */
 unsigned int df(StochasticNode const *snode);
+
+/**
+ * Indicates whether the distribution of the node is bounded
+ * either above or below.
+ */
+bool isBounded(StochasticNode const *node);
+
+/**
+ * Writes the lower and upper limits of a given stochastic node to the
+ * supplied arrays. If the node has upper and lower bounds then these
+ * are taken into account.
+ *
+ * @param node Stochastic node to query
+ *
+ * @param lower pointer to start of an array that will hold the lower 
+ * limit of the support
+ *
+ * @param lower pointer to start of an array that will hold the upper 
+ * limit of the support
+ *
+ * @param length size of the lower and upper arrays.
+ *
+ * @see Distribution#support
+ */
+void support(double *lower, double *upper, unsigned int length,
+             StochasticNode const *node, unsigned int chain);
+
+/**
+ * Returns true if the upper and lower limits of the support of the
+ * stochastic node are fixed. Upper and lower bounds are taken into account
+ *
+ * @see Distributin#isSupportFixed
+ */
+bool isSupportFixed(StochasticNode const *node);
 
 #endif /* STOCHASTIC_NODE_H_ */
 

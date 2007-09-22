@@ -26,27 +26,33 @@ class MixtureNode : public DeterministicNode {
 public:
     /**
      * Constructs a MixtureNode. 
-     * @param index Vector of discrete-valued scalar nodes
-     * @param parameters Vector of pairs. Each pair associates a
-     * possible value of the index nodes with a parent. The mixture node
-     * copies its value from the parent that matches the current value
-     * of the index.
+     *
+     * @param index Vector of index nodes. These must be discrete-valued,
+     *  scalar, and unobserved.
+     *
+     * @param mixmap STL map object which associates a possible value
+     * of the index nodes with a single parent. Each possible index
+     * value, denoted by a vector of integers, must have the correct
+     * size (matching the size of the index parameter), and the
+     * corresponding parents must all have the same dimension.
      */
     MixtureNode(std::vector<Node const *> const &index,
 		std::map<std::vector<int>, Node const *> const &mixmap);
     ~MixtureNode();
     /**
-     * Calculates the value of the node based on the current value of the
-     * index and the value of the corresponding parameter.
+     * Calculates the value of the mixture node by looking up the
+     * parent node corresponding to the current value of the index
+     * nodes (in the map supplied to the constructor). The mixture node
+     * copies its value from that parent.
      */
     void deterministicSample(unsigned int chain);
     /**
-     * Returns the number of index parameters.
+     * Returns the number of index nodes.
      */
     unsigned int index_size() const;
     /**
-     * A MixtureNode preserves linearity if none of the indices are
-     * parameters. It is never a fixed linear function.
+     * A MixtureNode preserves linearity if none of the index nodes
+     * are parameters. It is never a fixed linear function.
      */
     bool isLinear(std::set<Node const*> const &parameters, bool fixed) const;
     /**
@@ -55,13 +61,28 @@ public:
      */
     bool isScale(std::set<Node const*> const &parameters, bool fixed) const;
     /**
-     * Checks that the current value of the index variable corresponds
-     * to a valid Node in the vector of parameters.
+     * This function always returns true. It ignores possible errors
+     * in the index nodes.  This is because the deterministicSample
+     * member function already checks that the index value is valid
+     * and will throw an runtime error if it is not.  Repeating these
+     * calculations in the checkParentValues function would therefore
+     * be redundant.
      */
     bool checkParentValues(unsigned int chain) const;
+    /**
+     * Creates a name for the mixture node of the form.
+     *
+     * <pre>mixture(index=[p,q], parents=X[1,1,4]...X[2,3,4])</pre>
+     *
+     * Only the first and last parent nodes are listed to save space.
+     *
+     * Exceptionally, the name of a mixture node is not a reconstruction
+     * of its BUGS-language definition.
+     */
+    std::string name(NodeNameTab const &name_table) const;
 };
 
-MixtureNode const *asMixture(Node const *node);
-bool isMixture(Node const *node);
+bool isMixture(Node const *);
+MixtureNode const * asMixture(Node const *);
 
 #endif /* MIXTURE_NODE_H_ */

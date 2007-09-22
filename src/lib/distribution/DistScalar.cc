@@ -2,7 +2,6 @@
 #include <distribution/DistScalar.h>
 #include <sarray/nainf.h>
 #include <sarray/util.h>
-#include "Bounds.h"
 
 #include <stdexcept>
 #include <cmath>
@@ -35,21 +34,8 @@ void DistScalar::support(double *lower, double *upper, unsigned int length,
 void DistScalar::support(double *lower, double *upper,
 			 vector<double const *> const &parameters) const
 {
-    double const *lb = lowerBound(this, parameters);
-    if (lb) {
-	*lower = max(l(parameters), *lb);
-    }
-    else {
-	*lower = l(parameters);
-    }
-    double const *ub = upperBound(this, parameters);
-    if (ub) {
-	*upper = min(u(parameters), *ub);
-    }
-    else {
-	*upper = u(parameters);
-    }
-
+    *lower = l(parameters);
+    *upper = u(parameters);
 }
 
 double DistScalar::l(vector<double const *> const &parameters) const
@@ -97,28 +83,31 @@ bool DistScalar::isSupportFixed(vector<bool> const &fixmask) const
 
 double 
 DistScalar::logLikelihood(double const *x, unsigned int length,
-			  std::vector<double const *> const &parameters,
-			  std::vector<std::vector<unsigned int> > const  &dims)
+			  vector<double const *> const &parameters,
+			  vector<vector<unsigned int> > const &dims,
+                          double const *lower, double const *upper)
     const
 {
-    return logLikelihood(*x, parameters);
+    return logLikelihood(*x, parameters, lower, upper);
 }
 
 void 
 DistScalar::randomSample(double *x, unsigned int length,
 			 std::vector<double const *> const &parameters,
 			 std::vector<std::vector<unsigned int> > const  &dims,
+                         double const *lower, double const *upper,
 			 RNG *r) const
 {
-    *x = randomSample(parameters, r);
+    *x = randomSample(parameters, lower, upper, r);
 }
 
 void 
 DistScalar::typicalValue (double *x, unsigned int length,
 			  std::vector<double const *> const &parameters,
-			  std::vector<std::vector<unsigned int> > const &dims) const
+			  std::vector<std::vector<unsigned int> > const &dims,
+                          double const *lower, double const *upper) const
 {
-    *x = typicalValue(parameters);
+    *x = typicalValue(parameters, lower, upper);
 }
 
 bool 

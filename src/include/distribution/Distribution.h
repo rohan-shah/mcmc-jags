@@ -49,6 +49,12 @@ public:
      * 
      * @param dims Vector of dimensions of the parameters.
      *
+     * @param lbound Lower bound for truncated distributions. If the
+     * distribution is not truncated then this should be a NULL pointer.
+     *
+     * @param ubound Upper bound for truncated distributions. If the
+     * distribution is not truncated then this should be a NULL pointer.
+     * 
      * @returns the log likelihood.  If the likelihood should be zero
      * because x is inconsistent with the parameters then -Inf is
      * returned. If the parameters are invalid
@@ -59,7 +65,8 @@ public:
     virtual double 
 	logLikelihood(double const *x, unsigned int length,
 		      std::vector<double const *> const &parameters,
-		      std::vector<std::vector<unsigned int> > const  &dims)
+		      std::vector<std::vector<unsigned int> > const &dims,
+		      double const *lbound, double const *ubound)
 	const = 0;
     /**
      * Draws a random sample from the distribution. 
@@ -70,6 +77,12 @@ public:
      * to evaluate the likelihood. This vector should be of length
      * npar().
      *
+     * @param lbound Lower bound, for truncated distributions, or a NULL
+     * pointer if the distribution is not truncated.
+     *
+     * @param ubound Upper bound, for truncated distributions, or a NULL
+     * pointer if the distribution is not truncated.
+
      * @param rng pseudo-random number generator to use.
      *
      * @exception length_error 
@@ -78,7 +91,8 @@ public:
 	randomSample(double *x, unsigned int length,
 		     std::vector<double const *> const &parameters,
 		     std::vector<std::vector<unsigned int> > const  &dims,
-		     RNG *rng) const = 0;
+		     double const *lbound, double const *ubound, RNG *rng) 
+	const = 0;
     /**
      * Returns a typical value from the distribution.  The meaning of
      * this will depend on the distribution, but it will normally be a
@@ -90,38 +104,53 @@ public:
      * to evaluate the likelihood. This vector should be of length
      * npar().
      *
+     * @param dims Vector of parameter dimensions.
+     *
+     * @param lbound Lower bound, for truncated distributions, or a NULL
+     * pointer if the distribution is not truncated.
+     *
+     * @param ubound Upper bound, for truncated distributions, or a NULL
+     * pointer if the distribution is not truncated.
+
+     *
      * @exception length_error 
      */
     virtual void 
 	typicalValue(double *x, unsigned int length,
 		     std::vector<double const *> const &parameters,
-		     std::vector<std::vector<unsigned int> > const &dims)
+		     std::vector<std::vector<unsigned int> > const &dims,
+		     double const *lbound, double const *ubound)
 	const = 0;
+
     /**
+     * The lower and upper limits on the support of the distribution,
+     * given the parameters. 
+     *
      * @param lower Pointer to the start of an array to which the lower
-     * bound will be written.
+     * limit will be written.
+     *  
      * @param upper Pointer to the start of an array to which the lower
-     * bound will be written.
+     * limit will be written.
+     *
      * @param length Length of the lower and upper arrays
+     *
      * @param parameters Vector of parameters at which to evaluate the
      * support
-     * 
-     * FIXME
-     * The lower and upper limits on the support of X, given the parameters
+     *
+     * @param dims vector of dimensions of the parameters
      */
-    virtual void 
-	support(double *lower, double *upper, unsigned int length,
-		std::vector<double const *> const &parameters,
-		std::vector<std::vector<unsigned int> > const &dims) const = 0;
+    virtual void support(double *lower, double *upper, unsigned int length,
+			 std::vector<double const *> const &parameters,
+			 std::vector<std::vector<unsigned int> > const &dims) 
+	const = 0;
     /**
      * Indicates whether the support of the distribution is fixed.
      *
-     * @param fixmask Boolean vector indicating which parameters have
-     * fixed values.
+     * @param fixmask Boolean vector of length npar() indicating which
+     * parameters have fixed values.
      */
-     virtual bool
-	 isSupportFixed(std::vector<bool> const &fixmask) const = 0;
-    /**
+    virtual bool isSupportFixed(std::vector<bool> const &fixmask) const = 0;
+     /**
      * The number of parameters of the distribution
      */
     unsigned int npar() const;

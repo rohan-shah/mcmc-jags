@@ -4,8 +4,6 @@
 #include <sarray/util.h>
 #include <sarray/nainf.h>
 
-#include "Bounds.h"
-
 #include <stdexcept>
 #include <cmath>
 
@@ -15,125 +13,123 @@ using std::length_error;
 using std::logic_error;
 using std::log;
 
-DistScalarRmath::DistScalarRmath(string const &name, unsigned int npar, Support support, 
-		       bool canbound, bool discrete)
+double DistScalarRmath::calPlower(double lower, 
+				  vector<double const*> const &parameters) const
+{
+    if (isDiscreteValued()) {
+	return p(lower - 1, parameters, true, false);
+    }
+    else {
+	return p(lower, parameters, true, false);
+    }
+}
+
+double DistScalarRmath::calPupper(double upper,
+				  vector<double const*> const &parameters) const
+{
+    return p(upper, parameters, true, false);
+}
+
+
+DistScalarRmath::DistScalarRmath(string const &name, unsigned int npar, 
+				 Support support, bool canbound, bool discrete)
   
-  : DistScalar(name, npar, support, canbound, discrete), 
-    _support(support)
+    : DistScalar(name, npar, support, canbound, discrete),  _support(support)
 {
 }
 
 double 
-DistScalarRmath::typicalValue(vector<double const *> const &parameters) const
+DistScalarRmath::typicalValue(vector<double const *> const &parameters,
+			      double const *lower, double const *upper) const
 {
+    double llimit = JAGS_NEGINF, ulimit = JAGS_POSINF;
+    support(&llimit, &ulimit, parameters);
+    double plower = 0, pupper = 1;
+    
+    if (lower) {
+	llimit = fmax(llimit, *lower);
+	plower = calPlower(llimit, parameters);
+    }
 
-    double const *bb = lowerBound(this, parameters);
-    double const *ba = upperBound(this, parameters);
+    if (upper) {
+	ulimit = fmin(ulimit, *upper);
+	pupper = calPupper(ulimit, parameters);
+    }
+    
+    double pmed = (plower + pupper)/2;
+    double med = q(pmed, parameters, true, false);	
 
-    double y;
-    if (!ba && !bb) {
-      y = q(0.5, parameters, true, false);
+    //Calculate the log densities
+    double dllimit = d(llimit, parameters, true);
+    double dulimit = d(ulimit, parameters, true);
+    double dmed = d(med, parameters, true);
+
+    //Pick the median if it has the highest density, otherwise pick
+    //a point near to (but not on) the boundary
+    if (dmed > dllimit && dmed > dulimit) {
+	return med;
+    }
+    else if (dulimit > dllimit) {
+	return q(0.1 * plower + 0.9 * pupper, parameters, true, false);
     }
     else {
-        double lower = 0, upper = 0;
-	support(&lower, &upper, parameters);
-	double plower = 0, pupper = 1;
-	if (bb) {
-	    if (isDiscreteValued() && jags_finite(lower)) {
-		plower = p(lower - 1, parameters, true, false);
-	    }
-	    else {
-		plower = p(lower, parameters, true, false);
-	    }
-	}
-	if (ba) {
-	    pupper = p(upper, parameters, true, false);
-	}
-	double pmed = (plower + pupper)/2;
-	double med = q(pmed, parameters, true, false);	
-
-	//Calculate the log densities
-	double dlower = d(lower, parameters, true);
-	double dupper = d(upper, parameters, true);
-	double dmed = d(med, parameters, true);
-
-	//Pick the median if it has the highest density, otherwise pick
-	//a point near to (but not on) the boundary
-	if (dmed > dlower && dmed > dupper) {
-	    y = med;
-	}
-	else if (dupper > dlower) {
-	    y = q(0.1 * plower + 0.9 * pupper, parameters, true, false);
-	}
-	else {
-	    y = q(0.9 * plower + 0.1 * pupper, parameters, true, false);
-	}
+	return q(0.9 * plower + 0.1 * pupper, parameters, true, false);
     }
-    return y;
 }
 
 double 
 DistScalarRmath::logLikelihood(double x,
-			       vector<double const *> const &parameters) const
+			       vector<double const *> const &parameters,
+			       double const *lower, double const *upper) const
 {
-    bool lb = lowerBound(this, parameters);
-    bool ub = upperBound(this, parameters);
-
     double loglik =  d(x, parameters, true);
-    if (lb || ub) {
-	double lower, upper;
-	support(&lower, &upper, parameters);
-	if (x < lower || x > upper) {
-       	  return JAGS_NEGINF;
-	}
+
+    if (lower || upper) {
+
 	double plower = 0, pupper = 1;
-	if (lb) {
-	    if (isDiscreteValued()) {
-       	        if (jags_finite(lower)) {
-		    //Need to correct for discreteness
-		    plower = p(lower - 1, parameters, true, false);
-		}
-	    }
-	    else {
-		plower = p(lower, parameters, true, false);
-	    }
+
+	if (lower) {
+
+	    if (x < *lower)
+		return JAGS_NEGINF;
+
+	    plower = calPlower(*lower, parameters);
 	}
-	if (ub) {
-	    pupper = p(upper, parameters, true, false); 
+
+	if (upper) {
+	    
+	    if (x > *upper)
+		return JAGS_NEGINF;
+
+	    pupper = calPupper(*upper, parameters);
 	}
+
 	loglik -= log(pupper - plower);
     }
+
     return loglik;
 }
 
 
 double DistScalarRmath::randomSample(vector<double const *> const &parameters,
+				     double const *lower, double const *upper,
 				     RNG *rng) const
 {
-    bool bb = lowerBound(this, parameters);
-    bool ba = upperBound(this, parameters);
-  
-    if (ba || bb) {
-	double lower, upper;
-	support(&lower, &upper, parameters);
+    if (lower || upper) {
+
 	double plower = 0, pupper = 1;
-	if (bb) {
-	    if (isDiscreteValued()) {
-	        if (jags_finite(lower)) {
-		    plower = p(lower - 1, parameters, true, false);
-		}
-	    }
-	    else {
-		plower = p(lower, parameters, true, false);
-	    }
+	if (lower) {
+	    plower = calPlower(*lower, parameters);
 	}
-	if (ba) {
-	    pupper = p(upper, parameters, true, false);
+	if (upper) {
+	    pupper = calPupper(*upper, parameters);
 	}
+	
 	double u = plower + rng->uniform() * (pupper - plower);
 	return q(u, parameters, true, false);
     }
     else {
 	return r(parameters, rng);
     }
+
 }

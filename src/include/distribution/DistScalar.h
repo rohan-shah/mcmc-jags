@@ -49,35 +49,39 @@ class DistScalar : public Distribution
 	     Support support, bool canbound, bool discrete);
   double logLikelihood(double const *x, unsigned int length,
 		       std::vector<double const *> const &parameters,
-		       std::vector<std::vector<unsigned int> > const  &dims)
+		       std::vector<std::vector<unsigned int> > const  &dims,
+                       double const *lower, double const *upper)
       const;
   void randomSample(double *x, unsigned int length,
 		    std::vector<double const *> const &parameters,
 		    std::vector<std::vector<unsigned int> > const  &dims,
+                    double const *lower, double const *upper,
 		    RNG *r) const;
   void typicalValue(double *x, unsigned int length,
 		    std::vector<double const *> const &parameters,
-		    std::vector<std::vector<unsigned int> > const &dims) const;
+		    std::vector<std::vector<unsigned int> > const &dims,
+                    double const *lower, double const *upper) const;
   /**
    * Checks that parameters are scalar
    */
   bool checkParameterDim(std::vector<std::vector<unsigned int> > const &dims)
      const;
   /**
-   * This implementation of lowerSupport calculates the lower limit
-   * based on the bounds and on the DistScalar#l function.
+   * This implementation of calculates the support
+   * based on the DistScalar#l and DistScalar#u functions.
    */
   void support(double *lower, double *upper, unsigned int length, 
 	       std::vector<double const *> const &parameters,
 	       std::vector<std::vector<unsigned int> > const &dims) const;
   /**
-   * FIXME
+   * This implementation should be used for distributions with
+   * Support DIST_UNBOUNDED, DIST_POSITIVE and DIST_PROPORTION. If
+   * the Support is DIST_SPECIAL, this must be overloaded.
    */
   bool isSupportFixed(std::vector<bool> const &fixmask) const;
   /**
-   * Lower limit of distribution, given parameters, but ignoring
-   * bounds.  If the distribution has no lower limit, this should
-   * return -DBL_MAX.
+   * Lower limit of distribution, given parameters.  If the
+   * distribution has no lower limit, this should return JAGS_NEGINF.
    *
    * The default implementation should be used for distributions with
    * Support DIST_UNBOUNDED, DIST_POSITIVE and DIST_PROPORTION. If
@@ -85,9 +89,8 @@ class DistScalar : public Distribution
    */
   virtual double l(std::vector<double const *> const &parameters) const;
   /**
-   * Upper limit of distribution, given parameters, but ignoring
-   * bounds.  If the distribution has no upper limit, this should
-   * return DBL_MAX.
+   * Upper limit of distribution, given parameters. If the
+   * distribution has no upper limit, this should return JAGS_POSINF.
    *
    * The default implementation should be used for distributions with
    * Support DIST_UNBOUNDED, DIST_POSITIVE and DIST_PROPORTION. If
@@ -97,17 +100,21 @@ class DistScalar : public Distribution
   /**
    * Simplified version of loglikelihood function for scalar distributions
    */
-  virtual double logLikelihood(double x, std::vector<double const *> const &parameters)
+  virtual double 
+      logLikelihood(double x, std::vector<double const *> const &parameters,
+		    double const *lower, double const *upper)
       const = 0;
   /**
    * Simplified version of the randomSample function for scalar distributions
    */
   virtual double randomSample(std::vector<double const *> const &parameters, 
+                              double const *lower, double const *upper,
 			      RNG *rng) const = 0;
   /**
    * Simplified versino of typicalValue function for scalar distributions
    */
-  virtual double typicalValue(std::vector<double const *> const &parameters)
+  virtual double typicalValue(std::vector<double const *> const &parameters,
+                              double const *lower, double const *upper)
       const = 0;
   /**
    * Simplified version of support function for scalar distributions
