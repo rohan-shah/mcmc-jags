@@ -21,7 +21,8 @@ DMNorm::DMNorm()
 
 double DMNorm::logLikelihood(double const *x, unsigned int m,
 			     vector<double const *> const &parameters,
-			     vector<vector<unsigned int> > const &dims) const
+			     vector<vector<unsigned int> > const &dims,
+			     double const *lower, double const *upper) const
 {
     double const * mu = parameters[0];
     double const * T = parameters[1];
@@ -43,6 +44,7 @@ double DMNorm::logLikelihood(double const *x, unsigned int m,
 void DMNorm::randomSample(double *x, unsigned int length,
 			  vector<double const *> const &parameters,
 			  vector<vector<unsigned int> > const &dims,
+			  double const *lower, double const *upper,
 			  RNG *rng) const
 {
     double const * mu = parameters[0];
@@ -148,7 +150,8 @@ void DMNorm::support(double *lower, double *upper, unsigned int length,
 
 void DMNorm::typicalValue(double *x, unsigned int length,
 			  vector<double const *> const &parameters,
-			  vector<vector<unsigned int> > const &dims) const
+			  vector<vector<unsigned int> > const &dims,
+			  double const *lower, double const *upper) const
 {
     for (unsigned int i = 0; i < length; ++i) {
 	x[i] = parameters[0][i];
