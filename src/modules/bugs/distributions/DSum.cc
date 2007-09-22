@@ -32,7 +32,8 @@ bool DSum::checkParameterDiscrete(vector<bool> const &mask) const
     return allTrue(mask);
 }
 
-double DSum::logLikelihood(double x, vector<double const *> const &par) const
+double DSum::logLikelihood(double x, vector<double const *> const &par,
+			   double const *lower, double const *upper) const
 {
     if (fabs(x - SUM(par)) > 16 * DBL_EPSILON) {
 	// If this happens by accident, you have no chance of getting it right
@@ -42,7 +43,9 @@ double DSum::logLikelihood(double x, vector<double const *> const &par) const
     return 0;
 }
 
-double DSum::randomSample(vector<double const *> const &par, RNG *rng) const
+double DSum::randomSample(vector<double const *> const &par, 
+			  double const *lower, double const *upper,
+			  RNG *rng) const
 {
     /* The random sample from DSum is not random at all, but
        deterministic. */
@@ -59,7 +62,8 @@ double DSum::u(std::vector<double const *> const &par) const
     return SUM(par);
 }
 
-double DSum::typicalValue(vector<double const *> const &par) const
+double DSum::typicalValue(vector<double const *> const &par,
+			  double const *lower, double const *upper) const
 {
     return SUM(par);
 }

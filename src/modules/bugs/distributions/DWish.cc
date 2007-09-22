@@ -30,7 +30,8 @@ DWish::DWish()
 
 double DWish::logLikelihood(double const *x, unsigned int length,
 			    vector<double const *> const &par,
-			    vector<vector<unsigned int> > const &dims) const
+			    vector<vector<unsigned int> > const &dims,
+			    double const *lower, double const *upper) const
 {
     double const *scale = SCALE(par);
     unsigned int p = NROW(dims);
@@ -41,15 +42,6 @@ double DWish::logLikelihood(double const *x, unsigned int length,
     }
     loglik += DF(par) * logdet(scale, p) + (DF(par) - p - 1) * logdet(x, p);
     return loglik/2;
-}
-
-
-void DWish::randomSample(double *x, unsigned int length,
-			 vector<double const *> const &par,
-			 vector<vector<unsigned int> > const &dims,
-			 RNG *rng) const
-{
-  randomSample(x, length, SCALE(par), DF(par), NROW(dims), rng);
 }
 
 void DWish::randomSample(double *x, int length,
@@ -133,6 +125,15 @@ void DWish::randomSample(double *x, int length,
     delete [] Ztrans;
 }
 
+void DWish::randomSample(double *x, unsigned int length,
+			 vector<double const *> const &par,
+			 vector<vector<unsigned int> > const &dims,
+			 double const *lower, double const *upper,
+			 RNG *rng) const
+{
+  randomSample(x, length, SCALE(par), DF(par), NROW(dims), rng);
+}
+
 bool DWish::checkParameterDim (vector<vector<unsigned int> > const &dims) const
 {
   return isSquareMatrix(dims[0]) && isScalar(dims[1]);
@@ -183,7 +184,8 @@ void DWish::support(double *lower, double *upper, unsigned int length,
 
 void DWish::typicalValue(double *x, unsigned int length,
 			 vector<double const *> const &par,
-			 vector<vector<unsigned int> > const &dims) const
+			 vector<vector<unsigned int> > const &dims,
+			 double const *lower, double const *upper) const
 {
     /* Returns the mean as a typical value. We need to invert the
        scale matrix */
