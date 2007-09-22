@@ -76,7 +76,8 @@ DDirch::checkParameterValue(vector<double const *> const &par,
 
 double DDirch::logLikelihood(double const *x, unsigned int length,
 			     vector<double const *> const &par,
-                             vector<vector<unsigned int> > const &dims) const
+                             vector<vector<unsigned int> > const &dims,
+			     double const *lower, double const *upper) const
 {
     double const *alpha = ALPHA(par);
 
@@ -100,6 +101,7 @@ double DDirch::logLikelihood(double const *x, unsigned int length,
 void DDirch::randomSample(double *x, unsigned int length,
                           vector<double const *> const &par,
                           vector<vector<unsigned int> > const &dims,
+			  double const *lower, double const *upper,
 			  RNG *rng) const
 {
     double const *alpha = ALPHA(par);
@@ -121,26 +123,27 @@ void DDirch::support(double *lower, double *upper, unsigned int length,
 		vector<double const *> const &par,
 		vector<vector<unsigned int> > const &dims) const
 {
-   for (unsigned int i = 0; i < length; ++i) {
-      lower[i] = 0;
-      if (ALPHA(par)[i] == 0)
-         upper[i] = 0;
-      else
-         upper[i] = JAGS_POSINF;
-   }
+    for (unsigned int i = 0; i < length; ++i) {
+	lower[i] = 0;
+	if (ALPHA(par)[i] == 0)
+	    upper[i] = 0;
+	else
+	    upper[i] = JAGS_POSINF;
+    }
 }
 
 void DDirch::typicalValue(double *x, unsigned int length,
                           vector<double const *> const &par,
-                          vector<vector<unsigned int> > const &dims) const
+                          vector<vector<unsigned int> > const &dims,
+			  double const *lower, double const *upper) const
 {
-  double alphasum = 0.0;
-  for (unsigned int i = 0; i < length; ++i) {
-    alphasum += ALPHA(par)[i];
-  }
-  for (unsigned int i = 0; i < length; ++i) {
-    x[i] = ALPHA(par)[i]/alphasum;
-  }
+    double alphasum = 0.0;
+    for (unsigned int i = 0; i < length; ++i) {
+	alphasum += ALPHA(par)[i];
+    }
+    for (unsigned int i = 0; i < length; ++i) {
+	x[i] = ALPHA(par)[i]/alphasum;
+    }
 }
 
 bool DDirch::isSupportFixed(vector<bool> const &fixmask) const
