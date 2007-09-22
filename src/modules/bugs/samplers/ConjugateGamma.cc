@@ -124,7 +124,7 @@ bool ConjugateGamma::canSample(StochasticNode *snode, Graph const &graph)
     // Check stochastic children
     for (unsigned int i = 0; i < stoch_nodes.size(); ++i) {
 	vector<Node const*> const &param = stoch_nodes[i]->parents();
-	if (stoch_nodes[i]->isBounded()) {
+	if (isBounded(stoch_nodes[i])) {
 	    return false; //Bounded
 	}
 	switch(getDist(stoch_nodes[i])) {
@@ -240,7 +240,7 @@ void ConjugateGamma::update(ConjugateSampler *sampler,
 
     // Sample from the posterior
     double xnew;
-    if (sampler->node()->isBounded()) {
+    if (isBounded(sampler->node())) {
 	// Use inversion to get random sample
 	double lower = 0;
 	Node const *lb = sampler->node()->lowerBound();

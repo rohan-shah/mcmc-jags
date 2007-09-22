@@ -135,7 +135,7 @@ bool ConjugateNormal::canSample(StochasticNode *snode, Graph const &graph)
 	default:
 	    return false; //Not normal
 	}
-	if (stoch_nodes[i]->isBounded()) {
+	if (isBounded(stoch_nodes[i])) {
 	    return false; //Truncated distribution
 	}
 	vector<Node const*> const &param = stoch_nodes[i]->parents();
@@ -230,7 +230,7 @@ void ConjugateNormal::update(ConjugateSampler *sampler, unsigned int chain,
     double postsd = sqrt(1/B);
     double xnew;
 
-    if (snode->isBounded()) {
+    if (isBounded(snode)) {
 	Node const *lb = snode->lowerBound();
 	Node const *ub = snode->upperBound();
 	double plower = lb ? pnorm(*lb->value(chain), postmean, postsd, 1, 0) : 0;

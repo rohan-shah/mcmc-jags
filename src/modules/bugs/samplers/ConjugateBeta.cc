@@ -75,7 +75,7 @@ bool ConjugateBeta::canSample(StochasticNode *snode, Graph const &graph)
 
     // Check stochastic children
     for (unsigned int i = 0; i < stoch_nodes.size(); ++i) {
-	if (stoch_nodes[i]->isBounded()) {
+	if (isBounded(stoch_nodes[i])) {
 	    return false; //Bounded
 	}
 	switch(getDist(stoch_nodes[i])) {
@@ -163,7 +163,7 @@ ConjugateBeta::update(ConjugateSampler *sampler, unsigned int chain,
 
     // Draw the sample
     double xnew = rbeta(a, b, rng);
-    if (snode->isBounded()) {
+    if (isBounded(snode)) {
 	double lower = 0;
 	Node const *lb = snode->lowerBound();
 	if (lb) {

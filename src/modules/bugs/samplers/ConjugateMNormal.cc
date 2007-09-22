@@ -121,7 +121,7 @@ bool ConjugateMNormal::canSample(StochasticNode *snode, Graph const &graph)
     if (getDist(snode) != MNORM)
 	return false;
   
-    if (snode->isBounded())
+    if (isBounded(snode))
 	return false;
 
     vector<StochasticNode const*> stoch_nodes;
@@ -144,7 +144,7 @@ bool ConjugateMNormal::canSample(StochasticNode *snode, Graph const &graph)
 	    getDist(stoch_nodes[i]) != NORM) {
 	    return false; //Not normal or multivariate normal
 	}
-	if (stoch_nodes[i]->isBounded()) {
+	if (isBounded(stoch_nodes[i])) {
 	    return false;
 	}
 	vector<Node const *> const &param = stoch_nodes[i]->parents();

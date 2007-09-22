@@ -45,7 +45,8 @@ DNormMix::checkParameterValue(vector<double const *> const &par,
 
 double DNormMix::logLikelihood(double const *x, unsigned int length,
 			       vector<double const *> const &par,
-			       vector<vector<unsigned int> > const &dims) const
+			       vector<vector<unsigned int> > const &dims,
+			       double const *lower, double const *upper) const
 {
     unsigned int Ncat = product(dims[0]);
     double density = 0.0;
@@ -137,7 +138,8 @@ DNormMix::q(double p, vector<double const *> const &par, bool lower, bool log_p)
 void 
 DNormMix::randomSample(double *x, unsigned int length,
 		       vector<double const *> const &par, 
-		       vector<vector<unsigned int> > const &dims, RNG *rng) 
+		       vector<vector<unsigned int> > const &dims, 
+		       double const *lower, double const *upper, RNG *rng) 
     const
 {
     double const *mu = MU(par);
@@ -162,8 +164,9 @@ DNormMix::randomSample(double *x, unsigned int length,
 }
 
 void DNormMix::typicalValue(double *x, unsigned int length,
-                  std::vector<double const *> const &par,
-                  std::vector<std::vector<unsigned int> > const &dims) const
+			    vector<double const *> const &par,
+			    vector<std::vector<unsigned int> > const &dims,
+			    double const *lower, double const *upper) const
 {
     double const *mu = MU(par);
     unsigned int Ncat = product(dims[0]);

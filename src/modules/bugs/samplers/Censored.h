@@ -9,14 +9,15 @@
  *
  */
 class Censored : public Sampler {
-  const unsigned int _chain;
- public:
-  Censored(StochasticNode *snode, Graph const &graph, unsigned int chain);
-  ~Censored();
+    StochasticNode const *_snode;
+    std::vector<std::vector<double const *> > _parameters;
+public:
+    Censored(StochasticNode *snode, Graph const &graph);
+    ~Censored();
 
-  static bool canSample(StochasticNode *snode, Graph const &graph);
-  void update(RNG *rng);
-  void burninOff();
+    static bool canSample(StochasticNode *snode, Graph const &graph);
+    void update(std::vector<RNG *> const &rng);
+    bool adaptOff();
 };
 
 #endif /* CONJUGATE_NORMAL_H_ */

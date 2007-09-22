@@ -8,7 +8,7 @@
 #include "ConjugateMNormal.h"
 #include "ConjugateWishart.h"
 #include "ConjugateSampler.h"
-//#include "Censored.h"
+#include "Censored.h"
 
 #include <graph/StochasticNode.h>
 #include <distribution/Distribution.h>
@@ -36,10 +36,8 @@ ConjugateFactory::ConjugateFactory()
 bool ConjugateFactory::canSample(StochasticNode * snode,
 				 Graph const &graph) const
 {
-    /*
-      if (Censored::canSample(snode, graph))
+    if (Censored::canSample(snode, graph))
       return true;
-    */
 
     //FIXME: Could use a typedef here to make it readable
     map<const string, bool (*)(StochasticNode *, Graph const &)>::const_iterator
@@ -55,10 +53,8 @@ bool ConjugateFactory::canSample(StochasticNode * snode,
 Sampler *ConjugateFactory::makeSingletonSampler(StochasticNode *snode, 
 						Graph const &graph) const
 {
-    /*
-      if (Censored::canSample(snode, graph))
+    if (Censored::canSample(snode, graph))
       return new Censored(snode, graph);
-    */
     
     ConjugateMethod* method = 0;
     switch (getDist(snode)) {

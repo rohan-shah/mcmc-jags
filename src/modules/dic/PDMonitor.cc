@@ -53,16 +53,23 @@ namespace dic {
 	for (unsigned int ch = 0; ch < nchain; ++ch) {
 	    for (unsigned int i = 0; i < _nrep; ++i) {
 		dist->randomSample(rep_values, length, 
-				   _snode->parameters(ch), dims, _rngs[ch]);
+				   _snode->parameters(ch), dims, 
+				   _snode->lowerLimit(ch),
+                                   _snode->upperLimit(ch), 
+				   _rngs[ch]);
 		
 		double lik0 = dist->logLikelihood(rep_values, length,
-						  _snode->parameters(ch), dims);
+						  _snode->parameters(ch), dims,
+						  _snode->lowerLimit(ch),
+						  _snode->upperLimit(ch));
 		double lik1 = 0;
 		for (unsigned int n = 0; n < nchain; ++n) {
 		    if (n != ch) {
 			lik1 += dist->logLikelihood(rep_values, length,
 						    _snode->parameters(n), 
-						    dims);
+                                                    dims,
+						    _snode->lowerLimit(ch),
+						    _snode->upperLimit(ch));
 		    }
 		}
 		pD += lik0 - lik1/(nchain - 1);

@@ -11,17 +11,22 @@
 #include <vector>
 #include <cmath>
 
-#include <JRmath.h>
-
 using std::vector;
 using std::invalid_argument;
+using std::logic_error;
 
-Censored::Censored(StochasticNode *snode, Graph const &graph, unsigned int chain)
-  : Sampler(vector<StochasticNode*>(1,snode), graph), _chain(chain)
+Censored::Censored(StochasticNode *snode, Graph const &graph)
+    : Sampler(vector<StochasticNode*>(1,snode), graph), _snode(snode),
+      _parameters(snode->nchain())
 {
-  if (!canSample(snode, graph)) {
-    throw invalid_argument("Can't construct Censored sampler");
-  }
+    if (!canSample(snode, graph)) {
+	throw invalid_argument("Can't construct Censored sampler");
+    }
+
+    unsigned int nchain = snode->nchain();
+    for (unsigned int n = 0; n < nchain; ++n) {
+	_parameters[n] = snode->parameters(n);
+    }
 }
 
 Censored::~Censored()
@@ -30,75 +35,59 @@ Censored::~Censored()
 
 bool Censored::canSample(StochasticNode *snode, Graph const &graph)
 {
-  /* 
-     FIXME: Doesn't currently work without downcasting to incomplete
-     type, so for the moment just disable it.
-  */
-  return false;
-
-  /* The sampler works on scalar real-valued distributions with a
-     single child: an observed stochastic node with a "dinterval"
-     distribution
-  */
+    // The sampler works on scalar real-valued distributions with a
+    // single child: an observed stochastic node with a "dinterval"
+    // distribution. 
   
-  if(snode->distribution()->isDiscreteValued() || snode->length() != 1)
-    return false;
+    if (snode->distribution()->isDiscreteValued() || snode->length() != 1)
+	return false;
+
+    // The sampler relies on the fact that boundable distributions can
+    // draw truncated random samples. However, the node itself must not
+    // be bounded as we don't want the additional complication of combining
+    // a priori and a posteriori bounds on the distribution.
+    if (!snode->distribution()->canBound())
+	return false;
+    if (isBounded(snode))
+	return false;
   
-  //FIXME: In principle, we could allow bounded nodes.
-  if(snode->isBounded())
-    return false;
-  
-  vector<StochasticNode const*> stoch_nodes;
-  vector<Node*> dtrm_nodes;
-  classifyChildren(vector<StochasticNode*>(1,snode), 
-		   graph, stoch_nodes, dtrm_nodes);
+    if (snode->children()->size() != 1)
+	return false;
 
-  if (!dtrm_nodes.empty())
-    return false;
+    Node const *child = *snode->children()->begin();
+    if (!child->isObserved())
+	return false;
 
-  if (stoch_nodes.size() == 1) {
-    return (stoch_nodes[0]->distribution()->name() == "dinterval");
-  }
-  else {
-    return false;
-  }
-}
+    StochasticNode const *schild = asStochastic(child);
+    return (schild && schild->distribution()->name() == "dinterval");
+}	
 
-void Censored::update(RNG *rng)
+void Censored::update(vector<RNG *> const &rng)
 {
-  /*
-  StochasticNode const *child = stochasticChildren()[0];
-  double const *breaks = child->parameters()[1]->value();
-  unsigned long nbreak = child->parameters()[1]->length();
-  long y = static_cast<long>(child->data.value()[0]);  
+    StochasticNode const *child = stochasticChildren()[0];
+    unsigned int nbreak = child->parents()[1]->length();
 
-  if (y < 0 || y > nbreak)
-    throw NodeError(node(), "Bad interval-censored node");
+    unsigned int nchain = _snode->nchain();    
+    for (unsigned int n = 0; n < nchain; ++n) {
 
-  Distribution dist = node()->distribution();
-  vector<SArray const *> const &parameters = node()->parameters();
+	double const *breaks = child->parameters(n)[1];
 
-  double x;
-  if (y==0) {
-    //Left-censored: x <= breaks[0]
-    double logpx = dreal->p(breaks[0], parameters, true, true) - rexp(1);
-    x = dreal->q(logpx, parameters, true, true);
-  }
-  else if (y==nbreak) {
-    //Right-censored: x > breaks[nbreak-1]
-    double logpx = dreal->p(breaks[nbreak-1], parameters, false, true) 
-      - rexp(1);
-    x = dreal->q(logpx, parameters, false, true);
-  }
-  else {
-    //Interval-censored: breaks[y-1] < x <= breaks[y]
-    double px = runif(breaks[y-1], breaks[y]);
-    x = dreal->q(px, parameters, true, false);
-  }
-
-  setValue(&x,1);
-  */
+	int y = static_cast<int>(child->value(n)[0]);
+	if (y < 0 || y > nbreak)
+	    throw NodeError(_snode, "Bad interval-censored node");
+	
+	double const *lower = (y == 0) ? 0 : breaks + y - 1;
+	double const *upper = (y == nbreak) ? 0: breaks + y;
+    
+	double x;
+	_snode->distribution()->randomSample(&x, 1, _parameters[n],
+                                             _snode->parameterDims(), 
+                                             lower, upper, rng[n]);
+	setValue(&x,1,n);
+    }
 }
 
-void Censored::burninOff()
-{}
+bool Censored::adaptOff()
+{
+    return true;
+}

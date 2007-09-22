@@ -247,7 +247,7 @@ typedef union YYSTYPE
   std::vector<long> *ivec;
 }
 /* Line 187 of yacc.c.  */
-#line 251 "../../../JAGS/src/terminal/parser.cc"
+#line 251 "parser.cc"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
@@ -260,7 +260,7 @@ typedef union YYSTYPE
 
 
 /* Line 216 of yacc.c.  */
-#line 264 "../../../JAGS/src/terminal/parser.cc"
+#line 264 "parser.cc"
 
 #ifdef short
 # undef short
@@ -2350,7 +2350,7 @@ yyreduce:
 
 
 /* Line 1267 of yacc.c.  */
-#line 2354 "../../../JAGS/src/terminal/parser.cc"
+#line 2354 "parser.cc"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);

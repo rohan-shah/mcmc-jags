@@ -25,7 +25,7 @@ bool ConjugateDirichlet::canSample(StochasticNode *snode, Graph const &graph)
     if(getDist(snode) != DIRCH)
 	return false;
 
-    if (snode->isBounded())
+    if (isBounded(snode))
 	return false;
 
     vector<StochasticNode const*> stoch_nodes;
@@ -45,7 +45,7 @@ bool ConjugateDirichlet::canSample(StochasticNode *snode, Graph const &graph)
     // Check stochastic children
     for (unsigned int i = 0; i < stoch_nodes.size(); ++i) {
 	vector<Node const *> const &param = stoch_nodes[i]->parents();
-	if (stoch_nodes[i]->isBounded()) {
+	if (isBounded(stoch_nodes[i])) {
 	    return false; //Truncated
 	}
 	switch(getDist(stoch_nodes[i])) {
