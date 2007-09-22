@@ -28,7 +28,7 @@ DMState::DMState()
 bool 
 DMState::checkParameterDim(vector<vector<unsigned int> > const &dims) const
 {
-  return isScalar(dims[0]) && isScalar(dims[1]) && isSquareMatrix(dims[2]);
+    return isScalar(dims[0]) && isScalar(dims[1]) && isSquareMatrix(dims[2]);
 }
 
 bool DMState::checkParameterDiscrete(vector<bool> const &mask) const
@@ -155,7 +155,8 @@ long DMState::randomSample(vector<double const *> const &par) const
 double 
 DMState::logLikelihood(double const *y, unsigned int length,
 		       vector<double const *> const &par,
-		       vector<vector<unsigned int> > const &dims) const
+		       vector<vector<unsigned int> > const &dims,
+		       double const *lower, double const *upper) const
 {
     int initial = INITIAL(par);
     double time = TIME(par);
@@ -218,6 +219,7 @@ static double q(double p, int initial, double time, unsigned int nstate,
 void DMState::randomSample(double *x, unsigned int length,
 			   std::vector<double const *> const &par,
 			   std::vector<std::vector<unsigned int> > const &dims,
+			   double const *lower, double const *upper,
 			   RNG *rng) const
 {
     *x = q(runif(0, 1, rng), INITIAL(par), TIME(par), NSTATE(dims),
@@ -239,7 +241,8 @@ void DMState::support(double *lower, double *upper, unsigned int length,
 
 void DMState::typicalValue(double *x, unsigned int length,
 			   vector<double const *> const &par,
-			   vector<vector<unsigned int> > const &dims) const
+			   vector<vector<unsigned int> > const &dims,
+			   double const *lower, double const *upper) const
 {
     *x = q(0.5, INITIAL(par), TIME(par), NSTATE(dims), INTENSITY(par));
 }

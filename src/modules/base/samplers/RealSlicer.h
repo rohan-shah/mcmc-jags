@@ -12,6 +12,7 @@ namespace base {
  */
     class RealSlicer : public Slicer 
     {
+	bool _fixed_support;
     public:
 	/**
 	 * Constructor for Slice Sampler

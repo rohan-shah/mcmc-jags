@@ -29,7 +29,7 @@ namespace basesamplers {
 
     bool DiscreteSlicer::canSample(StochasticNode const *node)
     {
-	if (!node->distribution()->isDiscreteValued() || node->length() != 1)
+	if (!node->isDiscreteValued() || node->length() != 1)
 	    return false;
 	
 	if (df(node) == 0)
@@ -53,9 +53,7 @@ namespace basesamplers {
     void DiscreteSlicer::getLimits(double *lower, double *upper) const
     {
 	StochasticNode const *snode = _sampler->nodes().front();
-	snode->distribution()->support(lower, upper, 1, 
-				       snode->parameters(_chain),
-				       snode->parameterDims());
+	snode->support(lower, upper, 1);
 	*upper += 1;
     }
 

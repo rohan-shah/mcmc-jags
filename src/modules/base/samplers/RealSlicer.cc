@@ -13,8 +13,9 @@ using std::vector;
 namespace base {
 
     RealSlicer::RealSlicer(double width, long maxwidth)
-	: Slicer(width, maxwidth)
+	: Slicer(width, maxwidth), _fixed_support(false)
     {
+	
     }
 
     bool 

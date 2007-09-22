@@ -41,8 +41,9 @@ bool DCat::checkParameterValue(vector<double const *> const &par,
 }
 
 double DCat::logLikelihood(double const *x, unsigned int length,
-		     vector<double const *> const &par,
-		     vector<vector<unsigned int> > const &dims) const
+			   vector<double const *> const &par,
+			   vector<vector<unsigned int> > const &dims,
+			   double const *lower, double const *upper) const
 {
     unsigned int y = static_cast<unsigned int>(*x);
     if (y < 1 || y > NCAT(dims)) {
@@ -58,9 +59,10 @@ double DCat::logLikelihood(double const *x, unsigned int length,
 }
 
 void DCat::randomSample(double *x, unsigned int length,
-		  std::vector<double const *> const &par,
-		  std::vector<std::vector<unsigned int> > const &dims,
-		  RNG *rng) const
+			vector<double const *> const &par,
+			vector<vector<unsigned int> > const &dims,
+			double const *lower, double const *upper,
+			RNG *rng) const
 {
     double p = rng->uniform();
     double sump = 0;
@@ -86,10 +88,13 @@ void DCat::support(double *lower, double *upper, unsigned int length,
 }
 
 void DCat::typicalValue(double *x, unsigned int length,
-		  std::vector<double const *> const &par,
-		  std::vector<std::vector<unsigned int> > const &dims) const
+			vector<double const *> const &par,
+			vector<std::vector<unsigned int> > const &dims,
+			double const *lower, double const *upper) const
 {
-    //Pick the mode
+    if (lower || upper ){
+	throw logic_error("Distribution dcat cannot be bounded");
+    }
     *x = max_element(PROB(par), PROB(par) + NCAT(dims)) - PROB(par) + 1;
 }
 

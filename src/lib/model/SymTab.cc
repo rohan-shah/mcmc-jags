@@ -1,6 +1,5 @@
 #include <config.h>
 #include <model/SymTab.h>
-#include <graph/MixtureNode.h>
 #include <sarray/nainf.h>
 
 #include <string>
@@ -121,12 +120,12 @@ void SymTab::clear()
   _varTable.clear();
 }
 
+/*
 static vector<string> cutBUGSSubsetName(string const &name)
 {
-  /* 
-     Takes the BUGS language name of an array subset, e.g. "foo[a,b,c]",
-     and cuts it up into substrings ("foo" "[" "a" "," "b" "," "c" "]")
-  */
+  //Takes the BUGS language name of an array subset, e.g. "foo[a,b,c]",
+  //and cuts it up into substrings ("foo" "[" "a" "," "b" "," "c" "]")
+
   vector<string> cut;
   char const *c = name.c_str();
   unsigned int i = 0;
@@ -139,24 +138,31 @@ static vector<string> cutBUGSSubsetName(string const &name)
   }
   return cut;
 }
+*/
 
+/*
+This was a noble effort, but I don't think it worth it.  The
+MixtureNode class now has its own implementation of the Node::name
+member function
+
+include <graph/MixtureNode.h>
 
 static string makeMixtureName(MixtureNode const *mnode,
 			      SymTab const &symtab)
 {
-  /* 
-     Making a name for a mixture node is a complex business. We rely
-     on the fact that, currently, mixture nodes can only be created by
-     nested indexing. For example "foo[1,X,4]" where X can take values
-     1,2,3, will create a mixture node with X as an index and
-     parameters "foo[1,1,4]", "foo[1,2,4]", "foo[1,3,4]".
+    
+    //Making a name for a mixture node is a complex business. We rely
+    // on the fact that, currently, mixture nodes can only be created by
+    // nested indexing. For example "foo[1,X,4]" where X can take values
+    // 1,2,3, will create a mixture node with X as an index and
+    // parameters "foo[1,1,4]", "foo[1,2,4]", "foo[1,3,4]".
 
-     The BUGS language name of a mixture node can be reconstructed
-     by finding the parts of the parameter names that match, e.g.
-     "foo[1," ... ",4]"
-     and filling in the gaps with the names of the indices, e.g.
-     "foo[1," "X" ",4]"
-  */
+    // The BUGS language name of a mixture node can be reconstructed
+    // by finding the parts of the parameter names that match, e.g.
+    // "foo[1," ... ",4]"
+    // and filling in the gaps with the names of the indices, e.g.
+    // "foo[1," "X" ",4]"
+
 
   //The indices are the first elements of the vector of parents 
   vector<Node const *> index = mnode->parents();
@@ -192,11 +198,9 @@ static string makeMixtureName(MixtureNode const *mnode,
   for (unsigned int j = 1; j < param_names.size(); ++j) {
     vector<string> cut_name = cutBUGSSubsetName(param_names[j]);
     if (cut_name.size() != nparts) {
-      /* 
-	 Something went wrong here, but it's too late to throw an exception
-	 because we normally only want to know a node name after catching
-	 one.
-      */
+      //Something went wrong here, but it's too late to throw an exception
+      //because we normally only want to know a node name after catching
+      //one.
       return "";
     }
     for (unsigned int k = 0; k < nparts; ++k) {
@@ -214,7 +218,7 @@ static string makeMixtureName(MixtureNode const *mnode,
       ++nvar;
   }
   if (nvar != index.size()) {
-    /* Something went wrong - see above */
+    // Something went wrong - see above
     return "";
   }
    
@@ -232,30 +236,32 @@ static string makeMixtureName(MixtureNode const *mnode,
 
   return mnode_name;
 }
-
+*/
 
 string SymTab::getName(Node const *node) const
 {
-  //Special rules for mixture nodes
-  if (isMixture(node)) {
-    return makeMixtureName(asMixture(node), *this);
-  }
+    //Special rules for mixture nodes
+    /*
+      if (isMixture(node)) {
+      return makeMixtureName(asMixture(node), *this);
+      }
+    */
 
-  map<string, NodeArray*>::const_iterator p;
-  for (p = _varTable.begin(); p != _varTable.end(); ++p) {
-    NodeArray *array = p->second;
-    Range node_range = array->getRange(node);
-    if (!isNULL(node_range)) {
-      if (node_range == array->range()) {
-         return p->first;
-      }
-      else {
-         return p->first + print(array->getRange(node));
-      }
+    map<string, NodeArray*>::const_iterator p;
+    for (p = _varTable.begin(); p != _varTable.end(); ++p) {
+	NodeArray *array = p->second;
+	Range node_range = array->getRange(node);
+	if (!isNULL(node_range)) {
+	    if (node_range == array->range()) {
+		return p->first;
+	    }
+	    else {
+		return p->first + print(array->getRange(node));
+	    }
+	}
     }
-  }
 
-  return("");
+    return("");
 }
 
 unsigned int SymTab::nchain() const
