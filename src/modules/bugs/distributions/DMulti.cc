@@ -50,7 +50,8 @@ DMulti::checkParameterValue(vector<double const *> const &par,
 
 double DMulti::logLikelihood(double const *x, unsigned int length,
 			     vector<double const *> const &par,
-			     vector<vector<unsigned int> > const &dims) const
+			     vector<vector<unsigned int> > const &dims,
+			     double const *lower, double const *upper) const
 {
     double const *prob = PROB(par);
 
@@ -76,6 +77,7 @@ double DMulti::logLikelihood(double const *x, unsigned int length,
 void DMulti::randomSample(double *x, unsigned int length,
 			  vector<double const *> const &par,
 			  vector<vector<unsigned int> > const &dims,
+			  double const *lower, double const *upper,
 			  RNG *rng) const
 {
     /* Sample multinomial as a series of binomial distributions */
@@ -117,7 +119,8 @@ DMulti::dim(vector<vector<unsigned int> > const &dims) const
 
 void DMulti::typicalValue(double *x, unsigned int length,
 			  vector<double const *> const &par,
-			  vector<vector<unsigned int> > const &dims) const
+			  vector<vector<unsigned int> > const &dims,
+			  double const *lower, double const *upper) const
 {
     /* Draw a typical value in the same way as a random sample, but
        substituting the median at each stage */
