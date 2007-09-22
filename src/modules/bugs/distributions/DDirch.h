@@ -21,41 +21,42 @@ struct RNG;
  */
 class DDirch : public Distribution {
 public:
-  DDirch();
+    DDirch();
 
-  double logLikelihood(double const *x, unsigned int length,
-		       std::vector<double const *> const &parameters,
-		       std::vector<std::vector<unsigned int> > const &dims) 
-      const;
-  void randomSample(double *x, unsigned int length,
-		    std::vector<double const *> const &parameters,
-		    std::vector<std::vector<unsigned int> > const &dims,
-		    RNG *rng) const;
-  std::vector<unsigned int> 
-      dim(std::vector<std::vector<unsigned int> > const &dims) const;
-  /**
-   * Checks that alpha is a vector of length at least 2
-   */
-  bool checkParameterDim(std::vector<std::vector<unsigned int> > const &dims) const;
-  /**
-   * Checks that each element of alpha is >= 0.
-   *
-   * Structural zeros are allowed in the Dirichlet distribution.
-   * These are represented by the elements of alpha that are set to
-   * zero.  This is permitted only if alpha is fixed and there is at
-   * least one non-zero element of alpha.
-   */
-  bool checkParameterValue(std::vector<double const *> const &parameters,
-			   std::vector<std::vector<unsigned int> > const &dims)
-      const;
-  void support(double *lower, double *upper, unsigned int length,
-	       std::vector<double const *> const &parameters,
-               std::vector<std::vector<unsigned int> > const &dims) const;
-  void typicalValue(double *x, unsigned int length,
-		    std::vector<double const *> const &parameter,
-		    std::vector<std::vector<unsigned int> > const &dims) const;
-  bool isSupportFixed(std::vector<bool> const &fixmask) const;
-  unsigned int df(std::vector<std::vector<unsigned int> > const &dims) const;
+    double logLikelihood(double const *x, unsigned int length,
+			 std::vector<double const *> const &parameters,
+			 std::vector<std::vector<unsigned int> > const &dims,
+			 double const *lower, double const *upper) const;
+    void randomSample(double *x, unsigned int length,
+		      std::vector<double const *> const &parameters,
+		      std::vector<std::vector<unsigned int> > const &dims,
+		      double const *lower, double const *upper, RNG *rng) const;
+    void typicalValue(double *x, unsigned int length,
+		      std::vector<double const *> const &parameter,
+		      std::vector<std::vector<unsigned int> > const &dims,
+		      double const *lower, double const *upper) const;
+    std::vector<unsigned int> 
+	dim(std::vector<std::vector<unsigned int> > const &dims) const;
+    /**
+     * Checks that alpha is a vector of length at least 2
+     */
+    bool checkParameterDim(std::vector<std::vector<unsigned int> > const &dims) const;
+    /**
+     * Checks that each element of alpha is >= 0.
+     *
+     * Structural zeros are allowed in the Dirichlet distribution.
+     * These are represented by the elements of alpha that are set to
+     * zero.  This is permitted only if alpha is fixed and there is at
+     * least one non-zero element of alpha.
+     */
+    bool checkParameterValue(std::vector<double const *> const &parameters,
+			     std::vector<std::vector<unsigned int> > const &dims)
+	const;
+    void support(double *lower, double *upper, unsigned int length,
+		 std::vector<double const *> const &parameters,
+		 std::vector<std::vector<unsigned int> > const &dims) const;
+    bool isSupportFixed(std::vector<bool> const &fixmask) const;
+    unsigned int df(std::vector<std::vector<unsigned int> > const &dims) const;
 };
 
 #endif /* DDIRCH_H_ */
