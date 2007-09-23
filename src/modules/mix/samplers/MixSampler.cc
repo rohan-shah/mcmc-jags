@@ -40,9 +40,7 @@ static void read_bounds(vector<StochasticNode*> const &snodes,
 	    throw logic_error("Invalid length in read_bounds (MixSampler)");
 	}
 	else {
-	    snodes[j]->distribution()->support(lp, up, length_j, 
-					       snodes[j]->parameters(chain), 
-					       snodes[j]->parameterDims());
+	    support(lp, up, length_j, snodes[j], chain);
 	    lp += length_j;
 	    up += length_j;
 	}
@@ -191,11 +189,7 @@ bool MixSampler::canSample(vector<StochasticNode *> const &snodes,
 	   must remain the same between iterations to guarantee
 	   stationarity of the chain
 	*/
-	vector<bool> fixmask(snodes[i]->parents().size());
-	for (unsigned int j = 0; j < snodes[i]->parents().size(); ++j) {
-	    fixmask[j] = snodes[i]->parents()[j]->isObserved();
-	}
-	if (!snodes[i]->distribution()->isSupportFixed(fixmask)) {
+	if (!isSupportFixed(snodes[i])) {
 	    return false;
 	}
 	//Check that all nodes are of full rank

@@ -92,15 +92,8 @@ void MixSamplerFactory::makeSampler(set<StochasticNode*> &nodes,
 	    /* FIXME: Excluding Dirichlet priors with this */
 	    cansample = false;
 	}
-	else {
-	    unsigned int Nparents = snode->parents().size();
-	    vector<bool> fixmask(Nparents);
-	    for (unsigned int i = 0; i < Nparents; i++) {
-		fixmask[i] = snode->parents()[i]->isObserved();
-	    }
-	    if (!snode->distribution()->isSupportFixed(fixmask)) {
-		cansample = false;
-	    }
+	else if(!isSupportFixed(snode)) {
+	    cansample = false;
 	}
 	if (cansample) {
 	    sample_nodes.push_back(snode);
