@@ -38,9 +38,8 @@ RESampler::RESampler(StochasticNode *variance,
     : Metropolis(merg(variance,effects), graph, chain, value, length),
       _mode(RE_INIT)
 {
-    variance->distribution()->support(&_lower, &_upper, 1,
-				      variance->parameters(chain),
-				      variance->parameterDims());
+    support(&_lower, &_upper, 1U, variance, chain);
+
     for (unsigned int i = 0; i < 3; ++i) {
 	_lscale[i] = 0;
 	_n[i] = 10;
