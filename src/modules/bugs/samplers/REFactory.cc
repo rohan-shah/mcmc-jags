@@ -75,11 +75,7 @@ void REFactory::makeSampler(set<StochasticNode*> &nodes,
 		if (cansample) {
 
 		    //Check support of parent node is fixed
-		    vector<bool> fixmask(parent->parents().size());
-		    for (unsigned int i = 0; i < fixmask.size(); ++i) {
-			fixmask[i] = parent->parents()[i]->isObserved();
-		    }
-		    if (parent->distribution()->isSupportFixed(fixmask)) {
+		    if (isSupportFixed(parent)) {
 			effect_nodes.push_back(*p);
 			variance_nodes.push_back(parent);
 		    }
@@ -130,9 +126,7 @@ void REFactory::makeSampler(set<StochasticNode*> &nodes,
 		for (unsigned int ch = 0; ch < samplers.size(); ++ch) {
 
 		    double v = (*p)->value(ch)[0];
-		    (*p)->distribution()->support(&lower, &upper, 1,
-						  (*p)->parameters(ch),
-						  (*p)->parameterDims());
+		    support(&lower, &upper, 1U, *p, ch);
 		    bool bb = jags_finite(lower);
 		    bool ba = jags_finite(upper);
 		    if (bb && ba) {
