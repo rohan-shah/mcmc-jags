@@ -10,7 +10,8 @@
  */
 class Censored : public Sampler {
     StochasticNode const *_snode;
-    std::vector<std::vector<double const *> > _parameters;
+    Node const *_breaks;
+    int _y;
 public:
     Censored(StochasticNode *snode, Graph const &graph);
     ~Censored();

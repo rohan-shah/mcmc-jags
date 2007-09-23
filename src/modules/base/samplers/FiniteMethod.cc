@@ -25,11 +25,9 @@ namespace base {
 	    throw logic_error("Invalid FiniteMethod");
 	}
 
-	Distribution const *dist = snode->distribution();
-	
 	double lower = 0, upper = 0;
-	dist->support(&lower, &upper, 1, snode->parameters(0), 
-		      snode->parameterDims());
+	support(&lower, &upper, 1, snode, 0);
+
 	_lower = static_cast<int>(lower);
 	_upper = static_cast<int>(upper);
     }
@@ -86,9 +84,8 @@ namespace base {
 
 	for (unsigned int ch = 0; ch < node->nchain(); ++ch) {
 	    //Distribution cannot be unbounded
-	    double ulimit = 0, llimit = 0;
-	    dist->support(&llimit, &ulimit, 1, node->parameters(ch), 
-			  node->parameterDims());
+	    double ulimit = JAGS_NEGINF, llimit = JAGS_POSINF;
+	    support(&llimit, &ulimit, 1, node, ch);
 	    if (!jags_finite(ulimit) || !jags_finite(llimit))
 		return false;
 
@@ -98,12 +95,9 @@ namespace base {
 		return false;
 
 	    //Support must be fixed
-	    vector<bool> fixmask(node->parents().size());
-	    for (unsigned int i = 0; i < node->parents().size(); ++i) {
-		fixmask[i] = node->parents()[i]->isObserved();
-	    }
-	    if (!node->distribution()->isSupportFixed(fixmask))
-		return false;
+	    if (!isSupportFixed(node)) {
+                return false;
+            }
 	}
 	return true;
     }

@@ -13,7 +13,7 @@ using std::vector;
 namespace base {
 
     RealSlicer::RealSlicer(double width, long maxwidth)
-	: Slicer(width, maxwidth), _fixed_support(false)
+	: Slicer(width, maxwidth)
     {
 	
     }
@@ -43,9 +43,7 @@ namespace base {
     void RealSlicer::getLimits(double *lower, double *upper) const
     {
 	StochasticNode const *snode = _sampler->nodes().front();
-	snode->distribution()->support(lower, upper, 1, 
-				       snode->parameters(_chain),
-				       snode->parameterDims());
+	support(lower, upper, 1, snode, _chain);
     }
 
     void RealSlicer::update(RNG *rng)

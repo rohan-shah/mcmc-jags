@@ -190,11 +190,10 @@ unsigned int df(StochasticNode const *snode);
 bool isBounded(StochasticNode const *node);
 
 /**
- * Writes the lower and upper limits of a given stochastic node to the
- * supplied arrays. If the node has upper and lower bounds then these
- * are taken into account.
- *
- * @param node Stochastic node to query
+ * Writes the lower and upper limits of the support of a given
+ * stochastic node to the supplied arrays. If the node has upper and
+ * lower bounds then their values are taken into account in the
+ * calculation.
  *
  * @param lower pointer to start of an array that will hold the lower 
  * limit of the support
@@ -203,6 +202,10 @@ bool isBounded(StochasticNode const *node);
  * limit of the support
  *
  * @param length size of the lower and upper arrays.
+ *
+ * @param node Stochastic node to query
+ *
+ * @param chain Index number of chain to query
  *
  * @see Distribution#support
  */

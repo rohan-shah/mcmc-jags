@@ -16,18 +16,20 @@ using std::invalid_argument;
 using std::logic_error;
 
 Censored::Censored(StochasticNode *snode, Graph const &graph)
-    : Sampler(vector<StochasticNode*>(1,snode), graph), _snode(snode),
-      _parameters(snode->nchain())
+    : Sampler(vector<StochasticNode*>(1,snode), graph), _snode(snode)
 {
     if (!canSample(snode, graph)) {
 	throw invalid_argument("Can't construct Censored sampler");
     }
 
-    unsigned int nchain = snode->nchain();
-    for (unsigned int n = 0; n < nchain; ++n) {
-	_parameters[n] = snode->parameters(n);
-    }
+    StochasticNode const *child = stochasticChildren()[0];
+    _breaks = child->parents()[1];
+    _y = static_cast<int>(*child->value(0));
+
+    if (_y < 0 || _y > _breaks->length())
+	throw NodeError(_snode, "Bad interval-censored node");
 }
+
 
 Censored::~Censored()
 {
@@ -39,7 +41,7 @@ bool Censored::canSample(StochasticNode *snode, Graph const &graph)
     // single child: an observed stochastic node with a "dinterval"
     // distribution. 
   
-    if (snode->distribution()->isDiscreteValued() || snode->length() != 1)
+    if (snode->isDiscreteValued() || snode->length() != 1)
 	return false;
 
     // The sampler relies on the fact that boundable distributions can
@@ -64,23 +66,15 @@ bool Censored::canSample(StochasticNode *snode, Graph const &graph)
 
 void Censored::update(vector<RNG *> const &rng)
 {
-    StochasticNode const *child = stochasticChildren()[0];
-    unsigned int nbreak = child->parents()[1]->length();
-
     unsigned int nchain = _snode->nchain();    
     for (unsigned int n = 0; n < nchain; ++n) {
 
-	double const *breaks = child->parameters(n)[1];
-
-	int y = static_cast<int>(child->value(n)[0]);
-	if (y < 0 || y > nbreak)
-	    throw NodeError(_snode, "Bad interval-censored node");
+        double const *b = _breaks->value(n);
+	double const *lower = (_y == 0) ? 0 : b + _y - 1;
+	double const *upper = (_y == _breaks->length()) ? 0: b + _y;
 	
-	double const *lower = (y == 0) ? 0 : breaks + y - 1;
-	double const *upper = (y == nbreak) ? 0: breaks + y;
-    
 	double x;
-	_snode->distribution()->randomSample(&x, 1, _parameters[n],
+	_snode->distribution()->randomSample(&x, 1U, _snode->parameters(n),
                                              _snode->parameterDims(), 
                                              lower, upper, rng[n]);
 	setValue(&x,1,n);

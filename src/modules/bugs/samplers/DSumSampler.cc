@@ -115,12 +115,6 @@ void DSumMethod::getLimits(double *lower, double *upper) const
     double l0, u0, l1, u1;
     support(&l0, &u0, 1U, n[0], _chain);
     support(&l1, &u1, 1U, n[1], _chain);
-    /*
-    n[0]->distribution()->support(&l0, &u0, 1U, n[0]->parameters(_chain),
-				  n[0]->parameterDims());
-    n[1]->distribution()->support(&l1, &u1, 1U, n[1]->parameters(_chain),
-				  n[1]->parameterDims());
-    */
     *lower = max(l0, _sum - u1);
     *upper = min(u0, _sum - l1);
 }

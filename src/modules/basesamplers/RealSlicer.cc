@@ -42,9 +42,7 @@ namespace basesamplers {
     void RealSlicer::getLimits(double *lower, double *upper) const
     {
 	StochasticNode const *snode = _sampler->nodes().front();
-	snode->distribution()->support(lower, upper, 1, 
-				       snode->parameters(_chain),
-				       snode->parameterDims());
+	support(lower, upper, 1, snode, _chain); 
     }
 
     void RealSlicer::update(RNG *rng)

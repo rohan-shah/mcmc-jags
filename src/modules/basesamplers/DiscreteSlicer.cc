@@ -53,7 +53,7 @@ namespace basesamplers {
     void DiscreteSlicer::getLimits(double *lower, double *upper) const
     {
 	StochasticNode const *snode = _sampler->nodes().front();
-	snode->support(lower, upper, 1);
+	support(lower, upper, 1, snode, _chain);
 	*upper += 1;
     }
 
