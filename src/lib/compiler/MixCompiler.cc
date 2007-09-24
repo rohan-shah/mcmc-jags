@@ -30,7 +30,6 @@
 #include <compiler/ParseTree.h>
 #include <model/SymTab.h>
 #include <graph/StochasticNode.h>
-#include <distribution/DistScalar.h>
 #include <model/NodeArray.h>
 #include <graph/MixtureNode.h>
 #include <graph/GraphMarks.h>
@@ -201,24 +200,17 @@ getMixtureNode1(NodeArray *array, vector<SSI> const &limits, Compiler *compiler)
     vector<int> lower(nparents,1), upper(nparents,1);
     for (unsigned int i = 0; i < nparents; ++i) {
 	StochasticNode const *snode = stoch_parents[i];
-	Distribution const *dist = snode->distribution();
 
 	/* Check that support of node is fixed */
-	vector<bool> fixmask;
-	for (vector<Node const*>::const_iterator p = snode->parents().begin();
-	     p != snode->parents().end(); ++p) {
-	    fixmask.push_back((*p)->isObserved());
-	}
-	if (!dist->isSupportFixed(fixmask)) {
-	    return 0; //Can't count on support being fixed
+	if (!isSupportFixed(snode)) {
+	    return 0;
 	}
 
 	/* To be safe, we cycle over all chains */
 	for (unsigned int n = 0; n < snode->nchain(); ++n) {
 	    // Get lower and upper limits of support
-	    double l = 0, u = 0;
-	    dist->support(&l, &u, 1, snode->parameters(n), 
-			  snode->parameterDims());
+	    double l = JAGS_NEGINF, u = JAGS_POSINF;
+	    support(&l, &u, 1U, snode, n);
 	    if (!jags_finite(l) || !jags_finite(u)) {
 		return 0; //Unbounded parent => serious trouble
 	    }

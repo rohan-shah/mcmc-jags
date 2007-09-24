@@ -25,11 +25,9 @@ namespace basesamplers {
 	    throw logic_error("Invalid FiniteMethod");
 	}
 
-	Distribution const *dist = snode->distribution();
-	
 	double lower = 0, upper = 0;
-	dist->support(&lower, &upper, 1, snode->parameters(0), 
-		      snode->parameterDims());
+	support(&lower, &upper, 1U, snode, 0);
+
 	_lower = static_cast<int>(lower);
 	_upper = static_cast<int>(upper);
     }
@@ -84,11 +82,15 @@ namespace basesamplers {
 	if (df(node) == 0)
 	    return false;
 
+	//Support must be fixed
+	if (!isSupportFixed(node))
+	    return false;
+	
+	//FIXME: If support is fixed, it should be the same for all chains.
 	for (unsigned int ch = 0; ch < node->nchain(); ++ch) {
 	    //Distribution cannot be unbounded
-	    double ulimit = 0, llimit = 0;
-	    dist->support(&llimit, &ulimit, 1, node->parameters(ch), 
-			  node->parameterDims());
+	    double ulimit = JAGS_POSINF, llimit = JAGS_NEGINF;
+	    support(&llimit, &ulimit, 1, node, ch);
 	    if (!jags_finite(ulimit) || !jags_finite(llimit))
 		return false;
 
@@ -97,13 +99,6 @@ namespace basesamplers {
 	    if (n <= 1 || n > 20) //fixme: totally arbitrary
 		return false;
 
-	    //Support must be fixed
-	    vector<bool> fixmask(node->parents().size());
-	    for (unsigned int i = 0; i < node->parents().size(); ++i) {
-		fixmask[i] = node->parents()[i]->isObserved();
-	    }
-	    if (!node->distribution()->isSupportFixed(fixmask))
-		return false;
 	}
 	return true;
     }

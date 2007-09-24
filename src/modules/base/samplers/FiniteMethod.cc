@@ -82,6 +82,12 @@ namespace base {
 	if (df(node) == 0)
 	    return false;
 
+	//Support must be fixed
+	if (!isSupportFixed(node)) {
+	    return false;
+	}
+	
+	//FIXME: If support is fixed it is the same for all chains
 	for (unsigned int ch = 0; ch < node->nchain(); ++ch) {
 	    //Distribution cannot be unbounded
 	    double ulimit = JAGS_NEGINF, llimit = JAGS_POSINF;
@@ -93,11 +99,6 @@ namespace base {
 	    double n = ulimit - llimit + 1;
 	    if (n <= 1 || n > 20) //fixme: totally arbitrary
 		return false;
-
-	    //Support must be fixed
-	    if (!isSupportFixed(node)) {
-                return false;
-            }
 	}
 	return true;
     }
