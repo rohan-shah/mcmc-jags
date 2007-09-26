@@ -8,6 +8,7 @@
 #include <graph/MixtureNode.h>
 #include <graph/NodeError.h>
 #include <sarray/SArray.h>
+#include <sampler/Linear.h>
 
 #include <set>
 #include <stdexcept>
@@ -66,25 +67,15 @@ ConjugateGamma::ConjugateGamma()
 {
 }
 
-void ConjugateGamma::initialize(ConjugateSampler *sampler)
+void ConjugateGamma::initialize(ConjugateSampler *sampler, Graph const &graph)
 {
     // Check for constant scale transformation
     
     if (sampler->deterministicChildren().empty())
 	return; //trivial case: all coefficients are 1
 
-    set<Node const*> paramset;
-    vector<Node*> const &dtrm = sampler->deterministicChildren();
-    paramset.insert(sampler->node());
-    for (unsigned int j = 0; j < dtrm.size(); ++j) {
-	paramset.insert(dtrm[j]);
-    }
-    
-    for (unsigned int j = 0; j < dtrm.size(); ++j) {
-	if (!dtrm[j]->isScale(paramset, true)) {
-	    return; //Not a fixed scale transformation
-	}
-    }
+    if (!checkScale(sampler->node(), graph, true))
+	return; //Not a fixed scale transformation
 	
     // Allocate _coef and do one-time calculation of coefficients 
     _coef = new double[sampler->stochasticChildren().size()];
@@ -142,7 +133,7 @@ bool ConjugateGamma::canSample(StochasticNode *snode, Graph const &graph)
 
     // Check deterministic descendants are scale transformations 
     for (unsigned int j = 0; j < dtrm_nodes.size(); ++j) {
-	if (!dtrm_nodes[j]->isScale(paramset, false))
+	if (!dtrm_nodes[j]->isScale(paramset, graph, false))
 	    return false;
     }
     return true; //We made it!

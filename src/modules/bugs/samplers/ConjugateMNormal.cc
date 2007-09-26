@@ -5,6 +5,8 @@
 #include <graph/NodeError.h>
 #include <graph/LogicalNode.h>
 #include <graph/StochasticNode.h>
+#include <sampler/Linear.h>
+
 #include "lapack.h"
 
 #include <set>
@@ -84,7 +86,7 @@ ConjugateMNormal::~ConjugateMNormal()
     delete [] _betas;
 }
 
-void ConjugateMNormal::initialize(ConjugateSampler *sampler)
+void ConjugateMNormal::initialize(ConjugateSampler *sampler, Graph const &graph)
 {
     if(sampler->deterministicChildren().empty())
 	return; //Nothing to do
@@ -99,18 +101,9 @@ void ConjugateMNormal::initialize(ConjugateSampler *sampler)
     _length_betas = N * snode->length();
 
     // Check for constant linear terms
-    set<Node const *> paramset;
-    vector<Node*> const &dtrm = sampler->deterministicChildren();
-    paramset.insert(snode);
-    for (unsigned int j = 0; j < dtrm.size(); ++j) {
-	paramset.insert(dtrm[j]);
-    }
-    for (unsigned int j = 0; j < dtrm.size(); ++j) {
-	if (!dtrm[j]->isLinear(paramset, true)) {
-	    return; //Coefficients not fixed
-	}
-    }
-	
+    if (!checkLinear(sampler->nodes(), graph, true))
+	return; //Coefficients not fixed
+
     //Onetime calculation of fixed coefficients
     _betas = new double[_length_betas];
     calBeta(_betas, sampler, 0);
@@ -153,13 +146,10 @@ bool ConjugateMNormal::canSample(StochasticNode *snode, Graph const &graph)
 	}
     }
 
-    // Check deterministic descendants
-    for (unsigned int j = 0; j < dtrm_nodes.size(); ++j) {
-	if (!dtrm_nodes[j]->isLinear(paramset, false)) {
-	    return false;
-	}
-    }
-  
+    // Check linearity of deterministic descendants
+    if (!checkLinear(vector<StochasticNode*>(1, snode),graph, false))
+	return false;
+
     return true; //We made it!
 }
 

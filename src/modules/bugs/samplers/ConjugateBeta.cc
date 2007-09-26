@@ -94,7 +94,7 @@ bool ConjugateBeta::canSample(StochasticNode *snode, Graph const &graph)
     return true; //We made it!
 }
 
-void ConjugateBeta::initialize(ConjugateSampler *sampler)
+void ConjugateBeta::initialize(ConjugateSampler *sampler, Graph const &graph)
 {
 }
 

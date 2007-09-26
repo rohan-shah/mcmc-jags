@@ -5,6 +5,7 @@
 #include <graph/MixtureNode.h>
 #include <graph/LogicalNode.h>
 #include <graph/StochasticNode.h>
+#include <sampler/Linear.h>
 
 #include <set>
 #include <stdexcept>
@@ -70,7 +71,7 @@ ConjugateNormal::~ConjugateNormal()
     delete [] _betas;
 }
 
-void ConjugateNormal::initialize(ConjugateSampler *sampler)
+void ConjugateNormal::initialize(ConjugateSampler *sampler, Graph const &graph)
 {
     if (sampler->deterministicChildren().empty()) 
 	return;
@@ -80,21 +81,11 @@ void ConjugateNormal::initialize(ConjugateSampler *sampler)
     for (unsigned int i = 0; i < children.size(); ++i) {
 	_length_betas += children[i]->length();
     }
-    
+
     // Check for constant linear terms
-    set<Node const*> paramset;
-    paramset.insert(sampler->nodes()[0]);
-    vector<Node*> const &dtrm = sampler->deterministicChildren();
-    for (unsigned int j = 0; j < dtrm.size(); ++j) {
-	paramset.insert(dtrm[j]);
-    }
-    
-    for (unsigned int j = 0; j < dtrm.size(); ++j) {
-	if (!dtrm[j]->isLinear(paramset, true)) {
-	    return; //Not a constant linear term
-	}
-    }
-    
+    if (!checkLinear(sampler->nodes(), graph, true))
+	return;
+
     //One-time calculation of fixed coefficients
     _betas = new double[_length_betas];
     calBeta(_betas, sampler, 0);
@@ -143,12 +134,10 @@ bool ConjugateNormal::canSample(StochasticNode *snode, Graph const &graph)
 	    return false; //Precision depends on snode
 	}
     }
-  
+
     // Check linearity of deterministic descendants
-    for (unsigned int j = 0; j < dtrm_nodes.size(); ++j) {
-	if (!dtrm_nodes[j]->isLinear(paramset, false))
-	    return false;
-    }
+    if (!checkLinear(vector<StochasticNode*>(1, snode), graph, false))
+	return false;
 
     return true; //We made it!
 }

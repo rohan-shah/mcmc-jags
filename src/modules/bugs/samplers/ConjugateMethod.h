@@ -3,12 +3,13 @@
 
 class ConjugateSampler;
 class RNG;
+class Graph;
 
 class ConjugateMethod
 {
 public:
     virtual ~ConjugateMethod();
-    virtual void initialize(ConjugateSampler *sampler) = 0;
+    virtual void initialize(ConjugateSampler *sampler, Graph const &graph) = 0;
     virtual void update(ConjugateSampler *sampler, unsigned int chain, 
 			RNG *rng) const = 0;
 };

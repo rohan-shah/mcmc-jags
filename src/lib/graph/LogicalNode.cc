@@ -3,6 +3,7 @@
 #include <function/Function.h>
 #include <graph/NodeError.h>
 #include <graph/NodeNameTab.h>
+#include <graph/Graph.h>
 
 #include <stdexcept>
 #include <vector>
@@ -113,11 +114,25 @@ bool isLogical(Node const *node)
   return dynamic_cast<LogicalNode const*>(node);
 }
 
-bool LogicalNode::isLinear(std::set<Node const *> const &parameters, bool fixed) const
+bool LogicalNode::isLinear(set<Node const *> const &parameters, 
+			   Graph const &graph, bool fixed) const
 {
     vector<bool> mask(parents().size());
     for (unsigned int i = 0; i < parents().size(); ++i) {
-	mask[i] = parameters.count(parents()[i]);
+	Node const *p = parents()[i];
+        if (graph.contains(p)) {
+            if (parameters.count(p) == 0) {
+                //Parent is a non-linear function. No way to recover.
+                return false;
+            }
+            else {
+                mask[i] = true;
+            }
+        }
+        else {
+            //We don't care if the function is non-linear in these parameters
+            mask[i] = false; 
+        }
     }
 
     vector<bool> fixed_mask;
@@ -130,14 +145,21 @@ bool LogicalNode::isLinear(std::set<Node const *> const &parameters, bool fixed)
     return _func->isLinear(mask, fixed_mask);
 }
 
-bool LogicalNode::isScale(std::set<Node const *> const &parameters, bool fixed) const
+bool LogicalNode::isScale(set<Node const *> const &parameters, 
+			  Graph const &graph, bool fixed) const
 {
     unsigned int nparam = 0;
     unsigned int index = 0;
     for (unsigned int i = 0; i < parents().size(); ++i) {
-	if (parameters.count(parents()[i])) {
-	    nparam++;
-	    index = i;
+	Node const *p = parents()[i];
+	if (graph.contains(p)) {
+	    if (parameters.count(p)) {
+		nparam++;
+		index = i;
+	    }
+	    else {
+		return false; //Parent is non-linear function
+	    }
 	}
     }
     if (nparam == 0)

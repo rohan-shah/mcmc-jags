@@ -71,7 +71,7 @@ ConjugateSampler::ConjugateSampler(StochasticNode *node, Graph const &graph,
 	_child_dist.push_back(getDist(children[i]));
     }
     
-    method->initialize(this);
+    method->initialize(this, graph);
 }
 
 void ConjugateSampler::update(vector<RNG*> const &rngs)

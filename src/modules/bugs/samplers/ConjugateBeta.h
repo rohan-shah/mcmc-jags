@@ -17,7 +17,7 @@ class Graph;
  */
 class ConjugateBeta : public ConjugateMethod {
 public:
-    void initialize(ConjugateSampler *sampler);
+    void initialize(ConjugateSampler *sampler, Graph const &graph);
     void update(ConjugateSampler *sampler, unsigned int chain, RNG *rng) const;
     static bool canSample(StochasticNode *snode, Graph const &graph);
 };

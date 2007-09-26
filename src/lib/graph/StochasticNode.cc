@@ -204,13 +204,13 @@ void StochasticNode::replicate()
 }
 
 bool StochasticNode::isLinear(std::set<Node const*> const &parameters, 
-			      bool fixed) const
+			      Graph const &graph, bool fixed) const
 {
     return false;
 }
 
 bool StochasticNode::isScale(std::set<Node const*> const &parameters, 
-			     bool fixed) const
+			     Graph const &graph, bool fixed) const
 {
     return false;
 }

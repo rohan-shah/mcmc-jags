@@ -68,7 +68,8 @@ bool ConjugateWishart::canSample(StochasticNode *snode, Graph const &graph)
     return true; //We made it!
 }
 
-void ConjugateWishart::initialize(ConjugateSampler *sampler)
+void ConjugateWishart::initialize(ConjugateSampler *sampler,
+				  Graph const &graph)
 {
 }
 

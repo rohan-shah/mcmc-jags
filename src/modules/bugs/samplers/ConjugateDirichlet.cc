@@ -62,10 +62,13 @@ bool ConjugateDirichlet::canSample(StochasticNode *snode, Graph const &graph)
 
     // Check deterministic descendants
     for (unsigned int j = 0; j < dtrm_nodes.size(); ++j) {
-	if (isMixture(dtrm_nodes[j])) {
+	MixtureNode const *mnode = asMixture(dtrm_nodes[j]);
+	if (mnode) {
 	    // Check that indices do not depend on snode
-	    if(!dtrm_nodes[j]->isLinear(paramset, false)) {
-		return false;
+	    unsigned int nindex = mnode->index_size();
+	    for (unsigned int i = 0; i < nindex; ++i) {
+		if (paramset.count(mnode->parents()[i]))
+		    return false;
 	    }
 	}
 	else {
@@ -85,7 +88,8 @@ static bool allzero(double const *x, long length)
     return true;
 }
 
-void ConjugateDirichlet::initialize(ConjugateSampler *sampler)
+void ConjugateDirichlet::initialize(ConjugateSampler *sampler,
+				    Graph const &graph)
 {
 }
 
