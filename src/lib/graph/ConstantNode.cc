@@ -36,15 +36,15 @@ string ConstantNode::name(NodeNameTab const &name_table) const
 }
 
 bool ConstantNode::isLinear(std::set<Node const*> const &parameters, 
-			      bool fixed) const
+			    Graph const &graph, bool fixed) const
 {
-    return false;
+    return true;
 }
 
 bool ConstantNode::isScale(std::set<Node const*> const &parameters, 
-			     bool fixed) const
+			   Graph const &graph, bool fixed) const
 {
-    return false;
+    return true;
 }
 
 bool ConstantNode::checkParentValues(unsigned int) const

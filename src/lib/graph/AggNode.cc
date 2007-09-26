@@ -1,5 +1,6 @@
 #include <config.h>
 #include <graph/AggNode.h>
+#include <graph/Graph.h>
 
 #include <vector>
 #include <stdexcept>
@@ -54,14 +55,25 @@ AggNode const *asAggregate(Node *node)
   return dynamic_cast<AggNode const*>(node);
 }
 
-bool AggNode::isLinear(set<Node const*> const &parameters, bool fixed) const
+bool AggNode::isLinear(set<Node const*> const &parameters, 
+		       Graph const &graph, bool fixed) const
 {
-   return true;
+    vector<Node const *> const &par = parents();
+    for (unsigned int i = 0; i < par.size(); ++i) {
+        if (graph.contains(par[i]) && parameters.count(par[i]) == 0) {
+	    return false;
+	}
+    }
+    return true;
 }
 
-bool AggNode::isScale(set<Node const *> const &parameters, bool fixed) const
+bool AggNode::isScale(set<Node const *> const &parameters, 
+		      Graph const &graph, bool fixed) const
 {
-    return (parents().size() == 1);
+    if (parents().size() != 1)
+	return false;
+
+    return isLinear(parameters, graph, fixed);
 }
 
 bool AggNode::checkParentValues(unsigned int) const

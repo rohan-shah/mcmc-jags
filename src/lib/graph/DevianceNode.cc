@@ -50,13 +50,16 @@ void DevianceNode::deterministicSample(unsigned int chain)
   setValue(&deviance, 1, chain);
 }
 
-bool DevianceNode::isLinear(std::set<Node  const *> const &parameters, bool fixed) const 
+bool DevianceNode::isLinear(set<Node  const *> const &parameters, 
+			    Graph const &graph, bool fixed) const 
 {
-  return false;
+    return false;
 }
-bool DevianceNode::isScale(std::set<Node const *> const &parameters, bool fixed) const 
+
+bool DevianceNode::isScale(set<Node const *> const &parameters, 
+			   Graph const &graph, bool fixed) const 
 {
-  return false;
+    return false;
 }
 
 bool DevianceNode::checkParentValues(unsigned int nchain) const

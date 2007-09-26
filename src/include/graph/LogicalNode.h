@@ -48,12 +48,14 @@ public:
      * A logical node preserves linearity if its function is linear.
      * @see Function#isLinear
      */
-    bool isLinear(std::set<Node const*> const &parameters, bool fixed) const;
+    bool isLinear(std::set<Node const*> const &parameters, Graph const &graph,
+		  bool fixed) const;
     /**
      * A logical node preserves scale if its function is a scale function.
      * @see Function#isScale
      */
-    bool isScale(std::set<Node const*> const &parameters, bool fixed) const;
+    bool isScale(std::set<Node const*> const &parameters, Graph const &graph,
+		 bool fixed) const;
 };
 
 #endif /* LOGICAL_NODE_H_ */

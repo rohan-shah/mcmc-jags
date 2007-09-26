@@ -53,12 +53,14 @@ public:
      * An AggNode always preserves linearity. Therefore this function
      * returns true.
      */
-    bool isLinear(std::set<Node const*> const &parameters, bool fixed) const;
+    bool isLinear(std::set<Node const*> const &parameters, 
+		  Graph const &graph, bool fixed) const;
     /**
      * An AggNode is a scale transformation only if it has a single
      * parent, and in this case it is also fixed.
      */
-    bool isScale(std::set<Node const*> const &parameters, bool fixed) const;
+    bool isScale(std::set<Node const*> const &parameters, 
+		 Graph const &graph, bool fixed) const;
     /**
      * An AggNode places no restrictions on its parents' values. Therefore
      * this function always returns true.

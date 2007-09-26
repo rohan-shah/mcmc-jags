@@ -7,6 +7,7 @@
 
 class NodeNameTab;
 class RNG;
+class Graph;
 
 /**
  * @short Node in a directed acyclic graph representingn a Bayesian model 
@@ -217,7 +218,8 @@ public:
      * coefficients B1, ... Bn are fixed (but not necessarily A).
      */
     virtual bool 
-	isLinear(std::set<Node const*> const &parameters, bool fixed) const = 0;
+	isLinear(std::set<Node const*> const &parameters, Graph const &graph,
+		 bool fixed) const = 0;
     /**
      * Tests whether the value of the node is a scale function of the
      * ancestor node X. A scale function is a trivial linear function
@@ -234,7 +236,8 @@ public:
      * with fixed coefficient B.
      */
     virtual bool 
-	isScale(std::set<Node const*> const &parameters, bool fixed) const = 0;
+	isScale(std::set<Node const*> const &parameters, Graph const &graph,
+		bool fixed) const = 0;
 };
 
 /**

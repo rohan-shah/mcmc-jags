@@ -48,12 +48,14 @@ public:
      * Constant nodes are trivial fixed linear functions. This function
      * always returns true.
      */
-    bool isLinear(std::set<Node const*> const &parameters, bool fixed) const;
+    bool isLinear(std::set<Node const*> const &parameters, 
+		  Graph const &graph, bool fixed) const;
     /**
      * Constant nodes are trivial fixed scale functions. This function
      * always returns true.
      */
-    bool isScale(std::set<Node const*> const &parameters, bool fixed) const;
+    bool isScale(std::set<Node const*> const &parameters, 
+		 Graph const &graph, bool fixed) const;
 };
 
 #endif /* CONSTANT_NODE_H_ */

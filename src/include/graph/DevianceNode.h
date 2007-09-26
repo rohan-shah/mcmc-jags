@@ -30,11 +30,13 @@ public:
     /**
      * A deviance node never preserves linearity.
      */
-    bool isLinear(std::set<Node const*> const &parameters, bool fixed) const;
+    bool isLinear(std::set<Node const*> const &parameters, 
+		  Graph const &graph, bool fixed) const;
     /**
      * A deviance node is never a scale transformation of its parameters.
      */
-    bool isScale(std::set<Node const*> const &parameters, bool fixed) const;
+    bool isScale(std::set<Node const*> const &parameters, 
+		 Graph const &graph, bool fixed) const;
     /**
      * A deviance node always has valid parent values
      */
