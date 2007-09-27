@@ -5,6 +5,8 @@
 class Node;
 class Graph;
 
+enum LogicalMark {MARK_NULL=0, MARK_TRUE=1, MARK_FALSE=2};
+
 /**
  * @short Annotates the Nodes in a Graph with integer values.
  * 
