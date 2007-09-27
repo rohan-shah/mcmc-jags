@@ -40,6 +40,6 @@ bool checkLinear(std::vector<StochasticNode *> const &snodes,
  *
  * @see Node#isScale
  */
-bool checkScale(Node *snode, Graph const &graph, bool fixed);
+bool checkScale(StochasticNode *snode, Graph const &graph, bool fixed);
 
 #endif /* LINEAR_H_ */

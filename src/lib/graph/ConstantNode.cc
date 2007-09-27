@@ -35,14 +35,12 @@ string ConstantNode::name(NodeNameTab const &name_table) const
   return os.str();
 }
 
-bool ConstantNode::isLinear(std::set<Node const*> const &parameters, 
-			    Graph const &graph, bool fixed) const
+bool ConstantNode::isLinear(GraphMarks const &linear_marks, bool fixed) const
 {
     return true;
 }
 
-bool ConstantNode::isScale(std::set<Node const*> const &parameters, 
-			   Graph const &graph, bool fixed) const
+bool ConstantNode::isScale(GraphMarks const &scale_marks, bool fixed) const
 {
     return true;
 }

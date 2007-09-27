@@ -52,3 +52,13 @@ unsigned int Distribution::df(vector<vector<unsigned int> > const &pdims) const
     return product(dim(pdims));
 }
 
+
+bool Distribution::isLocationParameter(unsigned int i) const
+{
+    return false;
+}
+
+bool Distribution::isScaleParameter(unsigned int i) const
+{
+    return false;
+}

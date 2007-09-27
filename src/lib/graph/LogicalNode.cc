@@ -3,6 +3,7 @@
 #include <function/Function.h>
 #include <graph/NodeError.h>
 #include <graph/NodeNameTab.h>
+#include <graph/GraphMarks.h>
 #include <graph/Graph.h>
 
 #include <stdexcept>
@@ -114,21 +115,27 @@ bool isLogical(Node const *node)
   return dynamic_cast<LogicalNode const*>(node);
 }
 
-bool LogicalNode::isLinear(set<Node const *> const &parameters, 
-			   Graph const &graph, bool fixed) const
+bool LogicalNode::isLinear(GraphMarks const &linear_marks, bool fixed) const
 {
     vector<bool> mask(parents().size());
     for (unsigned int i = 0; i < parents().size(); ++i) {
 	Node const *p = parents()[i];
-        if (graph.contains(p)) {
-            if (parameters.count(p) == 0) {
+        if (linear_marks.graph().contains(p)) {
+	    switch(linear_marks.mark(p)) {
+            case MARK_NULL:
+                mask[i] = false;
+                break;
+	    case MARK_TRUE:
+		mask[i] = true;
+		break;
+	    case MARK_FALSE:
                 //Parent is a non-linear function. No way to recover.
-                return false;
-            }
-            else {
-                mask[i] = true;
-            }
-        }
+		return false;
+		break;
+	    default:
+		throw logic_error("Invalid marks in LogicalNode::isLinear");
+	    }
+	}
         else {
             //We don't care if the function is non-linear in these parameters
             mask[i] = false; 
@@ -145,32 +152,41 @@ bool LogicalNode::isLinear(set<Node const *> const &parameters,
     return _func->isLinear(mask, fixed_mask);
 }
 
-bool LogicalNode::isScale(set<Node const *> const &parameters, 
-			  Graph const &graph, bool fixed) const
+bool LogicalNode::isScale(GraphMarks const &scale_marks, bool fixed) const
 {
-    unsigned int nparam = 0;
-    unsigned int index = 0;
-    for (unsigned int i = 0; i < parents().size(); ++i) {
-	Node const *p = parents()[i];
-	if (graph.contains(p)) {
-	    if (parameters.count(p)) {
-		nparam++;
-		index = i;
-	    }
-	    else {
-		return false; //Parent is non-linear function
+    unsigned index = 0;
+    bool have_index = false;
+    vector<Node const *> const &par = parents();
+    for (unsigned int i = 0; i < par.size(); ++i) {
+	if (scale_marks.graph().contains(par[i])) {
+	    switch(scale_marks.mark(par[i])) {
+            case MARK_NULL:
+		break;
+	    case MARK_TRUE:
+		if (!have_index) {
+		    have_index = true;
+		    index = i;
+		}
+		else {
+		    return false;
+		}
+		break;
+	    case MARK_FALSE:
+		return false;
+		break;
+	    default:
+		throw logic_error("Invalid marks in LogicalNode::isScale");
 	    }
 	}
     }
-    if (nparam == 0)
+    if (!have_index) {
 	return true;
-    else if (nparam > 1)
-	return false;
+    }
     
     vector<bool> fixed_mask;
     if (fixed) {
-	for (unsigned int i = 0; i < parents().size(); ++i) {
-	    fixed_mask.push_back(parents()[i]->isObserved());
+	for (unsigned int i = 0; i < par.size(); ++i) {
+	    fixed_mask.push_back(par[i]->isObserved());
 	}
     }
 

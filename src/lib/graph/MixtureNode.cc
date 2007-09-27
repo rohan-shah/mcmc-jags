@@ -1,6 +1,7 @@
 #include <config.h>
 #include <graph/MixtureNode.h>
 #include <graph/NodeNameTab.h>
+#include <graph/GraphMarks.h>
 #include <graph/Graph.h>
 
 #include <utility>
@@ -195,23 +196,28 @@ bool isMixture(Node const *node)
   return dynamic_cast<MixtureNode const*>(node);
 }
 
-bool 
-MixtureNode::isLinear(set<Node const*> const &parameters, 
-		      Graph const &graph, bool fixed) const
+bool MixtureNode::isLinear(GraphMarks const &linear_marks, bool fixed) const
 {
     if (fixed)
 	return false;
 
-    //Check that none of the indices are in the parameter set
+    //Check that none of the indices are marked in the graph
+    //(indicating that they are linear or non-linear functions of the
+    //source nodes)
     vector<Node const*> const &par = parents();
     for (unsigned int i = 0; i < _Nindex; ++i) {
-	if (parameters.count(par[i]))
-	    return false;
+	if (linear_marks.graph().contains(par[i]) &&
+	    linear_marks.mark(par[i]) != 0) 
+	    {
+		return false;
+	    }
     }
 
-    //Check that remaining parents that are in the graph are linear
+    //Check that there are no other non-linear parents
     for (unsigned int i = _Nindex; i < par.size(); ++i) {
-	if (graph.contains(par[i]) && parameters.count(par[i]) == 0) {
+	if (linear_marks.graph().contains(par[i]) && 
+	    linear_marks.mark(par[i]) == MARK_FALSE) 
+	{
 	    return false;
 	}
     }
@@ -219,10 +225,9 @@ MixtureNode::isLinear(set<Node const*> const &parameters,
     return true;
 }
 
-bool MixtureNode::isScale(set<Node const*> const &parameters, 
-			  Graph const &graph, bool fixed) const
+bool MixtureNode::isScale(GraphMarks const &scale_marks, bool fixed) const
 {
-    return isLinear(parameters, graph, fixed);
+    return isLinear(scale_marks, fixed);
 }
 
 bool MixtureNode::checkParentValues(unsigned int chain) const

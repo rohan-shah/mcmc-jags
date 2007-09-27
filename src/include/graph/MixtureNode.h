@@ -54,14 +54,12 @@ public:
      * A MixtureNode preserves linearity if none of the index nodes
      * are parameters. It is never a fixed linear function.
      */
-    bool isLinear(std::set<Node const*> const &parameters, 
-		  Graph const &graph, bool fixed) const;
+    bool isLinear(GraphMarks const &linear_marks, bool fixed) const;
     /**
      * A MixtureNode is a scale transformation if none of the indices
      * are parameters. It is never a fixed scale transformation.
      */
-    bool isScale(std::set<Node const*> const &parameters, 
-		 Graph const &graph, bool fixed) const;
+    bool isScale(GraphMarks const &scale_marks, bool fixed) const;
     /**
      * This function always returns true. It ignores possible errors
      * in the index nodes.  This is because the deterministicSample

@@ -162,14 +162,12 @@ public:
      * Stochastic nodes are never linear functions of their
      * parameters. This function always returns false.
      */
-    bool isLinear(std::set<Node const*> const &parameters, 
-		  Graph const &graph, bool fixed) const;
+    bool isLinear(GraphMarks const &linear_marks, bool fixed) const;
     /**
      * Stochastic nodes are never scale functions. This function
      * always returns false.
      */
-    bool isScale(std::set<Node const*> const &parameters, 
-		 Graph const &graph, bool fixed) const;
+    bool isScale(GraphMarks const &scale_marks, bool fixed) const;
 };
 
 /**

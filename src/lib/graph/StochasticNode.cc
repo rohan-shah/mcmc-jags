@@ -1,4 +1,5 @@
 #include <config.h>
+#include <graph/GraphMarks.h>
 #include <graph/Graph.h>
 #include <graph/StochasticNode.h>
 #include <graph/NodeError.h>
@@ -203,14 +204,12 @@ void StochasticNode::replicate()
    _fweight++;
 }
 
-bool StochasticNode::isLinear(std::set<Node const*> const &parameters, 
-			      Graph const &graph, bool fixed) const
+bool StochasticNode::isLinear(GraphMarks const &linear_marks, bool fixed) const
 {
     return false;
 }
 
-bool StochasticNode::isScale(std::set<Node const*> const &parameters, 
-			     Graph const &graph, bool fixed) const
+bool StochasticNode::isScale(GraphMarks const &scale_marks, bool fixed) const
 {
     return false;
 }

@@ -8,6 +8,8 @@
 class NodeNameTab;
 class RNG;
 class Graph;
+class GraphMarks;
+
 
 /**
  * @short Node in a directed acyclic graph representingn a Bayesian model 
@@ -197,29 +199,44 @@ public:
      */
     std::vector<unsigned int> const &dim() const;
     /**
-     * Tests whether the value of the node is a linear function of the
-     * ancestor nodes X1, X2, ... Xn of form A + B %*% X1 + B2 %*% X2
-     * + ...  + Bn %*% Xn. Preservation of linearity is a criterion
-     * used by some Samplers to determine if they can act on a
-     * set of stochastic nodes.
+     * Tests whether the value of the node is a linear function of a
+     * set of ancestor nodes X = (X1, ... Nn), i.e. whether the value
+     * of the node can be expressed as A + B %*% X1 + B2 %*% X2 + ...
+     * + Bn %*% Xn. Preservation of linearity is a criterion used by
+     * some Samplers to determine if they can act on a set of
+     * stochastic nodes.
      *
      * False negative responses are permitted: i.e. the value false may
      * be returned when the node is, in fact, a linear function, but
      * false positives are not allowed.
      * 
-     * @param parameters Set of all ancestors of this node that are
-     * themselves linear functions functions of X1, X2, ... Xn.  The
-     * set must include the ancestor nodes (as they are trivial linear
-     * functions of themselves).  The current node may be a non-linear
-     * function of nodes not in this set.
+     * The test for linearity takes place in a graph, which is implicitly
+     * defined by the linear_marks parameter (and may be accessed directly
+     * using the GraphMarks#graph member function on linear_marks). Only
+     * paths that are contained entirely inside the graph are considered.
+     * The graph is assumed to be acyclic. Since the Node#isLinear function
+     * is designed to be called iteratively on a sequence of nodes, it
+     * relies on a GraphMarks object for book-keeping.
      *
-     * @param fixed When true, the test is more stringent and returns
-     * the value true only if the function is BOTH linear AND the
-     * coefficients B1, ... Bn are fixed (but not necessarily A).
+     * @param linear_marks A GraphMarks object in which all ancestors
+     * of the current node that are also descendants of X have been
+     * marked.  The mark values are MARK_TRUE if the node is a
+     * (possibly fixed) linear function of X, and MARK_FALSE
+     * otherwise.  Ancestors of the current node that are not
+     * descendants of X should remain unmarked.
+     *
+     * @param fixed Logical flag. When true, the test is more
+     * stringent and the isLinear function returns the value true only
+     * if the current node is a fixed linear function of X, i.e. the
+     * coefficients B1, ... Bn are constant (but not necessarily
+     * A). In this case, the linear_marks parameter must also conform
+     * to the more stringent conditions: ancestors of the current node
+     * should be marked with MARK_TRUE only if they are fixed linear
+     * functions of X. They should be marked with MARK_FALSE if they
+     * are non-linear or non-fixed linear functions of X.
      */
     virtual bool 
-	isLinear(std::set<Node const*> const &parameters, Graph const &graph,
-		 bool fixed) const = 0;
+	isLinear(GraphMarks const &linear_marks, bool fixed) const = 0;
     /**
      * Tests whether the value of the node is a scale function of the
      * ancestor node X. A scale function is a trivial linear function
@@ -227,17 +244,21 @@ public:
      * Preservation of scale is used by some Samplers to determine
      * if they can act on a set of stochastic nodes.
      * 
-     * @param parameters Set of all ancestors of the current node that
-     * are themselves scale transformations of X. The set must include
-     * X (as this is a trivial scale transformation of itself).
+     * The isScale function works the same way as the isLinear function.
+     *
+     * @param scale_marks. GraphMarks object in which all ancestors
+     * of the current node that are also descendants of X are marked
+     * with MARK_TRUE or MARK_FALSE, depending on whether they are
+     * (possibly fixed) scale functions of X or not.
      *
      * @param fixed When true, the test is more stringent and returns
      * the value true only if the function is a scale transformation
-     * with fixed coefficient B.
+     * with fixed coefficient B. In this case, the scale_marks parameter
+     * must conform to the more stringent conditions: only fixed scale
+     * functions of X may be marked with MARK_TRUE
      */
     virtual bool 
-	isScale(std::set<Node const*> const &parameters, Graph const &graph,
-		bool fixed) const = 0;
+	isScale(GraphMarks const &scale_marks, bool fixed) const = 0;
 };
 
 /**

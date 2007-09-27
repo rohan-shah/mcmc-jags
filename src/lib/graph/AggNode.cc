@@ -1,5 +1,6 @@
 #include <config.h>
 #include <graph/AggNode.h>
+#include <graph/GraphMarks.h>
 #include <graph/Graph.h>
 
 #include <vector>
@@ -7,6 +8,7 @@
 
 using std::vector;
 using std::set;
+using std::logic_error;
 
 AggNode::AggNode(vector<unsigned int> const &dim, 
 		 vector<Node const *> const &parents,
@@ -55,25 +57,53 @@ AggNode const *asAggregate(Node *node)
   return dynamic_cast<AggNode const*>(node);
 }
 
-bool AggNode::isLinear(set<Node const*> const &parameters, 
-		       Graph const &graph, bool fixed) const
+bool AggNode::isLinear(GraphMarks const &linear_marks, bool fixed) const
 {
     vector<Node const *> const &par = parents();
     for (unsigned int i = 0; i < par.size(); ++i) {
-        if (graph.contains(par[i]) && parameters.count(par[i]) == 0) {
-	    return false;
+	if (linear_marks.graph().contains(par[i])) {
+	    switch(linear_marks.mark(par[i])) {
+	    case MARK_NULL: case MARK_TRUE:
+		break;
+	    case MARK_FALSE:
+		return false;
+		break;
+	    default:
+		throw logic_error("Invalid graphmarks in AggNode::isLinear");
+	    }
 	}
     }
     return true;
 }
 
-bool AggNode::isScale(set<Node const *> const &parameters, 
-		      Graph const &graph, bool fixed) const
+bool AggNode::isScale(GraphMarks const &scale_marks, bool fixed) const
 {
-    if (parents().size() != 1)
-	return false;
+    Node const *p = 0;
+    vector<Node const *> const &par = parents();
+    for (unsigned int i = 0; i < par.size(); ++i) {
+        if (scale_marks.graph().contains(par[i])) {
+            switch(scale_marks.mark(par[i])) {
+	    case MARK_NULL:
+		break;
+            case MARK_TRUE:
+                if (p == 0) {
+                    p = par[i];   
+                }
+                else if (par[i] != p) {
+                    //There can only be one parent in the graph
+                    return false; 
+                }
+                break;
+            case MARK_FALSE:
+                return false;
+                break;
+            default:
+                throw logic_error("Invalid graphmarks in AggNode::isLinear");
+            }
+        }
+    }
+    return true;
 
-    return isLinear(parameters, graph, fixed);
 }
 
 bool AggNode::checkParentValues(unsigned int) const
