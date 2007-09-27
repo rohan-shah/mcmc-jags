@@ -201,6 +201,38 @@ public:
      * Indicates whether a distribution is boundable using the T(,) construct
      */
     bool canBound() const;
+    /**
+     * Tests for a location parameter.  A parameter of a distribution
+     * is considered to be a location parameter if, when it's value is
+     * incremented by X, the whole distribution is shifted by X,
+     * indpendently of the other parameter values.
+     * 
+     * This is a virtual function, for which the default implementation
+     * always returns false. Distributions with location parameters must
+     * overload this function.
+     *
+     * @param index Index number (starting from 0) of the parameter to be
+     * tested.
+     */
+    virtual bool isLocationParameter(unsigned int index) const;
+    /**
+     * Tests for a scale parameter.  A parameter of a distribution is
+     * considered to be a scale parameter if, when it's value is
+     * multiplied by X, the whole distribution multiplied by X,
+     * indpendently of the other parameter values.
+     * 
+     * Note that this definition excludes "location-scale" models:
+     * i.e. if the density of y takes the form (1/b)*f((y-a)/b) then b
+     * is not considered a scale parameter.
+     *
+     * This is a virtual function, for which the default
+     * implementation always returns false. Distributions with scale
+     * parameters must overload this function.
+     *
+     * @param index Index number (starting from 0) of the parameter to
+     * be tested.
+     */
+    virtual bool isScaleParameter(unsigned int index) const;
 };
 
 #endif /* DISTRIBUTION_H_ */
