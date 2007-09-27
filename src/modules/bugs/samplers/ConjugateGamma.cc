@@ -132,9 +132,8 @@ bool ConjugateGamma::canSample(StochasticNode *snode, Graph const &graph)
     }
 
     // Check deterministic descendants are scale transformations 
-    for (unsigned int j = 0; j < dtrm_nodes.size(); ++j) {
-	if (!dtrm_nodes[j]->isScale(paramset, graph, false))
-	    return false;
+    if (!checkScale(snode, graph, false)) {
+	return false;
     }
     return true; //We made it!
 }
