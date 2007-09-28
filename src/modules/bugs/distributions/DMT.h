@@ -4,7 +4,7 @@
 #include <distribution/Distribution.h>
 
 /**
- * @short Multivariate normal distribution
+ * @short Multivariate t distribution
  * <pre>
  * x[] ~ dmt(mu[], T[,], k)
  * </pre>
