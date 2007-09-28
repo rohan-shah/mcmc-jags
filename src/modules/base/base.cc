@@ -3,10 +3,12 @@
 //Functions
 #include <functions/Add.h>
 #include <functions/And.h>
+#include <functions/Dim.h>
 #include <functions/Divide.h>
 #include <functions/Equal.h>
 #include <functions/GreaterOrEqual.h>
 #include <functions/GreaterThan.h>
+#include <functions/Length.h>
 #include <functions/LessOrEqual.h>
 #include <functions/LessThan.h>
 #include <functions/Multiply.h>
@@ -39,10 +41,12 @@ namespace base {
 
 	insert(new Add);
 	insert(new And);
+        insert(new Dim);
 	insert(new Divide);
 	insert(new Equal);
 	insert(new GreaterOrEqual);
 	insert(new GreaterThan);
+        insert(new Length);
 	insert(new LessOrEqual);
 	insert(new LessThan);
 	insert(new Multiply);

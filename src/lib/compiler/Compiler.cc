@@ -144,6 +144,22 @@ bool Compiler::indexExpression(ParseTree const *p, int &value)
 	return false;
     }
     if (node->length() != 1) {
+	/* FIXME. We can do better than this! Although we must have a 
+	   scalar value at the end of the calculation (_index_expresion==0) 
+	   we should be able to work with scalar values in the intermediate
+	   steps. The problem right now is that we can't have this:
+
+	   for (i in 1:length(Y)) {
+	      Y[i] ~ dnorm(mu, tau)
+           }
+
+	   but instead have to use the more awkward:
+
+	   N <- length(Y)
+	   for (i in 1:N) {
+	       Y[i] ~ dnorm(mu, tau)
+           }
+	*/
 	string msg = string("Vector value in index expression:\n") + 
 	    node->name(_model.symtab());
 	throw runtime_error(msg);
@@ -727,6 +743,19 @@ void Compiler::getArrayDim(ParseTree const *p)
   string const &name = var->name();
 
   Range new_range = VariableSubsetRange(var);
+  /* FIXME: In this context, we don't necessarily want to assume
+     that an array expression with no indices is a scalar!
+     This is too limiting, e.g. we can't do this:
+
+     d <- dim(y)
+
+     without knowing length(dim(y)).
+
+     There are ways around this, e.g.
+
+     N <- length(dim(y))
+     d[1:N] <- dim(y)
+  */
 
   map<string, vector<vector<int> > >::iterator i = 
       _node_array_ranges.find(name);
@@ -921,6 +950,7 @@ void Compiler::undeclaredVariables(ParseTree const *prelations)
     }
   }
 
+  
   // Infer the dimension of remaining nodes from the relations
   traverseTree(prelations, &Compiler::getArrayDim);
   map<string, vector<vector<int> > >::const_iterator i = 
