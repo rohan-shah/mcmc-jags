@@ -16,7 +16,6 @@
 #include <distributions/DLnorm.h>
 #include <distributions/DLogis.h>
 #include <distributions/DMNorm.h>
-#include <distributions/DMState.h>
 #include <distributions/DMT.h>
 #include <distributions/DMulti.h>
 #include <distributions/DNegBin.h>
@@ -47,7 +46,6 @@
 #include <functions/Logit.h>
 #include <functions/Max.h>
 #include <functions/Mean.h>
-#include <functions/Mexp.h>
 #include <functions/Min.h>
 #include <functions/MatMult.h>
 #include <functions/Phi.h>
@@ -71,6 +69,7 @@
 #include <samplers/MNormalFactory.h>
 
 using std::vector;
+using namespace bugs;
 
 class BUGSModule : public Module {
 public:
@@ -94,7 +93,6 @@ BUGSModule::BUGSModule() {
     insert(new DLnorm);
     insert(new DLogis);
     insert(new DMNorm);
-    insert(new DMState);
     insert(new DMT);
     insert(new DMulti);
     insert(new DNegBin);
@@ -126,7 +124,6 @@ BUGSModule::BUGSModule() {
     insert(new MatMult);
     insert(new Max);
     insert(new Mean);
-    insert(new Mexp);
     insert(new Min);
     insert(new Phi);
     insert(new Pow);
