@@ -3,22 +3,26 @@
 
 #include <function/InverseLinkFunc.h>
 
-/**
- * @short Standard normal distribution function
- * @see Probit
- * <pre>
- * p <- phi(x)
- * probit(p) <- x
- * p = Prob(X < x) where X ~ N(0,1)
- * </pre>
- */
-class Phi : public InverseLinkFunc
-{
-public:
-  Phi ();
-  double evaluateScalar(std::vector<double const *> const &args) const;
-  double link(double mu) const;
-  double gradLink(double mu) const;
-};
+namespace bugs {
+
+    /**
+     * @short Standard normal distribution function
+     * @see Probit
+     * <pre>
+     * p <- phi(x)
+     * probit(p) <- x
+     * p = Prob(X < x) where X ~ N(0,1)
+     * </pre>
+     */
+    class Phi : public InverseLinkFunc
+    {
+    public:
+	Phi ();
+	double evaluateScalar(std::vector<double const *> const &args) const;
+	double link(double mu) const;
+	double gradLink(double mu) const;
+    };
+
+}
 
 #endif /* FUNC_PHI_H_ */

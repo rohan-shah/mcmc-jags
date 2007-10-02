@@ -3,20 +3,24 @@
 
 #include <function/ScalarFunc.h>
 
-/**
- * @short Normal quantile function
- * @see Phi
- * <pre>
- * y <- probit(p)
- * Prob(Y < y) = p for Y ~ N(0,1); 0 < p < 1
- * </pre>
- */
-class Probit : public ScalarFunc
-{
-public:
-  Probit ();
-  double evaluateScalar(std::vector<double const *> const &args) const;
-  bool checkScalarValue(std::vector<double const *> const &args) const;
-};
+namespace bugs {
+
+    /**
+     * @short Normal quantile function
+     * @see Phi
+     * <pre>
+     * y <- probit(p)
+     * Prob(Y < y) = p for Y ~ N(0,1); 0 < p < 1
+     * </pre>
+     */
+    class Probit : public ScalarFunc
+    {
+    public:
+	Probit ();
+	double evaluateScalar(std::vector<double const *> const &args) const;
+	bool checkScalarValue(std::vector<double const *> const &args) const;
+    };
+
+}
 
 #endif /* FUNC_PROBIT_H_ */
