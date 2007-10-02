@@ -1,5 +1,5 @@
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT([JAGS], [0.98.0], [jags@iarc.fr], [JAGS])
+AC_INIT([JAGS], [0.99.0], [jags@iarc.fr], [JAGS])
 AC_CANONICAL_HOST
 AC_CONFIG_SRCDIR(src/lib/Console.cc)
 AM_INIT_AUTOMAKE(AC_PACKAGE_NAME, AC_PACKAGE_VERSION)
@@ -126,6 +126,10 @@ AC_CONFIG_FILES([
   src/modules/bugs/distributions/Makefile	
   src/modules/bugs/samplers/Makefile	
   src/modules/bugs/matrix/Makefile	
+  src/modules/msm/Makefile	
+  src/modules/msm/functions/Makefile	
+  src/modules/msm/distributions/Makefile	
+  src/modules/msm/matrix/Makefile	
   src/modules/mix/Makefile	
   src/modules/mix/distributions/Makefile	
   src/modules/mix/samplers/Makefile	
