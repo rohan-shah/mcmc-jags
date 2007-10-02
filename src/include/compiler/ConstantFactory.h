@@ -18,6 +18,8 @@ struct ltdouble
   }
 };
 
+typedef std::pair<std::vector<unsigned int>, std::vector<double> > constpair;
+
 /**
  * @short Factory for ConstantNode objects
  *
@@ -28,16 +30,25 @@ struct ltdouble
  */
 class ConstantFactory 
 { 
-  unsigned int _nchain;
-  std::map<double, ConstantNode*, ltdouble> _constmap;
- public:
-  ConstantFactory(unsigned int nchain);
-  /**
-   * Get a constant node with a given value.  The results are cached,
-   * so if a request is repeated, the same node will be returned.
-   * If a node is newly allocated, it is inserted into the given graph.
-   */
-  ConstantNode *getConstantNode(double value, Graph &graph);
+    unsigned int _nchain;
+    std::map<double, ConstantNode*, ltdouble> _constmap;
+    std::map<constpair, ConstantNode*> _mv_constmap;
+public:
+    ConstantFactory(unsigned int nchain);
+    /**
+     * Get a constant node with a given value.  The results are cached,
+     * so if a request is repeated, the same node will be returned.
+     * If a node is newly allocated, it is inserted into the given graph.
+     */
+    ConstantNode *getConstantNode(double value, Graph &graph);
+    /**
+     * Get a multivariate constant node. The results are cached
+     * so that if a request is repeated, the same node will be returned.
+     * If a node is newly allocated, it is inserted into the given graph.
+     */
+    ConstantNode *getConstantNode(std::vector<unsigned int> const &dim,
+				  std::vector<double> const &value,
+				  Graph &graph);
 };
 
 #endif /* CONSTANT_FACTORY_H_ */
