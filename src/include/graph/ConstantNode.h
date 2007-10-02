@@ -7,7 +7,6 @@
  * @short Top-level Node representing data
  *
  * Constant nodes are the top-level nodes in any directed acyclic graph.
- * They are always scalar, and have no parents.
  *
  * In the BUGS language. Constant nodes appear only on the right hand
  * side of a relation. They are considered to represent observed
@@ -16,10 +15,16 @@
 class ConstantNode : public Node {
 public:
     /**
-     * Constructs a constant node and sets its value. The value is
+     * Constructs a scalar constant node and sets its value. The value is
      * fixed and is shared between all chains.
      */
     ConstantNode(double value, unsigned int nchain);
+    /**
+     * Constructs a multi-dimensional constant node 
+     */
+    ConstantNode(std::vector<unsigned int> const &dim, 
+		 std::vector<double> const &value,
+		 unsigned int nchain);
     /**
      * This function does nothing. It exists only so that objects of
      * class ConstantNode can be instantiated.

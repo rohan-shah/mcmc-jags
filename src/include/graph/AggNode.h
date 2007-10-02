@@ -66,4 +66,5 @@ public:
     bool checkParentValues(unsigned int chain) const;
 };
 
+
 #endif /* AGGREGATE_NODE_H */
