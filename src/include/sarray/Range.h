@@ -25,10 +25,13 @@ public:
     /**
      * Constructs a range based on given lower and upper limits
      * A logic_error is thrown if these are of different lengths
-     * @param lower lower limits. 
-     * @param upper upper limits. A range_error is thrown if any
+     *
+     * @param lower Lower limits. 
+     *
+     * @param upper Upper limits. A range_error is thrown if any
      *              element of upper is smaller than the corresponding
      *              element of lower.
+     *
      * @exception range_error
      */
     Range(std::vector<int> const &lower, std::vector<int> const &upper);
@@ -43,12 +46,16 @@ public:
      * dim (cast to a signed int).
      *
      * This constructor should not be confused with the constructor
-     * that creates a scalar range.
+     * that creates a scalar range from a vector of signed integers.
      */
     Range(std::vector<unsigned int> const &dim);
-    /** Equality operator */
+    /**
+     *Equality operator
+     */
     bool operator==(Range const &range) const;
-    /** Inequality operator */
+    /**
+     * Inequality operator 
+     */
     bool operator!=(Range const &range) const;
     /**
      * Length of the range. This is the number of indices that are
@@ -67,15 +74,15 @@ public:
      */
     bool contains(Range const &test_range) const;
     /**
-     * Returns the value of a RangeIterator after n iterations of
-     * RangeIterator#nextLeft 
+     * Returns the value of a RangeIterator constructed from this range,
+     * after n iterations of RangeIterator#nextLeft 
      *
      * @see RangeIterator
      */
     std::vector<int> leftIndex(unsigned int n) const;
     /**
      * The inverse of leftIndex. Returns the number of iterations of 
-     * RangeIterator#nextLeft required to reach index.
+     * RangeIterator#nextLeft required to reach the given index.
      *
      * @param index Index vector to convert to offset. An out_of_range
      * exception is thrown if the index is not contained in the range.
@@ -86,6 +93,7 @@ public:
     /**
      * Returns the value of a RangeIterator after n iterations of
      * RangeIterator#nextRight 
+     *
      * @see RangeIterator
      */
     std::vector<int> rightIndex(unsigned int n) const;
@@ -109,6 +117,7 @@ public:
     std::vector<unsigned int> const &dim(bool drop) const;
     /**
      * Number of dimensions covered by the Range
+     *
      * @param drop Should dimensions of size 1 be counted?
      */
     unsigned int ndim(bool drop) const;

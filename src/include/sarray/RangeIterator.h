@@ -52,7 +52,6 @@ public:
      * The initial value is zero.
      */
     unsigned int atEnd() const;
-
 };
 
 #endif /* RANGE_ITERATOR_H_ */
