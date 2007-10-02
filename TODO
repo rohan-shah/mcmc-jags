@@ -9,11 +9,11 @@ Goals for version 1.0 are:
 
 Currently working on:
 
-- introduce loadable modules
+- introduce loadable modules (DONE)
 - Gamerman's sampler for GLMs
 - Multivariate slice sampler
-- More efficient mixture model compilation
-- Efficient likelihood calculations for discrete data
+- More efficient mixture model compilation (DONE)
+- Efficient likelihood calculations for discrete data (DONE)
 - Check parameter validity at initialization and update for stochastic nodes
-- Default initialization for top-level stochastic nodes
+- Default initialization for top-level stochastic nodes (DONE)
 - Use doubling method for Univariate slice sampler before burnin.
