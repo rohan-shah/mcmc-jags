@@ -6,12 +6,16 @@
 using std::vector;
 using std::floor;
 
-Round::Round ():ScalarFunc ("round", 1)
-{
-}
+namespace bugs {
 
-double Round::evaluateScalar(vector<double const *> const &args) const
-{
-  /* The C99 round function does not exist in the current C++ standard */
-  return floor(*args[0] + 0.5);
+    Round::Round ():ScalarFunc ("round", 1)
+    {
+    }
+
+    double Round::evaluateScalar(vector<double const *> const &args) const
+    {
+	/* The C99 round function does not exist in the current C++ standard */
+	return floor(*args[0] + 0.5);
+    }
+
 }
