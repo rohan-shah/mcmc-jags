@@ -3,20 +3,24 @@
 
 #include <function/ScalarFunc.h>
 
-/**
- *@short Step function
- * <pre>
- * y <- step(x)
- * y = 1 if x >= 0
- *     0 if x <  0
- * </pre>
- */
-class Step:public ScalarFunc
-{
-public:
-  Step ();
-  double evaluateScalar(std::vector <double const *> const &args) const;
-  bool isDiscreteValued(std::vector<bool> const &mask) const;
-};
+namespace bugs {
+
+    /**
+     *@short Step function
+     * <pre>
+     * y <- step(x)
+     * y = 1 if x >= 0
+     *     0 if x <  0
+     * </pre>
+     */
+    class Step : public ScalarFunc
+    {
+    public:
+	Step ();
+	double evaluateScalar(std::vector <double const *> const &args) const;
+	bool isDiscreteValued(std::vector<bool> const &mask) const;
+    };
+    
+}
 
 #endif /* FUNC_STEP_H_ */

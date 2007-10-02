@@ -3,18 +3,22 @@
 
 using std::vector;
 
-Step::Step ()
-  : ScalarFunc ("step", 1)
-{
-}
+namespace bugs {
 
-double
-Step::evaluateScalar(vector<double const *> const &args) const
-{
-  return *args[0] >= 0 ? 1 : 0;
-}
+    Step::Step ()
+	: ScalarFunc ("step", 1)
+    {
+    }
 
-bool Step::isDiscreteValued(vector<bool> const &mask) const
-{
-  return true;
+    double
+    Step::evaluateScalar(vector<double const *> const &args) const
+    {
+	return *args[0] >= 0 ? 1 : 0;
+    }
+
+    bool Step::isDiscreteValued(vector<bool> const &mask) const
+    {
+	return true;
+    }
+
 }
