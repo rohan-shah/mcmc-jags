@@ -42,22 +42,35 @@ public:
    * same name has been inserted into the table, the most recently
    * inserted Function will be returned.
    *
-   * @return a pointer to the function or 0 if it was not found.
+   * @return a pointer to the function or a NULL pointer if it was not
+   * found.
    */
   Function const *find (std::string const &name) const;
   /**
    * Finds the inverse of a link function by the link name
    *
-   * @return a pointer to the inverse function or 0 if it was not found.
+   * @return a pointer to the inverse function or a NULL pointer if it
+   * was not found.
    */
   Function const *findInverse (std::string const &name) const;
+  /**
+   * Finds an inverse link function by its name.  This is a more
+   * restrictive version of the FuncTab#find function which returns
+   * a pointer to an InverseLinkFunc object, or a NULL pointer if the
+   * name does not correspond to an inverse link function.
+   */
+  InverseLinkFunc const *findLink (std::string const &name) const;
   /**
    * Removes a function from the table. This can only be called by the
    * module that owns the Function object, as it requires a
    * non-constant pointer.
    */
-  void erase(InverseLinkFunc *func);
   void erase(Function *func);
+  /**
+   * Removes an inverse link function from the table
+   */
+  void erase(InverseLinkFunc *func);
+
 };
 
 #endif /* FUNC_TAB_H_ */
