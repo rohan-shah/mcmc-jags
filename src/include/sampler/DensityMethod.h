@@ -8,7 +8,7 @@ class RNG;
  * @short Updates a Sampler using the log density of the sampled nodes.
  *
  * Updates a single chain of a ParallelDensitySampler. A typical
- * DensityMethods use only the log density of the sampled nodes by
+ * DensityMethod uses only the log density of the sampled nodes by
  * calling Sampler#logFullConditional.
  */
 class DensityMethod
@@ -29,7 +29,8 @@ public:
      * A subclass of DensityMethod may optionally set data members
      * when this function is called. The default does nothing.
      */
-    virtual void initialize(ParallelDensitySampler *sampler, unsigned int chain);
+    virtual void initialize(ParallelDensitySampler *sampler, 
+			    unsigned int chain);
     /**
      * Updates the sampler and chain defined by the last call to setData
      */
