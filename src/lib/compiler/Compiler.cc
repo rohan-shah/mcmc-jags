@@ -6,8 +6,10 @@
 #include <graph/ConstantNode.h>
 #include <graph/StochasticNode.h>
 #include <graph/DevianceNode.h>
+#include <graph/AggNode.h>
 #include <sarray/RangeIterator.h>
 #include <sarray/nainf.h>
+#include <sarray/util.h>
 
 #include "MixCompiler.h"
 
@@ -65,7 +67,11 @@ static long asInteger(double fval)
 
 Node * Compiler::constFromTable(ParseTree const *p)
 {
-    // Get a scalar constant value directly from the data table
+    // Get a constant value directly from the data table
+
+    if (!_index_expression) {
+	throw logic_error("Can only call constFromTable inside index expression");
+    }
 
     map<string,SArray>::const_iterator i = _data_table.find(p->name());
     if (i == _data_table.end()) {
@@ -79,26 +85,36 @@ Node * Compiler::constFromTable(ParseTree const *p)
     }
     else {
 	// Range expression successfully evaluated
-	if (subset_range.length() > 1) {
-
-	    throw runtime_error(string("Vector value ") + p->name() +
-				print(subset_range) + 
-				" in index expression");
-
-            //return 0;
-	}
-	unsigned int offset = sarray.range().leftOffset(subset_range.lower());  
-	double value = sarray.value()[offset];
 	Node *cnode = 0;
-	if (value != JAGS_NA) {
-	    if (_index_expression) {
-		cnode = new ConstantNode(value, 1);
-		_index_graph.add(cnode);
+	if (subset_range.length() > 1) {
+            
+	    RangeIterator i(subset_range);
+	    unsigned int n = subset_range.length();
+	    double const *v = sarray.value();
+            vector<double> value(n);
+	    for (unsigned int j = 0; j < n; ++j, i.nextLeft()) {
+		unsigned int offset = sarray.range().leftOffset(i);
+		value[j] = v[offset];
+		if (value[j] == JAGS_NA) {
+                    return 0;
+                }
+            }
+            cnode = new ConstantNode(subset_range.dim(false), value, 1);
+
+	}
+	else {
+	    unsigned int offset = 
+		sarray.range().leftOffset(subset_range.lower());  
+	    double value = sarray.value()[offset];
+	    if (value == JAGS_NA) {
+		return 0;
 	    }
 	    else {
-		cnode = _constantfactory.getConstantNode(value, _model.graph());
+		cnode = new ConstantNode(value, 1);
 	    }
+	    return cnode;
 	}
+	_index_graph.add(cnode);
 	return cnode;
     }
 }
@@ -144,22 +160,6 @@ bool Compiler::indexExpression(ParseTree const *p, int &value)
 	return false;
     }
     if (node->length() != 1) {
-	/* FIXME. We can do better than this! Although we must have a 
-	   scalar value at the end of the calculation (_index_expresion==0) 
-	   we should be able to work with scalar values in the intermediate
-	   steps. The problem right now is that we can't have this:
-
-	   for (i in 1:length(Y)) {
-	      Y[i] ~ dnorm(mu, tau)
-           }
-
-	   but instead have to use the more awkward:
-
-	   N <- length(Y)
-	   for (i in 1:N) {
-	       Y[i] ~ dnorm(mu, tau)
-           }
-	*/
 	string msg = string("Vector value in index expression:\n") + 
 	    node->name(_model.symtab());
 	throw runtime_error(msg);
@@ -190,12 +190,8 @@ Range Compiler::getRange(ParseTree const *p, Range const &default_range)
     string const &name = p->name();
 
   if (range_list.empty()) {
-    /* An empty range expression implies the default range, if it exists,
-       or a scalar value, if it does not */
-      if (isNULL(default_range))
-	  return Range(vector<int>(1,1));
-      else 
-	  return default_range;
+      //An empty range expression implies the default range
+      return default_range;
   }
 
   // Check size and integrity of range expression
@@ -285,13 +281,13 @@ Range Compiler::VariableSubsetRange(ParseTree const *var)
     return range;
   }
   else {
-    // Undeclared node
+      // Undeclared node
       Range range = getRange(var, Range());
-    if (isNULL(range)) {
-      throw runtime_error(string("Cannot evaluate subset expression for ")
-			  + "undeclared variable " + name);
-    }
-    return range;
+      if (isNULL(range)) {
+	  throw runtime_error(string("Cannot evaluate subset expression for ")
+			      + "undeclared variable " + name);
+      }
+      return range;
   }
 }
 
@@ -477,12 +473,84 @@ static Distribution const *getDistribution(ParseTree const *pstoch_rel,
   return dist;
 }
 
+Node *Compiler::getLength(ParseTree const *p, SymTab const &symtab)
+{
+    if (p->treeClass() != P_LENGTH) {
+	throw logic_error("Malformed parse tree. Expecting length expression");
+    }
+    ParseTree const *var = p->parameters()[0];
+    if (var->treeClass() != P_VAR) {
+	throw logic_error("Malformed parse tree. Expecting variable name");
+    }
+    NodeArray const *array = symtab.getVariable(var->name());
+    if (array) {
+	Range subset_range = getRange(var, array->range());
+	if (isNULL(subset_range)) {
+	    return 0;
+	}
+	else {
+	    double length = product(subset_range.dim(true));
+	    if (_index_expression) {
+		Node *node = new ConstantNode(length, 1);
+		_index_graph.add(node);
+	    return node;
+	    }
+	    else {
+		return _constantfactory.getConstantNode(length, _model.graph());
+	    }
+	}
+    }
+    else {
+	return 0;
+    }
+}
+
+
+Node *Compiler::getDim(ParseTree const *p, SymTab const &symtab)
+{
+    if (p->treeClass() != P_DIM) {
+	throw logic_error("Malformed parse tree. Expecting length expression");
+    }
+    ParseTree const *var = p->parameters()[0];
+    if (var->treeClass() != P_VAR) {
+	throw logic_error("Malformed parse tree. Expecting variable name");
+    }
+    NodeArray const *array = symtab.getVariable(var->name());
+    if (array) {
+	Range subset_range = getRange(var, array->range());
+	if (isNULL(subset_range)) {
+	    return 0;
+	}
+	else {
+	    vector<unsigned int> idim = subset_range.dim(false);
+	    vector<double> ddim(idim.size());
+            for (unsigned int j = 0; j < idim.size(); ++j) {
+                ddim[j] = idim[j];
+	    }
+
+	    vector<unsigned int> d(1, idim.size());
+
+	    if (_index_expression) {
+		Node *node = new ConstantNode(d, ddim, 1);
+		_index_graph.add(node);
+	    return node;
+	    }
+	    else {
+		return _constantfactory.getConstantNode(d, ddim, 
+							_model.graph());
+	    }
+	}
+    }
+    else {
+	return 0;
+    }
+}
+
+
 
 /*
  * Evaluates the expression t, and returns a pointer to a Node. If the
- * expression cannot be evaluated, a NULL pointer is returned. Any
- * newly-allocated Nodes that are created during the evaluation of the
- * expression are added to the given graph. 
+ * expression cannot be evaluated, a NULL pointer is returned. 
  */
 Node* Compiler::getParameter(ParseTree const *t)
 {
@@ -502,6 +570,12 @@ Node* Compiler::getParameter(ParseTree const *t)
 	break;
     case P_VAR:
 	node = getArraySubset(t);
+	break;
+    case P_LENGTH:
+	node = getLength(t,_model.symtab());
+	break;
+    case P_DIM:
+        node = getDim(t, _model.symtab());
 	break;
     case P_FUNCTION: case P_LINK:
 	if (getParameterVector(t, parents)) {
@@ -667,7 +741,7 @@ Node * Compiler::allocateLogical(ParseTree const *rel)
 	/* The reason we aren't using a ConstantFactory here is to ensure
 	   that the nodes are correctly named */
 	break;
-    case P_VAR: case P_FUNCTION: case P_LINK:
+    case P_VAR: case P_FUNCTION: case P_LINK: case P_LENGTH: case P_DIM:
 	node = getParameter(expression);
 	break;
     default:
@@ -679,56 +753,66 @@ Node * Compiler::allocateLogical(ParseTree const *rel)
 
 void Compiler::allocate(ParseTree const *rel)
 {
-  if (_is_resolved[_n_relations])
-    return;
-
-  Node *node = 0;
-
-  switch(rel->treeClass()) {
-  case P_STOCHREL:
-    node = allocateStochastic(rel);
+    if (_is_resolved[_n_relations])
+	return;
+    
+    Node *node = 0;
+    
+    switch(rel->treeClass()) {
+    case P_STOCHREL:
+	node = allocateStochastic(rel);
+	break;
+    case P_DETRMREL:
+	node = allocateLogical(rel);
     break;
-  case P_DETRMREL:
-    node = allocateLogical(rel);
-    break;
-  default:
-    throw logic_error("Malformed parse tree in Compiler::allocate");
-    break;
-  }
-
-  if (node) {
-    /* Check if a node is already inserted into this range */
-    ParseTree *var = rel->parameters()[0];
-    NodeArray *array = _model.symtab().getVariable(var->name());
-    Range range = VariableSubsetRange(var);
-    if (array->find(range)) {
-      throw runtime_error(string("Attempt to redefine node ") +
-			  var->name() + print(range));
+    default:
+	throw logic_error("Malformed parse tree in Compiler::allocate");
+	break;
     }
-    array->insert(node, range);
-    _n_resolved++;
-    _is_resolved[_n_relations] = true;
-  }
+    
+    SymTab &symtab = _model.symtab();
+    if (node) {
+	ParseTree *var = rel->parameters()[0];
+	NodeArray *array = symtab.getVariable(var->name());
+	if (!array) {
+	    //Undeclared array. It's size is inferred from the dimensions of
+	    //the newly created node
+	    symtab.addVariable(var->name(), node->dim());
+	    array = symtab.getVariable(var->name());
+	    array->insert(node, array->range());
+	}
+	else {
+	    // Check if a node is already inserted into this range
+	    Range range = VariableSubsetRange(var);
+	    if (array->find(range)) {
+		throw runtime_error(string("Attempt to redefine node ") +
+				    var->name() + print(range));
+	    }
+	    array->insert(node, range);
+	}
+	_n_resolved++;
+	_is_resolved[_n_relations] = true;
+    }
 }
 
 void Compiler::setConstantMask(ParseTree const *rel)
 {
-  ParseTree const *var = rel->parameters()[0];
-  string const &name = var->name();
-  Range range = VariableSubsetRange(var);
-  map<string,vector<bool> >::iterator p = _constant_mask.find(name);
-  if (p == _constant_mask.end()) {
-    return;
-  }
-  map<string,SArray>::const_iterator q = _data_table.find(name);
-  if (q == _data_table.end()) {
-    throw logic_error ("Error in Compiler::setConstantMask");
-  }
-  Range const &var_range = q->second.range();
-  vector<bool> &mask = p->second;
-  for (RangeIterator i(range); !i.atEnd(); i.nextLeft()) {
-      mask[var_range.leftOffset(i)] = false;
-  }
+    ParseTree const *var = rel->parameters()[0];
+    string const &name = var->name();
+    map<string,vector<bool> >::iterator p = _constant_mask.find(name);
+    if (p == _constant_mask.end()) {
+	return;
+    }
+    map<string,SArray>::const_iterator q = _data_table.find(name);
+    if (q == _data_table.end()) {
+	throw logic_error ("Error in Compiler::setConstantMask");
+    }
+    Range range = VariableSubsetRange(var);
+    Range const &var_range = q->second.range();
+    vector<bool> &mask = p->second;
+    for (RangeIterator i(range); !i.atEnd(); i.nextLeft()) {
+	mask[var_range.leftOffset(i)] = false;
+    }
 }
 
 void Compiler::getArrayDim(ParseTree const *p)
@@ -742,20 +826,12 @@ void Compiler::getArrayDim(ParseTree const *p)
   ParseTree const *var = p->parameters()[0];
   string const &name = var->name();
 
+  if(var->parameters().empty()) {
+      //No index expession => No info on array size
+      return;
+  }
+
   Range new_range = VariableSubsetRange(var);
-  /* FIXME: In this context, we don't necessarily want to assume
-     that an array expression with no indices is a scalar!
-     This is too limiting, e.g. we can't do this:
-
-     d <- dim(y)
-
-     without knowing length(dim(y)).
-
-     There are ways around this, e.g.
-
-     N <- length(dim(y))
-     d[1:N] <- dim(y)
-  */
 
   map<string, vector<vector<int> > >::iterator i = 
       _node_array_ranges.find(name);
