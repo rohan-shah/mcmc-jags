@@ -6,30 +6,33 @@
 
 using std::vector;
 
-class MIXModule : public Module {
-public:
-    MIXModule();
-    ~MIXModule();
-};
+namespace mix {
 
-MIXModule::MIXModule() {
+    class MIXModule : public Module {
+    public:
+	MIXModule();
+	~MIXModule();
+    };
 
-    //Load distributions
-    insert(new DNormMix);
-    insert(new MixSamplerFactory);
-}
+    MIXModule::MIXModule() {
 
-MIXModule::~MIXModule() {
-
-    vector<Distribution*> const &dvec = distributions();
-    for (unsigned int i = 0; i < dvec.size(); ++i) {
-	delete dvec[i];
+	insert(new DNormMix);
+	insert(new MixSamplerFactory);
     }
 
-    vector<SamplerFactory*> const &svec = samplerFactories();
-    for (unsigned int i = 0; i < svec.size(); ++i) {
-        delete svec[i];
+    MIXModule::~MIXModule() {
+
+	vector<Distribution*> const &dvec = distributions();
+	for (unsigned int i = 0; i < dvec.size(); ++i) {
+	    delete dvec[i];
+	}
+
+	vector<SamplerFactory*> const &svec = samplerFactories();
+	for (unsigned int i = 0; i < svec.size(); ++i) {
+	    delete svec[i];
+	}
     }
+
 }
 
-MIXModule _mix_module;
+mix::MIXModule _mix_module;
