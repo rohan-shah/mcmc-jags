@@ -56,11 +56,13 @@
      NE = 272,
      AND = 273,
      OR = 274,
-     DOUBLE = 275,
-     INT = 276,
-     NOT = 277,
-     NEG = 278,
-     ENDL = 279
+     LENGTH = 275,
+     DIM = 276,
+     DOUBLE = 277,
+     INT = 278,
+     NOT = 279,
+     NEG = 280,
+     ENDL = 281
    };
 #endif
 /* Tokens.  */
@@ -81,11 +83,13 @@
 #define NE 272
 #define AND 273
 #define OR 274
-#define DOUBLE 275
-#define INT 276
-#define NOT 277
-#define NEG 278
-#define ENDL 279
+#define LENGTH 275
+#define DIM 276
+#define DOUBLE 277
+#define INT 278
+#define NOT 279
+#define NEG 280
+#define ENDL 281
 
 
 
@@ -109,7 +113,7 @@ typedef union YYSTYPE
   std::vector<ParseTree*> *pvec;
 }
 /* Line 1489 of yacc.c.  */
-#line 113 "../../../../JAGS/src/lib/compiler/parser.h"
+#line 117 "parser.h"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
