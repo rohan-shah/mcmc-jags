@@ -14,8 +14,8 @@ class Graph;
  *
  * @param snodes Vector of stochastic nodes.
  *
- * @param dtrm_nodes Vector of deterministic descendants of the nodes
- * in the argument snodes, within some (implicitly defined) graph.
+ * @param graph Graph within which testing for linearity takes place.
+ * Paths outside this graph are ignored.
  *
  * @pararm fixed Boolean flag. If true, the function checks for fixed
  * linear functions.
@@ -32,8 +32,8 @@ bool checkLinear(std::vector<StochasticNode *> const &snodes,
  *
  * @param snode Node whose descendants are to be checked.
  *
- * @param graph Deterministic descendents of snode in some (implicitly
- * defined) graph.
+ * @param graph Graph within which testing for linearity takes place.
+ * paths outside this grahp are ignored.
  *
  * @pararm fixed Boolean flag. If true, the function checks for fixed
  * scale transformations.
