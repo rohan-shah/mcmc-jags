@@ -8,6 +8,8 @@
 
 class Graph;
 
+namespace mix {
+
 /**
  * @short Sampler for normal mixture models
  *
@@ -49,48 +51,50 @@ class Graph;
  * of low probability. These elements are controlled by the parameters
  * max_level, delta, and nrep respectively.
  */
-class MixSampler : public Metropolis
-{
-    const unsigned int _max_level;
-    const double _delta; 
-    const unsigned int _nrep;
-    unsigned int _level;
-    double *_lower;
-    double *_upper;
-    unsigned int _n;
-    std::vector<double> _lstep;
-    std::vector<double> _pmean;
-    bool _temper;
-public:
-    /**
-     * Constructor for Mix Sampler with tempered transitions
-     * @param max_level Maximum number of levels 
-     * @param delta Increment in the log temperature at each level. The
-     * maximum temperature reached is thus exp(nlevel * delta).
-     * @param nrep Number of Metropolis-Hastings updates to do at each level
-     */
-    MixSampler(std::vector<StochasticNode*> const &nodes,
-	       unsigned int max_level=50, double delta = 0.10, 
-	       unsigned int nrep = 4);
-    ~MixSampler();
-    /**
-     * At each iteration, MixSampler alternates nrep standard
-     * Metropolis-Hastings updates, and a single tempered transition.
-     */
-    void update(RNG *rng);
-    void rescale(double prob);
-    void transform(double const *v, unsigned int length,
-		   double *nv, unsigned int nlength) const;
-    void untransform(double const *nv, unsigned int nlength,
-		     double *v, unsigned int length) const;
-    static bool canSample(std::vector<StochasticNode *> const &snodes, 
-			  Graph const &graph);
-    /*
-    static void readValues(std::vector<StochasticNode *> const &snodes,
-                           unsigned int chain, double *value,
-                           unsigned int length);
-    */
-    bool checkAdaptation() const;
-};
+    class MixSampler : public Metropolis
+    {
+	const unsigned int _max_level;
+	const double _delta; 
+	const unsigned int _nrep;
+	unsigned int _level;
+	double *_lower;
+	double *_upper;
+	unsigned int _n;
+	std::vector<double> _lstep;
+	std::vector<double> _pmean;
+	bool _temper;
+    public:
+	/**
+	 * Constructor for Mix Sampler with tempered transitions
+	 *
+	 * @param max_level Maximum number of levels 
+	 *
+	 * @param delta Increment in the log temperature at each
+	 * level. The maximum temperature reached is thus exp(nlevel *
+	 * delta).
+	 *
+	 * @param nrep Number of Metropolis-Hastings updates to do at each level
+	 */
+	MixSampler(std::vector<StochasticNode*> const &nodes,
+		   unsigned int max_level=50, double delta = 0.10, 
+		   unsigned int nrep = 4);
+	~MixSampler();
+	/**
+	 * At each iteration, MixSampler alternates nrep standard
+	 * Metropolis-Hastings updates, and a single tempered
+	 * transition.
+	 */
+	void update(RNG *rng);
+	void rescale(double prob);
+	void transform(double const *v, unsigned int length,
+		       double *nv, unsigned int nlength) const;
+	void untransform(double const *nv, unsigned int nlength,
+			 double *v, unsigned int length) const;
+	static bool canSample(std::vector<StochasticNode *> const &snodes, 
+			      Graph const &graph);
+	bool checkAdaptation() const;
+    };
+
+}
 
 #endif /* MIX_SAMPLER_H_ */
