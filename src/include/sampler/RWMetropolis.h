@@ -36,8 +36,6 @@ public:
      * Modifies the scale to achieve the target acceptance probability.
      *
      * @param p acceptance probability at current update
-     * @param accept boolean flag indicating whether the update was
-     * accepted. This parameter is ignored.
      */
     void rescale(double p);
     void update(RNG *rng);
