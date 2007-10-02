@@ -8,30 +8,33 @@ using std::min_element;
 using std::min;
 using std::vector;
 
-Min::Min ()
-  : Function ("min", 0)
-{
-}
+namespace bugs {
 
-void Min::evaluate(double *value,  vector<double const *> const &args,
-		   vector<unsigned int> const &lengths,
-		   vector<vector<unsigned int> > const &dims) const
-{
-  double ans = *min_element(args[0], args[0] + lengths[0]);
-  for (unsigned int i = 1; i < args.size(); ++i) {
-    double mini = *min_element(args[i], args[i] + lengths[i]);
-    ans = min(ans, mini);
-  }
-  *value = ans;
-}
+    Min::Min ()
+	: Function ("min", 0)
+    {
+    }
 
-bool Min::checkParameterDim (vector<vector<unsigned int> > const &dims) const
-{
-  return true;
-}
+    void Min::evaluate(double *value,  vector<double const *> const &args,
+		       vector<unsigned int> const &lengths,
+		       vector<vector<unsigned int> > const &dims) const
+    {
+	double ans = *min_element(args[0], args[0] + lengths[0]);
+	for (unsigned int i = 1; i < args.size(); ++i) {
+	    double mini = *min_element(args[i], args[i] + lengths[i]);
+	    ans = min(ans, mini);
+	}
+	*value = ans;
+    }
 
-bool Min::isDiscreteValued(vector<bool> const &mask) const
-{
-    return allTrue(mask);
-}
+    bool Min::checkParameterDim (vector<vector<unsigned int> > const &dims) const
+    {
+	return true;
+    }
 
+    bool Min::isDiscreteValued(vector<bool> const &mask) const
+    {
+	return allTrue(mask);
+    }
+
+}
