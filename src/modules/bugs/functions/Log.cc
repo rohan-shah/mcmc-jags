@@ -6,18 +6,21 @@
 using std::vector;
 using std::log;
 
+namespace bugs {
 
-Log::Log ()
-  : ScalarFunc ("log", 1)
-{
-}
+    Log::Log ()
+	: ScalarFunc ("log", 1)
+    {
+    }
 
-double Log::evaluateScalar(vector<double const *> const &args) const
-{
-  return log(*args[0]);
-}
+    double Log::evaluateScalar(vector<double const *> const &args) const
+    {
+	return log(*args[0]);
+    }
 
-bool Log::checkScalarValue(vector<double const *> const &args) const
-{
-  return *args[0] >= 0;
+    bool Log::checkScalarValue(vector<double const *> const &args) const
+    {
+	return *args[0] >= 0;
+    }
+
 }
