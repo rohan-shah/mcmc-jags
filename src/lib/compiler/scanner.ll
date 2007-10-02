@@ -23,7 +23,8 @@ BRACKET		[ \t]*\(
 "var"			return VAR;
 "data"                  return DATA;
 "model"			return MODEL;
-
+"length"/{BRACKET}      return LENGTH;
+"dim"/{BRACKET}         return DIM;
 "for"/{BRACKET}        	return FOR;
 "in"/{BRACKET}		return IN;
 "in"                    return IN;

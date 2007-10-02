@@ -59,6 +59,8 @@
 %token FOR
 %token GT GE LT LE EQ NE 
 %token AND OR
+%token LENGTH 
+%token DIM
 
 %token <val> DOUBLE
 %token <val> INT
@@ -221,6 +223,14 @@ sum: expression '+' expression {
 
 expression: var 
 | DOUBLE {$$ = new ParseTree(P_VALUE); $$->setValue($1);}
+| LENGTH '(' var ')' {
+    $$ = new ParseTree(P_LENGTH);
+    setParameters($$,$3);
+}
+| DIM '(' var ')' {
+    $$ = new ParseTree(P_DIM);
+    setParameters($$,$3);
+}
 | FUNC '(' expression_list ')' {
   $$ = new ParseTree(P_FUNCTION); setName($$, $1);
   setParameters($$, $3);
