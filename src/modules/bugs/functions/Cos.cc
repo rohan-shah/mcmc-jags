@@ -6,12 +6,16 @@
 using std::vector;
 using std::cos;
 
-Cos::Cos ()
-  : ScalarFunc ("cos", 1)
-{
-}
+namespace bugs {
 
-double Cos::evaluateScalar(vector<double const *> const &args) const
-{
-  return cos(*args[0]);
+    Cos::Cos ()
+	: ScalarFunc ("cos", 1)
+    {
+    }
+
+    double Cos::evaluateScalar(vector<double const *> const &args) const
+    {
+	return cos(*args[0]);
+    }
+
 }

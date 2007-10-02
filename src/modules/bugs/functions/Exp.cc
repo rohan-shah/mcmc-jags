@@ -7,22 +7,26 @@ using std::vector;
 using std::exp;
 using std::log;
 
-Exp::Exp ()
-  : InverseLinkFunc ("exp", "log")
-{
-}
+namespace bugs {
 
-double Exp::evaluateScalar(vector<double const *> const &args) const
-{
-  return exp(*args[0]);
-}
+    Exp::Exp ()
+	: InverseLinkFunc ("exp", "log")
+    {
+    }
 
-double Exp::link(double mu) const
-{
-  return log(mu);
-}
+    double Exp::evaluateScalar(vector<double const *> const &args) const
+    {
+	return exp(*args[0]);
+    }
 
-double Exp::gradLink(double mu) const
-{
-  return 1/mu;
+    double Exp::link(double mu) const
+    {
+	return log(mu);
+    }
+
+    double Exp::gradLink(double mu) const
+    {
+	return 1/mu;
+    }
+
 }

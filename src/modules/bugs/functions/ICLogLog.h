@@ -3,21 +3,25 @@
 
 #include <function/InverseLinkFunc.h>
 
-/**
- * @short inverse complementary log log link
- * @see CLogLog
- * <pre>
- * cloglog(y) <- a + b*x
- * y <- icloglog(a + b*x)
- * </pre>
- */
-class ICLogLog : public InverseLinkFunc
-{
-public:
-    ICLogLog ();
-    double evaluateScalar(std::vector<double const *> const &args) const;
-    double link(double y) const;
-    double gradLink(double y) const;
-};
+namespace bugs {
+
+    /**
+     * @short inverse complementary log log link
+     * @see CLogLog
+     * <pre>
+     * cloglog(y) <- a + b*x
+     * y <- icloglog(a + b*x)
+     * </pre>
+     */
+    class ICLogLog : public InverseLinkFunc
+    {
+    public:
+	ICLogLog ();
+	double evaluateScalar(std::vector<double const *> const &args) const;
+	double link(double y) const;
+	double gradLink(double y) const;
+    };
+
+}
 
 #endif /* FUNC_ICLOGLOG_H_ */

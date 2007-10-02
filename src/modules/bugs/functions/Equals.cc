@@ -7,16 +7,20 @@
 using std::vector;
 using std::fabs;
 
-Equals::Equals () : ScalarFunc ("equals",2)
-{
-}
+namespace bugs {
 
-double Equals::evaluateScalar(vector<double const *> const &args) const
-{
-  return fabs(*args[0] - *args[1]) < 16 *DBL_EPSILON;
-}
+    Equals::Equals () : ScalarFunc ("equals",2)
+    {
+    }
 
-bool Equals::isDiscreteValued(std::vector<bool> const &mask) const
-{
-  return true;
+    double Equals::evaluateScalar(vector<double const *> const &args) const
+    {
+	return fabs(*args[0] - *args[1]) < 16 *DBL_EPSILON;
+    }
+
+    bool Equals::isDiscreteValued(std::vector<bool> const &mask) const
+    {
+	return true;
+    }
+
 }

@@ -7,23 +7,26 @@ using std::vector;
 using std::log;
 using std::exp;
 
-ICLogLog::ICLogLog(): InverseLinkFunc("icloglog", "cloglog")
-{
-}
+namespace bugs {
 
-double
-ICLogLog::evaluateScalar(vector <double const *> const &args) const
-{
-  return 1 - exp(-exp(*args[0]));
-}
+    ICLogLog::ICLogLog(): InverseLinkFunc("icloglog", "cloglog")
+    {
+    }
 
-double ICLogLog::link(double mu) const
-{
-  return log (-log (1 - mu));
-}
+    double
+    ICLogLog::evaluateScalar(vector <double const *> const &args) const
+    {
+	return 1 - exp(-exp(*args[0]));
+    }
 
-double ICLogLog::gradLink(double mu) const
-{
-  return -1/((1-mu)*log(1-mu));
-}
+    double ICLogLog::link(double mu) const
+    {
+	return log (-log (1 - mu));
+    }
 
+    double ICLogLog::gradLink(double mu) const
+    {
+	return -1/((1-mu)*log(1-mu));
+    }
+
+}
