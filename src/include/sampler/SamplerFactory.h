@@ -10,8 +10,6 @@ class Graph;
 
 /**
  * @short Factory for Sampler objects
- *
- * 
  */
 class SamplerFactory
 {
