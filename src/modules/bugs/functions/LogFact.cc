@@ -5,17 +5,21 @@
 
 using std::vector;
 
-LogFact::LogFact ()
-  : ScalarFunc ("logfact", 1)
-{
-}
+namespace bugs {
 
-double LogFact::evaluateScalar(vector<double const *> const &args) const
-{
-  return lgammafn(*args[0] + 1);
-}
+    LogFact::LogFact ()
+	: ScalarFunc ("logfact", 1)
+    {
+    }
 
-bool LogFact::checkScalarValue(vector<double const *> const &args) const
-{
-  return *args[0] > -1;
+    double LogFact::evaluateScalar(vector<double const *> const &args) const
+    {
+	return lgammafn(*args[0] + 1);
+    }
+
+    bool LogFact::checkScalarValue(vector<double const *> const &args) const
+    {
+	return *args[0] > -1;
+    }
+
 }

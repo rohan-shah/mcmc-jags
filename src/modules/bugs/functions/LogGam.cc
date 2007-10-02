@@ -5,17 +5,21 @@
 
 using std::vector;
 
-LogGam::LogGam ()
-  : ScalarFunc ("loggam", 1)
-{
-}
+namespace bugs {
 
-double LogGam::evaluateScalar(vector<double const *> const &args) const
-{
-  return lgammafn (*args[0]);
-}
+    LogGam::LogGam ()
+	: ScalarFunc ("loggam", 1)
+    {
+    }
 
-bool LogGam::checkScalarValue(vector<double const *> const &args) const
-{
-  return *args[0] > 0;
+    double LogGam::evaluateScalar(vector<double const *> const &args) const
+    {
+	return lgammafn (*args[0]);
+    }
+
+    bool LogGam::checkScalarValue(vector<double const *> const &args) const
+    {
+	return *args[0] > 0;
+    }
+
 }

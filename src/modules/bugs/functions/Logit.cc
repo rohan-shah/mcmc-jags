@@ -6,18 +6,22 @@
 using std::vector;
 using std::log;
 
-Logit::Logit ():ScalarFunc ("logit", 1)
-{
-}
+namespace bugs {
 
-double Logit::evaluateScalar(vector <double const *> const &args) const
-{
-  double arg = *args[0];
-  return log (arg / (1 - arg));
-}
+    Logit::Logit ():ScalarFunc ("logit", 1)
+    {
+    }
 
-bool Logit::checkScalarValue (vector <double const *> const &args) const
-{
-  double arg = *args[0];
-  return (arg >= 0 && arg <= 1);
+    double Logit::evaluateScalar(vector <double const *> const &args) const
+    {
+	double arg = *args[0];
+	return log (arg / (1 - arg));
+    }
+
+    bool Logit::checkScalarValue (vector <double const *> const &args) const
+    {
+	double arg = *args[0];
+	return (arg >= 0 && arg <= 1);
+    }
+
 }
