@@ -4,20 +4,33 @@
 
 #include <sstream>
 #include <cmath>
+#include <algorithm>
 
 using std::vector;
 using std::string;
 using std::ostringstream;
 using std::floor;
+using std::copy;
 
 ConstantNode::ConstantNode(double value, unsigned int nchain)
   : Node(vector<unsigned int>(1,1), nchain)
 {
-  setObserved(&value, 1);
-  //FIXME: This should be done within the setObserved function
-  if (value == floor(value)) {
-      setDiscreteValued();
-  }
+    setObserved(&value, 1);
+    //FIXME: This should be done within the setObserved function
+    if (value == floor(value)) {
+	setDiscreteValued();
+    }
+}
+
+ConstantNode::ConstantNode(vector<unsigned int> const &dim, 
+			   vector<double> const &value,
+			   unsigned int nchain)
+    : Node(dim, nchain)
+{
+    double *v = new double[value.size()];
+    copy(value.begin(),value.end(),v);
+    setObserved(v, value.size());
+    delete [] v;
 }
 
 void ConstantNode::deterministicSample(unsigned int) {}
@@ -54,3 +67,4 @@ bool ConstantNode::isRandomVariable() const
 {
     return true;
 }
+

@@ -29,6 +29,9 @@ static vector<unsigned int> mkDim(Function const *func,
   for (unsigned int j = 0; j < parents.size(); ++j) {
     parameter_dims[j] = parents[j]->dim();
   }
+  if (!func) {
+    throw logic_error("NULL function in LogicalNode constructor");
+  }
   if (!func->checkParameterLength(parameter_dims.size())) {
     //FIXME: logic_error or runtime_error?
     throw runtime_error(string("Incorrect number of parameters for function ")
