@@ -43,7 +43,7 @@ double DMT::logLikelihood(double const *x, unsigned int m,
     delete [] delta;
 
     double d = m; // Avoid problems with integer division
-    return -((k + d)/2) * (1 + ip/k) + logdet(T, m)/2 +
+    return -((k + d)/2) * log(1 + ip/k) + logdet(T, m)/2 +
 	lgamma((k + d)/2) - lgamma(k/2) - (d/2) * log(k) - (d/2) * log(M_PI);
 }
 
