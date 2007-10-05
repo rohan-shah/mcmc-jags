@@ -6,12 +6,15 @@
 
 #include <stdexcept>
 #include <cmath>
+#include <algorithm>
 
 using std::string;
 using std::vector;
 using std::length_error;
 using std::logic_error;
 using std::log;
+using std::min;
+using std::max;
 
 double DistScalarRmath::calPlower(double lower, 
 				  vector<double const*> const &parameters) const
@@ -47,12 +50,12 @@ DistScalarRmath::typicalValue(vector<double const *> const &parameters,
     double plower = 0, pupper = 1;
     
     if (lower) {
-	llimit = fmax(llimit, *lower);
+	llimit = max(llimit, *lower);
 	plower = calPlower(llimit, parameters);
     }
 
     if (upper) {
-	ulimit = fmin(ulimit, *upper);
+	ulimit = min(ulimit, *upper);
 	pupper = calPupper(ulimit, parameters);
     }
     
