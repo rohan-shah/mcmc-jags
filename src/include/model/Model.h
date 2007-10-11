@@ -70,7 +70,7 @@ public:
   void initialize(bool datagen);
   /** Returns true if the model has been initialized */
   bool isInitialized();
-  /** 
+  /**
    * Updates the model by the given number of iterations. A
    * logic_error is thrown if the model is uninitialized.
    *

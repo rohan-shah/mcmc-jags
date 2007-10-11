@@ -25,7 +25,7 @@ class BUGSModel : public Model
     std::list<Monitor*> _bugs_monitors;
 public:
     BUGSModel(unsigned int nchain);
-    
+    ~BUGSModel();
     /**
      * Returns the symbol table of the BUGSModel.
      */
@@ -107,26 +107,32 @@ public:
     void setParameters(std::map<std::string, SArray> const &param_table,
 		       unsigned int chain);
     /**
-     * Creates a new TraceMonitor. The TraceMonitor subclass has a
-     * special status for historical reasons, due to the need to
-     * support the CODA output format. The BUGSModel maintains it's
-     * own list of TraceMonitors and is also responsible for their
-     * memory management.
+     * Creates a new Monitor. The BUGSModel is responsible for the
+     * memory management of any monitor created this way. It is not
+     * possible to create two monitors with the same name, range and
+     * type.
+     *
+     * @param name Name of the node array
+     *
+     * @param range Subset of indices of the node array defining hte
+     * node to be monitored.
+     * 
+     * @param thin Thinning interval for monitor
+     *
+     * @param type Type of monitor to create
+     *
+     * @return True if the monitor was created.  
      */
     bool setMonitor(std::string const &name, Range const &range,
 		    unsigned int thin, std::string const &type);
     /**
-     * Deletes a TraceMonitor.  The TraceMonitor is removed both from
-     * the list of Monitors held by the parent class Monitor, and from
-     * the list of TraceMonitors accessed by the member function
-     * BUGSModel#traceMonitor. It is then deleted.
+     * Deletes a Monitor that has been previously created with a call
+     * to setMonitor.
+     *
+     * @return True if the monitor was deleted.
      */
     bool deleteMonitor(std::string const &name, Range const &range,
 		       std::string const &type);
-    /**
-     * Returns the list of TraceMonitors belonging to the BUGSModel.
-     */
-    //std::list<TraceMonitor const *> const &traceMonitors() const;
 };
 
 #endif /* BUGS_MODEL_H_ */
