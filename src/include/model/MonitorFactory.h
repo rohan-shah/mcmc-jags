@@ -8,6 +8,9 @@ class Monitor;
 class Node;
 class Model;
 
+/**
+ * @short Factory for Monitor objects
+ */
 class MonitorFactory {
 public:
     virtual ~MonitorFactory();
