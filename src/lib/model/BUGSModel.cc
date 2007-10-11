@@ -37,6 +37,21 @@ BUGSModel::BUGSModel(unsigned int nchain)
 {
 }
 
+BUGSModel::~BUGSModel()
+{
+    for (list<Monitor*>::iterator i = _bugs_monitors.begin();
+	 i != _bugs_monitors.end(); ++i)
+    {
+	if ((*i)->node() == node && (*i)->type() == type) {
+	    Monitor *monitor = *i;
+	    removeMonitor(monitor);
+	    _bugs_monitors.erase(i);
+	    delete monitor;
+	}
+    }
+
+}
+
 SymTab &BUGSModel::symtab() 
 {
   return _symtab;
@@ -344,28 +359,4 @@ bool BUGSModel::deleteMonitor(string const &name, Range const &range,
 	}
     }
     return false;
-
-    /*
-    pair<string, Range> nodeid(name, range);
-    map<pair<string, Range>, TraceMonitor*>::iterator p =
-	_trace_map.find(nodeid);
-    
-    if (p == _trace_map.end()) {
-	return false;
-    }
-    else {
-	removeMonitor(p->second);
-	_trace_map.erase(p);
-	_trace_monitors.remove(p->second);
-	delete p->second;
-	return true;
-    }
-    */
 }
-
-/*
-list<TraceMonitor const *> const &BUGSModel::traceMonitors() const
-{
-    return _trace_monitors;
-}
-*/
