@@ -42,12 +42,10 @@ BUGSModel::~BUGSModel()
     for (list<Monitor*>::iterator i = _bugs_monitors.begin();
 	 i != _bugs_monitors.end(); ++i)
     {
-	if ((*i)->node() == node && (*i)->type() == type) {
-	    Monitor *monitor = *i;
-	    removeMonitor(monitor);
-	    _bugs_monitors.erase(i);
-	    delete monitor;
-	}
+	Monitor *monitor = *i;
+	removeMonitor(monitor);
+	_bugs_monitors.erase(i);
+	delete monitor;
     }
 
 }

@@ -16,7 +16,7 @@ static vector<Node const *> mkParents(set<StochasticNode const *> const &param)
       par.push_back(*p);
       /* The parents of a deviance node include not only the given
 	 parameters, but also their parents */
-      vector <Node const *> const &parents = param->parents();
+      vector <Node const *> const &parents = (*p)->parents();
       for (unsigned int i = 0; i < parents.size(); ++i) {
 	  par.push_back(parents[i]);
       }
