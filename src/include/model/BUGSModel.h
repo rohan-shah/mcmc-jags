@@ -9,8 +9,6 @@
 #include <model/Model.h>
 #include <model/SymTab.h>
 
-class TraceMonitor;
-
 /**
  * @short Model with symbol table 
  *

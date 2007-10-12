@@ -6,11 +6,6 @@ using std::vector;
 using std::set;
 using std::logic_error;
 
-/* FIXME! To be correct, the parents of a deviance node should be
- * not only the observed stochastic nodes, but also the parents of
- * those nodes.  This doesn't seem to be causing any trouble now,
- * but it is still wrong
- */
 static vector<Node const *> mkParents(set<StochasticNode const *> const &param)
 {
    vector <Node const *> par;
@@ -19,6 +14,12 @@ static vector<Node const *> mkParents(set<StochasticNode const *> const &param)
    set<StochasticNode const *>::const_iterator p;
    for (p = param.begin(); p != param.end(); ++p) {
       par.push_back(*p);
+      /* The parents of a deviance node include not only the given
+	 parameters, but also their parents */
+      vector <Node const *> const &parents = param->parents();
+      for (unsigned int i = 0; i < parents.size(); ++i) {
+	  par.push_back(parents[i]);
+      }
    }
 
    if (par.empty()) {
