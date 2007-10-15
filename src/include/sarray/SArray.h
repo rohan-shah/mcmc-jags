@@ -3,15 +3,17 @@
 
 #include <sarray/Range.h>
 
+#include <vector>
+
 /**
  * @short multi-dimensional real-valued array
  *
- * An SArray represents a multi-dimensional array of double precision values
+ * An SArray represents a multi-dimensional array of double precision values.
  */
 class SArray 
 {
     Range const _range;
-    double *_value;
+    std::vector<double> _value;
     bool _discrete;
     SArray &operator=(SArray const &rhs);
 public:
@@ -25,26 +27,28 @@ public:
      */
     SArray(std::vector<unsigned int> const &dim);
     /**
-     * Copy constructor. 
+     * Copy constructor.
      *
-     * Note that the assignment operator of the SArray class is declared
-     * private, and so cannot be used.  An SArray can only be copied by a
-     * constructor. This ensures that, once constructed, an SArray cannot
-     * change its length or dimension.
+     * Note that the assignment operator of the SArray class is
+     * declared private, and so cannot be used.  An SArray can only be
+     * copied by a constructor. This ensures that, once constructed,
+     * an SArray cannot change its length or dimension.
      */
     SArray(SArray const &orig);
-    ~SArray();
     /**
-     * Sets the value of an SArray. 
+     * Sets the value of an SArray.
      *
-     * @param value Array of values to be assigned.
-     *
-     * @param length Length of value argument. This must match the length
-     * of the SArray or a length_error will be thrown.
+     * @param value vector of values to be assigned. The size of this
+     * vector must match the length of the SArray or a length_error
+     * exception will be thrown.
      *
      * @exception length_error
      */
-    void setValue(double const *value, unsigned int length);
+    void setValue(std::vector<double> const &value);
+    /**
+     * Sets the value of an SArray to an integer vector
+     */
+    void setValue(std::vector<int> const &value);
     /**
      * Sets the value of a single element of SArray
      *
@@ -54,26 +58,14 @@ public:
      */
     void setValue(double value, unsigned int offset);
     /**
-     * The value of the SArray in array form. 
+     * The value of the SArray . 
      *
-     * Values are given in column-major order (i.e. with
-     * the left hand index moving fastest), like the S language and Fortran. 
+     * Values are given in column-major order (i.e. with the left hand
+     * index moving fastest), like the S language and Fortran.
      *
-     * @return A pointer to the beginning of the value array.
+     * @return A reference to a vector of values.
      */
-    double const *value() const;
-    /**
-     * Sets the array to be integer-valued (true) or real-valued
-     * (false).
-     *
-     * Currently, the integer-value flag of an SArray is purely
-     * semantic: the storage type of the values is always double, and
-     * the values are never checked to see if they are consistent with
-     * the integer-value flag. This semantic information may be used,
-     * however, in other parts of the JAGS library: for example, to
-     * see whether the value of the SArray would be a valid subscript.
-     */
-    void setDiscreteValued(bool flag);
+    std::vector<double> const &value() const;
     /**
      * Indicates whether the SArray should contain integer-values or
      * real values.
@@ -83,8 +75,7 @@ public:
      * Returns the range associated with the SArray.
      */
     Range const &range() const;
-    /**
-     * It is convenient to inline these functions so that an SArray
+    /* It is convenient to inline these functions so that an SArray
      * can be thought of as having some of the dimension attributes
      * of its associated range.
      */

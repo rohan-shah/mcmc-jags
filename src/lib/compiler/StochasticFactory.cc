@@ -37,7 +37,8 @@ bool lt(StochasticTrio const &arg1, StochasticTrio const &arg2)
 	    return false;
 	}
 	else {
-	    return lt(arg1.data.value(), arg2.data.value(), arg1.data.length());
+	    //return lt(arg1.data.value(), arg2.data.value(), arg1.data.length());
+	    return lt(arg1.data.value(), arg2.data.value());
 	}
     }
 }
@@ -70,7 +71,8 @@ StochasticFactory::getStochasticNode(Distribution const *dist,
     else {
 	// Create a new stochastic node
 	StochasticNode *snode = new StochasticNode(dist, parents);
-	snode->setObserved(data.value(), data.length());
+	//snode->setObserved(data.value(), data.length());
+	snode->setObserved(data.value());
 	_stochasticmap[strio] = snode;
 	graph.add(snode);
 	return snode;

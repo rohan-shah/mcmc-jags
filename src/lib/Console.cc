@@ -3,7 +3,6 @@
 #include <compiler/Compiler.h>
 #include <compiler/parser_extra.h>
 #include <compiler/ParseTree.h>
-//#include <model/TraceMonitor.h>
 #include <model/Monitor.h>
 #include <model/BUGSModel.h>
 #include <graph/NodeError.h>
@@ -513,10 +512,7 @@ bool Console::dumpState(map<string,SArray> &data_table,
 	
 	vector<unsigned int> dimrng(1,rngstate.size());
 	SArray rngsarray(dimrng);
-	rngsarray.setDiscreteValued(true);
-	for (unsigned i = 0; i < rngstate.size(); ++i) {
-	  rngsarray.setValue(rngstate[i], i);
-	}
+	rngsarray.setValue(rngstate);
 	
 	data_table.insert(pair<string, SArray>(".RNG.state",rngsarray));
 	rng_name = _model->rng(chain - 1)->name();
@@ -564,20 +560,6 @@ bool Console::dumpMonitors(map<string,SArray> &data_table,
 		Node const *node = monitor->node();
 		string name = _model->symtab().getName(node);
 		
-		/*
-		//The new SArray has the same dimensions as the
-		//monitored node, plus an extra one for the 
-		//iterations. We put the extra dimension first.
-		unsigned int niter = monitor->niter();
-		unsigned int ndim = node->dim().size();
-		vector<unsigned int> dim(ndim + 1);
-		dim[0] = niter;
-		unsigned int length = 1;
-		for (unsigned int i = 1; i <= ndim; ++i) {
-		    dim[i] = node->dim()[i-1];
-		    length *= dim[i];
-		}
-		*/
 
 		//FIXME: Will need to call aperm in rjags interface
 		//as extra dimension for TraceMonitors now goes LAST.
@@ -585,30 +567,14 @@ bool Console::dumpMonitors(map<string,SArray> &data_table,
 		vector<unsigned int> dim = monitor->dim();
 		unsigned int length = product(dim);
 
-		/*
 		//Create a new SArray and insert it into the table
 		SArray ans(dim);
-		double *values = new double[length * niter];
-		vector<double> const &monitor_values = monitor->value(chain);
-		for (unsigned int i = 0; i < length; ++i) {
-		    for (unsigned int j = 0; j < niter; ++j) {
-			values[niter * i + j] = monitor_values[length * j + i];
-		    }
-		}
-		ans.setValue(values, length*niter);
-		delete [] values;
-		*/
-
-		//Create a new SArray and insert it into the table
-		SArray ans(dim);
-		double *values = new double[length];
+		vector<double> values(length);
 		vector<double> const &monitor_values = monitor->value(chain);
 		for (unsigned int i = 0; i < length; ++i) {
 		    values[i] = monitor_values[i];
 		}
-		ans.setValue(values, length);
-		delete [] values;
-
+		ans.setValue(values);
 		data_table.insert(pair<string,SArray>(name, ans));
 
 		unsigned int fweight = monitor->freqWeight();
@@ -678,29 +644,6 @@ bool Console::coda(vector<pair<string, Range> > const &nodes,
 	return false;
     }
 
-    /*
-    NodeArray *array = _model->symtab().getVariable(name);
-    if (!array) {
-	_err << name << " not found" << endl;
-	return false;
-    }
-
-    Node *node = 0;
-    if (isNULL(range)) {
-	node = array->getSubset(array->range(), _model->graph());
-    }
-    else if (array->range().contains(range)) {
-	node = array->getSubset(range, _model->graph());
-    }
-    else {
-	_err << "Requested invalid subset of node " << name << endl;
-	return false;
-    }
-    if (!node) {
-	_err << "Node is not being monitored" << endl;
-	return false;
-    }
-    */
 
     try {
         string warn;
@@ -732,26 +675,6 @@ BUGSModel const *Console::model()
 {
   return _model;
 }
-
-/*
-void jags_set_seed(unsigned int seed)
-{
-  // Given a single seed, calculates seeds for the Marsaglia
-  // Multicarry random number generator
-  unsigned int mmseeds[2];
-  for(int j = 0; j < 2; j++) {
-    seed = (69069 * seed + 1);
-    mmseeds[j] = seed;
-  }
-  // Fix up zero seeds 
-  if (mmseeds[0] == 0)
-    mmseeds[0] = 1;
-  if (mmseeds[1] == 0)
-    mmseeds[1] = 1;
-
-  set_seed(mmseeds[0], mmseeds[1]);
-}
-*/
 
 unsigned int Console::nchain() const
 {
@@ -801,43 +724,3 @@ bool Console::isAdapting() const
     return _model ? _model->isAdapting() : false;
 }
 
-/*
-bool Console::setRNGseed(SArray const &seed, unsigned int chain)
-{
-  if (_model == 0) {
-    _err << "Can't set RNG seed. No model!" << endl;    
-    return false;
-  }
-  if (seed.length() != 1) {
-    _err << "Seed must be a single integer\n";
-    return false;
-  }
-  if (chain == 0 || chain > _model->nchain()) {
-    _err << "Invalid chain number\n";
-    return false;
-  }
-
-  int iseed = static_cast<int>(*seed.value());
-  _model->rng(chain-1)->init(iseed);
-  return true;
-}
-
-bool Console::setRNGstate(SArray const &state, unsigned int chain)
-{
-  if (_model == 0) {
-    _err << "Can't set RNG state. No model!" << endl;    
-    return false;
-  }
-  vector<int>(istate);
-  double const *value = state.value();
-  for (unsigned int i = 0; i < state.length(); ++i) {
-    istate.push_back(static_cast<int>(value[i]));
-  }
-
-  if (_model->rng(chain-1)->setState(istate) == false) {
-    _err << "Invalid RNG state\n";
-    return false;
-  }
-  return true;
-}
-*/

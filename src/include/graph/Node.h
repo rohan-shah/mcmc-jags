@@ -161,7 +161,9 @@ public:
      *
      * @param length length of the value array
      */
-    void setObserved(double const *value, unsigned int length);
+    //void setObserved(double const *value, unsigned int length);
+    //FIXME
+    void setObserved(std::vector<double> const &value);
     /**
      * Indicates whether the node is observed. 
      */
