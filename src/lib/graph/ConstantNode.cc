@@ -15,7 +15,7 @@ using std::copy;
 ConstantNode::ConstantNode(double value, unsigned int nchain)
   : Node(vector<unsigned int>(1,1), nchain)
 {
-    setObserved(&value, 1);
+    setObserved(vector<double>(1,value));
     //FIXME: This should be done within the setObserved function
     if (value == floor(value)) {
 	setDiscreteValued();
@@ -27,10 +27,7 @@ ConstantNode::ConstantNode(vector<unsigned int> const &dim,
 			   unsigned int nchain)
     : Node(dim, nchain)
 {
-    double *v = new double[value.size()];
-    copy(value.begin(),value.end(),v);
-    setObserved(v, value.size());
-    delete [] v;
+    setObserved(value);
 }
 
 void ConstantNode::deterministicSample(unsigned int) {}

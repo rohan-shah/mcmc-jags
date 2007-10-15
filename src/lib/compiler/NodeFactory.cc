@@ -21,6 +21,20 @@ bool lt(double const *value1, double const *value2, unsigned int length)
     return false;
 }
 
+/* Comparison function for STL vectors of equal length */
+bool lt(vector<double> const &value1, vector<double> const &value2)
+{
+    for (unsigned long i = 0; i < value1.size(); ++i) {
+        if (lt(value1[i], value2[i])) {
+            return true;
+        }
+        else if (lt(value2[i], value1[i])) {
+            return false;
+        }
+    }
+    return false;
+}
+
 /* Comparison function for Nodes */
 bool lt(Node const *node1, Node const *node2)
 {

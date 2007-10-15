@@ -111,15 +111,14 @@ bool readRData(std::vector<ParseTree*> const *array_list,
 	  }
 
 	  /* Get the data */
-	  double *values = new double[length];
+	  vector<double> values(length);
 	  for (unsigned long i = 0; i < length; ++i) {
 	    values[i] = vec->parameters()[i]->value();
 	  }
 
 	  /* Now assign it to an SArray */
 	  SArray sarray(dim);
-	  sarray.setValue(values, length);
-	  delete [] values;
+	  sarray.setValue(values);
     
 	  /* Since there is no default constructor for SArray, we can't
 	     use the shorthand table[names[i]] = par;

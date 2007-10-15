@@ -275,10 +275,10 @@ void BUGSModel::setParameters(std::map<std::string, SArray> const &param_table,
 	if (seed.length() != 1) {
 	    throw runtime_error(".RNG.seed must be a single integer");
 	}
-	if (*seed.value() < 0) {
+	if (seed.value()[0] < 0) {
 	    throw runtime_error(".RNG.seed must be non-negative");
 	}
-	int iseed = static_cast<int>(*seed.value());
+	int iseed = static_cast<int>(seed.value()[0]);
 	rng(chain)->init(iseed);
     }
 
@@ -289,7 +289,8 @@ void BUGSModel::setParameters(std::map<std::string, SArray> const &param_table,
 	}
 	SArray const &state = param_table.find(".RNG.state")->second;
 	vector<int>(istate);
-	double const *value = state.value();
+	//double const *value = state.value();
+	vector<double> const &value = state.value();
 	for (unsigned int i = 0; i < state.length(); ++i) {
 	    istate.push_back(static_cast<int>(value[i]));
 	}

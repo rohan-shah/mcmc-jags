@@ -90,7 +90,8 @@ Node * Compiler::constFromTable(ParseTree const *p)
             
 	    RangeIterator i(subset_range);
 	    unsigned int n = subset_range.length();
-	    double const *v = sarray.value();
+	    //double const *v = sarray.value();
+	    vector<double> const &v = sarray.value();
             vector<double> value(n);
 	    for (unsigned int j = 0; j < n; ++j, i.nextLeft()) {
 		unsigned int offset = sarray.range().leftOffset(i);
@@ -698,7 +699,8 @@ Node * Compiler::allocateStochastic(ParseTree const *stoch_relation)
     if (q != _data_table.end() && lBound == 0 && uBound == 0) {
 	/* FIXME: Currently restricted to unbounded nodes */
 	SArray const &data = q->second;
-	double const *data_value = data.value();
+	//double const *data_value = data.value();
+	vector<double> const &data_value = data.value();
 	Range target_range = VariableSubsetRange(var);
 	bool isdata = true;
 	SArray this_data(target_range.dim(true));
@@ -859,44 +861,44 @@ void Compiler::getArrayDim(ParseTree const *p)
 
 void Compiler::writeConstantData(ParseTree const *relations)
 {
-  /* 
-     Values supplied in the data table, but which DO NOT
-     appear on the left-hand side of a relation, are constants.
-     We have to find these values in order to create the 
-     constant nodes that form the top level of any graphical
-     model.
-  */
+    /* 
+       Values supplied in the data table, but which DO NOT
+       appear on the left-hand side of a relation, are constants.
+       We have to find these values in order to create the 
+       constant nodes that form the top level of any graphical
+       model.
+    */
 
-  //First we set up the constant mask, setting all values to true by
-  //default
-  map<string, SArray>::const_iterator p;
-  for (p = _data_table.begin(); p != _data_table.end(); ++p) {
-    pair<string,vector<bool> > apair;
-    apair.first = p->first;
-    apair.second = vector<bool>(p->second.length(), true);
-    _constant_mask.insert(apair);
-  }
-
-  //Now traverse the parse tree, setting node array subsets that
-  //correspond to the left-hand side of any relation to be false
-  traverseTree(relations, &Compiler::setConstantMask);
-
-  //Create a temporary copy of the data table containing only
-  //data for constant nodes
-  map<string, SArray> temp_data_table = _data_table;
-  map<string, SArray>::iterator p2;
-  for(p2 = temp_data_table.begin(); p2 != temp_data_table.end(); ++p2) {
-    string const &name = p2->first;
-    SArray &temp_data = p2->second;
-    vector<bool> const &mask = _constant_mask.find(name)->second;
-    for (unsigned long i = 0; i < temp_data.length(); ++i) {
-      if (!mask[i]) {
-	temp_data.setValue(JAGS_NA, i);
-      }
+    //First we set up the constant mask, setting all values to true by
+    //default
+    map<string, SArray>::const_iterator p;
+    for (p = _data_table.begin(); p != _data_table.end(); ++p) {
+	pair<string, vector<bool> > apair;
+	apair.first = p->first;
+	apair.second = vector<bool>(p->second.length(), true);
+	_constant_mask.insert(apair);
     }
-  }
 
-  _model.symtab().writeData(temp_data_table);
+    //Now traverse the parse tree, setting node array subsets that
+    //correspond to the left-hand side of any relation to be false
+    traverseTree(relations, &Compiler::setConstantMask);
+
+    //Create a temporary copy of the data table containing only
+    //data for constant nodes
+    map<string, SArray> temp_data_table = _data_table;
+    map<string, SArray>::iterator p2;
+    for(p2 = temp_data_table.begin(); p2 != temp_data_table.end(); ++p2) {
+	string const &name = p2->first;
+	SArray &temp_data = p2->second;
+	vector<bool> const &mask = _constant_mask.find(name)->second;
+	for (unsigned long i = 0; i < temp_data.length(); ++i) {
+	    if (!mask[i]) {
+		temp_data.setValue(JAGS_NA, i);
+	    }
+	}
+    }
+
+    _model.symtab().writeData(temp_data_table);
 }
 
 void Compiler::writeRelations(ParseTree const *relations)

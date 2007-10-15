@@ -148,7 +148,8 @@ void NodeArray::setValue(SArray const &value, unsigned int chain)
 	throw runtime_error(string("Dimension mismatch when setting value of node array ") + name());
     }
   
-    double const *x = value.value();
+    //double const *x = value.value(); FIXME: old interface
+    vector<double> const &x = value.value();
     unsigned int N = value.length();
 
     //Gather all the nodes for which a data value is supplied
@@ -203,31 +204,28 @@ void NodeArray::setValue(SArray const &value, unsigned int chain)
     delete [] node_value;
 }
 
-void NodeArray::getValue(SArray &value, unsigned int chain, bool (*condition)(Node const *)) const
+void NodeArray::getValue(SArray &value, unsigned int chain, 
+			 bool (*condition)(Node const *)) const
 {
-  if (!(_range == value.range())) {
-    string msg("Dimension mismatch when getting value of node array ");
-    msg.append(name());
-    throw runtime_error(msg);
-  }
-
-  unsigned int array_length = _range.length();
-  vector<double> array_value(array_length);
-  //FIXME: Old interface
-//double *array_value = new double[array_length];
-  for (unsigned int j = 0; j < array_length; ++j) {
-    Node const *node = _node_pointers[j];
-    if (node && condition(node)) {
-      array_value[j] = node->value(chain)[_offsets[j]];
+    if (!(_range == value.range())) {
+	string msg("Dimension mismatch when getting value of node array ");
+	msg.append(name());
+	throw runtime_error(msg);
     }
-    else {
-      array_value[j] = JAGS_NA;
-    }
-  }
 
-  value.setValue(array_value);
-  //value.setValue(array_value, array_length);
-  //delete [] array_value;
+    unsigned int array_length = _range.length();
+    vector<double> array_value(array_length);
+    for (unsigned int j = 0; j < array_length; ++j) {
+	Node const *node = _node_pointers[j];
+	if (node && condition(node)) {
+	    array_value[j] = node->value(chain)[_offsets[j]];
+	}
+	else {
+	    array_value[j] = JAGS_NA;
+	}
+    }
+
+    value.setValue(array_value);
 }
 
 //FIXME: A lot of code overlap with setValue here.
@@ -240,7 +238,8 @@ void NodeArray::setData(SArray const &value, Graph &graph)
   }
 
   unsigned int N = value.length();  
-  double const *x = value.value();
+  vector<double> const &x = value.value();
+  //double const *x = value.value(); FIXME: old interface
   
   //Gather all the nodes for which a data value is supplied
   set<Node*> setnodes;

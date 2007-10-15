@@ -789,7 +789,7 @@ void doDump(std::string const &file, DumpType type, unsigned int chain)
        p != data_table.end(); ++p) {
     std::string const &name = p->first;
     SArray const &sarray = p->second;
-    double const *value = sarray.value();
+    std::vector<double> const &value = sarray.value();
     long length = sarray.length();
     out << "\"" << name << "\" <- " << std::endl;
     std::vector<unsigned int> const &dim = sarray.dim(false);
@@ -866,7 +866,7 @@ void dumpMonitors(std::string const &file, std::string const &type,
     for (p = data_table.begin(); p != data_table.end(); ++p) {
 	std::string const &name = p->first;
 	SArray const &sarray = p->second;
-	double const *value = sarray.value();
+	std::vector<double> const &value = sarray.value();
 	long length = sarray.length();
 
 	if (p != data_table.begin()) {

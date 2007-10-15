@@ -3,34 +3,21 @@
 #include <sarray/nainf.h>
 
 #include <stdexcept>
+#include <algorithm>
 
 using std::vector;
 using std::logic_error;
 using std::length_error;
+using std::copy;
 
 SArray::SArray(vector<unsigned int> const &dim)
-    : _range(dim), _value(0), _discrete(false)
+    : _range(dim), _value(_range.length(), JAGS_NA), _discrete(false)
 {
-    unsigned int n = _range.length();
-    _value = new double[n];
-    for (unsigned int i = 0; i < n; ++i) {
-	_value[i] = JAGS_NA;
-    }
 }
 
 SArray::SArray(SArray const &orig)
-    : _range(orig._range), _value(0), _discrete(orig._discrete)
+    : _range(orig._range), _value(orig._value), _discrete(orig._discrete)
 {
-    unsigned int n = _range.length();
-    _value = new double[n];
-    for (unsigned int i = 0; i < n; ++i) {
-	_value[i] = orig._value[i];
-    }
-}
-
-SArray::~SArray()
-{
-    delete [] _value;
 }
 
 Range const &SArray::range() const
@@ -38,32 +25,30 @@ Range const &SArray::range() const
     return _range;
 }
 
-void SArray::setValue(double const *value, unsigned int n)
+void SArray::setValue(vector<double> const &x)
 {
-    /*
-    if (_fixed) {
-	throw logic_error ("Attempt to set value of fixed SArray");
-    }
-    else 
-    */
-    if (n != _range.length()) {
+    if (x.size() != _value.size()) {
 	throw length_error("Length mismatch error in SArray::setValue");
     }
     else {
-	for (unsigned int i = 0; i < n; ++i) {
-	    _value[i] = value[i];
-	}
+        copy(x.begin(), x.end(), _value.begin());
+	_discrete = false;
+    }
+}
+
+void SArray::setValue(vector<int> const &x)
+{
+    if (x.size() != _value.size()) {
+	throw length_error("Length mismatch error in SArray::setValue");
+    }
+    else {
+        copy(x.begin(), x.end(), _value.begin());
+	_discrete = true;
     }
 }
 
 void SArray::setValue(double value, unsigned int i)
 {
-    /*
-    if (_fixed) {
-	throw logic_error ("Attempt to set value of fixed SArray");
-    }
-    else 
-    */
     if (i >= _range.length()) {
 	throw logic_error("Attempt to set value of invalid element of SArray");
     }
@@ -72,36 +57,9 @@ void SArray::setValue(double value, unsigned int i)
     }
 }
 
-double const * SArray::value() const
+vector<double> const &SArray::value() const
 {
     return _value;
-}
-
-/*
-void SArray::setFixed(bool fix)
-{
-    if (fix) {
-	for (unsigned int i = 0; i < _range.length(); ++i) {
-	    if (_value[i] == JAGS_NA)
-		throw logic_error("Attempt to fix SArray containing missing values");
-	}
-    }
-    _fixed = fix;
-}
-
-bool SArray::isFixed() const
-{
-    return _fixed;
-}
-*/
-
-/*
- FIXME: We should be retiring these functions, but need to keep them
- for reading/writing the data table
-*/
-void SArray::setDiscreteValued(bool discrete)
-{
-    _discrete = discrete;
 }
 
 bool SArray::isDiscreteValued() const

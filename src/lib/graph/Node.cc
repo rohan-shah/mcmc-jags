@@ -173,6 +173,7 @@ string Node::name(NodeNameTab const &name_table) const
   return name_table.getName(this);
 }
 
+/*
 void Node::setObserved(double const *value, unsigned int length)
 {
     if (length != _length) {
@@ -182,6 +183,21 @@ void Node::setObserved(double const *value, unsigned int length)
     for (unsigned int n = 0; n < _nchain; ++n) {
         for (unsigned int i = 0; i < length; ++i) {
 	    _data[n * length + i] = value[i];
+        }
+    }
+    _isobserved = true;
+}
+*/
+
+void Node::setObserved(vector<double> const &value)
+{
+    if (value.size() != _length) {
+	throw logic_error("Length mismatch in Node::setObserved");
+    }
+
+    for (unsigned int n = 0; n < _nchain; ++n) {
+        for (unsigned int i = 0; i < _length; ++i) {
+	    _data[n * _length + i] = value[i];
         }
     }
     _isobserved = true;
