@@ -113,7 +113,7 @@ typedef union YYSTYPE
   std::vector<ParseTree*> *pvec;
 }
 /* Line 1489 of yacc.c.  */
-#line 117 "parser.h"
+#line 117 "../../../../JAGS/src/lib/compiler/parser.h"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1

@@ -191,7 +191,7 @@ typedef union YYSTYPE
   std::vector<ParseTree*> *pvec;
 }
 /* Line 187 of yacc.c.  */
-#line 195 "parser.cc"
+#line 195 "../../../../JAGS/src/lib/compiler/parser.cc"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
@@ -204,7 +204,7 @@ typedef union YYSTYPE
 
 
 /* Line 216 of yacc.c.  */
-#line 208 "parser.cc"
+#line 208 "../../../../JAGS/src/lib/compiler/parser.cc"
 
 #ifdef short
 # undef short
@@ -1973,7 +1973,7 @@ yyreduce:
 
 
 /* Line 1267 of yacc.c.  */
-#line 1977 "parser.cc"
+#line 1977 "../../../../JAGS/src/lib/compiler/parser.cc"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
