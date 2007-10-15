@@ -43,8 +43,10 @@ BUGSModel::~BUGSModel()
 	 i != _bugs_monitors.end(); ++i)
     {
 	Monitor *monitor = *i;
+	/*
 	removeMonitor(monitor);
 	_bugs_monitors.erase(i);
+	*/
 	delete monitor;
     }
 

@@ -212,7 +212,9 @@ void NodeArray::getValue(SArray &value, unsigned int chain, bool (*condition)(No
   }
 
   unsigned int array_length = _range.length();
-  double *array_value = new double[array_length];
+  vector<double> array_value(array_length);
+  //FIXME: Old interface
+//double *array_value = new double[array_length];
   for (unsigned int j = 0; j < array_length; ++j) {
     Node const *node = _node_pointers[j];
     if (node && condition(node)) {
@@ -223,9 +225,9 @@ void NodeArray::getValue(SArray &value, unsigned int chain, bool (*condition)(No
     }
   }
 
-
-  value.setValue(array_value, array_length);
-  delete [] array_value;
+  value.setValue(array_value);
+  //value.setValue(array_value, array_length);
+  //delete [] array_value;
 }
 
 //FIXME: A lot of code overlap with setValue here.
