@@ -1,6 +1,6 @@
 #include <config.h>
 #include "DPar.h"
-#include <sarray/nainf.h>
+#include <util/nainf.h>
 #include <rng/RNG.h>
 
 #include <cmath>
