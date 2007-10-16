@@ -6,7 +6,7 @@
 #include <sarray/RangeIterator.h>
 #include <graph/NodeError.h>
 #include <sarray/SArray.h>
-#include <sarray/nainf.h>
+#include <util/nainf.h>
 
 #include <string>
 #include <stdexcept>
@@ -259,7 +259,7 @@ void NodeArray::setData(SArray const &value, Graph &graph)
   }
   
   set<Node*>::const_iterator p;
-  double *node_value = new double[N];
+  vector<double> node_value(N);
   for (p = setnodes.begin(); p != setnodes.end(); ++p) {
     //Step through each node
     Node *node = *p;
@@ -279,15 +279,13 @@ void NodeArray::setData(SArray const &value, Graph &graph)
     bool missing = (node_value[0] == JAGS_NA);
     for (unsigned int j = 1; j < node->length(); ++j) {
       if ((node_value[j] == JAGS_NA) != missing) {
-	delete [] node_value;
 	throw NodeError(node,"Values supplied for node are partially missing");
       }
     }
     if (!missing) {
-      node->setObserved(node_value, node->length());
+      node->setObserved(node_value);
     }
   }
-  delete [] node_value;
 }
 
 string const &NodeArray::name() const

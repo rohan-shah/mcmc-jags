@@ -3,7 +3,7 @@
 #include <graph/StochasticNode.h>
 #include <graph/Graph.h>
 #include <graph/NodeError.h>
-#include <sarray/nainf.h>
+#include <util/nainf.h>
 
 #include <stdexcept>
 #include <set>

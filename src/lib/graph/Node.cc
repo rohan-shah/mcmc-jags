@@ -2,8 +2,8 @@
 #include <graph/Node.h>
 #include <graph/NodeError.h>
 #include <graph/NodeNameTab.h>
-#include <sarray/nainf.h>
-#include <sarray/util.h>
+#include <util/nainf.h>
+#include <util/dim.h>
 
 #include <stdexcept>
 #include <algorithm>

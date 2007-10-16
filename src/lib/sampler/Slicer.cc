@@ -4,7 +4,7 @@
 #include <graph/StochasticNode.h>
 #include <graph/NodeError.h>
 #include <rng/RNG.h>
-#include <sarray/nainf.h>
+#include <util/nainf.h>
 #include <sampler/ParallelDensitySampler.h>
 
 #include <cmath>

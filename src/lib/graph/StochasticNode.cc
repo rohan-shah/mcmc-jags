@@ -4,7 +4,7 @@
 #include <graph/StochasticNode.h>
 #include <graph/NodeError.h>
 #include <distribution/Distribution.h>
-#include <sarray/nainf.h>
+#include <util/nainf.h>
 
 #include <vector>
 #include <stdexcept>

@@ -15,7 +15,6 @@
 #include <fstream>
 #include <cmath>
 
-//FIXME: do we still need all of these?
 using std::vector;
 using std::ofstream;
 using std::list;
@@ -23,8 +22,6 @@ using std::pair;
 using std::string;
 using std::logic_error;
 using std::runtime_error;
-using std::set;
-using std::multimap;
 
 /* 
    Nodes accessible to the user in a BUGSModel are identified
@@ -84,7 +81,8 @@ Node *BUGSModel::getNode(string const &name, Range const &target_range,
     return node;
 }
 
-#include <sarray/nainf.h>
+//FIXME Should be a util
+#include <util/nainf.h>
 static void writeDouble(double x, std::ostream &out)
 {
     if (x == JAGS_NA) {

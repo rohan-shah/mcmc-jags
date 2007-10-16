@@ -1,6 +1,6 @@
 #include <config.h>
 #include <model/SymTab.h>
-#include <sarray/nainf.h>
+#include <util/nainf.h>
 
 #include <string>
 #include <stdexcept>
