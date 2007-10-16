@@ -1,8 +1,8 @@
 #include <config.h>
 #include <distribution/DistScalarRmath.h>
 #include <rng/RNG.h>
-#include <sarray/util.h>
-#include <sarray/nainf.h>
+#include <util/nainf.h>
+#include <util/dim.h>
 
 #include <stdexcept>
 #include <cmath>

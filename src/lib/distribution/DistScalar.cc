@@ -1,7 +1,7 @@
 #include <config.h>
 #include <distribution/DistScalar.h>
-#include <sarray/nainf.h>
-#include <sarray/util.h>
+#include <util/nainf.h>
+#include <util/dim.h>
 
 #include <stdexcept>
 #include <cmath>
