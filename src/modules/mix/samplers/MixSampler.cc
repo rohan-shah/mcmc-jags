@@ -5,8 +5,8 @@
 #include <graph/GraphMarks.h>
 #include <distribution/Distribution.h>
 #include <rng/RNG.h>
-#include <sarray/util.h>
-#include <sarray/nainf.h>
+#include <util/dim.h>
+#include <util/nainf.h>
 #include <sampler/ParallelDensitySampler.h>
 
 #include <cmath>
