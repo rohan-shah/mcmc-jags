@@ -1,7 +1,6 @@
 #include <config.h>
 
 #include "Transpose.h"
-#include <sarray/util.h>
 
 using std::vector;
 
