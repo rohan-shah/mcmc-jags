@@ -4,7 +4,7 @@
 #include <algorithm>
 #include <stdexcept>
 
-#include <sarray/util.h>
+#include <util/dim.h>
 
 using std::vector;
 using std::sort;
