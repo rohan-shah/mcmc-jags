@@ -1,6 +1,6 @@
 #include <config.h>
 #include <sarray/SArray.h>
-#include <sarray/nainf.h>
+#include <util/nainf.h>
 
 #include <stdexcept>
 #include <algorithm>
