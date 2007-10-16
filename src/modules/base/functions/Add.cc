@@ -1,5 +1,5 @@
 #include <config.h>
-#include <sarray/util.h>
+#include <util/logical.h>
 #include "Add.h"
 
 using std::vector;
