@@ -1,6 +1,6 @@
 #include <config.h>
 #include <distribution/Distribution.h>
-#include <sarray/util.h>
+#include <util/dim.h>
 
 using std::vector;
 using std::string;

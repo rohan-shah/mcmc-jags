@@ -1,6 +1,6 @@
 #include <config.h>
 #include <function/ScalarFunc.h>
-#include <sarray/util.h>
+#include <util/dim.h>
 
 #include <algorithm>
 
