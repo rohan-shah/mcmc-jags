@@ -14,7 +14,7 @@
 
 #include <Console.h>
 #include <compiler/ParseTree.h>
-#include <sarray/nainf.h>
+#include <util/nainf.h>
 #include <cstdlib>
 #include <cstring>
 #include <ltdl.h>
