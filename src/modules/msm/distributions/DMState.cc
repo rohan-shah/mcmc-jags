@@ -1,7 +1,7 @@
 #include <config.h>
 #include "DMState.h"
-#include <sarray/util.h>
-#include <sarray/nainf.h>
+#include <util/dim.h>
+#include <util/nainf.h>
 #include "matexp.h"
 
 

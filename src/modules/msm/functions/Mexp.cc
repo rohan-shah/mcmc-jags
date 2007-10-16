@@ -3,7 +3,7 @@
 #include "Mexp.h"
 #include "matexp.h"
 
-#include <sarray/util.h>
+#include <util/dim.h>
 
 using std::vector;
 
