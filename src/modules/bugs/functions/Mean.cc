@@ -1,5 +1,4 @@
 #include <config.h>
-#include <sarray/util.h>
 #include "Mean.h"
 
 using std::vector;

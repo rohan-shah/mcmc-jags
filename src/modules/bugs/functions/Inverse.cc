@@ -1,6 +1,6 @@
 #include <config.h>
 #include "matrix.h"
-#include <sarray/util.h>
+#include <util/dim.h>
 #include "Inverse.h"
 
 using std::vector;

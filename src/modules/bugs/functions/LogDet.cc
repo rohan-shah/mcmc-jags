@@ -3,7 +3,7 @@
 #include "LogDet.h"
 #include "matrix.h"
 
-#include <sarray/util.h>
+#include <util/dim.h>
 
 using std::vector;
 

@@ -1,5 +1,5 @@
 #include <config.h>
-#include <sarray/util.h>
+#include <util/dim.h>
 #include "Rank.h"
 
 #include <algorithm>
