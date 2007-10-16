@@ -148,7 +148,6 @@ void NodeArray::setValue(SArray const &value, unsigned int chain)
 	throw runtime_error(string("Dimension mismatch when setting value of node array ") + name());
     }
   
-    //double const *x = value.value(); FIXME: old interface
     vector<double> const &x = value.value();
     unsigned int N = value.length();
 
@@ -233,59 +232,58 @@ void NodeArray::getValue(SArray &value, unsigned int chain,
 #include <iostream>
 void NodeArray::setData(SArray const &value, Graph &graph)
 {
-  if (!(_range == value.range())) {
-    throw runtime_error(string("Dimension mismatch when setting value of node array ") + name());
-  }
+    if (!(_range == value.range())) {
+	throw runtime_error(string("Dimension mismatch when setting value of node array ") + name());
+    }
 
-  unsigned int N = value.length();  
-  vector<double> const &x = value.value();
-  //double const *x = value.value(); FIXME: old interface
+    unsigned int N = value.length();  
+    vector<double> const &x = value.value();
   
-  //Gather all the nodes for which a data value is supplied
-  set<Node*> setnodes;
-  for (unsigned int i = 0; i < _range.length(); ++i) {
-    if (x[i] != JAGS_NA) {
-      if (_node_pointers[i] == 0) {
-	//Insert a new constant node
-	ConstantNode *cnode = new ConstantNode(x[i], _nchain);
-        graph.add(cnode);
-	insert(cnode, _range.leftIndex(i));
-      }
-      else {
-	//Existing node for which we must set value
-	setnodes.insert(_node_pointers[i]);
-      }
+    //Gather all the nodes for which a data value is supplied
+    set<Node*> setnodes;
+    for (unsigned int i = 0; i < _range.length(); ++i) {
+	if (x[i] != JAGS_NA) {
+	    if (_node_pointers[i] == 0) {
+		//Insert a new constant node
+		ConstantNode *cnode = new ConstantNode(x[i], _nchain);
+		graph.add(cnode);
+		insert(cnode, _range.leftIndex(i));
+	    }
+	    else {
+		//Existing node for which we must set value
+		setnodes.insert(_node_pointers[i]);
+	    }
+	}
     }
-  }
   
-  set<Node*>::const_iterator p;
-  vector<double> node_value(N);
-  for (p = setnodes.begin(); p != setnodes.end(); ++p) {
-    //Step through each node
-    Node *node = *p;
+    set<Node*>::const_iterator p;
+    for (p = setnodes.begin(); p != setnodes.end(); ++p) {
+	//Step through each node
+	Node *node = *p;
+	vector<double> node_value(node->length());
 
-    //Get vector of values for this node
-    for (unsigned int i = 0; i < N; ++i) {
-      if (_node_pointers[i] == node) {
-	if (_offsets[i] > node->length()) {
-	  throw logic_error("Invalid offset in NodeArray::setValue");
+	//Get vector of values for this node
+	for (unsigned int i = 0; i < N; ++i) {
+	    if (_node_pointers[i] == node) {
+		if (_offsets[i] > node->length()) {
+		    throw logic_error("Invalid offset in NodeArray::setValue");
+		}
+		else {
+		    node_value[_offsets[i]] = x[i];
+		}
+	    }
 	}
-	else {
-	  node_value[_offsets[i]] = x[i];
+	// If there are any missing values, they must all be missing
+	bool missing = (node_value[0] == JAGS_NA);
+	for (unsigned int j = 1; j < node->length(); ++j) {
+	    if ((node_value[j] == JAGS_NA) != missing) {
+		throw NodeError(node,"Values supplied for node are partially missing");
+	    }
 	}
-      }
+	if (!missing) {
+	    node->setObserved(node_value);
+	}
     }
-    // If there are any missing values, they must all be missing
-    bool missing = (node_value[0] == JAGS_NA);
-    for (unsigned int j = 1; j < node->length(); ++j) {
-      if ((node_value[j] == JAGS_NA) != missing) {
-	throw NodeError(node,"Values supplied for node are partially missing");
-      }
-    }
-    if (!missing) {
-      node->setObserved(node_value);
-    }
-  }
 }
 
 string const &NodeArray::name() const
