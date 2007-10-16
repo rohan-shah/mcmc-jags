@@ -1,8 +1,8 @@
 #include <config.h>
 #include "InterpLin.h"
 
-#include <sarray/nainf.h>
-#include <sarray/util.h>
+#include <util/nainf.h>
+#include <util/dim.h>
 
 using std::vector;
 
