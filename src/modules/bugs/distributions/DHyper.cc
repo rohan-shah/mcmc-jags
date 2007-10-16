@@ -9,8 +9,7 @@
 #include <config.h>
 #include "DHyper.h"
 #include <rng/RNG.h>
-#include <sarray/nainf.h>
-
+#include <util/nainf.h>
 
 #include <algorithm>
 #include <stdexcept>

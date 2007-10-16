@@ -1,8 +1,8 @@
 #include <config.h>
 #include "DCat.h"
 #include <rng/RNG.h>
-#include <sarray/util.h>
-#include <sarray/nainf.h>
+#include <util/dim.h>
+#include <util/nainf.h>
 
 #include <cfloat>
 #include <algorithm>

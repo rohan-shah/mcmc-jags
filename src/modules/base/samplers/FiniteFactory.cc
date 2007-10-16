@@ -1,5 +1,4 @@
 #include <config.h>
-#include <sarray/nainf.h>
 #include <distribution/Distribution.h>
 #include <graph/StochasticNode.h>
 #include <sampler/ParallelDensitySampler.h>

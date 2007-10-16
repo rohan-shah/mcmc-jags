@@ -3,7 +3,7 @@
 #include <graph/StochasticNode.h>
 #include <sampler/ParallelDensitySampler.h>
 #include <rng/RNG.h>
-#include <sarray/nainf.h>
+#include <util/nainf.h>
 #include <graph/NodeError.h>
 #include "FiniteMethod.h"
 
