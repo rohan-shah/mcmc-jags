@@ -34,7 +34,7 @@
 #include <graph/MixtureNode.h>
 #include <graph/GraphMarks.h>
 #include <sampler/Sampler.h>
-#include <sarray/nainf.h>
+#include <util/nainf.h>
 
 #include "MixCompiler.h"
 

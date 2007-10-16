@@ -8,8 +8,8 @@
 #include <graph/DevianceNode.h>
 #include <graph/AggNode.h>
 #include <sarray/RangeIterator.h>
-#include <sarray/nainf.h>
-#include <sarray/util.h>
+#include <util/nainf.h>
+#include <util/dim.h>
 
 #include "MixCompiler.h"
 

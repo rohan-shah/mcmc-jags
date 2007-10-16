@@ -11,7 +11,7 @@
 #include <sarray/Range.h>
 #include <sarray/SArray.h>
 #include <rng/RNG.h>
-#include <sarray/util.h>
+#include <util/dim.h>
 
 #include <map>
 #include <list>

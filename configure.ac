@@ -97,6 +97,7 @@ AC_CONFIG_FILES([
   etc/Makeconf
   src/Makefile
   src/lib/Makefile
+  src/lib/util/Makefile
   src/lib/sarray/Makefile
   src/lib/function/Makefile
   src/lib/distribution/Makefile
@@ -107,6 +108,7 @@ AC_CONFIG_FILES([
   src/lib/rng/Makefile
   src/jrmath/Makefile	
   src/include/Makefile
+  src/include/util/Makefile
   src/include/sarray/Makefile
   src/include/function/Makefile
   src/include/distribution/Makefile

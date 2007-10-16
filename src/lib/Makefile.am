@@ -5,6 +5,7 @@ libjags_la_SOURCES = Console.cc Module.cc
 libjags_la_CPPFLAGS = -I$(top_srcdir)/src/include
 
 libjags_la_LIBADD = model/libmodel.la		\
+        util/libutil.la				\
         sarray/libsarray.la			\
         function/libfunc.la			\
         sampler/libsampler.la			\
@@ -15,5 +16,5 @@ libjags_la_LIBADD = model/libmodel.la		\
 
 libjags_la_LDFLAGS = -no-undefined -version-info 0:0:0
 
-SUBDIRS = sarray distribution function sampler graph model	\
-	compiler rng
+SUBDIRS = util sarray distribution function sampler graph model	\
+	compiler rng 
