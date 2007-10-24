@@ -367,6 +367,10 @@ bool Console::setMonitor(string const &name, Range const &range,
 	_err << "Can't set monitor. No model!" << endl;    
 	return false;
     }
+    if (_model->isAdapting()) {
+        _err << "Can't set monitor. Model is still adapting" << endl;
+        return false;
+    }
 
     try {
 	bool ok = _model->setMonitor(name, range, thin, type);

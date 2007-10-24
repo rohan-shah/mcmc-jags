@@ -142,6 +142,10 @@ void Model::initialize(bool datagen)
 	_data_gen = true;
     }
 
+    if (_samplers.empty()) {
+	_adapt = false; //Nothing to adapt!
+    }
+    
     _is_initialized = true;
 }
 
