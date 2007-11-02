@@ -21,7 +21,7 @@ ConstantNode * ConstantFactory::getConstantNode(double value, Graph &graph)
 {
     ConstantNode *cnode = 0;
 
-    map<const double, ConstantNode*, ltdouble>::const_iterator i 
+    map<double, ConstantNode*, ltdouble>::const_iterator i 
 	= _constmap.find(value);
     if (i == _constmap.end()) {
 	// Create a new constant node
