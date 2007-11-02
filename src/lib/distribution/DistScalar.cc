@@ -113,8 +113,13 @@ DistScalar::typicalValue (double *x, unsigned int length,
 bool 
 DistScalar::checkParameterDim(vector<vector<unsigned int> > const &dims) const
 {
-    int n = 0; //Workaround for Solaris libCstd
+#ifdef _RWSTD_NO_CLASS_PARTIAL_SPEC
+//Workaround for Solaris libCstd
+    int n = 0; 
     count_if(dims.begin(), dims.end(), isScalar, n);
     return n == dims.size();
+#else
+    return count_if(dims.begin(), dims.end(), isScalar);
+#endif
 }
 
