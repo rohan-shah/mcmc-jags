@@ -13,7 +13,7 @@ using std::map;
 using std::string;
 using std::vector;
 
-static map<const string, ConjugateDist> _dist_table;
+static map<string, ConjugateDist> _dist_table;
 static bool initialized = false;
 
 static void init_tables ()
@@ -51,7 +51,7 @@ ConjugateDist getDist(StochasticNode const *snode)
 	init_tables();
   
     string const &name = snode->distribution()->name();
-    map<const string, ConjugateDist>::iterator p(_dist_table.find(name));
+    map<string, ConjugateDist>::iterator p(_dist_table.find(name));
 
     if (p == _dist_table.end())
 	return OTHERDIST;
