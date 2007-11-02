@@ -29,7 +29,7 @@ Counter * CounterTab::pushCounter(string const &name, Range const &range)
 
 void CounterTab::popCounter()
 {
-  pair<string, Counter * const> topcpair = _table.back();
+  pair<string, Counter *> topcpair = _table.back();
   _table.pop_back();
   delete topcpair.second;
 }
