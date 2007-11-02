@@ -41,7 +41,9 @@ namespace bugs {
 
     bool Sort::isDiscreteValued(vector<bool> const &mask) const
     {
-	return count(mask.begin(), mask.end(), false) == 0;
+        int n = 0; //workaround for Solaris libCstd
+        count(mask.begin(), mask.end(), false, n);
+        return n == 0;
     }
 
 }

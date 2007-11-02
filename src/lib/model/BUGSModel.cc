@@ -183,8 +183,7 @@ void BUGSModel::coda(vector<NodeId> const &nodes, ofstream &index,
 	    list<Monitor*>::const_iterator p = _bugs_monitors.begin();
 	    for (; p != _bugs_monitors.end(); ++p) {
 		if ((*p)->node() == node && (*p)->type() == "trace") {
-		    pair<NodeId, Monitor*> newpair = 
-			pair<NodeId, Monitor*>(nodes[i], *p);
+		    pair<NodeId, Monitor const*> newpair(nodes[i], *p);
 		    dump_nodes.push_back(newpair);		    
 		    break;
 		}
