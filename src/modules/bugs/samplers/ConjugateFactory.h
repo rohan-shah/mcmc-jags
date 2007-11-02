@@ -14,7 +14,7 @@ class StochasticNode;
  */
 class ConjugateFactory : public SingletonFactory
 {
-    std::map<const std::string, bool (*)(StochasticNode *,
+    std::map<std::string, bool (*)(StochasticNode *,
 					 Graph const &)> _func_table;
 public:
     ConjugateFactory();

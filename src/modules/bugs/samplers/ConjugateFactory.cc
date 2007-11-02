@@ -40,7 +40,7 @@ bool ConjugateFactory::canSample(StochasticNode * snode,
       return true;
 
     //FIXME: Could use a typedef here to make it readable
-    map<const string, bool (*)(StochasticNode *, Graph const &)>::const_iterator
+    map<string, bool (*)(StochasticNode *, Graph const &)>::const_iterator
 	p = _func_table.find(snode->distribution()->name());
 
     if (p == _func_table.end())
