@@ -123,7 +123,7 @@ bool readRData(std::vector<ParseTree*> const *array_list,
 	  /* Since there is no default constructor for SArray, we can't
 	     use the shorthand table[names[i]] = par;
 	  */
-	  table.insert(map<const string, SArray>::value_type(name, sarray));
+	  table.insert(map<string, SArray>::value_type(name, sarray));
 
 	  /*
 	    std::cout << "Reading " << name << "[";
