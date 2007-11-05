@@ -53,10 +53,11 @@ namespace bugs {
 
     bool 
     InterpLin::checkParameterValue(vector <double const *> const &args,
+				   vector <unsigned int> const &lengths,
 				   vector<vector<unsigned int> > const &dims) 
 	const
     {
-	unsigned int N = dims[1][0];
+        unsigned int N = lengths[1];
 	for (unsigned int i = 1; i < N; ++i) {
 	    if (args[1][i] < args[1][i-1])
 		return false;

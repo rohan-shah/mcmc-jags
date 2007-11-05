@@ -23,6 +23,7 @@ namespace bugs {
 	bool checkParameterDim(std::vector<std::vector<unsigned int> > const &dims)
 	    const;
 	bool checkParameterValue(std::vector <double const *> const &args,
+				 std::vector <unsigned int> const &lengths,
 				 std::vector<std::vector<unsigned int> > const &dims) 
 	    const;
     };

@@ -42,8 +42,8 @@ DistScalarRmath::DistScalarRmath(string const &name, unsigned int npar,
 }
 
 double 
-DistScalarRmath::typicalValue(vector<double const *> const &parameters,
-			      double const *lower, double const *upper) const
+DistScalarRmath::typicalScalar(vector<double const *> const &parameters,
+			       double const *lower, double const *upper) const
 {
     double llimit = JAGS_NEGINF, ulimit = JAGS_POSINF;
     support(&llimit, &ulimit, parameters);
@@ -81,9 +81,10 @@ DistScalarRmath::typicalValue(vector<double const *> const &parameters,
 }
 
 double 
-DistScalarRmath::logLikelihood(double x,
-			       vector<double const *> const &parameters,
-			       double const *lower, double const *upper) const
+DistScalarRmath::scalarLogLikelihood(double x,
+				     vector<double const *> const &parameters,
+				     double const *lower, double const *upper) 
+  const
 {
     double loglik =  d(x, parameters, true);
 
@@ -114,9 +115,10 @@ DistScalarRmath::logLikelihood(double x,
 }
 
 
-double DistScalarRmath::randomSample(vector<double const *> const &parameters,
-				     double const *lower, double const *upper,
-				     RNG *rng) const
+double 
+DistScalarRmath::scalarRandomSample(vector<double const *> const &parameters,
+				    double const *lower, double const *upper,
+				    RNG *rng) const
 {
     if (lower || upper) {
 
