@@ -47,7 +47,7 @@ namespace bugs {
         count(mask.begin(), mask.end(), false, n);
         return n == 0;
 #else
-	return count(mask.begin(), mask.end(), false);
+	return count(mask.begin(), mask.end(), false) == 0;
 #endif
     }
 
