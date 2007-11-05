@@ -88,7 +88,7 @@ DistScalar::logLikelihood(double const *x, unsigned int length,
                           double const *lower, double const *upper)
     const
 {
-    return logLikelihood(*x, parameters, lower, upper);
+  return scalarLogLikelihood(*x, parameters, lower, upper);
 }
 
 void 
@@ -98,7 +98,7 @@ DistScalar::randomSample(double *x, unsigned int length,
                          double const *lower, double const *upper,
 			 RNG *r) const
 {
-    *x = randomSample(parameters, lower, upper, r);
+    *x = scalarRandomSample(parameters, lower, upper, r);
 }
 
 void 
@@ -107,7 +107,7 @@ DistScalar::typicalValue (double *x, unsigned int length,
 			  std::vector<std::vector<unsigned int> > const &dims,
                           double const *lower, double const *upper) const
 {
-    *x = typicalValue(parameters, lower, upper);
+    *x = typicalScalar(parameters, lower, upper);
 }
 
 bool 
@@ -122,4 +122,3 @@ DistScalar::checkParameterDim(vector<vector<unsigned int> > const &dims) const
     return count_if(dims.begin(), dims.end(), isScalar) == dims.size();
 #endif
 }
-
