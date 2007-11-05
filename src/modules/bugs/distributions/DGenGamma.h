@@ -23,7 +23,9 @@ class DGenGamma : public DistScalarRmath {
   /**
    * Checks that r > 0, mu > 0, beta > 0
    */
-  bool checkParameterValue(std::vector<double const *> const &parameters) const;
+  bool checkParameterValue(std::vector<double const *> const &parameters,
+			   std::vector<std::vector<unsigned int> > const &dims)
+    const;
 };
 
 #endif /* DGEN_GAMMA_H_ */

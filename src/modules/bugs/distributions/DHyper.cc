@@ -47,7 +47,9 @@ DHyper::checkParameterDiscrete (vector<bool> const &mask) const
   return true;
 }
 
-bool DHyper::checkParameterValue(vector<double const *> const &parameters) const
+bool DHyper::checkParameterValue (vector<double const *> const &parameters,
+				  vector<vector<unsigned int> > const &dims) 
+  const
 {
   int n1,n2,m1;
   double psi;

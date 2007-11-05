@@ -13,7 +13,9 @@ DUnif::DUnif()
 {}
 
 bool 
-DUnif::checkParameterValue (vector<double const *> const &par) const
+DUnif::
+checkParameterValue (vector<double const *> const &par,
+		     vector<vector<unsigned int> > const &dims) const
 {
     return (LOWER(par) < UPPER(par));
 }

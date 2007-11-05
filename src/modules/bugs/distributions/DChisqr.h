@@ -24,7 +24,9 @@ class DChisqr : public DistScalarRmath {
   /**
    * Checks that k > 0
    */
-  bool checkParameterValue(std::vector<double const *> const &parameters) const;
+  bool checkParameterValue(std::vector<double const *> const &parameters,
+			   std::vector<std::vector<unsigned int> > const &dims)
+    const;
 };
 
 #endif /* DCHISQ_H_ */

@@ -15,7 +15,9 @@ DNorm::DNorm()
     : DistScalarRmath("dnorm", 2, DIST_UNBOUNDED, true, false)
 {}
 
-bool DNorm::checkParameterValue(vector<double const *> const &par) const
+bool DNorm::checkParameterValue (vector<double const *> const &par,
+				 vector<vector<unsigned int> > const &dims) 
+  const
 {
     return (TAU(par) > 0);
 }

@@ -24,7 +24,10 @@ public:
 	     bool log_p) const;
     double r(std::vector<double const *> const &parameters, RNG *rng) const;
     /** Checks that p lies in the open interval (0,1) */
-    bool checkParameterValue(std::vector<double const *> const &parameters) const;
+    bool 
+      checkParameterValue(std::vector<double const *> const &parameters,
+			  std::vector<std::vector<unsigned int> > const &dims)
+      const;
 };
 
 #endif /* DBERN_H_ */

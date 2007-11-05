@@ -23,7 +23,9 @@ class DExp : public DistScalarRmath {
   /**
    * Checks that lambda > 0
    */
-  bool checkParameterValue(std::vector<double const *> const &parameters) const;
+  bool checkParameterValue(std::vector<double const *> const &parameters,
+			   std::vector<std::vector<unsigned int> > const &dims)
+    const;
 };
 
 #endif /* DEXP_H_ */

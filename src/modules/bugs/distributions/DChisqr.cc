@@ -13,7 +13,8 @@ DChisqr::DChisqr()
 
 
 bool 
-DChisqr::checkParameterValue(vector<double const *> const &par) const
+DChisqr::checkParameterValue (vector<double const *> const &par,
+			      vector<vector<unsigned int> > const &dims) const
 {
   return (DF(par) > 0);
 }

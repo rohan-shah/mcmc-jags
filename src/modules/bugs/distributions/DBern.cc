@@ -19,7 +19,8 @@ DBern::DBern()
 {}
 
 bool 
-DBern::checkParameterValue(vector<double const *> const &parameters) const
+DBern::checkParameterValue (vector<double const *> const &parameters,
+			    vector<vector<unsigned int> > const &dims) const
 {
     return  (PROB(parameters) >= 0.0 && PROB(parameters) <= 1.0);
 }

@@ -23,11 +23,14 @@ class DGamma : public DistScalarRmath {
   /**
    * Checks that r > 0, mu > 0
    */
-  bool checkParameterValue(std::vector<double const *> const &parameters) const;
+  bool checkParameterValue(std::vector<double const *> const &parameters,
+			   std::vector<std::vector<unsigned int> > const & dims)
+    const;
   /**
    * The mean
    */
-  double  typicalValue(std::vector<double const *> const &par) const;
+  double  typicalScalar(std::vector<double const *> const &par,
+			double const *lower, double const *upper) const;
 };
 
 #endif /* DGAMMA_H_ */

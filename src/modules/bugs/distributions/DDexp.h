@@ -24,7 +24,9 @@ public:
   /**
    * Checks that tau > 0
    */
-  bool checkParameterValue(std::vector<double const *> const &parameters) const;
+  bool checkParameterValue(std::vector<double const *> const &parameters,
+			   std::vector<std::vector<unsigned int> > const &dims)
+    const;
 };
 
 #endif /* DDEXP_H_ */

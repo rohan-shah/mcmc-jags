@@ -9,7 +9,9 @@ DBeta::DBeta()
     : DistScalarRmath("dbeta", 2, DIST_PROPORTION, true, false)
 {}
 
-bool DBeta::checkParameterValue(vector<double const *> const &par) const
+bool 
+DBeta::checkParameterValue (vector<double const *> const &par,
+			    vector<vector<unsigned int> > const &dims) const
 {
     return (*par[0] > 0.0 && *par[1] > 0.0);
 }

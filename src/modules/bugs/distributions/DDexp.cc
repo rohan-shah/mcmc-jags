@@ -23,7 +23,8 @@ DDexp::DDexp()
 {}
 
 bool 
-DDexp::checkParameterValue(vector<double const *> const &par) const
+DDexp::checkParameterValue (vector<double const *> const &par,
+			    vector<vector<unsigned int> > const &dims) const
 {
   return (*par[1] > 0);
 }

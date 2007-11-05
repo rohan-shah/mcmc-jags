@@ -13,7 +13,9 @@ DLogis::DLogis()
     : DistScalarRmath("dlogis", 2, DIST_UNBOUNDED, true, false)
 {}
 
-bool DLogis::checkParameterValue (vector<double const *> const &par) const
+bool DLogis::checkParameterValue (vector<double const *> const &par,
+				  vector<vector<unsigned int> > const &dims) 
+  const
 {
     return (TAU(par) > 0);
 }

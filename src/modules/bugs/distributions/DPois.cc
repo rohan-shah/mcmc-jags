@@ -15,9 +15,11 @@ DPois::DPois()
     : DistScalarRmath("dpois", 1, DIST_POSITIVE, true, true)
 {}
 
-bool DPois::checkParameterValue(vector<double const *> const &par) const
+bool DPois::checkParameterValue (vector<double const *> const &par,
+				 vector<vector<unsigned int> > const &dims) 
+  const
 {
-    return (LAMBDA(par) > 0);
+    return (LAMBDA(par) >= 0);
 }
 
 double

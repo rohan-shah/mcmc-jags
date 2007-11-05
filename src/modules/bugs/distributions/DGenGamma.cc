@@ -31,7 +31,8 @@ DGenGamma::DGenGamma()
 {}
 
 bool 
-DGenGamma::checkParameterValue(vector<double const *> const &par) const
+DGenGamma::checkParameterValue (vector<double const *> const &par,
+				vector<vector<unsigned int> > const &dims) const
 {
     return (SHAPE(par) > 0 && URATE(par) > 0 && POW(par) > 0);
 }

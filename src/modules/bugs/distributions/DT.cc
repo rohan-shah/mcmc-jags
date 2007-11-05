@@ -15,7 +15,8 @@ DT::DT()
     : DistScalarRmath("dt", 3, DIST_UNBOUNDED, true, false)
 {}
 
-bool DT::checkParameterValue (vector<double const *> const &par) const
+bool DT::checkParameterValue (vector<double const *> const &par,
+			      vector<vector<unsigned int> > const &dims) const
 {
     return (TAU(par) > 0 && DF(par) > 0);
 }

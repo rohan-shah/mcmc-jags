@@ -25,7 +25,9 @@ class DNegBin : public DistScalarRmath {
   /**
    * Checks that p lies in the interval (0,1) and r > 0
    */
-  bool checkParameterValue(std::vector<double const *> const &parameters) const;
+  bool checkParameterValue(std::vector<double const *> const &parameters,
+			   std::vector<std::vector<unsigned int> > const &dims)
+    const;
 
 };
 

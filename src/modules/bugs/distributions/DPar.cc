@@ -17,7 +17,8 @@ DPar::DPar()
     : DistScalarRmath("dpar", 2, DIST_SPECIAL, true, false)
 {}
 
-bool DPar::checkParameterValue(vector<double const *> const &par) const
+bool DPar::checkParameterValue (vector<double const *> const &par,
+				vector<vector<unsigned int> > const &dims) const
 {
   return (ALPHA(par) > 0 && C(par) > 0);
 }

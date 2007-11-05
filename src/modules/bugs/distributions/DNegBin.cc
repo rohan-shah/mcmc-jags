@@ -23,7 +23,8 @@ bool DNegBin::checkParameterDiscrete (vector<bool> const &mask) const
 }
 
 bool 
-DNegBin::checkParameterValue(vector<double const *> const &par) const
+DNegBin::checkParameterValue (vector<double const *> const &par,
+			      vector<vector<unsigned int> > const &dims) const
 {
     double p = PROB(par);
     return (SIZE(par) > 0 && p > 0 && p < 1);

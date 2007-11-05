@@ -19,7 +19,8 @@ static inline double SCALE(vector<double const *> const &par)
     return 1 /(*par[0]);
 }
 
-bool DExp::checkParameterValue(vector<double const *> const &par) const
+bool DExp::checkParameterValue (vector<double const *> const &par,
+				vector<vector<unsigned int> > const &dims) const
 {
   return (*par[0] > 0);
 }

@@ -25,7 +25,9 @@ class DUnif : public DistScalarRmath {
   /** 
    * Checks that a < b
    */
-  bool checkParameterValue(std::vector<double const *> const &parameters) const;
+  bool checkParameterValue(std::vector<double const *> const &parameters,
+			   std::vector<std::vector<unsigned int> > const &dims) 
+    const;
   bool isSupportFixed(std::vector<bool> const &fixmask) const;
 };
 
