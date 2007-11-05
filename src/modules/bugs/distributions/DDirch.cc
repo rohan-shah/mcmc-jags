@@ -45,33 +45,16 @@ DDirch::checkParameterValue(vector<double const *> const &par,
     double const *alpha = ALPHA(par);
     unsigned int length = LENGTH(dims);
 
+    bool has_nonzero_alpha = false;
     for (unsigned int i = 0; i < length; i++) {
 	if (alpha[i] < 0) {
 	    return false;
 	}
-    }
-    return true;
-
-    /*
-    unsigned int nzero = 0; // No of zero shape par
-    for (unsigned int i = 0; i < length; i++) {
-	if (alpha[i] <= 0) {
-	    if (alpha[i] == 0) {
-		nzero++;
-	    }
-	    else {
-		return false;
-	    }
+	if (alpha[i] > 0) {
+	  has_nonzero_alpha = true;
 	}
     }
-
-    if (nzero) {
-	return (nzero < length);
-    }
-    else {
-	return true;
-    }
-    */
+    return has_nonzero_alpha;
 }
 
 double DDirch::logLikelihood(double const *x, unsigned int length,
@@ -90,7 +73,7 @@ double DDirch::logLikelihood(double const *x, unsigned int length,
 	}
 	else {
 	    alphasum += alpha[i];
-	    loglik += (alpha[i] - 1) * x[i] - lgamma(alpha[i]);
+	    loglik += (alpha[i] - 1) * log(x[i]) - lgamma(alpha[i]);
 	}
     }
     loglik += lgamma(alphasum);
