@@ -101,21 +101,23 @@ class DistScalar : public Distribution
    * Simplified version of loglikelihood function for scalar distributions
    */
   virtual double 
-      logLikelihood(double x, std::vector<double const *> const &parameters,
-		    double const *lower, double const *upper)
+      scalarLogLikelihood(double x, 
+			  std::vector<double const *> const &parameters,
+			  double const *lower, double const *upper)
       const = 0;
   /**
    * Simplified version of the randomSample function for scalar distributions
    */
-  virtual double randomSample(std::vector<double const *> const &parameters, 
-                              double const *lower, double const *upper,
-			      RNG *rng) const = 0;
+  virtual double 
+    scalarRandomSample(std::vector<double const *> const &parameters, 
+		       double const *lower, double const *upper,
+		       RNG *rng) const = 0;
   /**
    * Simplified versino of typicalValue function for scalar distributions
    */
-  virtual double typicalValue(std::vector<double const *> const &parameters,
-                              double const *lower, double const *upper)
-      const = 0;
+  virtual double typicalScalar(std::vector<double const *> const &parameters,
+			       double const *lower, double const *upper)
+    const = 0;
   /**
    * Simplified version of support function for scalar distributions
    */
