@@ -119,7 +119,7 @@ DistScalar::checkParameterDim(vector<vector<unsigned int> > const &dims) const
     count_if(dims.begin(), dims.end(), isScalar, n);
     return n == dims.size();
 #else
-    return count_if(dims.begin(), dims.end(), isScalar);
+    return count_if(dims.begin(), dims.end(), isScalar) == dims.size();
 #endif
 }
 
