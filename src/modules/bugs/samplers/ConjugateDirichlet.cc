@@ -129,8 +129,8 @@ void ConjugateDirichlet::update(ConjugateSampler *sampler, unsigned int chain,
 	    switch(child_dist[i]) {
 	    case MULTI:
 		N = schild->value(chain);
-		for (unsigned long i = 0; i < size; ++i) {
-		    alpha[i] += N[i] * Nrep;
+		for (unsigned long j = 0; j < size; ++j) {
+		    alpha[j] += N[j] * Nrep;
 		}
 		break;
 	    case CAT:
@@ -142,7 +142,7 @@ void ConjugateDirichlet::update(ConjugateSampler *sampler, unsigned int chain,
 	    }
 	}
     }
-    
+
     /* Check structural zeros */
     for (unsigned long i = 0; i < size; ++i) {
 	if (prior[i] == 0 && alpha[i] != 0) {
@@ -155,18 +155,18 @@ void ConjugateDirichlet::update(ConjugateSampler *sampler, unsigned int chain,
        variates and then normalizing
     */
 
-    double sum = 0.0;
+    double xsum = 0.0;
     for (unsigned long i = 0; i < size; ++i) {
 	if (alpha[i] > 0) {
 	    xnew[i] = rgamma(alpha[i], 1, rng);
-	    sum += xnew[i];
+	    xsum += xnew[i];
 	}
 	else {
 	    xnew[i] = 0;
 	}
     }
     for (unsigned long i = 0; i < size; ++i) {
-	xnew[i] /= sum;
+	xnew[i] /= xsum;
     }
 
     sampler->setValue(xnew, size, chain);
