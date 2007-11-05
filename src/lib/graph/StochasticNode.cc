@@ -188,7 +188,8 @@ vector<vector<unsigned int> > const &StochasticNode::parameterDims() const
 
 bool StochasticNode::checkParentValues(unsigned int chain) const
 {
-    return _dist->checkParameterValue(_parameters[chain], _dims);
+    return logDensity(chain) != JAGS_NEGINF;
+    //return _dist->checkParameterValue(_parameters[chain], _dims);
 }
 
 unsigned int StochasticNode::freqWeight() const
