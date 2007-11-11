@@ -1,0 +1,19 @@
+# File for pkg-config
+#
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+
+Name: libjags
+Version: @PACKAGE_VERSION@
+Description: JAGS library for Bayesian modelling using MCMC
+Libs: -L${jagslibdir} -ljags
+CXX: @CXX@
+CXXflags: @CXXFLAGS@ -I${jagsincludedir}
+CC: @CC@
+Cflags: @CFLAGS@ 
+F77: @F77@
+Fflags: @FFLAGS@
+
+
+

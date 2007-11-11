@@ -29,6 +29,7 @@ class Console
   ParseTree *_pdata;
   ParseTree *_prelations;
   std::vector<ParseTree*> *_pvariables;
+  std::vector<std::string> _array_names;
   void clearModel();
 public:
   /**
@@ -46,6 +47,9 @@ public:
    *
    * @param file containing BUGS-language description of the model
    *
+   * @param varnames vector of of strings that contains the names of
+   * all variables in the model on exit.
+   * 
    * @return true on success or false on error.
    */
   bool checkModel(std::FILE *file);
@@ -168,6 +172,11 @@ public:
    * Returns the iteration number of the model.
    */
   unsigned int iter() const;
+  /**
+   * Returns a vector of variable names used by the model. This vector
+   * excludes any counters used by the model within a for loop.
+   */
+  std::vector<std::string> const &variableNames() const;
   /**
    * Dump the contants of monitored node in CODA format
    * The parameters name and range must correspond to a previous
