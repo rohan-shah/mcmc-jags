@@ -1,5 +1,5 @@
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT([JAGS], [0.99.0], [jags@iarc.fr], [JAGS])
+AC_INIT([JAGS], [0.99.1], [martyn.plummer@users.sourceforge.net], [JAGS])
 AC_CANONICAL_HOST
 AC_CONFIG_SRCDIR(src/lib/Console.cc)
 AM_INIT_AUTOMAKE(AC_PACKAGE_NAME, AC_PACKAGE_VERSION)
@@ -80,13 +80,7 @@ R_FUNC_LOG1P
 
 dnl End Rmath stuff
 
-jagshomedir=${libdir}/jags
-AC_SUBST(jagshomedir)
-jagslibdir=${jagshomedir}/lib
-AC_SUBST(jagslibdir)
-jagsincludedir=${jagshomedir}/include
-AC_SUBST(jagsincludedir)
-jagsmoddir=${jagshomedir}/modules
+jagsmoddir=${libdir}/JAGS/modules
 AC_SUBST(jagsmoddir)
 
 AC_CONFIG_HEADERS([src/include/config.h])
@@ -94,7 +88,7 @@ AC_CONFIG_FILES([
   Makefile
   m4/Makefile
   etc/Makefile
-  etc/Makeconf
+  etc/jags.pc
   src/Makefile
   src/lib/Makefile
   src/lib/util/Makefile
