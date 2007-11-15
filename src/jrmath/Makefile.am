@@ -1,4 +1,4 @@
-jagslib_LTLIBRARIES = libjrmath.la
+lib_LTLIBRARIES = libjrmath.la
 
 libjrmath_la_CPPFLAGS = -I$(top_srcdir)/src/include
 
