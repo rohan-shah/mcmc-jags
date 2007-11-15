@@ -1,4 +1,4 @@
-EXTRA_DIST = Makeconf.in modules.conf
+EXTRA_DIST = jags.pc.in
 
-jagsetcdir = $(jagshomedir)/etc
-jagsetc_DATA = Makeconf modules.conf
+pkgconfigdir = $(libdir)/pkgconfig
+pkgconfig_DATA = jags.pc
