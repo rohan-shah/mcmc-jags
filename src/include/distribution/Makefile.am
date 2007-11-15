@@ -1,4 +1,4 @@
-distribincludedir = $(jagsincludedir)/distribution
+distribincludedir = $(pkgincludedir)/distribution
 
 distribinclude_HEADERS = Distribution.h DistTab.h DistScalar.h	\
 DistScalarRmath.h
