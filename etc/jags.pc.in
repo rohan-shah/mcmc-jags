@@ -3,17 +3,16 @@
 prefix=@prefix@
 exec_prefix=@exec_prefix@
 libdir=@libdir@
+jagsincludedir=@includedir@/JAGS
+jagsmoddir=@libdir@/JAGS/modules
 
 Name: libjags
 Version: @PACKAGE_VERSION@
 Description: JAGS library for Bayesian modelling using MCMC
-Libs: -L${jagslibdir} -ljags
+Libs: -L${libdir} -ljags
 CXX: @CXX@
 CXXflags: @CXXFLAGS@ -I${jagsincludedir}
 CC: @CC@
 Cflags: @CFLAGS@ 
 F77: @F77@
 Fflags: @FFLAGS@
-
-
-
