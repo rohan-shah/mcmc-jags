@@ -78,6 +78,7 @@ static bool classifyNode(Node *node, Graph const &sample_graph,
     if (!sample_graph.contains(node))
 	return false;
 
+    bool isinformative = false;
     if (asStochastic(node) && node->isRandomVariable()) {
 	/* This might look redundant, but we want to leave open
 	   the possibility that stochastic nodes may not
@@ -86,16 +87,16 @@ static bool classifyNode(Node *node, Graph const &sample_graph,
 	if (sgraph.contains(node)) 
 	    return true;
 
-	if (isInformative(node, sample_graph)) {
+	isinformative = isInformative(node, sample_graph);
+	if (isinformative) {
 	    sgraph.add(node);
-	    return true;
-	}
-	else {
-	    return false;
 	}
     }
-    else if (!dgraph.contains(node)) {
-	bool isinformative = false;
+    else {
+
+	if (dgraph.contains(node))
+	    return true;
+	
 	for (set<Node*>::iterator p = node->children()->begin();
 	     p != node->children()->end(); ++p) {
 	    if (classifyNode(*p, sample_graph, sgraph, dgraph)) {
@@ -105,8 +106,8 @@ static bool classifyNode(Node *node, Graph const &sample_graph,
 	if (isinformative) {
 	    dgraph.add(node);
 	}
-	return isinformative;
     }
+    return isinformative;
 }
 
 void Sampler::classifyChildren(vector<StochasticNode *> const &nodes,

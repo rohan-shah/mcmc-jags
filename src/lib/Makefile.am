@@ -1,4 +1,4 @@
-jagslib_LTLIBRARIES = libjags.la
+lib_LTLIBRARIES = libjags.la
 
 libjags_la_SOURCES = Console.cc Module.cc
 

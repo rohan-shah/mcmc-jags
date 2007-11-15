@@ -5,6 +5,7 @@
 #include <rng/RNG.h>
 #include <graph/MixtureNode.h>
 #include <graph/StochasticNode.h>
+#include <graph/NodeError.h>
 #include "ConjugateSampler.h"
 
 #include <set>
@@ -17,7 +18,6 @@
 using std::vector;
 using std::set;
 using std::sqrt;
-using std::invalid_argument;
 using std::logic_error;
 
 bool ConjugateDirichlet::canSample(StochasticNode *snode, Graph const &graph)
@@ -146,7 +146,7 @@ void ConjugateDirichlet::update(ConjugateSampler *sampler, unsigned int chain,
     /* Check structural zeros */
     for (unsigned long i = 0; i < size; ++i) {
 	if (prior[i] == 0 && alpha[i] != 0) {
-	    throw invalid_argument("Invalid likelihood for Dirichlet distribution with structural zeros");
+	    throw NodeError(snode, "Invalid likelihood for Dirichlet distribution with structural zeros");
 	}
     }
   

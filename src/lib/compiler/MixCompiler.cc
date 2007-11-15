@@ -354,7 +354,6 @@ Node * getMixtureNode(ParseTree const * var, Compiler *compiler)
 			var->name());
   }
 
-  Graph &compiler_graph = compiler->model().graph();
   unsigned int nvi = 0; //Count number of variable indices
   for (unsigned int i = 0; i < ndim; ++i) {
     ParseTree const *range_element = range_list[i];

@@ -1182,22 +1182,8 @@ int main (int argc, char **argv)
   std::cout << "Welcome to " << PACKAGE_STRING << " on " << ctime(&t);
   std::cout << "JAGS is free software and comes with ABSOLUTELY NO WARRANTY" 
             << std::endl;
-
-  if (getenv("JAGS_HOME")) {
-     /* Locate configuration file containing names of modules to load */
-     std::string conf_name = std::string(getenv("JAGS_HOME")) + 
-                             "/etc/modules.conf";
-     std::ifstream conf_file(conf_name.c_str());
-     if (conf_file) {
-        std::string module_name;
-        while((conf_file>> module_name)) {
-           loadModule(module_name);
-        }
-     }
-  }
-  else {
-    std::cerr << "Cannot find JAGS_HOME" << std::endl;
-  }
+  loadModule("basemod");
+  loadModule("bugs");
 
   console = new Console(std::cout, std::cerr);
 

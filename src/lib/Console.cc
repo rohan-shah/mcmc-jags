@@ -94,16 +94,19 @@ static void getVariableNames(ParseTree const *ptree, set<string> &names,
     {  
 	ParseTree *counter;
       
-	switch ((*p)->treeClass()) {
-	case P_FOR:
-	    counter = (*p)->parameters()[0];
-	    counterstack.push_back(counter->name());
-	    getVariableNames((*p)->parameters()[1], names, counterstack);
-	    counterstack.pop_back();
-	    break;
-	default:
-	    getVariableNames(*p, names, counterstack);
-	    break;
+	if (*p) {
+	    //ParseTree objects of type P_BOUND can have null parameters
+	    switch ((*p)->treeClass()) {
+	    case P_FOR:
+		counter = (*p)->parameters()[0];
+		counterstack.push_back(counter->name());
+		getVariableNames((*p)->parameters()[1], names, counterstack);
+		counterstack.pop_back();
+		break;
+	    default:
+		getVariableNames(*p, names, counterstack);
+		break;
+	    }
 	}
     }
 }
