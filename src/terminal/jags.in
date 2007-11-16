@@ -7,7 +7,7 @@ else
 fi
 export LD_LIBRARY_PATH
 
-JAGS_binary=@libexecdir@/jags.bin
+JAGS_binary=@libexecdir@/jags-terminal
 
 LTDL_LIBRARY_PATH="${JAGS_LIBS}:@jagsmoddir@"
 export LTDL_LIBRARY_PATH
