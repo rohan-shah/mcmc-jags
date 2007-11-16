@@ -131,5 +131,6 @@ AC_CONFIG_FILES([
   src/modules/mix/samplers/Makefile	
   src/modules/dic/Makefile
   src/terminal/Makefile
+  win32/Makefile
 ])
 AC_OUTPUT
