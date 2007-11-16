@@ -4,12 +4,12 @@ EXTRA_DIST = Doxyfile
 
 win32-installer:
 	make install DESTDIR=`pwd`/win32/inst
-	if test -d lapack; then \
+	(cd win32; if test -d lapack; then \
 	  for f in `ls lapack/*.dll`; do \
-	    ${INSTALL} $${f} win32/inst/${prefix}/bin; \
+	    ${INSTALL} $${f} inst/${prefix}/bin; \
 	  done; \
 	  for f in `ls lapack/*.dll.a`; do \
-	    ${INSTALL} $${f} win32/inst/${prefix}/lib; \
+	    ${INSTALL} $${f} inst/${prefix}/lib; \
 	  done; \
-	fi
+	fi)
 	makensis -DVERSION=${PACKAGE_VERSION} win32/jags.ini 
