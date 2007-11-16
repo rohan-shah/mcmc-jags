@@ -25,20 +25,20 @@ DirText "Select the directory to install JAGS in:"
 Section "" ; (default section)
 
 SetOutPath "$INSTDIR"
-File /r inst\usr\local\bin
-File /r inst\usr\local\lib
+File /r inst\bin
+File /r inst\lib
 
 SetOutPath "$INSTDIR\bin"
-File inst\usr\local\libexec\jags-terminal.exe
+File inst\libexec\jags-terminal.exe
 
 SetOutPath "$INSTDIR\include"
-File inst\usr\local\include\JAGS\*.h
-File /r inst\usr\local\include\JAGS\*
+File inst\include\JAGS\*.h
+File /r inst\include\JAGS\*
 
 SetOutPath "$INSTDIR\modules"
-File inst\usr\local\lib\JAGS\modules\*.dll
-File inst\usr\local\lib\JAGS\modules\*.dll.a
-File inst\usr\local\lib\JAGS\modules\*.la
+File inst\lib\JAGS\modules\*.dll
+File inst\lib\JAGS\modules\*.dll.a
+File inst\lib\JAGS\modules\*.la
 
 Push @JAGS_HOME@                        #text to be replaced
 Push $INSTDIR			  	#replace with
@@ -65,9 +65,6 @@ DeleteRegKey HKEY_LOCAL_MACHINE "SOFTWARE\JAGS-${VERSION}"
 DeleteRegKey HKEY_LOCAL_MACHINE "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\JAGS-${VERSION}"
 RMDir /r "$INSTDIR"
 SectionEnd ; end of uninstall section
-
-Function .onInstSuccess
-FunctionEnd
 
 Function AdvReplaceInFile
          Exch $0 ;file to replace in

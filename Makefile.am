@@ -3,7 +3,8 @@ SUBDIRS = m4 libltdl src etc win32
 EXTRA_DIST = Doxyfile
 
 win32-installer:
-	make install DESTDIR=`pwd`/win32/inst
+	make prefix=`pwd`/win32/inst
+	make install prefix=`pwd`/win32/inst
 	(cd win32; if test -d lapack; then \
 	  for f in `ls lapack/*.dll`; do \
 	    ${INSTALL} $${f} inst/${prefix}/bin; \
