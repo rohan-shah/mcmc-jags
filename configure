@@ -24025,7 +24025,7 @@ jagsmoddir=${libdir}/JAGS/modules
 
 ac_config_headers="$ac_config_headers src/include/config.h"
 
-ac_config_files="$ac_config_files Makefile m4/Makefile etc/Makefile etc/jags.pc src/Makefile src/lib/Makefile src/lib/util/Makefile src/lib/sarray/Makefile src/lib/function/Makefile src/lib/distribution/Makefile src/lib/graph/Makefile src/lib/sampler/Makefile src/lib/model/Makefile src/lib/compiler/Makefile src/lib/rng/Makefile src/jrmath/Makefile src/include/Makefile src/include/util/Makefile src/include/sarray/Makefile src/include/function/Makefile src/include/distribution/Makefile src/include/graph/Makefile src/include/sampler/Makefile src/include/model/Makefile src/include/compiler/Makefile src/include/rng/Makefile src/modules/Makefile src/modules/base/Makefile src/modules/base/functions/Makefile src/modules/base/rngs/Makefile src/modules/base/samplers/Makefile src/modules/base/monitors/Makefile src/modules/bugs/Makefile src/modules/bugs/functions/Makefile src/modules/bugs/distributions/Makefile src/modules/bugs/samplers/Makefile src/modules/bugs/matrix/Makefile src/modules/msm/Makefile src/modules/msm/functions/Makefile src/modules/msm/distributions/Makefile src/modules/msm/matrix/Makefile src/modules/mix/Makefile src/modules/mix/distributions/Makefile src/modules/mix/samplers/Makefile src/modules/dic/Makefile src/terminal/Makefile win32/Makefile"
+ac_config_files="$ac_config_files Makefile m4/Makefile etc/Makefile etc/jags.pc src/Makefile src/lib/Makefile src/lib/util/Makefile src/lib/sarray/Makefile src/lib/function/Makefile src/lib/distribution/Makefile src/lib/graph/Makefile src/lib/sampler/Makefile src/lib/model/Makefile src/lib/compiler/Makefile src/lib/rng/Makefile src/jrmath/Makefile src/include/Makefile src/include/util/Makefile src/include/sarray/Makefile src/include/function/Makefile src/include/distribution/Makefile src/include/graph/Makefile src/include/sampler/Makefile src/include/model/Makefile src/include/compiler/Makefile src/include/rng/Makefile src/modules/Makefile src/modules/base/Makefile src/modules/base/functions/Makefile src/modules/base/rngs/Makefile src/modules/base/samplers/Makefile src/modules/base/monitors/Makefile src/modules/bugs/Makefile src/modules/bugs/functions/Makefile src/modules/bugs/distributions/Makefile src/modules/bugs/samplers/Makefile src/modules/bugs/matrix/Makefile src/modules/msm/Makefile src/modules/msm/functions/Makefile src/modules/msm/distributions/Makefile src/modules/msm/matrix/Makefile src/modules/mix/Makefile src/modules/mix/distributions/Makefile src/modules/mix/samplers/Makefile src/modules/dic/Makefile src/terminal/Makefile win32/Makefile win32/lapack/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -24667,6 +24667,7 @@ do
     "src/modules/dic/Makefile") CONFIG_FILES="$CONFIG_FILES src/modules/dic/Makefile" ;;
     "src/terminal/Makefile") CONFIG_FILES="$CONFIG_FILES src/terminal/Makefile" ;;
     "win32/Makefile") CONFIG_FILES="$CONFIG_FILES win32/Makefile" ;;
+    "win32/lapack/Makefile") CONFIG_FILES="$CONFIG_FILES win32/lapack/Makefile" ;;
 
   *) { { echo "$as_me:$LINENO: error: invalid argument: $ac_config_target" >&5
 echo "$as_me: error: invalid argument: $ac_config_target" >&2;}
