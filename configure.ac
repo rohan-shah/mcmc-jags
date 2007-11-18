@@ -132,5 +132,6 @@ AC_CONFIG_FILES([
   src/modules/dic/Makefile
   src/terminal/Makefile
   win32/Makefile
+  win32/lapack/Makefile
 ])
 AC_OUTPUT
