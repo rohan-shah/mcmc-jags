@@ -1,0 +1,4 @@
+If you wish to distribute blas and lapack binaries with the JAGS
+installer, put the import libraries (libblas.dll.a, liblapack.dll.a)
+and DLLs (blas.dll, lapack.dll) in this subdirectory directory of the
+build tree. They will be detected and included in the installation.
