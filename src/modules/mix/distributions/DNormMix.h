@@ -6,10 +6,17 @@
 namespace mix {
 
 /**
- * <pre>
- * x ~ dnorm(mu, tau, p)
- * </pre>
  * @short Mixture of normal distribution
+ * <pre>
+ * x ~ dnorm(mu, tau, pi)
+ * </pre>
+ * The parameters mu, tau, pi are conforming vectors or arrays. Each
+ * element corresponds to a component of the mixture. If all parameters
+ * are vectors then component i is normal with mean mu[i], tau[i] and 
+ * probability of selection pi[i]/sum(pi).
+ *
+ * Note that the parameter pi is redundant: the likelihood depends
+ * only on pi/sum(pi).
  */
     class DNormMix : public Distribution {
     public:
