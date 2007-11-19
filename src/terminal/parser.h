@@ -76,7 +76,10 @@
      ITER = 292,
      ARROW = 293,
      ENDDATA = 294,
-     ASINTEGER = 295
+     ASINTEGER = 295,
+     DIRECTORY = 296,
+     CD = 297,
+     PWD = 298
    };
 #endif
 /* Tokens.  */
@@ -118,13 +121,16 @@
 #define ARROW 293
 #define ENDDATA 294
 #define ASINTEGER 295
+#define DIRECTORY 296
+#define CD 297
+#define PWD 298
 
 
 
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
-#line 62 "parser.yy"
+#line 83 "parser.yy"
 {
   int intval;
   double val;
@@ -135,7 +141,7 @@ typedef union YYSTYPE
   std::vector<long> *ivec;
 }
 /* Line 1489 of yacc.c.  */
-#line 139 "../../../JAGS/src/terminal/parser.h"
+#line 145 "../../../JAGS/src/terminal/parser.h"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1

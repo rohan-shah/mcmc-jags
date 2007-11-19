@@ -2,6 +2,26 @@
 %{
 #include <config.h>
 
+#include <errno.h>
+#include <dirent.h>
+
+#include <cstdio>
+#include <iostream>
+#include <fstream>
+#include <map>
+#include <algorithm>
+#include <cmath>
+#include <sstream>
+#include <fstream>
+#include <list>
+
+#include <Console.h>
+#include <compiler/ParseTree.h>
+#include <util/nainf.h>
+#include <cstdlib>
+#include <cstring>
+#include <ltdl.h>
+
 #include <cstdio>
 #include <iostream>
 #include <fstream>
@@ -47,6 +67,7 @@
     void dumpMonitors(std::string const &file, std::string const &type,
 		      unsigned int chain);
 
+    static bool getWorkingDirectory(std::string &name);
     static void errordump();
     static void updatestar(long niter, long refresh, int width);
     static void adaptstar(long niter, long refresh, int width);
@@ -111,6 +132,10 @@
 %token <intval> ENDDATA
 %token <intval> ASINTEGER
 
+%token <intval> DIRECTORY
+%token <intval> CD
+%token <intval> PWD
+
 %type <ptree> var index 
 %type <ptree> r_assignment r_structure
 %type <ptree> range_element r_dim 
@@ -147,6 +172,10 @@ command: model
 | coda
 | load
 | exit
+| read_dir
+| get_working_dir
+| set_working_dir
+| read_dir
 ;
 
 model: MODEL IN file_name {
@@ -542,6 +571,51 @@ r_character_vector: STRING {;}
 r_string_list: STRING {;}
 | r_string_list ',' STRING {;}
 ;
+
+/* Rules for interacting with the operating system */
+
+get_working_dir: PWD
+{
+    std::string name;
+    if (getWorkingDirectory(name)) {
+	std::cout << name << std::endl;
+    }
+    else {
+	std::cout << "ERROR: " << name << std::endl;
+    }
+}
+
+set_working_dir: CD file_name
+{
+    if (chdir(($2)->c_str()) == -1) {
+	std::cout << "ERROR: Cannot change working directory" << std::endl;
+    }
+    delete $2;
+}
+
+read_dir: DIRECTORY
+{
+    std::string name;
+    if (!getWorkingDirectory(name)) {
+	std::cerr << "ERROR: Unable to get working directory name\n"
+		  << name << std::endl;
+	return 0;
+    }
+	
+    DIR *dir;
+    struct dirent *de;
+    if ((dir = opendir(name.c_str())) != 0) {
+	while ((de = readdir(dir)) != 0) {
+	    if (std::strcmp(de->d_name, ".") && std::strcmp(de->d_name, "..")) {
+		std::cout << de->d_name << "\n";
+	    }
+	}
+	closedir(dir);
+    }
+    else {
+	std::cerr << "Unable to open working directory" << std::endl;
+    }
+}    
 
 %%
 
@@ -1199,3 +1273,29 @@ int main (int argc, char **argv)
   lt_dlexit();
 }
 
+static bool getWorkingDirectory(std::string &name)
+{
+    unsigned int buf_size=PATH_MAX;
+    char buf[buf_size];
+    if (getcwd(buf, buf_size)) {
+	name = buf;
+	return true;
+    }
+    else {
+	switch(errno) {
+	case EACCES:
+	    name = "Access denied";
+	    break;
+	case ENOENT:
+	    name = "Not found";
+	    break;
+	case ERANGE:
+	    name = "Directory name too long";
+	    break;
+	default:
+	    name = "Error in getcwd";
+	    break;
+	}
+	return false;
+    }
+}

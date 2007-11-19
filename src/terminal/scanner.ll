@@ -47,6 +47,10 @@ stem			zzlval.intval=STEM; return STEM;
 load                    zzlval.intval=LOAD; return LOAD;
 exit			zzlval.intval=EXIT; return EXIT;
 
+dir                     zzlval.intval=DIRECTORY; return DIRECTORY;
+cd                      zzlval.intval=CD; return CD;
+pwd                     zzlval.intval=PWD; return PWD;
+
 ","			return ',';
 "["			return '[';
 "]"			return ']';
