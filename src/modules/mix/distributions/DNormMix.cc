@@ -41,9 +41,8 @@ namespace mix {
 		return false;
 	    if (PROB(par)[i] <= 0) 
 		return false;
-	    sump += PROB(par)[i];
 	}
-	return (fabs(sump - 1) < 16 * DBL_EPSILON);
+	return true;
     }
 
     double DNormMix::logLikelihood(double const *x, unsigned int length,
@@ -54,11 +53,13 @@ namespace mix {
     {
 	unsigned int Ncat = product(dims[0]);
 	double density = 0.0;
+	double psum = 0.0;
 	for (unsigned int i = 0; i < Ncat; ++i) {
 	    density += PROB(par)[i] * dnorm(*x, MU(par)[i], 
 					    1/sqrt(TAU(par)[i]), 0);
+	    psum += PROB(par)[i];
 	}
-	return log(density);
+	return log(density) - log(psum);
     }
 
     void 
@@ -68,14 +69,18 @@ namespace mix {
 			   double const *lower, double const *upper, RNG *rng) 
 	const
     {
-	double const *mu = MU(par);
-	double const *tau = TAU(par);
 	unsigned long Ncat = product(dims[0]);
-    
+
+	// Rescale probability parameter
+	double sump = 0;
+	for (unsigned int i = 0; i < Ncat; ++i) {
+	  sump += PROB(par)[i];
+	}
+	double p_rand = runif(0, 1, rng) * sump;
+	sump = 0;
+
 	// Select mixture component (r)
 	unsigned int r = Ncat - 1;
-	double sump = 0;
-	double p_rand = runif(0, 1, rng);
 	for (unsigned int i = 0; i < Ncat - 1; ++i) {
 	    sump += PROB(par)[i];
 	    if (sump > p_rand) {
@@ -85,7 +90,7 @@ namespace mix {
 	}
 
 	// Now sample from conditional distribution of component r
-	double ans = rnorm(mu[r], 1/sqrt(tau[r]), rng);
+	double ans = rnorm(MU(par)[r], 1/sqrt(TAU(par)[r]), rng);
 	*x = ans;
     }
 
