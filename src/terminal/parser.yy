@@ -52,11 +52,13 @@
     int zzlex();
 #define YYERROR_VERBOSE 0
     static Console *console;
-    static bool interactive = true;
+    std::vector<bool> interactive;
     void setName(ParseTree *p, std::string *name);
     std::map<std::string, SArray> _data_table;
     std::deque<lt_dlhandle> _modules;
     bool open_data_buffer(std::string const *name);
+    bool open_command_buffer(std::string const *name);
+    void pop_buffer();
     void return_to_main_buffer();
     void setMonitor(ParseTree const *var, int thin, std::string const &type);
     void clearMonitor(ParseTree const *var, std::string const &type);
@@ -135,6 +137,8 @@
 %token <intval> DIRECTORY
 %token <intval> CD
 %token <intval> PWD
+%token <intval> RUN
+%token <intval> ENDSCRIPT
 
 %type <ptree> var index 
 %type <ptree> r_assignment r_structure
@@ -148,13 +152,15 @@
 
 %%
 
-input: {if (interactive) std::cout << ". " << std::flush;}
-| input line {if (interactive) std::cout << ". " << std::flush;}
+input: {if (interactive.back()) std::cout << ". " << std::flush;}
+| input line {if (interactive.back()) std::cout << ". " << std::flush;}
 ;
 
 line: ENDCMD {}
 | command ENDCMD {}
-| error ENDCMD {if(interactive) yyerrok; else exit(1);}
+| error ENDCMD {if(interactive.back()) yyerrok; else exit(1); }
+| run_script { interactive.push_back(false); }
+| ENDSCRIPT ENDCMD { interactive.pop_back(); }
 ;
 
 command: model 
@@ -189,16 +195,19 @@ model: MODEL IN file_name {
     }
     delete $3;
 }
+| MODEL CLEAR {
+    console->clearModel();
+}
 ;
 
 data_in: data r_assignment_list ENDDATA {
-  std::string rngname;
-  readRData($2, _data_table, rngname);
-  if (rngname.size() != 0) {
-     std::cerr << "WARNING: .RNG.name assignment ignored" << std::endl;
-  }
-  delete $2;
-}
+    std::string rngname;
+    readRData($2, _data_table, rngname);
+    if (rngname.size() != 0) {
+	std::cerr << "WARNING: .RNG.name assignment ignored" << std::endl;
+    }
+    delete $2;
+ }
 | data {}    // Failed to open the data file 
 ;
 
@@ -209,14 +218,14 @@ data_to: DATA TO file_name {
 ;
 
 data: DATA IN file_name {
-  if(open_data_buffer($3)) {
-    std::cout << "Reading data file " << *$3 << std::endl;
-  }
-  else {
-    std::cerr << "Unable to open file " << *$3 << std::endl << std::flush;
-  }
-  delete $3;
-}
+    if(open_data_buffer($3)) {
+	std::cout << "Reading data file " << *$3 << std::endl;
+    }
+    else {
+	std::cerr << "Unable to open file " << *$3 << std::endl << std::flush;
+    }
+    delete $3;
+ }
 ;
 
 data_clear: DATA CLEAR {
@@ -617,13 +626,24 @@ read_dir: DIRECTORY
     }
 }    
 
+run_script: RUN file_name {
+    if(open_command_buffer($2)) {
+	std::cout << "Running script file " << *$2 << std::endl;
+    }
+    else {
+	std::cerr << "Unable to open script file " << *$2 << std::endl;
+    }
+    delete $2;
+ }
+;
+
 %%
 
 int zzerror (const char *s)
 {
-  return_to_main_buffer();
-  std::cerr << s << std::endl;
-  return 0;
+    return_to_main_buffer();
+    std::cerr << s << std::endl;
+    return 0;
 }
 
 static Range getRange(ParseTree const *var)
@@ -1224,7 +1244,7 @@ int main (int argc, char **argv)
     std::cerr << "Too many arguments" << std::endl;
   }
   else if (argc == 2) {
-    interactive = false;
+    interactive.push_back(false);
     cmdfile = std::fopen(argv[1],"r");
     if (cmdfile) {
       zzin = cmdfile;
@@ -1233,6 +1253,9 @@ int main (int argc, char **argv)
       std::cerr << "Unable to open command file " << argv[1] << std::endl;
       return 1;
     }
+  }
+  else {
+    interactive.push_back(true);
   }
 
   if(lt_dlinit()) {

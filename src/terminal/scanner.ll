@@ -4,8 +4,12 @@
 #include <cstring>
 #include <compiler/ParseTree.h>
 #include "parser.h"
-  YY_BUFFER_STATE main_buffer = 0;
-  void return_to_main_buffer();
+    
+    std::vector<YY_BUFFER_STATE> buffer_stack;
+    std::vector<bool> int_stack;
+    void push_buffer(YY_BUFFER_STATE);
+    void pop_buffer();
+    void return_to_main_buffer();
 %}
 
 %option prefix="zz"
@@ -50,6 +54,7 @@ exit			zzlval.intval=EXIT; return EXIT;
 dir                     zzlval.intval=DIRECTORY; return DIRECTORY;
 cd                      zzlval.intval=CD; return CD;
 pwd                     zzlval.intval=PWD; return PWD;
+run                     zzlval.intval=RUN; return RUN;
 
 ","			return ',';
 "["			return '[';
@@ -119,10 +124,19 @@ pwd                     zzlval.intval=PWD; return PWD;
   return STRING;
 }
 
-<INITIAL><<EOF>>		yyterminate();
+<INITIAL><<EOF>> {
+    if (buffer_stack.empty()) {
+	yyterminate();
+    }
+    else {
+	pop_buffer();
+    }
+    return ENDSCRIPT;
+}
 <RDATA><<EOF>> {
-  return_to_main_buffer();
-  return ENDDATA;
+    pop_buffer();
+    BEGIN(INITIAL);
+    return ENDDATA;
 }
 %%
 
@@ -132,27 +146,51 @@ int zzwrap()
 }
 
 bool open_data_buffer(std::string const *name) {
-  if (main_buffer) {
-    return false;
-  }
-  FILE *file = fopen(name->c_str(),"r");
-  if (file) {
-    main_buffer = YY_CURRENT_BUFFER;
-    yy_switch_to_buffer(yy_create_buffer(file, YY_BUF_SIZE ) );
-    BEGIN(RDATA);
-    return true;
-  }
-  else {
-    return false;
-  }
+    FILE *file = fopen(name->c_str(),"r");
+    if (file) {
+	push_buffer(YY_CURRENT_BUFFER);
+	yy_switch_to_buffer(yy_create_buffer(file, YY_BUF_SIZE ) );
+	BEGIN(RDATA);
+	return true;
+    }
+    else {
+	return false;
+    }
+}
+
+bool open_command_buffer(std::string const *name) {
+    FILE *file = fopen(name->c_str(),"r");
+    if (file) {
+	push_buffer(YY_CURRENT_BUFFER);
+	yy_switch_to_buffer(yy_create_buffer(file, YY_BUF_SIZE ));
+	return true;
+    }
+    else {
+	return false;
+    }
+}
+
+void push_buffer(YY_BUFFER_STATE new_buffer) {
+    buffer_stack.push_back(new_buffer);
+}
+
+void pop_buffer() {
+    if (!buffer_stack.empty()) {
+	yy_delete_buffer (YY_CURRENT_BUFFER);
+	yy_switch_to_buffer(buffer_stack.back());
+	buffer_stack.pop_back();
+    }
 }
 
 void return_to_main_buffer() {
-  if (main_buffer && (main_buffer != YY_CURRENT_BUFFER)) {
-    yy_delete_buffer (YY_CURRENT_BUFFER);
-    yy_switch_to_buffer (main_buffer);
-    main_buffer = 0;
-  }
-  BEGIN(INITIAL);  
+    /* Clear all buffers in the stack and return to the first */
+    if (!buffer_stack.empty()) {
+	for (unsigned int i = 1; i < buffer_stack.size(); ++i) {
+	    yy_delete_buffer (buffer_stack[i]);
+	}
+	yy_switch_to_buffer(buffer_stack[0]);
+	buffer_stack.clear();
+    }
+    BEGIN(INITIAL);
 }
 

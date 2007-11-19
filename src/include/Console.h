@@ -30,7 +30,6 @@ class Console
   ParseTree *_prelations;
   std::vector<ParseTree*> *_pvariables;
   std::vector<std::string> _array_names;
-  void clearModel();
 public:
   /**
    * Constructor
@@ -203,6 +202,8 @@ public:
   bool adaptOff(bool &status);
   /** Indicates whether model is in adaptive mode */
   bool isAdapting() const;
+  /** Clears the model */
+  void clearModel();
 };
 
 #endif /* CONSOLE_H_ */

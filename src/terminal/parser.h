@@ -79,7 +79,9 @@
      ASINTEGER = 295,
      DIRECTORY = 296,
      CD = 297,
-     PWD = 298
+     PWD = 298,
+     RUN = 299,
+     ENDSCRIPT = 300
    };
 #endif
 /* Tokens.  */
@@ -124,13 +126,15 @@
 #define DIRECTORY 296
 #define CD 297
 #define PWD 298
+#define RUN 299
+#define ENDSCRIPT 300
 
 
 
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
-#line 83 "parser.yy"
+#line 85 "parser.yy"
 {
   int intval;
   double val;
@@ -141,7 +145,7 @@ typedef union YYSTYPE
   std::vector<long> *ivec;
 }
 /* Line 1489 of yacc.c.  */
-#line 145 "../../../JAGS/src/terminal/parser.h"
+#line 149 "../../../JAGS/src/terminal/parser.h"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
