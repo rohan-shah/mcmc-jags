@@ -31,9 +31,6 @@
 /* Define to 1 if you have the `expm1' function. */
 #undef HAVE_EXPM1
 
-/* Define to 1 if you have the `finite' function. */
-#undef HAVE_FINITE
-
 /* Define to 1 if you have the <ieeefp.h> header file. */
 #undef HAVE_IEEEFP_H
 

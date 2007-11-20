@@ -1586,15 +1586,12 @@ fi
 ## ----------
 ## According to C99, isnan and isfinite are macros in math.h, 
 ## but some older systems have isnan as a function (possibly as well).
-## On the other hand, finite is a BSD function.
 AC_DEFUN([R_IEEE_754],
-[AC_CHECK_FUNCS([finite isnan])
+[AC_CHECK_FUNCS([isnan])
 AC_CHECK_DECLS([isfinite, isnan], , , [#include <math.h>])
 AC_CACHE_CHECK([whether you have IEEE 754 floating-point arithmetic],
                [r_cv_ieee_754],
-[if (test "${ac_cv_func_finite}" = yes \
-      || test "${ac_cv_have_decl_isfinite}" = yes) \
-    && (test "${ac_cv_func_isnan}" = yes \
+[if (test "${ac_cv_func_isnan}" = yes \
       || test "${ac_cv_have_decl_isnan}" = yes); then
   r_cv_ieee_754=yes
 else
