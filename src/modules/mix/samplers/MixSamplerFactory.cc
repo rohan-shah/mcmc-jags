@@ -98,7 +98,7 @@ namespace mix {
 
 	    unsigned int nchain = sample_nodes[0]->nchain();
 	    vector<DensityMethod*> methods(nchain,0);	    
-	    for (unsigned int ch = 0; ch < samplers.size(); ++ch) {
+	    for (unsigned int ch = 0; ch < nchain; ++ch) {
 		methods[ch] = new MixSampler(sample_nodes);
 	    }
 	    Sampler *mix = new ParallelDensitySampler(sample_nodes, graph, 
