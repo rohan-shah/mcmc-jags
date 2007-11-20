@@ -183,7 +183,6 @@ command: model
 | read_dir
 | get_working_dir
 | set_working_dir
-| read_dir
 ;
 
 model: MODEL IN file_name {

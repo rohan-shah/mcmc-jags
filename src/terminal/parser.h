@@ -134,7 +134,7 @@
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
-#line 85 "parser.yy"
+#line 87 "parser.yy"
 {
   int intval;
   double val;
