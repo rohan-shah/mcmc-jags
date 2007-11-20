@@ -3,6 +3,8 @@
 #include <config.h>
 
 #include <errno.h>
+#include <limits.h>
+#include <unistd.h>
 #include <dirent.h>
 
 #include <cstdio>
@@ -1298,9 +1300,8 @@ int main (int argc, char **argv)
 
 static bool getWorkingDirectory(std::string &name)
 {
-    unsigned int buf_size=PATH_MAX;
-    char buf[buf_size];
-    if (getcwd(buf, buf_size)) {
+    char buf[PATH_MAX];
+    if (getcwd(buf, PATH_MAX)) {
 	name = buf;
 	return true;
     }
