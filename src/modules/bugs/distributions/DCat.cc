@@ -64,16 +64,20 @@ void DCat::randomSample(double *x, unsigned int length,
 			double const *lower, double const *upper,
 			RNG *rng) const
 {
-    double p = rng->uniform();
     double sump = 0;
-    for (unsigned int i = 1; i < NCAT(dims); ++i) {
-	sump += PROB(par)[i-1];
-	if (sump > p + 16 * DBL_EPSILON) {
-	    *x = i;
-	    return;
-	}
+    unsigned int i = 0;
+
+    for ( ; i < NCAT(dims); ++i) {
+	sump += PROB(par)[i];
     }
-    *x  = NCAT(dims);
+    double p = sump * rng->uniform();    
+
+    for ( ; i > 1; --i) {
+	sump -= PROB(par)[i-1];
+	if (sump <= p) 
+            break;
+    }
+    *x  = i;
 }
 
 void DCat::support(double *lower, double *upper, unsigned int length,
@@ -84,7 +88,7 @@ void DCat::support(double *lower, double *upper, unsigned int length,
 	throw logic_error("Invalid length in DCat::support");
 
     *lower = 1;
-    *upper = dims[0][0];
+    *upper = NCAT(dims);
 }
 
 void DCat::typicalValue(double *x, unsigned int length,
@@ -92,9 +96,6 @@ void DCat::typicalValue(double *x, unsigned int length,
 			vector<std::vector<unsigned int> > const &dims,
 			double const *lower, double const *upper) const
 {
-    if (lower || upper ){
-	throw logic_error("Distribution dcat cannot be bounded");
-    }
     *x = max_element(PROB(par), PROB(par) + NCAT(dims)) - PROB(par) + 1;
 }
 

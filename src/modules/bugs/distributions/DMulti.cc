@@ -81,9 +81,16 @@ void DMulti::randomSample(double *x, unsigned int length,
 			  RNG *rng) const
 {
     /* Sample multinomial as a series of binomial distributions */
+
     double N = SIZE(par);
-    double sump = 1.0;
     double const *prob = PROB(par);
+
+    //Normalize probability
+    double sump = 0;
+    for (unsigned int i = 0; i < length; ++i) {
+	sump += PROB(par)[i];
+    }
+
     for (unsigned int i = 0; i < length - 1; i++) {
 	if (N == 0) {
 	    x[i] = 0;
@@ -126,8 +133,13 @@ void DMulti::typicalValue(double *x, unsigned int length,
        substituting the median at each stage */
 
     double N = SIZE(par);
-    double sump = 1.0;
     double const *prob = PROB(par);
+
+    double sump = 0.0;
+    for (unsigned int i = 0; i < length; ++i) {
+	sump += prob[i];
+    }
+
     for (unsigned int i = 0; i < length - 1; i++) {
 	if (N == 0) {
 	    x[i] = 0;
