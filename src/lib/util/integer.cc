@@ -1,13 +1,13 @@
 #include <config.h>
 #include <stdexcept>
 #include <cmath>
+#include <cfloat>
 
 using std::runtime_error;
-using std::cmath;
 
 int asInteger(double fval)
 {
-    static const eps = sqrt(DBL_EPSILON);
+    static const double eps = sqrt(DBL_EPSILON);
 
     if (fval >= INT_MAX || fval <= INT_MIN) {
 	throw runtime_error("double value out of range for conversion to int");
