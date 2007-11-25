@@ -2,7 +2,6 @@
 #include <graph/GraphMarks.h>
 #include <graph/Graph.h>
 #include <graph/StochasticNode.h>
-#include <graph/NodeNameTab.h>
 #include <graph/NodeError.h>
 #include <distribution/Distribution.h>
 #include <util/nainf.h>
@@ -276,19 +275,9 @@ bool isBounded(StochasticNode const *node)
     return node->lowerBound() || node->upperBound();
 }
 
-string StochasticNode::name(NodeNameTab const &name_table) const
+string StochasticNode::deparse(vector<string> const &parnames) const
 {
-    string name = name_table.getName(this);
-    if (!name.empty())
-	return name;
-
-    vector<Node const *> const &par = parents();
-    vector<string> parnames(par.size());
-    for (unsigned int i = 0; i < par.size(); ++i) {
-	parnames[i] = par[i]->name(name_table);
-    }
-
-    name = _dist->name();
+    string name = _dist->name();
     name.append("(");
     unsigned int i = 0; 
     for ( ; i < _dist->npar(); ++i) {

@@ -1,6 +1,5 @@
 #include <config.h>
 #include <graph/ConstantNode.h>
-#include <graph/NodeNameTab.h>
 
 #include <sstream>
 #include <cmath>
@@ -34,15 +33,16 @@ void ConstantNode::deterministicSample(unsigned int) {}
 
 void ConstantNode::randomSample(RNG*, unsigned int) {}
 
-string ConstantNode::name(NodeNameTab const &name_table) const
+string ConstantNode::deparse(vector<string> const &parents) const
 {
-  string name = name_table.getName(this);
-  if (!name.empty())
-    return name;
-
-  ostringstream os;
-  os << *value(0);
-  return os.str();
+    ostringstream os;
+    if (length() == 1) {
+       os << *value(0);
+    }
+    else {
+       os << "c(" << value(0)[0] << "..."  << value(0)[length() - 1] << ")";
+    }
+    return os.str();
 }
 
 bool ConstantNode::isLinear(GraphMarks const &linear_marks, bool fixed) const

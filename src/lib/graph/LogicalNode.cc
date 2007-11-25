@@ -2,7 +2,6 @@
 #include <graph/LogicalNode.h>
 #include <function/Function.h>
 #include <graph/NodeError.h>
-#include <graph/NodeNameTab.h>
 #include <graph/GraphMarks.h>
 #include <graph/Graph.h>
 
@@ -80,24 +79,13 @@ LogicalNode::~LogicalNode()
 {
 }
 
-string LogicalNode::name(NodeNameTab const &name_table) const
+string LogicalNode::deparse(vector<string> const &parents) const
 {
-  string name = name_table.getName(this);
-  if (!name.empty())
-    return name;
-
-  vector<Node const *> const &par = parents();
-
-  vector<string> parnames(par.size());
-  for (unsigned int i = 0; i < par.size(); ++i) {
-      parnames[i] = par[i]->name(name_table);
-  }
-  
-  name.append("(");
-  name.append(_func->deparse(parnames));
-  name.append(")");
+    string name = "(";
+    name.append(_func->deparse(parents));
+    name.append(")");
 	      
-  return name;
+    return name;
 }
 
 void LogicalNode::deterministicSample(unsigned int chain)

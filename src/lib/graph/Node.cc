@@ -1,7 +1,6 @@
 #include <config.h>
 #include <graph/Node.h>
 #include <graph/NodeError.h>
-#include <graph/NodeNameTab.h>
 #include <util/nainf.h>
 #include <util/dim.h>
 
@@ -168,10 +167,6 @@ bool Node::initialize(RNG *rng, unsigned int n)
     return true; 
 }
     
-string Node::name(NodeNameTab const &name_table) const
-{
-  return name_table.getName(this);
-}
 
 /*
 void Node::setObserved(double const *value, unsigned int length)

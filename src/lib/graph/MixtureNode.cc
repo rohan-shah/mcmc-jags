@@ -1,6 +1,5 @@
 #include <config.h>
 #include <graph/MixtureNode.h>
-#include <graph/NodeNameTab.h>
 #include <graph/GraphMarks.h>
 #include <graph/Graph.h>
 
@@ -153,34 +152,29 @@ unsigned int MixtureNode::index_size() const
   return _Nindex;
 }
 
-string MixtureNode::name(NodeNameTab const &name_table) const
+string MixtureNode::deparse(vector<string> const &parents) const
 {
-    string name = name_table.getName(this);
-    if (!name.empty())
-	return name;
+    string name = "mixture(index=[";
 
-    name = "mixture(index=[";
-
-    vector<Node const *> const &par = parents();
     vector<int> i(_Nindex);
     for (unsigned int j = 0; j < _Nindex; ++j) {
 	if (j > 0) {
 	    name.append(",");
 	}
-	name.append(par[j]->name(name_table));
+	name.append(parents[j]);
     }
     name.append("], parents= ");
 
     /* We can't list all possible parents in a name, since there is
        no limit on the number. So we take the first and last */
-    name.append(par[_Nindex]->name(name_table)); //first parent
-    if (par.size() > _Nindex + 2) {
+    name.append(parents[_Nindex]); //first parent
+    if (parents.size() > _Nindex + 2) {
         name.append("...");
     }
     else {
         name.append(",");
     }
-    name.append(par[par.size() - 1]->name(name_table)); //last parent
+    name.append(parents.back()); //last parent
     name.append(")");
 	      
     return name;

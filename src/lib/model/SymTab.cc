@@ -1,5 +1,6 @@
 #include <config.h>
 #include <model/SymTab.h>
+#include <graph/Node.h>
 #include <util/nainf.h>
 
 #include <string>
@@ -261,10 +262,17 @@ string SymTab::getName(Node const *node) const
 	}
     }
 
-    return("");
+    //Name not in symbol table: calculate name from parents
+    vector<Node const *> const &parents = node->parents();
+    vector<string> parnames(parents.size());
+    for (unsigned int i = 0; i < parents.size(); ++i) {
+	parnames[i] = getName(parents[i]);
+    }
+    return node->deparse(parnames);
 }
 
 unsigned int SymTab::nchain() const
 {
   return _nchain;
 }
+    
