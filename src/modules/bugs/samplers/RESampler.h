@@ -33,6 +33,7 @@ public:
     void transformValues(const double*, unsigned int, double*, unsigned int) 
 	const;
     bool checkAdaptation() const;
+    std::string name() const;
 };
 
 #endif /* RANDOM_EFFECT_SAMPLER_H_ */
