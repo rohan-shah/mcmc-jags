@@ -7,6 +7,7 @@
 #include <graph/StochasticNode.h>
 #include <graph/DevianceNode.h>
 #include <graph/AggNode.h>
+#include <graph/NodeError.h>
 #include <sarray/RangeIterator.h>
 #include <util/nainf.h>
 #include <util/dim.h>
@@ -142,15 +143,14 @@ bool Compiler::indexExpression(ParseTree const *p, int &value)
 	return false;
     }
     if (node->length() != 1) {
-	string msg = string("Vector value in index expression:\n") + 
-	    node->name(_model.symtab());
-	throw runtime_error(msg);
+	throw NodeError(node,"Vector value in index expression"); 
     }
     if (node->isObserved()) {
 	bool is_integer = true;
 	value = checkInteger(node->value(0)[0], is_integer);
 	if (!is_integer) {
-	    throw runtime_error("Index expression evaluates to non-integer value");
+	    throw NodeError(node, 
+			    "Index expression evaluates to non-integer value");
 	}
 	return true;
     }

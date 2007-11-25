@@ -189,9 +189,9 @@ bool Console::compile(map<string, SArray> &data_table, unsigned int nchain,
 	    {
 	      if (!((*p)->isObserved())) {
 		_err << "Invalid data graph: observed node " 
-		     << nodes[i]->name(datagen_model.symtab()) 
+		     << datagen_model.symtab().getName(nodes[i]) 
 		     << " has unobserved parent " 
-		     << (*p)->name(datagen_model.symtab()) 
+		     << datagen_model.symtab().getName(*p)
 		     << "\n";
 		return false;
 	      }
@@ -209,8 +209,7 @@ bool Console::compile(map<string, SArray> &data_table, unsigned int nchain,
     }
     catch (NodeError except) {
       _err << "Error in node " << 
-        except.node->name(datagen_model.symtab()) << "\n";
-	//datagen_model.symtab().getName(except.node) << "\n";
+	datagen_model.symtab().getName(except.node) << "\n";
       _err << except.what() << endl;
       return false;
     }
@@ -259,7 +258,7 @@ bool Console::compile(map<string, SArray> &data_table, unsigned int nchain,
      }
   }
   catch (NodeError except) {
-    _err << "Error in node " << except.node->name(_model->symtab()) << "\n";
+    _err << "Error in node " << _model->symtab().getName(except.node) << '\n';
     _err << except.what() << endl;
     clearModel();
     return false;
@@ -295,9 +294,8 @@ bool Console::initialize()
 	_model->addDevianceNode();
     }
     catch (NodeError except) {
-        _err << "Error in node " << except.node->name(_model->symtab()) << '\n';
-        _err << except.what() << endl;
-       
+	_err << "Error in node " << _model->symtab().getName(except.node) << endl;
+	_err << except.what() << endl;
         clearModel();
 	return false;
     }
@@ -333,7 +331,7 @@ bool Console::setParameters(map<string, SArray> const &init_table,
     _model->setParameters(init_table, chain - 1);
   }
   catch (NodeError except) {
-    _err << "Error in node " << except.node->name(_model->symtab()) << '\n';
+    _err << "Error in node " << _model->symtab().getName(except.node) << '\n';
     _err << except.what() << endl;
     clearModel();
     return false;
@@ -367,7 +365,7 @@ bool Console::setRNGname(string const &name, unsigned int chain)
     }
   }
   catch (NodeError except) {
-    _err << "Error in node " << except.node->name(_model->symtab()) << '\n';
+    _err << "Error in node " << _model->symtab().getName(except.node) << '\n';
     _err << except.what() << endl;
     clearModel();
     return false;
@@ -402,7 +400,7 @@ bool Console::update(unsigned int n)
 	_model->update(n);
     }
     catch (NodeError except) {
-	_err << "Error in node " << except.node->name(_model->symtab()) << '\n';
+	_err << "Error in node " << _model->symtab().getName(except.node) << '\n';
 	_err << except.what() << endl;
 	clearModel();
 	return false;
@@ -598,7 +596,8 @@ bool Console::dumpState(map<string,SArray> &data_table,
     }
   }
   catch (NodeError except) {
-    _err << "Error in node " << except.node->name(_model->symtab()) << "\n";
+    _err << "Error in node " <<
+      _model->symtab().getName(except.node) << "\n";
     _err << except.what() << endl;
     return false;
   }
@@ -660,7 +659,8 @@ bool Console::dumpMonitors(map<string,SArray> &data_table,
 	}
     }
     catch (NodeError except) {
-	_err << "Error in node " << except.node->name(_model->symtab()) << "\n";
+	_err << "Error in node " <<
+	    _model->symtab().getName(except.node) << "\n";
 	_err << except.what() << endl;
 	return false;
     }
@@ -694,7 +694,8 @@ bool Console::coda(ofstream &index, vector<ofstream*> const &output)
         }
     }
     catch (NodeError except) {
-	_err << "Error in node " << except.node->name(_model->symtab()) << "\n";
+	_err << "Error in node " <<
+	    _model->symtab().getName(except.node) << "\n";
 	_err << except.what() << endl;
 	return false;
     }
@@ -728,7 +729,8 @@ bool Console::coda(vector<pair<string, Range> > const &nodes,
         }
     }
     catch (NodeError except) {
-	_err << "Error in node " << except.node->name(_model->symtab()) << "\n";
+	_err << "Error in node " <<
+	    _model->symtab().getName(except.node) << "\n";
 	_err << except.what() << endl;
 	return false;
     }
@@ -775,7 +777,7 @@ bool Console::adaptOff(bool &status)
       status =  _model->adaptOff();
   }
   catch (NodeError except) {
-    _err << "Error in node " << except.node->name(_model->symtab()) << '\n';
+    _err << "Error in node " << _model->symtab().getName(except.node) << '\n';
     _err << except.what() << endl;
     return false;
   }
