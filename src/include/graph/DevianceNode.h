@@ -39,6 +39,7 @@ public:
      * A deviance node always has valid parent values
      */
     bool checkParentValues(unsigned int chain) const;
+    std::string deparse(std::vector<std::string> const &parents) const;
 };
 
 #endif

@@ -64,6 +64,10 @@ public:
      * this function always returns true.
      */
     bool checkParentValues(unsigned int chain) const;
+    /**
+     * An aggregate node is named after its first and last parents
+     */
+    std::string deparse(std::vector<std::string> const &parents) const;
 };
 
 
