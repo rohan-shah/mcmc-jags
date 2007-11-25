@@ -20,6 +20,7 @@ using std::invalid_argument;
 using std::log;
 using std::exp;
 using std::min;
+using std::string;
 
 #define N_REFRESH 100
 
@@ -289,6 +290,11 @@ namespace mix {
 	/* True if all up-phase transitions are within target range
 	   for acceptance */
 	return (_level == _max_level);
+    }
+
+    string MixSampler::name() const
+    {
+	return "MixSampler";
     }
 
 }
