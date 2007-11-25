@@ -6,6 +6,7 @@
 
 using std::vector;
 using std::logic_error;
+using std::string;
 
 ParallelDensitySampler::ParallelDensitySampler(
     vector<StochasticNode *> const &nodes, Graph const &graph,
@@ -45,4 +46,9 @@ bool ParallelDensitySampler::adaptOff()
 	    pass = false;
     }
     return pass;
+}
+
+string ParallelDensitySampler::name() const
+{
+    return _methods[0]->name();
 }

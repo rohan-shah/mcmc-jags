@@ -12,6 +12,7 @@
 using std::floor;
 using std::vector;
 using std::logic_error;
+using std::string;
 
 namespace base {
 
@@ -62,4 +63,8 @@ namespace base {
 	updateDouble(rng);
     }
 
+    string DiscreteSlicer::name() const
+    {
+	return "DiscreteSlicer";
+    }
 }
