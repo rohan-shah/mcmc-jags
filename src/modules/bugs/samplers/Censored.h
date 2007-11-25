@@ -19,6 +19,7 @@ public:
     static bool canSample(StochasticNode *snode, Graph const &graph);
     void update(std::vector<RNG *> const &rng);
     bool adaptOff();
+    std::string name() const;
 };
 
 #endif /* CONJUGATE_NORMAL_H_ */

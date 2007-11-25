@@ -34,6 +34,7 @@ public:
     std::vector<ConjugateDist> const &childDist() const;
     void update(std::vector<RNG*> const &);
     bool adaptOff();
+    std::string name() const;
 };
 
 #endif /* CONJUGATE_SAMPLER_H_ */

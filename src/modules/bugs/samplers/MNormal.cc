@@ -21,8 +21,9 @@ using std::logic_error;
 using std::exp;
 using std::sqrt;
 using std::min;
+using std::string;
 
-MNormUpdate::MNormUpdate(vector<StochasticNode*> const &nodes)
+MNormMetropolis::MNormMetropolis(vector<StochasticNode*> const &nodes)
     : Metropolis(nodes), _mean(0), _var(0), _prec(0), _n(0), _n_isotonic(0), 
       _sump(0), _meanp(0), _lstep(0), _nstep(10), _p_over_target(true)
 {
@@ -42,14 +43,14 @@ MNormUpdate::MNormUpdate(vector<StochasticNode*> const &nodes)
     }
 }
 
-MNormUpdate::~MNormUpdate()
+MNormMetropolis::~MNormMetropolis()
 {
     delete [] _mean;
     delete [] _var;
     delete [] _prec;
 }
 
-void MNormUpdate::update(RNG *rng)
+void MNormMetropolis::update(RNG *rng)
 {
     double const *old_value = value();
     unsigned int N = value_length();
@@ -71,7 +72,7 @@ void MNormUpdate::update(RNG *rng)
     delete [] x;
 }
 
-void MNormUpdate::rescale(double p)
+void MNormMetropolis::rescale(double p)
 {
     ++_n;
     p = min(p, 1.0);
@@ -147,25 +148,30 @@ void MNormUpdate::rescale(double p)
     }
 }
 
-void MNormUpdate::transform(double const *v, unsigned int length,
+void MNormMetropolis::transform(double const *v, unsigned int length,
 			     double *nv, unsigned int nlength) const
 {
     if (length != nlength) {
-	throw logic_error("Invalid length in MNormUpdate::transformValues");
+	throw logic_error("Invalid length in MNormMetropolis::transformValues");
     }
     copy(v, v + length, nv);
 }
 
-void MNormUpdate::untransform(double const *nv, unsigned int nlength,
+void MNormMetropolis::untransform(double const *nv, unsigned int nlength,
 			     double *v, unsigned int length) const
 {
     if (length != nlength) {
-	throw logic_error("Invalid length in MNormUpdate::transformValues");
+	throw logic_error("Invalid length in MNormMetropolis::transformValues");
     }
     copy(nv, nv + nlength, v);
 }
 
-bool MNormUpdate::checkAdaptation() const
+bool MNormMetropolis::checkAdaptation() const
 {
     return (_n_isotonic > 0) && (_meanp >= 0.15) && (_meanp <= 0.35);
+}
+
+string MNormMetropolis::name() const
+{
+    return "MNormMetropolis";
 }

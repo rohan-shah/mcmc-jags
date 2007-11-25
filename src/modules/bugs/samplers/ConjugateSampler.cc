@@ -12,6 +12,7 @@
 using std::map;
 using std::string;
 using std::vector;
+using std::string;
 
 static map<string, ConjugateDist> _dist_table;
 static bool initialized = false;
@@ -100,4 +101,9 @@ vector<ConjugateDist> const &ConjugateSampler::childDist() const
 ConjugateDist ConjugateSampler::targetDist() const
 {
     return _target_dist;
+}
+
+string ConjugateSampler::name() const
+{
+    return "ConjugateSampler";
 }

@@ -20,6 +20,7 @@ using std::invalid_argument;
 using std::max;
 using std::min;
 using std::exp;
+using std::string;
 
 DSumMethod::DSumMethod()
     : Slicer(2, 10)
@@ -122,4 +123,9 @@ void DSumMethod::getLimits(double *lower, double *upper) const
 void DSumMethod::update(RNG *rng)
 {
     updateDouble(rng);
+}
+
+string DSumMethod::name() const
+{
+    return "DSumMethod";
 }

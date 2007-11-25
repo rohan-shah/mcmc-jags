@@ -26,7 +26,7 @@ MNormalFactory::makeSingletonSampler(StochasticNode *snode, Graph const &graph)
     vector<DensityMethod*> methods(nchain, 0);
     vector<StochasticNode*> nodes(1, snode);
     for (unsigned int ch = 0; ch < nchain; ++ch) {
-        methods[ch] = new MNormUpdate(nodes);
+        methods[ch] = new MNormMetropolis(nodes);
     }
     return new ParallelDensitySampler(nodes, graph, methods);
 }

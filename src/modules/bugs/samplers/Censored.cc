@@ -14,6 +14,7 @@
 using std::vector;
 using std::invalid_argument;
 using std::logic_error;
+using std::string;
 
 Censored::Censored(StochasticNode *snode, Graph const &graph)
     : Sampler(vector<StochasticNode*>(1,snode), graph), _snode(snode)
@@ -84,4 +85,9 @@ void Censored::update(vector<RNG *> const &rng)
 bool Censored::adaptOff()
 {
     return true;
+}
+
+string Censored::name() const
+{
+    return "Censored";
 }

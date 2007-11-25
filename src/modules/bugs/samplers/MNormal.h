@@ -1,11 +1,11 @@
-#ifndef MNORM_SAMPLER_H_
-#define MNORM_SAMPLER_H_
+#ifndef MNORM_METROPOLIS_H_
+#define MNORM_METROPOLIS_H_
 
 #include <sampler/Metropolis.h>
 
 class ParallelDensitySampler;
 
-class MNormUpdate : public Metropolis
+class MNormMetropolis : public Metropolis
 {
     double *_mean;
     double *_var;
@@ -17,8 +17,8 @@ class MNormUpdate : public Metropolis
     unsigned int _nstep;
     unsigned int _p_over_target;
 public:
-    MNormUpdate(std::vector<StochasticNode*> const &nodes);
-    ~MNormUpdate();
+    MNormMetropolis(std::vector<StochasticNode*> const &nodes);
+    ~MNormMetropolis();
     void rescale(double p);
     void transform(double const *v, unsigned int length,
 		   double *nv, unsigned int nlength) const;
@@ -26,6 +26,7 @@ public:
 		     double *v, unsigned int length) const;
     void update(RNG *rng);
     bool checkAdaptation() const;
+    std::string name() const;
 };
 
-#endif /* MNORM_SAMPLER_H_ */
+#endif /* MNORM_METROPOLIS_H_ */
