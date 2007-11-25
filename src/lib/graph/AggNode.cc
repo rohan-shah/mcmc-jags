@@ -9,6 +9,7 @@
 using std::vector;
 using std::set;
 using std::logic_error;
+using std::string;
 
 AggNode::AggNode(vector<unsigned int> const &dim, 
 		 vector<Node const *> const &parents,
@@ -111,3 +112,8 @@ bool AggNode::checkParentValues(unsigned int) const
    return true;
 }
 
+string AggNode::deparse(vector<string> const &parents) const
+{
+    return string("aggregate(") + parents.front() + "..." + 
+	parents.back() + ")";
+}
