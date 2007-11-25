@@ -10,6 +10,7 @@
 #include <sarray/RangeIterator.h>
 #include <util/nainf.h>
 #include <util/dim.h>
+#include <util/integer.h>
 
 #include "MixCompiler.h"
 
@@ -43,26 +44,6 @@ std::string ToString(const T& val)
     ostringstream strm;
     strm << val;
     return strm.str();
-}
-
-
-/* FIXME: Use this everywhere */
-static long asInteger(double fval)
-{
-  if (fval >= LONG_MAX || fval <= LONG_MIN) {
-    throw runtime_error("double value out of range for conversion to long");
-  }
-  long ival;
-  if (fval > 0) {
-    ival = (long) (fval + DBL_EPSILON);
-  }
-  else {
-    ival = (long) (fval - DBL_EPSILON);
-  }
-  if (fabs(fval - ival) > DBL_EPSILON) {
-    throw runtime_error("Invalid integer conversion");
-  }
-  return ival;
 }
 
 Node * Compiler::constFromTable(ParseTree const *p)
@@ -166,7 +147,11 @@ bool Compiler::indexExpression(ParseTree const *p, int &value)
 	throw runtime_error(msg);
     }
     if (node->isObserved()) {
-	value = asInteger(node->value(0)[0]);
+	bool is_integer = true;
+	value = checkInteger(node->value(0)[0], is_integer);
+	if (!is_integer) {
+	    throw runtime_error("Index expression evaluates to non-integer value");
+	}
 	return true;
     }
     else {

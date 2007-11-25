@@ -1,6 +1,7 @@
 #include <config.h>
 #include <compiler/StochasticFactory.h>
 #include <graph/StochasticNode.h>
+#include <graph/NodeError.h>
 #include <distribution/Distribution.h>
 #include <compiler/NodeFactory.h>
 
@@ -71,10 +72,13 @@ StochasticFactory::getStochasticNode(Distribution const *dist,
     else {
 	// Create a new stochastic node
 	StochasticNode *snode = new StochasticNode(dist, parents);
-	//snode->setObserved(data.value(), data.length());
+	graph.add(snode);
+
+	if (snode->dim() != data.dim(true)) {
+	    throw NodeError(snode, "Dimension mismatch between node and data");
+	}
 	snode->setObserved(data.value());
 	_stochasticmap[strio] = snode;
-	graph.add(snode);
 	return snode;
     }
 }
