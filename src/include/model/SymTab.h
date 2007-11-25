@@ -1,7 +1,6 @@
 #ifndef SYMTAB_H_
 #define SYMTAB_H_
  
-#include <graph/NodeNameTab.h>
 #include <model/NodeArray.h>
 #include <sarray/SArray.h>
 
@@ -17,7 +16,7 @@
  *
  * @see NodeArray
  */
-class SymTab : public NodeNameTab
+class SymTab  
 {
   Graph &_graph;
   unsigned int _nchain;

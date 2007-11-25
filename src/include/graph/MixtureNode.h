@@ -79,7 +79,7 @@ public:
      * Exceptionally, the name of a mixture node is not a reconstruction
      * of its BUGS-language definition.
      */
-    std::string name(NodeNameTab const &name_table) const;
+    std::string deparse(std::vector<std::string> const &parents) const;
 };
 
 bool isMixture(Node const *);

@@ -40,10 +40,9 @@ public:
      */
     bool checkParentValues(unsigned int) const;
     /**
-     * If a constant node does not have a name in the supplied
-     * name table, then it is named after its value.
+     * A constant node is named after its value
      */
-    std::string name(NodeNameTab const &name_table) const;
+    std::string deparse(std::vector<std::string> const &parents) const;
     /**
      * Constant nodes are observed random variables. This function
      * returns true.

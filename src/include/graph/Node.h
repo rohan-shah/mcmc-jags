@@ -5,11 +5,9 @@
 #include <vector>
 #include <string>
 
-class NodeNameTab;
 class RNG;
 class Graph;
 class GraphMarks;
-
 
 /**
  * @short Node in a directed acyclic graph representingn a Bayesian model 
@@ -139,15 +137,12 @@ public:
      */
     void initializeData();
     /**
-     * Returns the BUGS-language name of the node.  The default
-     * implementation looks up the node in the supplied name table and
-     * returns an empty string if it is not found. Subclasses can
-     * overload this function and try to calculate the Node name based
-     * on the names of its parents if it is not found int the name table.
+     * Returns the BUGS-language representation of the node, based on the 
+     * names of its parents
      *
-     * @param name_table Lookup table for node names.
+     * @param parents Vector of names of parent nodes
      */
-    virtual std::string name(NodeNameTab const &name_table) const;
+    virtual std::string deparse(std::vector<std::string> const &parents) const = 0;
     /**
      * Returns true if the node represents a random variable.
      */
@@ -157,12 +152,8 @@ public:
      * as observed. This function can only be called once for a given
      * Node.
      * 
-     * @param value array of doubles
-     *
-     * @param length length of the value array
+     * @param value vector of values
      */
-    //void setObserved(double const *value, unsigned int length);
-    //FIXME
     void setObserved(std::vector<double> const &value);
     /**
      * Indicates whether the node is observed. 

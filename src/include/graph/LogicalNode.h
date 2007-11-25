@@ -38,13 +38,6 @@ public:
      */
     bool checkParentValues(unsigned int chain) const;
     /**
-     * If a LogicalNode does not have a name defined in the name
-     * table, then its name is constructed to be the BUGS-language
-     * representation, i.e. the right-hand side of a logical relation
-     * that defines the node.
-     */
-    std::string name(NodeNameTab const &name_table) const;
-    /**
      * A logical node preserves linearity if its function is linear.
      * @see Function#isLinear
      */
@@ -54,6 +47,7 @@ public:
      * @see Function#isScale
      */
     bool isScale(GraphMarks const &scale_marks, bool fixed) const;
+    std::string deparse(std::vector<std::string> const &) const;
 };
 
 #endif /* LOGICAL_NODE_H_ */
