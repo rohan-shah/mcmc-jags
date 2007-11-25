@@ -9,6 +9,7 @@
 #include <cmath>
 
 using std::vector;
+using std::string;
 
 namespace base {
 
@@ -49,5 +50,10 @@ namespace base {
     void RealSlicer::update(RNG *rng)
     {
 	updateStep(rng);
+    }
+
+    string RealSlicer::name() const
+    {
+	return "RealSlicer";
     }
 }

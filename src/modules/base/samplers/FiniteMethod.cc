@@ -16,6 +16,7 @@ using std::logic_error;
 using std::string;
 using std::vector;
 using std::exp;
+using std::string;
 
 namespace base {
 
@@ -101,5 +102,10 @@ namespace base {
 		return false;
 	}
 	return true;
+    }
+
+    string FiniteMethod::name() const
+    {
+	return "FiniteMethod";
     }
 }
