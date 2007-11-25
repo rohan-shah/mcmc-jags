@@ -31,6 +31,7 @@ namespace base {
 	void getLimits(double *lower, double *upper) const;
 	void update(RNG*);
 	static bool canSample(StochasticNode const *node);
+	std::string name() const;
     };
 
 }
