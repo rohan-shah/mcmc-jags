@@ -30,6 +30,7 @@ public:
     ~ParallelDensitySampler();
     void update(std::vector<RNG*> const &);
     bool adaptOff();
+    std::string name() const;
 };
 
 #endif /* PARALLEL_SAMPLER_H_ */

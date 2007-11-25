@@ -168,6 +168,13 @@ public:
      * always returns false.
      */
     bool isScale(GraphMarks const &scale_marks, bool fixed) const;
+    /**
+     * If a StochasticNode does not have a name defined in the name
+     * table, then its name is constructed to be the BUGS-language
+     * representation, i.e. the right-hand side of a logical relation
+     * that defines the node.
+     */
+    std::string name(NodeNameTab const &name_table) const;
 };
 
 /**

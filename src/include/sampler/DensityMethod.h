@@ -1,6 +1,8 @@
 #ifndef DENSITY_METHOD_H_
 #define DENSITY_METHOD_H_
 
+#include <string>
+
 class ParallelDensitySampler;
 class RNG;
 
@@ -42,6 +44,12 @@ public:
      * @see Sampler#adaptOff
      */
     virtual bool adaptOff() = 0;
+    /**
+     * Returns an informative name for the update method
+     *
+     * @see Sampler#name
+     */
+    virtual std::string name() const = 0;
 };
     
 #endif /* DENSITY_METHOD_H_ */

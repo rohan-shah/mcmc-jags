@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <set>
+#include <string>
 
 class StochasticNode;
 class Node;
@@ -125,6 +126,11 @@ public:
    * should simply return true.
    */
   virtual bool adaptOff() = 0;
+  /**
+   * Returns a name for the sampler which should describe the method
+   * it uses to update the nodes.
+   */
+  virtual std::string name() const = 0;
   /**
    * Static function that identifies the Marginal Stochastic Children
    * and the Immediate Deterministic Descendants of the given nodes
