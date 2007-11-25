@@ -93,6 +93,7 @@ namespace mix {
 	static bool canSample(std::vector<StochasticNode *> const &snodes, 
 			      Graph const &graph);
 	bool checkAdaptation() const;
+	std::string name() const;
     };
 
 }
