@@ -5,6 +5,7 @@
 using std::vector;
 using std::set;
 using std::logic_error;
+using std::string;
 
 static vector<Node const *> mkParents(set<StochasticNode const *> const &param)
 {
@@ -64,4 +65,9 @@ bool DevianceNode::isScale(GraphMarks const &scale_marks, bool fixed) const
 bool DevianceNode::checkParentValues(unsigned int nchain) const
 {
     return true;
+}
+
+string DevianceNode::deparse(vector<string> const &parents) const
+{
+    return "deviance";
 }
