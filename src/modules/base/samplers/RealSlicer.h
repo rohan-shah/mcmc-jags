@@ -26,6 +26,7 @@ namespace base {
 	void setValue(double value);
 	void getLimits(double *lower, double *upper) const;
 	void update(RNG *rng);
+	std::string name() const;
 	static bool canSample(StochasticNode const *node);
     };
 

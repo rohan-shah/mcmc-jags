@@ -19,6 +19,7 @@ class FiniteMethod : public DensityMethod {
 	 * returns true
 	 */
 	bool adaptOff();
+	std::string name() const;
 	static bool canSample(StochasticNode const *snode);
     };
 

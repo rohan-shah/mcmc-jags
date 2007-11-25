@@ -62,4 +62,9 @@ namespace basesamplers {
 	updateDouble(rng);
     }
 
+    string name() const
+    {
+	return "Discrete Slice Method";
+    }
+
 }

@@ -33,6 +33,7 @@ namespace basesamplers {
 	double value() const;
 	void getLimits(double *lower, double *upper) const;
 	void update(RNG*);
+	std::string name() const;
 	static bool canSample(StochasticNode const *node);
     };
 

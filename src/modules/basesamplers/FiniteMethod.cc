@@ -102,4 +102,9 @@ namespace basesamplers {
 	}
 	return true;
     }
+
+    string FiniteMethod::name() const
+    {
+	return "Finite Method";
+    }
 }

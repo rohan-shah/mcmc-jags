@@ -49,4 +49,9 @@ namespace basesamplers {
     {
 	updateStep(rng);
     }
+    
+    void RealSlicer::name() const
+    {
+	return "Real Slice Method";
+    }
 }
