@@ -99,6 +99,11 @@ static void getVariableNames(ParseTree const *ptree, set<string> &names,
 	    switch ((*p)->treeClass()) {
 	    case P_FOR:
 		counter = (*p)->parameters()[0];
+                for (unsigned int i = 0; i < counter->parameters().size(); ++i)
+                {
+                    getVariableNames(counter->parameters()[i], names,
+                                     counterstack);
+                }
 		counterstack.push_back(counter->name());
 		getVariableNames((*p)->parameters()[1], names, counterstack);
 		counterstack.pop_back();
