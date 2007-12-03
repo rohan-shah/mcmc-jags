@@ -154,20 +154,26 @@ void Sampler::classifyChildren(vector<StochasticNode *> const &nodes,
 
 double Sampler::logFullConditional(unsigned int chain) const
 {
-    double lfc = 0.0;
-
+    double lprior = 0.0;
     vector<StochasticNode*>::const_iterator p = _nodes.begin();
     for (; p != _nodes.end(); ++p) {
-	lfc += (*p)->logDensity(chain);
+	lprior += (*p)->logDensity(chain);
     }
   
+    double llike = 0.0;
     vector<StochasticNode const*>::const_iterator q = _stoch_children.begin();
     for (; q != _stoch_children.end(); ++q) {
-	lfc += (*q)->logDensity(chain) * (*q)->freqWeight();
+	llike += (*q)->logDensity(chain) * (*q)->freqWeight();
     }
-  
+
+    double lfc = lprior + llike;
     if(jags_isnan(lfc)) {
-	//Try to find where the calculation went wrong
+	/* 
+	   Try to find where the calculation went wrong. At this point,
+	   we are definitely going to throw an exception. It's just a
+	   question of working out which error message. So we can afford
+	   to be laborious.
+	*/
 	for (p = _nodes.begin(); p != _nodes.end(); ++p) {
 	    if (jags_isnan((*p)->logDensity(chain))) {
 		throw NodeError(*p, "Failure to calculate log density");
@@ -180,8 +186,20 @@ double Sampler::logFullConditional(unsigned int chain) const
 	    }
 	}
 
-	//This could  happen if we try to add +Inf to -Inf
-	throw logic_error("Failure in Sampler::logFullConditional");
+	if (jags_isnan(lprior)) {
+	    throw runtime_error(string("Failure to calculate prior density in ")
+				+ name());
+	}
+	if (jags_isnan(llike)) {
+	    throw runtime_error(string("Failure to calculate likelihood in ")
+				+ name());
+	}
+	if (!jags_finite(lprior) && !jags_finite(llike)) {
+	    throw runtime_error(string("Prior and likelihood are incompatible")
+				+ " in " + name());
+	}
+	throw runtime_error(string("Failure to calculate log full conditional")
+			    + " in " + name());
     }
 
     return lfc;
