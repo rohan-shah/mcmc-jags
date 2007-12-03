@@ -10,10 +10,10 @@ bugssampler_la_SOURCES = Censored.cc ConjugateGamma.cc			\
 ConjugateWishart.cc ConjugateBeta.cc ConjugateMNormal.cc		\
 ConjugateDirichlet.cc ConjugateNormal.cc DSumFactory.cc			\
 ConjugateFactory.cc ConjugateSampler.cc DSumSampler.cc 			\
-MNormal.cc MNormalFactory.cc ConjugateMethod.cc
+MNormal.cc MNormalFactory.cc ConjugateMethod.cc Dirichlet.cc DirichletFactory.cc
 
 noinst_HEADERS = Censored.h ConjugateFactory.h ConjugateNormal.h	\
 ConjugateBeta.h ConjugateGamma.h ConjugateSampler.h DSumFactory.h	\
 ConjugateDirichlet.h ConjugateMNormal.h ConjugateWishart.h		\
-DSumSampler.h MNormal.h MNormalFactory.h ConjugateMethod.h
+DSumSampler.h MNormal.h MNormalFactory.h ConjugateMethod.h Dirichlet.h DirichletFactory.h
 
