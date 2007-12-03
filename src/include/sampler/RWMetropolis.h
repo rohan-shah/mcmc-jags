@@ -13,9 +13,11 @@
 class RWMetropolis : public Metropolis
 {
     const double _prob;
-    double _lscale;
+    double _lstep;
     bool  _p_over_target;
     unsigned int _n;
+    double _pmean;
+    unsigned int _niter;
 public:
     /**
      * Constructs a random walk Metropolis sampler. 
@@ -39,6 +41,7 @@ public:
      */
     void rescale(double p);
     void update(RNG *rng);
+    bool checkAdaptation() const;
 };
 
 #endif /* RW_METROPOLIS_H_ */

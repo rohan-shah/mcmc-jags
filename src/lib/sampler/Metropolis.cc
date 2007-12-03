@@ -10,7 +10,9 @@
 using std::logic_error;
 using std::vector;
 using std::copy;
+using std::min;
 
+/*
 static unsigned int addDF(vector<StochasticNode *> const &nodes)
 {
     unsigned int d = 0;
@@ -19,6 +21,7 @@ static unsigned int addDF(vector<StochasticNode *> const &nodes)
      }
      return d;
 }
+*/
 
 static unsigned int addLength(vector<StochasticNode *> const &nodes)
 {
@@ -32,7 +35,7 @@ static unsigned int addLength(vector<StochasticNode *> const &nodes)
 Metropolis::Metropolis(vector<StochasticNode*> const &nodes)
     : _adapt(true), _value(0), _last_value(0), _length(0)
 {
-    _length = addDF(nodes);
+    _length = addLength(nodes);
     _value = new double[_length];
     _last_value = new double[_length];
 }
@@ -95,7 +98,7 @@ bool Metropolis::accept(RNG *rng, double prob)
 	propose(_last_value, _length);
     }
     if (_adapt) {
-	rescale(prob);
+	rescale(min(prob, 1.0));
     }
     return accept;
 }

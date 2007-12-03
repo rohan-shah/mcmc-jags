@@ -1004,55 +1004,65 @@ void Compiler::declareVariables(vector<ParseTree*> const &dec_list)
 
 void Compiler::undeclaredVariables(ParseTree const *prelations)
 {
-  // Get undeclared variables from data table
-  map<string, SArray>::const_iterator p = _data_table.begin();
-  for (; p != _data_table.end(); ++p) {
-    string const &name = p->first;
-    if (!_model.symtab().getVariable(name)) {
-      _model.symtab().addVariable(name, p->second.dim(false));
-    }
-  }
-
-  
-  // Infer the dimension of remaining nodes from the relations
-  traverseTree(prelations, &Compiler::getArrayDim);
-  map<string, vector<vector<int> > >::const_iterator i = 
-      _node_array_ranges.begin(); 
-  for (; i != _node_array_ranges.end(); ++i) {
-    if (_model.symtab().getVariable(i->first)) {
-       //Node already declared. Check consistency 
-       NodeArray const * array = _model.symtab().getVariable(i->first);
-       vector<int> const &upper = array->range().upper();
-       if (upper.size() != i->second[1].size()) {
-           string msg = "Dimension mismatch between data and model for node ";
-           msg.append(i->first);
-           throw runtime_error(msg);
-       }
-       for (unsigned int j = 0; j < upper.size(); ++j) {
-           if (i->second[1][j] > upper[j]) {
-              string msg =  string("Index out of range for node ") + i->first;
-              throw runtime_error(msg);
-           }
-       } 
-    }
-    else {
-	//Node not declared. Use inferred size
-	vector<int> const &upper = i->second[1];
-	unsigned int ndim = upper.size();
-	vector<unsigned int> dim(ndim);
-	for (unsigned int j = 0; j < ndim; ++j) {
-	    if (upper[j] <= 0) {
-		string msg = string("Invalid index for node ") + i->first;
+    // Get undeclared variables from data table
+    map<string, SArray>::const_iterator p = _data_table.begin();
+    for (; p != _data_table.end(); ++p) {
+	string const &name = p->first;
+	NodeArray const *array = _model.symtab().getVariable(name);
+	if (array) {
+	    if (p->second.range() != array->range()) {
+		string msg = string("Dimensions of ") + name + 
+		    " in declaration (" + print(array->range()) + 
+		    ") conflict with dimensions in data (" + 
+		    print(p->second.range()) + ")";
 		throw runtime_error(msg);
 	    }
-	    else {
-		dim[j] = static_cast<unsigned int>(upper[j]);
-	    }
 	}
-				 
-	_model.symtab().addVariable(i->first, dim);
+	else {
+	    _model.symtab().addVariable(name, p->second.dim(false));
+	}
     }
-  }
+
+  
+    // Infer the dimension of remaining nodes from the relations
+    traverseTree(prelations, &Compiler::getArrayDim);
+    map<string, vector<vector<int> > >::const_iterator i = 
+	_node_array_ranges.begin(); 
+    for (; i != _node_array_ranges.end(); ++i) {
+	if (_model.symtab().getVariable(i->first)) {
+	    //Node already declared. Check consistency 
+	    NodeArray const * array = _model.symtab().getVariable(i->first);
+	    vector<int> const &upper = array->range().upper();
+	    if (upper.size() != i->second[1].size()) {
+		string msg = "Dimension mismatch between data and model for node ";
+		msg.append(i->first);
+		throw runtime_error(msg);
+	    }
+	    for (unsigned int j = 0; j < upper.size(); ++j) {
+		if (i->second[1][j] > upper[j]) {
+		    string msg =  string("Index out of range for node ") + i->first;
+		    throw runtime_error(msg);
+		}
+	    } 
+	}
+	else {
+	    //Node not declared. Use inferred size
+	    vector<int> const &upper = i->second[1];
+	    unsigned int ndim = upper.size();
+	    vector<unsigned int> dim(ndim);
+	    for (unsigned int j = 0; j < ndim; ++j) {
+		if (upper[j] <= 0) {
+		    string msg = string("Invalid index for node ") + i->first;
+		    throw runtime_error(msg);
+		}
+		else {
+		    dim[j] = static_cast<unsigned int>(upper[j]);
+		}
+	    }
+				 
+	    _model.symtab().addVariable(i->first, dim);
+	}
+    }
 }
 
 DistTab &Compiler::distTab()
