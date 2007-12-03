@@ -67,6 +67,7 @@
 #include <samplers/DSumFactory.h>
 //#include <samplers/REFactory.h>
 #include <samplers/MNormalFactory.h>
+#include <samplers/DirichletFactory.h>
 
 using std::vector;
 using namespace bugs;
@@ -144,6 +145,7 @@ BUGSModule::BUGSModule() {
     insert(new ConjugateFactory);
     //insert(new REFactory);
     insert(new DSumFactory);
+    insert(new DirichletFactory);
 }
 
 BUGSModule::~BUGSModule() {
