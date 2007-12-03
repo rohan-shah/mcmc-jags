@@ -306,7 +306,15 @@ getMixtureNode1(NodeArray *array, vector<SSI> const &limits, Compiler *compiler)
 	//subsets.insert(pair<vector<int>, Node*>(ranges[i].first, subset_node));
     }
 
-    return compiler->mixtureFactory().getMixtureNode(indices, subsets, compiler_graph);
+/* FIXME. Constant pointer!
+    if (subsets.size() == 1) {
+	//   Nothing to do here! In this case, a complex expression evaluates
+	//   to a single answer, e.g (0 * p[i]) is always zero.
+	return subsets.begin()->second;
+    }
+*/
+    return compiler->mixtureFactory().getMixtureNode(indices, subsets, 
+						     compiler_graph);
 }
 
 static Node * 
