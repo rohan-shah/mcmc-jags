@@ -45,9 +45,13 @@ namespace base {
 	    liksum += lik[i];
 	}
 
-	if (liksum == 0 || !jags_finite(liksum)) {
-            Node *node = _sampler->nodes()[0];
-	    throw NodeError(node, "Cannot normalize density in FiniteMethod");
+	if (liksum == 0) {
+	    throw NodeError(_sampler->nodes()[0],
+			   "All possible values have probability zero");
+	}
+	if (!jags_finite(liksum)) {
+	    throw NodeError(_sampler->nodes()[0],
+			    "Cannot normalize density");
 	}
 
 	/* Sample */
