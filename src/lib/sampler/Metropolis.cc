@@ -33,7 +33,7 @@ static unsigned int addLength(vector<StochasticNode *> const &nodes)
 Metropolis::Metropolis(vector<StochasticNode*> const &nodes)
     : _adapt(true), _value(0), _last_value(0), _length(0)
 {
-    _length = addDF(nodes);
+    _length = addLength(nodes);
     _value = new double[_length];
     _last_value = new double[_length];
 }

@@ -37,19 +37,18 @@ RWMetropolis::~RWMetropolis()
 
 void RWMetropolis::rescale(double p)
 {
-    _lstep +=  (p - _prob) / _n; //We work on a log scale
+    _lstep +=  (p - _prob) / _n; 
+
     if ((p > _prob) != _p_over_target) {
-	/* 
-	   Reduce the step size only when the acceptance probability
-	   crosses the target value. This allows us to adapt quickly
-	   to a poor initial choice of scale.
-	*/
+	//   Reduce the step size only when the acceptance probability
+	//  crosses the target value. This allows us to adapt quickly
+	// to a poor initial choice of scale.
 	_p_over_target = !_p_over_target;
 	_n++;
     }
 
-    /* We keep a weighted mean estimate of the mean acceptance probability
-       with the weights in favour of more recent iterations */
+    // We keep a weighted mean estimate of the mean acceptance probability
+    //  with the weights in favour of more recent iterations
     _pmean += 2 * (p - _pmean) / _niter;
     _niter++;
 }
@@ -82,4 +81,9 @@ bool RWMetropolis::checkAdaptation() const
     double logit_accept = log(_pmean/(1 - _pmean));
 
     return fabs(logit_target - logit_accept) < 0.5;
+}
+
+double RWMetropolis::step() const
+{
+    return exp(_lstep);
 }
