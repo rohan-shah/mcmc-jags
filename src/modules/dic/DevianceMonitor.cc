@@ -24,7 +24,7 @@ namespace dic {
 
     vector<unsigned int> DevianceMonitor::dim() const
     {
-	return vector<unsigned int>(1, 1 + niter());
+	return vector<unsigned int>(1, niter());
     }
  
     vector<double> const &DevianceMonitor::value(unsigned int chain) const

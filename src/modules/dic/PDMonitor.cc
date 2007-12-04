@@ -31,7 +31,7 @@ namespace dic {
 
     vector<unsigned int> PDMonitor::dim() const
     {
-	return vector<unsigned int>(1, 1 + niter());
+	return vector<unsigned int>(1, niter());
     }
  
     vector<double> const &PDMonitor::value(unsigned int chain) const
