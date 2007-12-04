@@ -538,7 +538,7 @@ Node *Compiler::getDim(ParseTree const *p, SymTab const &symtab)
  * Evaluates the expression t, and returns a pointer to a Node. If the
  * expression cannot be evaluated, a NULL pointer is returned. 
  */
-Node* Compiler::getParameter(ParseTree const *t)
+Node * Compiler::getParameter(ParseTree const *t)
 {
     vector<Node const *> parents;
     Node *node = 0;
