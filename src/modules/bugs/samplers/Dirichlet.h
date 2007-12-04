@@ -11,7 +11,9 @@ public:
 		   double *nv, unsigned int nlength) const;
     void untransform(double const *nv, unsigned int nlength,
 		     double *v, unsigned int length) const;
+    void update(RNG *rng);
     std::string name() const;
+    double penalty() const;
 };
 
 #endif /* DIRICHLET_METROPOLIS_H_ */
