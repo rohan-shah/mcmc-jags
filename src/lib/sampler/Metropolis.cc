@@ -12,7 +12,6 @@ using std::vector;
 using std::copy;
 using std::min;
 
-/*
 static unsigned int addDF(vector<StochasticNode *> const &nodes)
 {
     unsigned int d = 0;
@@ -21,7 +20,6 @@ static unsigned int addDF(vector<StochasticNode *> const &nodes)
      }
      return d;
 }
-*/
 
 static unsigned int addLength(vector<StochasticNode *> const &nodes)
 {
@@ -35,7 +33,7 @@ static unsigned int addLength(vector<StochasticNode *> const &nodes)
 Metropolis::Metropolis(vector<StochasticNode*> const &nodes)
     : _adapt(true), _value(0), _last_value(0), _length(0)
 {
-    _length = addLength(nodes);
+    _length = addDF(nodes);
     _value = new double[_length];
     _last_value = new double[_length];
 }

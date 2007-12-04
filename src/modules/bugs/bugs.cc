@@ -142,10 +142,10 @@ BUGSModule::BUGSModule() {
     insert(new Trunc);
 
     insert(new MNormalFactory);
+    insert(new DirichletFactory);
     insert(new ConjugateFactory);
     //insert(new REFactory);
     insert(new DSumFactory);
-    insert(new DirichletFactory);
 }
 
 BUGSModule::~BUGSModule() {
