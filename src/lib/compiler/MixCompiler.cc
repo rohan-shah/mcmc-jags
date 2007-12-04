@@ -297,22 +297,26 @@ getMixtureNode1(NodeArray *array, vector<SSI> const &limits, Compiler *compiler)
 
     /* Convert these into subsets */
 
+    //Look out for trivial mixture nodes in which all subsets are the same.
+    bool trivial = true;
+    Node *subset_node0 = array->getSubset(ranges[0].second, compiler_graph);
+
     map<vector<int>, Node const *> subsets;  
     for (unsigned int i = 0; i < ranges.size(); ++i) {
 	Node *subset_node = array->getSubset(ranges[i].second, compiler_graph);
 	if (!subset_node)
 	    return 0;
 	subsets[ranges[i].first] = subset_node;
-	//subsets.insert(pair<vector<int>, Node*>(ranges[i].first, subset_node));
+	if (subset_node != subset_node0)
+	    trivial = false;
     }
 
-/* FIXME. Constant pointer!
-    if (subsets.size() == 1) {
-	//   Nothing to do here! In this case, a complex expression evaluates
-	//   to a single answer, e.g (0 * p[i]) is always zero.
-	return subsets.begin()->second;
+    if (trivial) {
+	// Nothing to do here! All subset nodes are the same, so we
+	// just return the subset node.
+	return subset_node0;
     }
-*/
+
     return compiler->mixtureFactory().getMixtureNode(indices, subsets, 
 						     compiler_graph);
 }
