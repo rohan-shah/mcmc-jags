@@ -4,6 +4,7 @@
 #include <graph/NodeError.h>
 #include <distribution/Distribution.h>
 #include <compiler/NodeFactory.h>
+#include <util/dim.h>
 
 #include <stdexcept>
 
@@ -74,8 +75,10 @@ StochasticFactory::getStochasticNode(Distribution const *dist,
 	StochasticNode *snode = new StochasticNode(dist, parents);
 	graph.add(snode);
 
-	if (snode->dim() != data.dim(true)) {
-	    throw NodeError(snode, "Dimension mismatch between node and data");
+	if (data.dim(true) != drop(snode->dim())) {
+            std::string msg = std::string("expected ") + print(Range(snode->dim())) + " got " + print(Range(data.dim(true)));
+	    //throw NodeError(snode, "Dimension mismatch between node and data");
+	    throw NodeError(snode, msg);
 	}
 	snode->setObserved(data.value());
 	_stochasticmap[strio] = snode;

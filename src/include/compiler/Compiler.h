@@ -68,7 +68,7 @@ class Compiler {
 public:
   bool indexExpression(ParseTree const *t, int &value);
   BUGSModel &model() const;
-  Node* getParameter(ParseTree const *t);
+  Node * getParameter(ParseTree const *t);
   /**
    * @param model Model to be created by the compiler.
    *
