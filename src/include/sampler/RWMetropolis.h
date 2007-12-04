@@ -31,9 +31,9 @@ public:
 		 double prob = 0.234);
     ~RWMetropolis();
     /**
-     * Returns the current scale for the random walk updates.
+     * Returns the current step size for the random walk updates.
      */
-    double scale() const;
+    double step() const;
     /**
      * Modifies the scale to achieve the target acceptance probability.
      *
@@ -42,6 +42,7 @@ public:
     void rescale(double p);
     void update(RNG *rng);
     bool checkAdaptation() const;
+
 };
 
 #endif /* RW_METROPOLIS_H_ */
