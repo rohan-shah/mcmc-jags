@@ -1,5 +1,3 @@
-//#define bugs_LTX_load load
-
 #include <Module.h>
 #include <distribution/DistTab.h>
 
@@ -165,14 +163,5 @@ BUGSModule::~BUGSModule() {
 	delete svec[i];
     }
 }
-
-/*
-extern "C" {
-    void load() {
-	static BUGSModule bugs_module;
-	return;
-    }
-}
-*/
 
 BUGSModule _bugs_module;
