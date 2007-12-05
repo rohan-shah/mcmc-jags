@@ -13,7 +13,6 @@ public:
 		     double *v, unsigned int length) const;
     void update(RNG *rng);
     std::string name() const;
-    double penalty() const;
 };
 
 #endif /* DIRICHLET_METROPOLIS_H_ */
