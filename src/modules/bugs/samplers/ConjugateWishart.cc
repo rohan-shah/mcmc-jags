@@ -20,6 +20,7 @@ using std::set;
 using std::sqrt;
 using std::invalid_argument;
 using std::logic_error;
+using std::string;
 
 bool ConjugateWishart::canSample(StochasticNode *snode, Graph const &graph)
 {
@@ -122,4 +123,9 @@ void ConjugateWishart::update(ConjugateSampler *sampler, unsigned int chain,
     delete [] R;
     sampler->setValue(xnew, N, chain);
     delete [] xnew;
+}
+
+string ConjugateWishart::name() const
+{
+    return "ConjugateWishart";
 }
