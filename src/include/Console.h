@@ -198,6 +198,7 @@ public:
   bool dumpMonitors(std::map<std::string,SArray> &data_table,
                     std::map<std::string,unsigned int > &weight_table,
 		    std::string const &type, unsigned int chain);
+  bool dumpSamplers(std::vector<std::vector<std::string> > &sampler_list);
   /** Turns off adaptive mode of the model */
   bool adaptOff(bool &status);
   /** Indicates whether model is in adaptive mode */
