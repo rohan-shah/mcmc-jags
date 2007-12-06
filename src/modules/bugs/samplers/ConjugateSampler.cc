@@ -105,5 +105,5 @@ ConjugateDist ConjugateSampler::targetDist() const
 
 string ConjugateSampler::name() const
 {
-    return "ConjugateSampler";
+    return _method->name();
 }
