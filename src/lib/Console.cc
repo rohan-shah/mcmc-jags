@@ -809,3 +809,40 @@ vector<string> const &Console::variableNames() const
 {
     return _array_names;
 }
+
+bool Console::dumpSamplers(vector<vector<string> > &sampler_names)
+{
+    if (_model == 0) {
+	_err << "Can't dump samplers. No model!" << endl;    
+	return false;
+    }
+    if (!_model->isInitialized()) {
+	_err << "Model not initialized" << endl;
+	return false;
+    }
+
+    try {
+	_model->samplerNames(sampler_names);
+    }
+    catch (NodeError except) {
+	_err << "Error in node " << _model->symtab().getName(except.node) 
+	     << endl;
+	_err << except.what() << endl;
+        clearModel();
+	return false;
+    }
+    catch (std::runtime_error except) {
+	_err << "RUNTIME ERROR" << endl;
+	_err << except.what() << endl;
+        clearModel();
+	return false;
+    }
+    catch (std::logic_error except) {
+	_err << "LOGIC ERROR" << endl;
+	_err << except.what() << endl;
+	_err << "Please send a bug report to " << PACKAGE_BUGREPORT << endl;
+        clearModel();
+	return false;
+    }
+    return true;
+}

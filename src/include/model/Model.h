@@ -21,9 +21,11 @@ class MonitorFactory;
  * elements necessary to run an MCMC sampler on a graphical model.
  */
 class Model {
+protected:
+  std::vector<Sampler*> _samplers;
+private:
   unsigned int _nchain;
   std::vector<RNG *> _rng;
-  std::vector<Sampler*> _samplers;
   unsigned int _iteration;
   Graph _graph;
   std::set<Node*> _extra_nodes;
