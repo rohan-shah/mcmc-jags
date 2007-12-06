@@ -33,9 +33,10 @@ using std::runtime_error;
 using std::string;
 using std::ostringstream;
 using std::stable_sort;
+using std::copy;
 
 Model::Model(unsigned int nchain)
-    : _nchain(nchain), _rng(nchain, 0), _samplers(0), _iteration(0),
+    : _samplers(0), _nchain(nchain), _rng(nchain, 0), _iteration(0),
       _is_initialized(false), _adapt(true), _data_gen(false)
 {
 }
@@ -524,3 +525,7 @@ bool Model::setDefaultMonitors(string const &type, unsigned int thin)
     }
     return false;
 }
+
+
+
+

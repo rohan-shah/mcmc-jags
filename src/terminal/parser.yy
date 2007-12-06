@@ -79,6 +79,7 @@
     static void setParameters(ParseTree *p, std::vector<ParseTree*> *parameters);
     static void setParameters(ParseTree *p, ParseTree *param1, ParseTree *param2);
     static void loadModule(std::string const &name);
+    static void dumpSamplers(std::string const &file);
     %}
 
 %defines
@@ -124,6 +125,7 @@
 %token <intval> NCHAINS
 %token <intval> CHAIN
 %token <intval> LOAD
+%token <intval> SAMPLERS
 
 %token <intval> LIST 
 %token <intval> STRUCTURE
@@ -183,6 +185,7 @@ command: model
 | read_dir
 | get_working_dir
 | set_working_dir
+| samplers_to
 ;
 
 model: MODEL IN file_name {
@@ -460,6 +463,13 @@ coda: CODA var {
 ;
 
 load: LOAD file_name { loadModule(*$2); }
+;
+
+samplers_to: SAMPLERS TO file_name 
+{
+    dumpSamplers(*$3);
+    delete $3;
+}
 ;
 
 /* Rules for scanning dumped R datasets */
@@ -1321,4 +1331,25 @@ static bool getWorkingDirectory(std::string &name)
 	}
 	return false;
     }
+}
+
+static void dumpSamplers(std::string const &file)
+{
+    std::ofstream out(file.c_str());
+    if (!out) {
+	std::cerr << "Failed to open file " << file << std::endl;
+	return;
+    }
+
+    std::vector<std::vector<std::string> > sampler_list;
+    console->dumpSamplers(sampler_list);
+    for (unsigned int i = 0; i < sampler_list.size(); ++i) {
+	for (unsigned int j = 1; j < sampler_list[i].size(); ++j) {
+	    out << i + 1 << "\t" 
+		<< sampler_list[i][0] << "\t" //First element is sampler name
+		<< sampler_list[i][j] << "\n"; //Rest are node names
+	}
+    }
+
+    out.close();
 }
