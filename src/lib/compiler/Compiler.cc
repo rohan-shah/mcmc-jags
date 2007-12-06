@@ -82,7 +82,8 @@ Node * Compiler::constFromTable(ParseTree const *p)
                     return 0;
                 }
             }
-            cnode = new ConstantNode(subset_range.dim(false), value, 1);
+            cnode = new ConstantNode(subset_range.dim(false), value, 
+				     _model.nchain());
 
 	}
 	else {
@@ -93,7 +94,7 @@ Node * Compiler::constFromTable(ParseTree const *p)
 		return 0;
 	    }
 	    else {
-		cnode = new ConstantNode(value, 1);
+		cnode = new ConstantNode(value, _model.nchain());
 	    }
 	    return cnode;
 	}
@@ -372,7 +373,7 @@ Node *Compiler::getArraySubset(ParseTree const *p)
     Counter *counter = _countertab.getCounter(p->name()); //A counter
     if (counter) {
 	if (_index_expression) {
-	    node = new ConstantNode((*counter)[0], 1);
+	    node = new ConstantNode((*counter)[0], _model.nchain());
 	    _index_graph.add(node);
 	}
 	else {
@@ -477,7 +478,7 @@ Node *Compiler::getLength(ParseTree const *p, SymTab const &symtab)
 	else {
 	    double length = product(subset_range.dim(true));
 	    if (_index_expression) {
-		Node *node = new ConstantNode(length, 1);
+		Node *node = new ConstantNode(length, _model.nchain());
 		_index_graph.add(node);
 	    return node;
 	    }
@@ -517,7 +518,7 @@ Node *Compiler::getDim(ParseTree const *p, SymTab const &symtab)
 	    vector<unsigned int> d(1, idim.size());
 
 	    if (_index_expression) {
-		Node *node = new ConstantNode(d, ddim, 1);
+		Node *node = new ConstantNode(d, ddim, _model.nchain());
 		_index_graph.add(node);
 	    return node;
 	    }
@@ -546,7 +547,7 @@ Node * Compiler::getParameter(ParseTree const *t)
     switch (t->treeClass()) {
     case P_VALUE:
 	if (_index_expression) {
-	    node = new ConstantNode(t->value(), 1);
+	    node = new ConstantNode(t->value(), _model.nchain());
 	    _index_graph.add(node);
 	}
 	else {
