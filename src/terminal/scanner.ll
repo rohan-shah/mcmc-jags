@@ -44,6 +44,7 @@ type			zzlval.intval=TYPE; return TYPE;
 set			zzlval.intval=SET; return SET;
 clear			zzlval.intval=CLEAR; return CLEAR;
 thin			zzlval.intval=THIN; return THIN;
+samplers                zzlval.intval=SAMPLERS; return SAMPLERS;
 
 coda			zzlval.intval=CODA; return CODA;
 stem			zzlval.intval=STEM; return STEM;
