@@ -22,6 +22,7 @@ public:
     void initialize(ConjugateSampler *sampler, Graph const &graph);
     void update(ConjugateSampler *sampler, unsigned int chain, RNG *rng) const;
     static bool canSample(StochasticNode *snode, Graph const &graph);
+    std::string name() const;
 };
 
 #endif /* CONJUGATE_DIRICHLET_H_ */

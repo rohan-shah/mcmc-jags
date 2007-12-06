@@ -21,7 +21,7 @@ using std::vector;
 using std::set;
 using std::sqrt;
 using std::invalid_argument;
-
+using std::string;
 
 static void calBeta(double *beta, ConjugateSampler *sampler, unsigned int chain)
 {
@@ -232,4 +232,9 @@ void ConjugateNormal::update(ConjugateSampler *sampler, unsigned int chain,
     }
     sampler->setValue(&xnew, 1, chain);
 
+}
+
+string ConjugateNormal::name() const
+{
+    return "ConjugateNormal";
 }

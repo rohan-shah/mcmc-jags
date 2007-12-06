@@ -25,6 +25,7 @@ using std::invalid_argument;
 using std::logic_error;
 using std::max;
 using std::sort;
+using std::string;
 
 static double 
 getScale(StochasticNode const *snode, ConjugateDist d, unsigned int chain)
@@ -247,4 +248,9 @@ void ConjugateGamma::update(ConjugateSampler *sampler,
 	xnew = rgamma(r, 1/mu, rng);
     }
     sampler->setValue(&xnew, 1, chain);  
+}
+
+string ConjugateGamma::name() const
+{
+    return "ConjugateGamma";
 }

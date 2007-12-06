@@ -23,6 +23,7 @@ using std::invalid_argument;
 using std::logic_error;
 using std::max;
 using std::min;
+using std::string;
 
 bool ConjugateBeta::canSample(StochasticNode *snode, Graph const &graph)
 {
@@ -194,4 +195,9 @@ ConjugateBeta::update(ConjugateSampler *sampler, unsigned int chain,
 	delete [] C;
     }
 
+}
+
+string ConjugateBeta::name() const
+{
+    return "ConjugateBeta";
 }

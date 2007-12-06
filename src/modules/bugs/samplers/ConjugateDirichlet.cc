@@ -19,6 +19,7 @@ using std::vector;
 using std::set;
 using std::sqrt;
 using std::logic_error;
+using std::string;
 
 bool ConjugateDirichlet::canSample(StochasticNode *snode, Graph const &graph)
 {
@@ -173,4 +174,9 @@ void ConjugateDirichlet::update(ConjugateSampler *sampler, unsigned int chain,
 
     delete [] xnew;
     delete [] alpha;
+}
+
+string ConjugateDirichlet::name() const
+{
+    return "ConjugateDirichlet";
 }

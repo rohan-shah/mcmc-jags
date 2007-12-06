@@ -26,6 +26,7 @@ using std::vector;
 using std::set;
 using std::sqrt;
 using std::invalid_argument;
+using std::string;
 
 static void calBeta(double *betas, ConjugateSampler *sampler,
                     unsigned int chain)
@@ -298,4 +299,9 @@ void ConjugateMNormal::update(ConjugateSampler *sampler, unsigned int chain,
     delete [] b;
     delete [] A;
     delete [] xnew;
+}
+
+string ConjugateMNormal::name() const
+{
+    return "ConjugateMNormal";
 }
