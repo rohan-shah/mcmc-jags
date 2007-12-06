@@ -131,6 +131,19 @@ public:
      */
     bool deleteMonitor(std::string const &name, Range const &range,
 		       std::string const &type);
+    /**
+     * Writes the names of the samplers, and the corresponding 
+     * sampled nodes vectors to the given vector.
+     *
+     * @param sampler_names vector that is modified during the call On
+     * exit it will contain an element for each Sampler in the model.
+     * Each element is a vector of strings: the first string is the
+     * name of the sampler, and the remaining strings are the names of
+     * the nodes sampled by that Sampler.
+     */
+    void samplerNames(std::vector<std::vector<std::string> > &sampler_names) 
+	const;
+
 };
 
 #endif /* BUGS_MODEL_H_ */
