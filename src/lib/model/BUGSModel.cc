@@ -8,6 +8,7 @@
 #include <graph/GraphMarks.h>
 #include <graph/Node.h>
 #include <rng/RNG.h>
+#include <sampler/Sampler.h>
 
 #include <list>
 #include <utility>
@@ -49,9 +50,9 @@ BUGSModel::~BUGSModel()
 
 }
 
-SymTab &BUGSModel::symtab() 
+SymTab &BUGSModel::symtab()
 {
-  return _symtab;
+    return _symtab;
 }
 
 Node *BUGSModel::getNode(string const &name, Range const &target_range,
@@ -357,4 +358,23 @@ bool BUGSModel::deleteMonitor(string const &name, Range const &range,
 	}
     }
     return false;
+}
+
+void BUGSModel::samplerNames(vector<vector<string> > &sampler_names) const
+{
+    sampler_names.clear();
+    sampler_names.reserve(_samplers.size());
+
+    for (unsigned int i = 0; i < _samplers.size(); ++i) {
+
+	vector<string> names;	
+	vector<StochasticNode *> const &nodes = _samplers[i]->nodes();
+	names.reserve(nodes.size()+1);
+	
+	names.push_back(_samplers[i]->name());
+	for (unsigned int j = 0; j < nodes.size(); ++j) {
+	    names.push_back(_symtab.getName(nodes[j]));
+	}
+	sampler_names.push_back(names);
+    }    
 }
