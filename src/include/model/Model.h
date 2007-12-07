@@ -31,6 +31,7 @@ private:
   std::set<Node*> _extra_nodes;
   std::vector<Node*> _sampled_extra;
   std::list<Monitor*> _monitors;
+  std::list<Monitor*> _default_monitors;
   bool _is_initialized;
   bool _adapt;
   bool _data_gen;
@@ -106,9 +107,17 @@ public:
    * list. If none of the available monitor factories can create
    * default monitors of the given type, the return value is false.
    *
+   * Monitors created by a call to setDefaultMonitors are owned by
+   * the Model.
+   *
    * @see MonitorFactory#addDefaultMonitors
    */
   bool setDefaultMonitors(std::string const &type, unsigned int thin);
+  /**
+   * Removes all Monitors of the given type created by a previous call
+   * to setDefaultMonitors, and deletes them.
+   */
+  void clearDefaultMonitors(std::string const &type);
   /**
    * After the model is initialized, extra uninformative nodes may be
    * added to the graph (For example, a node may be added that

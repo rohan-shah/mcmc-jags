@@ -146,6 +146,15 @@ public:
    */
   bool setDefaultMonitors(std::string const &type, unsigned int thin);
   /**
+   * @short Clears default monitors 
+   *
+   * This function deletes all monitors created by a previous call to
+   * setDefault monitors.
+   *
+   * @param type The type of Monitor to clear
+   */
+  bool clearDefaultMonitors(std::string const &type);
+  /**
    * @short Dumps the state of the model.
    *
    * Writes the current values of the variables to the data table.
@@ -197,7 +206,7 @@ public:
   unsigned int nchain() const;
   bool dumpMonitors(std::map<std::string,SArray> &data_table,
                     std::map<std::string,unsigned int > &weight_table,
-		    std::string const &type, unsigned int chain);
+		    std::string const &type);
   bool dumpSamplers(std::vector<std::vector<std::string> > &sampler_list);
   /** Turns off adaptive mode of the model */
   bool adaptOff(bool &status);
