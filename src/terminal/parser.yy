@@ -68,8 +68,7 @@
     void doCoda (ParseTree const *var, std::string const &stem);
     void doAllCoda (std::string const &stem);
     void doDump (std::string const &file, DumpType type, unsigned int chain);
-    void dumpMonitors(std::string const &file, std::string const &type,
-		      unsigned int chain);
+    void dumpMonitors(std::string const &file, std::string const &type);
 
     static bool getWorkingDirectory(std::string &name);
     static void errordump();
@@ -419,26 +418,19 @@ monitor_clear: MONITOR CLEAR var {
 }
 ;
 
-monitors_to: MONITORS TO file_name ',' TYPE '(' NAME ')' CHAIN '(' INT ')' {
-    dumpMonitors(*$3, *$7, $11);
+monitors_to:  MONITORS TO file_name 
+{
+    dumpMonitors(*$3, "trace");
+    delete $3;
+}
+|
+MONITORS TO file_name ',' TYPE '(' NAME ')' {
+    dumpMonitors(*$3, *$7);
     delete $3;
     delete $7; 
-}
-monitors_to: MONITORS TO file_name ',' CHAIN '(' INT ')' TYPE '(' NAME ')' {
-    dumpMonitors(*$3, *$11, $7);
-    delete $3;
-    delete $11; 
-}
-monitors_to: MONITORS TO file_name ',' TYPE '(' NAME ')' {
-    dumpMonitors(*$3, *$7, 1);
-    delete $3;
-    delete $7; 
-}
-monitors_to: MONITORS TO file_name ',' CHAIN '(' INT ')' {
-    dumpMonitors(*$3, "trace", $7);
-    delete $3;
 }
 ;
+
 
 /* 
    File names may optionally be enclosed in quotes, and this is required
@@ -946,15 +938,12 @@ void doDump(std::string const &file, DumpType type, unsigned int chain)
   out.close();
 }  
 
-void dumpMonitors(std::string const &file, std::string const &type, 
-		  unsigned int chain)
+void dumpMonitors(std::string const &file, std::string const &type)
 {
     std::map<std::string,SArray> data_table;
     std::map<std::string,unsigned int> weight_table;
 
-    //std::string rng_name;
-
-    if (!console->dumpMonitors(data_table, weight_table, type, chain)) {
+    if (!console->dumpMonitors(data_table, weight_table, type)) {
 	return;
     }
 
