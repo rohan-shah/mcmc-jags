@@ -5,7 +5,7 @@
 
 using std::runtime_error;
 
-static const double eps = sqrt(DBL_EPSILON);
+static const double eps = 16 * DBL_EPSILON;
 
 int asInteger(double fval)
 {

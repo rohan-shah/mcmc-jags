@@ -48,6 +48,11 @@ Model::~Model()
 	delete sampler0;
 	_samplers.pop_back();
     }
+    for (list<Monitor*>::const_iterator p = _default_monitors.begin();
+	 p != _default_monitors.end(); ++p)
+    {
+	delete *p;
+    }
 }
 
 Graph &Model::graph() 
@@ -512,13 +517,14 @@ bool Model::setDefaultMonitors(string const &type, unsigned int thin)
 	if (!default_nodes.empty()) {
 	    unsigned int start = iteration() + 1;
 	    for (unsigned int i = 0; i < default_nodes.size(); ++i) {
-		//FIXME: Who owns this?
 		Monitor *monitor = (*j)->getMonitor(default_nodes[i], this,
 						    start, thin, type);
 		if (!monitor) {
 		    throw logic_error("Invalid default monitor");
 		}
 		addMonitor(monitor);
+		/* Model takes ownership of default monitors */
+		_default_monitors.push_back(monitor);
 	    }
 	    return true;
 	}
@@ -526,6 +532,19 @@ bool Model::setDefaultMonitors(string const &type, unsigned int thin)
     return false;
 }
 
-
-
+void Model::clearDefaultMonitors(string const &type)
+{
+    list<Monitor*> dmonitors = _default_monitors;
+    for (list<Monitor*>::const_iterator p = dmonitors.begin();
+	 p != dmonitors.end(); ++p) 
+    {
+	Monitor *monitor = *p;
+	if (monitor->type() == type) {
+	    _default_monitors.remove(monitor);
+	    _monitors.remove(monitor);
+	    delete monitor;
+	}
+    }
+    setSampledExtra();
+}
 

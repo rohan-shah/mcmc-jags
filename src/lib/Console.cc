@@ -3,8 +3,8 @@
 #include <compiler/Compiler.h>
 #include <compiler/parser_extra.h>
 #include <compiler/ParseTree.h>
-#include <model/Monitor.h>
 #include <model/BUGSModel.h>
+#include <model/Monitor.h>
 #include <graph/NodeError.h>
 #include <sampler/SamplerFactory.h>
 #include <graph/Node.h>
@@ -31,6 +31,27 @@ using std::set;
 using std::pair;
 using std::FILE;
 
+#define CATCH_ERRORS							\
+    catch (NodeError except) {						\
+	_err << "Error in node " <<					\
+	    _model->symtab().getName(except.node) << "\n";		\
+	_err << except.what() << endl;					\
+	return false;							\
+    }									\
+    catch (std::runtime_error except) {					\
+	_err << "RUNTIME ERROR:\n";					\
+	_err << except.what() << endl;					\
+	clearModel();							\
+	return false;							\
+    }									\
+    catch (std::logic_error except) {					\
+	_err << "LOGIC ERROR:\n" << except.what() << '\n';		\
+	_err << "Please send a bug report to "				\
+	     << PACKAGE_BUGREPORT << endl;				\
+	clearModel();							\
+	return false;							\
+    }
+
 /* Helper functions for dumpState */
 
 static bool isData(Node const *node)
@@ -56,15 +77,15 @@ Console::Console(ostream &out, ostream &err)
 
 Console::~Console()
 {
-  delete _model;
-  delete _pdata;
-  delete _prelations;
-  if (_pvariables) {
-      for (unsigned int i = 0; i < _pvariables->size(); ++i) {
-	  delete (*_pvariables)[i];
-      }
-      delete _pvariables;
-  }
+    delete _model;
+    delete _pdata;
+    delete _prelations;
+    if (_pvariables) {
+	for (unsigned int i = 0; i < _pvariables->size(); ++i) {
+	    delete (*_pvariables)[i];
+	}
+	delete _pvariables;
+    }
 }
 
 static void getVariableNames(ParseTree const *ptree, set<string> &names,
@@ -124,10 +145,21 @@ bool Console::checkModel(FILE *file)
 	clearModel();
     }
     _model = 0;
+
     int lineno =  parse_bugs(file, &_pvariables, &_pdata, &_prelations);
     if (lineno != 0) {
 	_err << endl << "Parse error on line " << lineno << endl;
-	clearModel();
+	//Tidy up
+	delete _pdata; _pdata = 0;
+	delete _prelations; _prelations = 0;
+	if (_pvariables) {
+	    for (unsigned int i = 0; i < _pvariables->size(); ++i) {
+		delete (*_pvariables)[i];
+	    }
+	    delete _pvariables;
+	    _pvariables = 0;
+	}
+	
 	return false;
     }
 
@@ -163,160 +195,119 @@ bool Console::checkModel(FILE *file)
 bool Console::compile(map<string, SArray> &data_table, unsigned int nchain,
                       bool gendata)
 {
-  if (nchain == 0) {
-    _err << "You must have at least one chain" << endl;
-    return false;
-  }
-  
-  RNG *datagen_rng = 0;
-  if (_pdata && gendata) {
-    BUGSModel datagen_model(1);
-    Compiler compiler(datagen_model, data_table);
-    _out << "Compiling data graph" << endl;
-    try {
-      if (_pvariables) {
-	_out << "   Declaring variables" << endl;
-	compiler.declareVariables(*_pvariables);
-      }
-      _out << "   Resolving undeclared variables" << endl;
-      compiler.undeclaredVariables(_pdata);
-      _out << "   Allocating nodes" << endl;
-      compiler.writeRelations(_pdata);
+    if (nchain == 0) {
+	_err << "You must have at least one chain" << endl;
+	return true;
+    }
+    if (_model) {
+	_out << "Replacing existing model" << endl;
+	clearModel();
+    }
+
+    RNG *datagen_rng = 0;
+    if (_pdata && gendata) {
+	_model = new BUGSModel(1);
+
+	Compiler compiler(*_model, data_table);
+	_out << "Compiling data graph" << endl;
+	try {
+	    if (_pvariables) {
+		_out << "   Declaring variables" << endl;
+		compiler.declareVariables(*_pvariables);
+	    }
+	    _out << "   Resolving undeclared variables" << endl;
+	    compiler.undeclaredVariables(_pdata);
+	    _out << "   Allocating nodes" << endl;
+	    compiler.writeRelations(_pdata);
       
-      /* Check validity of data generating model */
-      vector<Node*> nodes;
-      datagen_model.graph().getNodes(nodes);
-      for (unsigned int i = 0; i < nodes.size(); ++i) {
-	if (nodes[i]->isObserved()) {
-	  vector<Node const*> const &parents = nodes[i]->parents();
-	  for (vector<Node const*>::const_iterator p = parents.begin();
-	       p != parents.end(); ++p)
-	    {
-	      if (!((*p)->isObserved())) {
-		_err << "Invalid data graph: observed node " 
-		     << datagen_model.symtab().getName(nodes[i]) 
-		     << " has unobserved parent " 
-		     << datagen_model.symtab().getName(*p)
-		     << "\n";
-		return false;
-	      }
+	    /* Check validity of data generating model */
+	    vector<Node*> nodes;
+	    _model->graph().getNodes(nodes);
+	    for (unsigned int i = 0; i < nodes.size(); ++i) {
+		if (nodes[i]->isObserved()) {
+		    vector<Node const*> const &parents = nodes[i]->parents();
+		    for (vector<Node const*>::const_iterator p = parents.begin();
+			 p != parents.end(); ++p)
+		    {
+			if (!((*p)->isObserved())) {
+			    _err << "Invalid data graph: observed node " 
+				 << _model->symtab().getName(nodes[i]) 
+				 << " has unobserved parent " 
+				 << _model->symtab().getName(*p)
+				 << "\n";
+			    clearModel();
+			    return false;
+			}
+		    }
+		}
+	    }
+	    _out << "   Initializing" << endl;
+	    _model->initialize(true);
+	    // Do a single update (by forward sampling)
+	    _model->update(1);
+	    //Save data generating RNG for later use. It is owned by the
+	    //RNGFactory, not the model.
+	    datagen_rng = _model->rng(0);
+	    _out << "   Reading data back into data table" << endl;
+	    _model->symtab().readValues(data_table, 0, alwaysTrue);
+	    delete _model;
+	    _model = 0;
+	}
+	CATCH_ERRORS
+    }
+
+    _model = new BUGSModel(nchain);
+    Compiler compiler(*_model, data_table);
+
+    _out << "Compiling model graph" << endl;
+    try {
+	if (_pvariables) {
+	    _out << "   Declaring variables" << endl;
+	    compiler.declareVariables(*_pvariables);
+	}
+	if (_prelations) {
+	    _out << "   Resolving undeclared variables" << endl;
+	    compiler.undeclaredVariables(_prelations);
+	    _out << "   Allocating nodes" << endl;
+	    compiler.writeRelations(_prelations);
+	}
+	else {
+	    _err << "Nothing to compile" << endl;
+	    return true;
+	}
+	if (_model) {
+	    _out << "   Graph Size: " << _model->graph().size() << endl;
+	    if (datagen_rng) {
+		// Reuse the data-generation RNG, if there is one, for chain 0 
+		_model->setRNG(datagen_rng, 0);
 	    }
 	}
-      }
-      _out << "   Initializing" << endl;
-      datagen_model.initialize(true);
-      // Do a single update (by forward sampling)
-      datagen_model.update(1);
-      //Save data generating RNG for later use
-      datagen_rng = datagen_model.rng(0);
-      _out << "   Reading data back into data table" << endl;
-      datagen_model.symtab().readValues(data_table, 0, alwaysTrue);
+	else {
+	    _err << "No model" << endl;
+	    return true;
+	}
     }
-    catch (NodeError except) {
-      _err << "Error in node " << 
-	datagen_model.symtab().getName(except.node) << "\n";
-      _err << except.what() << endl;
-      return false;
-    }
-    catch (std::runtime_error except) {
-      _err << "RUNTIME ERROR:\n";
-      _err << except.what() << endl;
-      return false;
-    }
-    catch (std::logic_error except) {
-      _err << "LOGIC ERROR:\n";
-      _err << except.what() << '\n';
-      _err << "Please send a bug report to " << PACKAGE_BUGREPORT << endl;
-      return false;
-    }
-  }
-
-  _model = new BUGSModel(nchain);
-  Compiler compiler(*_model, data_table);
-
-  _out << "Compiling model graph" << endl;
-  try {
-    if (_pvariables) {
-      _out << "   Declaring variables" << endl;
-      compiler.declareVariables(*_pvariables);
-    }
-    if (_prelations) {
-       _out << "   Resolving undeclared variables" << endl;
-       compiler.undeclaredVariables(_prelations);
-       _out << "   Allocating nodes" << endl;
-       compiler.writeRelations(_prelations);
-     }
-     else {
-       _err << "Nothing to compile" << endl;
-       return false;
-     }
-     if (_model) {
-       _out << "   Graph Size: " << _model->graph().size() << endl;
-       if (datagen_rng) {
-          // Reuse the data-generation RNG, if there is one, for chain 0 
-          _model->setRNG(datagen_rng, 0);
-       }
-     }
-     else {
-       _err << "No model" << endl;
-       return false;
-     }
-  }
-  catch (NodeError except) {
-    _err << "Error in node " << _model->symtab().getName(except.node) << '\n';
-    _err << except.what() << endl;
-    clearModel();
-    return false;
-  }
-  catch (std::runtime_error except) {
-    _err << "RUNTIME ERROR:\n";
-    _err << except.what() << endl;
-    clearModel();
-    return false;
-  }
-  catch (std::logic_error except) {
-    _err << "LOGIC ERROR:\n";
-    _err << except.what() << '\n';
-    _err << "Please send a bug report to " << PACKAGE_BUGREPORT << endl;
-    clearModel();
-    return false;
-  }
-  return true;
+    CATCH_ERRORS;
+    
+    return true;
 }
 
 bool Console::initialize()
 {
     if (_model == 0) {
 	_err << "Can't initialize. No model!" << endl;
-	return false;
+	return true;
     }
     if (_model->graph().size() == 0) {
 	_err << "Can't initialize. No nodes in graph (Have you compiled the model?)" 	 << endl;
-	return false;
+	return true;
     }
     try {
 	_model->initialize(false);
 	_model->addDevianceNode();
     }
-    catch (NodeError except) {
-	_err << "Error in node " << _model->symtab().getName(except.node) << endl;
-	_err << except.what() << endl;
-        clearModel();
-	return false;
-    }
-    catch (std::runtime_error except) {
-	_err << "RUNTIME ERROR" << endl;
-	_err << except.what() << endl;
-        clearModel();
-	return false;
-    }
-    catch (std::logic_error except) {
-	_err << "LOGIC ERROR" << endl;
-	_err << except.what() << endl;
-	_err << "Please send a bug report to " << PACKAGE_BUGREPORT << endl;
-        clearModel();
-	return false;
-    }
+    CATCH_ERRORS;
+    
     return true;
 }
 
@@ -325,70 +316,36 @@ bool Console::setParameters(map<string, SArray> const &init_table,
 {
   if (_model == 0) {
     _err << "Can't set initial values. No model!" << endl;    
-    return false;
+    return true;
   }
   if (chain == 0 || chain > nchain()) {
     _err << "Invalid chain number" << endl;
-    return false;
+    return true;
   }
 
   try {
     _model->setParameters(init_table, chain - 1);
-  }
-  catch (NodeError except) {
-    _err << "Error in node " << _model->symtab().getName(except.node) << '\n';
-    _err << except.what() << endl;
-    clearModel();
-    return false;
-  }
-  catch (std::runtime_error except) {
-    _err << "RUNTIME ERROR:\n";
-    _err << except.what() << endl;
-    clearModel();
-    return false;
-  }
-  catch (std::logic_error except) {
-    _err << "LOGIC ERROR\n";
-    _err << except.what() << '\n';
-    _err << "Please send a bug report to " << PACKAGE_BUGREPORT << endl;
-    clearModel();
-    return false;
-  }
-  return true;
+  } 
+  CATCH_ERRORS
+	
+      return true;
 }
 
 bool Console::setRNGname(string const &name, unsigned int chain)
 {
-  if (_model == 0) {
-    _err << "Can't set RNG name. No model!" << endl;    
-    return false;
-  }
-  try {
-    bool name_ok = _model->setRNG(name, chain - 1);
-    if (!name_ok) {
-       _err << "WARNING: RNG name " << name << " not found\n";
+    if (_model == 0) {
+	_err << "Can't set RNG name. No model!" << endl;    
+	return true;
     }
-  }
-  catch (NodeError except) {
-    _err << "Error in node " << _model->symtab().getName(except.node) << '\n';
-    _err << except.what() << endl;
-    clearModel();
-    return false;
-  }
-  catch (std::runtime_error except) {
-    _err << "RUNTIME ERROR:\n";
-    _err << except.what() << endl;
-    clearModel();
-    return false;
-  }
-  catch (std::logic_error except) {
-    _err << "LOGIC ERROR\n";
-    _err << except.what() << '\n';
-    _err << "Please send a bug report to " << PACKAGE_BUGREPORT << endl;
-    clearModel();
-    return false;
-  }
-  return true;
+    try {
+	bool name_ok = _model->setRNG(name, chain - 1);
+	if (!name_ok) {
+	    _err << "WARNING: RNG name " << name << " not found\n";
+	}
+    }
+    CATCH_ERRORS
+	
+	return true;
 }
 
 bool Console::update(unsigned int n)
@@ -404,25 +361,8 @@ bool Console::update(unsigned int n)
     try {
 	_model->update(n);
     }
-    catch (NodeError except) {
-	_err << "Error in node " << _model->symtab().getName(except.node) << '\n';
-	_err << except.what() << endl;
-	clearModel();
-	return false;
-    }
-    catch (std::runtime_error except) {
-	_err << "RUNTIME ERROR:\n";
-	_err << except.what() << endl;
-	clearModel();
-	return false;
-    }
-    catch (std::logic_error except) {
-	_err << "LOGIC ERROR:\n";
-	_err << except.what() << '\n';
-	_err << "Please send a bug report to " << PACKAGE_BUGREPORT << endl;
-	clearModel();
-	return false;
-    }
+    CATCH_ERRORS;
+
     return true;
 }
 
@@ -456,19 +396,8 @@ bool Console::setMonitor(string const &name, Range const &range,
 	    return false;
 	}
     }
-    catch (std::logic_error except) {
-	_err << "LOGIC ERROR:\n";
-	_err << except.what() << '\n';
-	_err << "Please send a bug report to " << PACKAGE_BUGREPORT << endl;
-	clearModel();
-	return false;
-    }
-    catch (std::runtime_error except) {
-	_err << "RUNTIME ERROR:\n";
-	_err << except.what() << endl;
-	clearModel();
-	return false;
-    }
+    CATCH_ERRORS
+
     return true;
 }
 
@@ -488,19 +417,8 @@ bool Console::clearMonitor(string const &name, Range const &range,
 	  return false;
       }
   }
-  catch (std::logic_error except) {
-    _err << "LOGIC ERROR:" << endl;
-    _err << except.what() << endl;
-    _err << "Please send a bug report to " << PACKAGE_BUGREPORT << endl;
-    clearModel();
-    return false;
-  }
-  catch (std::runtime_error except) {
-    _err << "RUNTIME ERROR:" << endl;
-    _err << except.what() << endl;
-    clearModel();
-    return false;
-  }
+  CATCH_ERRORS
+
   return true;
 }
 
@@ -518,36 +436,28 @@ bool Console::setDefaultMonitors(string const &type, unsigned int thin)
 	    return false;
 	}
     }
-    catch (std::logic_error except) {
-	_err << "LOGIC ERROR:\n";
-	_err << except.what() << '\n';
-	_err << "Please send a bug report to " << PACKAGE_BUGREPORT << endl;
-	clearModel();
-	return false;
-    }
-    catch (std::runtime_error except) {
-	_err << "RUNTIME ERROR:\n";
-	_err << except.what() << endl;
-	clearModel();
-	return false;
-    }
+    CATCH_ERRORS
+
     return true;
+}
+
+bool Console::clearDefaultMonitors(string const &type)
+{
+    if (!_model) {
+	_err << "Can't clear monitors. No model!" << endl;    
+	return true;
+    }
+
+    try {
+	_model->clearDefaultMonitors(type);
+    }
+    CATCH_ERRORS
+
+	return true;
 }
 
 void Console::clearModel()
 {
-    /*
-    if (_pvariables) {
-	for (unsigned int i = 0; i < _pvariables->size(); ++i) {
-	    delete (*_pvariables)[i];
-	}
-	delete _pvariables;
-	_pvariables = 0;
-    }
-    delete _pdata; _pdata = 0;
-    delete _prelations; _prelations = 0;
-    */
-
     _out << "Deleting model" << endl;
     delete _model; 
     _model = 0;
@@ -600,23 +510,7 @@ bool Console::dumpState(map<string,SArray> &data_table,
       }
     }
   }
-  catch (NodeError except) {
-    _err << "Error in node " <<
-      _model->symtab().getName(except.node) << "\n";
-    _err << except.what() << endl;
-    return false;
-  }
-  catch (std::runtime_error except) {
-    _err << "RUNTIME ERROR:\n";
-    _err << except.what() << endl;
-    return false;
-  }
-  catch (std::logic_error except) {
-    _err << "LOGIC ERROR:\n";
-    _err << except.what() << '\n';
-    _err << "Please send a bug report to " << PACKAGE_BUGREPORT << endl;
-    return false;
-  }
+  CATCH_ERRORS
   
   return true;
 }
@@ -624,36 +518,30 @@ bool Console::dumpState(map<string,SArray> &data_table,
 
 bool Console::dumpMonitors(map<string,SArray> &data_table,
 			   map<string,unsigned int> &weight_table,
-			   string const &name, unsigned int chain)
+			   string const &type) 
 {
-    if(chain == 0 || chain > nchain()) {
-	_err << "Invalid chain number" << endl;
-	return false;
-    }
-    chain -= 1;
-
     try {
 	list<Monitor*> const &monitors = _model->monitors();
 	list<Monitor*>::const_iterator p;
 	for (p = monitors.begin(); p != monitors.end(); ++p) {
 	    Monitor const *monitor = *p;
-	    if (monitor->niter() > 0 && monitor->type() == name) {
+	    if (monitor->niter() > 0 && monitor->type() == type) {
 		Node const *node = monitor->node();
 		string name = _model->symtab().getName(node);
 		
-
-		//FIXME: Will need to call aperm in rjags interface
-		//as extra dimension for TraceMonitors now goes LAST.
-
 		vector<unsigned int> dim = monitor->dim();
 		unsigned int length = product(dim);
-
+		unsigned int nchain = monitor->nchain();
+		dim.push_back(nchain);
+		
 		//Create a new SArray and insert it into the table
 		SArray ans(dim);
-		vector<double> values(length);
-		vector<double> const &monitor_values = monitor->value(chain);
-		for (unsigned int i = 0; i < length; ++i) {
-		    values[i] = monitor_values[i];
+		vector<double> values(length * nchain);
+		for (unsigned int ch = 0; ch < nchain; ++ch) {
+		    vector<double> const &mon_values = monitor->value(ch);
+		    for (unsigned int i = 0; i < length; ++i) {
+			values[i + ch * length] = mon_values[i];
+		    }
 		}
 		ans.setValue(values);
 		data_table.insert(pair<string,SArray>(name, ans));
@@ -663,26 +551,11 @@ bool Console::dumpMonitors(map<string,SArray> &data_table,
 	    }
 	}
     }
-    catch (NodeError except) {
-	_err << "Error in node " <<
-	    _model->symtab().getName(except.node) << "\n";
-	_err << except.what() << endl;
-	return false;
-    }
-    catch (std::runtime_error except) {
-	_err << "RUNTIME ERROR:\n";
-	_err << except.what() << endl;
-	return false;
-    }
-    catch (std::logic_error except) {
-	_err << "LOGIC ERROR:\n";
-	_err << except.what() << '\n';
-	_err << "Please send a bug report to " << PACKAGE_BUGREPORT << endl;
-	return false;
-    }
+    CATCH_ERRORS
 
     return true;
 }
+
 
 bool Console::coda(ofstream &index, vector<ofstream*> const &output)
 {
@@ -698,22 +571,8 @@ bool Console::coda(ofstream &index, vector<ofstream*> const &output)
             _err << "WARNING:\n" << warn;
         }
     }
-    catch (NodeError except) {
-	_err << "Error in node " <<
-	    _model->symtab().getName(except.node) << "\n";
-	_err << except.what() << endl;
-	return false;
-    }
-    catch (std::runtime_error except) {
-	_err << "RUNTIME ERROR:\n";
-	_err << except.what() << endl;
-	return false;
-    }
-    catch (std::logic_error except) {
-	_err << "LOGIC ERROR:\n";
-	_err << except.what() << '\n';
-	_err << "Please send a bug report to " << PACKAGE_BUGREPORT << endl;            return false;
-    }
+    CATCH_ERRORS
+
     return true;
 }
 
@@ -733,22 +592,8 @@ bool Console::coda(vector<pair<string, Range> > const &nodes,
             _err << "WARNINGS:\n" << warn;
         }
     }
-    catch (NodeError except) {
-	_err << "Error in node " <<
-	    _model->symtab().getName(except.node) << "\n";
-	_err << except.what() << endl;
-	return false;
-    }
-    catch (std::runtime_error except) {
-	_err << "RUNTIME ERROR:\n";
-	_err << except.what() << endl;
-	return false;
-    }
-    catch (std::logic_error except) {
-	_err << "LOGIC ERROR:\n";
-	_err << except.what() << '\n';
-	_err << "Please send a bug report to " << PACKAGE_BUGREPORT << endl;            return false;
-    }
+    CATCH_ERRORS
+
     return true;
 }
 
@@ -781,22 +626,8 @@ bool Console::adaptOff(bool &status)
   try {
       status =  _model->adaptOff();
   }
-  catch (NodeError except) {
-    _err << "Error in node " << _model->symtab().getName(except.node) << '\n';
-    _err << except.what() << endl;
-    return false;
-  }
-  catch (std::runtime_error except) {
-    _err << "RUNTIME ERROR:\n";
-    _err << except.what() << endl;
-    return false;
-  }
-  catch (std::logic_error except) {
-    _err << "LOGIC ERROR:\n";
-    _err << except.what() << '\n';
-    _err << "Please send a bug report to " << PACKAGE_BUGREPORT << endl;
-    return false;
-  }
+  CATCH_ERRORS
+
   return true;
 }
 
@@ -824,25 +655,7 @@ bool Console::dumpSamplers(vector<vector<string> > &sampler_names)
     try {
 	_model->samplerNames(sampler_names);
     }
-    catch (NodeError except) {
-	_err << "Error in node " << _model->symtab().getName(except.node) 
-	     << endl;
-	_err << except.what() << endl;
-        clearModel();
-	return false;
-    }
-    catch (std::runtime_error except) {
-	_err << "RUNTIME ERROR" << endl;
-	_err << except.what() << endl;
-        clearModel();
-	return false;
-    }
-    catch (std::logic_error except) {
-	_err << "LOGIC ERROR" << endl;
-	_err << except.what() << endl;
-	_err << "Please send a bug report to " << PACKAGE_BUGREPORT << endl;
-        clearModel();
-	return false;
-    }
+    CATCH_ERRORS
+
     return true;
 }
