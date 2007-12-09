@@ -1,6 +1,8 @@
 #ifndef MONITOR_H_
 #define MONITOR_H_
 
+#include <sarray/SArray.h>
+
 #include <vector>
 #include <string>
 
@@ -90,6 +92,14 @@ public:
      * @see Node#freqWeight
      */
      unsigned int freqWeight() const;
+     /**
+      * Dumps the monitored values to an SArray. 
+      *
+      * The SArray should have informative dimnames. In particular, the
+      * dimnames "iteration" and "chain" should be used if there are
+      * values for each iteration and each chain, respectively.
+      */
+     virtual SArray dump() const = 0;
 };
 
 #endif

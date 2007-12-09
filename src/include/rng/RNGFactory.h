@@ -2,6 +2,7 @@
 #define RNG_FACTORY_H_
 
 #include <string>
+#include <vector>
 
 class RNG;
 
@@ -17,15 +18,15 @@ class RNGFactory
    */
   virtual ~RNGFactory() {};
   /**
-   * Returns a newly allocated RNG object.
+   * Returns a vector of newly allocated RNG objects.
    *
-   * Successive calls should return RNG objects that generate
-   * completely independent random number streams.  An RNGFactory may
-   * have the capacity to generate only a limited number of
-   * independent RNG objects.  When this capacity is exhausted, the
-   * RNGFactory will return a NULL pointer.
+   * @param n Number of RNGs requested. If successful, the return value
+   * will be a list of length n, and on exit the counter n will be
+   * decremented to zero.  If a factory has the capacity to make only m < n
+   * independent samplers, then the return value will be of length m
+   * and on exit the counter will be decremented by m.
    */
-  virtual RNG * makeRNG() = 0;
+  virtual std::vector<RNG *> makeRNGs(unsigned int &n) = 0;
   /**
    * Returns a newly allocated RNG object.  
    *

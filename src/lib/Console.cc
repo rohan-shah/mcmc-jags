@@ -6,7 +6,7 @@
 #include <model/BUGSModel.h>
 #include <model/Monitor.h>
 #include <graph/NodeError.h>
-#include <sampler/SamplerFactory.h>
+//#include <sampler/SamplerFactory.h>
 #include <graph/Node.h>
 #include <sarray/Range.h>
 #include <sarray/SArray.h>
@@ -526,28 +526,15 @@ bool Console::dumpMonitors(map<string,SArray> &data_table,
 	for (p = monitors.begin(); p != monitors.end(); ++p) {
 	    Monitor const *monitor = *p;
 	    if (monitor->niter() > 0 && monitor->type() == type) {
-		Node const *node = monitor->node();
-		string name = _model->symtab().getName(node);
-		
-		vector<unsigned int> dim = monitor->dim();
-		unsigned int length = product(dim);
-		unsigned int nchain = monitor->nchain();
-		dim.push_back(nchain);
-		
-		//Create a new SArray and insert it into the table
-		SArray ans(dim);
-		vector<double> values(length * nchain);
-		for (unsigned int ch = 0; ch < nchain; ++ch) {
-		    vector<double> const &mon_values = monitor->value(ch);
-		    for (unsigned int i = 0; i < length; ++i) {
-			values[i + ch * length] = mon_values[i];
-		    }
-		}
-		ans.setValue(values);
-		data_table.insert(pair<string,SArray>(name, ans));
 
-		unsigned int fweight = monitor->freqWeight();
-		weight_table.insert(pair<string,unsigned int>(name, fweight));
+		string name = _model->symtab().getName(monitor->node());
+		if (!name.empty()) {
+		    data_table.insert(pair<string,SArray>(name, 
+							  monitor->dump()));
+		    unsigned int fweight = monitor->freqWeight();
+		    weight_table.insert(pair<string,unsigned int>(name, 
+								  fweight));
+		}
 	    }
 	}
     }

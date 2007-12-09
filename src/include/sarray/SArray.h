@@ -4,6 +4,7 @@
 #include <sarray/Range.h>
 
 #include <vector>
+#include <string>
 
 /**
  * @short multi-dimensional real-valued array
@@ -15,6 +16,7 @@ class SArray
     Range const _range;
     std::vector<double> _value;
     bool _discrete;
+    std::vector<std::string> _dimnames;
     SArray &operator=(SArray const &rhs);
 public:
     /**
@@ -75,9 +77,23 @@ public:
      * Returns the range associated with the SArray.
      */
     Range const &range() const;
-    /* It is convenient to inline these functions so that an SArray
-     * can be thought of as having some of the dimension attributes
-     * of its associated range.
+    /**
+     * Returns a vector of strings giving names corresponding to the
+     * dimensions of the SArray. A newly created SArray has no
+     * dimnames and this function returns an empty vector.
+     */
+    std::vector<std::string> const &dimNames() const;
+    /**
+     * Sets the dimnames of the SArray.
+     *
+     * @param names A vector of names of size equal to the number of
+     * dimensions, or zero.
+     */
+    void setDimNames(std::vector<std::string> const &names);
+    /**
+     * It is convenient to inline these functions so that an SArray
+     * can be thought of as having some of the dimension attributes of
+     * its associated range.
      */
     unsigned int length() const { return range().length(); }
     unsigned int ndim(bool drop) const { return range().ndim(drop); }
