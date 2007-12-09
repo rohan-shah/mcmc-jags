@@ -24,7 +24,11 @@ namespace dic {
 
     vector<unsigned int> DevianceMonitor::dim() const
     {
-	return vector<unsigned int>(1, niter());
+	vector<unsigned int> d(3);
+        d[0] = 1;
+	d[1] = niter();
+	d[2] = nchain();
+	return d;
     }
  
     vector<double> const &DevianceMonitor::value(unsigned int chain) const
@@ -47,5 +51,24 @@ namespace dic {
 	}
 
     }
-
+    
+    SArray DevianceMonitor::dump() const
+    {
+	SArray ans(dim());
+	
+	vector<double> v(nchain() * niter());
+	for (unsigned int ch = 0; ch < nchain(); ++ch) {
+	    for (unsigned int i = 0; i < niter(); ++i) {
+		v[i + ch * niter()] = _values[ch][i];
+	    }
+	}
+	ans.setValue(v);
+	
+	vector<string> names(3);
+	names[1] = "iteration";
+	names[2] = "chain";
+	
+	ans.setDimNames(names);
+	return(ans);
+    }
 }
