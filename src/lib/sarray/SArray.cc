@@ -9,6 +9,7 @@ using std::vector;
 using std::logic_error;
 using std::length_error;
 using std::copy;
+using std::string;
 
 SArray::SArray(vector<unsigned int> const &dim)
     : _range(dim), _value(_range.length(), JAGS_NA), _discrete(false)
@@ -16,7 +17,8 @@ SArray::SArray(vector<unsigned int> const &dim)
 }
 
 SArray::SArray(SArray const &orig)
-    : _range(orig._range), _value(orig._value), _discrete(orig._discrete)
+    : _range(orig._range), _value(orig._value), _discrete(orig._discrete),
+      _dimnames(orig._dimnames)
 {
 }
 
@@ -65,4 +67,19 @@ vector<double> const &SArray::value() const
 bool SArray::isDiscreteValued() const
 {
     return _discrete;
+}
+
+vector<string> const &SArray::dimNames() const
+{
+    return _dimnames;
+}
+
+void SArray::setDimNames(vector<string> const &names)
+{
+    if (names.empty() || names.size() == _range.ndim(false)) {
+	_dimnames = names;
+    }
+    else {
+	throw length_error("Invalid length in SArray::setDimNames");
+    }
 }

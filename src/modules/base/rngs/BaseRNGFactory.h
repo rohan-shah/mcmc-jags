@@ -3,8 +3,6 @@
 
 #include <rng/RNGFactory.h>
 
-#include <vector>
-
 namespace base {
     
 /**
@@ -17,7 +15,7 @@ namespace base {
     public:
 	BaseRNGFactory();
 	~BaseRNGFactory();
-	RNG * makeRNG();
+	std::vector<RNG *> makeRNGs(unsigned int &n);
 	RNG * makeRNG(std::string const &name);
     };
 

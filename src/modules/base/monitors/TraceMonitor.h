@@ -19,6 +19,7 @@ namespace base {
 	std::vector<unsigned int> dim() const;
 	unsigned int nchain() const;
 	void reserve(unsigned int niter);
+	SArray dump() const;
     };
 }
 

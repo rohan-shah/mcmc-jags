@@ -39,6 +39,7 @@ namespace base {
     {
 	vector<unsigned int> dim = node()->dim();
 	dim.push_back(niter());
+	dim.push_back(nchain());
 	return dim;
     }
 
@@ -55,4 +56,27 @@ namespace base {
 	}
     }
 
+    SArray TraceMonitor::dump() const
+    {
+	vector<unsigned int> d = dim();
+	SArray ans(d);
+	unsigned int length = _values[0].size(); 
+	unsigned int nch = _values.size();
+
+	vector<double> v(length * nch);
+	for (unsigned int ch = 0; ch < nch; ++ch) {
+	    for (unsigned int i = 0; i < length; ++i) {
+		v[i + ch * length] = _values[ch][i];
+	    }
+	}
+	ans.setValue(v);    
+	
+	int ndim = d.size();
+	vector<string> names(ndim);
+	names[ndim-2] = "iteration";
+	names[ndim-1] = "chain";
+	ans.setDimNames(names);
+	
+	return(ans);
+    }
 }

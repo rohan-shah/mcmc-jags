@@ -25,32 +25,38 @@ namespace base {
 	}
     }
 
-    RNG * BaseRNGFactory::makeRNG()
+    vector<RNG *> BaseRNGFactory::makeRNGs(unsigned int &n)
     {
 	unsigned int seed = static_cast<unsigned int>(time(NULL));
 
-	RNG *rng = 0;
-
-	switch(_index++) {
-	case 0:
-	    rng =  new WichmannHillRNG(seed, DEFAULT_NORM_KIND);
-	    break;
-	case 1:
-	    rng = new MarsagliaRNG(seed, DEFAULT_NORM_KIND);
-	    break;
-	case 2:
-	    rng = new SuperDuperRNG(seed, DEFAULT_NORM_KIND);
-	    break;
-	case 3:
-	    rng = new MersenneTwisterRNG(seed, DEFAULT_NORM_KIND);
-	    break;
-	default:
-	    return 0;
+	vector<RNG *> ans;
+	unsigned int norig = n;
+	for (unsigned int i = 0; i < norig; ++i) {
+	    RNG *rng = 0;
+	    switch(i) {
+	    case 0:
+		rng =  new WichmannHillRNG(seed, DEFAULT_NORM_KIND);
+		break;
+	    case 1:
+		rng = new MarsagliaRNG(seed, DEFAULT_NORM_KIND);
+		break;
+	    case 2:
+		rng = new SuperDuperRNG(seed, DEFAULT_NORM_KIND);
+		break;
+	    case 3:
+		rng = new MersenneTwisterRNG(seed, DEFAULT_NORM_KIND);
+		break;
+	    default:
+		break;
+	    }
+	    if (rng) {
+		// Store generated RNG for memory management
+		_rngvec.push_back(rng);
+		ans.push_back(rng);
+		--n;
+	    }
 	}
-
-	// Store generated RNG for memory management
-	_rngvec.push_back(rng);
-	return rng;
+	return ans;
     }
 
     RNG * BaseRNGFactory::makeRNG(std::string const &name)
