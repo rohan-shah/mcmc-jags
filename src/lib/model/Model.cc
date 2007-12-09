@@ -70,20 +70,33 @@ void Model::chooseRNGs()
     /* Assign default RNG objects for any chain that does not
        currently have one */
 
-    list<RNGFactory*>::const_iterator p = rngFactories().begin();
-    for (unsigned int n = 0; n < _nchain; ++n) {
-	while (_rng[n] == 0) {
-	    if (p == rngFactories().end()) {
-		ostringstream msg;
-		msg << "Cannot generate RNG for chain " << n
-		    << ": No further RNGFactory objects loaded";
-		throw runtime_error(msg.str());
-	    }
-	    _rng[n] = (*p)->makeRNG();
-	    if (_rng[n] == 0) {
-		//This factory cannot generate any more RNGs. 
-		// Move to the next one.
-		++p;
+    //Count number of unassigned RNGs
+    unsigned int n  = 0;
+    for (unsigned int i = 0; i < _nchain; ++i) {
+	if (_rng[i] == 0)
+	    ++n;
+    }
+
+    vector<RNG*> new_rngs;
+    for (list<RNGFactory*>::const_iterator p = rngFactories().begin();
+	 p != rngFactories().end(); ++p) 
+    {
+	vector<RNG*> rngs = (*p)->makeRNGs(n);
+	for (unsigned int j = 0; j < rngs.size(); ++j) {
+	    new_rngs.push_back(rngs[j]);
+	}
+	if (n == 0)
+	    break;
+    }
+    
+    if (n > 0) {
+	throw runtime_error("Cannot generate sufficient RNGs");
+    }
+    else {
+	unsigned int j = 0;
+	for (unsigned int i = 0; i < _nchain; ++i) {
+	    if (_rng[i] == 0) {
+		_rng[i] = new_rngs[j++];
 	    }
 	}
     }
