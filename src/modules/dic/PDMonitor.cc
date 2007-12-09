@@ -31,7 +31,10 @@ namespace dic {
 
     vector<unsigned int> PDMonitor::dim() const
     {
-	return vector<unsigned int>(1, niter());
+	vector<unsigned int> d(2);
+	d[0] = 1;
+	d[1] = niter();
+	return d;
     }
  
     vector<double> const &PDMonitor::value(unsigned int chain) const
@@ -84,6 +87,18 @@ namespace dic {
     {
 	unsigned int N = 1 + niter / thin();
 	_values.reserve(_values.size() + N);
+    }
+
+    SArray PDMonitor::dump() const
+    {
+	vector<unsigned int> d = dim();
+	SArray ans(d);
+	ans.setValue(_values);
+
+        vector<string> names(2);
+	names[1] = "iteration";
+	ans.setDimNames(names);
+	return ans;
     }
 
 }

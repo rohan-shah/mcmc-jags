@@ -23,7 +23,8 @@ namespace dic {
 	std::vector<unsigned int> dim() const;
 	std::vector<double> const &value(unsigned int chain) const;
 	void doUpdate();
-	virtual void reserve(unsigned int niter);
+	void reserve(unsigned int niter);
+	SArray dump() const;
     };
 
 }
