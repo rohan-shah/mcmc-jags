@@ -67,21 +67,22 @@
      NCHAINS = 283,
      CHAIN = 284,
      LOAD = 285,
-     LIST = 286,
-     STRUCTURE = 287,
-     DIM = 288,
-     NA = 289,
-     R_NULL = 290,
-     DIMNAMES = 291,
-     ITER = 292,
-     ARROW = 293,
-     ENDDATA = 294,
-     ASINTEGER = 295,
-     DIRECTORY = 296,
-     CD = 297,
-     PWD = 298,
-     RUN = 299,
-     ENDSCRIPT = 300
+     SAMPLERS = 286,
+     LIST = 287,
+     STRUCTURE = 288,
+     DIM = 289,
+     NA = 290,
+     R_NULL = 291,
+     DIMNAMES = 292,
+     ITER = 293,
+     ARROW = 294,
+     ENDDATA = 295,
+     ASINTEGER = 296,
+     DIRECTORY = 297,
+     CD = 298,
+     PWD = 299,
+     RUN = 300,
+     ENDSCRIPT = 301
    };
 #endif
 /* Tokens.  */
@@ -113,21 +114,22 @@
 #define NCHAINS 283
 #define CHAIN 284
 #define LOAD 285
-#define LIST 286
-#define STRUCTURE 287
-#define DIM 288
-#define NA 289
-#define R_NULL 290
-#define DIMNAMES 291
-#define ITER 292
-#define ARROW 293
-#define ENDDATA 294
-#define ASINTEGER 295
-#define DIRECTORY 296
-#define CD 297
-#define PWD 298
-#define RUN 299
-#define ENDSCRIPT 300
+#define SAMPLERS 286
+#define LIST 287
+#define STRUCTURE 288
+#define DIM 289
+#define NA 290
+#define R_NULL 291
+#define DIMNAMES 292
+#define ITER 293
+#define ARROW 294
+#define ENDDATA 295
+#define ASINTEGER 296
+#define DIRECTORY 297
+#define CD 298
+#define PWD 299
+#define RUN 300
+#define ENDSCRIPT 301
 
 
 
@@ -145,7 +147,7 @@ typedef union YYSTYPE
   std::vector<long> *ivec;
 }
 /* Line 1489 of yacc.c.  */
-#line 149 "../../../JAGS/src/terminal/parser.h"
+#line 151 "../../../JAGS/src/terminal/parser.h"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
