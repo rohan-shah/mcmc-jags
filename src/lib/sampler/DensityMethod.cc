@@ -11,13 +11,13 @@ DensityMethod::~DensityMethod()
 }
 
 void 
-DensityMethod::setData(ParallelDensitySampler *sampler, unsigned int chain)
+DensityMethod::setData(DensitySampler *sampler, unsigned int chain)
 {
     _sampler = sampler;
     _chain = chain;
 }
 
 void 
-DensityMethod::initialize(ParallelDensitySampler *sampler, unsigned int chain)
+DensityMethod::initialize(DensitySampler *sampler, unsigned int chain)
 {
 }
