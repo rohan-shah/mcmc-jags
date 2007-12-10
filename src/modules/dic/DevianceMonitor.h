@@ -8,7 +8,7 @@ class StochasticNode;
 namespace dic {
 
 class DevianceMonitor : public Monitor {
-    std::vector<std::vector<double> > _values; // sampled values
+    std::vector<double>  _values; // sampled values
     StochasticNode const *_snode;
 public:
     DevianceMonitor(StochasticNode const *node, unsigned int start, 

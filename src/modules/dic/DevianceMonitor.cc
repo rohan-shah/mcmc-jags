@@ -19,54 +19,48 @@ namespace dic {
 
     unsigned int DevianceMonitor::nchain() const
     {
-	return _snode->nchain();
+      return 1;
     }
 
     vector<unsigned int> DevianceMonitor::dim() const
     {
-	vector<unsigned int> d(3);
+	vector<unsigned int> d(2);
         d[0] = 1;
 	d[1] = niter();
-	d[2] = nchain();
 	return d;
     }
  
     vector<double> const &DevianceMonitor::value(unsigned int chain) const
     {
-	return _values[chain];
+	return _values;
     }
 
     void DevianceMonitor::doUpdate()
     {
-	for (unsigned int ch = 0; ch < _values.size(); ++ch) {
-	    _values[ch].push_back(-2 * _snode->logDensity(ch));
+        double dev = 0;
+	unsigned int nchain = _snode->nchain();
+
+	for (unsigned int ch = 0; ch < nchain; ++ch) {
+	  dev -= 2* _snode->logDensity(ch);
 	}
+	dev /= nchain;
+
+	_values.push_back(dev);
     }
 
     void DevianceMonitor::reserve(unsigned int niter)
     {
 	unsigned int N = 1 + niter / thin();
-	for (unsigned int ch = 0; ch < _values.size(); ++ch) {
-	    _values[ch].reserve(_values[ch].size() + N);
-	}
-
+	_values.reserve(_values.size() + N);
     }
     
     SArray DevianceMonitor::dump() const
     {
 	SArray ans(dim());
-	
-	vector<double> v(nchain() * niter());
-	for (unsigned int ch = 0; ch < nchain(); ++ch) {
-	    for (unsigned int i = 0; i < niter(); ++i) {
-		v[i + ch * niter()] = _values[ch][i];
-	    }
-	}
-	ans.setValue(v);
-	
-	vector<string> names(3);
+	ans.setValue(_values);
+
+	vector<string> names(2);
 	names[1] = "iteration";
-	names[2] = "chain";
 	
 	ans.setDimNames(names);
 	return(ans);
