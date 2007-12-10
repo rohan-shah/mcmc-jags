@@ -23,11 +23,11 @@ using std::sqrt;
 using std::min;
 using std::string;
 
-MNormMetropolis::MNormMetropolis(vector<StochasticNode*> const &nodes)
-    : Metropolis(nodes), _mean(0), _var(0), _prec(0), _n(0), _n_isotonic(0), 
-      _sump(0), _meanp(0), _lstep(0), _nstep(10), _p_over_target(true)
+MNormMetropolis::MNormMetropolis(StochasticNode* node)
+    : Metropolis(vector<StochasticNode*>(1,node)), _mean(0), _var(0), _prec(0),
+      _n(0), _n_isotonic(0), _sump(0), _meanp(0), _lstep(0), _nstep(10), 
+      _p_over_target(true)
 {
-    StochasticNode *node = nodes[0];
     unsigned int N = node->length();
 
     _mean = new double[N];

@@ -17,7 +17,7 @@ class MNormMetropolis : public Metropolis
     unsigned int _nstep;
     unsigned int _p_over_target;
 public:
-    MNormMetropolis(std::vector<StochasticNode*> const &nodes);
+    MNormMetropolis(StochasticNode* node);
     ~MNormMetropolis();
     void rescale(double p);
     void transform(double const *v, unsigned int length,
