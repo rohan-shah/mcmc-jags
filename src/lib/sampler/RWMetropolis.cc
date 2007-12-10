@@ -1,6 +1,6 @@
 #include <config.h>
 #include <sampler/RWMetropolis.h>
-#include <sampler/ParallelDensitySampler.h>
+//#include <sampler/ParallelDensitySampler.h>
 #include <rng/RNG.h>
 
 #include <cmath>
@@ -53,6 +53,7 @@ void RWMetropolis::rescale(double p)
     _niter++;
 }
 
+/*
 void RWMetropolis::update(RNG *rng)
 {
     unsigned int d = value_length();
@@ -71,6 +72,7 @@ void RWMetropolis::update(RNG *rng)
 
     delete [] new_value;
 }
+*/
 
 bool RWMetropolis::checkAdaptation() const
 {
