@@ -13,6 +13,7 @@ using std::vector;
 using std::copy;
 using std::logic_error;
 using std::exp;
+using std::log;
 using std::sqrt;
 using std::min;
 using std::string;
