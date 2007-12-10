@@ -6,7 +6,7 @@
 #include <lapack.h>
 
 #include <graph/StochasticNode.h>
-#include <sampler/ParallelDensitySampler.h>
+#include <sampler/DensitySampler.h>
 #include <rng/RNG.h>
 
 #include <cmath>

@@ -3,7 +3,7 @@
 
 #include <sampler/Metropolis.h>
 
-class ParallelDensitySampler;
+class DensitySampler;
 
 class MNormMetropolis : public Metropolis
 {
