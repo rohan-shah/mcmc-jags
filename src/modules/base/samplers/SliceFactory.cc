@@ -4,7 +4,7 @@
 #include "DiscreteSlicer.h"
 #include "SliceFactory.h"
 
-#include <sampler/ParallelDensitySampler.h>
+#include <sampler/DensitySampler.h>
 #include <graph/StochasticNode.h>
 
 #include <vector>
@@ -41,7 +41,7 @@ namespace base {
 	}
 
 	vector<StochasticNode*> nodes(1, snode);
-	return new ParallelDensitySampler(nodes, graph, methods);
+	return new DensitySampler(nodes, graph, methods);
     }
 
 }

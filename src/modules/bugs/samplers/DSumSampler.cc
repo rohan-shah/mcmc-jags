@@ -2,7 +2,7 @@
 #include <distribution/Distribution.h>
 #include <graph/StochasticNode.h>
 #include <graph/Graph.h>
-#include <sampler/ParallelDensitySampler.h>
+#include <sampler/DensitySampler.h>
 #include "DSumSampler.h"
 
 #include <cfloat>
@@ -27,7 +27,7 @@ DSumMethod::DSumMethod()
 {
 }
 
-void DSumMethod::initialize(ParallelDensitySampler *sampler, unsigned int chain)
+void DSumMethod::initialize(DensitySampler *sampler, unsigned int chain)
 {
     _sampler = sampler;
     _chain = chain;

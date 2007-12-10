@@ -20,7 +20,7 @@ class DSumMethod : public Slicer
 public:
     DSumMethod();
     ~DSumMethod();
-    void initialize(ParallelDensitySampler *sampler, unsigned int chain);
+    void initialize(DensitySampler *sampler, unsigned int chain);
     void update(RNG *);
     void setValue(double x);
     double value() const;
