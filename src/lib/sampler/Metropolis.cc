@@ -1,6 +1,6 @@
 #include <config.h>
 #include <sampler/Metropolis.h>
-#include <sampler/ParallelDensitySampler.h>
+#include <sampler/DensitySampler.h>
 #include <graph/StochasticNode.h>
 #include <rng/RNG.h>
 
@@ -44,7 +44,7 @@ Metropolis::~Metropolis()
     delete [] _last_value;
 }
 
-void Metropolis::initialize(ParallelDensitySampler *sampler, unsigned int chain)
+void Metropolis::initialize(DensitySampler *sampler, unsigned int chain)
 {
     /* 
        We can't do this in the constructor because we are relying
@@ -69,6 +69,8 @@ void Metropolis::initialize(ParallelDensitySampler *sampler, unsigned int chain)
     delete [] node_values;
 
     copy(_value, _value + _length, _last_value);
+
+    initMetropolis(sampler, chain);
 }
 
 void Metropolis::propose(double const *value, unsigned int Nvalue)
@@ -117,9 +119,8 @@ double const *Metropolis::value() const
     return _value;
 }
 
-/*
-unsigned int Metropolis::chain() const
+void Metropolis::initMetropolis(DensitySampler *sampler, unsigned int chain)
 {
-   return _chain;
+    //This function only exists for a subclass to override instead of
+    //Metropolis::initialize
 }
-*/
