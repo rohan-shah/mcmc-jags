@@ -17,7 +17,7 @@ using std::sqrt;
 using std::min;
 using std::string;
 
-DirchMetropolis::DirchMetropolis(StochasticNode* const node)
+DirchMetropolis::DirchMetropolis(StochasticNode* node)
     : RWMetropolis(vector<StochasticNode*>(1, node), 0.1)
 {
 }
