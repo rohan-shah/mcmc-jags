@@ -35,7 +35,6 @@ namespace mix {
 	const
     {
 	unsigned int Ncat = product(dims[0]);
-	double sump = 0.0;
 	for (unsigned int i = 0; i < Ncat; ++i) {
 	    if (TAU(par)[i] <= 0)
 		return false;
