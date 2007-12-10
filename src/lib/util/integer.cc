@@ -4,6 +4,7 @@
 #include <cfloat>
 
 using std::runtime_error;
+using std::fabs;
 
 static const double eps = 16 * DBL_EPSILON;
 
