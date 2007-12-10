@@ -6,7 +6,7 @@
 class DirchMetropolis : public RWMetropolis
 {
 public:
-    DirchMetropolis(StochasticNode* node);
+    DirchMetropolis(StochasticNode * node);
     void transform(double const *v, unsigned int length,
 		   double *nv, unsigned int nlength) const;
     void untransform(double const *nv, unsigned int nlength,
