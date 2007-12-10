@@ -1,7 +1,7 @@
 #include <config.h>
 #include <distribution/Distribution.h>
 #include <graph/StochasticNode.h>
-#include <sampler/ParallelDensitySampler.h>
+#include <sampler/DensitySampler.h>
 #include <sampler/DensityMethod.h>
 
 #include "FiniteMethod.h"
@@ -29,7 +29,7 @@ namespace base {
 	}
 	
 	vector<StochasticNode*> sample_nodes(1, snode);
-	return new ParallelDensitySampler(sample_nodes, graph, methods);
+	return new DensitySampler(sample_nodes, graph, methods);
     }
     
 }
