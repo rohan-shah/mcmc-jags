@@ -7,7 +7,7 @@
 #include <rng/RNG.h>
 #include <util/dim.h>
 #include <util/nainf.h>
-#include <sampler/ParallelDensitySampler.h>
+#include <sampler/DensitySampler.h>
 
 #include <cmath>
 #include <algorithm>

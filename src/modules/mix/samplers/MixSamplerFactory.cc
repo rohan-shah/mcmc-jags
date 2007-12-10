@@ -5,7 +5,7 @@
 #include <graph/Graph.h>
 #include <graph/StochasticNode.h>
 #include <distribution/Distribution.h>
-#include <sampler/ParallelDensitySampler.h>
+#include <sampler/DensitySampler.h>
 
 #include <set>
 
@@ -101,7 +101,7 @@ namespace mix {
 	    for (unsigned int ch = 0; ch < nchain; ++ch) {
 		methods[ch] = new MixSampler(sample_nodes);
 	    }
-	    Sampler *mix = new ParallelDensitySampler(sample_nodes, graph, 
+	    Sampler *mix = new DensitySampler(sample_nodes, graph, 
 						      methods);
 	    samplers.push_back(mix);
 	}
