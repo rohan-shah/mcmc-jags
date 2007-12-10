@@ -35,12 +35,18 @@ public:
      */
     double step() const;
     /**
-     * Modifies the scale to achieve the target acceptance probability.
+     * Modifies the scale to achieve the target acceptance probability
+     * using a noisy gradient algorithm
      *
      * @param p acceptance probability at current update
      */
     void rescale(double p);
-    void update(RNG *rng);
+    /**
+     * The RWMetropolis method keeps a running mean of the acceptance
+     * probabilities, which is updated every time the rescale function
+     * is called. The checkAdaptation function returns true if the logit
+     * of the running mean is within 0.50 of the target.
+     */
     bool checkAdaptation() const;
 
 };

@@ -48,20 +48,23 @@ public:
      * Initialization cannot be done when the Metropolis object is
      * constructed, as it depends on the virtual untransform function.
      *
-     * A subclass of Metropolis must not overload this function.  In
-     * extremis, it may be explicitly called by any function that
-     * overloads it.
+     * A subclass of Metropolis must not overload this function. It
+     * should overload initMetropolis instead. 
      */
-    void initialize(ParallelDensitySampler *sampler, unsigned int chain);
+    void initialize(DensitySampler *sampler, unsigned int chain);
+    /**
+     * Extra initialization function called by Metropolis#initialize.
+     * A subclass of Metropolis should overload this function instead of
+     * the initialize function if it needs additional initialization of
+     * private data. The default function does nothing.
+     */
+    virtual void initMetropolis(DensitySampler *sampler, unsigned int chain);
     /**
      * Returns the current value array of the Metropolis object. 
      */
     double const *value() const;
     /**
-     * Returns the length of the value array. This is the sum of the
-     * degrees of freedom of the sampled nodes
-     *
-     * @see Distribution#df
+     * Returns the length of the value array. 
      */
     unsigned int value_length() const;
     /**
@@ -87,7 +90,7 @@ public:
     /**
      * Rescales the proposal distribution. This function is called by
      * Metropolis#accept when the sampler is in adaptive
-     * mode. Rescaling may optionally depend on the acceptance
+     * mode. Rescaling may depend on the acceptance
      * probability.
      *
      * @param p Acceptance probability
