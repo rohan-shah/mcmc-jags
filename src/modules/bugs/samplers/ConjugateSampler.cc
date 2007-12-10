@@ -83,6 +83,11 @@ void ConjugateSampler::update(vector<RNG*> const &rngs)
     }
 }
 
+bool ConjugateSampler::isAdaptive() const
+{
+    return false;
+}
+
 bool ConjugateSampler::adaptOff()
 {
     return true;

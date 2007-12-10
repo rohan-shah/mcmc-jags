@@ -109,6 +109,11 @@ bool Metropolis::adaptOff()
     return checkAdaptation(); 
 }
 
+bool Metropolis::isAdaptive() const
+{
+    return true;
+}
+
 unsigned int Metropolis::value_length() const
 {
     return _length;

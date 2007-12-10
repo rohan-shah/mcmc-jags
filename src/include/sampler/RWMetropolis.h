@@ -6,9 +6,9 @@
 /**
  * @short Random Walk Metropolis-Hastings update method
  *
- * This class provides a scale function, which gives a scale by which
- * random walk steps should be multiplied. The scale is adapted to 
- * achieve the target acceptance rate using a noisy gradient algorithm.
+ * This class provides a step function, which gives the size of random
+ * walk steps. This step size is adapted to achieve the target acceptance
+ * rate using a noisy gradient algorithm.
  */
 class RWMetropolis : public Metropolis
 {

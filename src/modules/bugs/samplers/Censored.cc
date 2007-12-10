@@ -82,6 +82,11 @@ void Censored::update(vector<RNG *> const &rng)
     }
 }
 
+bool Censored::isAdaptive() const
+{
+    return false;
+}
+
 bool Censored::adaptOff()
 {
     return true;

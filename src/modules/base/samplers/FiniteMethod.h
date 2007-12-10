@@ -14,6 +14,10 @@ namespace base {
 	FiniteMethod(StochasticNode const *snode);
 	void update(RNG *rng);
 	/**
+	 * FiniteMethod is not adaptive. This function returns false.
+	 */
+	bool isAdaptive() const;
+	/**
 	 * FiniteMethod has no adaptive mode. This function simply
 	 * returns true
 	 */

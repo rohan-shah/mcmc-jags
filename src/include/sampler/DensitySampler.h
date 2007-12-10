@@ -30,6 +30,7 @@ public:
     ~DensitySampler();
     void update(std::vector<RNG*> const &);
     bool adaptOff();
+    bool isAdaptive() const;
     std::string name() const;
 };
 

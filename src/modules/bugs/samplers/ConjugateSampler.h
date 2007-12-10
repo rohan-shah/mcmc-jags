@@ -33,6 +33,10 @@ public:
     ConjugateDist targetDist() const;
     std::vector<ConjugateDist> const &childDist() const;
     void update(std::vector<RNG*> const &);
+    /**
+     * Conjugate methods are not adaptive
+     */
+    bool isAdaptive() const;
     bool adaptOff();
     std::string name() const;
 };

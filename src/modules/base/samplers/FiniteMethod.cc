@@ -69,6 +69,11 @@ namespace base {
 	delete [] lik;
     }
 
+    bool FiniteMethod::isAdaptive() const
+    {
+	return false;
+    }
+
     bool FiniteMethod::adaptOff()
     {
 	return true;

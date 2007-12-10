@@ -127,6 +127,10 @@ public:
    */
   virtual bool adaptOff() = 0;
   /**
+   * Indicates whether the sampler has an adaptive mode.
+   */
+  virtual bool isAdaptive() const = 0;
+  /**
    * Returns a name for the sampler which should describe the method
    * it uses to update the nodes.
    */

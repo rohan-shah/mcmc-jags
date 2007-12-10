@@ -44,6 +44,12 @@ public:
      */
     virtual bool adaptOff() = 0;
     /**
+     * Indicates whether the update method has an adaptive mode
+     *
+     * @see Sampler#isAsaptive
+     */
+    virtual bool isAdaptive() const = 0;
+    /**
      * Returns an informative name for the update method
      *
      * @see Sampler#name

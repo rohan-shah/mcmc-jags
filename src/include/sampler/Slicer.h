@@ -72,6 +72,11 @@ public:
      * (50) have taken place.
      */
     bool adaptOff();
+    /**
+     * The slicer method is adaptive.  The step size adapts to the
+     * mean distance between consecutive updates
+     */
+   bool isAdaptive() const;
 };
 
 #endif /* SLICER_H_ */

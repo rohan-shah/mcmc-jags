@@ -48,6 +48,15 @@ bool DensitySampler::adaptOff()
     return pass;
 }
 
+bool DensitySampler::isAdaptive() const
+{
+    for (unsigned int ch = 0; ch < _methods.size(); ++ch) {
+	if (_methods[ch]->isAdaptive())
+	    return true;
+    }
+    return false;
+}
+
 string DensitySampler::name() const
 {
     return _methods[0]->name();

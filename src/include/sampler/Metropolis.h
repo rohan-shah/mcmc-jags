@@ -97,6 +97,12 @@ public:
      */
     virtual void rescale(double p) = 0;
     /**
+     * The Metropolis-Hastings method is adaptive. The process of
+     * adaptation is specific to each subclass and is defined by the
+     * rescale member function
+     */
+    bool isAdaptive() const;
+    /**
      * Turns off adaptive mode
      */
     bool adaptOff();

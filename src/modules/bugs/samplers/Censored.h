@@ -18,6 +18,7 @@ public:
 
     static bool canSample(StochasticNode *snode, Graph const &graph);
     void update(std::vector<RNG *> const &rng);
+    bool isAdaptive() const;
     bool adaptOff();
     std::string name() const;
 };

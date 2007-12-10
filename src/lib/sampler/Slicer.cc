@@ -255,3 +255,8 @@ bool Slicer::adaptOff()
   //FIXME We could try a bit harder than this
   return (_iter > MIN_ADAPT);
 }
+
+bool Slicer::isAdaptive() const
+{
+    return true;
+}

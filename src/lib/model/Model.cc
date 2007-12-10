@@ -37,7 +37,7 @@ using std::copy;
 
 Model::Model(unsigned int nchain)
     : _samplers(0), _nchain(nchain), _rng(nchain, 0), _iteration(0),
-      _is_initialized(false), _adapt(true), _data_gen(false)
+      _is_initialized(false), _adapt(false), _data_gen(false)
 {
 }
 
@@ -161,8 +161,12 @@ void Model::initialize(bool datagen)
 	_data_gen = true;
     }
 
-    if (_samplers.empty()) {
-	_adapt = false; //Nothing to adapt!
+    // Switch to adaptive mode if we find an adaptive sampler
+    for (unsigned int i = 0; i < _samplers.size(); ++i) {
+	if (_samplers[i]->isAdaptive()) {
+	    _adapt = true;
+	    break;
+	}
     }
     
     _is_initialized = true;
