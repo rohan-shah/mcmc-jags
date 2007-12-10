@@ -4,7 +4,7 @@
 #include "DirichletFactory.h"
 #include <graph/StochasticNode.h>
 #include <distribution/Distribution.h>
-#include <sampler/ParallelDensitySampler.h>
+#include <sampler/DensitySampler.h>
 
 #include <string>
 #include <vector>
@@ -29,5 +29,5 @@ DirichletFactory::makeSingletonSampler(StochasticNode *snode,
     for (unsigned int ch = 0; ch < nchain; ++ch) {
         methods[ch] = new DirchMetropolis(snode);
     }
-    return new ParallelDensitySampler(nodes, graph, methods);
+    return new DensitySampler(nodes, graph, methods);
 }
