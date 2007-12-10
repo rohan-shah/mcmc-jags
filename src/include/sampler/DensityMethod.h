@@ -3,20 +3,20 @@
 
 #include <string>
 
-class ParallelDensitySampler;
+class DensitySampler;
 class RNG;
 
 /**
  * @short Updates a Sampler using the log density of the sampled nodes.
  *
- * Updates a single chain of a ParallelDensitySampler. A typical
+ * Updates a single chain of a DensitySampler. A typical
  * DensityMethod uses only the log density of the sampled nodes by
  * calling Sampler#logFullConditional.
  */
 class DensityMethod
 {
 protected:
-    ParallelDensitySampler *_sampler;
+    DensitySampler *_sampler;
     unsigned int _chain;
 public:
     DensityMethod();
@@ -24,15 +24,14 @@ public:
     /**
      * Sets the values of the protected data members _sampler and _chain
      * so that subclasses of DensityMethod can access them. This
-     * function is called by the constructor of ParallelDensitySampler.
+     * function is called by the constructor of DensitySampler.
      */
-    void setData(ParallelDensitySampler *sampler, unsigned int chain);
+    void setData(DensitySampler *sampler, unsigned int chain);
     /**
      * A subclass of DensityMethod may optionally set data members
      * when this function is called. The default does nothing.
      */
-    virtual void initialize(ParallelDensitySampler *sampler, 
-			    unsigned int chain);
+    virtual void initialize(DensitySampler *sampler,  unsigned int chain);
     /**
      * Updates the sampler and chain defined by the last call to setData
      */
