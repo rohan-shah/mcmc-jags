@@ -18,6 +18,7 @@
 using std::vector;
 using std::logic_error;
 using std::runtime_error;
+using std::log;
 
 #define SCALE(par) (par[0])
 #define DF(par)    (*par[1])
