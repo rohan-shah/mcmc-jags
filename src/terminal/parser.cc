@@ -170,7 +170,7 @@
 
 
 /* Copy the first part of user declarations.  */
-#line 2 "parser.yy"
+#line 2 "../../../JAGS/src/terminal/parser.yy"
 
 #include <config.h>
 
@@ -273,7 +273,7 @@
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
-#line 87 "parser.yy"
+#line 87 "../../../JAGS/src/terminal/parser.yy"
 {
   int intval;
   double val;
@@ -283,7 +283,7 @@ typedef union YYSTYPE
   std::vector<double> *vec;
   std::vector<long> *ivec;
 }
-/* Line 187 of yacc.c.  */
+/* Line 193 of yacc.c.  */
 #line 288 "../../../JAGS/src/terminal/parser.cc"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -1733,42 +1733,42 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 158 "parser.yy"
+#line 158 "../../../JAGS/src/terminal/parser.yy"
     {if (interactive.back()) std::cout << ". " << std::flush;}
     break;
 
   case 3:
-#line 159 "parser.yy"
+#line 159 "../../../JAGS/src/terminal/parser.yy"
     {if (interactive.back()) std::cout << ". " << std::flush;}
     break;
 
   case 4:
-#line 162 "parser.yy"
+#line 162 "../../../JAGS/src/terminal/parser.yy"
     {}
     break;
 
   case 5:
-#line 163 "parser.yy"
+#line 163 "../../../JAGS/src/terminal/parser.yy"
     {}
     break;
 
   case 6:
-#line 164 "parser.yy"
+#line 164 "../../../JAGS/src/terminal/parser.yy"
     {if(interactive.back()) yyerrok; else exit(1); }
     break;
 
   case 7:
-#line 165 "parser.yy"
+#line 165 "../../../JAGS/src/terminal/parser.yy"
     { interactive.push_back(false); }
     break;
 
   case 8:
-#line 166 "parser.yy"
+#line 166 "../../../JAGS/src/terminal/parser.yy"
     { interactive.pop_back(); }
     break;
 
   case 28:
-#line 190 "parser.yy"
+#line 190 "../../../JAGS/src/terminal/parser.yy"
     {
     std::FILE *file = std::fopen(((yyvsp[(3) - (3)].stringptr))->c_str(), "r");
     if (!file) {
@@ -1783,14 +1783,14 @@ yyreduce:
     break;
 
   case 29:
-#line 201 "parser.yy"
+#line 201 "../../../JAGS/src/terminal/parser.yy"
     {
     console->clearModel();
 }
     break;
 
   case 30:
-#line 206 "parser.yy"
+#line 206 "../../../JAGS/src/terminal/parser.yy"
     {
     std::string rngname;
     readRData((yyvsp[(2) - (3)].pvec), _data_table, rngname);
@@ -1802,12 +1802,12 @@ yyreduce:
     break;
 
   case 31:
-#line 214 "parser.yy"
+#line 214 "../../../JAGS/src/terminal/parser.yy"
     {}
     break;
 
   case 32:
-#line 217 "parser.yy"
+#line 217 "../../../JAGS/src/terminal/parser.yy"
     {
     doDump(*(yyvsp[(3) - (3)].stringptr), DUMP_DATA, 1);
     delete (yyvsp[(3) - (3)].stringptr);
@@ -1815,7 +1815,7 @@ yyreduce:
     break;
 
   case 33:
-#line 223 "parser.yy"
+#line 223 "../../../JAGS/src/terminal/parser.yy"
     {
     if(open_data_buffer((yyvsp[(3) - (3)].stringptr))) {
 	std::cout << "Reading data file " << *(yyvsp[(3) - (3)].stringptr) << std::endl;
@@ -1828,7 +1828,7 @@ yyreduce:
     break;
 
   case 34:
-#line 234 "parser.yy"
+#line 234 "../../../JAGS/src/terminal/parser.yy"
     {
   std::cout << "Clearing data table " << std::endl;
   _data_table.clear();
@@ -1836,7 +1836,7 @@ yyreduce:
     break;
 
   case 35:
-#line 241 "parser.yy"
+#line 241 "../../../JAGS/src/terminal/parser.yy"
     {
     std::map<std::string, SArray> parameter_table;
     std::string rngname;
@@ -1858,7 +1858,7 @@ yyreduce:
     break;
 
   case 36:
-#line 260 "parser.yy"
+#line 260 "../../../JAGS/src/terminal/parser.yy"
     {
     std::map<std::string, SArray> parameter_table;
     std::string rngname;
@@ -1874,12 +1874,12 @@ yyreduce:
     break;
 
   case 37:
-#line 272 "parser.yy"
+#line 272 "../../../JAGS/src/terminal/parser.yy"
     {}
     break;
 
   case 38:
-#line 275 "parser.yy"
+#line 275 "../../../JAGS/src/terminal/parser.yy"
     {
     doDump(*(yyvsp[(3) - (3)].stringptr), DUMP_PARAMETERS, 1);
     delete (yyvsp[(3) - (3)].stringptr);
@@ -1887,7 +1887,7 @@ yyreduce:
     break;
 
   case 39:
-#line 279 "parser.yy"
+#line 279 "../../../JAGS/src/terminal/parser.yy"
     {
     doDump(*(yyvsp[(3) - (8)].stringptr), DUMP_PARAMETERS, (yyvsp[(7) - (8)].intval));
     delete (yyvsp[(3) - (8)].stringptr);
@@ -1895,7 +1895,7 @@ yyreduce:
     break;
 
   case 40:
-#line 285 "parser.yy"
+#line 285 "../../../JAGS/src/terminal/parser.yy"
     {
   if(open_data_buffer((yyvsp[(3) - (3)].stringptr))) {
     std::cout << "Reading parameter file " << *(yyvsp[(3) - (3)].stringptr) << std::endl;
@@ -1908,7 +1908,7 @@ yyreduce:
     break;
 
   case 41:
-#line 294 "parser.yy"
+#line 294 "../../../JAGS/src/terminal/parser.yy"
     {
   /* Legacy option to not break existing scripts */
   if(open_data_buffer((yyvsp[(3) - (3)].stringptr))) {
@@ -1922,21 +1922,21 @@ yyreduce:
     break;
 
   case 42:
-#line 306 "parser.yy"
+#line 306 "../../../JAGS/src/terminal/parser.yy"
     {
   console->compile(_data_table, 1, true);
 }
     break;
 
   case 43:
-#line 309 "parser.yy"
+#line 309 "../../../JAGS/src/terminal/parser.yy"
     {
     console->compile(_data_table, (yyvsp[(5) - (6)].intval), true);
 }
     break;
 
   case 44:
-#line 314 "parser.yy"
+#line 314 "../../../JAGS/src/terminal/parser.yy"
     {
   if (!console->initialize()) {
     errordump();
@@ -1945,7 +1945,7 @@ yyreduce:
     break;
 
   case 45:
-#line 321 "parser.yy"
+#line 321 "../../../JAGS/src/terminal/parser.yy"
     {
     long refresh = (yyvsp[(2) - (2)].intval)/40;
     adaptstar((yyvsp[(2) - (2)].intval), refresh, 40);
@@ -1953,14 +1953,14 @@ yyreduce:
     break;
 
   case 46:
-#line 325 "parser.yy"
+#line 325 "../../../JAGS/src/terminal/parser.yy"
     {
     adaptstar((yyvsp[(2) - (7)].intval),(yyvsp[(6) - (7)].intval),40);
 }
     break;
 
   case 47:
-#line 330 "parser.yy"
+#line 330 "../../../JAGS/src/terminal/parser.yy"
     {
   //fixme: put refresh option
   long refresh = (yyvsp[(2) - (2)].intval)/40;
@@ -1969,26 +1969,26 @@ yyreduce:
     break;
 
   case 48:
-#line 335 "parser.yy"
+#line 335 "../../../JAGS/src/terminal/parser.yy"
     {
   updatestar((yyvsp[(2) - (7)].intval),(yyvsp[(6) - (7)].intval), 40);
 }
     break;
 
   case 49:
-#line 340 "parser.yy"
+#line 340 "../../../JAGS/src/terminal/parser.yy"
     {return 0;}
     break;
 
   case 50:
-#line 343 "parser.yy"
+#line 343 "../../../JAGS/src/terminal/parser.yy"
     {
   (yyval.ptree) = new ParseTree(P_VAR); setName((yyval.ptree), (yyvsp[(1) - (1)].stringptr));
 }
     break;
 
   case 51:
-#line 346 "parser.yy"
+#line 346 "../../../JAGS/src/terminal/parser.yy"
     {
   (yyval.ptree) = new ParseTree(P_VAR); setName((yyval.ptree), (yyvsp[(1) - (4)].stringptr));
   setParameters((yyval.ptree), (yyvsp[(3) - (4)].pvec));
@@ -1996,68 +1996,68 @@ yyreduce:
     break;
 
   case 52:
-#line 352 "parser.yy"
+#line 352 "../../../JAGS/src/terminal/parser.yy"
     {
   (yyval.pvec) = new std::vector<ParseTree*>(1, (yyvsp[(1) - (1)].ptree)); 
 }
     break;
 
   case 53:
-#line 355 "parser.yy"
+#line 355 "../../../JAGS/src/terminal/parser.yy"
     {
   (yyval.pvec)=(yyvsp[(1) - (3)].pvec); (yyval.pvec)->push_back((yyvsp[(3) - (3)].ptree));
 }
     break;
 
   case 54:
-#line 360 "parser.yy"
+#line 360 "../../../JAGS/src/terminal/parser.yy"
     {
   (yyval.ptree) = new ParseTree(P_RANGE); setParameters((yyval.ptree),(yyvsp[(1) - (1)].ptree));
 }
     break;
 
   case 55:
-#line 363 "parser.yy"
+#line 363 "../../../JAGS/src/terminal/parser.yy"
     {
   (yyval.ptree) = new ParseTree(P_RANGE); setParameters((yyval.ptree), (yyvsp[(1) - (3)].ptree), (yyvsp[(3) - (3)].ptree));
 }
     break;
 
   case 56:
-#line 369 "parser.yy"
+#line 369 "../../../JAGS/src/terminal/parser.yy"
     {(yyval.ptree) = new ParseTree(P_VALUE); (yyval.ptree)->setValue((yyvsp[(1) - (1)].intval));}
     break;
 
   case 59:
-#line 376 "parser.yy"
+#line 376 "../../../JAGS/src/terminal/parser.yy"
     { 
     setMonitor((yyvsp[(3) - (3)].ptree), 1, "trace"); delete (yyvsp[(3) - (3)].ptree);
 }
     break;
 
   case 60:
-#line 379 "parser.yy"
+#line 379 "../../../JAGS/src/terminal/parser.yy"
     { 
     setMonitor((yyvsp[(3) - (8)].ptree), (yyvsp[(7) - (8)].intval), "trace"); delete (yyvsp[(3) - (8)].ptree);
 }
     break;
 
   case 61:
-#line 382 "parser.yy"
+#line 382 "../../../JAGS/src/terminal/parser.yy"
     {
     setMonitor((yyvsp[(2) - (2)].ptree), 1, "trace"); delete (yyvsp[(2) - (2)].ptree);
 }
     break;
 
   case 62:
-#line 385 "parser.yy"
+#line 385 "../../../JAGS/src/terminal/parser.yy"
     { 
     setMonitor((yyvsp[(2) - (7)].ptree), (yyvsp[(6) - (7)].intval), "trace"); delete (yyvsp[(2) - (7)].ptree);
 }
     break;
 
   case 63:
-#line 388 "parser.yy"
+#line 388 "../../../JAGS/src/terminal/parser.yy"
     {
     setMonitor((yyvsp[(2) - (7)].ptree), 1, *(yyvsp[(6) - (7)].stringptr));
     delete (yyvsp[(6) - (7)].stringptr);
@@ -2065,7 +2065,7 @@ yyreduce:
     break;
 
   case 64:
-#line 392 "parser.yy"
+#line 392 "../../../JAGS/src/terminal/parser.yy"
     {
     setMonitor((yyvsp[(2) - (11)].ptree), (yyvsp[(10) - (11)].intval), *(yyvsp[(6) - (11)].stringptr)); 
     delete (yyvsp[(6) - (11)].stringptr);
@@ -2073,7 +2073,7 @@ yyreduce:
     break;
 
   case 65:
-#line 396 "parser.yy"
+#line 396 "../../../JAGS/src/terminal/parser.yy"
     {
     setMonitor((yyvsp[(2) - (11)].ptree), (yyvsp[(6) - (11)].intval), *(yyvsp[(10) - (11)].stringptr)); 
     delete (yyvsp[(10) - (11)].stringptr);
@@ -2081,7 +2081,7 @@ yyreduce:
     break;
 
   case 66:
-#line 400 "parser.yy"
+#line 400 "../../../JAGS/src/terminal/parser.yy"
     {
     setDefaultMonitors(*(yyvsp[(9) - (10)].stringptr), (yyvsp[(5) - (10)].intval));
     delete (yyvsp[(9) - (10)].stringptr);
@@ -2089,28 +2089,28 @@ yyreduce:
     break;
 
   case 67:
-#line 404 "parser.yy"
+#line 404 "../../../JAGS/src/terminal/parser.yy"
     {
     setDefaultMonitors(*(yyvsp[(5) - (10)].stringptr), (yyvsp[(9) - (10)].intval));
 }
     break;
 
   case 68:
-#line 407 "parser.yy"
+#line 407 "../../../JAGS/src/terminal/parser.yy"
     {
     setDefaultMonitors(*(yyvsp[(5) - (6)].stringptr), 1);
 }
     break;
 
   case 69:
-#line 412 "parser.yy"
+#line 412 "../../../JAGS/src/terminal/parser.yy"
     {
     clearMonitor((yyvsp[(3) - (3)].ptree), "trace"); delete (yyvsp[(3) - (3)].ptree);
 }
     break;
 
   case 70:
-#line 415 "parser.yy"
+#line 415 "../../../JAGS/src/terminal/parser.yy"
     {
     clearMonitor((yyvsp[(3) - (8)].ptree), *(yyvsp[(7) - (8)].stringptr));
     delete (yyvsp[(7) - (8)].stringptr);
@@ -2118,7 +2118,7 @@ yyreduce:
     break;
 
   case 71:
-#line 422 "parser.yy"
+#line 422 "../../../JAGS/src/terminal/parser.yy"
     {
     dumpMonitors(*(yyvsp[(3) - (3)].stringptr), "trace");
     delete (yyvsp[(3) - (3)].stringptr);
@@ -2126,7 +2126,7 @@ yyreduce:
     break;
 
   case 72:
-#line 427 "parser.yy"
+#line 427 "../../../JAGS/src/terminal/parser.yy"
     {
     dumpMonitors(*(yyvsp[(3) - (8)].stringptr), *(yyvsp[(7) - (8)].stringptr));
     delete (yyvsp[(3) - (8)].stringptr);
@@ -2135,50 +2135,50 @@ yyreduce:
     break;
 
   case 73:
-#line 439 "parser.yy"
+#line 439 "../../../JAGS/src/terminal/parser.yy"
     { (yyval.stringptr) = (yyvsp[(1) - (1)].stringptr);}
     break;
 
   case 74:
-#line 440 "parser.yy"
+#line 440 "../../../JAGS/src/terminal/parser.yy"
     { (yyval.stringptr) = (yyvsp[(1) - (1)].stringptr); }
     break;
 
   case 75:
-#line 443 "parser.yy"
+#line 443 "../../../JAGS/src/terminal/parser.yy"
     {
   doCoda ((yyvsp[(2) - (2)].ptree), "CODA"); delete (yyvsp[(2) - (2)].ptree);
 }
     break;
 
   case 76:
-#line 446 "parser.yy"
+#line 446 "../../../JAGS/src/terminal/parser.yy"
     {
   doCoda ((yyvsp[(2) - (7)].ptree), *(yyvsp[(6) - (7)].stringptr)); delete (yyvsp[(2) - (7)].ptree); delete (yyvsp[(6) - (7)].stringptr);
 }
     break;
 
   case 77:
-#line 449 "parser.yy"
+#line 449 "../../../JAGS/src/terminal/parser.yy"
     {
   doAllCoda ("CODA"); 
 }
     break;
 
   case 78:
-#line 452 "parser.yy"
+#line 452 "../../../JAGS/src/terminal/parser.yy"
     {
   doAllCoda (*(yyvsp[(6) - (7)].stringptr)); delete (yyvsp[(6) - (7)].stringptr); 
 }
     break;
 
   case 79:
-#line 457 "parser.yy"
+#line 457 "../../../JAGS/src/terminal/parser.yy"
     { loadModule(*(yyvsp[(2) - (2)].stringptr)); }
     break;
 
   case 80:
-#line 461 "parser.yy"
+#line 461 "../../../JAGS/src/terminal/parser.yy"
     {
     dumpSamplers(*(yyvsp[(3) - (3)].stringptr));
     delete (yyvsp[(3) - (3)].stringptr);
@@ -2186,35 +2186,35 @@ yyreduce:
     break;
 
   case 81:
-#line 469 "parser.yy"
+#line 469 "../../../JAGS/src/terminal/parser.yy"
     {
   (yyval.pvec) = new std::vector<ParseTree*>(1, (yyvsp[(1) - (1)].ptree));
 }
     break;
 
   case 82:
-#line 472 "parser.yy"
+#line 472 "../../../JAGS/src/terminal/parser.yy"
     {
   (yyval.pvec) = (yyvsp[(1) - (2)].pvec); (yyval.pvec)->push_back((yyvsp[(2) - (2)].ptree));
 }
     break;
 
   case 83:
-#line 475 "parser.yy"
+#line 475 "../../../JAGS/src/terminal/parser.yy"
     {
   (yyval.pvec) = (yyvsp[(1) - (3)].pvec); (yyval.pvec)->push_back((yyvsp[(3) - (3)].ptree));
 }
     break;
 
   case 84:
-#line 480 "parser.yy"
+#line 480 "../../../JAGS/src/terminal/parser.yy"
     {
   (yyval.ptree) = (yyvsp[(3) - (3)].ptree); setName((yyval.ptree), (yyvsp[(1) - (3)].stringptr));
 }
     break;
 
   case 85:
-#line 483 "parser.yy"
+#line 483 "../../../JAGS/src/terminal/parser.yy"
     {
   (yyval.ptree) = new ParseTree(P_ARRAY);
   setName((yyval.ptree), (yyvsp[(1) - (3)].stringptr));
@@ -2223,7 +2223,7 @@ yyreduce:
     break;
 
   case 86:
-#line 488 "parser.yy"
+#line 488 "../../../JAGS/src/terminal/parser.yy"
     {
   /* Allow this for setting the NAME of the random number generator */
   (yyval.ptree) = new ParseTree(P_VAR); setName((yyval.ptree), (yyvsp[(1) - (3)].stringptr));
@@ -2233,7 +2233,7 @@ yyreduce:
     break;
 
   case 88:
-#line 497 "parser.yy"
+#line 497 "../../../JAGS/src/terminal/parser.yy"
     {
     /* R >= 2.4.0 uses backticks for quoted names */
     (yyval.stringptr) = (yyvsp[(2) - (3)].stringptr);
@@ -2241,7 +2241,7 @@ yyreduce:
     break;
 
   case 89:
-#line 502 "parser.yy"
+#line 502 "../../../JAGS/src/terminal/parser.yy"
     {
   (yyval.ptree) = new ParseTree(P_ARRAY); 
   if ((yyvsp[(5) - (6)].ptree)) 
@@ -2252,29 +2252,29 @@ yyreduce:
     break;
 
   case 91:
-#line 514 "parser.yy"
+#line 514 "../../../JAGS/src/terminal/parser.yy"
     {(yyval.ptree)=0;}
     break;
 
   case 93:
-#line 516 "parser.yy"
+#line 516 "../../../JAGS/src/terminal/parser.yy"
     {(yyval.ptree)=(yyvsp[(3) - (3)].ptree);}
     break;
 
   case 94:
-#line 519 "parser.yy"
+#line 519 "../../../JAGS/src/terminal/parser.yy"
     {
   (yyval.ptree) = (yyvsp[(3) - (3)].ptree);
 }
     break;
 
   case 97:
-#line 528 "parser.yy"
+#line 528 "../../../JAGS/src/terminal/parser.yy"
     {(yyval.ptree) = (yyvsp[(3) - (4)].ptree);}
     break;
 
   case 98:
-#line 531 "parser.yy"
+#line 531 "../../../JAGS/src/terminal/parser.yy"
     { 
   (yyval.ptree) = new ParseTree(P_VECTOR); 
   setParameters((yyval.ptree), (yyvsp[(1) - (1)].ptree));
@@ -2282,7 +2282,7 @@ yyreduce:
     break;
 
   case 99:
-#line 535 "parser.yy"
+#line 535 "../../../JAGS/src/terminal/parser.yy"
     {
   (yyval.ptree) = new ParseTree(P_VECTOR);
   setParameters((yyval.ptree), (yyvsp[(3) - (4)].pvec));
@@ -2290,117 +2290,117 @@ yyreduce:
     break;
 
   case 100:
-#line 541 "parser.yy"
+#line 541 "../../../JAGS/src/terminal/parser.yy"
     {(yyval.pvec) = new std::vector<ParseTree*>(1, (yyvsp[(1) - (1)].ptree)); }
     break;
 
   case 101:
-#line 542 "parser.yy"
+#line 542 "../../../JAGS/src/terminal/parser.yy"
     {(yyval.pvec) = (yyvsp[(1) - (3)].pvec); (yyval.pvec)->push_back((yyvsp[(3) - (3)].ptree));}
     break;
 
   case 102:
-#line 545 "parser.yy"
+#line 545 "../../../JAGS/src/terminal/parser.yy"
     {(yyval.ptree) = new ParseTree(P_VALUE); (yyval.ptree)->setValue((yyvsp[(1) - (1)].val));}
     break;
 
   case 103:
-#line 546 "parser.yy"
+#line 546 "../../../JAGS/src/terminal/parser.yy"
     {(yyval.ptree) = new ParseTree(P_VALUE); (yyval.ptree)->setValue(JAGS_NA);}
     break;
 
   case 104:
-#line 552 "parser.yy"
+#line 552 "../../../JAGS/src/terminal/parser.yy"
     {;}
     break;
 
   case 105:
-#line 555 "parser.yy"
+#line 555 "../../../JAGS/src/terminal/parser.yy"
     {;}
     break;
 
   case 106:
-#line 556 "parser.yy"
+#line 556 "../../../JAGS/src/terminal/parser.yy"
     {;}
     break;
 
   case 107:
-#line 559 "parser.yy"
+#line 559 "../../../JAGS/src/terminal/parser.yy"
     {;}
     break;
 
   case 108:
-#line 560 "parser.yy"
+#line 560 "../../../JAGS/src/terminal/parser.yy"
     {;}
     break;
 
   case 109:
-#line 563 "parser.yy"
+#line 563 "../../../JAGS/src/terminal/parser.yy"
     {;}
     break;
 
   case 110:
-#line 564 "parser.yy"
+#line 564 "../../../JAGS/src/terminal/parser.yy"
     {;}
     break;
 
   case 111:
-#line 565 "parser.yy"
+#line 565 "../../../JAGS/src/terminal/parser.yy"
     {;}
     break;
 
   case 112:
-#line 566 "parser.yy"
+#line 566 "../../../JAGS/src/terminal/parser.yy"
     {;}
     break;
 
   case 113:
-#line 567 "parser.yy"
+#line 567 "../../../JAGS/src/terminal/parser.yy"
     {;}
     break;
 
   case 114:
-#line 568 "parser.yy"
+#line 568 "../../../JAGS/src/terminal/parser.yy"
     {;}
     break;
 
   case 115:
-#line 571 "parser.yy"
+#line 571 "../../../JAGS/src/terminal/parser.yy"
     {;}
     break;
 
   case 117:
-#line 575 "parser.yy"
+#line 575 "../../../JAGS/src/terminal/parser.yy"
     {;}
     break;
 
   case 118:
-#line 576 "parser.yy"
+#line 576 "../../../JAGS/src/terminal/parser.yy"
     {;}
     break;
 
   case 119:
-#line 579 "parser.yy"
+#line 579 "../../../JAGS/src/terminal/parser.yy"
     {;}
     break;
 
   case 120:
-#line 580 "parser.yy"
+#line 580 "../../../JAGS/src/terminal/parser.yy"
     {;}
     break;
 
   case 121:
-#line 583 "parser.yy"
+#line 583 "../../../JAGS/src/terminal/parser.yy"
     {;}
     break;
 
   case 122:
-#line 584 "parser.yy"
+#line 584 "../../../JAGS/src/terminal/parser.yy"
     {;}
     break;
 
   case 123:
-#line 590 "parser.yy"
+#line 590 "../../../JAGS/src/terminal/parser.yy"
     {
     std::string name;
     if (getWorkingDirectory(name)) {
@@ -2413,7 +2413,7 @@ yyreduce:
     break;
 
   case 124:
-#line 601 "parser.yy"
+#line 601 "../../../JAGS/src/terminal/parser.yy"
     {
     if (chdir(((yyvsp[(2) - (2)].stringptr))->c_str()) == -1) {
 	std::cout << "ERROR: Cannot change working directory" << std::endl;
@@ -2423,7 +2423,7 @@ yyreduce:
     break;
 
   case 125:
-#line 609 "parser.yy"
+#line 609 "../../../JAGS/src/terminal/parser.yy"
     {
     std::string name;
     if (!getWorkingDirectory(name)) {
@@ -2449,7 +2449,7 @@ yyreduce:
     break;
 
   case 126:
-#line 632 "parser.yy"
+#line 632 "../../../JAGS/src/terminal/parser.yy"
     {
     if(open_command_buffer((yyvsp[(2) - (2)].stringptr))) {
 	std::cout << "Running script file " << *(yyvsp[(2) - (2)].stringptr) << std::endl;
@@ -2677,7 +2677,7 @@ yyreturn:
 }
 
 
-#line 643 "parser.yy"
+#line 643 "../../../JAGS/src/terminal/parser.yy"
 
 
 int zzerror (const char *s)
