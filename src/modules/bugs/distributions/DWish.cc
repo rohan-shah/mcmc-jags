@@ -27,6 +27,15 @@ DWish::DWish()
   : Distribution("dwish", 2, false, false) 
 {}
 
+static double log_multigamma(double n, unsigned int p)
+{
+    double y =  (p * (p-1) * log(M_PI))/4;
+    for (unsigned int j = 0; j < p; ++j) {
+        y += lgamma((n-j)/2);
+    }
+    return y;
+}
+    
 
 double DWish::logLikelihood(double const *x, unsigned int length,
 			    vector<double const *> const &par,
@@ -41,6 +50,7 @@ double DWish::logLikelihood(double const *x, unsigned int length,
 	loglik += scale[i] * x[i];
     }
     loglik += DF(par) * logdet(scale, p) + (DF(par) - p - 1) * logdet(x, p);
+    loglik -= DF(par) * p * log(2) + 2 * log_multigamma(DF(par)/2, p);
     return loglik/2;
 }
 
