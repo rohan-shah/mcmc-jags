@@ -90,9 +90,6 @@ string LogicalNode::deparse(vector<string> const &parents) const
 
 void LogicalNode::deterministicSample(unsigned int chain)
 {
-  if (!_func->checkParameterValue(_parameters[chain], _lengths, _dims)) {
-    throw NodeError(this, "Invalid parameter values for LogicalNode");
-  }
   _func->evaluate(_data + chain * _length, _parameters[chain], _lengths, _dims);
 }
 

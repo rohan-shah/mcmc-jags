@@ -38,11 +38,10 @@ DMulti::checkParameterValue(vector<double const *> const &par,
     if (SIZE(par) < 1)
 	return false;
 
-    double const *prob = PROB(par);
     unsigned int length = product(dims[0]);
-    for (unsigned int i = 0; i < length; i++) {
-      if (prob[i] < 0)
-	return false;
+    for (unsigned int i = 0; i < length; ++i) {
+	if (PROB(par)[i] < 0)
+	    return false;
     }
 
     return true;
@@ -53,23 +52,20 @@ double DMulti::logLikelihood(double const *x, unsigned int length,
 			     vector<vector<unsigned int> > const &dims,
 			     double const *lower, double const *upper) const
 {
-    double const *prob = PROB(par);
-
     double loglik = 0.0;
-    double xsum = 0.0;
     double sump = 0.0;
     for (unsigned int i = 0; i < length; i++) {
-	if (prob[i] == 0) {
-	    if (x[i] != 0)
+	if (x[i] != 0) {
+	    if (PROB(par)[i] == 0) {
 		return JAGS_NEGINF;
+	    }
+	    else {
+		loglik += x[i] * log(PROB(par)[i]) - lgamma(x[i] + 1);
+	    }
 	}
-	else if (x[i] != 0) {
-	     loglik += x[i] * log(prob[i]) - lgamma(x[i] + 1);
-	     xsum += x[i];
-	}
-	sump += prob[i];
+	sump += PROB(par)[i];
     }
-    loglik += lgamma(xsum + 1) - xsum * log(sump);
+    loglik += lgamma(SIZE(par) + 1) - SIZE(par) * log(sump);
 
     return loglik;
 }

@@ -323,6 +323,9 @@ void Model::update(unsigned int niter)
 	    for (vector<Node*>::const_iterator k = _sampled_extra.begin();
 		 k != _sampled_extra.end(); ++k)
 	    {
+                if (!(*k)->checkParentValues(n)) {
+                     throw NodeError(*k, "Invalid parent values");
+                }
 		(*k)->randomSample(_rng[n], n);
 	    }
 	}
