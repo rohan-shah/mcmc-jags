@@ -412,25 +412,28 @@ void setParameters(ParseTree *p, ParseTree *param1, ParseTree *param2,
   p->setParameters(parameters);
 }
 
-int parse_bugs (FILE *file, std::vector<ParseTree*> **dec_list, 
-                ParseTree **data, ParseTree **relations)
+int parse_bugs (FILE *file, std::vector<ParseTree*> * &dec_list, 
+                ParseTree * &data, ParseTree * &relations)
 {
-  extern FILE *yyin;
-  yyin = file;
-
-  delete _pvariables; _pvariables = 0;
-  delete _prelations; _prelations = 0;
-  delete _pdata; _pdata = 0;
-  if (yyparse() == 0) {
-      *dec_list = _pvariables;
-      *data = _pdata;
-      *relations = _prelations;
-      return 0;
-  }
-  else {
-    // FIXME: memory leaks when we have a syntax error?
-    // FIXME TOO: yylineno is not remapped. Remove it
+    extern FILE *yyin;
+    yyin = file;
     extern int yylineno;
-    return yylineno;
-  }
+    
+    int val = 0;
+    if (yyparse() == 0) {
+	dec_list = _pvariables; 
+	data = _pdata; 
+	relations = _prelations;
+    }
+    else {
+	delete _pvariables; 
+	delete _prelations; 
+	delete _pdata;
+	val = yylineno;
+    }
+    _pvariables = 0;
+    _prelations = 0;
+    _pdata = 0;
+
+    return val;
 }
