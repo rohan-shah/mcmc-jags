@@ -2,6 +2,7 @@
 #include <distribution/DistTab.h>
 #include <distribution/Distribution.h>
 #include <functional>
+#include <algorithm>
 
 using std::string;
 using std::binary_function;

@@ -10,6 +10,7 @@
 #include "DSumSampler.h"
 
 #include <stdexcept>
+#include <algorithm>
 
 using std::set;
 using std::vector;

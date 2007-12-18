@@ -4,6 +4,7 @@
 #include <function/InverseLinkFunc.h>
 #include <function/Function.h>
 #include <model/Model.h>
+#include <algorithm>
 
 using std::vector;
 using std::list;

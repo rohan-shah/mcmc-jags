@@ -41,6 +41,7 @@
 #include <stdexcept>
 #include <string>
 #include <set>
+#include <climits>
 
 using std::vector;
 using std::pair;
