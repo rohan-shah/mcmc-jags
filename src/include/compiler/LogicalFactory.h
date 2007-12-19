@@ -55,18 +55,18 @@ struct ltlogical
  */
 class LogicalFactory 
 { 
-  std::map<LogicalPair, LogicalNode*, ltlogical> _logicalmap;
+    std::map<LogicalPair, Node*, ltlogical> _logicalmap;
 	
 public:
-  /**
-   * Get a logical node with a given function and given parameters.
-   * The results are cached, so if a request is repeated, the same
-   * node will be returned. If a newly allocated node is returned,
-   * it is also added to the given Graph.
-   */
-  LogicalNode *getLogicalNode(Function const *func, 
-			      std::vector<Node const*> const &param,
-                              Graph &graph);
+    /**
+     * Get a logical node with a given function and given parameters.
+     * The results are cached, so if a request is repeated, the same
+     * node will be returned. If a newly allocated node is returned,
+     * it is also added to the given Graph.
+     */
+    Node *getNode(Function const *func, 
+		  std::vector<Node const*> const &param,
+		  Graph &graph);
 };
 
 #endif /* LOGICAL_FACTORY_H_ */

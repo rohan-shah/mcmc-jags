@@ -2,8 +2,11 @@
 #include <compiler/LogicalFactory.h>
 #include <graph/Node.h>
 #include <graph/LogicalNode.h>
+#include <graph/ScalarLogicalNode.h>
 #include <function/Function.h>
+#include <function/ScalarFunc.h>
 #include <compiler/NodeFactory.h>
+#include <util/dim.h>
 
 #include <stdexcept>
 
@@ -11,8 +14,6 @@ using std::pair;
 using std::map;
 using std::vector;
 using std::invalid_argument;
-
-
 
 bool lt(LogicalPair const &arg1, LogicalPair const &arg2)
 {
@@ -29,27 +30,43 @@ bool lt(LogicalPair const &arg1, LogicalPair const &arg2)
     }
 }
 
-LogicalNode*
-LogicalFactory::getLogicalNode(Function const *func, 
-			       vector<Node const *> const &parents,
-                               Graph &graph)
+Node* LogicalFactory::getNode(Function const *func, 
+			      vector<Node const *> const &parents,
+			      Graph &graph)
 {
-  if (func == 0) {
-    throw invalid_argument("NULL function passed to getLogicalNode");
-  }
+    if (func == 0) {
+	throw invalid_argument("NULL function passed to getLogicalNode");
+    }
 
-  LogicalPair lpair(func, parents);
-  map<LogicalPair, LogicalNode*, ltlogical>::iterator i 
-      = _logicalmap.find(lpair);
+    LogicalPair lpair(func, parents);
+    map<LogicalPair, Node*, ltlogical>::iterator i = _logicalmap.find(lpair);
 
-  if (i != _logicalmap.end()) {
-    return i->second;
-  }
-  else {
-    // Create a new logical node
-    LogicalNode *lnode = new LogicalNode(func, parents);
-    _logicalmap[lpair] = lnode;
-    graph.add(lnode);
-    return lnode;
-  }
+    if (i != _logicalmap.end()) {
+	return i->second;
+    }
+    else {
+	// Create a node
+
+	ScalarFunc const * sfunc = dynamic_cast<ScalarFunc const *>(func);
+	bool vectorized = false;
+	if (sfunc) {
+	    for (unsigned int i = 0; i < parents.size(); ++i) {
+		if (!isScalar(parents[i]->dim())) {
+		    vectorized = true;
+		    break;
+		}
+	    }
+	}
+
+	Node *lnode = 0;
+	if (sfunc && !vectorized) {
+	    lnode = new ScalarLogicalNode(sfunc, parents);
+	}
+	else {
+	    lnode = new LogicalNode(func, parents);
+	}
+	_logicalmap[lpair] = lnode;
+	graph.add(lnode);
+	return lnode;
+    }
 }

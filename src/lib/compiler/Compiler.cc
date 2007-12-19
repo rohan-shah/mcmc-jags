@@ -578,8 +578,7 @@ Node * Compiler::getParameter(ParseTree const *t)
 		_index_graph.add(node);
 	    }
 	    else {
-		node = _logicalfactory.getLogicalNode(func, parents, 
-						      _model.graph());
+		node = _logicalfactory.getNode(func, parents, _model.graph());
 	    }
 	}
 	break;

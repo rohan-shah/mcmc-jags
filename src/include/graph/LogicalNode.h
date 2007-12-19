@@ -26,11 +26,8 @@ public:
     LogicalNode(Function const *func,
                 std::vector<Node const*> const &parameters);
     ~LogicalNode();
-    /** 
-     * Calculates the value of the node based on the parameters. This
-     * function calls Function#checkParameterValue and will throw an
-     * exception if the result is false.
-     * @exception NodeError
+    /**
+     * Calculates the value of the node based on the parameters. 
      */
     void deterministicSample(unsigned int chain);
     /**
