@@ -34,7 +34,7 @@ class Node {
     Node(Node const &orig);
     Node &operator=(Node const &rhs);
 protected:
-    const std::vector<unsigned int> _dim;
+    std::vector<unsigned int> const &_dim;
     const unsigned int _length;
     const unsigned int _nchain;
     double *_data;

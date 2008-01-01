@@ -41,7 +41,7 @@ class RNG;
 class StochasticNode : public Node {
     Distribution const * const _dist;
     std::vector<std::vector<double const *> > _parameters;
-    std::vector<std::vector<unsigned int> > _dims;
+    std::vector<std::vector<unsigned int> > const &_dims;
     Node const *_lower;
     Node const *_upper;
     unsigned int _fweight;
@@ -139,15 +139,6 @@ public:
      * not considered to be a random variable.
      */
     bool isRandomVariable() const;
-    /**
-     * Checks that the parameters are within the valid range determined
-     * by the Distribution.
-     *
-     * @param chain Index number of chain to check
-     *
-     * @see Distribution#checkParameterValue
-     */
-    bool checkParameterValue(unsigned int chain) const;    
     /**
      * An observed stochastic node may represent more than one observation.
      * The frequency weight records the number of observations represented

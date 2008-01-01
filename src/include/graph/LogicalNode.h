@@ -16,8 +16,8 @@ class Function;
 class LogicalNode : public DeterministicNode {
     Function const * const _func;
     std::vector<std::vector<double const*> > _parameters;
-    std::vector<unsigned int> _lengths;
-    std::vector<std::vector<unsigned int> > _dims;
+    std::vector<unsigned int> const &_lengths;
+    std::vector<std::vector<unsigned int> > const &_dims;
 public:
     /**
      * A logical node is defined by a function (which may be an inline
