@@ -70,4 +70,25 @@ unsigned int product(std::vector<unsigned int> const &arg);
  */
 std::vector<unsigned int> drop(std::vector<unsigned int> const &dims);
 
+/**
+ * Returns a constant reference to a unique vector
+ *
+ * Vectors of unsigned integers are frequently repeated objects in
+ * the JAGS library (Typically as dimensions of Nodes). This function
+ * creates a unique constant reference to the requested vector. This
+ * avoids redundant copies of the vector taking up memory.
+ */
+std::vector<unsigned int> const &getUnique(std::vector<unsigned int> const &dim);
+
+/**
+ * Returns a constant reference to a unique vector
+ *
+ * Vectors of parameter dimensions are frequently repeated objects
+ * in the JAGS library. This function returns a reference to a unique
+ * copy of the requested vector in order to save memory.
+ * 
+ */
+std::vector<std::vector<unsigned int> > const & 
+getUnique(std::vector<std::vector<unsigned int> > const &dimvec);
+
 #endif /* DIM_H_ */
