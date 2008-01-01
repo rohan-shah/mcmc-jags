@@ -16,7 +16,8 @@ using std::find;
 
 Node::Node(vector<unsigned int> const &dim, unsigned int nchain)
     : _parents(0), _children(0), _ref(0), _isobserved(false),
-      _isdiscrete(false), _dim(dim), _length(product(dim)), _nchain(nchain),
+      _isdiscrete(false), _dim(getUnique(dim)), _length(product(dim)), 
+      _nchain(nchain),
       _data(0)
       
 {
@@ -35,7 +36,7 @@ Node::Node(vector<unsigned int> const &dim, unsigned int nchain)
 Node::Node(vector<unsigned int> const &dim, 
 	   vector<Node const *> const &parents)
   : _parents(parents), _children(0), _ref(0),  _isobserved(false), 
-    _isdiscrete(false), _dim(dim), _length(product(dim)),
+    _isdiscrete(false), _dim(getUnique(dim)), _length(product(dim)),
      _nchain(countChains(parents)), _data(0)
 {
   if (nchain() == 0) {

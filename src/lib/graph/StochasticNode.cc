@@ -5,6 +5,7 @@
 #include <graph/NodeError.h>
 #include <distribution/Distribution.h>
 #include <util/nainf.h>
+#include <util/dim.h>
 
 #include <vector>
 #include <stdexcept>
@@ -55,21 +56,25 @@ static vector<Node const *> mkParents(vector<Node const *> const &parameters,
     return parents;
 }
 
+static vector<vector<unsigned int> > const &
+mkParameterDims(vector<Node const *> const &parameters) {
+    vector<vector<unsigned int> > dims(parameters.size());
+    for (unsigned int j = 0; j < parameters.size(); ++j) {
+        dims[j] = parameters[j]->dim();
+    }
+    return getUnique(dims);
+}
+
 StochasticNode::StochasticNode(Distribution const *dist, 
 			       vector<Node const *> const &parameters,
 			       Node const *lower, Node const *upper)
     : Node(mkDim(dist, parameters), mkParents(parameters, lower, upper)), 
-      _dist(dist), _parameters(nchain()), _lower(lower), _upper(upper), 
-      _fweight(1)
+      _dist(dist), _parameters(nchain()), _dims(mkParameterDims(parameters)),
+      _lower(lower), _upper(upper), _fweight(1)
 {
  
     if (parameters.size() != _dist->npar()) {
 	throw NodeError(this, "Incorrect number of parameters for distribution");
-    }
-  
-    _dims.reserve(parameters.size());
-    for (unsigned int i = 0; i < parameters.size(); ++i) {
-	_dims.push_back(parameters[i]->dim());
     }
     if (!_dist->checkParameterDim(_dims)) {
 	throw NodeError(this,"Invalid parameter dimensions for distribution");

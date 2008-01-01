@@ -4,6 +4,7 @@
 #include <graph/NodeError.h>
 #include <graph/GraphMarks.h>
 #include <graph/Graph.h>
+#include <util/dim.h>
 
 #include <stdexcept>
 #include <vector>
@@ -43,21 +44,33 @@ static vector<unsigned int> mkDim(Function const *func,
   return func->dim(parameter_dims);
 }
 
+static vector<unsigned int> const &
+mkLengths(vector<Node const *> const &parameters) {
+    vector<unsigned int> lengths(parameters.size());
+    for (unsigned int j = 0; j < parameters.size(); ++j) {
+        lengths[j] = parameters[j]->length();
+
+    }
+    return getUnique(lengths);
+}
+
+static vector<vector<unsigned int> > const &
+mkParameterDims(vector<Node const *> const &parameters) {
+    vector<vector<unsigned int> > dims(parameters.size());
+    for (unsigned int j = 0; j < parameters.size(); ++j) {
+        dims[j] = parameters[j]->dim();
+    }
+    return getUnique(dims);
+}
 
 LogicalNode::LogicalNode(Function const *function, 
 			 vector<Node const *> const &parameters)
   : DeterministicNode(mkDim(function,parameters), parameters),
     _func(function),
-    _parameters(nchain())
+    _parameters(nchain()),
+    _dims(mkParameterDims(parameters)),
+    _lengths(mkLengths(parameters))
 {
-  
-    _dims.reserve(parameters.size());
-    _lengths.reserve(parameters.size());
-    for (unsigned int j = 0; j < parameters.size(); ++j) {
-	_dims.push_back(parameters[j]->dim());
-	_lengths.push_back(parameters[j]->length());
-    }
-
     for (unsigned int n = 0; n < nchain(); ++n) {
 	_parameters[n].reserve(parameters.size());
 	for (unsigned long j = 0; j < parameters.size(); ++j) {
