@@ -69,7 +69,7 @@ DistScalarRmath::typicalScalar(vector<double const *> const &parameters,
 
     //Pick the median if it has the highest density, otherwise pick
     //a point near to (but not on) the boundary
-    if (dmed > dllimit && dmed > dulimit) {
+    if (dmed >= dllimit && dmed >= dulimit) {
 	return med;
     }
     else if (dulimit > dllimit) {
