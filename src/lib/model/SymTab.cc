@@ -21,6 +21,14 @@ SymTab::SymTab(Graph &graph, unsigned int nchain)
 {
 }
 
+SymTab::~SymTab() {
+    
+    map<string, NodeArray*>::iterator p;
+    for (p = _varTable.begin(); p != _varTable.end(); ++p) {
+	delete p->second;
+    }
+}
+
 void SymTab::addVariable(string const &name, vector<unsigned int> const &dim)
 {
   if (_varTable.find(name) != _varTable.end()) {

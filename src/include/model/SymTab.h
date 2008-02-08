@@ -29,6 +29,7 @@ public:
    * @param nchain Number of chains of nodes in the Symbol table.
    */
   SymTab(Graph &graph, unsigned int nchain);
+  ~SymTab();
   /**
    * Adds an array variable to the symbol table. This creates a
    * NodeArray object of the given dimension and associates it
