@@ -125,6 +125,13 @@ run                     zzlval.intval=RUN; return RUN;
   return STRING;
 }
 
+\'[^\']*\' {
+    zzlval.stringptr = new std::string(zztext);
+    zzlval.stringptr->erase(zzlval.stringptr->size() - 1, 1);
+    zzlval.stringptr->erase(0,1);
+    return STRING;
+}
+
 <INITIAL><<EOF>> {
     if (buffer_stack.empty()) {
 	yyterminate();

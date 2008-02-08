@@ -494,6 +494,7 @@ r_assignment: r_name ARROW r_structure {
 ;
 
 r_name: STRING
+| NAME
 | '`' NAME '`' {
     /* R >= 2.4.0 uses backticks for quoted names */
     $$ = $2;
