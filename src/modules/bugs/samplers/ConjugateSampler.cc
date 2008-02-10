@@ -75,6 +75,11 @@ ConjugateSampler::ConjugateSampler(StochasticNode *node, Graph const &graph,
     method->initialize(this, graph);
 }
 
+ConjugateSampler::~ConjugateSampler()
+{
+    delete _method;
+}
+
 void ConjugateSampler::update(vector<RNG*> const &rngs)
 {
     unsigned int nchain = _snode->nchain();
