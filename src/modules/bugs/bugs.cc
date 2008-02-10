@@ -105,6 +105,7 @@ BUGSModule::BUGSModule() {
     insert(new DHyper);
     insert(new DSum); 
 
+    //Load functions
     insert(new Abs);
     insert(new Cos);
     insert(new CLogLog);
@@ -139,6 +140,7 @@ BUGSModule::BUGSModule() {
     insert(new Transpose);
     insert(new Trunc);
 
+    //Load sampler factories
     insert(new MNormalFactory);
     insert(new DirichletFactory);
     insert(new ConjugateFactory);
