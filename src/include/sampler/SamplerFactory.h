@@ -14,7 +14,7 @@ class Graph;
 class SamplerFactory
 {
 public:
-    virtual ~SamplerFactory() {};
+    virtual ~SamplerFactory();
     /**
      * Finds nodes in the set of stochastic nodes that can be sampled
      * within the given graph, removes them from the set and adds a

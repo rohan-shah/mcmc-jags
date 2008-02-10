@@ -23,8 +23,9 @@ class MonitorFactory;
  * member function.
  */
 class Module {
+    std::vector<Function*> _internal_functions;
+    std::vector<InverseLinkFunc*> _internal_link_functions;
     std::vector<Function*> _functions;
-    std::vector<InverseLinkFunc*> _link_functions;
     std::vector<Distribution*> _distributions;
     std::vector<SamplerFactory*> _sampler_factories;
     std::vector<RNGFactory*> _rng_factories;

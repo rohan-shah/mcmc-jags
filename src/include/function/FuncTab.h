@@ -4,8 +4,8 @@
 #include <list>
 #include <string>
 
-class Function;
 class InverseLinkFunc;
+class Function;
 
 /**
  * @short Look-up table for Function objects
@@ -61,16 +61,15 @@ public:
    */
   InverseLinkFunc const *findLink (std::string const &name) const;
   /**
+   * Removes an inverse link function from the table
+   */
+  void erase(InverseLinkFunc *func);
+  /**
    * Removes a function from the table. This can only be called by the
    * module that owns the Function object, as it requires a
    * non-constant pointer.
    */
   void erase(Function *func);
-  /**
-   * Removes an inverse link function from the table
-   */
-  void erase(InverseLinkFunc *func);
-
 };
 
 #endif /* FUNC_TAB_H_ */
