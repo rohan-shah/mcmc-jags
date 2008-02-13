@@ -262,7 +262,7 @@ parameters_in: parameters r_assignment_list ENDDATA
     std::map<std::string, SArray> parameter_table;
     std::string rngname;
     readRData($2, parameter_table, rngname);
-    delete_vec($2);
+    delete_pvec($2);
     /* We have to set the name first, because the state or seed
        might be embedded in the parameter_table */
     if (rngname.size() != 0) {
