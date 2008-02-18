@@ -258,35 +258,22 @@ void ConjugateMNormal::update(ConjugateSampler *sampler, unsigned int chain,
     /* 
        Solve the equation A %*% x = b to get the posterior mean.
        We have to take a copy of A as it is overwritten during
-       the call to DSYSV. The result is stored in b
+       the call to DPOSV. The result is stored in b
     */
     double * Acopy = new double[N];
     for (int i = 0; i < N; ++i) {
 	Acopy[i] = A[i];
     }
-    int *ipiv = new int[nrow];
     int one = 1;
-    double worktest;
-    int lwork = -1;
     int info;
-    F77_DSYSV ("L", &nrow, &one, Acopy, &nrow, ipiv, b, &nrow, &worktest, 
-	       &lwork, &info);
+    F77_DPOSV ("L", &nrow, &one, Acopy, &nrow, b, &nrow, &info);
     if (info != 0) {
+	delete [] Acopy;
+	delete [] A;
+	delete [] b;
 	throw NodeError(snode,
 			"unable to solve linear equations in Conjugate mnorm sampler");
-  }
-    lwork = static_cast<int>(worktest) + 1;
-    double * work = new double[lwork];
-    F77_DSYSV ("L", &nrow, &one, Acopy, &nrow, ipiv, b, &nrow, work, &lwork,
-	       &info);
-    if (info != 0) {
-	throw NodeError(snode,
-			"unable to solve linear equations in Conjugate MNorm sampler");
     }
-    delete [] work;
-    delete [] Acopy;
-    delete [] ipiv;
-
 
     //Shift origin back to original scale
     for (int i = 0; i < nrow; ++i) {
@@ -295,9 +282,10 @@ void ConjugateMNormal::update(ConjugateSampler *sampler, unsigned int chain,
     double *xnew = new double[nrow];
     DMNorm::randomsample(xnew, b, A, true, nrow, rng);
     sampler->setValue(xnew, nrow, chain);
-    
-    delete [] b;
+
     delete [] A;
+    delete [] Acopy;
+    delete [] b;
     delete [] xnew;
 }
 
