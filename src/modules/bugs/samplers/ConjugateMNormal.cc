@@ -186,22 +186,43 @@ void ConjugateMNormal::update(ConjugateSampler *sampler, unsigned int chain,
 	A[i] = priorprec[i];
     }
     
+    /* FORTRAN routines are all call-by-reference, so we need to create
+     * these constants */
+    double zero = 0;
+    double d1 = 1;
+    int i1 = 1;
+
     if (sampler->deterministicChildren().empty()) {
       
 	// This can only happen if the stochastic children are all
 	// multivariate normal with the same number of rows and 
-	// columns normal. We know alpha = 0, beta = I.
-	
+	// columns. We know alpha = 0, beta = I.
+
+	double *delta = new double[nrow]; 
+
 	for (unsigned int j = 0; j < nchildren; ++j) {
 	    double const *Y = stoch_children[j]->value(chain);
 	    double const *tau = stoch_children[j]->parents()[1]->value(chain);
+	    double alpha = stoch_children[j]->freqWeight();
+	
+	    F77_DAXPY (&N, &alpha, tau, &i1, A, &i1);
+	    for (unsigned int i = 0; i < nrow; ++i) {
+		delta[i] = Y[i] - xold[i];
+	    }
+	    F77_DGEMV ("N", &nrow, &nrow, &alpha, tau, &nrow, delta, &i1,
+		       &d1, b, &i1);
+	    /*
+	    //FIXME: Include frequency weights
 	    for (int i = 0; i < nrow; ++i) {
 		for (int i2 = 0; i2 < nrow; ++i2) {
 		    A[i * nrow + i2] += tau[i * nrow + i2];
 		    b[i] += (Y[i2] - xold[i2]) * tau[nrow * i + i2];
 		}
 	    }
+	    */
 	}
+
+	delete [] delta;
 	
     }
     else {
@@ -215,8 +236,32 @@ void ConjugateMNormal::update(ConjugateSampler *sampler, unsigned int chain,
         else {
             betas = _betas;
         }
+
+	//Calculate largest possible size of working matrix C
+	int max_nrow_child = 0;
+	for (unsigned int j = 0; j < nchildren; ++j) {
+	    if (snode->length() > max_nrow_child) {
+		max_nrow_child = snode->length();
+	    }
+	}
+	double *C = new double[nrow * max_nrow_child];
+	double *delta = new double[max_nrow_child];
 	
-	/* Now add the contribution of each term to A, b */
+	/* Now add the contribution of each term to A, b 
+	   
+	   b += N_j * beta_j %*% tau_j (Y_j - mu_j)
+	   A += N_j * beta_j %*% tau_j %*% t(beta_j)
+
+	   where 
+	   - N_j is the frequency weight of child j
+	   - beta_j is a matrix of linear coefficients
+	   - tau_j is the variance-covariance matrix of child j
+	   - mu_j is the mean of child j
+	   - Y_j is the value of child j
+	   
+	   We make use of BLAS routines for efficiency.
+
+	 */
 	double const *beta_j = betas;
 	for (unsigned int j = 0; j < nchildren; ++j) {
 	    
@@ -227,6 +272,35 @@ void ConjugateMNormal::update(ConjugateSampler *sampler, unsigned int chain,
 	    int nrow_child = snode->length();
 	    unsigned int Nrep = snode->freqWeight();
 
+	    if (nrow_child == 1) {
+
+		double alpha = Nrep * tau[0];
+		F77_DSYR("L", &nrow, &alpha, beta_j, &i1, A, &nrow);
+		alpha *= (Y[0] - mu[0]);
+		F77_DAXPY(&nrow, &alpha, beta_j, &i1, b, &i1);
+
+	    }
+	    else {
+
+		double alpha = Nrep;
+
+		F77_DSYMM("R", "L", &nrow, &nrow_child, &alpha, tau,
+                          &nrow_child, beta_j, &nrow, &zero, C, &nrow);
+
+		for (unsigned int i = 0; i < nrow_child; ++i) {
+		    delta[i] = Y[i] - mu[i];
+		}
+		
+		F77_DGEMV("N", &nrow, &nrow_child, &d1, C, &nrow,
+			  delta, &i1, &d1, b, &i1);
+		F77_DGEMM("N","T", &nrow, &nrow, &nrow_child,
+			  &d1, C, &nrow, beta_j, &nrow, &d1, A, &nrow);
+	    }
+	       
+	    /*
+	    //This turns out to be rather expensive to do by hand
+	    //for large matrices.
+	      
 	    for (int i = 0; i < nrow; ++i) {
 		for (int k = 0; k < nrow_child; ++k) {
 		  
@@ -245,9 +319,13 @@ void ConjugateMNormal::update(ConjugateSampler *sampler, unsigned int chain,
 		  
 		}
 	    }
+	    */
 	  
 	    beta_j += nrow_child * nrow;
 	}
+
+	delete [] C;
+	delete [] delta;
 
 	if (temp_beta) {
 	    delete betas;
@@ -280,6 +358,7 @@ void ConjugateMNormal::update(ConjugateSampler *sampler, unsigned int chain,
 	b[i] += xold[i];
     }
     double *xnew = new double[nrow];
+    //FIXME. This must use lower triangle of A!!!!
     DMNorm::randomsample(xnew, b, A, true, nrow, rng);
     sampler->setValue(xnew, nrow, chain);
 
