@@ -50,7 +50,7 @@ public:
    * this case a mean of zero is used.
    *
    * @param tau Either the precision matrix or the variance-covariance
-   * matrix.  
+   * matrix.  Only the lower triangle is used.
    * 
    * @param prec Logical flag. If true then tau represents the
    * precision matrix (the parameterization used in the bugs language).
