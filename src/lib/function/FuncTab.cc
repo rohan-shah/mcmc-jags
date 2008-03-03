@@ -81,24 +81,20 @@ Function const * FuncTab::find (string const &funcname) const
     return (p == _func_list.end()) ? 0 : *p;
 }
 
-Function const * FuncTab::findInverse (string const &linkname) const
+InverseLinkFunc const * FuncTab::findInverseLink (string const &name,
+						  bool link_name) const
 {
 
-    //Note scoping operator to distinguish std::find from FuncTab::find
-    LinkList::const_iterator p = std::find_if(_link_list.begin(), 
-					      _link_list.end(),
-					      bind2nd(isLinkName(), &linkname));
-    
-    return (p == _link_list.end()) ? 0 : *p;
-}
-
-InverseLinkFunc const * FuncTab::findLink (string const &funcname) const
-{
-    //Note scoping operator to distinguish std::find from FuncTab::find
-    LinkList::const_iterator p = std::find_if(_link_list.begin(), 
-					      _link_list.end(),
-					      bind2nd(isFuncName(), &funcname));
-
+    LinkList::const_iterator p = _link_list.end();
+    if (link_name) {
+	//Note scoping operator to distinguish std::find from FuncTab::find
+	p = std::find_if(_link_list.begin(), _link_list.end(),
+			 bind2nd(isLinkName(), &name));
+    }
+    else {
+	p = std::find_if(_link_list.begin(), _link_list.end(),
+			 bind2nd(isFuncName(), &name));
+    }
     return (p == _link_list.end()) ? 0 : *p;
 }
 

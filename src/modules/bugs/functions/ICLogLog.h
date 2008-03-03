@@ -17,7 +17,7 @@ namespace bugs {
     {
     public:
 	ICLogLog ();
-	double evaluateScalar(std::vector<double const *> const &args) const;
+	double inverseLink(double eta) const;
 	double link(double y) const;
 	double gradLink(double y) const;
     };

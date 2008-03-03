@@ -14,9 +14,9 @@ namespace bugs {
     {
     }
 
-    double Exp::evaluateScalar(vector<double const *> const &args) const
+    double Exp::inverseLink(double eta) const
     {
-	return exp(*args[0]);
+	return exp(eta);
     }
 
     double Exp::link(double mu) const

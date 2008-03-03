@@ -47,19 +47,18 @@ public:
    */
   Function const *find (std::string const &name) const;
   /**
-   * Finds the inverse of a link function by the link name
+   * Finds the inverse of a link function by name
    *
-   * @return a pointer to the inverse function or a NULL pointer if it
+   * @parameter name to search on.
+   *
+   * @link_name Logical flag. If true then search by link name
+   * (e.g. "log"), otherwise search by the name of the inverse (e.g. "exp")
+   *
+   * @return a pointer to the inverse link function or a NULL pointer if it
    * was not found.
    */
-  Function const *findInverse (std::string const &name) const;
-  /**
-   * Finds an inverse link function by its name.  This is a more
-   * restrictive version of the FuncTab#find function which returns
-   * a pointer to an InverseLinkFunc object, or a NULL pointer if the
-   * name does not correspond to an inverse link function.
-   */
-  InverseLinkFunc const *findLink (std::string const &name) const;
+  InverseLinkFunc const *findInverseLink (std::string const &name,
+					  bool link_name) const;
   /**
    * Removes an inverse link function from the table
    */

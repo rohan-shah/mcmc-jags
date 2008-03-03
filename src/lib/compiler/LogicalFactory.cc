@@ -1,11 +1,14 @@
 #include <config.h>
+
 #include <compiler/LogicalFactory.h>
-#include <graph/Node.h>
-#include <graph/LogicalNode.h>
-#include <graph/ScalarLogicalNode.h>
-#include <function/Function.h>
-#include <function/ScalarFunc.h>
 #include <compiler/NodeFactory.h>
+#include <graph/LogicalNode.h>
+#include <graph/Node.h>
+#include <graph/ScalarLogicalNode.h>
+#include <graph/LinkNode.h>
+#include <function/InverseLinkFunc.h>
+#include <function/ScalarFunc.h>
+#include <function/Function.h>
 #include <util/dim.h>
 
 #include <stdexcept>
@@ -30,6 +33,37 @@ bool lt(LogicalPair const &arg1, LogicalPair const &arg2)
     }
 }
 
+Node* LogicalFactory::getLinkNode(InverseLinkFunc const *link, 
+				  vector<Node const *> const &parents,
+				  Graph &graph)
+{
+    if (link == 0) {
+	throw invalid_argument("NULL function passed to getLogicalNode");
+    }
+    
+    LogicalPair lpair(link, parents);
+    map<LogicalPair, Node*, ltlogical>::iterator i = _logicalmap.find(lpair);
+    
+    if (i != _logicalmap.end()) {
+	return i->second;
+    }
+    else {
+	// Create a node
+
+	Node *lnode = 0;
+	if (isScalar(parents[0]->dim())) {
+	    lnode = new LinkNode(link, parents);
+	}
+	else {
+	    //Vectorized
+	    lnode = new LogicalNode(link, parents);
+	}
+	_logicalmap[lpair] = lnode;
+	graph.add(lnode);
+	return lnode;
+    }
+}
+
 Node* LogicalFactory::getNode(Function const *func, 
 			      vector<Node const *> const &parents,
 			      Graph &graph)
@@ -46,6 +80,8 @@ Node* LogicalFactory::getNode(Function const *func,
     }
     else {
 	// Create a node
+
+	//FIXME: Downcasting to an incomplete type
 
 	ScalarFunc const * sfunc = dynamic_cast<ScalarFunc const *>(func);
 	bool vectorized = false;

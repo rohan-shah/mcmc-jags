@@ -13,3 +13,9 @@ InverseLinkFunc::linkName () const
 {
   return _link;
 }
+
+double 
+InverseLinkFunc::evaluateScalar(std::vector <double const *> const &args) const
+{
+    return inverseLink(args[0][0]);
+}

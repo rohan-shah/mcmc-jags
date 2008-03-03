@@ -407,23 +407,6 @@ Node *Compiler::getArraySubset(ParseTree const *p)
     return node;
 }
 
-static Function const *getLink(ParseTree const *t, FuncTab const &functab)
-{
-  if (t->treeClass() != P_LINK) {
-    throw logic_error("Malformed parse tree: Expected link function");
-  }
-
-  Function const *func = functab.findInverse(t->name());
-  if (func == 0) {
-    string msg("Unable to find inverse of link function ");
-    msg.append(t->name());
-    throw runtime_error(msg);
-  }
-  else {
-    return func;
-  }
-}
-
 static Function const *getFunction(ParseTree const *t, FuncTab const &functab)
 {
     if (t->treeClass() != P_FUNCTION) 
@@ -564,21 +547,37 @@ Node * Compiler::getParameter(ParseTree const *t)
     case P_DIM:
         node = getDim(t, _model.symtab());
 	break;
-    case P_FUNCTION: case P_LINK:
+    case P_LINK:
 	if (getParameterVector(t, parents)) {
-	    Function const *func = 0;
-	    if (t->treeClass() == P_FUNCTION) {
-		func = getFunction(t, funcTab());
+	    InverseLinkFunc const *link = 
+		funcTab().findInverseLink(t->name(), true);
+	    if (!link) {
+		string msg("Unable to find inverse of link function ");
+		msg.append(t->name());
+		throw runtime_error(msg);
 	    }
-	    else {
-		func = getLink(t, funcTab());
-	    }
+	    node = _logicalfactory.getLinkNode(link, parents, _model.graph());
+	}
+	break;
+    case P_FUNCTION:
+	if (getParameterVector(t, parents)) {
+	    Function const *func = getFunction(t, funcTab());
 	    if (_index_expression) {
 		node = new LogicalNode(func, parents);
 		_index_graph.add(node);
 	    }
-	    else {
-		node = _logicalfactory.getNode(func, parents, _model.graph());
+	    else {	    
+		/* Test first to see if it is a link function */
+		InverseLinkFunc const *link = 
+		    funcTab().findInverseLink(t->name(), false);
+		if (link) {
+		    node = _logicalfactory.getLinkNode(link, parents, 
+						       _model.graph());
+		}
+		else {
+		    node = _logicalfactory.getNode(func, parents, 
+						   _model.graph());
+		}
 	    }
 	}
 	break;

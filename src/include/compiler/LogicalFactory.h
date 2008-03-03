@@ -9,8 +9,9 @@
 #include <map>
 #include <cfloat>
 
+class InverseLinkFunc;
 class Function;
-class LogicalNode;
+class LinkNode;
 
 /**
  * A "logical pair", consisting of a function and a vector of arguments,
@@ -67,6 +68,12 @@ public:
     Node *getNode(Function const *func, 
 		  std::vector<Node const*> const &param,
 		  Graph &graph);
+    /**
+     * Get a link node
+     */
+    Node *getLinkNode(InverseLinkFunc const *link, 
+		      std::vector<Node const *> const &parents,
+		      Graph &graph);
 };
 
 #endif /* LOGICAL_FACTORY_H_ */

@@ -13,10 +13,9 @@ namespace bugs {
     {
     }
 
-    double
-    ICLogLog::evaluateScalar(vector <double const *> const &args) const
+    double ICLogLog::inverseLink(double eta) const
     {
-	return 1 - exp(-exp(*args[0]));
+	return 1 - exp(-exp(eta));
     }
 
     double ICLogLog::link(double mu) const

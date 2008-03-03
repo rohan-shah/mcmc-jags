@@ -7,13 +7,12 @@ using std::vector;
 
 namespace bugs {
 
-    Phi::Phi ():InverseLinkFunc ("phi", "probit")
+    Phi::Phi () : InverseLinkFunc ("phi", "probit")
     {
     }
 
-    double Phi::evaluateScalar(vector<double const *> const &args) const
+    double Phi::inverseLink(double q) const
     {
-	double q = *args[0];
 	if (!R_FINITE (q)) {
 	    return q > 0 ? 1 : 0;
 	}

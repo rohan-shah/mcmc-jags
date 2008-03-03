@@ -54,7 +54,7 @@ public:
     virtual double evaluateScalar(std::vector <double const *> const &args) 
 	const = 0;
     /**
-     * Returns since the result of a scalar function should
+     * Returns 1 since the result of a scalar function should
      * always be scalar.
      */
     std::vector<unsigned int> 

@@ -32,10 +32,14 @@ public:
      * Returns the name of the link function
      */
     std::string const &linkName () const;
+    /**Inverse of link function */
+    virtual double inverseLink(double eta) const = 0;
     /** Link function */
     virtual double link(double mu) const = 0;
     /** Gradient of link function */
     virtual double gradLink(double mu) const = 0;
+    /** Calls inverseLink */
+    double evaluateScalar(std::vector <double const *> const &args) const;
 };
 
-#endif
+#endif /* INVERSE_LINK_FUNC_H_ */

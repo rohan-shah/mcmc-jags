@@ -18,7 +18,7 @@ namespace bugs {
     {
     public:
 	Phi ();
-	double evaluateScalar(std::vector<double const *> const &args) const;
+	double inverseLink(double eta) const;
 	double link(double mu) const;
 	double gradLink(double mu) const;
     };

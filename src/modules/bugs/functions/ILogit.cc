@@ -15,9 +15,9 @@ namespace bugs {
     {
     }
 
-    double ILogit::evaluateScalar(vector<double const *> const &args) const
+    double ILogit::inverseLink(double eta) const
     {
-	return 1/(1 + exp(-args[0][0]));
+	return 1/(1 + exp(-eta));
     }
 
     double ILogit::link(double mu) const
