@@ -2,6 +2,7 @@
 #include <function/InverseLinkFunc.h>
 
 using std::string;
+using std::vector;
 
 InverseLinkFunc::InverseLinkFunc (string const &name, string const &link)
   : ScalarFunc (name, 1), _link(link)
@@ -15,7 +16,7 @@ InverseLinkFunc::linkName () const
 }
 
 double 
-InverseLinkFunc::evaluateScalar(std::vector <double const *> const &args) const
+InverseLinkFunc::evaluateScalar(vector <double const *> const &args) const
 {
     return inverseLink(args[0][0]);
 }
