@@ -61,12 +61,3 @@ string const &Monitor::type() const
 {
     return _type;
 }
-
-unsigned int Monitor::freqWeight() const
-{
-    StochasticNode const *snode = asStochastic(_node);
-    if (snode) {
-        return snode->freqWeight();
-    }
-    return 1;
-}

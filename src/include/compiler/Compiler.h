@@ -2,7 +2,6 @@
 #define COMPILER_H_
 
 #include <compiler/LogicalFactory.h>
-#include <compiler/StochasticFactory.h>
 #include <compiler/ConstantFactory.h>
 #include <compiler/MixtureFactory.h>
 #include <compiler/CounterTab.h>
@@ -40,7 +39,6 @@ class Compiler {
   Graph _index_graph;
   ConstantFactory _constantfactory;
   LogicalFactory _logicalfactory;
-  StochasticFactory _stochasticfactory;
   MixtureFactory _mixfactory;
   std::map<std::string, std::vector<std::vector<int> > > _node_array_ranges;
 

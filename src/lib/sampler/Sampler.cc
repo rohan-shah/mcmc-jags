@@ -163,7 +163,7 @@ double Sampler::logFullConditional(unsigned int chain) const
     double llike = 0.0;
     vector<StochasticNode const*>::const_iterator q = _stoch_children.begin();
     for (; q != _stoch_children.end(); ++q) {
-	llike += (*q)->logDensity(chain) * (*q)->freqWeight();
+	llike += (*q)->logDensity(chain);
     }
 
     double lfc = lprior + llike;
@@ -250,7 +250,7 @@ double Sampler::logLikelihood(unsigned int chain) const
 
     vector<StochasticNode const*>::const_iterator q = _stoch_children.begin();
     for (; q != _stoch_children.end(); ++q) {
-	llik += (*q)->logDensity(chain) * (*q)->freqWeight();
+	llik += (*q)->logDensity(chain);
     }
   
     if(jags_isnan(llik)) {

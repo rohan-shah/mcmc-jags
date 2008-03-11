@@ -46,7 +46,7 @@ void DevianceNode::deterministicSample(unsigned int chain)
   for (vector<StochasticNode const*>::const_iterator p = _parameters.begin();
        p != _parameters.end(); ++p)
     {
-       deviance -= (*p)->logDensity(chain) * (*p)->freqWeight();
+       deviance -= (*p)->logDensity(chain);
     }
   deviance *= 2;
   setValue(&deviance, 1, chain);

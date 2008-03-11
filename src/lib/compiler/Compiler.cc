@@ -680,17 +680,16 @@ Node * Compiler::allocateStochastic(ParseTree const *stoch_relation)
     ParseTree *var = stoch_relation->parameters()[0];
     string const &name = var->name();
     map<string,SArray>::const_iterator q = _data_table.find(name);
-    if (q != _data_table.end() && lBound == 0 && uBound == 0) {
-	/* FIXME: Currently restricted to unbounded nodes */
-	SArray const &data = q->second;
-	//double const *data_value = data.value();
-	vector<double> const &data_value = data.value();
+    if (q != _data_table.end()) {
+	vector<double> const &data_value = q->second.value();
+        Range const &data_range = q->second.range();
+
 	Range target_range = VariableSubsetRange(var);
 	bool isdata = true;
 	SArray this_data(target_range.dim(true));
 	unsigned int i = 0;
 	for (RangeIterator p(target_range); !p.atEnd(); p.nextLeft()) {
-	    unsigned int j = data.range().leftOffset(p);
+	    unsigned int j = data_range.leftOffset(p);
 	    if (data_value[j] == JAGS_NA) {
 		isdata = false;
 		break;
@@ -701,15 +700,23 @@ Node * Compiler::allocateStochastic(ParseTree const *stoch_relation)
 	}
 
 	if (isdata) {
-	    snode =  _stochasticfactory.getStochasticNode(dist, parameters,
-							  this_data,
-							  _model.graph());
+	    snode = new StochasticNode(dist, parameters, lBound, uBound);
+	    if (this_data.dim(true) != drop(snode->dim())) {
+		string msg = "Dimension mismatch between node and data:\n";
+		msg.append("Expected ");
+		msg.append(print(Range(snode->dim())));
+		msg.append(" got ");
+		msg.append(print(Range(this_data.dim(true))));
+		throw NodeError(snode, msg);
+	    }
+	    snode->setObserved(this_data.value());
 	}
     }
  
     if (snode == 0) {
 	snode =  new StochasticNode(dist, parameters, lBound, uBound);
     }
+
     _model.graph().add(snode);
     return snode;
 }

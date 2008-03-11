@@ -70,7 +70,7 @@ StochasticNode::StochasticNode(Distribution const *dist,
 			       Node const *lower, Node const *upper)
     : Node(mkDim(dist, parameters), mkParents(parameters, lower, upper)), 
       _dist(dist), _parameters(nchain()), _dims(mkParameterDims(parameters)),
-      _lower(lower), _upper(upper), _fweight(1)
+      _lower(lower), _upper(upper)
 {
  
     if (parameters.size() != _dist->npar()) {
@@ -194,19 +194,6 @@ vector<vector<unsigned int> > const &StochasticNode::parameterDims() const
 bool StochasticNode::checkParentValues(unsigned int chain) const
 {
     return _dist->checkParameterValue(_parameters[chain], _dims);
-}
-
-unsigned int StochasticNode::freqWeight() const
-{
-    return _fweight;
-}
-
-void StochasticNode::replicate()
-{
-   if (!this->isObserved())
-       throw logic_error("Attempt to replicate unobserved stochastic node");
-
-   _fweight++;
 }
 
 bool StochasticNode::isLinear(GraphMarks const &linear_marks, bool fixed) const

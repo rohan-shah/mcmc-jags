@@ -84,14 +84,6 @@ public:
      * @param niter number of future iterations to reserve. 
      */
     virtual void reserve(unsigned int niter) = 0;
-    /**
-     * Returns the frequency weight of the monitored node. Only 
-     * observed stochastic nodes may have frequency weights greater than
-     * 1.
-     *
-     * @see Node#freqWeight
-     */
-     unsigned int freqWeight() const;
      /**
       * Dumps the monitored values to an SArray. 
       *

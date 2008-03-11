@@ -44,7 +44,6 @@ class StochasticNode : public Node {
     std::vector<std::vector<unsigned int> > const &_dims;
     Node const *_lower;
     Node const *_upper;
-    unsigned int _fweight;
 public:
     /**
      * Constructs a new StochasticNode given a distribution, a vector
@@ -139,16 +138,6 @@ public:
      * not considered to be a random variable.
      */
     bool isRandomVariable() const;
-    /**
-     * An observed stochastic node may represent more than one observation.
-     * The frequency weight records the number of observations represented
-     * by a node. Newly allocated stochastic nodes have a freqWeight of 1.
-     */
-    unsigned int freqWeight() const;
-    /**
-     * Increments the frequency weight of a stochastic node by 1.
-     */
-    void replicate();
     /**
      * Stochastic nodes are never linear functions of their
      * parameters. This function always returns false.

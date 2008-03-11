@@ -168,9 +168,8 @@ void ConjugateNormal::update(ConjugateSampler *sampler, unsigned int chain,
 	for (unsigned int i = 0; i < nchildren; ++i) {
 	    double Y = *stoch_children[i]->value(chain);
 	    double tau = *stoch_children[i]->parents()[1]->value(chain);
-	    unsigned int Nrep = stoch_children[i]->freqWeight();
-	    A += (Y - xold) * tau * Nrep;
-	    B += tau * Nrep;
+	    A += (Y - xold) * tau;
+	    B += tau;
 	}
 
     }
@@ -195,15 +194,14 @@ void ConjugateNormal::update(ConjugateSampler *sampler, unsigned int chain,
 	    double const *tau = child->parents()[1]->value(chain);
 	    double const *alpha = child->parents()[0]->value(chain);
 	    unsigned int nrow = child->length();
-	    unsigned int Nrep = child->freqWeight();
 
 	    for (unsigned int k = 0; k < nrow; ++k) {
 		double tau_beta_k = 0;
 		for (unsigned int k2 = 0; k2 < nrow; ++k2) {
 		    tau_beta_k += tau[k * nrow + k2] * bp[k2];
 		}
-		A += (Y[k] - alpha[k]) * tau_beta_k * Nrep;
-		B += bp[k] * tau_beta_k * Nrep;
+		A += (Y[k] - alpha[k]) * tau_beta_k;
+		B += bp[k] * tau_beta_k;
 	    }
 	    
 	    bp += nrow;

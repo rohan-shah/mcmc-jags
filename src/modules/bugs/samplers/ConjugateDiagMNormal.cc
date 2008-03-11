@@ -275,11 +275,10 @@ void ConjugateDiagMNormal::update(ConjugateSampler *sampler, unsigned int chain,
 	double const *mu = snode->parents()[0]->value(chain);
 	double const *tau = snode->parents()[1]->value(chain);
 	int nrow_child = snode->length();
-	unsigned int Nrep = snode->freqWeight();
 	
 	if (nrow_child == 1) {
 	    
-	    double alpha = Nrep * tau[0];
+	    double alpha = tau[0];
 	    F77_DSYR("L", &nrow, &alpha, beta_j, &i1, A, &nrow);
 	    alpha *= (Y[0] - mu[0]);
 	    F77_DAXPY(&nrow, &alpha, beta_j, &i1, b, &i1);
@@ -287,7 +286,7 @@ void ConjugateDiagMNormal::update(ConjugateSampler *sampler, unsigned int chain,
 	}
 	else {
 	    
-	    double alpha = Nrep;
+	    double alpha = 1;
 	    
 	    F77_DSYMM("R", "L", &nrow, &nrow_child, &alpha, tau,
 		      &nrow_child, beta_j, &nrow, &zero, C, &nrow);

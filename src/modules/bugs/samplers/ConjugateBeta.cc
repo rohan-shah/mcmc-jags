@@ -156,9 +156,8 @@ ConjugateBeta::update(ConjugateSampler *sampler, unsigned int chain,
 	    default:
 		throw logic_error("Invalid distribution in Conjugate Beta sampler");
 	    }
-	    unsigned int Nrep = stoch_children[i]->freqWeight();
-	    a += y * Nrep;
-	    b += (n - y) * Nrep;
+	    a += y;
+	    b += (n - y);
 	}
     }
 
