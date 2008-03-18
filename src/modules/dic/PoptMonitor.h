@@ -11,15 +11,17 @@ class RNG;
 
 namespace dic {
 
-    class PDMonitor : public Monitor {
+    class PoptMonitor : public Monitor {
+	StochasticNode const *_snode;
 	StochasticNode _repnode;
 	const std::vector<RNG *> _rngs;
 	unsigned int _nrep;
 	std::vector<double> _values; // sampled values
+	double _weights;
     public:
-	PDMonitor(StochasticNode const *snode,
-		  unsigned int start,  unsigned int thin, 
-		  std::vector<RNG *> const &rngs, unsigned int nrep); 
+	PoptMonitor(StochasticNode const *snode,
+		    unsigned int start,  unsigned int thin, 
+		    std::vector<RNG *> const &rngs, unsigned int nrep); 
 	unsigned int nchain() const;
 	std::vector<unsigned int> dim() const;
 	std::vector<double> const &value(unsigned int chain) const;
