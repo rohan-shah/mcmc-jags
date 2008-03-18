@@ -2,6 +2,7 @@
 
 #include "DevianceMonitorFactory.h"
 #include "PDMonitorFactory.h"
+#include "PoptMonitorFactory.h"
 
 using std::vector;
 
@@ -17,6 +18,7 @@ DICModule::DICModule() {
 
     insert(new DevianceMonitorFactory);
     insert(new PDMonitorFactory);
+    insert(new PoptMonitorFactory);
 }
 
 DICModule::~DICModule() {
