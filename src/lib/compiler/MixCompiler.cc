@@ -323,6 +323,124 @@ getMixtureNode1(NodeArray *array, vector<SSI> const &limits, Compiler *compiler)
 						     compiler_graph);
 }
 
+/* Add stochastic parents of given node to the set */
+static bool classifyParents(Node const *node, 
+			    set<StochasticNode const*> &sparents,
+			    set<Node const*> &dparents)
+{
+    vector<Node const*> const &par = node->parents();
+    for (unsigned int i = 0; i < par.size(); ++i) {
+	StochasticNode const *snode = asStochastic(par[i]);
+	if (snode && snode->isRandomVariable()) {
+	    sparents.insert(snode);
+	}
+	else {
+	    dparents.insert(par[i]);
+	    classifyParents(par[i], sparents, dparents);
+	}
+    }
+}
+
+static void sortNodes(set<Node const*> &nodeset, vector<Node const*> &nodevec)
+{
+    while(!nodeset.empty()) {
+	set<Node const*>::iterator p = nodeset.begin();
+	while(p != nodeset.end()) {
+	    Node const *node = *p;
+	    vector<Node const*> const &parents = node->parents();
+	    unsigned int i = 0;
+	    for ( ; i < parents.size(); ++i) {
+		if (nodeset.count(parents[i]))
+		    break;
+	    }
+	    ++p;
+	    if (i == parents.size()) {
+		//Node has no parents in the set
+		nodevec.push_back(node);
+		nodeset.erase(node);
+	    }
+	}
+    }
+}
+
+static void cloneNodes(set<Node const*> &nodeset, vector<Node*> &newnodes)
+{
+    vector<Node const*> nodevec;
+    sortNodes(nodeset, nodevec);
+
+    map<Node const*, Node const*> remap;
+    
+    for (unsigned int i = 0; i < nodevec.size(); ++i) {
+	vector<Node const *> args = nodevec[i]->parents();
+	for (unsigned int j = 0; j < args.size(); ++j) {
+	    map<Node const*, Node const*>::const_iterator p =
+		remap.find(args[j]);
+	    if (p != remap.end()) 
+		args[j] = p->second;
+	}
+	Node *newnode = nodevec[i]->clone(args);
+	newnodes.push_back(newnode);
+	remap[nodevec[i]] = newnode;
+    }
+}
+
+static Node* 
+getMixtureNode3(NodeArray *array, vector<SSI> const &limits, Compiler *compiler)
+/* Try to simplify the mixture node by enumerating all possible values
+   that the indices can take. This can only be done under certain
+   conditions. */
+{
+    unsigned int ndim = limits.size();
+
+    vector<Node const*> indices;
+    set<StochasticNode const *> sparents;
+    set<Node const *> dparents;
+
+    unsigned int nvi = 0;
+    for (unsigned int i = 0; i < ndim; ++i) {
+	if (limits[i].node) {
+	    indices.push_back(limits[i].node);
+	    classifyParents(limits[i].node, sparents, dparents);
+	    ++nvi;
+	}
+    }
+
+    for (set<StochasticNode const*>::const_iterator p = sparents.begin();
+	 p != sparents.end(); ++p)
+    {
+	if ((*p)->length() != 1 || !(*p)->isDiscreteValued() ||
+	    !isSupportFixed(*p))
+	{
+	    return 0;
+	}
+    }
+
+    unsigned int nparents = sparents.size();  
+    vector<StochasticNode const *> stoch_parents(nparents);
+    copy(sparents.begin(), sparents.end(), stoch_parents.begin());
+    
+
+    vector<int> lower(nparents), upper(nparents);
+    for (unsigned int i = 0; i < nparents; ++i) {
+	StochasticNode const *snode = stoch_parents[i];
+	
+	// Get lower and upper limits of support
+	double l = JAGS_NEGINF, u = JAGS_POSINF;
+	support(&l, &u, 1U, snode, 0);
+	if (!jags_finite(l) || !jags_finite(u)) {
+	    return 0; //Unbounded parent => serious trouble
+	}
+	if (l < -INT_MAX || u > INT_MAX) {
+	    return 0; //Can't cast to int
+	}
+	lower[i] = static_cast<int>(l);
+	upper[i] = static_cast<int>(u);
+    }
+
+    
+    return 0; //FIXME
+}
+
 static Node * 
 getMixtureNode2(NodeArray *array, vector<SSI> const &limits, Compiler *compiler)
 {
