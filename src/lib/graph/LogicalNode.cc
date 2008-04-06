@@ -188,3 +188,8 @@ bool LogicalNode::checkParentValues(unsigned int chain) const
 {
     return _func->checkParameterValue(_parameters[chain], _lengths, _dims);
 }
+
+Node *LogicalNode::clone(vector<Node const*> const &parents) const
+{
+    return new LogicalNode(_func, parents);
+}

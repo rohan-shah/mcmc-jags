@@ -58,6 +58,8 @@ public:
      * always returns true.
      */
     bool isScale(GraphMarks const &scale_marks, bool fixed) const;
+    Node *clone(std::vector<Node const *> const &parents) const;
+
 };
 
 #endif /* CONSTANT_NODE_H_ */

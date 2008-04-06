@@ -252,6 +252,14 @@ public:
      */
     virtual bool 
 	isScale(GraphMarks const &scale_marks, bool fixed) const = 0;
+    /**
+     * Creates a copy of the node. The clone will have the same class
+     * as the original. Supplying the parents of this node as the
+     * argument creates an identical copy.
+     *
+     * @param parents Parents of the cloned node. 
+     */
+    virtual Node * clone(std::vector<Node const *> const &parents) const = 0;
 };
 
 /**

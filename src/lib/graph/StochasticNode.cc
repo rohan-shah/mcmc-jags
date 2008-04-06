@@ -293,3 +293,23 @@ string StochasticNode::deparse(vector<string> const &parnames) const
 
     return name;
 }
+
+Node * StochasticNode::clone(vector<Node const *> const &parents) const
+{
+    vector<Node const *> param(parents);
+
+    //Peel off upper and lower bounds
+    Node const *upper = 0;
+    if (_upper) {
+	upper = param.back();
+	param.pop_back();
+    }
+    Node const *lower = 0;
+    if (_lower) {
+	lower = param.back();
+	param.pop_back();
+    }
+    
+    return new StochasticNode(_dist, param, lower, upper);
+
+}

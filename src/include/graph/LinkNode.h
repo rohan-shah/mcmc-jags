@@ -41,6 +41,7 @@ public:
      */
     bool isScale(GraphMarks const &scale_marks, bool fixed) const;
     std::string deparse(std::vector<std::string> const &) const;
+    Node *clone(std::vector<Node const *> const &parents) const;
 };
 
 #endif /* LINK_NODE_H_ */

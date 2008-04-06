@@ -71,3 +71,12 @@ string DevianceNode::deparse(vector<string> const &parents) const
 {
     return "deviance";
 }
+
+Node *DevianceNode::clone(vector<Node const *> const &parents) const
+{
+    set<StochasticNode const *> params;
+    for (unsigned int i = 0; i < _parameters.size(); ++i) {
+	params.insert(asStochastic(parents[i]));
+    }
+    return new DevianceNode(params);
+}

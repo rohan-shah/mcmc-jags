@@ -149,6 +149,7 @@ public:
      */
     bool isScale(GraphMarks const &scale_marks, bool fixed) const;
     std::string deparse(std::vector<std::string> const &parameters) const;
+    Node * clone(std::vector<Node const *> const &parents) const;
 };
 
 /**

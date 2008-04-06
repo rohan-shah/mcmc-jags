@@ -65,3 +65,12 @@ bool ConstantNode::isRandomVariable() const
     return true;
 }
 
+Node *ConstantNode::clone(vector<Node const *> const &parents) const
+{
+    vector<double> value(this->length());
+    for (unsigned int i = 0; i < this->length(); ++i) {
+	value[i] = this->value(0)[i];
+    }
+    return new ConstantNode(this->dim(), value, this->nchain());
+}
+

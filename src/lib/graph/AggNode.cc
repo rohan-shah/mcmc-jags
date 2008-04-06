@@ -1,3 +1,4 @@
+
 #include <config.h>
 #include <graph/AggNode.h>
 #include <graph/GraphMarks.h>
@@ -15,7 +16,8 @@ using std::string;
 AggNode::AggNode(vector<unsigned int> const &dim, 
 		 vector<Node const *> const &parents,
                  vector<unsigned int> const &offsets)
-    : DeterministicNode(dim, parents), _parent_values(_length * _nchain)
+    : DeterministicNode(dim, parents), _offsets(offsets),
+      _parent_values(_length * _nchain)
 {
   /* Check argument lengths */
   if (_length != parents.size() || _length != offsets.size()) {
@@ -124,3 +126,9 @@ string AggNode::deparse(vector<string> const &parents) const
     return string("aggregate(") + parents.front() + "..." + 
 	parents.back() + ")";
 }
+
+Node *AggNode::clone(vector<Node const *> const &parents) const
+{
+    return new AggNode(this->dim(), parents, _offsets);
+}
+

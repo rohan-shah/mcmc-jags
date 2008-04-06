@@ -12,7 +12,7 @@
  *
  */
 class AggNode : public DeterministicNode {
-    //std::vector<unsigned int> _offsets;
+    std::vector<unsigned int> _offsets;
     std::vector<double const *>  _parent_values;
     /* Forbid copying */
     AggNode(AggNode const &orig);
@@ -69,6 +69,7 @@ public:
      * An aggregate node is named after its first and last parents
      */
     std::string deparse(std::vector<std::string> const &parents) const;
+    Node *clone(std::vector<Node const *> const &parents) const;
 };
 
 

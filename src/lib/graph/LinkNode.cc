@@ -64,3 +64,7 @@ InverseLinkFunc const * LinkNode::link() const
     return _func;
 }
    
+Node *LinkNode::clone(vector<Node const *> const &parents) const
+{
+    return new LinkNode(_func, parents);
+}

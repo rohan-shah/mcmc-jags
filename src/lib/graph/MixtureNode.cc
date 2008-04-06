@@ -228,3 +228,23 @@ bool MixtureNode::checkParentValues(unsigned int chain) const
 {
     return true;
 }
+
+Node *MixtureNode::clone(vector<Node const *> const &parents) const
+{
+    vector<Node const *> index(_Nindex);
+    vector<Node const *>::const_iterator p = parents.begin();
+    for (unsigned int i = 0; i < _Nindex; ++i) {
+	index[i] = *p;
+	++p;
+    }
+    
+    map<vector<int>, Node const *> mixmap;
+    map<vector<int>, Node const *>::const_iterator q = _map.begin();
+    while (p != parents.end() && q != _map.end()) {
+	mixmap[q->first] = *p;
+	++q;
+	++p;
+    }
+    
+    return new MixtureNode(index, mixmap);
+}
