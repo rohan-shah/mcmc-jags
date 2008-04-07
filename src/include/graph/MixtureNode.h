@@ -6,6 +6,13 @@
 #include <vector>
 
 /**
+ * A MixMap is an STL map object.  The key represents an integer-valued
+ * index, and the value is the corresponding Node from which a
+ * MixtureNode will copy its values when its indices take that value.
+ */
+typedef std::map<std::vector<int> , Node const *>  MixMap;
+
+/**
  * @short Node for mixture models.
  *
  * A mixture node copies its value from one of several parents, based
@@ -21,7 +28,7 @@
  * x[1], ... x[M].
  */
 class MixtureNode : public DeterministicNode {
-    std::map<std::vector<int>, Node const *> _map;
+    MixMap _map;
     unsigned int _Nindex;
 public:
     /**

@@ -39,7 +39,8 @@ class Compiler {
   Graph _index_graph;
   ConstantFactory _constantfactory;
   LogicalFactory _logicalfactory;
-  MixtureFactory _mixfactory;
+  MixtureFactory _mixfactory1;
+  MixtureFactory _mixfactory2;
   std::map<std::string, std::vector<std::vector<int> > > _node_array_ranges;
 
   Node *getArraySubset(ParseTree const *t);
@@ -111,7 +112,8 @@ public:
    * @see Module
    */
   static DistTab &distTab();
-  MixtureFactory &mixtureFactory();
+  MixtureFactory &mixtureFactory1();
+  MixtureFactory &mixtureFactory2();
 };
 
 

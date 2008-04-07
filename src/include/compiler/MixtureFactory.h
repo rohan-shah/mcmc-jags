@@ -3,55 +3,29 @@
 
 #include <graph/Graph.h>
 #include <graph/Node.h>
+#include <graph/MixtureNode.h>
 
 #include <vector>
 #include <map>
 #include <cfloat>
 
 class NodeArray;
-class MixtureNode;
 
 /**
- * A MixMap is an STL map object.  The key represents an integer-valued
- * index, and the value is the corresponding Node from which a
- * MixtureNode will copy its values when its indices take that value.
+ * A "mixture pair" uniquely indexes a mixture node. The first element
+ * is a vector of (discrete-valued) index nodes. The second element is
+ * a vector of parent nodes from which the mixture node copies its
+ * value.
  *
- * @see Mix
- */
-typedef std::map<std::vector<int> , Node const *>  MixMap;
-
-/**
- * A MixPair contains the information required to uniquely identify a
- * MixtureNode. The first element of the pair is a vector of Nodes
- * (which should be discrete-valued) representing the indices of the
- * MixtureNode. The second element is a MixMap which defines how each
- * possible value of the indices is mapped onto a parent Node.
+ * It is implicit in the mixture pair definition that the index nodes
+ * take a range of possible values. If these values are calculated and
+ * sorted, then ther there is a one-to-one correspondence between the
+ * sorted index values and the vector of parent nodes.
  *
- * @see compMixPair ltmixpair
+ * The reason this vector of possible index values is not used is
+ * because it is not necessary to uniquely define a mixture node.
  */
-typedef std::pair<std::vector <Node const*>, MixMap> MixPair;
-
-/**
- * Comparison function for MixPair objects which is used to give them
- * a unique (but arbitrary) ordering. The compMixPair function returns
- * true if the first argument comes before the second in the ordering.
- *
- * @see ltmixpair
- */
-bool compMixPair(MixPair const &, MixPair const &);
-
-/**
- * @short STL function object for the map class using MixPair as a key
- *
- * @see MixtureFac
- */
-struct ltmixpair
-{
-    bool operator()(MixPair const &arg1, MixPair const &arg2) const
-    {
-	return compMixPair(arg1, arg2);
-    }
-};
+typedef std::pair<std::vector<Node const*>, std::vector<Node const*> > MixPair;
 
 /**
  * @short Factory for MixtureNode objects
@@ -62,7 +36,7 @@ struct ltmixpair
  */
 class MixtureFactory  
 { 
-  std::map<MixPair, MixtureNode*, ltmixpair> _mixmap;
+  std::map<MixPair, MixtureNode*> _mix_node_map;
 public:
   /**
    * Get a mixture node.  The results are cached, so if a request is

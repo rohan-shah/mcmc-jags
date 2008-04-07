@@ -319,7 +319,7 @@ getMixtureNode1(NodeArray *array, vector<SSI> const &limits, Compiler *compiler)
 	return subset_node0;
     }
 
-    return compiler->mixtureFactory().getMixtureNode(indices, subsets, 
+    return compiler->mixtureFactory1().getMixtureNode(indices, subsets, 
 						     compiler_graph);
 }
 
@@ -328,14 +328,14 @@ static bool classifyParents(Node const *node,
 			    set<StochasticNode const*> &sparents,
 			    set<Node const*> &dparents)
 {
-    vector<Node const*> const &par = node->parents();
-    for (unsigned int i = 0; i < par.size(); ++i) {
-	StochasticNode const *snode = asStochastic(par[i]);
-	if (snode && snode->isRandomVariable()) {
-	    sparents.insert(snode);
-	}
-	else {
-	    dparents.insert(par[i]);
+    StochasticNode const *snode = asStochastic(node);
+    if (snode && snode->isRandomVariable()) {
+	sparents.insert(snode);
+    }
+    else {
+	dparents.insert(node);
+	vector<Node const*> const &par = node->parents();
+	for (unsigned int i = 0; i < par.size(); ++i) {
 	    classifyParents(par[i], sparents, dparents);
 	}
     }
@@ -363,26 +363,24 @@ static void sortNodes(set<Node const*> &nodeset, vector<Node const*> &nodevec)
     }
 }
 
-static void cloneNodes(set<Node const*> &nodeset, vector<Node*> &newnodes)
+static void cloneNodes(vector<Node const*> const &nodes, 
+		       vector<Node*> &newnodes,
+		       map<Node const*, Node const*> &remap)
 {
-    vector<Node const*> nodevec;
-    sortNodes(nodeset, nodevec);
-
-    map<Node const*, Node const*> remap;
-    
-    for (unsigned int i = 0; i < nodevec.size(); ++i) {
-	vector<Node const *> args = nodevec[i]->parents();
+    for (unsigned int i = 0; i < nodes.size(); ++i) {
+	vector<Node const *> args = nodes[i]->parents();
 	for (unsigned int j = 0; j < args.size(); ++j) {
 	    map<Node const*, Node const*>::const_iterator p =
 		remap.find(args[j]);
 	    if (p != remap.end()) 
 		args[j] = p->second;
 	}
-	Node *newnode = nodevec[i]->clone(args);
+	Node *newnode = nodes[i]->clone(args);
 	newnodes.push_back(newnode);
-	remap[nodevec[i]] = newnode;
+	remap[nodes[i]] = newnode;
     }
 }
+
 
 static Node* 
 getMixtureNode3(NodeArray *array, vector<SSI> const &limits, Compiler *compiler)
@@ -437,8 +435,111 @@ getMixtureNode3(NodeArray *array, vector<SSI> const &limits, Compiler *compiler)
 	upper[i] = static_cast<int>(u);
     }
 
+    map<Node const*, Node const*> remap;
+    vector<Node const*> stoch_parents2(stoch_parents.size());
+    copy(stoch_parents.begin(), stoch_parents.end(), stoch_parents2.begin());
+    vector<Node *> rep_stoch_parents;
+    cloneNodes(stoch_parents2, rep_stoch_parents, remap);
     
-    return 0; //FIXME
+    vector<Node const*> dtrm_parents;
+    sortNodes(dparents, dtrm_parents);
+    vector<Node*> rep_dtrm_parents;
+    cloneNodes(dtrm_parents, rep_dtrm_parents, remap);
+
+    vector<Node const*> rep_indices(indices.size());
+    for (unsigned int i = 0; i < indices.size(); ++i) {
+	rep_indices[i] = remap[indices[i]];
+    }
+
+    /* Create a set containing all possible values that the stochastic
+       indices can take */
+
+    set<vector<int> > index_values;
+    vector<int>  this_index(indices.size(),1);
+    Range stoch_node_range(lower, upper);
+
+    for (RangeIterator i(stoch_node_range); !i.atEnd(); i.nextLeft()) {
+
+	for (unsigned int j = 0; j < stoch_parents.size(); ++j) {
+	    double v = i[j];
+	    rep_stoch_parents[j]->setValue(&v, 1, 0);
+	}
+
+	for (unsigned int k = 0; k < dtrm_parents.size(); ++k) {
+	    rep_dtrm_parents[k]->deterministicSample(0);
+	}
+    
+	for (unsigned int l = 0; l < indices.size(); ++l) {
+	    this_index[l] = static_cast<int>(*rep_indices[l]->value(0));
+	}
+    
+	index_values.insert(this_index);
+    }
+    
+    /* We are done with the replicate nodes */
+    rep_indices.clear();
+    while (!rep_dtrm_parents.empty()) {
+	delete rep_dtrm_parents.back();
+	rep_dtrm_parents.pop_back();
+    }
+    while (!rep_stoch_parents.empty()) {
+	delete rep_stoch_parents.back();
+	rep_stoch_parents.pop_back();
+    }
+
+    /* Now set up the possible subsets defined by the stochastic indices */
+
+    vector<int> variable_offset(nvi, 1);
+    vector<int> lower_index(ndim, 1), upper_index(ndim, 1);
+    int k = 0;
+    for (unsigned int j = 0; j < ndim; ++j) {
+	if (limits[j].node != 0) {
+	    variable_offset[k++] = j;
+	}
+	else {
+	    lower_index[j] = limits[j].lower;
+	    upper_index[j] = limits[j].upper;
+	}
+    }
+
+    vector<pair<vector<int>, Range> > ranges;  
+    set<vector<int> >::const_iterator p;
+    for (p = index_values.begin(); p != index_values.end(); ++p) {
+
+	vector<int> const &i = *p;
+	for (unsigned int k = 0; k < nvi; ++k) {
+	    lower_index[variable_offset[k]] = i[k];
+	    upper_index[variable_offset[k]] = i[k];
+	}
+	ranges.push_back(pair<vector<int>, Range>(i, Range(lower_index, upper_index)));
+    }
+
+
+    /* Convert these into subsets */
+    Graph &compiler_graph = compiler->model().graph();
+    
+    //Look out for trivial mixture nodes in which all subsets are the same.
+    bool trivial = true;
+    Node *subset_node0 = array->getSubset(ranges[0].second, compiler_graph);
+
+    map<vector<int>, Node const *> subsets;  
+    for (unsigned int i = 0; i < ranges.size(); ++i) {
+	Node *subset_node = array->getSubset(ranges[i].second, compiler_graph);
+	if (!subset_node)
+	    return 0;
+	subsets[ranges[i].first] = subset_node;
+	if (subset_node != subset_node0)
+	    trivial = false;
+    }
+
+    if (trivial) {
+	// Nothing to do here! All subset nodes are the same, so we
+	// just return the subset node.
+	return subset_node0;
+    }
+
+    return compiler->mixtureFactory1().getMixtureNode(indices, subsets, 
+						     compiler_graph);
 }
 
 static Node * 
@@ -464,7 +565,7 @@ getMixtureNode2(NodeArray *array, vector<SSI> const &limits, Compiler *compiler)
 	}
     }
 
-    return compiler->mixtureFactory().getMixtureNode(indices, subsets, cgraph);
+    return compiler->mixtureFactory2().getMixtureNode(indices, subsets, cgraph);
 }
 
 Node * getMixtureNode(ParseTree const * var, Compiler *compiler)
@@ -558,7 +659,10 @@ Node * getMixtureNode(ParseTree const * var, Compiler *compiler)
     throw logic_error("Trivial mixture node");
   }
 
-  Node *mnode = getMixtureNode1(array, limits, compiler);
+  //return getMixtureNode2(array, limits, compiler);
+
+  //Node *mnode = getMixtureNode1(array, limits, compiler);
+  Node *mnode = getMixtureNode3(array, limits, compiler);
   if (mnode)
     return mnode;
   else

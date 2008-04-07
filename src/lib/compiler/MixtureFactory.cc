@@ -5,67 +5,42 @@
 #include <model/NodeArray.h>
 
 #include <utility>
+#include <stdexcept>
 
 using std::vector;
 using std::map;
+using std::logic_error;
 
-bool compMixPair(MixPair const &arg1, MixPair const &arg2)
+MixtureNode * 
+MixtureFactory::getMixtureNode(vector<Node const *> const &index_nodes,
+			       MixMap const &mixmap, Graph &graph)
 {
-    //First compare indices
-    vector<Node const *> const &index1 = arg1.first;
-    vector<Node const *> const &index2 = arg2.first;
-    if (lt(index1, index2)) {
-	return true;
-    }
-    else if (lt(index2, index1)) {
-	return false;
+    /* 
+       Separate the index values from the parameters. Only the latter
+       are used to index the mixture nodes
+    */
+    vector<Node const *> parameters;
+    vector<vector<int> > index_values;
+    for (map<vector<int>, Node const *>::const_iterator p = mixmap.begin();
+         p != mixmap.end(); ++p)
+    {
+        index_values.push_back(p->first);
+        parameters.push_back(p->second);
     }
 
-    //Same indices. Now compare mixmaps 
-    MixMap const &mixmap1 = arg1.second;
-    MixMap const &mixmap2 = arg2.second;
-    if (mixmap1.size() < mixmap2.size()) {
-	return true;
-    }
-    else if (mixmap1.size() > mixmap2.size()) {
-	return false;
-    }
-    else {
-	MixMap::const_iterator p1 = mixmap1.begin();
-	MixMap::const_iterator p2 = mixmap2.begin();
-	for (unsigned int i = 0; i < mixmap1.size(); ++i) {
-	    if (p1->first < p2->first) {
-		return true;
-	    }
-	    else if (p2->first < p1->first) {
-		return false;
-	    }
-	    else if (lt(p1->second, p2->second)) {
-		return true;
-	    }
-	    else if (lt(p2->second, p1->second)) {
-		return false;
-	    }
-	    ++p1;
-	    ++p2;
-	}
-	return false; //equal
-    }
-}
+    MixPair mpair(index_nodes, parameters);
+    map<MixPair, MixtureNode*>::const_iterator p = _mix_node_map.find(mpair);
 
-MixtureNode * MixtureFactory::getMixtureNode(vector<Node const *> const &index,
-					     MixMap const &mixmap, Graph &graph)
-{
-    MixPair mpair(index, mixmap);
-    map<MixPair, MixtureNode*, ltmixpair>::const_iterator p = 
-	_mixmap.find(mpair);
-
-    if (p != _mixmap.end()) {
+    if (p != _mix_node_map.end()) {
 	return p->second;
     }
     else {
-	MixtureNode *mix = new MixtureNode(index, mixmap);
-	_mixmap[mpair] = mix;
+        if (parameters.size() != index_values.size()) {
+            throw logic_error("Length mismatch in MixtureFactory::getMixtureNode");
+        }
+	
+	MixtureNode *mix = new MixtureNode(index_nodes, mixmap);
+	_mix_node_map[mpair] = mix;
 	graph.add(mix);
 	return mix;
     }

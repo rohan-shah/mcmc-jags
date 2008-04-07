@@ -1083,9 +1083,14 @@ FuncTab &Compiler::funcTab()
     return _functab;
 }
 
-MixtureFactory& Compiler::mixtureFactory()
+MixtureFactory& Compiler::mixtureFactory1()
 {
-   return _mixfactory;
+   return _mixfactory1;
+}
+
+MixtureFactory& Compiler::mixtureFactory2()
+{
+   return _mixfactory2;
 }
 
 BUGSModel &Compiler::model() const
