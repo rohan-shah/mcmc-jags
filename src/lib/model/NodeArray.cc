@@ -113,6 +113,12 @@ Node *NodeArray::find(Range const &target_range) const
 
 Node *NodeArray::getSubset(Range const &target_range, Graph &graph)
 {
+  //Check validity of target range
+    if (!_range.contains(target_range)) {
+	throw runtime_error(string("Cannot get subset ") + name() + 
+			    print(target_range) + ". Range out of bounds");
+    }
+    
   /* If range corresponds to a set node, then return this */
   Node *node = find(target_range);
   if (node)
@@ -125,6 +131,7 @@ Node *NodeArray::getSubset(Range const &target_range, Graph &graph)
   }
 
   /* Otherwise create an aggregate node */
+
   vector<Node const *> nodes;
   vector<unsigned int> offsets;
   for (RangeIterator i(target_range); !i.atEnd(); i.nextLeft()) {
