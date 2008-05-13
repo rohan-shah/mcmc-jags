@@ -1,5 +1,9 @@
 #include "KL.h"
 
-KL::~KL()
-{}
+namespace dic {
+
+    KL::~KL()
+    {}
+
+}
 
