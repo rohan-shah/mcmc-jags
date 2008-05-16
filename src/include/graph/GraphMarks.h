@@ -22,6 +22,7 @@ enum LogicalMark {MARK_NULL=0, MARK_TRUE=1, MARK_FALSE=2};
  */
 class GraphMarks {
     Graph const &_graph;
+    int _default_mark;
     std::map<Node const*,int> _marks;
 public:
     /**

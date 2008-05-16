@@ -133,9 +133,11 @@ void Model::initialize(bool datagen)
 
     if (!_graph.isClosed())
 	throw runtime_error("Graph not closed");
+    /* Redundant
     if (_graph.hasCycle()) 
 	throw runtime_error("Directed cycle in graph");
-    
+    */
+
     //Get nodes in forward-sampling order
     vector<Node*> sorted_nodes;
     _graph.getSortedNodes(sorted_nodes);

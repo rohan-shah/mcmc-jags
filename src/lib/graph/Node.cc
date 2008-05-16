@@ -14,6 +14,45 @@ using std::logic_error;
 using std::copy;
 using std::find;
 
+static vector<Node const*> &marked_nodes()
+{
+    // Vector of nodes marked for deletion
+
+    static vector<Node const*> _marked_nodes;
+    return _marked_nodes;
+}
+
+/*
+void Node::checkForDeletion() const
+{
+    
+    //Check to see if node can be delete (reference count of zero and
+    //no children). If so, add it to the list of nodes marked for deletion.
+    
+    if (_ref == 0 && _children()->empty()) {
+	marked_nodes().push_back(node);
+    }
+}
+*/
+
+void Node::sweep() {
+
+    //Memory management for nodes
+
+    while (!marked_nodes().empty()) {
+
+	//When nodes are deleted, they may push other nodes onto the 
+	//marked list. So we copy it to a new vector.
+
+	vector<Node const*> delete_list = marked_nodes();
+	marked_nodes().clear();
+	
+	for (unsigned int i = 0; i < delete_list.size(); ++i) {
+	    delete delete_list[i];
+	}
+    }
+}
+
 Node::Node(vector<unsigned int> const &dim, unsigned int nchain)
     : _parents(0), _children(0), _ref(0), _isobserved(false),
       _isdiscrete(false), _dim(getUnique(dim)), _length(product(dim)), 
@@ -35,79 +74,73 @@ Node::Node(vector<unsigned int> const &dim, unsigned int nchain)
 
 Node::Node(vector<unsigned int> const &dim, 
 	   vector<Node const *> const &parents)
-  : _parents(parents), _children(0), _ref(0),  _isobserved(false), 
-    _isdiscrete(false), _dim(getUnique(dim)), _length(product(dim)),
-     _nchain(countChains(parents)), _data(0)
+    : _parents(parents), _children(0), _ref(0),  _isobserved(false), 
+      _isdiscrete(false), _dim(getUnique(dim)), _length(product(dim)),
+      _nchain(countChains(parents)), _data(0)
 {
-  if (nchain() == 0) {
-    throw logic_error("chain number mismatch in Node constructor");
-  }
-
-  for (unsigned int i = 0; i < parents.size(); ++i) {
-    if (parents[i] == this) {
-      throw NodeError(this, "Node cannot be its own parent");
+    if (nchain() == 0) {
+	throw logic_error("chain number mismatch in Node constructor");
     }
-  }
-  
-  for (unsigned int i = 0; i < parents.size(); ++i) {
-    parents[i]->_children->insert(this);
-  }
 
-  unsigned int N = _length * _nchain;
-  _data = new double[N];
-  for (unsigned int i = 0; i < N; ++i) {
-      _data[i] = JAGS_NA;
-  }
+    for (unsigned int i = 0; i < parents.size(); ++i) {
+	if (parents[i] == this) {
+	    throw NodeError(this, "Node cannot be its own parent");
+	}
+    }
   
-  _children = new set<Node*>;
+    for (unsigned int i = 0; i < parents.size(); ++i) {
+	parents[i]->_children->insert(this);
+    }
+
+    unsigned int N = _length * _nchain;
+    _data = new double[N];
+    for (unsigned int i = 0; i < N; ++i) {
+	_data[i] = JAGS_NA;
+    }
+  
+    _children = new set<Node*>;
 }
 
 Node::~Node()
 {
     delete [] _data;
+    delete _children;
 
     for (unsigned int i = 0; i < _parents.size(); ++i) {
 	_parents[i]->_children->erase(this);
-    }
-    for (set<Node*>::iterator p = _children->begin(); p != _children->end(); 
-	 p++)
-	{
-	    vector<Node const *> &P = (*p)->_parents;
-	    vector<Node const *>::iterator cp;
-	    while ( (cp = find(P.begin(), P.end(), this)) != P.end()) {
-		P.erase(cp);
+
+	if (_parents[i]->_ref == 0 && _parents[i]->_children->empty()) {
+	    //marked_nodes().push_back(parents[i]);
 	}
     }
-
-    delete _children;
 }
 
 void Node::ref()
 {
-  _ref++;
+    _ref++;
 }
 
 void Node::unref()
 {
-  _ref--;
-  if (_ref == 0) {
-    delete this;
-  }
+    _ref--;
+    if (_ref == 0 && _children->empty()) {
+	marked_nodes().push_back(this);
+    }
 }
 
 unsigned int Node::refCount() const
 {
-  return _ref;
+    return _ref;
 }
 
 vector <Node const *> const &Node::parents() const
 {
-  return _parents;
+    return _parents;
 }
 
 set<Node*> const *Node::children() 
 {
-  return _children;
+    return _children;
 }
 
 static bool isInitialized(Node const *node, unsigned int n)
@@ -231,12 +264,6 @@ void Node::setValue(double const *value, unsigned int length, unsigned int chain
       throw NodeError(this, "Invalid chain in Node::setValue");
 
    copy(value, value + _length, _data + chain * _length);
-/*
-   double *v = _data + length * chain;
-   for (unsigned int i = 0; i < length; ++i) {
-      v[i] = value[i];
-   }
-*/
 }
 
 bool Node::isDiscreteValued() const
@@ -251,7 +278,7 @@ void Node::setDiscreteValued()
 
 double const *Node::value(unsigned int chain) const
 {
-   return _data + chain * _length;
+    return _data + chain * _length;
 }
 
 vector<unsigned int> const &Node::dim() const
@@ -263,5 +290,3 @@ unsigned int Node::length() const
 {
     return _length;
 }
-
-

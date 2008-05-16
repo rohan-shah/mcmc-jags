@@ -13,12 +13,8 @@ using std::set;
 using std::logic_error;
 
 GraphMarks::GraphMarks(Graph const &graph)
-    : _graph(graph)
+    : _graph(graph), _default_mark(0)
 {
-    set<Node*> const &nodes = graph.nodes();
-    for (set<Node*>::const_iterator i = nodes.begin(); i != nodes.end(); ++i) {
-	_marks[*i] = 0;
-    }
 }
 
 GraphMarks::~GraphMarks()
@@ -31,37 +27,37 @@ Graph const &GraphMarks::graph() const
 
 void GraphMarks::mark(Node const *node, int m)
 {
-    map<Node const*, int>::iterator i = _marks.find(node);
-    if (i == _marks.end()) {
+    if (!_graph.contains(node)) {
 	throw logic_error("Attempt to set mark of node not in graph");
     }
-    else {
-	i->second = m;
-    }
+    _marks[node] = m;
 }
 
 int GraphMarks::mark(Node const *node) const
 {
+    if (!_graph.contains(node)) {
+	throw logic_error("Attempt to get mark of node not in Graph");	    
+    }
+    
     map<Node const*, int>::const_iterator i = _marks.find(node);
     if (i == _marks.end()) {
-	throw logic_error("Attempt to get mark of node not in Graph");
+	return _default_mark;
     }
-    return i->second;
+    else {
+	return i->second;
+    }
 }
+
 
 void GraphMarks::markAll(int m)
 {
-    for (map<Node const*, int>::iterator i = _marks.begin();
-	 i != _marks.end(); ++i) 
-    {
-	i->second = m;
-    }
+    _marks.clear();
+    _default_mark = m;
 }
 
 void GraphMarks::markParents(Node const *node, int m)
 {
-
-    if (_marks.find(node) == _marks.end()) {
+    if (!_graph.contains(node)) {
 	throw logic_error("Can't mark parents of node: not in Graph");
     }
     else {
@@ -69,9 +65,8 @@ void GraphMarks::markParents(Node const *node, int m)
 	for (vector<Node const *>::const_iterator p = parents.begin(); 
 	     p != parents.end(); ++p) 
 	{
-	    map<Node const*, int>::iterator i = _marks.find(*p);    
-	    if (i != _marks.end()) {
-		i->second = m;
+	    if (_graph.contains(*p)) {
+		_marks[*p] = m;
 	    }
 	}
     }
@@ -84,17 +79,18 @@ GraphMarks::markParents(Node const *node, bool (*test)(Node const *), int m)
     if (!_graph.contains(node)) {
 	throw logic_error("Can't mark parents of node: not in Graph");
     }
-    else {
-	vector<Node const *> const &parents = node->parents();
-	for (unsigned int j = 0; j < parents.size(); ++j) {
-	    map<Node const*, int>::iterator i = _marks.find(parents[j]);
-	    if (i != _marks.end()) {
-		if (test(i->first)) {
-		    i->second = m;
-		}
-		else {
-		    markParents(i->first, test, m);
-		}
+
+    vector<Node const *> const &parents = node->parents();
+    for (vector<Node const*>::const_iterator p = parents.begin(); 
+	 p != parents.end(); ++p)
+    {
+	Node const *parent = *p;
+	if (_graph.contains(parent)) {
+	    if (test(parent)) {
+		_marks[parent] = m;
+	    }
+	    else {
+		markParents(parent, test, m);
 	    }
 	}
     }
@@ -106,15 +102,13 @@ void GraphMarks::markChildren(Node *node, int m)
     if (!_graph.contains(node)) {
 	throw logic_error("Can't mark children of node: not in Graph");
     }
-    else {
-	set<Node*> const *children = node->children();
-	for (set<Node*>::const_iterator p = children->begin(); 
-	     p != children->end(); ++p) 
-	{
-	    map<Node const*, int>::iterator i = _marks.find(*p);    
-	    if (i != _marks.end()) {
-		i->second = m;
-	    }
+
+    set<Node*> const *children = node->children();
+    for (set<Node*>::const_iterator p = children->begin(); 
+	 p != children->end(); ++p) 
+    {
+	if (_graph.contains(*p)) {
+	    _marks[*p] = m;
 	}
     }
 }
@@ -125,34 +119,33 @@ void GraphMarks::markChildren(Node *node, bool (*test)(Node const *), int m)
     if (!_graph.contains(node)) {
 	throw logic_error("Can't mark children of node: not in Graph");
     }
-    else {
-	set<Node*> const *children = node->children();
-	for (set<Node*>::const_iterator p = children->begin(); 
-	     p != children->end(); ++p) 
-	{
-	    map<Node const*, int>::iterator i = _marks.find(*p);    
-	    if (i != _marks.end()) {
-		if (test(i->first)) {
-		    i->second = m;
+
+    set<Node*> const *children = node->children();
+    for (set<Node*>::const_iterator p = children->begin(); 
+	 p != children->end(); ++p) 
+    {
+	Node *child = *p;
+	if (_graph.contains(child)) {
+		if (test(child)) {
+		    _marks[child] = m;
 		}
 		else {
-		    markChildren(*p, test, m);
+		    markChildren(child, test, m);
 		}
-	    }
 	}
     }
 }
 
 static void do_mark_descendants(Node *node, int m, GraphMarks *gmarks,
-				GraphMarks &visited)
+				set<Node const*> &visited)
 {
     // Recursive helper function for GraphMarks::markDescendants
     for (set<Node*>::const_iterator i = node->children()->begin();
 	 i != node->children()->end(); ++i) 
     {
 	Node const *child = *i;
-	if (visited.graph().contains(child) && visited.mark(child) == 0) {
-	    visited.mark(child, 1);
+	if (gmarks->graph().contains(child) && visited.count(child) == 0) {
+	    visited.insert(child);
 	    gmarks->mark(child, m);
 	    do_mark_descendants(*i, m, gmarks, visited);
 	}
@@ -168,20 +161,20 @@ void GraphMarks::markDescendants(Node *node, int m)
        visited_nodes keeps track of previously visited nodes in order
        to avoid an infinite loop when the graph has a directed cycle.
     */
-    GraphMarks visited_nodes(_graph);
+    set<Node const*> visited_nodes;
     do_mark_descendants(node, m, this, visited_nodes);
 }
 
 static void do_mark_ancestors(Node const *node, int m, GraphMarks *gmarks,
-			      GraphMarks &visited)
+			      set<Node const*> &visited)
 {
     // Recursive helper function for GraphMarks::markAncestors
     for (vector<Node const*>::const_iterator i = node->parents().begin();
 	 i != node->parents().end(); ++i) 
     {
 	Node const *parent = *i;
-	if (visited.graph().contains(parent) && visited.mark(parent) == 0) {
-	    visited.mark(parent, 1);
+	if (visited.count(parent) == 0 && gmarks->graph().contains(parent)) {
+	    visited.insert(parent);
 	    gmarks->mark(parent, m);
 	    do_mark_ancestors(parent, m, gmarks, visited);
 	}
@@ -194,9 +187,9 @@ void GraphMarks::markAncestors(Node const *node, int m)
 	throw logic_error("Can't mark children of node: not in Graph");
     }
     /* 
-       visited_nodes keeps track of previously visited nodes in order
-       to avoid an infinite loop when the graph has a directed cycle.
+       visited_nodes keeps track of previously visited nodes for efficiency.
+       This also protects against directed cycles.
     */
-    GraphMarks visited_nodes(_graph);
+    set<Node const*> visited_nodes;
     do_mark_ancestors(node, m, this, visited_nodes);
 }

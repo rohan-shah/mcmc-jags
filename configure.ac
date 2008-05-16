@@ -91,6 +91,7 @@ AC_CONFIG_FILES([
   etc/jags.pc
   src/Makefile
   src/lib/Makefile
+  src/lib/version.cc
   src/lib/util/Makefile
   src/lib/sarray/Makefile
   src/lib/function/Makefile

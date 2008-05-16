@@ -38,7 +38,7 @@ protected:
     const unsigned int _length;
     const unsigned int _nchain;
     double *_data;
-  
+
 public:
     /**
      * Constucts a Node with no parents.
@@ -67,8 +67,10 @@ public:
      */
     void ref();
     /**
-     * Decrements reference count. The node deletes itself when the
-     * reference count is zero.
+     * Decrements reference count. When the reference count is zero,
+     * the node is marked for deletion.
+     *
+     * @see Node##sweep
      */
     void unref();
     /**
@@ -87,12 +89,12 @@ public:
      * Set of children.
      *
      * Note that if we have write access to a Node, then this function
-     * gives write access to it's children.  This is a necessity:
+     * gives write access to its children.  This is a necessity:
      * if we modify the value of the current Node, then we may need to
      * update it's children to keep consistency of the model. Conversely,
      * if we do not have write access to the Node (e.g. we have a constant
      * pointer or reference) then this function cannot be used to obtain
-     * access to it's children.
+     * access to its children.
      */
     std::set<Node*> const *children();
     /**
@@ -260,6 +262,11 @@ public:
      * @param parents Parents of the cloned node. 
      */
     virtual Node * clone(std::vector<Node const *> const &parents) const = 0;
+    /**
+     * Deletes nodes that have been marked for deletion because their
+     * reference count has reached zero.
+     */
+    static void sweep();
 };
 
 /**

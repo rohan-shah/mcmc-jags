@@ -132,32 +132,24 @@ bool Compiler::indexExpression(ParseTree const *p, int &value)
     Node *node = getParameter(p);
     _index_expression--;
 
-    Graph tgraph;
-    if (_index_expression == 0) {
-	if (node) {
-	    tgraph.add(node); //Preserves node when _index_graph is cleared
-	}
-        _index_graph.clear();
+    if (!node || !node->isObserved()) {
+	return false;
     }
 
-    if (!node) {
-	return false;
-    }
     if (node->length() != 1) {
-	throw NodeError(node,"Vector value in index expression"); 
+	throw NodeError(node, "Vector value in index expression"); 
     }
-    if (node->isObserved()) {
-	bool is_integer = true;
-	value = checkInteger(node->value(0)[0], is_integer);
-	if (!is_integer) {
-	    throw NodeError(node, 
-			    "Index expression evaluates to non-integer value");
-	}
-	return true;
+    bool is_integer = true;
+    value = checkInteger(node->value(0)[0], is_integer);
+    if (!is_integer) {
+	throw NodeError(node, 
+			"Index expression evaluates to non-integer value");
     }
-    else {
-	return false;
+    
+    if (_index_expression == 0) {
+        _index_graph.clear();
     }
+    return true;
 }
 
 Range Compiler::getRange(ParseTree const *p, Range const &default_range)
