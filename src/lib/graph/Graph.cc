@@ -6,11 +6,13 @@
 #include <stdexcept>
 #include <vector>
 #include <set>
+#include <algorithm>
 
 using std::vector;
 using std::set;
 using std::invalid_argument;
 using std::logic_error;
+using std::reverse;
 
 Graph::Graph()
   : _nodes()
