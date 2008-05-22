@@ -321,39 +321,6 @@ Range Compiler::CounterRange(ParseTree const *var)
   }
 }
 
-Node * Compiler::getSubsetNode(ParseTree const *var)
-{
-    if (var->treeClass() != P_VAR) {
-	throw logic_error("Expecting variable expression");
-    }
-    
-    NodeArray *array = _model.symtab().getVariable(var->name());
-    if (array == 0) {
-	if (_strict_resolution) {
-	    throw runtime_error(string("Unknown variable ") + var->name());
-	}
-	else {
-	    return 0;
-	}
-    }
-    Range subset_range = getRange(var, array->range());
-    if (isNULL(subset_range)) {
-	return 0;
-    }
-    if (!array->range().contains(subset_range)) {
-	throw runtime_error(string("Subset ") + var->name() 
-			    + print(subset_range)
-			    + " out of range");
-    }
-    Node *node = array->getSubset(subset_range, _model.graph());
-    if (node == 0 && _strict_resolution) {
-	throw runtime_error(string("Unable to resolve parameter ") + 
-			    array->name() + print(subset_range) +
-			    " (one of its ancestors may be undefined)");
-    }
-    return node;
-}
-
 Node *Compiler::getArraySubset(ParseTree const *p)
 {
     Node *node = 0;
@@ -378,10 +345,23 @@ Node *Compiler::getArraySubset(ParseTree const *p)
 	if (array) {
 	    Range subset_range = getRange(p, array->range());
 	    if (!isNULL(subset_range)) {
-		node = getSubsetNode(p); //A fixed subset
+		//A fixed subset
+		if (!array->range().contains(subset_range)) {
+		    throw runtime_error(string("Subset ") + array->name() 
+					+ print(subset_range)
+					+ " out of range");
+		}
+		node = array->getSubset(subset_range, _model.graph());
+		if (node == 0 && _strict_resolution) {
+		    throw runtime_error(string("Unable to resolve parameter ")
+					+ array->name() 
+					+ print(subset_range) +
+					" (one of its ancestors may be undefined)");
+		}
 	    }
 	    else if (!_index_expression) {
-		node = getMixtureNode(p, this); //A stochastic subset
+		//A stochastic subset
+		node = getMixtureNode(p, this);
 	    } 
 	}
 	else if (_strict_resolution) {

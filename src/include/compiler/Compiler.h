@@ -61,7 +61,6 @@ class Compiler {
   void getArrayDim(ParseTree const *p);
   bool getParameterVector(ParseTree const *t,
 			  std::vector<Node const *> &parents);
-  Node * getSubsetNode(ParseTree const *var);
   Node * constFromTable(ParseTree const *p);
   void addDevianceNode();
 public:

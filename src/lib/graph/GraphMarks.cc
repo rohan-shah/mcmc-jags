@@ -136,18 +136,18 @@ void GraphMarks::markChildren(Node *node, bool (*test)(Node const *), int m)
     }
 }
 
-static void do_mark_descendants(Node *node, int m, GraphMarks *gmarks,
-				set<Node const*> &visited)
+void 
+GraphMarks::do_mark_descendants(Node *node, int m, set<Node const*> &visited)
 {
     // Recursive helper function for GraphMarks::markDescendants
     for (set<Node*>::const_iterator i = node->children()->begin();
 	 i != node->children()->end(); ++i) 
     {
 	Node const *child = *i;
-	if (gmarks->graph().contains(child) && visited.count(child) == 0) {
+	if (_graph.contains(child) && visited.count(child) == 0) {
 	    visited.insert(child);
-	    gmarks->mark(child, m);
-	    do_mark_descendants(*i, m, gmarks, visited);
+            _marks[child] = m;
+	    do_mark_descendants(*i, m, visited);
 	}
     }
 }
@@ -162,10 +162,11 @@ void GraphMarks::markDescendants(Node *node, int m)
        to avoid an infinite loop when the graph has a directed cycle.
     */
     set<Node const*> visited_nodes;
-    do_mark_descendants(node, m, this, visited_nodes);
+    do_mark_descendants(node, m, visited_nodes);
 }
 
-static void do_mark_ancestors(Node const *node, int m, GraphMarks *gmarks,
+void 
+GraphMarks::do_mark_ancestors(Node const *node, int m, 
 			      set<Node const*> &visited)
 {
     // Recursive helper function for GraphMarks::markAncestors
@@ -173,10 +174,10 @@ static void do_mark_ancestors(Node const *node, int m, GraphMarks *gmarks,
 	 i != node->parents().end(); ++i) 
     {
 	Node const *parent = *i;
-	if (visited.count(parent) == 0 && gmarks->graph().contains(parent)) {
+	if (visited.count(parent) == 0 && _graph.contains(parent)) {
 	    visited.insert(parent);
-	    gmarks->mark(parent, m);
-	    do_mark_ancestors(parent, m, gmarks, visited);
+            _marks[parent] = m;
+	    do_mark_ancestors(parent, m, visited);
 	}
     }
 }
@@ -191,5 +192,6 @@ void GraphMarks::markAncestors(Node const *node, int m)
        This also protects against directed cycles.
     */
     set<Node const*> visited_nodes;
-    do_mark_ancestors(node, m, this, visited_nodes);
+    do_mark_ancestors(node, m, visited_nodes);
 }
+

@@ -2,6 +2,7 @@
 #define GRAPH_MARKS_H_
 
 #include <map>
+#include <set>
 class Node;
 class Graph;
 
@@ -24,6 +25,9 @@ class GraphMarks {
     Graph const &_graph;
     int _default_mark;
     std::map<Node const*,int> _marks;
+
+    void do_mark_ancestors(Node const *, int, std::set<Node const*> &);
+    void do_mark_descendants(Node *, int, std::set<Node const*> &);
 public:
     /**
      * Constructor. Each node in the graph initially has mark zero 

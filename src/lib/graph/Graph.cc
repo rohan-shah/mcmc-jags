@@ -67,15 +67,12 @@ unsigned int Graph::size() const
   return _nodes.size();
 }
 
-//debuggin
-#include <graph/NodeError.h>
 bool Graph::isClosed() const
 {
   /* Determine whether any nodes in the graph have children or
      parents outside the graph */
 
-  for (set<Node*>::iterator i = _nodes.begin(); 
-       i != _nodes.end(); i++) {
+  for (set<Node*>::iterator i = _nodes.begin(); i != _nodes.end(); i++) {
     
     /* Check parents */
     vector<Node const *> const &parents = (*i)->parents();
@@ -83,7 +80,6 @@ bool Graph::isClosed() const
 	 j != parents.end(); j++) 
       {
 	if (!this->contains(*j)) {
-          throw NodeError(*j,"Not in model graph");
 	  return false;
 	}
       }
@@ -93,7 +89,6 @@ bool Graph::isClosed() const
     for (set<Node*>::iterator k = children->begin(); k != children->end(); k++)
 	{
 	    if (!this->contains(*k)) {
-                throw NodeError(*k,"Not in model graph");
 		return false;
 	    }
 	}
