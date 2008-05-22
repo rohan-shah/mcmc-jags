@@ -66,45 +66,46 @@ static bool isInformative(Node *node, Graph const &sample_graph)
 }
 
 static bool classifyNode(Node *node, Graph const &sample_graph, 
-			 Graph &sgraph, Graph &dgraph)
+			 set<StochasticNode const*> &sset, set<Node*> &dset)
 {
     /*
      * Recursive classification function for node and its descendants.
      *
-     * If a node is informative, it is added to either sgraph (for
-     * stochastic nodes representing random variables) or dgraph (
+     * If a node is informative, it is added to either sset (for
+     * stochastic nodes representing random variables) or dset (
      * for other nodes). The recursion stops with stochastic nodes.
      */
     if (!sample_graph.contains(node))
 	return false;
 
     bool isinformative = false;
-    if (asStochastic(node) && node->isRandomVariable()) {
+    StochasticNode const *snode = asStochastic(node);
+    if (snode && snode->isRandomVariable()) {
 	/* This might look redundant, but we want to leave open
 	   the possibility that stochastic nodes may not
 	   represent random variables */
 
-	if (sgraph.contains(node)) 
+	if (sset.count(snode)) 
 	    return true;
 
 	isinformative = isInformative(node, sample_graph);
 	if (isinformative) {
-	    sgraph.add(node);
+	    sset.insert(snode);
 	}
     }
     else {
 
-	if (dgraph.contains(node))
+	if (dset.count(node))
 	    return true;
 	
 	for (set<Node*>::iterator p = node->children()->begin();
 	     p != node->children()->end(); ++p) {
-	    if (classifyNode(*p, sample_graph, sgraph, dgraph)) {
+	    if (classifyNode(*p, sample_graph, sset, dset)) {
 		isinformative = true;
 	    }
 	}
 	if (isinformative) {
-	    dgraph.add(node);
+	    dset.insert(node);
 	}
     }
     return isinformative;
@@ -115,7 +116,8 @@ void Sampler::classifyChildren(vector<StochasticNode *> const &nodes,
 			       vector<StochasticNode const*> &stoch_nodes,
 			       vector<Node*> &dtrm_nodes)
 {
-    Graph dgraph, sgraph;
+    set<Node*> dset;
+    set<StochasticNode const*> sset;
 
     /* Classify children of each node */
     vector<StochasticNode  *>::const_iterator p = nodes.begin();
@@ -127,29 +129,23 @@ void Sampler::classifyChildren(vector<StochasticNode *> const &nodes,
 	for (set<Node*>::const_iterator q = snode->children()->begin(); 
 	     q != snode->children()->end(); ++q) 
 	{
-	    classifyNode(*q, graph, sgraph, dgraph);
+	    classifyNode(*q, graph, sset, dset);
 	}
     }
 
-    /* Strip nodes to be sampled out of the graph of stochastic
+    /* Strip nodes to be sampled out of the set of stochastic
        children. Such nodes would contribute to both the prior
        AND the likelihood, causing incorrect calculation of the
        log full conditional */
     for (p = nodes.begin(); p != nodes.end(); ++p) {
-	sgraph.remove(*p);
+	sset.erase(*p);
     }
 
-    vector<Node*> svector;
-    sgraph.getNodes(svector);
-    stoch_nodes.clear();
-    for (vector<Node*>::iterator i = svector.begin(); i != svector.end(); 
-	 ++i)
-    {
-	stoch_nodes.push_back(asStochastic(*i));
-    }
+    stoch_nodes.resize(sset.size());
+    copy(sset.begin(), sset.end(), stoch_nodes.begin());
 
     dtrm_nodes.clear();
-    dgraph.getSortedNodes(dtrm_nodes);
+    Graph::getSortedNodes(dset, dtrm_nodes);
 }
 
 double Sampler::logFullConditional(unsigned int chain) const

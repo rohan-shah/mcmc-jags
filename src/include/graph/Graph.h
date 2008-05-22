@@ -85,6 +85,11 @@ public:
    * this vector will contain the sorted nodes.
    */
   void getSortedNodes(std::vector<Node*> &sorted) const; 
+  /**
+   * Static version of the getSortedNodes function which works with
+   * a set instead of a graph.  
+   */
+  static void getSortedNodes(std::set<Node*> &nodes, std::vector<Node*> &sorted);
 };
 
 #endif /* GRAPH_H_ */

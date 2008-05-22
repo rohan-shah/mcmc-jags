@@ -267,19 +267,18 @@ static bool childInSet(Node *node, set<Node*> const &S)
     return false;
 }
 
-void Graph::getSortedNodes(vector<Node*> &sortednodes) const
+void Graph::getSortedNodes(set<Node*> &S, vector<Node*> &sortednodes) 
 {
     /* 
        Return a vector of nodes whose ordering follows the partial
-       ordering of the graph.  If a is after b then there is never a
+       ordering of the set.  If a is after b then there is never a
        path from a to b.
     */
 
     if (!sortednodes.empty()) {
-	throw logic_error("vector not empty in Graph::getSortedNodes");
+	throw logic_error("vector not empty in getSortedNodes");
     }
 
-    set<Node*> S = _nodes;
     sortednodes.reserve(S.size());
 
     while (!S.empty()) {
@@ -307,4 +306,10 @@ void Graph::getSortedNodes(vector<Node*> &sortednodes) const
     }
 
     reverse(sortednodes.begin(), sortednodes.end());
+}
+
+void Graph::getSortedNodes(vector<Node*> &sortednodes) const
+{
+    set<Node*> S = _nodes;
+    getSortedNodes(S, sortednodes);
 }
