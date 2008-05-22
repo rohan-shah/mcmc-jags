@@ -23,11 +23,25 @@ namespace mix {
 					Graph const &graph,
 					vector<Sampler *> &samplers) const
     {
+	/* Find nodes in the graph with distribution DNormMix and add
+	   them to the vector "mix_nodes" */
+	vector<StochasticNode const*> mix_nodes;
+	set<Node*>::const_iterator p;
+	for (p = graph.nodes().begin(); p != graph.nodes().end(); ++p) {
+	    StochasticNode const *snode = asStochastic(*p);
+	    if (snode && snode->distribution()->name() == "dnormmix") {
+		mix_nodes.push_back(snode);
+	    }
+	}
+
+	if (mix_nodes.empty()) {
+	    return; //Nothing to do
+	}
+
 	GraphMarks marks(graph);
 
 	/* Find observed nodes in the graph and mark their ancestors:
 	   these are the informative nodes */
-	set<Node*>::const_iterator p;
 	for (p = graph.nodes().begin(); p != graph.nodes().end(); ++p) {
 	    if ((*p)->isObserved()) {
 		marks.mark(*p, 1);
@@ -35,24 +49,21 @@ namespace mix {
 	    }
 	}
 
-	/* Find informative nodes in the graph with distribution DNormMix
-	   and add them to the vector "mix_nodes" */
-	vector<StochasticNode const*> mix_nodes;
-	for (p = graph.nodes().begin(); p != graph.nodes().end(); ++p) {
-	    if (marks.mark(*p) == 1) {
-		StochasticNode const *snode = asStochastic(*p);
-		if (snode && snode->distribution()->name() == "dnormmix") {
-		    mix_nodes.push_back(snode);
-		}
+	//Keep only informative mixture nodes
+	vector<StochasticNode const*> informative_mix_nodes;
+	for (unsigned int i = 0; i < mix_nodes.size(); ++i) {
+	    if (marks.mark(mix_nodes[i]) == 1) {
+		informative_mix_nodes.push_back(mix_nodes[i]);
 	    }
 	}
-	if (mix_nodes.empty()) {
+
+	if (informative_mix_nodes.empty()) {
 	    return; //Nothing to do
 	}
 
 	/* Now find the stochastic parents of mix_nodes */
-	for (unsigned int i = 0; i < mix_nodes.size(); ++i) {
-	    marks.markParents(mix_nodes[i], isStoch, 2);
+	for (unsigned int i = 0; i < informative_mix_nodes.size(); ++i) {
+	    marks.markParents(informative_mix_nodes[i], isStoch, 2);
 	}
 	/* The stochastic parents can be sampled if
 	   1) They are in the given set of nodes
