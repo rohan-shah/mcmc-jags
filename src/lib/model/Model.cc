@@ -212,10 +212,10 @@ struct less_sampler {
 void Model::chooseSamplers(vector<Node*> const &sorted_nodes)
 {
     /*
-     * Selects samplers. For each chain, samplers are selected by
-     * traversing the list of SamplerFactories in order. If there are
-     * any informative stochastic nodes left without samplers after all
-     * factories have been tried, then a runtime error is thrown
+     * Selects samplers. Samplers are selected by traversing the list
+     * of SamplerFactories in order. If there are any informative
+     * stochastic nodes left without samplers after all factories have
+     * been tried, then a runtime error is thrown
      *
      * @see Model#samplerFactories
      */
@@ -276,7 +276,15 @@ void Model::chooseSamplers(vector<Node*> const &sorted_nodes)
     for (list<SamplerFactory const *>::const_iterator p = sfactories.begin();
 	 p != sfactories.end(); ++p)
     {
-	(*p)->makeSampler(sset, sample_graph, _samplers);
+	Sampler *sampler = (*p)->makeSampler(sset, sample_graph);
+	while (sampler) {
+	    vector<StochasticNode*> const &nodes = sampler->nodes();
+	    for (unsigned int i = 0; i < nodes.size(); ++i) {
+		sset.erase(nodes[i]);
+	    }
+	    _samplers.push_back(sampler);
+	    sampler = (*p)->makeSampler(sset, sample_graph);
+	}
     }
   
     // Make sure we found a sampler for all the nodes

@@ -29,9 +29,8 @@ public:
      * This traverses the graph, creating a Sampler, when possible,
      * for each individual StochasticNode.
      */
-    void makeSampler(std::set<StochasticNode*> &nodes, 
-		     Graph const &graph,
-		     std::vector<Sampler*> &samplers) const;
+    Sampler * makeSampler(std::set<StochasticNode*> const &nodes, 
+			  Graph const &graph) const;
 };
 
 #endif /* SINGLETON_FACTORY_H */

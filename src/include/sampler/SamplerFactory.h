@@ -17,12 +17,12 @@ public:
     virtual ~SamplerFactory();
     /**
      * Finds nodes in the set of stochastic nodes that can be sampled
-     * within the given graph, removes them from the set and adds a
-     * sampler to the vector of samplers.
+     * within the given graph, and returns a newly allocated sampler
+     * for them.  If no sampler can be created, a NULL pointer is
+     * returned.
      */
-    virtual void 
-	makeSampler(std::set<StochasticNode*> &nodes, Graph const &graph,
-		    std::vector<Sampler*> &samplers) const = 0;
+    virtual Sampler* makeSampler(std::set<StochasticNode*> const &nodes, 
+				 Graph const &graph) const = 0;
 };
 
 #endif /* SAMPLER_FACTORY_H_ */

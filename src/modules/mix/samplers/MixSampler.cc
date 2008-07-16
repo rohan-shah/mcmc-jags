@@ -137,6 +137,9 @@ namespace mix {
     bool MixSampler::canSample(vector<StochasticNode *> const &snodes,
 			       Graph const &graph)
     {
+	if (snodes.empty())
+	    return false;
+
 	for (unsigned int i = 0; i < snodes.size(); ++i) {
 	    if (!graph.contains(snodes[i])) {
 		return false;
@@ -153,10 +156,8 @@ namespace mix {
 		return false;
 	    }
 	    //Check that all nodes are of full rank
-	    for (unsigned int i = 0; i < snodes.size(); ++i) {
-		if (snodes[i]->length() != df(snodes[i]))
-		    return false;
-	    }
+	    if (snodes[i]->length() != df(snodes[i]))
+		return false;
 	}
 	return true;
     }

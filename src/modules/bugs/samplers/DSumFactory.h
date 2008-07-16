@@ -11,10 +11,8 @@ class Graph;
 class DSumFactory : public SamplerFactory
 {
  public:
-    void makeSampler(std::set<StochasticNode*> &nodes, 
-		     Graph const &graph,
-		     std::vector<Sampler*> &samplers)
-	const;
+    Sampler * makeSampler(std::set<StochasticNode*> const &nodes, 
+		     Graph const &graph) const;
 };
 
 #endif /* DSUM_FACTORY_H_ */
