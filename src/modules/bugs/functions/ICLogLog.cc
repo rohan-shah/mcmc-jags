@@ -23,9 +23,9 @@ namespace bugs {
 	return log (-log (1 - mu));
     }
 
-    double ICLogLog::gradLink(double mu) const
+    double ICLogLog::grad(double eta) const
     {
-	return -1/((1-mu)*log(1-mu));
+	return exp(eta) * exp(-exp(eta));
     }
 
 }

@@ -14,7 +14,7 @@ namespace bugs {
 
     double Probit::evaluateScalar(vector<double const *> const &args) const
     {
-	return qnorm5 (*args[0], 0, 1, 0, 0);
+	return qnorm (*args[0], 0, 1, 1, 0);
     }
 
     bool Probit::checkScalarValue (vector <double const *> const &args) const

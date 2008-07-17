@@ -18,8 +18,8 @@ namespace bugs {
     public:
 	ICLogLog ();
 	double inverseLink(double eta) const;
-	double link(double y) const;
-	double gradLink(double y) const;
+	double link(double mu) const;
+	double grad(double eta) const;
     };
 
 }

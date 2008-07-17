@@ -25,9 +25,10 @@ namespace bugs {
 	return log(mu) - log(1- mu);
     }
 
-    double ILogit::gradLink(double mu) const
+    double ILogit::grad(double eta) const
     {
-	return 1/(mu*(1-mu));
+	double opexp = 1 + exp(eta);
+	return exp(eta) / (opexp * opexp);
     }
 
 }

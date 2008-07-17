@@ -36,8 +36,8 @@ public:
     virtual double inverseLink(double eta) const = 0;
     /** Link function */
     virtual double link(double mu) const = 0;
-    /** Gradient of link function */
-    virtual double gradLink(double mu) const = 0;
+    /** Gradient of the inverse link function */
+    virtual double grad(double eta) const = 0;
     /** Calls inverseLink */
     double evaluateScalar(std::vector <double const *> const &args) const;
 };

@@ -16,7 +16,7 @@ namespace bugs {
 	if (!R_FINITE (q)) {
 	    return q > 0 ? 1 : 0;
 	}
-	double p = pnorm5(q, 0, 1, 0, 0);
+	double p = pnorm(q, 0, 1, 1, 0);
 	if (p == 0)
 	    return DBL_EPSILON;
 	else if (p == 1)
@@ -27,12 +27,12 @@ namespace bugs {
 
     double Phi::link(double mu) const
     {
-	return pnorm (mu, 0, 1, 0, 0);
+	return qnorm (mu, 0, 1, 1, 0);
     }
 
-    double Phi::gradLink(double mu) const
+    double Phi::grad(double eta) const
     {
-	return dnorm (mu, 0, 1, 0);
+	return dnorm (eta, 0, 1, 0);
     }
 
 }

@@ -24,9 +24,9 @@ namespace bugs {
 	return log(mu);
     }
 
-    double Exp::gradLink(double mu) const
+    double Exp::grad(double eta) const
     {
-	return 1/mu;
+	return exp(eta);
     }
 
 }

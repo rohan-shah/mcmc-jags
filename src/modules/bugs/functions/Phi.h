@@ -20,7 +20,7 @@ namespace bugs {
 	Phi ();
 	double inverseLink(double eta) const;
 	double link(double mu) const;
-	double gradLink(double mu) const;
+	double grad(double eta) const;
     };
 
 }
