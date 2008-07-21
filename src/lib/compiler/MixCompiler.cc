@@ -43,6 +43,7 @@
 #include <string>
 #include <set>
 #include <climits>
+#include <algorithm>
 
 using std::vector;
 using std::pair;
@@ -51,6 +52,7 @@ using std::runtime_error;
 using std::string;
 using std::set;
 using std::map;
+using std::copy;
 
 //Structure to hold subset indices
 struct SSI {
@@ -324,7 +326,7 @@ getMixtureNode1(NodeArray *array, vector<SSI> const &limits, Compiler *compiler)
 }
 
 /* Add stochastic parents of given node to the set */
-static bool classifyParents(Node const *node, 
+static void classifyParents(Node const *node, 
 			    set<StochasticNode const*> &sparents,
 			    set<Node const*> &dparents)
 {
