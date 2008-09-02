@@ -16,7 +16,7 @@ struct RNG;
  *
  * <pre>
  * p[] ~ ddirch(alpha[])
- * f(p | alpha) = C * prod(p^alpha)
+ * f(p | alpha) = C * prod(p^(alpha-1))
  * </pre>
  */
 class DDirch : public Distribution {
