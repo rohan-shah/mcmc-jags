@@ -9,13 +9,13 @@
 #include <cstring>
 #include <iostream>
 #include <vector>
+#include <sstream>
   
   void yyerror(const char *);
   int yylex();
   int yylex_destroy();
   
 #define YYDEBUG 1
-#define YYERROR_VERBOSE 1
   
   static std::vector<ParseTree *> * _pvariables = 0;
   static ParseTree *_pdata = 0;
@@ -55,6 +55,7 @@
 %token <stringptr> NAME
 %token <stringptr> FUNC
 %token <stringptr> SPECIAL
+%token <stringptr> BADCHAR
 %token IN
 %token ARROW
 %token FOR
@@ -338,12 +339,17 @@ var: NAME {
 
 %%
 
-using std::cout;
-using std::endl;
+static std::string error_buf;
 
 void yyerror (const char *s)
 {
-  cout << s << endl;
+    extern int yylineno;
+    extern char * yytext;
+
+    std::ostringstream msg;
+    msg << std::string(s) << " on line " << yylineno << " near \"" << 
+           std::string(yytext) << "\"";
+    error_buf = msg.str();
 }
 
 static ParseTree *Truncated (ParseTree *left, ParseTree *right)
@@ -414,23 +420,26 @@ void setParameters(ParseTree *p, ParseTree *param1, ParseTree *param2,
 }
 
 int parse_bugs (std::FILE *file, std::vector<ParseTree*> * &dec_list, 
-                ParseTree * &data, ParseTree * &relations)
+                ParseTree * &data, ParseTree * &relations,
+		std::string &message)
 {
     extern std::FILE *yyin;
     yyin = file;
-    extern int yylineno;
     
     int val = 0;
+    error_buf.clear();
+
     if (yyparse() == 0) {
 	dec_list = _pvariables; 
 	data = _pdata; 
 	relations = _prelations;
     }
     else {
+	message = error_buf;
 	delete _pvariables; 
 	delete _prelations; 
 	delete _pdata;
-	val = yylineno;
+	val = 1;
     }
     _pvariables = 0;
     _prelations = 0;

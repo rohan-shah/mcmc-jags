@@ -146,9 +146,10 @@ bool Console::checkModel(FILE *file)
     }
     _model = 0;
 
-    int lineno =  parse_bugs(file, _pvariables, _pdata, _prelations);
-    if (lineno != 0) {
-	_err << endl << "Parse error on line " << lineno << endl;
+    string message;
+    int status =  parse_bugs(file, _pvariables, _pdata, _prelations, message);
+    if (status != 0) {
+	_err << endl << "Error parsing model file:" << endl << message << endl;
 	//Tidy up
 	delete _pdata; _pdata = 0;
 	delete _prelations; _prelations = 0;
