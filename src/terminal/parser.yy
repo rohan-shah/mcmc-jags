@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include <dirent.h>
 
+#include <cstdlib>
 #include <cstdio>
 #include <iostream>
 #include <fstream>
@@ -21,7 +22,6 @@
 #include <Console.h>
 #include <compiler/ParseTree.h>
 #include <util/nainf.h>
-#include <cstdlib>
 #include <cstring>
 #include <ltdl.h>
 
@@ -38,7 +38,6 @@
 #include <Console.h>
 #include <compiler/ParseTree.h>
 #include <util/nainf.h>
-#include <cstdlib>
 #include <cstring>
 #include <ltdl.h>
 
@@ -72,6 +71,7 @@
     void doAllCoda (std::string const &stem);
     void doDump (std::string const &file, DumpType type, unsigned int chain);
     void dumpMonitors(std::string const &file, std::string const &type);
+    void doSystem(std::string const *command);
 
     static bool getWorkingDirectory(std::string &name);
     static void errordump();
@@ -103,6 +103,7 @@
 %token <val>    DOUBLE
 %token <stringptr> NAME
 %token <stringptr> STRING
+%token <stringptr> SYSCMD
 %token <intval> ENDCMD
 
 %token <intval> MODEL
@@ -175,6 +176,7 @@ line: ENDCMD {}
 | error ENDCMD {if(interactive) yyerrok; else exit(1); }
 | run_script {}
 | ENDSCRIPT ENDCMD { close_buffer();}
+| SYSCMD ENDCMD { doSystem($1); delete $1;}
 ;
 
 command: model 
@@ -272,7 +274,7 @@ parameters_in: parameters r_assignment_list ENDDATA
     std::map<std::string, SArray> parameter_table;
     std::string rngname;
     readRData($2, parameter_table, rngname);
-    delete_pvec($2);
+    delete $2;
     /* We have to set the name first, because the state or seed
        might be embedded in the parameter_table */
     if (rngname.size() != 0) {
@@ -1394,3 +1396,7 @@ static void print_unused_variables()
 
 }
 
+void doSystem(std::string const *command)
+{
+    std::system(command->c_str());
+}
