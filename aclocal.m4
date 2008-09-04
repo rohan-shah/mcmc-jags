@@ -888,7 +888,6 @@ AC_SUBST([am__untar])
 ]) # _AM_PROG_TAR
 
 m4_include([m4/R.m4])
-m4_include([m4/acx_blas.m4])
-m4_include([m4/acx_fortran.m4])
-m4_include([m4/acxx_lapack.m4])
+m4_include([m4/acx_lapack.m4])
+m4_include([m4/acxx_blas.m4])
 m4_include([m4/libtool.m4])

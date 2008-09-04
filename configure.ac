@@ -1,4 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
+
+AC_PREREQ(2.61)
+
 AC_INIT([JAGS], [2.0.0], [martyn_plummer@users.sourceforge.net], [JAGS])
 AC_CANONICAL_HOST
 AC_CONFIG_SRCDIR(src/lib/Console.cc)
@@ -37,8 +40,8 @@ AC_SUBST(INCLTDL)
 AC_SUBST(LIBLTDL)
 
 dnl fortran stuff
-ACX_F77_WRAPPERS
-ACX_F77_LIBRARY_LDFLAGS
+AC_F77_WRAPPERS
+AC_F77_LIBRARY_LDFLAGS
 ACX_LAPACK([],[
 	AC_MSG_ERROR("You need to install the LAPACK library")
 ])
