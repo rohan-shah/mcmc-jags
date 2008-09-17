@@ -645,9 +645,11 @@ Node * Compiler::allocateStochastic(ParseTree const *stoch_relation)
     }
 
   
-    StochasticNode *snode = 0;
-    Distribution const *dist = getDistribution(stoch_relation, distTab());
 
+    Distribution const *dist = getDistribution(stoch_relation, distTab());
+    Node *snode =  new StochasticNode(dist, parameters, lBound, uBound);
+    _model.graph().add(snode);
+    
     //Search data table to see if this is an observed node
     ParseTree *var = stoch_relation->parameters()[0];
     string const &name = var->name();
@@ -657,39 +659,33 @@ Node * Compiler::allocateStochastic(ParseTree const *stoch_relation)
         Range const &data_range = q->second.range();
 
 	Range target_range = VariableSubsetRange(var);
-	bool isdata = true;
-	SArray this_data(target_range.dim(true));
+	if (target_range.dim(true) != drop(snode->dim())) {
+	    throw NodeError(snode, 
+			    string("Node has wrong dimensions for range ") 
+			    + name + print(target_range));
+	}
+
+	vector<double> this_data(target_range.length());
+
 	unsigned int i = 0;
+	unsigned int nmissing = 0;
 	for (RangeIterator p(target_range); !p.atEnd(); p.nextLeft()) {
 	    unsigned int j = data_range.leftOffset(p);
 	    if (data_value[j] == JAGS_NA) {
-		isdata = false;
-		break;
+		++nmissing;
 	    }
-	    else {
-		this_data.setValue(data_value[j], i++);
-	    }
+	    this_data[i++] = data_value[j];
 	}
 
-	if (isdata) {
-	    snode = new StochasticNode(dist, parameters, lBound, uBound);
-	    if (this_data.dim(true) != drop(snode->dim())) {
-		string msg = "Dimension mismatch between node and data:\n";
-		msg.append("Expected ");
-		msg.append(print(Range(snode->dim())));
-		msg.append(" got ");
-		msg.append(print(Range(this_data.dim(true))));
-		throw NodeError(snode, msg);
-	    }
-	    snode->setObserved(this_data.value());
+	if (nmissing == 0) {
+	    snode->setObserved(this_data);
+	}
+	else if (nmissing != this_data.size()) {
+	    throw NodeError(snode, string("Data ") + name + print(target_range)
+			    + " is partially missing");
 	}
     }
  
-    if (snode == 0) {
-	snode =  new StochasticNode(dist, parameters, lBound, uBound);
-    }
-
-    _model.graph().add(snode);
     return snode;
 }
 
