@@ -26,18 +26,22 @@ DCat::DCat()
 
 bool DCat::checkParameterDim(vector<vector<unsigned int> > const &dims) const
 {
-    return isVector(dims[0]);
+    return isVector(dims[0]) || isScalar(dims[0]);
 }
 
 bool DCat::checkParameterValue(vector<double const *> const &par,
 			       vector<vector<unsigned int> > const &dims) const
 {
+    bool nz = false;
     for (unsigned int i = 0; i < NCAT(dims); i++) {
 	if (PROB(par)[i] < 0.0) {
 	    return false; 
 	}
+	if (PROB(par)[i] > 0.0) {
+	    nz = true; //at least one non-zero probability
+	}
     }
-    return true;
+    return nz;
 }
 
 double DCat::logLikelihood(double const *x, unsigned int length,
