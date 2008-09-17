@@ -36,6 +36,7 @@ using std::FILE;
 	_err << "Error in node " <<					\
 	    _model->symtab().getName(except.node) << "\n";		\
 	_err << except.what() << endl;					\
+	clearModel();							\
 	return false;							\
     }									\
     catch (std::runtime_error except) {					\
