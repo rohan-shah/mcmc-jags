@@ -3,7 +3,7 @@
 Name "JAGS"
 OutFile "jags-${VERSION}-setup.exe"
 InstallDir "$PROGRAMFILES\JAGS\JAGS-${VERSION}"
-InstallDirRegKey HKEY_LOCAL_MACHINE "SOFTWARE\JAGS-${VERSION}" ""
+InstallDirRegKey HKEY_LOCAL_MACHINE "SOFTWARE\JAGS\JAGS-${VERSION}" ""
 RequestExecutionLevel admin
 
 Var SM_FOLDER
@@ -15,7 +15,7 @@ Var MUI_TEMP
 
 ;Start Menu Folder Page Configuration
 !define MUI_STARTMENUPAGE_REGISTRY_ROOT "HKCU" 
-!define MUI_STARTMENUPAGE_REGISTRY_KEY "SOFTWARE\JAGS-${VERSION}" 
+!define MUI_STARTMENUPAGE_REGISTRY_KEY "SOFTWARE\JAGS\JAGS-${VERSION}" 
 !define MUI_STARTMENUPAGE_REGISTRY_VALUENAME "Start Menu Folder"
 
 !insertmacro MUI_PAGE_STARTMENU Application $SM_FOLDER
@@ -44,22 +44,22 @@ Section # Default section
    File inst\include\JAGS\*.h
    File /r inst\include\JAGS\*
 
-   SetOutPath "$INSTDIR\modules"
-   File inst\lib\JAGS\modules\basemod.dll
-   File inst\lib\JAGS\modules\basemod.dll.a
-   File inst\lib\JAGS\modules\basemod.la
-   File inst\lib\JAGS\modules\bugs.dll
-   File inst\lib\JAGS\modules\bugs.dll.a
-   File inst\lib\JAGS\modules\bugs.la
-   File inst\lib\JAGS\modules\mix.dll
-   File inst\lib\JAGS\modules\mix.dll.a
-   File inst\lib\JAGS\modules\mix.la
-   File inst\lib\JAGS\modules\msm.dll
-   File inst\lib\JAGS\modules\msm.dll.a
-   File inst\lib\JAGS\modules\msm.la
-   File inst\lib\JAGS\modules\dic.dll
-   File inst\lib\JAGS\modules\dic.dll.a
-   File inst\lib\JAGS\modules\dic.la
+   SetOutPath "$INSTDIR\modules-${VERSION}"
+   File inst\lib\JAGS\modules-${VERSION}\basemod.dll
+   File inst\lib\JAGS\modules-${VERSION}\basemod.dll.a
+   File inst\lib\JAGS\modules-${VERSION}\basemod.la
+   File inst\lib\JAGS\modules-${VERSION}\bugs.dll
+   File inst\lib\JAGS\modules-${VERSION}\bugs.dll.a
+   File inst\lib\JAGS\modules-${VERSION}\bugs.la
+   File inst\lib\JAGS\modules-${VERSION}\mix.dll
+   File inst\lib\JAGS\modules-${VERSION}\mix.dll.a
+   File inst\lib\JAGS\modules-${VERSION}\mix.la
+   File inst\lib\JAGS\modules-${VERSION}\msm.dll
+   File inst\lib\JAGS\modules-${VERSION}\msm.dll.a
+   File inst\lib\JAGS\modules-${VERSION}\msm.la
+   File inst\lib\JAGS\modules-${VERSION}\dic.dll
+   File inst\lib\JAGS\modules-${VERSION}\dic.dll.a
+   File inst\lib\JAGS\modules-${VERSION}\dic.la
 
    Push @JAGS_HOME@               #text to be replaced
    Push $INSTDIR                  #replace with
@@ -68,7 +68,7 @@ Section # Default section
    Push $INSTDIR\bin\jags.bat     #file to replace in
    Call AdvReplaceInFile
 
-   WriteRegStr HKLM "SOFTWARE\JAGS-${VERSION}" "Install_Dir" "$INSTDIR"
+   WriteRegStr HKLM "SOFTWARE\JAGS\JAGS-${VERSION}" "Install_Dir" "$INSTDIR"
    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\JAGS-${VERSION}" "DisplayName" "JAGS ${VERSION}"
    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\JAGS-${VERSION}" "UninstallString" '"$INSTDIR\uninst.exe"'
    WriteUninstaller "$INSTDIR\uninst.exe"
@@ -92,23 +92,23 @@ Section "Uninstall"
   RMDir /r "$INSTDIR\lib"
   RMDir /r "$INSTDIR\include"
   #Modules have to be handled more carefully, in case there are 
-  #custom user-installed modules
-  Delete "$INSTDIR\modules\basemod.dll"
-  Delete "$INSTDIR\modules\basemod.dll.a"
-  Delete "$INSTDIR\modules\basemod.la"
-  Delete "$INSTDIR\modules\bugs.dll"
-  Delete "$INSTDIR\modules\bugs.dll.a"
-  Delete "$INSTDIR\modules\bugs.la"
-  Delete "$INSTDIR\modules\mix.dll"
-  Delete "$INSTDIR\modules\mix.dll.a"
-  Delete "$INSTDIR\modules\mix.la"
-  Delete "$INSTDIR\modules\msm.dll"
-  Delete "$INSTDIR\modules\msm.dll.a"
-  Delete "$INSTDIR\modules\msm.la"
-  Delete "$INSTDIR\modules\dic.dll"
-  Delete "$INSTDIR\modules\dic.dll.a"
-  Delete "$INSTDIR\modules\dic.la"
-  RMDir $INSTDIR\modules"
+  #custom user-installed modules-${VERSION}
+  Delete "$INSTDIR\modules-${VERSION}\basemod.dll"
+  Delete "$INSTDIR\modules-${VERSION}\basemod.dll.a"
+  Delete "$INSTDIR\modules-${VERSION}\basemod.la"
+  Delete "$INSTDIR\modules-${VERSION}\bugs.dll"
+  Delete "$INSTDIR\modules-${VERSION}\bugs.dll.a"
+  Delete "$INSTDIR\modules-${VERSION}\bugs.la"
+  Delete "$INSTDIR\modules-${VERSION}\mix.dll"
+  Delete "$INSTDIR\modules-${VERSION}\mix.dll.a"
+  Delete "$INSTDIR\modules-${VERSION}\mix.la"
+  Delete "$INSTDIR\modules-${VERSION}\msm.dll"
+  Delete "$INSTDIR\modules-${VERSION}\msm.dll.a"
+  Delete "$INSTDIR\modules-${VERSION}\msm.la"
+  Delete "$INSTDIR\modules-${VERSION}\dic.dll"
+  Delete "$INSTDIR\modules-${VERSION}\dic.dll.a"
+  Delete "$INSTDIR\modules-${VERSION}\dic.la"
+  RMDir $INSTDIR\modules-${VERSION}"
   #Uninstaller
   Delete "$INSTDIR\uninst.exe"
 
@@ -132,9 +132,10 @@ Section "Uninstall"
     StrCmp $MUI_TEMP $SMPROGRAMS startMenuDeleteLoopDone startMenuDeleteLoop
   startMenuDeleteLoopDone:
 
-  DeleteRegKey HKLM "SOFTWARE\JAGS-${VERSION}"
+  DeleteRegKey HKLM "SOFTWARE\JAGS\JAGS-${VERSION}"
   DeleteRegKey HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\JAGS-${VERSION}"
-  DeleteRegKey /ifempty HKCU "SOFTWARE\JAGS-${VERSION}"
+  DeleteRegKey /ifempty HKCU "SOFTWARE\JAGS\JAGS-${VERSION}"
+  DeleteRegKey /ifempty HKCU "SOFTWARE\JAGS"
 
 SectionEnd # end of uninstall section
 
