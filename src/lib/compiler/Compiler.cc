@@ -806,6 +806,9 @@ void Compiler::getArrayDim(ParseTree const *p)
   else {
     //Check against the existing entry, and modify if necessary
     unsigned int ndim = i->second[0].size();
+    if (!var_range.contains(range)) {
+	throw logic_error("Invalid range in Compiler::setConstantMask.");
+    }
     if (new_range.ndim(false) != ndim) {
       throw runtime_error(string("Inconsistent dimensions for array ") + name);
     }
