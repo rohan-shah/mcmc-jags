@@ -104,6 +104,10 @@ AC_CONFIG_FILES([
   src/lib/model/Makefile
   src/lib/compiler/Makefile
   src/lib/rng/Makefile
+  src/UFsparse/Makefile
+  src/UFsparse/AMD/Makefile
+  src/UFsparse/COLAMD/Makefile
+  src/UFsparse/CHOLMOD/Makefile
   src/jrmath/Makefile	
   src/include/Makefile
   src/include/util/Makefile
@@ -115,6 +119,7 @@ AC_CONFIG_FILES([
   src/include/model/Makefile
   src/include/compiler/Makefile
   src/include/rng/Makefile
+  src/include/UFsparse/Makefile
   src/modules/Makefile
   src/modules/base/Makefile
   src/modules/base/functions/Makefile
