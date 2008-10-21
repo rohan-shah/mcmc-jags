@@ -770,6 +770,9 @@ void Compiler::setConstantMask(ParseTree const *rel)
     }
     Range range = VariableSubsetRange(var);
     Range const &var_range = q->second.range();
+    if (!var_range.contains(range)) {
+        throw logic_error("Invalid range in Compiler::setConstantMask.");
+    }
     vector<bool> &mask = p->second;
     for (RangeIterator i(range); !i.atEnd(); i.nextLeft()) {
 	mask[var_range.leftOffset(i)] = false;
@@ -806,9 +809,6 @@ void Compiler::getArrayDim(ParseTree const *p)
   else {
     //Check against the existing entry, and modify if necessary
     unsigned int ndim = i->second[0].size();
-    if (!var_range.contains(range)) {
-	throw logic_error("Invalid range in Compiler::setConstantMask.");
-    }
     if (new_range.ndim(false) != ndim) {
       throw runtime_error(string("Inconsistent dimensions for array ") + name);
     }
