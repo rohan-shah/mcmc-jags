@@ -451,7 +451,7 @@ Node *Compiler::getLength(ParseTree const *p, SymTab const &symtab)
 Node *Compiler::getDim(ParseTree const *p, SymTab const &symtab)
 {
     if (p->treeClass() != P_DIM) {
-	throw logic_error("Malformed parse tree. Expecting length expression");
+	throw logic_error("Malformed parse tree. Expecting dim expression");
     }
     ParseTree const *var = p->parameters()[0];
     if (var->treeClass() != P_VAR) {
