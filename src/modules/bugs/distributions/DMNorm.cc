@@ -128,7 +128,7 @@ DMNorm::checkParameterValue(vector<double const *> const &parameters,
     // Check symmetry
     for (unsigned int i = 1; i < n; i++) {
 	for (unsigned int j = 0; j < i - 1; j++) {
-	    if (fabs(T[i + j*n] - T[j + i*n]) > DBL_EPSILON)
+	    if (fabs(T[i + j*n] - T[j + i*n]) > 16 * DBL_EPSILON)
 		return false;
 	}
     }
