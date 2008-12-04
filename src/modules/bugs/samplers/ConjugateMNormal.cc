@@ -211,15 +211,6 @@ void ConjugateMNormal::update(ConjugateSampler *sampler, unsigned int chain,
 	    }
 	    F77_DGEMV ("N", &nrow, &nrow, &alpha, tau, &nrow, delta, &i1,
 		       &d1, b, &i1);
-	    /*
-	    //FIXME: Include frequency weights
-	    for (int i = 0; i < nrow; ++i) {
-		for (int i2 = 0; i2 < nrow; ++i2) {
-		    A[i * nrow + i2] += tau[i * nrow + i2];
-		    b[i] += (Y[i2] - xold[i2]) * tau[nrow * i + i2];
-		}
-	    }
-	    */
 	}
 
 	delete [] delta;
@@ -296,30 +287,6 @@ void ConjugateMNormal::update(ConjugateSampler *sampler, unsigned int chain,
 			  &d1, C, &nrow, beta_j, &nrow, &d1, A, &nrow);
 	    }
 	       
-	    /*
-	    //This turns out to be rather expensive to do by hand
-	    //for large matrices.
-	      
-	    for (int i = 0; i < nrow; ++i) {
-		for (int k = 0; k < nrow_child; ++k) {
-		  
-		    double beta_tau = 0;
-		    for (int k2 = 0; k2 < nrow_child; ++k2) {
-			beta_tau += 
-			    beta_j[nrow * k2 + i] * tau[nrow_child * k2 + k];
-		    }
-		  
-		    for (int i2 = 0; i2 < nrow; ++i2) {
-			A[i * nrow + i2] += Nrep * 
-			    beta_tau * beta_j[nrow * k + i2];
-		    }
-		  
-		    b[i] += Nrep * (Y[k] - mu[k]) * beta_tau;
-		  
-		}
-	    }
-	    */
-	  
 	    beta_j += nrow_child * nrow;
 	}
 
@@ -327,7 +294,7 @@ void ConjugateMNormal::update(ConjugateSampler *sampler, unsigned int chain,
 	delete [] delta;
 
 	if (temp_beta) {
-	    delete betas;
+	    delete [] betas;
 	}
     }
 
@@ -357,7 +324,7 @@ void ConjugateMNormal::update(ConjugateSampler *sampler, unsigned int chain,
 	b[i] += xold[i];
     }
     double *xnew = new double[nrow];
-    //FIXME. This must use lower triangle of A!!!!
+    //NB. This uses the lower triangle of A
     DMNorm::randomsample(xnew, b, A, true, nrow, rng);
     sampler->setValue(xnew, nrow, chain);
 
