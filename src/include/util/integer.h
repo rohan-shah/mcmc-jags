@@ -1,7 +1,7 @@
 #ifndef UTIL_INTEGER_H_
 #define UTIL_INTEGER_H_
 
+bool checkInteger(double);
 int asInteger(double);
-int checkInteger(double, bool&);
 
 #endif /* UTIL_INTEGER_H_ */
