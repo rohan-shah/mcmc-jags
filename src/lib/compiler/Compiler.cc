@@ -139,13 +139,12 @@ bool Compiler::indexExpression(ParseTree const *p, int &value)
     if (node->length() != 1) {
 	throw NodeError(node, "Vector value in index expression"); 
     }
-    bool is_integer = true;
-    value = checkInteger(node->value(0)[0], is_integer);
-    if (!is_integer) {
+    if (!checkInteger(node->value(0)[0])) {
 	throw NodeError(node, 
 			"Index expression evaluates to non-integer value");
     }
-    
+    value = asInteger(node->value(0)[0]);
+	
     if (_index_expression == 0) {
         _index_graph.clear();
     }
