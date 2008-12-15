@@ -11,25 +11,29 @@ using std::string;
 
 static const double eps = 16 * DBL_EPSILON;
 
+static int coerceInteger(double fval)
+{
+    if (fval > 0) {
+	return static_cast<int>(fval + eps);
+    }
+    else {
+	return static_cast<int>(fval - eps);
+    }
+}
+
 int asInteger(double fval)
 {
     if (fval >= INT_MAX || fval <= INT_MIN) {
 	throw runtime_error(string("double value out of range for conversion to int"));
     }
-    int ival;
-    if (fval > 0) {
-	ival = static_cast<int>(fval + eps);
-    }
-    else {
-	ival = static_cast<int>(fval - eps);
-    }
-    return ival;
+    return coerceInteger(fval);
 }
 
-int checkInteger(double fval, bool &flag)
+bool checkInteger(double fval)
 {
-    int ival = asInteger(fval);
-    flag = fabs(fval - ival) < eps;
-    return ival;
+    if (fval >= INT_MAX || fval <= INT_MIN) {
+	return false;
+    }
+    return fabs(fval - coerceInteger(fval)) < eps;
 }
 
