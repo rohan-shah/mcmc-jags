@@ -290,7 +290,7 @@ Range Compiler::CounterRange(ParseTree const *var)
 
   unsigned int size = prange->parameters().size();
   if (size < 1 || size > 2) {
-    throw logic_error(string("Invalid range expression for counter")
+    throw logic_error(string("Invalid range expression for counter ")
 		      + var->name());
   }
   int lower;
@@ -965,7 +965,7 @@ void Compiler::declareVariables(vector<ParseTree*> const &dec_list)
 				    + name);
 	    }
 	    if (dim_i <= 0) {
-		throw runtime_error(string("Non-positive dimension for node") 
+		throw runtime_error(string("Non-positive dimension for node ") 
 				    + name);
 	    }
 	    dim[i] = static_cast<unsigned int>(dim_i);
