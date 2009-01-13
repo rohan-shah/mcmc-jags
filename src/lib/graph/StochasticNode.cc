@@ -26,14 +26,14 @@ static vector<unsigned int> mkDim(Distribution const *dist,
        parents
     */
 
+    if (parents.size() != dist->npar()) {
+	throw runtime_error(string("Incorrect number of parameters for ") +
+			    "distribution " + dist->name());
+    }
+
     vector<vector<unsigned int> > parameter_dims(parents.size());
     for (unsigned long j = 0; j < parents.size(); ++j) {
 	parameter_dims[j] = parents[j]->dim();
-    }
-    if (parameter_dims.size() != dist->npar()) {
-	//FIXME: logic_error or runtime_error?
-	throw runtime_error(string("Incorrect number of parameters for ") +
-			    "distribution " + dist->name());
     }
     if (!dist->checkParameterDim(parameter_dims)) {
 	throw runtime_error(string("Non-conforming parameters for ") +
