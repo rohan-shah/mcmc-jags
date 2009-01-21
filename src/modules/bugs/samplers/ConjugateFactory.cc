@@ -50,8 +50,8 @@ bool ConjugateFactory::canSample(StochasticNode * snode,
     }
 }
 
-Sampler *ConjugateFactory::makeSingletonSampler(StochasticNode *snode, 
-						Graph const &graph) const
+Sampler *ConjugateFactory::makeSampler(StochasticNode *snode, 
+					Graph const &graph) const
 {
     if (Censored::canSample(snode, graph))
       return new Censored(snode, graph);

@@ -11,7 +11,7 @@ Sampler *SingletonFactory::makeSampler(set<StochasticNode*> const &nodes,
     for (set<StochasticNode*>::iterator p(nodes.begin()); p != nodes.end(); ++p)
     {
 	if (canSample(*p, graph)) {
-	    return makeSingletonSampler(*p, graph);
+	    return makeSampler(*p, graph);
 	}
     }
     return 0;

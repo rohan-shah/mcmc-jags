@@ -23,8 +23,8 @@ public:
      * Returns a dynamically allocated Sampler for a given node. This
      * function is called by SingletonFactory#makeSampler.
      */
-    virtual Sampler *makeSingletonSampler(StochasticNode *node,
-					  Graph const &graph) const = 0;
+    virtual Sampler *makeSampler(StochasticNode *node,
+				  Graph const &graph) const = 0;
     /**
      * This traverses the graph, creating a Sampler, when possible,
      * for each individual StochasticNode.

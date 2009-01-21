@@ -19,8 +19,7 @@ MNormalFactory::canSample(StochasticNode * snode, Graph const &graph) const
 }
 
 Sampler *
-MNormalFactory::makeSingletonSampler(StochasticNode *snode, Graph const &graph)
-				      const
+MNormalFactory::makeSampler(StochasticNode *snode, Graph const &graph) const
 {
     unsigned int nchain = snode->nchain();
     vector<DensityMethod*> methods(nchain, 0);

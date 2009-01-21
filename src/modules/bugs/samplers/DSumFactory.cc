@@ -16,27 +16,48 @@ using std::set;
 using std::vector;
 using std::runtime_error;
 
+static StochasticNode const *getDSumChild(StochasticNode *node)
+{
+    //We can skip nodes that are not scalar discrete-valued
+    //as they cannot be sampled by a DSumSampler
+    if (node->length() != 1 || !node->isDiscreteValued())
+	return 0;
+    
+    set<Node *>::const_iterator p;
+    for (p = node->children()->begin(); p != node->children()->end(); ++p) {
+	//Skip unobserved nodes
+	if ((*p)->isObserved()) {
+	    StochasticNode const *snode = asStochastic(*p);
+	    if (snode && snode->distribution()->name() == "dsum") {
+		return snode;
+	    }
+	}
+    }
+    return 0;
+}
+
+
 Sampler * DSumFactory::makeSampler(set<StochasticNode*> const &nodes,
 				   Graph const &graph) const
 {
-    set<StochasticNode*> dsum_nodes;
-    set<StochasticNode*>::const_iterator p;
-
     //Find DSum node
-    for (p = nodes.begin(); p != nodes.end(); ++p) {
-	if ((*p)->distribution()->name() == "dsum")
+    StochasticNode const *dsum_node = 0;
+    for (set<StochasticNode*>::const_iterator p = nodes.begin(); 
+	 p != nodes.end(); ++p) 
+    {
+	dsum_node = getDSumChild(*p);
+	if (dsum_node)
 	    break;
     }
-  
-    if (p == nodes.end())
+    
+    if (!dsum_node)
 	return 0;
-
     
     //See if we can sample the parents. This can only be done if they
     //are unobserved stochastic nodes in the sample set
 
     vector<StochasticNode *> parameters;
-    vector<Node const *> const &parents = (*p)->parents();
+    vector<Node const *> const &parents = dsum_node->parents();
     vector<Node const *>::const_iterator pp;
     for (pp = parents.begin(); pp != parents.end(); ++pp) {
 	set<StochasticNode *>::const_iterator q =

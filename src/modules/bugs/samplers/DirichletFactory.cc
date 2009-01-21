@@ -19,9 +19,7 @@ DirichletFactory::canSample(StochasticNode * snode, Graph const &graph) const
 }
 
 Sampler *
-DirichletFactory::makeSingletonSampler(StochasticNode *snode, 
-				       Graph const &graph)
-    const
+DirichletFactory::makeSampler(StochasticNode *snode, Graph const &graph) const
 {
     unsigned int nchain = snode->nchain();
     vector<DensityMethod*> methods(nchain, 0);

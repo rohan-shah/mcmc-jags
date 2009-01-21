@@ -24,8 +24,8 @@ namespace base {
         }
     }
 
-    Sampler *SliceFactory::makeSingletonSampler(StochasticNode *snode,
-						Graph const &graph) const
+    Sampler *SliceFactory::makeSampler(StochasticNode *snode,
+					Graph const &graph) const
     {
 	unsigned int nchain = snode->nchain();
 	vector<DensityMethod*> methods(nchain, 0);

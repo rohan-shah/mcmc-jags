@@ -13,8 +13,7 @@ class DirichletFactory : public SingletonFactory
 {
 public:
     bool canSample(StochasticNode *snode, Graph const &graph) const;
-    Sampler *makeSingletonSampler(StochasticNode *snode, Graph const &graph)
-                                  const;
+    Sampler *makeSampler(StochasticNode *snode, Graph const &graph) const;
 };
 
 #endif /* DIRICHLET_FACTORY_H_ */
