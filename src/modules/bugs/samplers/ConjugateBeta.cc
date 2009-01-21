@@ -80,7 +80,7 @@ bool ConjugateBeta::canSample(StochasticNode *snode, Graph const &graph)
 	    return false; //Bounded
 	}
 	switch(getDist(stoch_nodes[i])) {
-	case BIN: 
+	case BIN: case NEGBIN:
 	    if (paramset.count(stoch_nodes[i]->parents()[1])) {
 		return false; //n depends on snode
 	    }      
@@ -116,6 +116,7 @@ ConjugateBeta::update(ConjugateSampler *sampler, unsigned int chain,
     case UNIF:
 	a = 1;
 	b = 1;
+	break;
     default:
         throw logic_error("invalid distribution in ConjugateBeta sampler");
     }
@@ -145,19 +146,26 @@ ConjugateBeta::update(ConjugateSampler *sampler, unsigned int chain,
     for (unsigned int i = 0; i < stoch_children.size(); ++i) {
 	if (!(is_mix && C[i] == 0)) {
 	    double y = *stoch_children[i]->value(chain);
-	    double n;
+	    double n, aplus, bplus;
 	    switch(child_dist[i]) {
 	    case BIN:
 		n = *stoch_children[i]->parents()[1]->value(chain);
+		aplus = y;
+		bplus = n - y;
 		break;
+	    case NEGBIN:
+		n = *stoch_children[i]->parents()[1]->value(chain);
+		aplus = n;
+		bplus = y;
 	    case BERN:
-		n = 1;
+		aplus = y;
+		bplus = 1 - y;
 		break;
 	    default:
 		throw logic_error("Invalid distribution in Conjugate Beta sampler");
 	    }
-	    a += y;
-	    b += (n - y);
+	    a += aplus;
+	    b += bplus;
 	}
     }
 
@@ -178,6 +186,7 @@ ConjugateBeta::update(ConjugateSampler *sampler, unsigned int chain,
 	for (int i = 0; i < 4; i++) {
 	    if (xnew >= lower && xnew <= upper) {
 		sampler->setValue(&xnew, 1, chain);
+                if (is_mix) delete [] C;
 		return;
 	    }
 	    xnew = rbeta(a, b, rng);
