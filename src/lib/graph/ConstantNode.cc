@@ -69,16 +69,6 @@ string ConstantNode::deparse(vector<string> const &parents) const
     return os.str();
 }
 
-bool ConstantNode::isLinear(GraphMarks const &linear_marks, bool fixed) const
-{
-    return true;
-}
-
-bool ConstantNode::isScale(GraphMarks const &scale_marks, bool fixed) const
-{
-    return true;
-}
-
 bool ConstantNode::checkParentValues(unsigned int) const
 {
     return true;

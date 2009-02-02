@@ -139,16 +139,6 @@ public:
      * not considered to be a random variable.
      */
     bool isRandomVariable() const;
-    /**
-     * Stochastic nodes are never linear functions of their
-     * parameters. This function always returns false.
-     */
-    bool isLinear(GraphMarks const &linear_marks, bool fixed) const;
-    /**
-     * Stochastic nodes are never scale functions. This function
-     * always returns false.
-     */
-    bool isScale(GraphMarks const &scale_marks, bool fixed) const;
     std::string deparse(std::vector<std::string> const &parameters) const;
     Node * clone(std::vector<Node const *> const &parents) const;
     bool isDiscreteValued() const;

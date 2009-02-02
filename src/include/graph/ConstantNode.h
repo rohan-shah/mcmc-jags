@@ -57,16 +57,6 @@ public:
      * returns true.
      */
     bool isRandomVariable() const;
-    /**
-     * Constant nodes are trivial fixed linear functions. This function
-     * always returns true.
-     */
-    bool isLinear(GraphMarks const &linear_marks, bool fixed) const;
-    /**
-     * Constant nodes are trivial fixed scale functions. This function
-     * always returns true.
-     */
-    bool isScale(GraphMarks const &scale_marks, bool fixed) const;
     Node *clone(std::vector<Node const *> const &parents) const;
 
 };

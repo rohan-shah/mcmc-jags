@@ -194,16 +194,6 @@ bool StochasticNode::checkParentValues(unsigned int chain) const
     return _dist->checkParameterValue(_parameters[chain], _dims);
 }
 
-bool StochasticNode::isLinear(GraphMarks const &linear_marks, bool fixed) const
-{
-    return false;
-}
-
-bool StochasticNode::isScale(GraphMarks const &scale_marks, bool fixed) const
-{
-    return false;
-}
-
 unsigned int df(StochasticNode const *snode)
 {
     return snode->distribution()->df(snode->parameterDims());
