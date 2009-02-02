@@ -1,6 +1,7 @@
 #include <config.h>
 #include <sampler/Sampler.h>
 #include <graph/StochasticNode.h>
+#include <graph/DeterministicNode.h>
 #include <graph/Graph.h>
 #include <graph/NodeError.h>
 #include <util/nainf.h>
@@ -9,12 +10,17 @@
 #include <set>
 #include <string>
 #include <cmath>
+#include <algorithm>
 
 using std::vector;
 using std::set;
 using std::runtime_error;
 using std::logic_error;
 using std::string;
+using std::reverse;
+
+static bool isInformative(StochasticNode *node, Graph const &sample_graph);
+static bool isInformative(DeterministicNode *node, Graph const &sample_graph);
 
 static unsigned int sumLength(vector<StochasticNode *> const &nodes)
 {
@@ -30,9 +36,7 @@ Sampler::Sampler(vector<StochasticNode *> const &nodes, Graph const &graph)
     : _length(sumLength(nodes)), _nodes(nodes), _stoch_children(0),
       _determ_children(0)
 {
-  classifyChildren(nodes, graph, _stoch_children, _determ_children);
-
-
+    classifyChildren(nodes, graph, _stoch_children, _determ_children);
 }
 
 Sampler::~Sampler()
@@ -45,91 +49,135 @@ vector<StochasticNode *> const &Sampler::nodes() const
   return _nodes;
 }
 
-static bool isInformative(Node *node, Graph const &sample_graph)
+/* A node is informative if it has an observed descendant. There are two
+   functions to check informativeness: one for stochastic nodes and one
+   for deterministic nodes.  The only difference is that for stochastic nodes
+   we check to see if the node is observed.
+*/
+static bool isInformative(StochasticNode *node, Graph const &sample_graph)
 {
-    /* Recursively test whether a node is informative (is observed or
-       has an observed descendant in the graph) */
-
     if (!sample_graph.contains(node))
 	return false;
-    
+
     if (node->isObserved())
 	return true;
 
-    for (set<Node*>::iterator p = node->children()->begin();
-	 p != node->children()->end(); ++p) {
-	if (isInformative(*p, sample_graph)) {
+    for (set<StochasticNode*>::iterator p = node->stochasticChildren()->begin();
+         p != node->stochasticChildren()->end(); ++p) 
+    {
+        if (isInformative(*p, sample_graph)) 
+            return true;
+    }
+    for (set<DeterministicNode*>::iterator p = node->deterministicChildren()->begin();
+         p != node->deterministicChildren()->end(); ++p) 
+    {
+	if (isInformative(*p, sample_graph)) 
 	    return true;
-	}
-    }    
+    }
     return false;
 }
 
-static bool classifyNode(Node *node, Graph const &sample_graph, 
-			 set<StochasticNode const*> &sset, set<Node*> &dset)
+static bool isInformative(DeterministicNode *node, Graph const &sample_graph)
 {
-    /*
-     * Recursive classification function for node and its descendants.
-     *
-     * If a node is informative, it is added to either sset (for
-     * stochastic nodes representing random variables) or dset (
-     * for other nodes). The recursion stops with stochastic nodes.
-     */
     if (!sample_graph.contains(node))
 	return false;
 
-    bool isinformative = false;
-    StochasticNode const *snode = asStochastic(node);
-    if (snode && snode->isRandomVariable()) {
-	/* This might look redundant, but we want to leave open
-	   the possibility that stochastic nodes may not
-	   represent random variables */
-
-	if (sset.count(snode)) 
-	    return true;
-
-	isinformative = isInformative(node, sample_graph);
-	if (isinformative) {
-	    sset.insert(snode);
-	}
+    for (set<StochasticNode*>::iterator p = node->stochasticChildren()->begin();
+         p != node->stochasticChildren()->end(); ++p) 
+    {
+        if (isInformative(*p, sample_graph)) 
+            return true;
     }
-    else {
-
-	if (dset.count(node))
+    for (set<DeterministicNode*>::iterator p = node->deterministicChildren()->begin();
+         p != node->deterministicChildren()->end(); ++p) 
+    {
+	if (isInformative(*p, sample_graph)) 
 	    return true;
-	
-	for (set<Node*>::iterator p = node->children()->begin();
-	     p != node->children()->end(); ++p) {
-	    if (classifyNode(*p, sample_graph, sset, dset)) {
-		isinformative = true;
-	    }
-	}
-	if (isinformative) {
-	    dset.insert(node);
-	}
     }
-    return isinformative;
+    return false;
 }
+
+static bool classifyNode(StochasticNode *snode, Graph const &sample_graph, 
+			 set<StochasticNode const*> &sset)
+{
+    // classification function for stochastic nodes
+      
+    if (!sample_graph.contains(snode))
+	return false;
+
+    if (sset.count(snode))
+	return true;
+
+    if (isInformative(snode, sample_graph)) {
+	sset.insert(snode);
+	return true;
+    }
+    return false;
+}
+
+static bool classifyNode(DeterministicNode *dnode, Graph const &sample_graph,
+                         set<StochasticNode const *> &sset,
+			 set<DeterministicNode const *> &dset,
+			 vector<DeterministicNode *> &dvec)
+{
+    //  Recursive classification function for deterministic nodes
+
+    if (!sample_graph.contains(dnode))
+	return false;
+    
+    if (dset.count(dnode))
+	return true;
+    
+    bool informative = false;
+    set<StochasticNode*>::const_iterator p; 
+    for (p = dnode->stochasticChildren()->begin(); 
+	 p != dnode->stochasticChildren()->end(); ++p)
+    {
+	if (classifyNode(*p, sample_graph, sset)) 
+	    informative = true;
+    }
+    set<DeterministicNode*>::const_iterator q;
+    for (q = dnode->deterministicChildren()->begin();
+	 q != dnode->deterministicChildren()->end(); ++q)
+    {
+	if (classifyNode(*q, sample_graph, sset, dset, dvec)) 
+	    informative = true;
+    }
+    if (informative) {
+	dset.insert(dnode);
+	dvec.push_back(dnode);
+    }
+    return informative;
+}
+
 
 void Sampler::classifyChildren(vector<StochasticNode *> const &nodes,
 			       Graph const &graph,
 			       vector<StochasticNode const*> &stoch_nodes,
-			       vector<Node*> &dtrm_nodes)
+			       vector<DeterministicNode*> &dtrm_nodes)
 {
-    set<Node*> dset;
+    set<DeterministicNode const *> dset;
     set<StochasticNode const*> sset;
 
+    dtrm_nodes.clear();
+
     /* Classify children of each node */
-    vector<StochasticNode  *>::const_iterator p = nodes.begin();
-    for (; p != nodes.end(); ++p) {
-	StochasticNode *snode = *p;
-	if (!graph.contains(snode)) {
+    vector<StochasticNode  *>::const_iterator p; 
+    for (p = nodes.begin(); p != nodes.end(); ++p) {
+	if (!graph.contains(*p)) {
 	    throw logic_error("Sampled node outside of sampling graph");
 	}
-	for (set<Node*>::const_iterator q = snode->children()->begin(); 
-	     q != snode->children()->end(); ++q) 
+	set<StochasticNode*> const *sch = (*p)->stochasticChildren();
+	for (set<StochasticNode*>::const_iterator q = sch->begin();
+	     q != sch->end(); ++q)
 	{
-	    classifyNode(*q, graph, sset, dset);
+	    classifyNode(*q, graph, sset);
+	}
+	set<DeterministicNode*> const *dch = (*p)->deterministicChildren();
+	for (set<DeterministicNode*>::const_iterator q = dch->begin();
+	     q != dch->end(); ++q)
+	{
+	    classifyNode(*q, graph, sset, dset, dtrm_nodes);
 	}
     }
 
@@ -141,11 +189,15 @@ void Sampler::classifyChildren(vector<StochasticNode *> const &nodes,
 	sset.erase(*p);
     }
 
-    stoch_nodes.resize(sset.size());
-    copy(sset.begin(), sset.end(), stoch_nodes.begin());
+    stoch_nodes.clear();
+    for (set<StochasticNode const*>::const_iterator i = sset.begin();
+         i != sset.end(); ++i)
+    {
+       stoch_nodes.push_back(*i);
+    }
 
-    dtrm_nodes.clear();
-    Graph::getSortedNodes(dset, dtrm_nodes);
+    // Deterministic nodes are pushed onto dtrm_nodes in reverse order
+    reverse(dtrm_nodes.begin(), dtrm_nodes.end());
 }
 
 double Sampler::logFullConditional(unsigned int chain) const
@@ -184,13 +236,12 @@ double Sampler::logFullConditional(unsigned int chain) const
 
 	//Recalculate the deterministic children, checking for
 	//invalid values
-	for (vector<Node*>::const_iterator p(_determ_children.begin());
-	     p != _determ_children.end(); ++p) 
-	{
-	    if(!(*p)->checkParentValues(chain)) {
-		throw NodeError(*p, "Invalid parent values");
+	vector<DeterministicNode*>::const_iterator r;
+	for (r =_determ_children.begin(); r != _determ_children.end(); ++r) {
+	    if(!(*r)->checkParentValues(chain)) {
+		throw NodeError(*r, "Invalid parent values");
 	    }
-	    (*p)->deterministicSample(chain);
+	    (*r)->deterministicSample(chain);
 	}
 
 	//Check likelihood
@@ -269,7 +320,7 @@ vector<StochasticNode const*> const &Sampler::stochasticChildren() const
   return _stoch_children;
 }
 
-vector<Node*> const &Sampler::deterministicChildren() const
+vector<DeterministicNode*> const &Sampler::deterministicChildren() const
 {
   return _determ_children;
 }
@@ -287,7 +338,7 @@ void Sampler::setValue(double const * value, unsigned int length,
 	value += node->length();
     }
 
-    for (vector<Node*>::iterator p(_determ_children.begin());
+    for (vector<DeterministicNode*>::iterator p(_determ_children.begin());
 	 p != _determ_children.end(); ++p) {
       (*p)->deterministicSample(chain);
     }

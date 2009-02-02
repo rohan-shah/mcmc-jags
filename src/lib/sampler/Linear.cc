@@ -4,6 +4,7 @@
 #include <graph/GraphMarks.h>
 #include <graph/Graph.h>
 #include <graph/StochasticNode.h>
+#include <graph/DeterministicNode.h>
 #include <graph/Node.h>
 
 using std::vector;
@@ -13,7 +14,7 @@ bool checkLinear(vector<StochasticNode*> const &snodes, Graph const &graph,
 		 bool fixed)
 {
     vector<StochasticNode const *> stoch_nodes;
-    vector<Node *> dtrm_nodes;
+    vector<DeterministicNode *> dtrm_nodes;
     Sampler::classifyChildren(snodes, graph, stoch_nodes, dtrm_nodes);
 
     GraphMarks linear_marks(graph);
@@ -37,7 +38,7 @@ bool checkLinear(vector<StochasticNode*> const &snodes, Graph const &graph,
 bool checkScale(StochasticNode* snode, Graph const &graph, bool fixed)
 {
     vector<StochasticNode const *> stoch_nodes;
-    vector<Node *> dtrm_nodes;
+    vector<DeterministicNode *> dtrm_nodes;
     Sampler::classifyChildren(vector<StochasticNode *>(1, snode), graph, 
 			      stoch_nodes, dtrm_nodes);
 

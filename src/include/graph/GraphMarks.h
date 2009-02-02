@@ -64,13 +64,13 @@ public:
     /**
      * Marks the children of node that are in the graph. 
      */
-    void markChildren(Node *node, int m);
+    //void markChildren(Node *node, int m);
     /**
      * Marks the children of a node in the sub-graph obtained by
      * marginalizing over all nodes for which the function test
      * returns false.
      */
-    void markChildren(Node *node, bool (*test)(Node const*), int m);
+    //void markChildren(Node *node, bool (*test)(Node const*), int m);
     /**
      * Marks the ancestors of the node in the graph, i.e. every node N
      * for which there is a directed path from N to node within the
@@ -82,7 +82,7 @@ public:
      * N for which there is a directed path from the given node to N
      * within the graph.
      */
-    void markDescendants(Node *node, int m);
+    //void markDescendants(Node *node, int m);
 };
 
 #endif /* GRAPH_MARKS_H_ */

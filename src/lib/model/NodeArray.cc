@@ -168,7 +168,7 @@ void NodeArray::setValue(SArray const &value, unsigned int chain)
 		throw runtime_error(msg + name() + 
 				    print(value.range().leftIndex(i)));
 	    }
-	    if (asStochastic(node) || asConstant(node)) {
+	    if (node->isRandomVariable()) {
 		setnodes.insert(node);
 	    }
 	    else {

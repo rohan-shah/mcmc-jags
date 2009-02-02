@@ -78,14 +78,6 @@ LogicalNode::LogicalNode(Function const *function,
 	}
 	
     }
-
-    vector<bool> mask(parameters.size());
-    for (unsigned long j = 0; j < parameters.size(); ++j) {
-	mask[j] = parameters[j]->isDiscreteValued();
-    }
-    if (_func->isDiscreteValued(mask)) {
-	setDiscreteValued();
-    }
 }
 
 LogicalNode::~LogicalNode()
@@ -192,4 +184,13 @@ bool LogicalNode::checkParentValues(unsigned int chain) const
 Node *LogicalNode::clone(vector<Node const*> const &parents) const
 {
     return new LogicalNode(_func, parents);
+}
+
+bool LogicalNode::isDiscreteValued() const
+{
+    vector<bool> mask(parents().size());
+    for (unsigned long j = 0; j < parents().size(); ++j) {
+        mask[j] = parents()[j]->isDiscreteValued();
+    }
+    return _func->isDiscreteValued(mask);
 }

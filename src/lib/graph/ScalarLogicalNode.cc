@@ -37,13 +37,6 @@ ScalarLogicalNode::ScalarLogicalNode(ScalarFunc const *function,
 	
     }
 
-    vector<bool> mask(parameters.size());
-    for (unsigned long j = 0; j < parameters.size(); ++j) {
-	mask[j] = parameters[j]->isDiscreteValued();
-    }
-    if (_func->isDiscreteValued(mask)) {
-	setDiscreteValued();
-    }
 }
 
 string ScalarLogicalNode::deparse(vector<string> const &parents) const
@@ -148,3 +141,13 @@ Node *ScalarLogicalNode::clone(vector<Node const*> const &parents) const
 {
     return new ScalarLogicalNode(_func, parents);
 }
+
+bool ScalarLogicalNode::isDiscreteValued() const
+{
+    vector<bool> mask(parents().size());
+    for (unsigned long j = 0; j < parents().size(); ++j) {
+        mask[j] = parents()[j]->isDiscreteValued();
+    }
+    return _func->isDiscreteValued(mask);
+}
+

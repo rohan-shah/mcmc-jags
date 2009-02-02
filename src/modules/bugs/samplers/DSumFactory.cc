@@ -23,15 +23,13 @@ static StochasticNode const *getDSumChild(StochasticNode *node)
     if (node->length() != 1 || !node->isDiscreteValued())
 	return 0;
     
-    set<Node *>::const_iterator p;
-    for (p = node->children()->begin(); p != node->children()->end(); ++p) {
+    set<StochasticNode *>::const_iterator p;
+    for (p = node->stochasticChildren()->begin(); 
+	 p != node->stochasticChildren()->end(); ++p) 
+    {
 	//Skip unobserved nodes
-	if ((*p)->isObserved()) {
-	    StochasticNode const *snode = asStochastic(*p);
-	    if (snode && snode->distribution()->name() == "dsum") {
-		return snode;
-	    }
-	}
+	if ((*p)->isObserved() && (*p)->distribution()->name() == "dsum") 
+	    return *p;
     }
     return 0;
 }

@@ -36,18 +36,6 @@ AggNode::AggNode(vector<unsigned int> const &dim,
 	  _parent_values[i + ch * _length] = parents[i]->value(ch) + offsets[i];
       }
   }
-
-  /* See if node is discrete-valued */
-  bool isdiscrete = true;
-  for (unsigned int i = 0; i < _length; i++) {
-    if (!parents[i]->isDiscreteValued()) {
-      isdiscrete = false;
-      break;
-    }
-  }
-  if (isdiscrete) {
-    setDiscreteValued();
-  }
 }
 
 AggNode::~AggNode()
@@ -132,3 +120,10 @@ Node *AggNode::clone(vector<Node const *> const &parents) const
     return new AggNode(this->dim(), parents, _offsets);
 }
 
+bool AggNode::isDiscreteValued() const
+{
+    for (unsigned int i = 0; i < parents().size(); ++i) {
+        if (!parents()[i]->isDiscreteValued()) return false;
+    }
+    return true;
+}

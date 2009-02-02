@@ -70,7 +70,7 @@ StochasticNode::StochasticNode(Distribution const *dist,
 			       Node const *lower, Node const *upper)
     : Node(mkDim(dist, parameters), mkParents(parameters, lower, upper)), 
       _dist(dist), _parameters(nchain()), _dims(mkParameterDims(parameters)),
-      _lower(lower), _upper(upper)
+      _lower(lower), _upper(upper), _observed(false)
 {
  
     if (parameters.size() != _dist->npar()) {
@@ -103,13 +103,16 @@ StochasticNode::StochasticNode(Distribution const *dist,
 	}
     }
 
-    if (dist->isDiscreteValued()) {
-	setDiscreteValued();
+    for (unsigned int i = 0; i < parents().size(); ++i) {
+	parents()[i]->addChild(this);
     }
 }
 
 StochasticNode::~StochasticNode()
 {
+    for (unsigned int i = 0; i < parents().size(); ++i) {
+	parents()[i]->removeChild(this);
+    }
 }
 
 Node const *StochasticNode::lowerBound() const
@@ -166,11 +169,6 @@ void StochasticNode::randomSample(RNG *rng, unsigned int chain)
 			_parameters[chain], _dims, 
 			lowerLimit(chain), upperLimit(chain), rng);
 }  
-
-StochasticNode const *asStochastic(Node const *node)
-{
-    return dynamic_cast<StochasticNode const*>(node);
-}
 
 bool StochasticNode::isRandomVariable() const
 {
@@ -312,4 +310,23 @@ Node * StochasticNode::clone(vector<Node const *> const &parents) const
     
     return new StochasticNode(_dist, param, lower, upper);
 
+}
+
+bool StochasticNode::isDiscreteValued() const
+{
+    return _dist->isDiscreteValued();
+}
+
+bool StochasticNode::isObserved() const
+{
+    return _observed;
+}
+
+void StochasticNode::setObserved() 
+{
+    _observed = true;
+} 
+
+StochasticNode const *asStochastic(Node const* node) {
+   return dynamic_cast<StochasticNode const*>(node);
 }

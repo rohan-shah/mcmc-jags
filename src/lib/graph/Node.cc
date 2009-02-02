@@ -14,6 +14,9 @@ using std::logic_error;
 using std::copy;
 using std::find;
 
+class DeterminsticNode;
+class StochasticNode;
+
 static vector<Node const*> &marked_nodes()
 {
     // Vector of nodes marked for deletion
@@ -21,19 +24,6 @@ static vector<Node const*> &marked_nodes()
     static vector<Node const*> _marked_nodes;
     return _marked_nodes;
 }
-
-/*
-void Node::checkForDeletion() const
-{
-    
-    //Check to see if node can be delete (reference count of zero and
-    //no children). If so, add it to the list of nodes marked for deletion.
-    
-    if (_ref == 0 && _children()->empty()) {
-	marked_nodes().push_back(node);
-    }
-}
-*/
 
 void Node::sweep() {
 
@@ -54,10 +44,8 @@ void Node::sweep() {
 }
 
 Node::Node(vector<unsigned int> const &dim, unsigned int nchain)
-    : _parents(0), _children(0), _ref(0), _isobserved(false),
-      _isdiscrete(false), _dim(getUnique(dim)), _length(product(dim)), 
-      _nchain(nchain),
-      _data(0)
+    : _parents(0), _stoch_children(0), _dtrm_children(0), _ref(0), 
+      _dim(getUnique(dim)), _length(product(dim)), _nchain(nchain), _data(0)
       
 {
     if (nchain==0)
@@ -69,13 +57,14 @@ Node::Node(vector<unsigned int> const &dim, unsigned int nchain)
 	_data[i] = JAGS_NA;
     }
 
-    _children = new set<Node*>;
+    _dtrm_children = new set<DeterministicNode*>;
+    _stoch_children = new set<StochasticNode*>;
 }
 
 Node::Node(vector<unsigned int> const &dim, 
 	   vector<Node const *> const &parents)
-    : _parents(parents), _children(0), _ref(0),  _isobserved(false), 
-      _isdiscrete(false), _dim(getUnique(dim)), _length(product(dim)),
+    : _parents(parents), _stoch_children(0), _dtrm_children(0),  _ref(0),
+      _dim(getUnique(dim)), _length(product(dim)),
       _nchain(countChains(parents)), _data(0)
 {
     if (nchain() == 0) {
@@ -88,31 +77,21 @@ Node::Node(vector<unsigned int> const &dim,
 	}
     }
   
-    for (unsigned int i = 0; i < parents.size(); ++i) {
-	parents[i]->_children->insert(this);
-    }
-
     unsigned int N = _length * _nchain;
     _data = new double[N];
     for (unsigned int i = 0; i < N; ++i) {
 	_data[i] = JAGS_NA;
     }
   
-    _children = new set<Node*>;
+    _stoch_children = new set<StochasticNode*>;
+    _dtrm_children = new set<DeterministicNode*>;
 }
 
 Node::~Node()
 {
     delete [] _data;
-    delete _children;
-
-    for (unsigned int i = 0; i < _parents.size(); ++i) {
-	_parents[i]->_children->erase(this);
-
-	if (_parents[i]->_ref == 0 && _parents[i]->_children->empty()) {
-	    //marked_nodes().push_back(parents[i]);
-	}
-    }
+    delete _stoch_children;
+    delete _dtrm_children;
 }
 
 void Node::ref()
@@ -123,7 +102,7 @@ void Node::ref()
 void Node::unref()
 {
     _ref--;
-    if (_ref == 0 && _children->empty()) {
+    if (_ref == 0 && _dtrm_children->empty() && _stoch_children->empty()) {
 	marked_nodes().push_back(this);
     }
 }
@@ -138,9 +117,14 @@ vector <Node const *> const &Node::parents() const
     return _parents;
 }
 
-set<Node*> const *Node::children() 
+set<StochasticNode*> const *Node::stochasticChildren() 
 {
-    return _children;
+    return _stoch_children;
+}
+
+set<DeterministicNode*> const *Node::deterministicChildren() 
+{
+    return _dtrm_children;
 }
 
 static bool isInitialized(Node const *node, unsigned int n)
@@ -155,7 +139,7 @@ static bool isInitialized(Node const *node, unsigned int n)
 
 void Node::initializeData()
 {
-    if (this->isRandomVariable() || this->isObserved())
+    if (this->isRandomVariable())
 	return;
     
     //Test whether all parents are observed
@@ -168,7 +152,6 @@ void Node::initializeData()
     for (unsigned int n = 0; n < _nchain; ++n) {
         deterministicSample(n);
     }
-    _isobserved = true;
 }
     
 bool Node::initialize(RNG *rng, unsigned int n)
@@ -192,6 +175,7 @@ bool Node::initialize(RNG *rng, unsigned int n)
 	}
     }
 
+    //FIXME: This may not be a great idea
     if (isfixed) {
 	deterministicSample(n);
     }
@@ -201,23 +185,6 @@ bool Node::initialize(RNG *rng, unsigned int n)
     return true; 
 }
     
-
-/*
-void Node::setObserved(double const *value, unsigned int length)
-{
-    if (length != _length) {
-	throw logic_error("Length mismatch in Node::setObserved");
-    }
-
-    for (unsigned int n = 0; n < _nchain; ++n) {
-        for (unsigned int i = 0; i < length; ++i) {
-	    _data[n * length + i] = value[i];
-        }
-    }
-    _isobserved = true;
-}
-*/
-
 void Node::setObserved(vector<double> const &value)
 {
     if (value.size() != _length) {
@@ -229,12 +196,6 @@ void Node::setObserved(vector<double> const &value)
 	    _data[n * _length + i] = value[i];
         }
     }
-    _isobserved = true;
-}
-
-bool Node::isObserved() const
-{
-    return _isobserved;
 }
 
 unsigned int Node::nchain() const
@@ -266,6 +227,7 @@ void Node::setValue(double const *value, unsigned int length, unsigned int chain
    copy(value, value + _length, _data + chain * _length);
 }
 
+/*
 bool Node::isDiscreteValued() const
 {
     return _isdiscrete;
@@ -275,6 +237,7 @@ void Node::setDiscreteValued()
 {
     _isdiscrete = true;
 }
+*/
 
 double const *Node::value(unsigned int chain) const
 {
@@ -290,3 +253,26 @@ unsigned int Node::length() const
 {
     return _length;
 }
+
+void Node::addChild(DeterministicNode *node) const
+{
+    _dtrm_children->insert(node);
+}
+
+void Node::addChild(StochasticNode *node) const
+{
+    _stoch_children->insert(node);
+}
+
+void Node::removeChild(DeterministicNode *node) const
+{
+    _dtrm_children->erase(node);
+}
+
+void Node::removeChild(StochasticNode *node) const
+{
+    _stoch_children->erase(node);
+}
+
+
+

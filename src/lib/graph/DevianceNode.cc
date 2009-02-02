@@ -74,9 +74,16 @@ string DevianceNode::deparse(vector<string> const &parents) const
 
 Node *DevianceNode::clone(vector<Node const *> const &parents) const
 {
+    //FIXME: This looks horribly broken (parents include parents of stochastic nodes)
+    //and uses downcasting
     set<StochasticNode const *> params;
     for (unsigned int i = 0; i < _parameters.size(); ++i) {
 	params.insert(asStochastic(parents[i]));
     }
     return new DevianceNode(params);
+}
+
+bool DevianceNode::isDiscreteValued() const
+{
+    return false;
 }

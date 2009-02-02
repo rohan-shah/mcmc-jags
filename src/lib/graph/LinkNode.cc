@@ -68,3 +68,8 @@ Node *LinkNode::clone(vector<Node const *> const &parents) const
 {
     return new LinkNode(_func, parents);
 }
+
+bool LinkNode::isDiscreteValued() const
+{
+    return false;
+}

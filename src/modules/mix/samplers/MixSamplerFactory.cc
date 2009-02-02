@@ -43,17 +43,16 @@ namespace mix {
 					     Graph const &graph) const
     {
 	vector<StochasticNode*> sparents;
-        set<Node*>::const_iterator p;
-	for (p = graph.nodes().begin(); p != graph.nodes().end(); ++p) {
+        set<StochasticNode*>::const_iterator p;
+	for (p = graph.stochasticNodes().begin(); p != graph.stochasticNodes().end(); ++p) {
 	 
-	    StochasticNode const *snode = asStochastic(*p);
-	    if (snode && snode->distribution()->name() == "dnormmix") {
+	    if ((*p)->distribution()->name() == "dnormmix") {
 		sparents = stochasticParents(*p, nodes, graph);
 		if (MixSampler::canSample(sparents, graph))
 		    break;
 	    }
 	}
-	if (p == graph.nodes().end()) {
+	if (p == graph.stochasticNodes().end()) {
 	    return 0;
 	}
 

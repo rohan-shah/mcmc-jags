@@ -3,7 +3,9 @@
 
 #include <set>
 #include <vector>
+
 class Node;
+class StochasticNode;
 
 /**
  * A graph is a container class for (pointers to) Nodes. A Node may
@@ -14,6 +16,7 @@ class Node;
  */
 class Graph {
   std::set<Node*> _nodes;
+  std::set<StochasticNode*> _stoch_nodes;
 
   /* forbid copying */
   Graph(Graph const &orig);
@@ -29,11 +32,19 @@ public:
    */
   ~Graph();
   /**
+   * Adds a StochasticNode to the graph
+   */
+  void add(StochasticNode *snode);
+  /**
    * Adds node to graph.  The reference count of the node is
    * incremented.  If node is already in the graph, no action is
    * taken.
    */
   void add(Node *node);
+  /**
+   * Removes a StochasticNode from the graph
+   */
+  void remove(StochasticNode *snode);
   /**
    * Removes node from graph. The reference count of the node is
    * decremented. If node is not a member, no action is taken.
@@ -69,6 +80,10 @@ public:
    * The set of nodes contained in the graph
    */
   std::set<Node*> const &nodes() const;
+  /**
+   * The set of stochastic nodes contained in the graph
+   */
+  std::set<StochasticNode*> const &stochasticNodes() const;
   /**
    * Adds all nodes in the graph to the given vector
    */

@@ -25,6 +25,15 @@ public:
     ConstantNode(std::vector<unsigned int> const &dim, 
 		 std::vector<double> const &value,
 		 unsigned int nchain);
+    ~ConstantNode();
+    /**
+     * A ConstantNode is always observed
+     */
+    bool isObserved() const;
+    /**
+     * Indicates whether a ConstantNode is discrete-valued
+     */
+    bool isDiscreteValued() const;
     /**
      * This function does nothing. It exists only so that objects of
      * class ConstantNode can be instantiated.

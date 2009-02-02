@@ -54,15 +54,17 @@ bool Censored::canSample(StochasticNode *snode, Graph const &graph)
     if (isBounded(snode))
 	return false;
   
-    if (snode->children()->size() != 1)
+    if (snode->stochasticChildren()->size() != 1)
+	return false;
+    //FIXME: We should take note of whether this is informative
+    if (!snode->deterministicChildren()->empty())
 	return false;
 
-    Node const *child = *snode->children()->begin();
+    StochasticNode const *child = *snode->stochasticChildren()->begin();
     if (!child->isObserved())
 	return false;
 
-    StochasticNode const *schild = asStochastic(child);
-    return (schild && schild->distribution()->name() == "dinterval");
+    return (child->distribution()->name() == "dinterval");
 }	
 
 void Censored::update(vector<RNG *> const &rng)

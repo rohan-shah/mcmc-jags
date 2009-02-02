@@ -8,6 +8,8 @@
 class RNG;
 class Graph;
 class GraphMarks;
+class StochasticNode;
+class DeterministicNode;
 
 /**
  * @short Node in a directed acyclic graph representingn a Bayesian model 
@@ -25,17 +27,17 @@ class GraphMarks;
  */
 class Node {
     std::vector<Node const *> _parents;
-    std::set<Node*> *_children;
-    unsigned int _ref;
-    bool _isobserved;
-    bool _isdiscrete;
+    std::set<StochasticNode *> *_stoch_children;
+    std::set<DeterministicNode *> *_dtrm_children;
 
     /* Forbid copying of Node objects */
     Node(Node const &orig);
     Node &operator=(Node const &rhs);
+
 protected:
+    unsigned int _ref;
     std::vector<unsigned int> const &_dim;
-    const unsigned int _length;
+    unsigned int _length;
     const unsigned int _nchain;
     double *_data;
 
@@ -86,18 +88,6 @@ public:
      */
     std::vector<Node const *> const &parents() const;
     /**
-     * Set of children.
-     *
-     * Note that if we have write access to a Node, then this function
-     * gives write access to its children.  This is a necessity:
-     * if we modify the value of the current Node, then we may need to
-     * update it's children to keep consistency of the model. Conversely,
-     * if we do not have write access to the Node (e.g. we have a constant
-     * pointer or reference) then this function cannot be used to obtain
-     * access to its children.
-     */
-    std::set<Node*> const *children();
-    /**
      * Draws a random sample from the node's prior distribution.
      * @param rng Pointer to random number generator
      * @param chain Number of chain from which to draw sample
@@ -112,6 +102,14 @@ public:
      * Checks whether the parents of the Node have valid values.
      */
     virtual bool checkParentValues(unsigned int chain) const = 0;
+    /**
+     * Returns the stochastic children of the node
+     */
+    std::set<StochasticNode*> const *stochasticChildren();
+    /**
+     * Returns the deterministic children of the node
+     */
+    std::set<DeterministicNode*> const *deterministicChildren();
     /**
      * Initializes the node for the given chain. The value array of a
      * newly constructed Node consists of missing values (denoted by
@@ -131,9 +129,8 @@ public:
     bool initialize(RNG *rng, unsigned int chain);
     /**
      * Initializes a node, in all chains, if it is not a random
-     * variable and if all of its parents are observed. In this case,
-     * the value of the node is also fixed. Otherwise the function
-     * has no effect.
+     * variable and if all of its parents are observed.  Otherwise the
+     * function has no effect.
      *
      * @see initialize
      */
@@ -160,7 +157,7 @@ public:
     /**
      * Indicates whether the node is observed. 
      */
-    bool isObserved() const;
+    virtual bool isObserved() const = 0;
     /**
      * Sets the value of the node for a given chain
      * @param value Array of values to be assigned
@@ -174,12 +171,7 @@ public:
      * Indicates whether a node is discrete-valued or not.
      * @see SArray#isDiscreteValued
      */
-    bool isDiscreteValued() const;
-    /**
-     * Permanently sets the node to be discrete-valued for all chains.
-     * @see SArray#isDiscreteValued
-     */
-    void setDiscreteValued();
+    virtual bool isDiscreteValued() const = 0;
     /**
      * Returns a pointer to the start of the array of values for 
      * the given chain.
@@ -267,6 +259,10 @@ public:
      * reference count has reached zero.
      */
     static void sweep();
+    void addChild(StochasticNode *node) const;
+    void removeChild(StochasticNode *node) const;
+    void addChild(DeterministicNode *node) const;
+    void removeChild(DeterministicNode *node) const;
 };
 
 /**

@@ -51,6 +51,10 @@ public:
      */
     void deterministicSample(unsigned int chain);
     /**
+     * An aggregate node is discrete valued if all of its parents are
+     */
+    bool isDiscreteValued() const;
+    /**
      * An AggNode always preserves linearity. Therefore this function
      * returns true.
      */

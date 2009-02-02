@@ -30,6 +30,7 @@ void GraphMarks::mark(Node const *node, int m)
     if (!_graph.contains(node)) {
 	throw logic_error("Attempt to set mark of node not in graph");
     }
+    //FIXME: If m is the default mark, we should remove it from the map
     _marks[node] = m;
 }
 
@@ -72,6 +73,7 @@ void GraphMarks::markParents(Node const *node, int m)
     }
 }
 
+//Used by MixtureSampler factory
 void 
 GraphMarks::markParents(Node const *node, bool (*test)(Node const *), int m)
 {
@@ -96,6 +98,7 @@ GraphMarks::markParents(Node const *node, bool (*test)(Node const *), int m)
     }
 }
 
+/*
 void GraphMarks::markChildren(Node *node, int m)
 {
 
@@ -103,7 +106,7 @@ void GraphMarks::markChildren(Node *node, int m)
 	throw logic_error("Can't mark children of node: not in Graph");
     }
 
-    set<Node*> const *children = node->children();
+    set<StochasticNode*> const *children = node->hildren();
     for (set<Node*>::const_iterator p = children->begin(); 
 	 p != children->end(); ++p) 
     {
@@ -135,7 +138,9 @@ void GraphMarks::markChildren(Node *node, bool (*test)(Node const *), int m)
 	}
     }
 }
+*/
 
+/*
 void 
 GraphMarks::do_mark_descendants(Node *node, int m, set<Node const*> &visited)
 {
@@ -157,13 +162,13 @@ void GraphMarks::markDescendants(Node *node, int m)
     if (!_graph.contains(node)) {
 	throw logic_error("Can't mark children of node: not in Graph");
     }
-    /* 
-       visited_nodes keeps track of previously visited nodes in order
-       to avoid an infinite loop when the graph has a directed cycle.
-    */
+    //   visited_nodes keeps track of previously visited nodes in order
+    //   to avoid an infinite loop when the graph has a directed cycle.
+
     set<Node const*> visited_nodes;
     do_mark_descendants(node, m, visited_nodes);
 }
+*/
 
 void 
 GraphMarks::do_mark_ancestors(Node const *node, int m, 
@@ -185,12 +190,10 @@ GraphMarks::do_mark_ancestors(Node const *node, int m,
 void GraphMarks::markAncestors(Node const *node, int m)
 {
     if (!_graph.contains(node)) {
-	throw logic_error("Can't mark children of node: not in Graph");
+	throw logic_error("Can't mark ancestors of node: not in Graph");
     }
-    /* 
-       visited_nodes keeps track of previously visited nodes for efficiency.
-       This also protects against directed cycles.
-    */
+    //  visited_nodes keeps track of previously visited nodes for efficiency.
+    //  This also protects against directed cycles.
     set<Node const*> visited_nodes;
     do_mark_ancestors(node, m, visited_nodes);
 }

@@ -58,6 +58,11 @@ public:
      */
     unsigned int index_size() const;
     /**
+     * A MixtureNode is discrete valued if all of its possible
+     * parents are discrete
+     */
+    bool isDiscreteValued() const;
+    /**
      * A MixtureNode preserves linearity if none of the index nodes
      * are parameters. It is never a fixed linear function.
      */

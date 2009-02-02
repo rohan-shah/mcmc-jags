@@ -103,6 +103,8 @@ Node * Compiler::constFromTable(ParseTree const *p)
     }
 }
 
+//debuggin
+#include <iostream>
 bool Compiler::indexExpression(ParseTree const *p, int &value)
 {
     /* 
@@ -140,6 +142,7 @@ bool Compiler::indexExpression(ParseTree const *p, int &value)
 	throw NodeError(node, "Vector value in index expression"); 
     }
     if (!checkInteger(node->value(0)[0])) {
+	std::cout << node->value(0)[0] << std::endl;
 	throw NodeError(node, 
 			"Index expression evaluates to non-integer value");
     }
@@ -557,18 +560,17 @@ Node * Compiler::getParameter(ParseTree const *t)
     if (!node)
         return 0;
 
-    /* Initialize deterministic nodes now, if they are functions of 
-       data, to aid in node recycling */
-    if (!node->isRandomVariable()) {
-      node->initializeData();
-    }
-
-    if (_index_expression && !node->isObserved()) {
-	return 0;
+    if (node->isRandomVariable()) {
+	//Random variables in index expressions must be observed
+	if (_index_expression && !node->isObserved())
+	    return 0;
     }
     else {
-	return node;
+	//Initialize deterministic nodes now (FIXME: may be expensive)
+	node->initializeData();
     }
+
+    return node;
 }
 
 /*
@@ -643,7 +645,7 @@ Node * Compiler::allocateStochastic(ParseTree const *stoch_relation)
   
 
     Distribution const *dist = getDistribution(stoch_relation, distTab());
-    Node *snode =  new StochasticNode(dist, parameters, lBound, uBound);
+    StochasticNode *snode =  new StochasticNode(dist, parameters, lBound, uBound);
     _model.graph().add(snode);
     
     //Search data table to see if this is an observed node
@@ -661,7 +663,8 @@ Node * Compiler::allocateStochastic(ParseTree const *stoch_relation)
 			    + name + print(target_range));
 	}
 
-	vector<double> this_data(target_range.length());
+	unsigned int length = target_range.length();
+	double *this_data = new double[length];
 
 	unsigned int i = 0;
 	unsigned int nmissing = 0;
@@ -674,9 +677,14 @@ Node * Compiler::allocateStochastic(ParseTree const *stoch_relation)
 	}
 
 	if (nmissing == 0) {
-	    snode->setObserved(this_data);
+            for (unsigned int n = 0; n < snode->nchain(); ++n) {
+	        snode->setValue(this_data, length, n);
+            }
+ 	    snode->setObserved();
 	}
-	else if (nmissing != this_data.size()) {
+	delete [] this_data;
+
+	if (nmissing != 0 && nmissing != length) {
 	    throw NodeError(snode, string("Data ") + name + print(target_range)
 			    + " is partially missing");
 	}

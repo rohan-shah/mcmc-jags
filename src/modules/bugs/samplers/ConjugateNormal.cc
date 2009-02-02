@@ -104,7 +104,7 @@ bool ConjugateNormal::canSample(StochasticNode *snode, Graph const &graph)
 	return false;
 
     vector<StochasticNode const*> stoch_nodes;
-    vector<Node*> dtrm_nodes;
+    vector<DeterministicNode*> dtrm_nodes;
     Sampler::classifyChildren(vector<StochasticNode*>(1,snode), 
 		              graph, stoch_nodes, dtrm_nodes);
 

@@ -44,6 +44,7 @@ class StochasticNode : public Node {
     std::vector<std::vector<unsigned int> > const &_dims;
     Node const *_lower;
     Node const *_upper;
+    bool _observed;
 public:
     /**
      * Constructs a new StochasticNode given a distribution, a vector
@@ -150,13 +151,10 @@ public:
     bool isScale(GraphMarks const &scale_marks, bool fixed) const;
     std::string deparse(std::vector<std::string> const &parameters) const;
     Node * clone(std::vector<Node const *> const &parents) const;
+    bool isDiscreteValued() const;
+    bool isObserved() const;
+    void setObserved();
 };
-
-/**
- * Wrapper function that dynamically casts a Node pointer to a
- * StochasticNode pointer.
- */
-StochasticNode const *asStochastic(Node const *node);
 
 /**
  * Number of degrees of freedom of a node
@@ -201,6 +199,12 @@ void support(double *lower, double *upper, unsigned int length,
  * @see Distributin#isSupportFixed
  */
 bool isSupportFixed(StochasticNode const *node);
+
+/**
+ * Wrapper function that dynamically casts a Node pointer to a
+ * StochasticNode pointer.
+ */
+StochasticNode const *asStochastic(Node const *node);
 
 #endif /* STOCHASTIC_NODE_H_ */
 

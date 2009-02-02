@@ -31,24 +31,21 @@ namespace base {
 	vector<Node const*> dnodes;
 
         if (type == "trace") {
-	    set<Node*> const &nodes = model->graph().nodes();
-	    set<Node*>::const_iterator p = nodes.begin(); 
-	    for ( ; p != nodes.end(); ++p) {
-		StochasticNode const *snode = asStochastic(*p);
-		if (snode) {
-		    //Find stochastic nodes with observed parents
-		    bool istop = true;
-		    vector<Node const*> const &parents = (*p)->parents();
-		    vector<Node const*>::const_iterator q;
-		    for (q = parents.begin(); q != parents.end(); ++q) {
-			if (!(*q)->isObserved()) {
-			    istop = false;
-			    break;
-			}
+	    set<StochasticNode*> const &snodes = model->graph().stochasticNodes();
+	    set<StochasticNode*>::const_iterator p = snodes.begin(); 
+	    for ( ; p != snodes.end(); ++p) {
+		//Find stochastic nodes with observed parents
+		bool istop = true;
+		vector<Node const*> const &parents = (*p)->parents();
+		vector<Node const*>::const_iterator q;
+		for (q = parents.begin(); q != parents.end(); ++q) {
+		    if (!(*q)->isObserved()) {
+			istop = false;
+			break;
 		    }
-		    if (istop) {
-			dnodes.push_back(*p);
-		    }
+		}
+		if (istop) {
+		    dnodes.push_back(*p);
 		}
 	    }
 	}

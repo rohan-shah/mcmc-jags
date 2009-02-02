@@ -16,8 +16,9 @@ class Function;
 class LogicalNode : public DeterministicNode {
     Function const * const _func;
     std::vector<std::vector<double const*> > _parameters;
-    std::vector<unsigned int> const &_lengths;
     std::vector<std::vector<unsigned int> > const &_dims;
+    std::vector<unsigned int> const &_lengths;
+
 public:
     /**
      * A logical node is defined by a function (which may be an inline
@@ -26,6 +27,11 @@ public:
     LogicalNode(Function const *func,
                 std::vector<Node const*> const &parameters);
     ~LogicalNode();
+    /**
+     * A LogicalNode may be discrete valued if its parents are. 
+     * @see Function##isDiscreteValued;
+     */
+    bool isDiscreteValued() const;
     /**
      * Calculates the value of the node based on the parameters. 
      */

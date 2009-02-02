@@ -92,22 +92,8 @@ MixtureNode::MixtureNode (vector<Node const *> const &index,
 	    throw invalid_argument("Invalid index in MixtureNode");
 	}
     }
-
-    // A mixture node is discrete if all its parents are discrete
-
-    bool isdiscrete = true;
-    vector<Node const *> const &par = parents();
-    for(unsigned int i = _Nindex; i < par.size(); ++i) {
-	if (!par[i]->isDiscreteValued()) {
-	    isdiscrete = false;
-	    break;
-	}
-    }
-
-    if (isdiscrete) {
-	setDiscreteValued();
-    }
 }
+
 
 MixtureNode::~MixtureNode()
 {
@@ -247,4 +233,13 @@ Node *MixtureNode::clone(vector<Node const *> const &parents) const
     }
     
     return new MixtureNode(index, mixmap);
+}
+
+bool MixtureNode::isDiscreteValued() const
+{
+    for(unsigned int i = _Nindex; i < parents().size(); ++i) {
+	if (!parents()[i]->isDiscreteValued())
+	    return false;
+    }
+    return true;
 }
