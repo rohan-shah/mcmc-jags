@@ -47,9 +47,9 @@ public:
      */
     int mark(Node const *node) const;
     /**
-     * Sets the mark of all nodes in the graph to m
+     * Resets the mark of all nodes in the graph to zero.
      */
-    void markAll(int m);
+    void clear();
     /**
      * Sets the mark of all parents of the given node in the graph to
      * m.

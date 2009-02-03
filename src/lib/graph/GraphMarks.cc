@@ -13,7 +13,7 @@ using std::set;
 using std::logic_error;
 
 GraphMarks::GraphMarks(Graph const &graph)
-    : _graph(graph), _default_mark(0)
+    : _graph(graph)
 {
 }
 
@@ -30,8 +30,12 @@ void GraphMarks::mark(Node const *node, int m)
     if (!_graph.contains(node)) {
 	throw logic_error("Attempt to set mark of node not in graph");
     }
-    //FIXME: If m is the default mark, we should remove it from the map
-    _marks[node] = m;
+    if (m == 0) {
+	_marks.erase(node);
+    }
+    else {
+	_marks[node] = m;
+    }
 }
 
 int GraphMarks::mark(Node const *node) const
@@ -42,18 +46,16 @@ int GraphMarks::mark(Node const *node) const
     
     map<Node const*, int>::const_iterator i = _marks.find(node);
     if (i == _marks.end()) {
-	return _default_mark;
+	return 0;
     }
     else {
 	return i->second;
     }
 }
 
-
-void GraphMarks::markAll(int m)
+void GraphMarks::clear()
 {
     _marks.clear();
-    _default_mark = m;
 }
 
 void GraphMarks::markParents(Node const *node, int m)
@@ -73,6 +75,7 @@ void GraphMarks::markParents(Node const *node, int m)
     }
 }
 
+//FIXME
 //Used by MixtureSampler factory
 void 
 GraphMarks::markParents(Node const *node, bool (*test)(Node const *), int m)
