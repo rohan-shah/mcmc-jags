@@ -3061,12 +3061,12 @@ AS_VAR_POPDEF([ac_Symbol])dnl
 ## Defines HAVE_SYMBOL if declared.  SYMBOLS is an m4 list.
 AC_DEFUN([R_CHECK_FUNCS],
 [AC_FOREACH([AC_Func], [$1],
-  [AH_TEMPLATE(AS_TR_CPP(HAVE_[]AC_Func),
+  [AH_TEMPLATE(AS_TR_CPP([HAVE_]AC_Func),
                [Define to 1 if you have the `]AC_Func[' function.])])dnl
 for ac_func in $1
 do
 R_CHECK_DECL($ac_func,
-             [AC_DEFINE_UNQUOTED([AS_TR_CPP([HAVE_$ac_func])], 1)], , [$2])dnl
+             [AC_DEFINE_UNQUOTED(AS_TR_CPP([HAVE_$ac_func]), 1)], , [$2])dnl
 done
 ])# R_CHECK_FUNCS
 
