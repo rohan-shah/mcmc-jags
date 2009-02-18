@@ -35,9 +35,9 @@ private:
   bool _is_initialized;
   bool _adapt;
   bool _data_gen;
-  void initializeNodes(std::vector<Node*> const &sorted_nodes);
+  void initializeNodes();
   void chooseRNGs();
-  void chooseSamplers(std::vector<Node*> const &sorted_nodes);
+  void chooseSamplers();
   void setSampledExtra();
 public:
   /**

@@ -113,18 +113,14 @@ void Model::initialize(bool datagen)
     if (!_graph.isClosed())
 	throw runtime_error("Graph not closed");
 
-    //Get nodes in forward-sampling order
-    vector<Node*> sorted_nodes;
-    _graph.getSortedNodes(sorted_nodes);
-
     // Choose random number generators
     chooseRNGs();
 
     //Initialize nodes
-    initializeNodes(sorted_nodes);
+    initializeNodes();
 
     // Choose Samplers
-    chooseSamplers(sorted_nodes);
+    chooseSamplers();
     
     if (datagen) {
 	Graph egraph;
@@ -149,8 +145,12 @@ void Model::initialize(bool datagen)
     _is_initialized = true;
 }
 
-void Model::initializeNodes(vector<Node*> const &sorted_nodes)
+void Model::initializeNodes()
 {
+    //Get nodes in forward-sampling order
+    vector<Node*> sorted_nodes;
+    _graph.getSortedNodes(sorted_nodes);
+
     vector<Node*>::const_iterator i;
     for (i = sorted_nodes.begin(); i != sorted_nodes.end(); ++i) {
 	Node *node = *i;
@@ -164,29 +164,6 @@ void Model::initializeNodes(vector<Node*> const &sorted_nodes)
 	}
     }
 }
-
-/*
-struct less_sampler {  
-
-    // Comparison operator for Samplers which sorts them according to
-    // the ordering defined by the supplied sampler_map.
-
-    map<Sampler const*, int> const & _sampler_map;
-
-    less_sampler(map<Sampler const*, int> const &sampler_map) 
-	: _sampler_map(sampler_map) {};
-
-    bool operator()(Sampler const *x, Sampler const *y) const {
-	map<Sampler const*, int>::const_iterator i = _sampler_map.find(x);
-	map<Sampler const*, int>::const_iterator j = _sampler_map.find(y);
-
-	if (i == _sampler_map.end() || j == _sampler_map.end()) {
-	    throw logic_error("Invalid sampler map");
-	}
-	return i->second > j->second;
-    };
-};
-*/
 
 struct less_sampler {  
     /* 
@@ -211,9 +188,11 @@ struct less_sampler {
     };
 };
 
-static bool anyChildInSet(Sampler const *sampler, set<StochasticNode const*> const &sset)
+static bool anyChildInSet(Sampler const *sampler, 
+			  set<StochasticNode const*> const &sset)
 {
-    vector<StochasticNode const*> const &schildren = sampler->stochasticChildren();
+    vector<StochasticNode const*> const &schildren 
+	= sampler->stochasticChildren();
     for (unsigned int i = 0; i < schildren.size(); ++i) {
 	if (sset.find(schildren[i]) != sset.end())
 	    return true;
@@ -261,7 +240,7 @@ samplerLimits(Sampler const *sampler, unsigned int &lower, unsigned int &upper)
     }
 }
 
-void Model::chooseSamplers(vector<Node*> const &sorted_nodes)
+void Model::chooseSamplers()
 {
     /*
      * Selects samplers. Samplers are selected by traversing the list
@@ -312,8 +291,9 @@ void Model::chooseSamplers(vector<Node*> const &sorted_nodes)
 	}
     }
 
-    vector<Node*>::const_iterator j;
-    for (j = sorted_nodes.begin(); j != sorted_nodes.end(); j++) {
+    set<Node*> const &nodes = _graph.nodes();
+    set<Node*>::const_iterator j;
+    for (j = nodes.begin(); j != nodes.end(); ++j) {
 	switch(marks.mark(*j)) {
 	case 0:
 	    _extra_nodes.insert(*j);
@@ -406,34 +386,6 @@ void Model::chooseSamplers(vector<Node*> const &sorted_nodes)
 	    }
 	}
     }
-
-    /*
-    // The map node_map associates each node in the graph with its index
-    // in the vector of sorted nodes. 
-    map <Node const *, int> node_map;
-    for (unsigned int i = 0; i < sorted_nodes.size(); ++i) {
-	node_map.insert(pair<Node const*, int>(sorted_nodes[i], i));
-    }
-    
-    // Use node_map to construct a map for the samplers.  Each sampler
-    // is given the highest index of any stochastic node that it
-    // samples.
-    
-    map <Sampler const *, int> sampler_map;
-    for (unsigned int i = 0; i < _samplers.size(); ++i) {
-	vector<StochasticNode*> const &nodes = _samplers[i]->nodes();
-	int index_i = 0;
-	for (unsigned int j = 0; j < nodes.size(); ++j) {
-	    index_i = max(index_i, node_map[nodes[j]]);
-	}
-	sampler_map.insert(pair<Sampler const*, int>(_samplers[i], index_i));
-    }
-
-    // Sort the samplers in reverse sampling order. Empirically, this
-    // ordering allows the chain to recover quickly from bad starting
-    // values.
-    stable_sort(_samplers.begin(), _samplers.end(), less_sampler(sampler_map));
-    */
 }
 
 void Model::update(unsigned int niter)
