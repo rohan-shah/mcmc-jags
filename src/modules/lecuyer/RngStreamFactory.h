@@ -1,0 +1,25 @@
+#ifndef RNG_STREAM_FACTORY_H_
+#define RNG_STREAM_FACTORY_H_
+
+#include <rng/RNGFactory.h>
+#include "RngStream.h"
+
+namespace lecuyer {
+    
+/**
+ * @short Factory object for Lecuyer RNG Stream
+ */
+    class RngStreamFactory : public RNGFactory
+    {
+	RngStream _g;
+	std::vector<RNG*> _rngvec;
+    public:
+	RngStreamFactory();
+	~RngStreamFactory();
+	std::vector<RNG *> makeRNGs(unsigned int &n);
+	RNG * makeRNG(std::string const &name);
+    };
+
+}
+
+#endif /* RNG_STREAM_FACTORY_H_ */
