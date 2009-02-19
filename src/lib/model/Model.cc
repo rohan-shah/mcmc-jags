@@ -85,6 +85,12 @@ void Model::chooseRNGs()
 	 p != rngFactories().end(); ++p) 
     {
 	vector<RNG*> rngs = (*p)->makeRNGs(n);
+        if (rngs.size() > n) {
+            throw logic_error("Too many rngs produced by RNG factory");
+        }
+        else {
+            n -= rngs.size();
+        }
 	for (unsigned int j = 0; j < rngs.size(); ++j) {
 	    new_rngs.push_back(rngs[j]);
 	}

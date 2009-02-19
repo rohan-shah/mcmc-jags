@@ -16,7 +16,7 @@ namespace lecuyer {
     public:
 	RngStreamFactory();
 	~RngStreamFactory();
-	std::vector<RNG *> makeRNGs(unsigned int &n);
+	std::vector<RNG *> makeRNGs(unsigned int n);
 	RNG * makeRNG(std::string const &name);
     };
 

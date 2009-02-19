@@ -20,13 +20,11 @@ class RNGFactory
   /**
    * Returns a vector of newly allocated RNG objects.
    *
-   * @param n Number of RNGs requested. If successful, the return value
-   * will be a list of length n, and on exit the counter n will be
-   * decremented to zero.  If a factory has the capacity to make only m < n
-   * independent samplers, then the return value will be of length m
-   * and on exit the counter will be decremented by m.
+   * @param n Number of RNGs requested. Note that an RNG factory have the
+   * capacity to make only m < n independent samplers (where m may be zero).
+   * In this case it should return a vector of length m.
    */
-  virtual std::vector<RNG *> makeRNGs(unsigned int &n) = 0;
+  virtual std::vector<RNG *> makeRNGs(unsigned int n) = 0;
   /**
    * Returns a newly allocated RNG object.  
    *

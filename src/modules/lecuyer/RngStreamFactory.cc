@@ -26,7 +26,7 @@ namespace lecuyer {
 	}
     }
 
-    vector<RNG *> RngStreamFactory::makeRNGs(unsigned int &n)
+    vector<RNG *> RngStreamFactory::makeRNGs(unsigned int n)
     {
 	vector<RNG *> ans;
 	for (unsigned int i = 0; i < n; ++i) {
@@ -38,7 +38,6 @@ namespace lecuyer {
 	    ans.push_back(rng);
 	}
 	_g.resetNextStream();
-	n = 0; //FIXME: This is kind of dumb
 	return ans;
     }
 

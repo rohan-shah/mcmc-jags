@@ -139,6 +139,7 @@ AC_CONFIG_FILES([
   src/modules/mix/distributions/Makefile	
   src/modules/mix/samplers/Makefile	
   src/modules/dic/Makefile
+  src/modules/lecuyer/Makefile
   src/terminal/Makefile
   win32/Makefile
   win32/lapack/Makefile

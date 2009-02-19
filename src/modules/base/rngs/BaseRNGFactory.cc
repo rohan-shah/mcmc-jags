@@ -25,13 +25,12 @@ namespace base {
 	}
     }
 
-    vector<RNG *> BaseRNGFactory::makeRNGs(unsigned int &n)
+    vector<RNG *> BaseRNGFactory::makeRNGs(unsigned int n)
     {
 	unsigned int seed = static_cast<unsigned int>(time(NULL));
 
 	vector<RNG *> ans;
-	unsigned int norig = n;
-	for (unsigned int i = 0; i < norig; ++i) {
+	for (unsigned int i = 0; i < n; ++i) {
 	    RNG *rng = 0;
 	    switch(i) {
 	    case 0:
@@ -53,7 +52,6 @@ namespace base {
 		// Store generated RNG for memory management
 		_rngvec.push_back(rng);
 		ans.push_back(rng);
-		--n;
 	    }
 	}
 	return ans;
