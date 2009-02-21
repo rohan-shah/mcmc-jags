@@ -11,11 +11,13 @@ namespace lecuyer {
  */
     class RngStreamFactory : public RNGFactory
     {
-	RngStream _g;
+	double Bg[6], Ig[6];
 	std::vector<RNG*> _rngvec;
     public:
 	RngStreamFactory();
 	~RngStreamFactory();
+	void nextStream();
+	void nextSubstream();
 	std::vector<RNG *> makeRNGs(unsigned int n);
 	RNG * makeRNG(std::string const &name);
     };
