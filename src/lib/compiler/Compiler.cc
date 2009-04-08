@@ -586,7 +586,7 @@ bool Compiler::getParameterVector(ParseTree const *t,
     }
 
     switch (t->treeClass()) {
-    case P_FUNCTION: case P_LINK:
+    case P_FUNCTION: case P_LINK: case P_DENSITY:
 	for (unsigned int i = 0; i < t->parameters().size(); ++i) {
 	    Node *node = getParameter(t->parameters()[i]);
 	    if (node) {
@@ -600,31 +600,40 @@ bool Compiler::getParameterVector(ParseTree const *t,
 	}
 	break;
     default:
-	throw logic_error("Invalid Parse Tree. Expected function or operator.");
+	throw logic_error("Invalid Parse Tree.");
     }
     return true;
 }
 
+
+//debuggin
+#include <iostream>
 Node * Compiler::allocateStochastic(ParseTree const *stoch_relation)
 {
     ParseTree const *distribution = stoch_relation->parameters()[1];  
-    vector<Node const *> parameters;
-    Node *lBound = 0, *uBound = 0;
 
     // Create the parameter vector
+    vector<Node const *> parameters;
+/*
+    if (!getParameterVector(distribution, parameters)) {
+	return 0;
+    }
+*/
     vector<ParseTree*> const &param_list = distribution->parameters();
     for (unsigned int i = 0; i < param_list.size(); ++i) {
-	Node *param = getParameter(param_list[i]);
-	if (param) {
-	    parameters.push_back(param);
-	}
-	else {
-	    return 0;
-	}
+        Node *param = getParameter(param_list[i]);
+        if (param) {
+            parameters.push_back(param);
+        }
+        else {
+            return 0;
+        }
     }
 
-    // Set upper and lower bounds, if truncated
+    // Set upper and lower bounds
+    Node *lBound = 0, *uBound = 0;
     if (stoch_relation->parameters().size() == 3) {
+	//Truncated distribution
 	ParseTree const *truncated = stoch_relation->parameters()[2];
 	ParseTree const *ll = truncated->parameters()[0];
 	ParseTree const *ul = truncated->parameters()[1];
@@ -642,29 +651,21 @@ Node * Compiler::allocateStochastic(ParseTree const *stoch_relation)
 	}
     }
 
-  
-
-    Distribution const *dist = getDistribution(stoch_relation, distTab());
-    StochasticNode *snode =  new StochasticNode(dist, parameters, lBound, uBound);
-    _model.graph().add(snode);
-    
     //Search data table to see if this is an observed node
     ParseTree *var = stoch_relation->parameters()[0];
     string const &name = var->name();
+
+    double *this_data = 0;
+    unsigned int data_length = 0;
     map<string,SArray>::const_iterator q = _data_table.find(name);
     if (q != _data_table.end()) {
+
 	vector<double> const &data_value = q->second.value();
-        Range const &data_range = q->second.range();
+	Range const &data_range = q->second.range();
 
 	Range target_range = VariableSubsetRange(var);
-	if (target_range.dim(true) != drop(snode->dim())) {
-	    throw NodeError(snode, 
-			    string("Node has wrong dimensions for range ") 
-			    + name + print(target_range));
-	}
-
-	unsigned int length = target_range.length();
-	double *this_data = new double[length];
+	data_length = target_range.length();
+	this_data = new double[data_length];
 
 	unsigned int i = 0;
 	unsigned int nmissing = 0;
@@ -675,22 +676,53 @@ Node * Compiler::allocateStochastic(ParseTree const *stoch_relation)
 	    }
 	    this_data[i++] = data_value[j];
 	}
-
-	if (nmissing == 0) {
-            for (unsigned int n = 0; n < snode->nchain(); ++n) {
-	        snode->setValue(this_data, length, n);
-            }
- 	    snode->setObserved();
+	if (nmissing == data_length) {
+	    delete [] this_data;
+	    this_data = 0;
+	    data_length = 0;
 	}
-	delete [] this_data;
-
-	if (nmissing != 0 && nmissing != length) {
-	    throw NodeError(snode, string("Data ") + name + print(target_range)
-			    + " is partially missing");
+	else if (nmissing != 0) {
+	    throw runtime_error(string("Data ") + name + 
+				print(target_range) + " is partially missing");
 	}
     }
- 
-    return snode;
+    
+    /* Special compiler rule: if the node is unobserved, we try to create a
+       logical node instead, using a function with the same name.  This is for
+       observable functions.
+    */
+
+    Node *node = 0;
+/*
+    if (!isobserved) {
+	Function const *func = funcTab().find(stoch_relation->name());
+	if (func) {
+	    DeterministicNode *dnode = new LogicalNode(func, parameters);
+	    _model.graph().add(dnode);
+            node = dnode;
+	}
+    }	
+*/
+    if (!node) {
+	Distribution const *dist = getDistribution(stoch_relation, distTab());
+	if (!dist) {
+	    throw runtime_error(string("Unknown distribution: ") + 
+				stoch_relation->name());
+	}
+	StochasticNode *snode =  new StochasticNode(dist, parameters, 
+						    lBound, uBound);
+	_model.graph().add(snode);
+	if (this_data) {
+	    for (unsigned int n = 0; n < snode->nchain(); ++n) {
+		snode->setValue(this_data, data_length, n);
+	    }
+	    snode->setObserved();
+	    delete [] this_data;
+	}
+	node = snode;
+    }
+
+    return node;
 }
 
 Node * Compiler::allocateLogical(ParseTree const *rel)
