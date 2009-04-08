@@ -614,11 +614,10 @@ Node * Compiler::allocateStochastic(ParseTree const *stoch_relation)
 
     // Create the parameter vector
     vector<Node const *> parameters;
-/*
     if (!getParameterVector(distribution, parameters)) {
 	return 0;
     }
-*/
+/*
     vector<ParseTree*> const &param_list = distribution->parameters();
     for (unsigned int i = 0; i < param_list.size(); ++i) {
         Node *param = getParameter(param_list[i]);
@@ -629,7 +628,7 @@ Node * Compiler::allocateStochastic(ParseTree const *stoch_relation)
             return 0;
         }
     }
-
+*/
     // Set upper and lower bounds
     Node *lBound = 0, *uBound = 0;
     if (stoch_relation->parameters().size() == 3) {
@@ -651,13 +650,16 @@ Node * Compiler::allocateStochastic(ParseTree const *stoch_relation)
 	}
     }
 
-    //Search data table to see if this is an observed node
-    ParseTree *var = stoch_relation->parameters()[0];
-    string const &name = var->name();
-
+    /* 
+       Check data table to see if this is an observed node.  If it is,
+       we put the data in a array of doubles pointed to by this_data,
+       and set data_length equal to the length of the array
+    */
     double *this_data = 0;
     unsigned int data_length = 0;
-    map<string,SArray>::const_iterator q = _data_table.find(name);
+
+    ParseTree *var = stoch_relation->parameters()[0];
+    map<string,SArray>::const_iterator q = _data_table.find(var->name());
     if (q != _data_table.end()) {
 
 	vector<double> const &data_value = q->second.value();
@@ -682,47 +684,49 @@ Node * Compiler::allocateStochastic(ParseTree const *stoch_relation)
 	    data_length = 0;
 	}
 	else if (nmissing != 0) {
-	    throw runtime_error(string("Data ") + name + 
+	    throw runtime_error(string("Data ") + var->name() + 
 				print(target_range) + " is partially missing");
 	}
     }
-    
-    /* Special compiler rule: if the node is unobserved, we try to create a
-       logical node instead, using a function with the same name.  This is for
-       observable functions.
-    */
 
-    Node *node = 0;
-/*
-    if (!isobserved) {
-	Function const *func = funcTab().find(stoch_relation->name());
+    // Check that distribution exists
+    string const &distname = distribution->name();
+    Distribution const *dist = distTab().find(distname);
+    if (!dist) {
+	throw runtime_error(string("Unknown distribution: ") + distname);
+    }
+
+    if (!this_data) {
+	/* 
+	   Special rule for observable functions, which exist both as
+	   a Function and a Distribution, sharing the same name.  If
+	   the node is unobserved, and we find a Function sharing the
+	   name of the distribution, then we create a LogicalNode
+	   instead.
+	*/
+	Function const *func = funcTab().find(distname);
 	if (func) {
 	    DeterministicNode *dnode = new LogicalNode(func, parameters);
 	    _model.graph().add(dnode);
-            node = dnode;
+            return dnode;
 	}
     }	
-*/
-    if (!node) {
-	Distribution const *dist = getDistribution(stoch_relation, distTab());
-	if (!dist) {
-	    throw runtime_error(string("Unknown distribution: ") + 
-				stoch_relation->name());
-	}
-	StochasticNode *snode =  new StochasticNode(dist, parameters, 
-						    lBound, uBound);
-	_model.graph().add(snode);
-	if (this_data) {
-	    for (unsigned int n = 0; n < snode->nchain(); ++n) {
-		snode->setValue(this_data, data_length, n);
-	    }
-	    snode->setObserved();
-	    delete [] this_data;
-	}
-	node = snode;
-    }
 
-    return node;
+    // Create Stochastic Node
+    StochasticNode *snode =  new StochasticNode(dist, parameters, 
+						lBound, uBound);
+    _model.graph().add(snode);
+    
+    // If Node is observed, set the data
+    if (this_data) {
+	for (unsigned int n = 0; n < snode->nchain(); ++n) {
+	    snode->setValue(this_data, data_length, n);
+	}
+	snode->setObserved();
+	delete [] this_data;
+    }
+    
+    return snode;
 }
 
 Node * Compiler::allocateLogical(ParseTree const *rel)
