@@ -47,6 +47,22 @@ std::string ToString(const T& val)
     return strm.str();
 }
 
+void CompileError(ParseTree const *p, string const &msg1, 
+		  string const &msg2 = "")
+{
+    string msg = string("Compilation error on line ") + ToString(p->line())
+	+ ".";
+    if (!msg1.empty()) {
+	msg.append("\n");
+	msg.append(msg1);
+    }
+    if (!msg2.empty()) {
+	msg.append(" ");
+	msg.append(msg2);
+    }
+    throw runtime_error(msg);
+}
+
 Node * Compiler::constFromTable(ParseTree const *p)
 {
     // Get a constant value directly from the data table
@@ -178,8 +194,7 @@ Range Compiler::getRange(ParseTree const *p, Range const &default_range)
   // Check size and integrity of range expression
   unsigned int size = range_list.size();
   if (!isNULL(default_range) && size != default_range.ndim(false)) {
-    string msg = string("dimension mismatch taking subset of ") + name;
-    throw runtime_error(msg);
+      CompileError(p, "Dimension mismatch taking subset of", name);
   }
   for (unsigned int i = 0; i < size; ++i) {
     if (range_list[i]->treeClass() != P_RANGE) {
@@ -235,8 +250,7 @@ Range Compiler::VariableSubsetRange(ParseTree const *var)
 
   string const &name = var->name();
   if (_countertab.getCounter(name)) {
-    throw runtime_error(string("Counter cannot appear on LHS of relation: ")
-			+ name);
+      CompileError(var, "Counter cannot appear on LHS of relation:", name);
   }
   NodeArray *array = _model.symtab().getVariable(name);
   if (array) {
@@ -248,13 +262,11 @@ Range Compiler::VariableSubsetRange(ParseTree const *var)
 	return array->range();
     }
     if (range_list.size() != array->range().ndim(false)) {
-	throw runtime_error(string("Dimension mismatch in subset expression") +
-			    " of variable " + name);
+	CompileError(var, "Dimension mismatch in subset expression of", name);
     }
     Range range = getRange(var, array->range());
     if (isNULL(range)) {
-	throw runtime_error(string("Missing values in subset expression ") 
-			    + "of variable " + name);
+	CompileError(var, "Missing values in subset expression of", name);
     }
     return range;
   }
@@ -262,8 +274,7 @@ Range Compiler::VariableSubsetRange(ParseTree const *var)
       // Undeclared node
       Range range = getRange(var, Range());
       if (isNULL(range)) {
-	  throw runtime_error(string("Cannot evaluate subset expression for ")
-			      + "undeclared variable " + name);
+	  CompileError(var, "Cannot evaluate subset expression for", name);
       }
       return range;
   }
@@ -298,14 +309,13 @@ Range Compiler::CounterRange(ParseTree const *var)
   }
   int lower;
   if(!indexExpression(prange->parameters()[0], lower)) {
-    throw runtime_error(string("Unable to evaluate lower index of counter ")
-			+ var->name());
+      CompileError(var, "Cannot evaluate lower index of counter", var->name());
   }
   int upper;
   if (prange->parameters().size() == 2) {
     if (!indexExpression(prange->parameters()[1], upper)) {
-      throw runtime_error(string("Unable to evaluate upper index of counter ")
-			  + var->name());
+	CompileError(var, "Cannot evaluate upper index of counter", 
+		     var->name());
     }
   }
   else {
@@ -346,16 +356,17 @@ Node *Compiler::getArraySubset(ParseTree const *p)
 	    if (!isNULL(subset_range)) {
 		//A fixed subset
 		if (!array->range().contains(subset_range)) {
-		    throw runtime_error(string("Subset ") + array->name() 
-					+ print(subset_range)
-					+ " out of range");
+		    string msg = string("Subset ") + array->name() 
+			+ print(subset_range) + " out of range";
+		    CompileError(p, msg);
 		}
 		node = array->getSubset(subset_range, _model.graph());
 		if (node == 0 && _strict_resolution) {
-		    throw runtime_error(string("Unable to resolve parameter ")
-					+ array->name() 
-					+ print(subset_range) +
-					" (one of its ancestors may be undefined)");
+		    string msg = string("Unable to resolve parameter ")
+			+ array->name() + print(subset_range);
+		    CompileError(p, msg,
+				 "(one of its ancestors may be undefined)");
+		
 		}
 	    }
 	    else if (!_index_expression) {
@@ -365,7 +376,7 @@ Node *Compiler::getArraySubset(ParseTree const *p)
 	}
 	else if (_strict_resolution) {
 	    //Give an informative error message in case of failure
-	    throw runtime_error(string("Unknown parameter ") + p->name());
+	    CompileError(p, "Unknown parameter", p->name());
 	}
 	
 	if (!node && _index_expression) {
@@ -385,9 +396,7 @@ static Function const *getFunction(ParseTree const *t, FuncTab const &functab)
 
     Function const *func = functab.find(t->name());
     if (func == 0) {
-	string msg("Unable to find function ");
-	msg.append(t->name());
-	throw runtime_error(msg);
+	CompileError(t, "Unknown function:", t->name());
     }    
 
     return func;
@@ -409,7 +418,7 @@ static Distribution const *getDistribution(ParseTree const *pstoch_rel,
   }
   Distribution const *dist = table.find(pdist->name());
   if (dist == 0) {
-    throw runtime_error(string("Unknown distribution: ") + pdist->name());
+      CompileError(pdist, "Unknown distribution:", pdist->name());
   }
   return dist;
 }
@@ -523,9 +532,7 @@ Node * Compiler::getParameter(ParseTree const *t)
 	    InverseLinkFunc const *link = 
 		funcTab().findInverseLink(t->name(), true);
 	    if (!link) {
-		string msg("Unable to find inverse of link function ");
-		msg.append(t->name());
-		throw runtime_error(msg);
+		CompileError(t, "Unknown link function:", t->name());
 	    }
 	    node = _logicalfactory.getLinkNode(link, parents, _model.graph());
 	}
@@ -684,8 +691,8 @@ Node * Compiler::allocateStochastic(ParseTree const *stoch_relation)
 	    data_length = 0;
 	}
 	else if (nmissing != 0) {
-	    throw runtime_error(string("Data ") + var->name() + 
-				print(target_range) + " is partially missing");
+	    CompileError(var, var->name() + print(target_range),
+			 "has missing values");
 	}
     }
 
@@ -693,7 +700,7 @@ Node * Compiler::allocateStochastic(ParseTree const *stoch_relation)
     string const &distname = distribution->name();
     Distribution const *dist = distTab().find(distname);
     if (!dist) {
-	throw runtime_error(string("Unknown distribution: ") + distname);
+	CompileError(distribution, "Unknown distribution:", distname);
     }
 
     if (!this_data) {
@@ -786,8 +793,8 @@ void Compiler::allocate(ParseTree const *rel)
 	    // Check if a node is already inserted into this range
 	    Range range = VariableSubsetRange(var);
 	    if (array->find(range)) {
-		throw runtime_error(string("Attempt to redefine node ") +
-				    var->name() + print(range));
+		CompileError(var, "Attempt to redefine node",
+			     var->name() + print(range));
 	    }
 	    array->insert(node, range);
 	}
@@ -850,7 +857,7 @@ void Compiler::getArrayDim(ParseTree const *p)
     //Check against the existing entry, and modify if necessary
     unsigned int ndim = i->second[0].size();
     if (new_range.ndim(false) != ndim) {
-      throw runtime_error(string("Inconsistent dimensions for array ") + name);
+	CompileError(var, "Inconsistent dimensiosn for array", name);
     }
     else {
 	for (unsigned int j = 0; j < ndim; ++j) {
@@ -1005,12 +1012,11 @@ void Compiler::declareVariables(vector<ParseTree*> const &dec_list)
 	for (unsigned int i = 0; i < ndim; ++i) {
 	    int dim_i;
 	    if (!indexExpression(node_dec->parameters()[i], dim_i)) {
-		throw runtime_error(string("Unable to calculate dimensions of node ")
-				    + name);
+		CompileError(node_dec, "Unable to calculate dimensions of node",
+			     name);
 	    }
 	    if (dim_i <= 0) {
-		throw runtime_error(string("Non-positive dimension for node ") 
-				    + name);
+		CompileError(node_dec, "Non-positive dimension for node", name);
 	    }
 	    dim[i] = static_cast<unsigned int>(dim_i);
 	}
