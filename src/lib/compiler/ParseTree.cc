@@ -6,9 +6,9 @@ using std::string;
 using std::vector;
 using std::logic_error;
 
-ParseTree::ParseTree(TreeClass tclass)
-  : _tclass(tclass), _parameters(), _parent(0), _name(), _value(0)
-    //_operator(OP_NONE)
+ParseTree::ParseTree(TreeClass tclass, int line)
+    : _tclass(tclass), _parameters(), _parent(0), _name(), _value(0), 
+      _line(line)
 {
 }
 
@@ -45,18 +45,6 @@ void ParseTree::setValue(double value)
   }
 }
 
-/*
-void ParseTree::setOperator(Operator op)
-{
-  if (_tclass == P_OPERATOR) {
-    _operator = op;
-  }
-  else {
-    throw logic_error("Can't set operator: tree class not P_OPERATOR");
-  }
-}
-*/
-
 vector<ParseTree*> const &ParseTree::parameters() const
 {
   return _parameters;
@@ -87,15 +75,10 @@ double ParseTree::value() const
   return _value;
 }
 
-/*
-Operator ParseTree::getOperator() const
+int ParseTree::line() const
 {
-  if (_tclass != P_OPERATOR) {
-    throw logic_error("Can't get operator of ParseTree: invalid treeClass");
-  }
-  return _operator;
+    return _line;
 }
-*/
 
 void ParseTree::setParameters(std::vector<ParseTree *> const &parameters)
 {

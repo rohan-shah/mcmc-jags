@@ -14,6 +14,7 @@
   void yyerror(const char *);
   int yylex();
   int yylex_destroy();
+  extern int yylineno;
   
 #define YYDEBUG 1
   
@@ -109,11 +110,11 @@ dec_list: node_dec { $$ = new std::vector<ParseTree*>(1, $1); }
 ;
 
 node_dec: NAME {
-  $$ = new ParseTree(P_VAR); setName($$, $1); 
+    $$ = new ParseTree(P_VAR, yylineno); setName($$, $1); 
 }
 | NAME '[' dim_list ']' {
-  $$ = new ParseTree(P_VAR); setName($$, $1);
-  setParameters($$, $3);
+    $$ = new ParseTree(P_VAR, yylineno); setName($$, $1);
+    setParameters($$, $3);
 }
 ;
 
@@ -122,22 +123,22 @@ dim_list: expression { $$ = new std::vector<ParseTree*>(1, $1); }
 ;
 
 data_stmt: DATA '{' relation_list '}' {
-  ParseTree *p = new ParseTree(P_RELATIONS);
-  setParameters(p, $3);
-  _pdata = p;
+    ParseTree *p = new ParseTree(P_RELATIONS, yylineno);
+    setParameters(p, $3);
+    _pdata = p;
 }
 ;
 
 model_stmt: MODEL '{' relation_list '}' { 
-  ParseTree *p = new ParseTree(P_RELATIONS);
-  setParameters(p, $3);
-  _prelations = p;
+    ParseTree *p = new ParseTree(P_RELATIONS, yylineno);
+    setParameters(p, $3);
+    _prelations = p;
 }
 ;
  
 relations: '{' relation_list '}' {
-  $$ = new ParseTree(P_RELATIONS);
-  setParameters($$, $2);
+    $$ = new ParseTree(P_RELATIONS, yylineno);
+    setParameters($$, $2);
 }
 ;
 
@@ -153,20 +154,20 @@ relation: stoch_relation
 ;
 
 for_loop: counter relations {
-  $$ = new ParseTree(P_FOR);
-  setParameters($$, $1, $2);
+    $$ = new ParseTree(P_FOR, yylineno);
+    setParameters($$, $1, $2);
 }
 ;
 
 counter: FOR '(' NAME IN range_element ')' {
-  $$ = new ParseTree(P_COUNTER); setName($$, $3);
-  setParameters($$, $5);
+    $$ = new ParseTree(P_COUNTER, yylineno); setName($$, $3);
+    setParameters($$, $5);
 }
 ;
 
 determ_relation: var ARROW expression {
-  $$ = new ParseTree(P_DETRMREL);
-  setParameters($$, $1, $3);
+    $$ = new ParseTree(P_DETRMREL, yylineno);
+    setParameters($$, $1, $3);
 } 
 | FUNC '(' var ')' ARROW expression {
 
@@ -176,22 +177,22 @@ determ_relation: var ARROW expression {
      function is applied to the RHS of the deterministic relation
   */
      
-  ParseTree *p = new ParseTree(P_LINK); setName(p, $1);
-  setParameters(p, $6);
-
-  $$ = new ParseTree(P_DETRMREL);
-  setParameters($$, $3, p);
+    ParseTree *p = new ParseTree(P_LINK, yylineno); setName(p, $1);
+    setParameters(p, $6);
+    
+    $$ = new ParseTree(P_DETRMREL, yylineno);
+    setParameters($$, $3, p);
 }
 ;
 
 stoch_relation:	var '~' distribution {
-  $$ = new ParseTree(P_STOCHREL); 
-  setParameters($$, $1, $3);
-}
+    $$ = new ParseTree(P_STOCHREL, yylineno); 
+    setParameters($$, $1, $3);
+ }
 | var '~' distribution truncated {
-  $$ = new ParseTree(P_STOCHREL); 
-  setParameters($$, $1, $3, $4);
-}
+    $$ = new ParseTree(P_STOCHREL, yylineno); 
+    setParameters($$, $1, $3, $4);
+  }
 ;
 
 product: expression '*' expression {
@@ -224,77 +225,77 @@ sum: expression '+' expression {
 ;
 
 expression: var 
-| DOUBLE {$$ = new ParseTree(P_VALUE); $$->setValue($1);}
+| DOUBLE {$$ = new ParseTree(P_VALUE, yylineno); $$->setValue($1);}
 | LENGTH '(' var ')' {
-    $$ = new ParseTree(P_LENGTH);
+    $$ = new ParseTree(P_LENGTH, yylineno);
     setParameters($$,$3);
 }
 | DIM '(' var ')' {
-    $$ = new ParseTree(P_DIM);
+    $$ = new ParseTree(P_DIM, yylineno);
     setParameters($$,$3);
 }
 | FUNC '(' expression_list ')' {
-  $$ = new ParseTree(P_FUNCTION); setName($$, $1);
+  $$ = new ParseTree(P_FUNCTION, yylineno); setName($$, $1);
   setParameters($$, $3);
 }
 | product {
-    $$ = new ParseTree(P_FUNCTION); $$->setName("*");
+    $$ = new ParseTree(P_FUNCTION, yylineno); $$->setName("*");
     setParameters($$, $1);
 }
 | expression '/' expression {
-    $$ = new ParseTree(P_FUNCTION); $$->setName("/");
+    $$ = new ParseTree(P_FUNCTION, yylineno); $$->setName("/");
     setParameters($$, $1, $3);
 }
 | sum {
-    $$ = new ParseTree(P_FUNCTION); $$->setName("+");
+    $$ = new ParseTree(P_FUNCTION, yylineno); $$->setName("+");
     setParameters($$, $1);
 }
 | expression '-' expression {
-    $$ = new ParseTree(P_FUNCTION); $$->setName("-");
+    $$ = new ParseTree(P_FUNCTION, yylineno); $$->setName("-");
     setParameters($$, $1, $3);
 }
 | '-' expression %prec NEG {
-    $$ = new ParseTree(P_FUNCTION); $$->setName("NEG");
+    $$ = new ParseTree(P_FUNCTION, yylineno); $$->setName("NEG");
     setParameters($$, $2);
 }
 | expression GT expression {
-    $$ = new ParseTree(P_FUNCTION); $$->setName(">");
+    $$ = new ParseTree(P_FUNCTION, yylineno); $$->setName(">");
     setParameters($$, $1, $3);
  }      
 | expression GE expression {
-    $$ = new ParseTree(P_FUNCTION); $$->setName(">=");
+    $$ = new ParseTree(P_FUNCTION, yylineno); $$->setName(">=");
     setParameters($$, $1, $3);
  }      
 | expression LT expression {
-    $$ = new ParseTree(P_FUNCTION); $$->setName("<");
+    $$ = new ParseTree(P_FUNCTION, yylineno); $$->setName("<");
     setParameters($$, $1, $3);
  }      
 | expression LE expression {
-    $$ = new ParseTree(P_FUNCTION); $$->setName("<=");
+    $$ = new ParseTree(P_FUNCTION, yylineno); $$->setName("<=");
     setParameters($$, $1, $3);
  }      
 | expression EQ expression {
-    $$ = new ParseTree(P_FUNCTION); $$->setName("==");
+    $$ = new ParseTree(P_FUNCTION, yylineno); $$->setName("==");
     setParameters($$, $1, $3);
  }      
 | expression NE expression {
-    $$ = new ParseTree(P_FUNCTION); $$->setName("!=");
+    $$ = new ParseTree(P_FUNCTION, yylineno); $$->setName("!=");
     setParameters($$, $1, $3);
 }      
 | expression AND expression {
-    $$ = new ParseTree(P_FUNCTION); $$->setName("&&");
+    $$ = new ParseTree(P_FUNCTION, yylineno); $$->setName("&&");
     setParameters($$, $1, $3);
  }      
 | expression OR expression {
-    $$ = new ParseTree(P_FUNCTION); $$->setName("||");
+    $$ = new ParseTree(P_FUNCTION, yylineno); $$->setName("||");
     setParameters($$, $1, $3);
 }
 | expression '^' expression {
-    $$ = new ParseTree(P_FUNCTION); $$->setName("^");
+    $$ = new ParseTree(P_FUNCTION, yylineno); $$->setName("^");
     setParameters($$, $1, $3);
   }
 | expression SPECIAL expression {
-    $$ = new ParseTree(P_FUNCTION); setName($$, $2);
+    $$ = new ParseTree(P_FUNCTION, yylineno); setName($$, $2);
     setParameters($$, $1, $3);
  }
 | '(' expression ')' { $$ = $2; }
@@ -308,16 +309,16 @@ range_list: range_element { $$ = new std::vector<ParseTree*>(1, $1); }
 | range_list ',' range_element { $$=$1; $$->push_back($3); }
 ;
 
-range_element: {$$ = new ParseTree(P_RANGE);}
-| expression {$$ = new ParseTree(P_RANGE); setParameters($$,$1);}
+range_element: {$$ = new ParseTree(P_RANGE, yylineno);}
+| expression {$$ = new ParseTree(P_RANGE, yylineno); setParameters($$,$1);}
 | expression ':' expression {
-  $$ = new ParseTree(P_RANGE); setParameters($$, $1, $3);
+  $$ = new ParseTree(P_RANGE, yylineno); setParameters($$, $1, $3);
 }
 ;
 
 distribution: FUNC '(' expression_list ')'
 {
-  $$ = new ParseTree(P_DENSITY); setName($$, $1);
+  $$ = new ParseTree(P_DENSITY, yylineno); setName($$, $1);
   setParameters($$, $3);
 }
 ;
@@ -329,10 +330,10 @@ truncated: 'T' '(' expression ','  expression ')' {$$ = Truncated($3,$5);}
 ;
 
 var: NAME {
-  $$ = new ParseTree(P_VAR); setName($$, $1);
+  $$ = new ParseTree(P_VAR, yylineno); setName($$, $1);
 }
 | NAME '[' range_list ']' {
-  $$ = new ParseTree(P_VAR); setName($$, $1);
+  $$ = new ParseTree(P_VAR, yylineno); setName($$, $1);
   setParameters($$, $3);
 }
 ;
@@ -343,8 +344,8 @@ static std::string error_buf;
 
 void yyerror (const char *s)
 {
-    extern int yylineno;
     extern char * yytext;
+    extern int yylineno;
 
     std::ostringstream msg;
     msg << std::string(s) << " on line " << yylineno << " near \"" << 
@@ -354,9 +355,9 @@ void yyerror (const char *s)
 
 static ParseTree *Truncated (ParseTree *left, ParseTree *right)
 {
-  ParseTree *p = new ParseTree(P_BOUNDS);
-  setParameters(p, left, right);
-  return p;
+    ParseTree *p = new ParseTree(P_BOUNDS, yylineno);
+    setParameters(p, left, right);
+    return p;
 }
 
 void setName(ParseTree *p, std::string *name)
