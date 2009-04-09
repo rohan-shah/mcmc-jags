@@ -33,6 +33,7 @@ class ParseTree {
   ParseTree const *_parent;
   std::string _name;
   double _value;
+  int _line;
 public:
   /**
    * Constructor, which sets the treeClass of the ParseTree node.  The
@@ -40,7 +41,7 @@ public:
    * it has no parent, the vector of parameters is empty, the name is an
    * empty string, the value is set to 0 and the operator is OP_NONE.
    */
-  ParseTree(TreeClass tclass);
+  ParseTree(TreeClass tclass, int line = 0);
   /**
    * Destructor.  This deletes the parameters.
    */
@@ -85,6 +86,10 @@ public:
    * Returns the value for a ParseTree with treeClass P_VALUE.
    */
   double value() const;
+  /**
+   * Returns the line number.
+   */
+  int line() const;
 };
 
 #endif /* PARSE_TREE_H_ */
