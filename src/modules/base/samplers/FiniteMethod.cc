@@ -11,12 +11,14 @@
 #include <string>
 #include <stdexcept>
 #include <vector>
+#include <algorithm>
 
 using std::logic_error;
 using std::string;
 using std::vector;
 using std::exp;
 using std::string;
+using std::max;
 
 namespace base {
 
@@ -36,19 +38,24 @@ namespace base {
     void FiniteMethod::update(RNG *rng)
     {
 	int size = _upper - _lower + 1;
-	double *lik = new double[size];
-	double liksum = 0.0;
+	vector<double> lik(size);
+
+	//Calculate log-likelihood
+	double lik_max = JAGS_NEGINF;
 	for (int i = 0; i < size; i++) {
 	    double ivalue = _lower + i;
 	    _sampler->setValue(&ivalue, 1, _chain);
-	    lik[i] = exp(_sampler->logFullConditional(_chain));
-	    liksum += lik[i];
+	    lik[i] = _sampler->logFullConditional(_chain);
+	    lik_max = max(lik_max, lik[i]);
 	}
 
-	if (liksum == 0) {
-	    throw NodeError(_sampler->nodes()[0],
-			   "All possible values have probability zero");
+	//Transform log-likelihood to likelihood, avoiding overflow
+	double liksum = 0;
+	for (int i = 0; i < size; ++i) {
+	    lik[i] = exp(lik[i] - lik_max);
+	    liksum += lik[i];
 	}
+	
 	if (!jags_finite(liksum)) {
 	    throw NodeError(_sampler->nodes()[0],
 			    "Cannot normalize density");
@@ -66,7 +73,6 @@ namespace base {
 	}
 	double ivalue = _lower + i;
 	_sampler->setValue(&ivalue, 1, _chain);
-	delete [] lik;
     }
 
     bool FiniteMethod::isAdaptive() const
