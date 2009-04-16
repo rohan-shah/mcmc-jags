@@ -207,7 +207,7 @@ double DHyper::d(double z, vector<double const *> const &parameters,
   int uu = min(n1, m1);
 
   double den = 0;
-  if (x >= 11 && x <= uu) {
+  if (x >= ll && x <= uu) {
     int N = uu - ll + 1;
     double *pi = new double[N];
     density(pi, N, n1, n2, m1, psi);
