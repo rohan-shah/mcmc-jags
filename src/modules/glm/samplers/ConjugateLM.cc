@@ -11,33 +11,38 @@
 
 #include "LMSampler.h"
 
+#include <sampler/Linear.h>
+#include <graph/StochasticNode.h>
+
 //#include <JRmath.h>
 
 using std::string;
-//using std::vector;
+using std::vector;
 //using std::set;
 //using std::sqrt;
 //using std::invalid_argument;
 
-/*
-static void calBeta(double *betas, ConjugateSampler *sampler,
-                    unsigned int chain)
-{
-    StochasticNode *snode = sampler->node();
-    double const *xold = snode->value(chain);
-    unsigned int nrow = snode->length();
 
+static void calBeta(double *betas, LMSampler *sampler, unsigned int chain)
+{
+    /*
+    unsigned int nrow = sampler->length();
     double *xnew = new double[nrow];
-    for (unsigned int i = 0; i < nrow; ++i) {
-	xnew[i] = xold[i];
+    
+    vector<StochasticNode *> const &snodes = sampler->nodes();
+
+    unsigned int k = 0;
+    for (unsigned int i = 0; i < snodes.size(); ++i) {
+	for (unsigned int j = 0; j < snodes[i]->length(); ++j) {
+	    xnew[k++] = snodes[i]->value(chain)[j];
+	}
     }
 
     vector<StochasticNode const*> const &stoch_children = 
         sampler->stochasticChildren();
 
-    unsigned long nchildren = stoch_children.size();
     double *beta_j = betas;
-    for (unsigned int j = 0; j < nchildren; ++j) {
+    for (unsigned int j = 0; j < stoch_children.size(); ++j) {
 	StochasticNode const *snode = stoch_children[j];
 	double const *mu = snode->parents()[0]->value(chain);
 	unsigned int nrow_child = snode->length();
@@ -53,7 +58,7 @@ static void calBeta(double *betas, ConjugateSampler *sampler,
 	xnew[i] += 1;
 	sampler->setValue(xnew, nrow, chain);
 	beta_j = betas;
-	for (unsigned int j = 0; j < nchildren; ++j) {
+	for (unsigned int j = 0; j < stoch_children.size(); ++j) {
 	    StochasticNode const *snode = stoch_children[j];
 	    double const *mu = snode->parents()[0]->value(chain);
 	    unsigned int nrow_child = snode->length();
@@ -67,8 +72,8 @@ static void calBeta(double *betas, ConjugateSampler *sampler,
     sampler->setValue(xnew, nrow, chain);
 
     delete [] xnew;
+    */
 }
-*/
 
 ConjugateLM::ConjugateLM()
     : _betas(0), _length_betas(0)
@@ -82,18 +87,14 @@ ConjugateLM::~ConjugateLM()
 
 void ConjugateLM::initialize(LMSampler *sampler, Graph const &graph)
 {
-/*
-    if(sampler->deterministicChildren().empty())
-	return; //Nothing to do
-
-    StochasticNode const *snode = sampler->node();
     vector<StochasticNode const *> const &children = 
 	sampler->stochasticChildren();
     unsigned int N = 0;
     for (unsigned int i = 0; i < children.size(); ++i) {
 	N += children[i]->length();
     }
-    _length_betas = N * snode->length();
+
+    _length_betas = N * sampler->length();
 
     // Check for constant linear terms
     if (!checkLinear(sampler->nodes(), graph, true))
@@ -102,7 +103,6 @@ void ConjugateLM::initialize(LMSampler *sampler, Graph const &graph)
     //Onetime calculation of fixed coefficients
     _betas = new double[_length_betas];
     calBeta(_betas, sampler, 0);
-*/
 }
 
 
