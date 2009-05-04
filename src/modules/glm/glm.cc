@@ -1,7 +1,6 @@
 #include <Module.h>
 #include <distribution/DistTab.h>
-
-//#include "samplers/ConjugateLinearFactory.h"
+#include "samplers/ConjugateLMFactory.h"
 
 using std::vector;
 
@@ -15,7 +14,7 @@ namespace glm {
     
     GLMModule::GLMModule() {
 	
-//	insert(new ConjugateLinearFactory);
+	insert(new ConjugateLMFactory);
 	
     }
     
