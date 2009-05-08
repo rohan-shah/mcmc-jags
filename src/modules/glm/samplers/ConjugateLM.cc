@@ -3,34 +3,35 @@
 
 //#include "lapack.h"
 
-//#include <set>
+#include <set>
 //#include <stdexcept>
-//#include <vector>
+#include <vector>
 //#include <cmath>
 //#include <string>
+#include <stdexcept>
 
 #include "LMSampler.h"
 
 #include <sampler/Linear.h>
 #include <graph/StochasticNode.h>
+#include <sampler/Sampler.h>
 
 //#include <JRmath.h>
 
 using std::string;
 using std::vector;
-//using std::set;
+using std::set;
 //using std::sqrt;
 //using std::invalid_argument;
+using std::logic_error;
 
 
-static void calBeta(double *betas, LMSampler *sampler, unsigned int chain)
+void ConjugateLM::calBeta(cs *betas, LMSampler *sampler, unsigned int chain)
 {
-    /*
-    unsigned int nrow = sampler->length();
-    double *xnew = new double[nrow];
-    
+/*
     vector<StochasticNode *> const &snodes = sampler->nodes();
 
+    vector<double> xnew(_ncol);
     unsigned int k = 0;
     for (unsigned int i = 0; i < snodes.size(); ++i) {
 	for (unsigned int j = 0; j < snodes[i]->length(); ++j) {
@@ -41,14 +42,14 @@ static void calBeta(double *betas, LMSampler *sampler, unsigned int chain)
     vector<StochasticNode const*> const &stoch_children = 
         sampler->stochasticChildren();
 
-    double *beta_j = betas;
+    double *beta_j = betas->x;
+    r = 0;
     for (unsigned int j = 0; j < stoch_children.size(); ++j) {
-	StochasticNode const *snode = stoch_children[j];
-	double const *mu = snode->parents()[0]->value(chain);
-	unsigned int nrow_child = snode->length();
+	double const *mu = stoch_children[j]->parents()[0]->value(chain);
+	unsigned int length_child = stoch_children[j]->length();
 	for (unsigned int k = 0; k < nrow_child; ++k) {
 	    for (unsigned int i = 0; i < nrow; ++i) {
-		beta_j[nrow * k + i] = -mu[k];
+		beta_j[] = -mu[k];
 	    }
 	}
 	beta_j += nrow_child * nrow;
@@ -72,37 +73,89 @@ static void calBeta(double *betas, LMSampler *sampler, unsigned int chain)
     sampler->setValue(xnew, nrow, chain);
 
     delete [] xnew;
-    */
+*/
 }
 
 ConjugateLM::ConjugateLM()
-    : _betas(0), _length_betas(0)
+    : _betas(0), _nrow(0), _ncol(0)
 {
+    
 }
 
 ConjugateLM::~ConjugateLM()
 {
-    delete [] _betas;
+    cs_free(_betas);
+}
+
+static void getIndices(set<StochasticNode const*> const &schildren,
+		       vector<StochasticNode const*> const &rows,
+		       vector<int> &indices)
+{
+    indices.clear();
+
+    for (unsigned int i = 0; i < rows.size(); ++i) {
+	if (schildren.count(rows[i])) {
+	    indices.push_back(i);
+	}
+    }
+
+    if (indices.size() != schildren.size()) {
+	throw logic_error("Size mismatch in getIndices");
+    }
 }
 
 void ConjugateLM::initialize(LMSampler *sampler, Graph const &graph)
 {
+/*
+    vector<StochasticNode *> const &snodes = sampler->nodes();
     vector<StochasticNode const *> const &children = 
 	sampler->stochasticChildren();
-    unsigned int N = 0;
-    for (unsigned int i = 0; i < children.size(); ++i) {
-	N += children[i]->length();
-    }
 
-    _length_betas = N * sampler->length();
+    int nrow = 0;
+    for (unsigned int i = 0; i < children.size(); ++i) {
+	nrow += children[i]->length();
+    }
+    int ncol = sampler->length();
+
+    //Row and column indices for sparse matrix representation
+    vector<int> cols(ncol + 1);
+    vector<int> rows;
+
+    int c = 0; //column counter
+    int nz = 0; //running total of number of non-zero entries
+    for (unsigned int i = 0; i < snodes.size(); ++i) {
+
+	set<StochasticNode const *> children_i;
+	stochasticChildren(vector<StochasticNode*>(1,snodes[i]), graph,
+			   children_i);
+	vector<int> indices;
+	getIndices(children_i, children, indices);
+
+	for (unsigned int j = 0; j < snodes[i]->length(); ++j) {
+	    cols[c++] = nz;
+	    for (unsigned int k = 0; k < indices.size(); ++k) {
+		rows.push_back(indices[k]);
+	    }
+	    nz += indices.size();
+	}
+    }
+    cols[c] = nz;
+
+
+    //Set up sparse matrix representation of beta coefficients
+    cs *T = cs_spalloc(nrow, ncol, nz, 1, 0);
+    int *Ti = T->i;
+    int *Tj = T->p;
+    double *Tx = T->x;
+    for (unsigned int i = 0; i < 
 
     // Check for constant linear terms
     if (!checkLinear(sampler->nodes(), graph, true))
 	return; //Coefficients not fixed
 
     //Onetime calculation of fixed coefficients
-    _betas = new double[_length_betas];
     calBeta(_betas, sampler, 0);
+*/
 }
 
 
