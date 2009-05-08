@@ -1,6 +1,8 @@
 #ifndef DETERMINISTIC_NODE_H_
 #define DETERMINISTIC_NODE_H_
 
+class GraphMarks;
+
 #include <graph/Node.h>
 
 /**

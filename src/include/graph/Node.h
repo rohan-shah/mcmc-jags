@@ -6,10 +6,9 @@
 #include <string>
 
 class RNG;
-class Graph;
-class GraphMarks;
 class StochasticNode;
 class DeterministicNode;
+class Graph;
 
 /**
  * @short Node in a directed acyclic graph representingn a Bayesian model 
@@ -209,5 +208,6 @@ public:
  * if the parameters are inconsistent
  */
 unsigned int countChains(std::vector<Node const *> const &parameters);
+
 
 #endif /* NODE_H_ */

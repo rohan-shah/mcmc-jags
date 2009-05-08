@@ -273,6 +273,6 @@ void Node::removeChild(StochasticNode *node) const
 {
     _stoch_children->erase(node);
 }
-
+    
 
 
