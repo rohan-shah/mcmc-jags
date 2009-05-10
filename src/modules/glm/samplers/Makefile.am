@@ -1,6 +1,7 @@
 noinst_LTLIBRARIES = glmsampler.la
 
-glmsampler_la_CPPFLAGS = -I$(top_srcdir)/src/include
+glmsampler_la_CPPFLAGS = -I$(top_srcdir)/src/include \
+		-I$(top_srcdir)/src/modules/glm/CSparse
 
 glmsampler_la_LDFLAGS = -no-undefined -module -avoid-version
 

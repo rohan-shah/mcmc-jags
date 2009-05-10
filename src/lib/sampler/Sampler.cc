@@ -348,3 +348,44 @@ unsigned int Sampler::length() const
 {
     return _length;
 }
+
+static void stochChildren(Node *node, Graph const &graph,
+			   set<StochasticNode const*> &children)
+{
+    set<StochasticNode*> const *sch = node->stochasticChildren();
+    for (set<StochasticNode*>::const_iterator p = sch->begin();
+	 p != sch->end(); ++p)
+    {
+	if (graph.contains(*p))
+	    children.insert(*p);
+    }
+    set<DeterministicNode*> const *dch = node->deterministicChildren();
+    for (set<DeterministicNode*>::const_iterator p = dch->begin();
+	 p != dch->end(); ++p)
+    {
+	if (graph.contains(*p))
+	    stochChildren(*p, graph, children);
+    }
+}
+    
+void Sampler::getStochasticChildren(vector<StochasticNode *> const &nodes,
+				    Graph const &graph,
+				    set<StochasticNode const*> &children)
+
+{
+
+    vector<StochasticNode  *>::const_iterator p; 
+    
+    for (p = nodes.begin(); p != nodes.end(); ++p) {
+	if (!graph.contains(*p)) {
+	    throw logic_error("Sampled node outside of sampling graph");
+	}
+	stochChildren(*p, graph, children);
+    }
+
+    // Strip given nodes out of the set of stochastic children.
+    
+    for (p = nodes.begin(); p != nodes.end(); ++p) {
+	children.erase(*p);
+    }
+}

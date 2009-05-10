@@ -13,8 +13,8 @@ class LMSampler;
  */
 class ConjugateLM {
     cs *_betas;
-    int _nrow, _ncol;
-    void calBeta(cs *_betas, LMSampler *sampler, unsigned int chain);
+    bool _fixed;
+    void calBeta(cs *_betas, LMSampler *sampler, unsigned int chain) const;
 public:
     ConjugateLM();
     ~ConjugateLM();

@@ -156,6 +156,21 @@ public:
 			       Graph const &graph,
 			       std::vector<StochasticNode const*> &stoch_nodes,
 			       std::vector<DeterministicNode*> &dtrm_nodes);
+  /**
+   * Simplified version of classifyChildren that finds only the stochastic
+   * children within the graph.
+   *
+   * @param nodes Set of Nodes whose stochastic children are to be found.
+   *
+   * @param graph Graph within which calculations are to take place.
+   * Nodes outside of this graph will be ignored.
+   *
+   * @param children Set which will contain the marginal stochastic
+   * children on exit.
+   */
+  static void getStochasticChildren(std::vector<StochasticNode *> const &nodes,
+				    Graph const &graph,
+				    std::set<StochasticNode const*> &children);
 };
 
 #endif /* SAMPLER_H_ */

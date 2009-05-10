@@ -9,11 +9,13 @@
 //#include <cmath>
 //#include <string>
 #include <stdexcept>
+#include <algorithm>
 
 #include "LMSampler.h"
 
 #include <sampler/Linear.h>
 #include <graph/StochasticNode.h>
+#include <graph/DeterministicNode.h>
 #include <sampler/Sampler.h>
 
 //#include <JRmath.h>
@@ -24,60 +26,77 @@ using std::set;
 //using std::sqrt;
 //using std::invalid_argument;
 using std::logic_error;
+using std::copy;
 
+
+static double getMean(StochasticNode const *snode, unsigned int chain) {
+    return snode->parents()[0]->value(chain)[0];
+}
+
+static void updateDeterministic(Node *node, unsigned int chain)
+{
+    set<DeterministicNode*> const *dch = node->deterministicChildren();
+    for (set<DeterministicNode*>::const_iterator p = dch->begin();
+	 p != dch->end(); ++p)
+    {
+	(*p)->deterministicSample(chain);
+	updateDeterministic(*p, chain);
+    }
+}
 
 void ConjugateLM::calBeta(cs *betas, LMSampler *sampler, unsigned int chain)
+const
 {
-/*
     vector<StochasticNode *> const &snodes = sampler->nodes();
+    vector<StochasticNode const*> const &schildren = 
+	sampler->stochasticChildren();
 
-    vector<double> xnew(_ncol);
-    unsigned int k = 0;
-    for (unsigned int i = 0; i < snodes.size(); ++i) {
-	for (unsigned int j = 0; j < snodes[i]->length(); ++j) {
-	    xnew[k++] = snodes[i]->value(chain)[j];
-	}
+    int *Bi = betas->i;
+    int *Bp = betas->p;
+    double *Bx = betas->x;
+
+    int nrow = betas->m;
+    int nz = betas->nz;
+
+    for (unsigned int z = 0; z < nz; ++z) {
+	Bx[z] = -getMean(schildren[Bi[z]], chain);
     }
 
-    vector<StochasticNode const*> const &stoch_children = 
-        sampler->stochasticChildren();
-
-    double *beta_j = betas->x;
-    r = 0;
-    for (unsigned int j = 0; j < stoch_children.size(); ++j) {
-	double const *mu = stoch_children[j]->parents()[0]->value(chain);
-	unsigned int length_child = stoch_children[j]->length();
-	for (unsigned int k = 0; k < nrow_child; ++k) {
-	    for (unsigned int i = 0; i < nrow; ++i) {
-		beta_j[] = -mu[k];
+    int c = 0; //column counter
+    unsigned int length_max = 0;
+    double *xnew = 0;
+    for (vector<StochasticNode*>::const_iterator p = snodes.begin();
+	 p != snodes.end(); ++p)
+    {
+	Node *snode = *p;
+	unsigned int length = snode->length();
+	if (length > length_max) {
+	    delete [] xnew;
+	    xnew = new double[length];
+	    length_max = length;
+	}
+	double const *xold = snode->value(chain);
+	copy(xold, xold + nrow, xnew);
+	for (unsigned int i = 0; i < length; ++i) {
+	    xnew[i] += 1;
+	    snode->setValue(xnew, length, chain);
+	    updateDeterministic(snode, chain); 
+				
+	    for (int z = Bp[c]; z < Bp[c + 1]; ++z) {
+		Bx[z] += getMean(schildren[Bi[z]], chain);
 	    }
+	    xnew[i] -= 1;
+	    ++c;
 	}
-	beta_j += nrow_child * nrow;
+	snode->setValue(xnew, nrow, chain);
+	updateDeterministic(snode, chain);
     }
-
-    for (unsigned int i = 0; i < nrow; ++i) {
-	xnew[i] += 1;
-	sampler->setValue(xnew, nrow, chain);
-	beta_j = betas;
-	for (unsigned int j = 0; j < stoch_children.size(); ++j) {
-	    StochasticNode const *snode = stoch_children[j];
-	    double const *mu = snode->parents()[0]->value(chain);
-	    unsigned int nrow_child = snode->length();
-	    for (unsigned int k = 0; k < nrow_child; ++k) {
-		beta_j[nrow * k + i] += mu[k];
-	    }
-	    beta_j += nrow_child * nrow;
-	}
-	xnew[i] -= 1;
-    }
-    sampler->setValue(xnew, nrow, chain);
-
     delete [] xnew;
-*/
+	
 }
 
 ConjugateLM::ConjugateLM()
-    : _betas(0), _nrow(0), _ncol(0)
+    : _betas(0), _fixed(false)
 {
     
 }
@@ -106,15 +125,11 @@ static void getIndices(set<StochasticNode const*> const &schildren,
 
 void ConjugateLM::initialize(LMSampler *sampler, Graph const &graph)
 {
-/*
     vector<StochasticNode *> const &snodes = sampler->nodes();
     vector<StochasticNode const *> const &children = 
 	sampler->stochasticChildren();
 
-    int nrow = 0;
-    for (unsigned int i = 0; i < children.size(); ++i) {
-	nrow += children[i]->length();
-    }
+    int nrow = children.size();
     int ncol = sampler->length();
 
     //Row and column indices for sparse matrix representation
@@ -126,8 +141,8 @@ void ConjugateLM::initialize(LMSampler *sampler, Graph const &graph)
     for (unsigned int i = 0; i < snodes.size(); ++i) {
 
 	set<StochasticNode const *> children_i;
-	stochasticChildren(vector<StochasticNode*>(1,snodes[i]), graph,
-			   children_i);
+	Sampler::getStochasticChildren(vector<StochasticNode*>(1,snodes[i]), 
+				      graph, children_i);
 	vector<int> indices;
 	getIndices(children_i, children, indices);
 
@@ -144,163 +159,144 @@ void ConjugateLM::initialize(LMSampler *sampler, Graph const &graph)
 
     //Set up sparse matrix representation of beta coefficients
     cs *T = cs_spalloc(nrow, ncol, nz, 1, 0);
-    int *Ti = T->i;
     int *Tj = T->p;
-    double *Tx = T->x;
-    for (unsigned int i = 0; i < 
+    for (unsigned int k = 0; k < nz; ++k) {
+	T->i[k] = rows[k];
+    }
+    for (unsigned int j = 0; j <= ncol; ++j) {
+	T->p[j] = cols[j];
+    }
+    T->nz = nz; //Not sure if we need this or not.
+    _betas = T;
 
     // Check for constant linear terms
-    if (!checkLinear(sampler->nodes(), graph, true))
-	return; //Coefficients not fixed
-
-    //Onetime calculation of fixed coefficients
-    calBeta(_betas, sampler, 0);
-*/
+    if (checkLinear(sampler->nodes(), graph, true)) {
+	_fixed = true;
+	calBeta(_betas, sampler, 0);
+    }
 }
 
 
 void ConjugateLM::update(LMSampler *sampler, unsigned int chain, RNG *rng) const
 {
-/*
     vector<StochasticNode const*> const &stoch_children = 
           sampler->stochasticChildren();
     unsigned int nchildren = stoch_children.size();
     
-    StochasticNode *snode = sampler->node();
-    double const *xold = snode->value(chain);
-    double const *priormean = snode->parents()[0]->value(chain); 
-    double const *priorprec = snode->parents()[1]->value(chain);
-    int nrow = snode->length();
-
     //   The log of the full conditional density takes the form
-    //   -1/2(t(x) %*% A %*% x - 2 * b %*% x)
+    //   -(t(x) %*% A %*% x - 2 * b %*% x)/2
 
     //   For computational convenience, we reset the origin to xold,
-    //   the current value of the node.
+    //   the current value of the sampler.
 
-    int N = nrow * nrow;
+    // The vector b is dense, but the matrsampler->length();ix A has a block diagonal
+    // structure. We construct it as a sparse matrix in triplet form
+    // then compress.
+    unsigned int nrow = sampler->length();
     double *b = new double[nrow];
-    double *A = new double[N];
-    for (int i = 0; i < nrow; ++i) {
-	b[i] = 0;
-	for (int i2 = 0; i2 < nrow; ++i2) {
-	    b[i] += priorprec[i * nrow + i2] * (priormean[i2] - xold[i2]);
+    cs *A = cs_spalloc(nrow, nrow, 1, 1, 1); //better nzmax 
+    
+    vector<StochasticNode*> const &snodes = sampler->nodes();
+    int c = 0;
+    for (unsigned int i = 0; i < snodes.size(); ++i) {
+
+	int length_i = snodes[i]->length();
+	double const *priormean = snodes[i]->parents()[0]->value(chain);
+	double const *priorprec = snodes[i]->parents()[1]->value(chain);
+	
+	double const *xold = snodes[i]->value(chain);
+	for (int j = 0; j < length_i; ++j) {
+	    b[j] = 0;
+	    for (int k = 0; k < length_i; ++k) {
+		b[j] += priorprec[j * length_i + k] * (priormean[k] - xold[k]);
+	    }
+	}
+
+	for (int j = 0; j < length_i; ++j) {
+	    for (int k = 0; k < length_i; ++k) {
+		cs_entry(A, c+j, c+k, priorprec[j + length_i * k]);
+	    }
+	}
+	c += length_i;
+    }
+    cs_compress(A);
+
+    if (!_fixed) {
+	//Fixme: could be more efficient if we don't have to recalculate
+	//all coefficients
+	calBeta(_betas, sampler, chain);
+    }
+
+    /*
+    //Calculate largest possible size of working matrix C
+    int max_nrow_child = 0;
+    for (unsigned int j = 0; j < nchildren; ++j) {
+	if (snode->length() > max_nrow_child) {
+	    max_nrow_child = snode->length();
 	}
     }
-    for (int i = 0; i < N; ++i) {
-	A[i] = priorprec[i];
+    double *C = new double[nrow * max_nrow_child];
+    double *delta = new double[max_nrow_child];
+    */
+
+    //Now add the contribution of each term to A, b 
+    //   
+    //   b += beta_j %*% tau_j (Y_j - mu_j)
+    //   A += beta_j %*% tau_j %*% t(beta_j)
+    
+    //   where 
+    //   - beta_j is a matrix of linear coefficients
+    //   - tau_j is the variance-covariance matrix of child j
+    //   - mu_j is the mean of child j
+    //   - Y_j is the value of child j
+    
+    //   We make use of BLAS routines for efficiency.
+
+/*    
+    double const *beta_j = betas;
+    for (unsigned int j = 0; j < nchildren; ++j) {
+	
+	StochasticNode const *snode = stoch_children[j];
+	double const *Y = snode->value(chain);
+	double const *mu = snode->parents()[0]->value(chain);
+	double const *tau = snode->parents()[1]->value(chain);
+	int nrow_child = snode->length();
+	
+	if (nrow_child == 1) {
+	    
+	    double alpha = tau[0];
+	    F77_DSYR("L", &nrow, &alpha, beta_j, &i1, A, &nrow);
+	    alpha *= (Y[0] - mu[0]);
+	    F77_DAXPY(&nrow, &alpha, beta_j, &i1, b, &i1);
+	    
+	}
+	else {
+	    
+	    double alpha = 1;
+	    
+	    F77_DSYMM("R", "L", &nrow, &nrow_child, &alpha, tau,
+		      &nrow_child, beta_j, &nrow, &zero, C, &nrow);
+	    
+	    for (unsigned int i = 0; i < nrow_child; ++i) {
+		delta[i] = Y[i] - mu[i];
+	    }
+	    
+	    F77_DGEMV("N", &nrow, &nrow_child, &d1, C, &nrow,
+		      delta, &i1, &d1, b, &i1);
+	    F77_DGEMM("N","T", &nrow, &nrow, &nrow_child,
+		      &d1, C, &nrow, beta_j, &nrow, &d1, A, &nrow);
+	}
+	
+	beta_j += nrow_child * nrow;
     }
     
-    // FORTRAN routines are all call-by-reference, so we need to create
-    // these constants
-    double zero = 0;
-    double d1 = 1;
-    int i1 = 1;
-
-    if (sampler->deterministicChildren().empty()) {
-      
-	// This can only happen if the stochastic children are all
-	// multivariate normal with the same number of rows and 
-	// columns. We know alpha = 0, beta = I.
-
-	double *delta = new double[nrow]; 
-
-	for (unsigned int j = 0; j < nchildren; ++j) {
-	    double const *Y = stoch_children[j]->value(chain);
-	    double const *tau = stoch_children[j]->parents()[1]->value(chain);
-	    double alpha = 1;
-	
-	    F77_DAXPY (&N, &alpha, tau, &i1, A, &i1);
-	    for (unsigned int i = 0; i < nrow; ++i) {
-		delta[i] = Y[i] - xold[i];
-	    }
-	    F77_DGEMV ("N", &nrow, &nrow, &alpha, tau, &nrow, delta, &i1,
-		       &d1, b, &i1);
-	}
-
-	delete [] delta;
-	
+    delete [] C;
+    delete [] delta;
+    
+    if (temp_beta) {
+	delete betas;
     }
-    else {
-	
-	bool temp_beta = (_betas == 0);
-        double *betas = 0;
-	if (temp_beta) {
-	    betas = new double[_length_betas];
-	    calBeta(betas, sampler, chain);
-	}
-        else {
-            betas = _betas;
-        }
 
-	//Calculate largest possible size of working matrix C
-	int max_nrow_child = 0;
-	for (unsigned int j = 0; j < nchildren; ++j) {
-	    if (snode->length() > max_nrow_child) {
-		max_nrow_child = snode->length();
-	    }
-	}
-	double *C = new double[nrow * max_nrow_child];
-	double *delta = new double[max_nrow_child];
-	
-	//Now add the contribution of each term to A, b 
-	//   
-	//   b += N_j * beta_j %*% tau_j (Y_j - mu_j)
-	//   A += N_j * beta_j %*% tau_j %*% t(beta_j)
-
-	//   where 
-	//   - N_j is the frequency weight of child j
-	//   - beta_j is a matrix of linear coefficients
-	//   - tau_j is the variance-covariance matrix of child j
-	//   - mu_j is the mean of child j
-	//   - Y_j is the value of child j
-	   
-	//   We make use of BLAS routines for efficiency.
-
-	double const *beta_j = betas;
-	for (unsigned int j = 0; j < nchildren; ++j) {
-	    
-	    StochasticNode const *snode = stoch_children[j];
-	    double const *Y = snode->value(chain);
-	    double const *mu = snode->parents()[0]->value(chain);
-	    double const *tau = snode->parents()[1]->value(chain);
-	    int nrow_child = snode->length();
-
-	    if (nrow_child == 1) {
-
-		double alpha = tau[0];
-		F77_DSYR("L", &nrow, &alpha, beta_j, &i1, A, &nrow);
-		alpha *= (Y[0] - mu[0]);
-		F77_DAXPY(&nrow, &alpha, beta_j, &i1, b, &i1);
-
-	    }
-	    else {
-
-		double alpha = 1;
-
-		F77_DSYMM("R", "L", &nrow, &nrow_child, &alpha, tau,
-                          &nrow_child, beta_j, &nrow, &zero, C, &nrow);
-
-		for (unsigned int i = 0; i < nrow_child; ++i) {
-		    delta[i] = Y[i] - mu[i];
-		}
-		
-		F77_DGEMV("N", &nrow, &nrow_child, &d1, C, &nrow,
-			  delta, &i1, &d1, b, &i1);
-		F77_DGEMM("N","T", &nrow, &nrow, &nrow_child,
-			  &d1, C, &nrow, beta_j, &nrow, &d1, A, &nrow);
-	    }
-	       
-	    beta_j += nrow_child * nrow;
-	}
-
-	delete [] C;
-	delete [] delta;
-
-	if (temp_beta) {
-	    delete betas;
-	}
-    }
 
 
     // Solve the equation A %*% x = b to get the posterior mean.
