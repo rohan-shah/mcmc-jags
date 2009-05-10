@@ -104,7 +104,6 @@ AC_CONFIG_FILES([
   src/lib/model/Makefile
   src/lib/compiler/Makefile
   src/lib/rng/Makefile
-  src/CSparse/Makefile
   src/jrmath/Makefile	
   src/include/Makefile
   src/include/util/Makefile
@@ -137,6 +136,7 @@ AC_CONFIG_FILES([
   src/modules/dic/Makefile
   src/modules/lecuyer/Makefile
   src/modules/glm/Makefile
+  src/modules/glm/CSparse/Makefile
   src/modules/glm/samplers/Makefile
   src/terminal/Makefile
   win32/Makefile
