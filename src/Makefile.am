@@ -1,1 +1,1 @@
-SUBDIRS = include lib jrmath CSparse modules terminal
+SUBDIRS = include lib jrmath modules terminal
