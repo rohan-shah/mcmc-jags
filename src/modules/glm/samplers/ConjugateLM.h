@@ -1,7 +1,9 @@
 #ifndef CONJUGATE_LM_H_
 #define CONJUGATE_LM_H_
 
+extern "C" {
 #include <cs.h>
+}
 #include <string>
 
 class Graph;
@@ -12,9 +14,11 @@ class LMSampler;
  * Conjugate sampler for normal linear models.
  */
 class ConjugateLM {
-    cs *_betas;
+    cs *_beta;
     bool _fixed;
-    void calBeta(cs *_betas, LMSampler *sampler, unsigned int chain) const;
+    unsigned int _length_max;
+    unsigned _nz_prior;
+    void calBeta(cs *_beta, LMSampler *sampler, unsigned int chain) const;
 public:
     ConjugateLM();
     ~ConjugateLM();

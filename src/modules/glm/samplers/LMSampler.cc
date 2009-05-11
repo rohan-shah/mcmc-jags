@@ -15,10 +15,11 @@ using std::vector;
 using std::string;
 
 
-LMSampler::LMSampler(vector<StochasticNode *> const &sample_nodes, Graph const &graph)
+LMSampler::LMSampler(vector<StochasticNode *> const &sample_nodes, 
+		     Graph const &graph)
     : Sampler(sample_nodes, graph)
 {
-    //_method->initialize(this, graph);
+    _method.initialize(this, graph);
 }
 
 LMSampler::~LMSampler()
@@ -27,12 +28,10 @@ LMSampler::~LMSampler()
 
 void LMSampler::update(vector<RNG*> const &rngs)
 {
-/*
-    unsigned int nchain = _snode->nchain();
+    unsigned int nchain = nodes()[0]->nchain();
     for (unsigned int ch = 0; ch < nchain; ++ch) {
-	_method->update(this, ch, rngs[ch]);
+	_method.update(this, ch, rngs[ch]);
     }
-*/
 }
 
 bool LMSampler::isAdaptive() const
