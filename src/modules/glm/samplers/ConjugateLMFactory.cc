@@ -19,6 +19,7 @@ using std::set;
 using std::vector;
 using std::map;
 using std::stable_sort;
+using std::string;
 
 static unsigned int canSample(StochasticNode *snode, Graph const &graph)
 {
@@ -34,7 +35,8 @@ static unsigned int canSample(StochasticNode *snode, Graph const &graph)
       zero.
     */
 
-    if (snode->distribution()->name() != "dnorm")
+    string dname = snode->distribution()->name();
+    if (dname != "dnorm" && dname != "dmnorm")
 	return 0;
 
     vector<StochasticNode const*> stoch_nodes;

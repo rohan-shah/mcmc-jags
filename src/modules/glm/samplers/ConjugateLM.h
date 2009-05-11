@@ -15,9 +15,11 @@ class LMSampler;
  */
 class ConjugateLM {
     cs *_beta;
+    css *_symbol;
     bool _fixed;
     unsigned int _length_max;
     unsigned _nz_prior;
+    void symbolic(LMSampler const *sampler);
     void calBeta(cs *_beta, LMSampler *sampler, unsigned int chain) const;
 public:
     ConjugateLM();

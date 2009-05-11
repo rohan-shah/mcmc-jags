@@ -94,7 +94,7 @@ const
 }
 
 ConjugateLM::ConjugateLM()
-    : _beta(0), _fixed(false), _length_max(0), _nz_prior(0)
+    : _beta(0), _symbol(0), _fixed(false), _length_max(0), _nz_prior(0)
 {
 }
 
@@ -118,6 +118,61 @@ static void getIndices(set<StochasticNode const*> const &schildren,
     if (indices.size() != schildren.size()) {
 	throw logic_error("Size mismatch in getIndices");
     }
+}
+
+/* 
+   Symbolic analysis of the posterior precision matrix for the
+   Cholesky decomposition.
+
+   This only needs to be done once, at initialization.  It is a
+   stripped-down version of the code in update.  Note that the values
+   of the sparse matrices are never referenced.
+*/
+void ConjugateLM::symbolic(LMSampler const *sampler)  
+{
+    vector<StochasticNode const*> const &schildren = 
+	sampler->stochasticChildren();
+    unsigned int nchildren = schildren.size();
+    
+    unsigned int nrow = sampler->length();
+    cs *Aprior = cs_spalloc(nrow, nrow, _nz_prior, 0, 0); 
+    
+    // Prior contribution
+    int *Ap = Aprior->p;
+    int *Ai = Aprior->i;
+
+    int c = 0;
+    int r = 0;
+    vector<StochasticNode*> const &snodes = sampler->nodes();
+    for (vector<StochasticNode*>::const_iterator p = snodes.begin();
+	 p != snodes.end(); ++p)
+    {
+	StochasticNode *snode = *p;
+	int length = snode->length();
+
+	int cbase = c; //first column in this diagonal block
+	for (unsigned int i = 0; i < length; ++i, ++c) {
+	    Ap[c] = r;
+	    for (unsigned int j = 0; j < length; ++j, ++r) {
+		Ai[r] = cbase + j;
+	    }
+	}
+    }
+    Ap[c] = r;
+
+    // Likelihood contribution
+    
+    cs *tbeta = cs_transpose(_beta, 0);
+    cs *Alik = cs_multiply(tbeta, _beta);
+    cs *A = cs_add(Aprior, Alik, 0, 0);
+    
+    //Free working matrices
+    cs_spfree(tbeta);
+    cs_spfree(Aprior);
+    cs_spfree(Alik);
+
+    _symbol = cs_schol(1, A); 
+    cs_spfree(A);
 }
 
 void ConjugateLM::initialize(LMSampler *sampler, Graph const &graph)
@@ -166,10 +221,13 @@ void ConjugateLM::initialize(LMSampler *sampler, Graph const &graph)
     copy(Bp.begin(), Bp.end(), _beta->p);
     copy(Bi.begin(), Bi.end(), _beta->i);
 
+    //Symbolic analysis
+    calBeta(_beta, sampler, 0);
+    symbolic(sampler);
+
     // Check for constant linear terms
     if (checkLinear(sampler->nodes(), graph, true)) {
 	_fixed = true;
-	calBeta(_beta, sampler, 0);
     }
 }
 
@@ -209,13 +267,14 @@ void ConjugateLM::update(LMSampler *sampler, unsigned int chain, RNG *rng) const
 	double const *xold = snode->value(chain);
 
 	int length = snode->length();
-
+	
+	int cbase = c; //first column of this diagonal block
 	for (unsigned int i = 0; i < length; ++i, ++c) {
 	    b[c] = 0;
 	    Ap[c] = r;
 	    for (unsigned int j = 0; j < length; ++j, ++r) {
 		b[c] += priorprec[i + length * j] * (priormean[j] - xold[j]);
-		Ai[r] = c + j;
+		Ai[r] = cbase + j;
 		Ax[r] = priorprec[i + length * j];
 	    }
 	}
@@ -265,41 +324,48 @@ void ConjugateLM::update(LMSampler *sampler, unsigned int chain, RNG *rng) const
 
     // Solve the equation A %*% x = b to get the posterior mean.
     // Vector b is overwritten in the process
-    cs_cholsol(0, A, b);
+    
+    csn *N = cs_chol(A, _symbol);
+    if (!N) {
+	throw logic_error("Cholesky decomposition failure in ConjugateLM");
+    }
+
+    double *x = new double[nrow];
+    cs_ipvec(_symbol->pinv, b, x, nrow);
+    cs_lsolve(N->L, x);
+    cs_ltsolve(N->L, x);
+    cs_pvec(_symbol->pinv, x, b, nrow);
 
     //Shift origin back to original scale
     c = 0;
-    for (unsigned int i = 0; i < snodes.size(); ++i) {
-
-	int length_i = snodes[i]->length();
-	double const *xold = snodes[i]->value(chain);
-	for (int j = 0; j < length_i; ++j) {
-	    b[c + j] += xold[j];
+    for (vector<StochasticNode*>::const_iterator p = snodes.begin();
+	 p != snodes.end(); ++p)
+    {
+	StochasticNode *snode = *p;
+	unsigned int length = snode->length();
+	double const *xold = snode->value(chain);
+	for (unsigned int i = 0; i < length; ++i, ++c) {
+	    b[c] += xold[i];
 	}
-	++c;
     }
 
     // Generate new random sample
-    double *xnew = new double[nrow];
-    for (unsigned int i = 0; i < nrow; ++i) {
-	xnew[i] = rng->normal();
+    for (unsigned int r = 0; r < nrow; ++r) {
+	x[r] = rng->normal();
     }
+    cs_ltsolve(N->L, x);
 
-    css *S = cs_schol(1, A); //FIXME: Calculate this in initialize function
-    csn *N = cs_chol(A, S);
-    cs_ltsolve(N->L, xnew);
-
-    for (unsigned int i = 0; i < nrow; ++i) {
-	xnew[i] += b[i];
+    for (unsigned int r = 0; r < nrow; ++r) {
+	x[r] += b[r];
     }
     
-    sampler->setValue(xnew, nrow, chain);
+    sampler->setValue(x, nrow, chain);
 
-    delete [] xnew;
+    delete [] x;
     delete [] b;
     cs_nfree(N);
-    cs_sfree(S);
     cs_spfree(A);
+
 }
 
 string ConjugateLM::name() const
