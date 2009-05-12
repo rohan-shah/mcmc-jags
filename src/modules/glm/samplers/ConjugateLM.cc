@@ -240,11 +240,11 @@ void ConjugateLM::update(LMSampler *sampler, unsigned int chain, RNG *rng) const
     
     //   The log of the full conditional density takes the form
     //   -(t(x) %*% A %*% x - 2 * b %*% x)/2
+    //   where A is the posterior precision and the mean mu solves
+    //   A %*% mu = b
 
-    //   For computational convenience, we reset the origin to xold,
-    //   the current value of the sampler.
-
-    // The vector b is dense, but the matrix is sparse A.
+    //   For computational convenience we take xold, the current value
+    //   of the sampled nodes, as the origin
 
     unsigned int nrow = sampler->length();
     double *b = new double[nrow];
@@ -265,7 +265,6 @@ void ConjugateLM::update(LMSampler *sampler, unsigned int chain, RNG *rng) const
 	double const *priormean = snode->parents()[0]->value(chain);
 	double const *priorprec = snode->parents()[1]->value(chain);
 	double const *xold = snode->value(chain);
-
 	int length = snode->length();
 	
 	int cbase = c; //first column of this diagonal block
@@ -289,8 +288,8 @@ void ConjugateLM::update(LMSampler *sampler, unsigned int chain, RNG *rng) const
 
     // Likelihood contributions
     //   
-    //   b += beta %*% tau %*% (Y - mu)
-    //   A += beta %*% tau %*% t(beta)
+    //   b += t(beta) %*% tau %*% (Y - mu)
+    //   A += t(beta) %*% tau %*% beta
     
     //   where 
     //   - beta is a matrix of linear coefficients
@@ -315,57 +314,48 @@ void ConjugateLM::update(LMSampler *sampler, unsigned int chain, RNG *rng) const
     }
 
     cs *Alik = cs_multiply(tbeta, _beta);
-    cs *A = cs_add(Aprior, Alik, 1, 1);
-
-    //Free working matrices
     cs_spfree(tbeta);
+    cs *A = cs_add(Aprior, Alik, 1, 1);
     cs_spfree(Aprior);
     cs_spfree(Alik);
 
-    // Solve the equation A %*% x = b to get the posterior mean.
-    // Vector b is overwritten in the process
-    
+    // Get Cholesky decomposition of posterior precision
     csn *N = cs_chol(A, _symbol);
     if (!N) {
 	throw logic_error("Cholesky decomposition failure in ConjugateLM");
     }
+    cs_spfree(A);
 
-    double *x = new double[nrow];
-    cs_ipvec(_symbol->pinv, b, x, nrow);
-    cs_lsolve(N->L, x);
-    cs_ltsolve(N->L, x);
-    cs_pvec(_symbol->pinv, x, b, nrow);
+    // Use the Cholesky decomposition to generate a new sample with mean
+    // mu such that A %*% mu = b and precision A. The vector b is overwritten
+    // with the result
 
+    double *w = new double[nrow];
+    cs_ipvec(_symbol->pinv, b, w, nrow);
+    cs_lsolve(N->L, w);
+    for (r = 0; r < nrow; ++r) {
+	w[r] += rng->normal();
+    }
+    cs_ltsolve(N->L, w);
+    cs_nfree(N);
+    cs_pvec(_symbol->pinv, w, b, nrow);
+    delete [] w;
+    
     //Shift origin back to original scale
-    c = 0;
+    r = 0;
     for (vector<StochasticNode*>::const_iterator p = snodes.begin();
 	 p != snodes.end(); ++p)
     {
 	StochasticNode *snode = *p;
 	unsigned int length = snode->length();
 	double const *xold = snode->value(chain);
-	for (unsigned int i = 0; i < length; ++i, ++c) {
-	    b[c] += xold[i];
+	for (unsigned int i = 0; i < length; ++i, ++r) {
+	    b[r] += xold[i];
 	}
     }
 
-    // Generate new random sample
-    for (unsigned int r = 0; r < nrow; ++r) {
-	x[r] = rng->normal();
-    }
-    cs_ltsolve(N->L, x);
-
-    for (unsigned int r = 0; r < nrow; ++r) {
-	x[r] += b[r];
-    }
-    
-    sampler->setValue(x, nrow, chain);
-
-    delete [] x;
+    sampler->setValue(b, nrow, chain);
     delete [] b;
-    cs_nfree(N);
-    cs_spfree(A);
-
 }
 
 string ConjugateLM::name() const
