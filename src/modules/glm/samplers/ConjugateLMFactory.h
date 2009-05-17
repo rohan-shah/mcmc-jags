@@ -1,18 +1,19 @@
 #ifndef CONJUGATE_LM_FACTORY_H_
 #define CONJUGATE_LM_FACTORY_H_
 
-#include <sampler/SamplerFactory.h>
+#include "GLMFactory.h"
 
 namespace glm {
 
 /**
  * @short Factory object for conjugate linear model sampler
  */
-    class ConjugateLMFactory : public SamplerFactory
+    class ConjugateLMFactory : public GLMFactory
     {
     public:
-	Sampler * makeSampler(std::set<StochasticNode*> const &nodes, 
-			      Graph const &graph) const;
+	bool checkOutcome(StochasticNode const *snode) const;
+	bool checkLink(InverseLinkFunc const *link) const;
+	GLMMethod *newMethod() const;
     };
 
 }
