@@ -20,10 +20,16 @@ class Graph;
  * @pararm fixed Boolean flag. If true, the function checks for fixed
  * linear functions.
  *
+ * @param link Boolean flag. If true, then the function tests for a
+ * generalized linear model, allowing the last deterministic
+ * descendants (i.e. those with no deterministic children) to be link
+ * functions.
+ *
  * @see Node#isLinear
  */
 bool checkLinear(std::vector<StochasticNode *> const &snodes,
-		 Graph const &graph, bool fixed);
+		 Graph const &graph, bool fixed, bool link=false);
+
 
 /**
  * Helper function to check for scale transformations. The function

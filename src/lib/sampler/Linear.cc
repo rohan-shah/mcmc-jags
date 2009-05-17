@@ -5,13 +5,15 @@
 #include <graph/Graph.h>
 #include <graph/StochasticNode.h>
 #include <graph/DeterministicNode.h>
+#include <graph/LinkNode.h>
 #include <graph/Node.h>
 
 using std::vector;
 using std::set;
 
 bool checkLinear(vector<StochasticNode*> const &snodes, Graph const &graph,
-		 bool fixed)
+		 bool fixed, bool link)
+
 {
     vector<StochasticNode const *> stoch_nodes;
     vector<DeterministicNode *> dtrm_nodes;
@@ -26,6 +28,17 @@ bool checkLinear(vector<StochasticNode*> const &snodes, Graph const &graph,
     for (unsigned int j = 0; j < dtrm_nodes.size(); ++j) {
 	if (dtrm_nodes[j]->isLinear(linear_marks, fixed)) {	
 	    linear_marks.mark(dtrm_nodes[j], MARK_TRUE);
+	}
+	else if (link) {
+	    //Allow link functions
+	    LinkNode const *lnode = 
+		dynamic_cast<LinkNode const*>(dtrm_nodes[j]);
+	    if (lnode) {
+		linear_marks.mark(dtrm_nodes[j], MARK_FALSE);
+	    }
+	    else {
+		return false;
+	    }
 	}
 	else {
 	    return false;
