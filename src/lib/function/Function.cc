@@ -49,6 +49,24 @@ bool Function::isScale(unsigned int index,
     return false;
 }
 
+bool Function::isPower(vector<bool> const &mask,
+		       vector<bool> const &isfixed) const
+{
+    unsigned int index = mask.size();
+    for (unsigned int i = 0; i < mask.size(); ++i) {
+	if (mask[i]) {
+	    if (i > index)
+		return false; //more than one element of mask is true
+	    else 
+		index = i;
+	}
+    }
+    if (index == mask.size())
+	return false;
+    
+    return isScale(index, isfixed);
+}
+    
 vector<unsigned int> 
 Function::dim(vector <vector<unsigned int> > const &dims) const
 {

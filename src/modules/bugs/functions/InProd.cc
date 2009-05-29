@@ -62,4 +62,17 @@ namespace bugs {
 	return true;
     }
 
+    bool InProd::isPower(std::vector<bool> const &mask,
+		         std::vector<bool> const &fix) const
+    {
+	if (fix.empty()) {
+	    return true;
+	}
+	else if ((mask[0] && !fix[0]) || (mask[1] && !fix[1])) {
+	    return false;
+	}
+        else {
+            return true;
+        }
+    }
 }

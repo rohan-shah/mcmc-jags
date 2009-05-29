@@ -50,6 +50,12 @@ public:
      * @see Function#isScale
      */
     bool isScale(GraphMarks const &scale_marks, bool fixed) const;
+    /**
+     * A logical node preserves log-linearity if its function is
+     * a power function.
+     * @see Function#isPower
+     */
+    bool isPower(GraphMarks const &scale_marks, bool fixed) const;
     std::string deparse(std::vector<std::string> const &) const;
     Node *clone(std::vector<Node const *> const &parents) const;
 };

@@ -7,9 +7,8 @@ namespace base {
 
 /**
  * The Add function implements the infix operator "+" in the BUGS language.
- * The expression a + b + c is broken down into ((a + b) + c), so two
- * separate calls to Add are made.
- * @short Sum of two scalars
+ * The expression a + b + c is evaluated in a single function call.
+ * @short Sum of scalars
  * <pre>
  * y <- a + b
  * </pre>

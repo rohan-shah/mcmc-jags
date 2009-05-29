@@ -32,4 +32,10 @@ namespace bugs {
 	return allTrue(mask);
     }
 
+    bool Prod::isPower(std::vector<bool> const &mask,
+                       std::vector<bool> const &fix) const
+    {
+        return true;
+    }
+
 }

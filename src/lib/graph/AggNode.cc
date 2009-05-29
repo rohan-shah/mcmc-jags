@@ -77,6 +77,7 @@ bool AggNode::isLinear(GraphMarks const &linear_marks, bool fixed) const
 bool AggNode::isScale(GraphMarks const &scale_marks, bool fixed) const
 {
     Node const *p = 0;
+    unsigned int offset = 0;
     vector<Node const *> const &par = parents();
     for (unsigned int i = 0; i < par.size(); ++i) {
         if (scale_marks.graph().contains(par[i])) {
@@ -86,8 +87,9 @@ bool AggNode::isScale(GraphMarks const &scale_marks, bool fixed) const
             case MARK_TRUE:
                 if (p == 0) {
                     p = par[i];   
+                    offset = _offsets[i];
                 }
-                else if (par[i] != p) {
+                else if (par[i] != p || _offsets[i] != offset) {
                     //There can only be one parent in the graph
                     return false; 
                 }

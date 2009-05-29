@@ -27,6 +27,8 @@ namespace bugs {
 	bool isLinear(std::vector<bool> const &mask,
 		      std::vector<bool> const &fix) const;
 	bool isScale(unsigned int index, std::vector<bool> const &fix) const;
+	bool isPower(std::vector<bool> const &mask,
+		     std::vector<bool> const &fix) const;
     };
 
 }

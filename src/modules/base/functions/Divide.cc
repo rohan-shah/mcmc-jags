@@ -43,4 +43,10 @@ bool Divide::isScale(unsigned int index, vector<bool> const &fix) const
 	return fix[1];
 }
 
+    bool 
+    Divide::isPower(vector<bool> const &mask, vector<bool> const &fix) const
+    {
+	return true;
+    }
+	
 }

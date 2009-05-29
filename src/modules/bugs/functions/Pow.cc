@@ -31,5 +31,15 @@ namespace bugs {
 	    return fabs(arg2 - iarg2) < DBL_EPSILON;
 	}
     }
-
+    
+    bool Pow::isPower(vector<bool> const &mask, vector<bool> const &fix) const
+    {
+ 	if (mask[1])
+ 	    return false;
+	
+ 	if (!fix.empty() && !fix[1])
+ 	    return false;
+	
+ 	return true;
+    }
 }

@@ -150,6 +150,15 @@ public:
     virtual bool isScale(unsigned int index,
 			 std::vector<bool> const &isfixed) const;
     /**
+     * Test whether the function is a power transformation, i.e a
+     * function of the form f(x) = A*X^B.  All scale functions are by
+     * default power functions with B=1. Therefore the default isScale
+     * function calls isScale. It must be over-ridden for power functions
+     * with B!=1.
+     */
+    virtual bool isPower(std::vector<bool> const &mask,
+			 std::vector<bool> const &isfixed) const;
+    /**
      * Returns a BUGS-language expression representing the function call.
      * The default behaviour for a function named "foo" is to return
      * "foo(arg1,arg2)". Functions that are represented as prefix or infix

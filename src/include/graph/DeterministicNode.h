@@ -75,7 +75,9 @@ public:
      * ancestor node X. A scale function is a trivial linear function
      * of the form A + B %*% X where either A or B is zero (or both).
      * Preservation of scale is used by some Samplers to determine
-     * if they can act on a set of stochastic nodes.
+     * if they can act on a set of stochastic nodes. A multivariate node
+     * is considered a scale function if each element is an identical
+     * power function of X.
      * 
      * The isScale function works the same way as the isLinear function.
      *
@@ -92,6 +94,47 @@ public:
      */
     virtual bool 
 	isScale(GraphMarks const &scale_marks, bool fixed) const = 0;
+    /**
+     * Tests whether the value of the node is a power function of an
+     * ancestor nodes X. A power function is a function of the form A
+     * * X^B. Power functions are used by some samplers to determine
+     * if they can act on a set of stochastic nodes. Note that power
+     * functions become linear functions if we transform to a log
+     * scale: i.e. if Y=A*X^B and A > 0, then log(Y) is a linear
+     * function of log(X).
+     *
+     * Most power functions are actually scale functions, i.e they
+     * take the form A*X^B with B=1, so the default isPower function
+     * simply calls isScale. It only needs to be overridden for power
+     * functions with B!=1.
+     * 
+     * The test for linearity takes place in a graph, which is implicitly
+     * defined by the linear_marks parameter (and may be accessed directly
+     * using the GraphMarks#graph member function on linear_marks). Only
+     * paths that are contained entirely inside the graph are considered.
+     * The graph is assumed to be acyclic. Since the Node#isLinear function
+     * is designed to be called iteratively on a sequence of nodes, it
+     * relies on a GraphMarks object for book-keeping.
+     *
+     * @param power_marks A GraphMarks object in which all ancestors
+     * of the current node that are also descendants of X have been
+     * marked.  The mark values are MARK_TRUE if the node is a
+     * (possibly fixed) power function of X, and MARK_FALSE
+     * otherwise.  Ancestors of the current node that are not
+     * descendants of X should remain unmarked.
+     *
+     * @param fixed Logical flag. When true, the test is more
+     * stringent and the isPower function returns the value true only
+     * if the current node is a fixed power function of X, i.e. the
+     * coefficient B is constant (but not necessarily A). In this
+     * case, the power_marks parameter must also conform to the more
+     * stringent conditions: ancestors of the current node should be
+     * marked with MARK_TRUE only if they are fixed power functions
+     * of X. They should be marked with MARK_FALSE if they are
+     * non-power or non-fixed power functions of X.
+     */
+    virtual bool 
+	isPower(GraphMarks const &power_marks, bool fixed) const;
 };
 
 #endif /* DETERMINISTIC_NODE_H_ */

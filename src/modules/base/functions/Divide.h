@@ -23,6 +23,9 @@ public:
     bool isLinear(std::vector<bool> const &mask,
 		  std::vector<bool> const &fixmask) const;
     bool isScale(unsigned int index, std::vector<bool> const &fixmask) const;
+    bool isPower(std::vector<bool> const &mask,
+                 std::vector<bool> const &fix) const;
+
 };
 
 }

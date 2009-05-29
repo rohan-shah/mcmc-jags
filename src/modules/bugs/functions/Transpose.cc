@@ -39,4 +39,15 @@ namespace bugs {
 	return dims[0].size() == 1 || dims[0].size() == 2;
     }
 
+    bool Transpose::isLinear(std::vector<bool> const &mask,
+		             std::vector<bool> const &isfixed) const
+    {
+	return true;
+    }
+    
+    bool Transpose::isScale(unsigned int index,
+                            std::vector<bool> const &mask) const
+    {
+	return true;
+    }
 }

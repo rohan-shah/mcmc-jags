@@ -163,7 +163,7 @@ bool LogicalNode::isScale(GraphMarks const &scale_marks, bool fixed) const
 	}
     }
     if (!have_index) {
-	return true;
+	return true;//FIXME: What is the best solution here?
     }
     
     vector<bool> fixed_mask;
@@ -174,6 +174,50 @@ bool LogicalNode::isScale(GraphMarks const &scale_marks, bool fixed) const
     }
 
     return _func->isScale(index, fixed_mask);
+}
+
+//FIXME: Code overlap with isLinear
+bool LogicalNode::isPower(GraphMarks const &linear_marks, bool fixed) const
+{
+    //Scale functions are, by default, fixed power functions
+    if (isScale(linear_marks, false))
+	return true;
+
+    //Otherwise we check for a power function
+
+    vector<bool> mask(parents().size());
+    for (unsigned int i = 0; i < parents().size(); ++i) {
+	Node const *p = parents()[i];
+        if (linear_marks.graph().contains(p)) {
+	    switch(linear_marks.mark(p)) {
+            case MARK_NULL:
+                mask[i] = false;
+                break;
+	    case MARK_TRUE:
+		mask[i] = true;
+		break;
+	    case MARK_FALSE:
+                //Parent is a non-power function. No way to recover.
+		return false;
+		break;
+	    default:
+		throw logic_error("Invalid marks in LogicalNode::isLinear");
+	    }
+	}
+        else {
+            //We don't care about these parameters
+            mask[i] = false; 
+        }
+    }
+
+    vector<bool> fixed_mask;
+    if (fixed) {
+	for (unsigned int i = 0; i < parents().size(); ++i) {
+	    fixed_mask.push_back(parents()[i]->isObserved());
+	}
+    }
+
+    return _func->isPower(mask, fixed_mask);
 }
 
 bool LogicalNode::checkParentValues(unsigned int chain) const

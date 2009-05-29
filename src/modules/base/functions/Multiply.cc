@@ -75,4 +75,9 @@ bool Multiply::isScale(unsigned int index, vector<bool> const &fix) const
     return true;
 }
 
+    bool Multiply::isPower(vector<bool> const &mask, 
+			   vector<bool> const &fix) const
+    {
+	return true;
+    }
 }
