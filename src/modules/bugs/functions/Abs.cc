@@ -23,4 +23,11 @@ namespace bugs {
 	return mask[0];
     }
 
+    bool Abs::isScale(unsigned int index, std::vector<bool> const &mask) const
+    {
+	if (mask.empty())
+	    return true;
+	else
+	    return mask[0];
+    }
 }
