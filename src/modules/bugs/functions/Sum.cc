@@ -36,10 +36,4 @@ namespace bugs {
     {
 	return true;
     }
-
-    bool Sum::isScale(unsigned int index, vector<bool> const &fix) const
-    {
-	return true;
-    }
-
 }

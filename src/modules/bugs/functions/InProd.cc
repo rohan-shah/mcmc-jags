@@ -47,32 +47,4 @@ namespace bugs {
 
 	return true;
     }
-
-    bool InProd::isScale(unsigned int index, vector<bool> const &fix) const
-    {
-	if (fix.empty()) {
-	    return true;
-	}
-	else {
-	    if ((index == 0 && !fix[1]) || (index == 1 && !fix[0])) {
-		return false;
-	    }
-	}
-
-	return true;
-    }
-
-    bool InProd::isPower(std::vector<bool> const &mask,
-		         std::vector<bool> const &fix) const
-    {
-	if (fix.empty()) {
-	    return true;
-	}
-	else if ((mask[0] && !fix[0]) || (mask[1] && !fix[1])) {
-	    return false;
-	}
-        else {
-            return true;
-        }
-    }
 }

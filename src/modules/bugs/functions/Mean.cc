@@ -33,12 +33,5 @@ namespace bugs {
     {
 	return true;
     }
-
-    bool 
-    Mean::isScale(unsigned int index, vector<bool> const &fix) const
-    {
-	return true;
-    }
-
 }
 
