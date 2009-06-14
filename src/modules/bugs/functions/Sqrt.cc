@@ -22,4 +22,11 @@ namespace bugs {
 	return *args[0] >= 0;
     }
 
+    bool Sqrt::isPower(std::vector<bool> const &mask,
+                       std::vector<bool> const &fix) const
+    {
+        return true;
+    }
+
+
 }

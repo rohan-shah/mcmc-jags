@@ -18,6 +18,8 @@ namespace bugs {
 	Sqrt ();
 	double evaluateScalar(std::vector<double const *> const &args) const;
 	bool checkScalarValue(std::vector<double const *> const &args) const;
+        bool isPower(std::vector<bool> const &mask,
+                     std::vector<bool> const &fix) const;
     };
 }
 
