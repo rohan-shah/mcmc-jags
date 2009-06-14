@@ -63,15 +63,11 @@ public:
      */
     bool isDiscreteValued() const;
     /**
-     * A MixtureNode preserves linearity if none of the index nodes
-     * are parameters. It is never a fixed linear function.
+     * A MixtureNode preserves all closed classes if none of its index
+     * nodes are descendants of X. It is never fixed
      */
-    bool isLinear(GraphMarks const &linear_marks, bool fixed) const;
-    /**
-     * A MixtureNode is a scale transformation if none of the indices
-     * are parameters. It is never a fixed scale transformation.
-     */
-    bool isScale(GraphMarks const &scale_marks, bool fixed) const;
+    bool isClosed(std::set<Node const *> const &ancestors, 
+		  ClosedFuncClass fc, bool fixed) const;
     /**
      * This function always returns true. It ignores possible errors
      * in the index nodes.  This is because the deterministicSample

@@ -176,38 +176,22 @@ bool isMixture(Node const *node)
   return dynamic_cast<MixtureNode const*>(node);
 }
 
-bool MixtureNode::isLinear(GraphMarks const &linear_marks, bool fixed) const
+
+bool MixtureNode::isClosed(set<Node const *> const &ancestors, 
+			   ClosedFuncClass fc, bool fixed) const
 {
     if (fixed)
 	return false;
 
-    //Check that none of the indices are marked in the graph
-    //(indicating that they are linear or non-linear functions of the
-    //source nodes)
+    //Check that none of the indices are in the ancestor set
     vector<Node const*> const &par = parents();
     for (unsigned int i = 0; i < _Nindex; ++i) {
-	if (linear_marks.graph().contains(par[i]) &&
-	    linear_marks.mark(par[i]) != 0) 
-	    {
-		return false;
-	    }
-    }
-
-    //Check that there are no other non-linear parents
-    for (unsigned int i = _Nindex; i < par.size(); ++i) {
-	if (linear_marks.graph().contains(par[i]) && 
-	    linear_marks.mark(par[i]) == MARK_FALSE) 
-	{
+	if (ancestors.count(par[i])) {
 	    return false;
 	}
     }
 
     return true;
-}
-
-bool MixtureNode::isScale(GraphMarks const &scale_marks, bool fixed) const
-{
-    return isLinear(scale_marks, fixed);
 }
 
 bool MixtureNode::checkParentValues(unsigned int chain) const

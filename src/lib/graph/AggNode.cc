@@ -55,6 +55,7 @@ AggNode const *asAggregate(Node *node)
   return dynamic_cast<AggNode const*>(node);
 }
 
+/*
 bool AggNode::isLinear(GraphMarks const &linear_marks, bool fixed) const
 {
     vector<Node const *> const &par = parents();
@@ -73,7 +74,15 @@ bool AggNode::isLinear(GraphMarks const &linear_marks, bool fixed) const
     }
     return true;
 }
+*/
 
+bool AggNode::isClosed(set<Node const *> const &ancestors, 
+		       ClosedFuncClass fc, bool fixed) const
+{
+    return true;
+}
+
+/*
 bool AggNode::isScale(GraphMarks const &scale_marks, bool fixed) const
 {
     Node const *p = 0;
@@ -105,6 +114,7 @@ bool AggNode::isScale(GraphMarks const &scale_marks, bool fixed) const
     return true;
 
 }
+*/
 
 bool AggNode::checkParentValues(unsigned int) const
 {

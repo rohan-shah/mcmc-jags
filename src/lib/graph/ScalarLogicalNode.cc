@@ -53,82 +53,49 @@ void ScalarLogicalNode::deterministicSample(unsigned int chain)
     _data[chain] = _func->evaluateScalar(_parameters[chain]);
 }
 
-bool ScalarLogicalNode::isLinear(GraphMarks const &linear_marks, bool fixed) const
+//FIXME: Identical to LogicalNode::isClosed
+
+bool ScalarLogicalNode::isClosed(set<Node const *> const &ancestors, 
+				 ClosedFuncClass fc, bool fixed) const
 {
-    vector<bool> mask(parents().size());
-    for (unsigned int i = 0; i < parents().size(); ++i) {
-	Node const *p = parents()[i];
-        if (linear_marks.graph().contains(p)) {
-	    switch(linear_marks.mark(p)) {
-            case MARK_NULL:
-                mask[i] = false;
-                break;
-	    case MARK_TRUE:
-		mask[i] = true;
-		break;
-	    case MARK_FALSE:
-                //Parent is a non-linear function. No way to recover.
-		return false;
-		break;
-	    default:
-		throw logic_error("Invalid marks in ScalarlogicalNode::isLinear");
-	    }
-	}
-        else {
-            //We don't care if the function is non-linear in these parameters
-            mask[i] = false; 
-        }
-    }
-
-    vector<bool> fixed_mask;
-    if (fixed) {
-	for (unsigned int i = 0; i < parents().size(); ++i) {
-	    fixed_mask.push_back(parents()[i]->isObserved());
-	}
-    }
-
-    return _func->isLinear(mask, fixed_mask);
-}
-
-bool ScalarLogicalNode::isScale(GraphMarks const &scale_marks, bool fixed) const
-{
-    unsigned index = 0;
-    bool have_index = false;
     vector<Node const *> const &par = parents();
-    for (unsigned int i = 0; i < par.size(); ++i) {
-	if (scale_marks.graph().contains(par[i])) {
-	    switch(scale_marks.mark(par[i])) {
-            case MARK_NULL:
-		break;
-	    case MARK_TRUE:
-		if (!have_index) {
-		    have_index = true;
-		    index = i;
-		}
-		else {
-		    return false;
-		}
-		break;
-	    case MARK_FALSE:
-		return false;
-		break;
-	    default:
-		throw logic_error("Invalid marks in ScalarLogicalNode::isScale");
-	    }
-	}
-    }
-    if (!have_index) {
-	return true;
-    }
-    
+
+    vector<bool> mask(par.size());
     vector<bool> fixed_mask;
-    if (fixed) {
-	for (unsigned int i = 0; i < par.size(); ++i) {
+    unsigned int nmask = 0;
+    unsigned int index = 0;
+    for (unsigned int i = 0; i < par.size(); ++i) {
+	mask[i] = ancestors.count(par[i]);
+	if (mask[i]) {
+	    ++nmask;
+	    index = i;
+	}
+	if (fixed) {
 	    fixed_mask.push_back(par[i]->isObserved());
 	}
     }
 
-    return _func->isScale(index, fixed_mask);
+    switch(fc) {
+    case DNODE_LINEAR:
+	return _func->isLinear(mask, fixed_mask);
+	break;
+    case DNODE_POWER:
+	if (nmask == 0)
+	    return true;
+	else if (nmask == 1 && _func->isScale(index, fixed_mask))
+	    return true;
+	else
+	    return _func->isPower(mask, fixed_mask);
+	break;
+    case DNODE_SCALE:
+	if (nmask == 0)
+	    return true;
+	else if (nmask == 1) 
+	    return _func->isScale(index, fixed_mask);
+	else 
+	    return false;
+	break;
+    }
 }
 
 bool ScalarLogicalNode::checkParentValues(unsigned int chain) const

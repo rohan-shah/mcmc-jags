@@ -44,12 +44,8 @@ void LinkNode::deterministicSample(unsigned int chain)
     _data[chain] = _func->inverseLink(_parameters[chain]);
 }
 
-bool LinkNode::isLinear(GraphMarks const &linear_marks, bool fixed) const
-{
-    return false;
-}
-
-bool LinkNode::isScale(GraphMarks const &scale_marks, bool fixed) const
+bool LinkNode::isClosed(std::set<Node const *> const &ancestors, 
+			ClosedFuncClass fc, bool fixed) const
 {
     return false;
 }

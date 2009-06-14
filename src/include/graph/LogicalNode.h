@@ -29,7 +29,7 @@ public:
     ~LogicalNode();
     /**
      * A LogicalNode may be discrete valued if its parents are. 
-     * @see Function##isDiscreteValued;
+     * @see Function##isDiscreteValued
      */
     bool isDiscreteValued() const;
     /**
@@ -41,21 +41,13 @@ public:
      */
     bool checkParentValues(unsigned int chain) const;
     /**
-     * A logical node preserves linearity if its function is linear.
-     * @see Function#isLinear
+     * A LogicalNode belongs to a closed class if its function
+     * preserves that class.
+     *
+     * @see Function#isLinear, Function#isScale, Function#isPower
      */
-    bool isLinear(GraphMarks const &linear_marks, bool fixed) const;
-    /**
-     * A logical node preserves scale if its function is a scale function.
-     * @see Function#isScale
-     */
-    bool isScale(GraphMarks const &scale_marks, bool fixed) const;
-    /**
-     * A logical node preserves log-linearity if its function is
-     * a power function.
-     * @see Function#isPower
-     */
-    bool isPower(GraphMarks const &scale_marks, bool fixed) const;
+    bool isClosed(std::set<Node const *> const &ancestors, 
+		  ClosedFuncClass fc, bool fixed) const;
     std::string deparse(std::vector<std::string> const &) const;
     Node *clone(std::vector<Node const *> const &parents) const;
 };

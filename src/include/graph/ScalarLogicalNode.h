@@ -38,15 +38,13 @@ public:
      */
     bool checkParentValues(unsigned int chain) const;
     /**
-     * A logical node preserves linearity if its function is linear.
-     * @see Function#isLinear
+     * A ScalarLogicalNode belongs to a closed class if its function
+     * preserves that class.
+     *
+     * @see ScalarFunc#isLinear, ScalarFunc#isScale, ScalarFunc#isPower
      */
-    bool isLinear(GraphMarks const &linear_marks, bool fixed) const;
-    /**
-     * A logical node preserves scale if its function is a scale function.
-     * @see Function#isScale
-     */
-    bool isScale(GraphMarks const &scale_marks, bool fixed) const;
+    bool isClosed(std::set<Node const *> const &ancestors, 
+		  ClosedFuncClass fc, bool fixed) const;
     std::string deparse(std::vector<std::string> const &) const;
     Node *clone(std::vector<Node const *> const &parents) const;
     bool isDiscreteValued() const;

@@ -28,17 +28,14 @@ public:
      */
     void deterministicSample(unsigned int chain);
     /**
-     * A deviance node never preserves linearity.
-     */
-    bool isLinear(GraphMarks const &linear_marks, bool fixed) const;
-    /**
-     * A deviance node is never a scale transformation of its parameters.
-     */
-    bool isScale(GraphMarks const &scale_marks, bool fixed) const;
-    /**
      * A deviance node always has valid parent values
      */
     bool checkParentValues(unsigned int chain) const;
+    /**
+     * A deviance node is not closed under any class
+     */
+    bool isClosed(std::set<Node const *> const &ancestors, 
+		  ClosedFuncClass fc, bool fixed) const;
     std::string deparse(std::vector<std::string> const &parents) const;
     Node *clone(std::vector<Node const *> const &parents) const;
     bool isDiscreteValued() const;

@@ -38,8 +38,3 @@ bool DeterministicNode::isObserved() const
     return true;
 }
 
-bool DeterministicNode::isPower(GraphMarks const &power_marks,
-				bool fixed) const
-{
-    return isScale(power_marks, false);
-}

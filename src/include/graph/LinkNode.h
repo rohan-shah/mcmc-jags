@@ -33,13 +33,10 @@ public:
      */
     bool checkParentValues(unsigned int chain) const;
     /**
-     * Returns false. Link nodes are non-linear.
+     * Link nodes are not closed
      */
-    bool isLinear(GraphMarks const &linear_marks, bool fixed) const;
-    /**
-     * Returns false. Link nodes are not scale functions.
-     */
-    bool isScale(GraphMarks const &scale_marks, bool fixed) const;
+    bool isClosed(std::set<Node const *> const &ancestors, 
+		  ClosedFuncClass fc, bool fixed) const;
     std::string deparse(std::vector<std::string> const &) const;
     Node *clone(std::vector<Node const *> const &parents) const;
     /** Linknodes are never discrete valued */

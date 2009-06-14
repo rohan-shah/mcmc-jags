@@ -52,12 +52,8 @@ void DevianceNode::deterministicSample(unsigned int chain)
   setValue(&deviance, 1, chain);
 }
 
-bool DevianceNode::isLinear(GraphMarks const &linear_marks, bool fixed) const
-{
-    return false;
-}
-
-bool DevianceNode::isScale(GraphMarks const &scale_marks, bool fixed) const
+bool DevianceNode::isClosed(set<Node const *> const &ancestors, 
+			    ClosedFuncClass fc, bool fixed) const
 {
     return false;
 }

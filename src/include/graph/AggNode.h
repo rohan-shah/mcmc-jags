@@ -51,19 +51,14 @@ public:
      */
     void deterministicSample(unsigned int chain);
     /**
-     * An aggregate node is discrete valued if all of its parents are
+     * An aggregate node is discrete valued if all of its parents are.
      */
     bool isDiscreteValued() const;
     /**
-     * An AggNode always preserves linearity. Therefore this function
-     * returns true.
+     * Aggregate nodes are closed under all classes and are always fixed.
      */
-    bool isLinear(GraphMarks const &linear_marks, bool fixed) const;
-    /**
-     * An AggNode is a scale transformation only if it has a single
-     * parent, and in this case it is also fixed.
-     */
-    bool isScale(GraphMarks const &linear_marks, bool fixed) const;
+    bool isClosed(std::set<Node const *> const &ancestors, 
+		  ClosedFuncClass fc, bool fixed) const;
     /**
      * An AggNode places no restrictions on its parents' values. Therefore
      * this function always returns true.
