@@ -26,7 +26,7 @@ namespace bugs {
     bool Abs::isScale(unsigned int index, std::vector<bool> const &mask) const
     {
 	if (mask.empty())
-	    return true;
+	    return false;
 	else
 	    return mask[0];
     }
