@@ -79,7 +79,19 @@ bool AggNode::isLinear(GraphMarks const &linear_marks, bool fixed) const
 bool AggNode::isClosed(set<Node const *> const &ancestors, 
 		       ClosedFuncClass fc, bool fixed) const
 {
-    return true;
+    switch(fc) {
+    case DNODE_SCALE:
+	for (unsigned int i = 0; i < parents().size(); ++i) {
+	    if (ancestors.count(parents()[i]) == 0) {
+		return false;
+	    }
+	}
+	return true;
+	break;
+    case DNODE_LINEAR: case DNODE_SCALE_MIX: case DNODE_POWER:
+	return true;
+	break;
+    }
 }
 
 /*

@@ -104,40 +104,19 @@ public:
      */
     virtual bool isDiscreteValued(std::vector<bool> const &mask) const;
     /**
-     * Tests whether the value of the function is linear, i.e. a
-     * function of the form f(x) = A + B %*% x.  False negative
-     * responses are permitted: i.e. the value false may be returned
-     * when the value is, in fact, a linear function of the given
-     * parameters, but false positives are not allowed. Since most
-     * functions of interest are non-linear, the default method
-     * returns false, so linear Functions must overload this.
+     * Tests whether the value of the function is a scale
+     * transformation, i.e. a function of the form f(x) = B %*% x.
+     * Since most functions are not scale transformations, the default
+     * method returns false. It is permitted for the isScale function
+     * to return false negatives.  Therefore it is acceptable to use
+     * the default implementation even when the function is a scale
+     * function. 
      * 
      * @param mask boolean vector of length equal to the number of
-     * parameters.  The mask indicates a subset of parameters (those with
-     * value true) to be tested for linearity. The function may be 
-     * non-linear for parameters with mask value false.
-     *
-     * @param isfixed boolean vector. This may be empty, in which case
-     * it is ignored. A non-empty vector must have length equal to mask,
-     * and denotes the parameters whose values are fixed. In this case
-     * the test is more restrictive, and the function returns true only
-     * if the coefficient B is fixed.
-     *
-     * @see DeterministicNode#isLinear
-     */
-    virtual bool isLinear(std::vector<bool> const &mask,
-			  std::vector<bool> const &isfixed) const;
-    /**
-     * Tests whether the value of the function is a scale
-     * transformation of the given scalar parameter, i.e. a trivial
-     * linear function of the form f(x) = A + B %*% x, where A or B is
-     * zero..  False negative responses are permitted.  Since most
-     * functions of interest are not scale transformations, the
-     * default method returns false.
-     * 
-     * @param index The index of the parameter to be tested. The function
-     * may be a non-scale transformation of the other pararameters (e.g.
-     * the function x/y is a scale transformation of x but not of y).
+     * parameters.  The mask indicates a subset of parameters (those
+     * with value true) to be tested. At least one element of mask
+     * must be true.  The function need not be a scale function for
+     * parameters with mask value false.
      *
      * @param isfixed boolean vector. This may be empty, in which case
      * it is ignored.  A non-empty vector must have length equal to
@@ -145,16 +124,54 @@ public:
      * case the test is more restrictive, and the function returns true
      * only if the coeffiicent B is fixed.
      *
-     * @see DeterministicNode#isScale
+     * @see DeterministicNode#isClosed
      */
-    virtual bool isScale(unsigned int index,
+    virtual bool isScale(std::vector<bool> const &mask,
 			 std::vector<bool> const &isfixed) const;
     /**
+     * Tests whether the function is linear, i.e. a function of the
+     * form f(x) = A + B %*% x.
+     *
+     * All scale functions are linear functions. Therefore, the
+     * default method calls isScale. It only needs to be overridden
+     * for linear functions that are not scale functions.
+     *
+     * @see Function#isScale
+     */
+    virtual bool isLinear(std::vector<bool> const &mask,
+			  std::vector<bool> const &isfixed) const;
+    /**
+     * Tests whether the function preserves scale mixtures, i.e.  it
+     * takes the form f(x) = A + B * x, with at least one of A,B equal
+     * to zero, when the arguments with mask set to true are also
+     * scale functions of x.
+     * 
+     * Most scale functions are also scale mixture functions, so the
+     * default isScaleMixture method calls isScale. However, there are
+     * exceptions, due to the different behaviour of vector-valued
+     * nodes.  A vector-valued node y is a scale function of x only if
+     * each of its elements is a scale function of x. Conversely, y
+     * may be a scale mixture function if only some of its elements
+     * are scale mixture functions of x, and the rest are not
+     * descendents of x.
+     *
+     * Thus functions that take linear combinations of the elements of
+     * vector-valued nodes are never scale mixture functions (because
+     * we cannot guarantee that A==0 simultaneously for all elements)
+     * and for these functions the default method must be overridden.
+     *
+     * @see Function#isScale
+     */
+    virtual bool isScaleMix(std::vector<bool> const &mask,
+			    std::vector<bool> const &isfixed) const;
+    /**
      * Test whether the function is a power transformation, i.e a
-     * function of the form f(x) = A*X^B.  All scale functions are by
-     * default power functions with B=1. Therefore the default isScale
-     * function calls isScale. It must be over-ridden for power functions
-     * with B!=1.
+     * function of the form f(x) = A*X^B.  All scale mixture functions
+     * are power functions (with B=1 or B=0). Therefore the default
+     * method calls isScaleMix. It must be over-ridden for power
+     * functions with B!=1.
+     *
+     * @see Function#isScaleMix
      */
     virtual bool isPower(std::vector<bool> const &mask,
 			 std::vector<bool> const &isfixed) const;

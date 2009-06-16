@@ -16,11 +16,14 @@
  * (X1, ... Nn). A linear function takes the form A + B %*% X1 + B2
  * %*% X2 + ... * + Bn %*% * Xn. 
  *
- * DNODE_SCALE denotes a scale function of the single ancestor node
- * X. This is a trivial linear function of the form A + B * X * where
- * either A or B is zero (or both). 
+ * DNODE_SCALE denotes a scale function of the single ancestor node X.
+ * This is a function of the form B*X.
  *
- * DNODE_POWER denostes a power function of the single ancestor node1
+ * DNODE_SCALE_MIX denotes a generalization of the scale function
+ * class used in mixture models. These functions are linear functions
+ * of the form A + B * X * where at least one of A or B is zero.
+ *
+ * DNODE_POWER denostes a power function of the single ancestor node
  * X.  This is a function of the form A * X^B.  Power functions become
  * linear functions if we transform to a log scale: i.e. if Y=A*X^B
  * and A > 0, then log(Y) is a linear function of log(X).
@@ -30,7 +33,7 @@
  *
  * @see DeterministicNode#isClosed
  */
-enum ClosedFuncClass {DNODE_LINEAR, DNODE_SCALE, DNODE_POWER};
+enum ClosedFuncClass {DNODE_LINEAR, DNODE_SCALE, DNODE_SCALE_MIX, DNODE_POWER};
 
 /**
  * @short Base class for deterministic Node objects

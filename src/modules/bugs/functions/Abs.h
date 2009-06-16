@@ -19,7 +19,6 @@ namespace bugs {
 	Abs ();
 	double evaluateScalar(std::vector<double const *> const &args) const;
 	bool isDiscreteValued(std::vector<bool> const &mask) const;
-	bool isScale(unsigned int index, std::vector<bool> const &mask) const;
     };
 
 }

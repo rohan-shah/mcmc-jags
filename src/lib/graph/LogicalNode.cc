@@ -105,38 +105,33 @@ bool LogicalNode::isClosed(set<Node const *> const &ancestors,
 
     vector<bool> mask(par.size());
     vector<bool> fixed_mask;
-    unsigned int nmask = 0;
-    unsigned int index = 0;
+    bool valid_mask = false;
     for (unsigned int i = 0; i < par.size(); ++i) {
 	mask[i] = ancestors.count(par[i]);
 	if (mask[i]) {
-	    ++nmask;
-	    index = i;
+	    valid_mask = true; //At least one element of mask must be true
 	}
 	if (fixed) {
 	    fixed_mask.push_back(par[i]->isObserved());
 	}
     }
 
+    if (!valid_mask) {
+        throw logic_error("Invalid mask in LogicalNode::isClosed");
+    }
+
     switch(fc) {
     case DNODE_LINEAR:
 	return _func->isLinear(mask, fixed_mask);
-	break;
+        break;
     case DNODE_POWER:
-	if (nmask == 0)
-	    return true;
-	else if (nmask == 1 && _func->isScale(index, fixed_mask))
-	    return true;
-	else
-	    return _func->isPower(mask, fixed_mask);
-	break;
+	return _func->isPower(mask, fixed_mask);
+        break;
     case DNODE_SCALE:
-	if (nmask == 0)
-	    return true;
-	else if (nmask == 1) 
-	    return _func->isScale(index, fixed_mask);
-	else 
-	    return false;
+	return _func->isScale(mask, fixed_mask);
+	break;
+    case DNODE_SCALE_MIX:
+        return _func->isScaleMix(mask, fixed_mask);
 	break;
     }
 }

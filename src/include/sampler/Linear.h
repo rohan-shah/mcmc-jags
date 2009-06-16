@@ -25,11 +25,10 @@ class Graph;
  * descendants (i.e. those with no deterministic children) to be link
  * functions.
  *
- * @see Node#isLinear
+ * @see Node#isClosed
  */
 bool checkLinear(std::vector<StochasticNode *> const &snodes,
 		 Graph const &graph, bool fixed, bool link=false);
-
 
 /**
  * Helper function to check for scale transformations. The function
@@ -44,9 +43,24 @@ bool checkLinear(std::vector<StochasticNode *> const &snodes,
  * @pararm fixed Boolean flag. If true, the function checks for fixed
  * scale transformations.
  *
- * @see Node#isScale
+ * @see Node#isClosed
  */
 bool checkScale(StochasticNode *snode, Graph const &graph, bool fixed);
+
+
+/**
+ * Helper function to check for scale transformations. The function
+ * returns true if all deterministic descendants of the given node
+ * (within the given graph) are scale mixture transformations.
+ *
+ * @param snode Node whose descendants are to be checked.
+ *
+ * @param graph Graph within which testing takes place.  paths outside
+ * this graph are ignored.
+ *
+ * @see Node#isClosed
+ */
+bool checkScaleMix(StochasticNode *snode, Graph const &graph);
 
 /**
  * Helper function to check for power transformations. The function
@@ -55,13 +69,13 @@ bool checkScale(StochasticNode *snode, Graph const &graph, bool fixed);
  *
  * @param snode Node whose descendants are to be checked.
  *
- * @param graph Graph within which testing for linearity takes place.
- * paths outside this grahp are ignored.
+ * @param graph Graph within which testing takes place.  Paths outside
+ * this graph are ignored.
  *
  * @pararm fixed Boolean flag. If true, the function checks for fixed
- * scale transformations.
+ * power transformations.
  *
- * @see Node#isScale
+ * @see Node#isClosed
  */
 bool checkPower(StochasticNode *snode, Graph const &graph, bool fixed);
 

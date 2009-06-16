@@ -37,34 +37,29 @@ bool Function::isDiscreteValued(vector<bool> const &mask) const
   return false;
 }
 
-bool Function::isLinear(vector<bool> const &mask,
-			vector<bool> const &isfixed) const
-{
-  return false;
-}
-
-bool Function::isScale(unsigned int index,
+bool Function::isScale(vector<bool> const &mask,
 		       vector<bool> const &isfixed) const
 {
     return false;
 }
 
+bool Function::isLinear(vector<bool> const &mask,
+			vector<bool> const &isfixed) const
+{
+    return isScale(mask, isfixed);
+}
+
+
+bool Function::isScaleMix(vector<bool> const &mask,
+			  vector<bool> const &isfixed) const
+{
+    return isScale(mask, isfixed);
+}
+
 bool Function::isPower(vector<bool> const &mask,
 		       vector<bool> const &isfixed) const
 {
-    unsigned int index = mask.size();
-    for (unsigned int i = 0; i < mask.size(); ++i) {
-	if (mask[i]) {
-	    if (i > index)
-		return false; //more than one element of mask is true
-	    else 
-		index = i;
-	}
-    }
-    if (index == mask.size())
-	return false;
-    
-    return isScale(index, isfixed);
+    return isScaleMix(mask, isfixed);
 }
     
 vector<unsigned int> 

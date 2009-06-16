@@ -1,5 +1,4 @@
 #include <config.h>
-#include <util/logical.h>
 #include "Sum.h"
 
 using std::vector;
@@ -29,11 +28,18 @@ namespace bugs {
 
     bool Sum::isDiscreteValued(vector<bool> const &mask) const
     {
-	return allTrue(mask);
+	return mask[0];
     }
 
-    bool Sum::isLinear(vector<bool> const &mask, vector<bool> const &fix) const
+    bool Sum::isScale(vector<bool> const &mask, vector<bool> const &fix) const
     {
 	return true;
     }
+
+    bool Sum::isScaleMix(std::vector<bool> const &mask,
+		         std::vector<bool> const &isfixed) const
+    {
+	return false;
+    }
+
 }

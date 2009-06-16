@@ -25,12 +25,7 @@ bool Neg::isDiscreteValued(vector<bool> const &mask) const
   return allTrue(mask);
 }
 
-bool Neg::isLinear(vector<bool> const &mask, vector<bool> const &fix) const
-{
-    return true;
-}
-
-bool Neg::isScale(unsigned int index, vector<bool> const &fix) const
+bool Neg::isScale(vector<bool> const &mask, vector<bool> const &fix) const
 {
     return true;
 }

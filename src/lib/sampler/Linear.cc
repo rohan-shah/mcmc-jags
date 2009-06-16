@@ -82,6 +82,12 @@ bool checkScale(StochasticNode* snode, Graph const &graph, bool fixed)
 		       false, DNODE_SCALE);
 }
 
+bool checkScaleMix(StochasticNode* snode, Graph const &graph)
+{
+    return checkClosed(vector<StochasticNode *>(1, snode), graph, false,
+                       false, DNODE_SCALE_MIX);
+}
+
 bool checkPower(StochasticNode* snode, Graph const &graph, bool fixed)
 {
     return checkClosed(vector<StochasticNode *>(1, snode), graph, fixed,

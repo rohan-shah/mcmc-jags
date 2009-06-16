@@ -34,7 +34,7 @@ namespace bugs {
     }
 
     bool 
-    InProd::isLinear(vector<bool> const &mask, vector<bool> const &fix) const
+    InProd::isScale(vector<bool> const &mask, vector<bool> const &fix) const
     {
 	//Test for quadratic term
 	if (mask[0] && mask[1])
@@ -46,5 +46,11 @@ namespace bugs {
 	}
 
 	return true;
+    }
+
+    bool
+    InProd::isScaleMix(vector<bool> const &mask, vector<bool> const &fix) const
+    {
+	return false;
     }
 }

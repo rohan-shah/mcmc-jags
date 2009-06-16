@@ -18,9 +18,7 @@ namespace base {
 	Multiply ();
 	double evaluateScalar(std::vector<double const *> const &args) const;
 	bool isDiscreteValued(std::vector<bool> const &mask) const;
-	bool isLinear(std::vector<bool> const &mask,
-		      std::vector<bool> const &fixmask) const;
-	bool isScale(unsigned int index, 
+	bool isScale(std::vector<bool> const &mask,
 		     std::vector<bool> const &fixmask) const;
 	bool isPower(std::vector<bool> const &mask, 
 		     std::vector<bool> const &fix) const;

@@ -29,9 +29,16 @@ namespace bugs {
     }
 
     bool 
-    Mean::isLinear(vector<bool> const &mask, vector<bool> const &fix) const
+    Mean::isScale(vector<bool> const &mask, vector<bool> const &fix) const
     {
 	return true;
     }
+
+    bool Mean::isScaleMix(vector<bool> const &mask, 
+			  vector<bool> const &fix) const
+    {
+	return false;
+    }
+
 }
 

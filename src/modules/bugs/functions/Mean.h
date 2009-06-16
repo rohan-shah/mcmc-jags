@@ -22,8 +22,10 @@ namespace bugs {
 		      std::vector<std::vector<unsigned int> > const &dims) 
 	    const;
 	bool checkParameterDim (std::vector<std::vector<unsigned int> > const &dims) const;
-	bool isLinear(std::vector<bool> const &mask,
-		      std::vector<bool> const &fix) const;
+	bool isScale(std::vector<bool> const &mask,
+		     std::vector<bool> const &fix) const;
+	bool isScaleMix(std::vector<bool> const &mask,
+			std::vector<bool> const &fix) const;
     };
 }
 

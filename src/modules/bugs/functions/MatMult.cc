@@ -76,7 +76,7 @@ namespace bugs {
 
 
     bool 
-    MatMult::isLinear(vector<bool> const &mask, vector<bool> const &fix) const
+    MatMult::isScale(vector<bool> const &mask, vector<bool> const &fix) const
     {
 	//Test for quadratic terms
 	if (mask[0] && mask[1]) {
@@ -92,6 +92,12 @@ namespace bugs {
 	}
 
 	return true;
+    }
+
+    bool 
+    MatMult::isScaleMix(vector<bool> const &mask, vector<bool> const &fix) const
+    {
+	return false;
     }
 
 }
