@@ -40,17 +40,11 @@ namespace bugs {
 	if (mask[0] && mask[1])
 	    return false;
 
-	if (!fix.empty()) {
-	    if ( (!mask[0] && !fix[0]) || (!mask[1] && !fix[1]) )
-		return false;
+	if (fix.empty()) {
+	    return true;
 	}
-
-	return true;
-    }
-
-    bool
-    InProd::isScaleMix(vector<bool> const &mask, vector<bool> const &fix) const
-    {
-	return false;
+        else {
+	    return (mask[0] || fix[0]) && (mask[1] || fix[1]); 
+        }
     }
 }

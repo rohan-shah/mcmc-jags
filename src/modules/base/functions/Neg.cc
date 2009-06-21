@@ -22,7 +22,7 @@ double Neg::evaluateScalar(vector<double const*> const &args) const
 
 bool Neg::isDiscreteValued(vector<bool> const &mask) const
 {
-  return allTrue(mask);
+  return mask[0];
 }
 
 bool Neg::isScale(vector<bool> const &mask, vector<bool> const &fix) const

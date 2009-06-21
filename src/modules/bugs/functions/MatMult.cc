@@ -83,21 +83,11 @@ namespace bugs {
 	    return false;
 	}
     
-	if (!fix.empty()) {
-	    for (unsigned int i = 0; i < 2; ++i) {
-		if (!mask[i] && !fix[i]) {
-		    return false;
-		}
-	    }
+	if (fix.empty()) {
+	    return true;
 	}
-
-	return true;
+	else {
+	    return (mask[0] || fix[0]) && (mask[1] || fix[1]);
+	}
     }
-
-    bool 
-    MatMult::isScaleMix(vector<bool> const &mask, vector<bool> const &fix) const
-    {
-	return false;
-    }
-
 }

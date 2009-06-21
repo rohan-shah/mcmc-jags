@@ -35,11 +35,4 @@ namespace bugs {
     {
 	return true;
     }
-
-    bool Sum::isScaleMix(std::vector<bool> const &mask,
-		         std::vector<bool> const &isfixed) const
-    {
-	return false;
-    }
-
 }

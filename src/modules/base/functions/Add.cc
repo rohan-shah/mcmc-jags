@@ -33,10 +33,4 @@ namespace base {
     {
 	return allTrue(mask);
     }
-
-    bool Add::isScaleMix(vector<bool> const &mask, 
-			 vector<bool> const &fix) const
-    {
-	return false;
-    }
 }

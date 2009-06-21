@@ -25,10 +25,7 @@ namespace base {
 	if (mask[1])
 	    return false; //No reciprocal terms
 
-	if (fix.empty())
-	    return true;
-	else
-	    return fix[1];
+	return fix.empty() || fix[1];
     }
 
     bool 

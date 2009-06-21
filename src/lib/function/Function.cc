@@ -49,17 +49,10 @@ bool Function::isLinear(vector<bool> const &mask,
     return isScale(mask, isfixed);
 }
 
-
-bool Function::isScaleMix(vector<bool> const &mask,
-			  vector<bool> const &isfixed) const
-{
-    return isScale(mask, isfixed);
-}
-
 bool Function::isPower(vector<bool> const &mask,
 		       vector<bool> const &isfixed) const
 {
-    return isScaleMix(mask, isfixed);
+    return false;
 }
     
 vector<unsigned int> 

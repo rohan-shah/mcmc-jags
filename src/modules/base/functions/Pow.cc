@@ -35,10 +35,7 @@ bool Pow::checkScalarValue(vector<double const *> const &args) const
     {
 	if (mask[1])
 	    return false;
-
-	if (!fix.empty() && !fix[1])
-	    return false;
-
-	return true;
+        else
+            return fix.empty() || fix[1];
     }
 }

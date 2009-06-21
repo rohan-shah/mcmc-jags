@@ -81,6 +81,12 @@ public:
      */
     virtual bool 
 	checkScalarValue(std::vector<double const *> const &args) const;
+    /**
+     * If a ScalarFunc preserves a scale transformation and only one
+     * value of mask is true, then it is also a (fixed) power function.
+     */
+    bool isPower(std::vector<bool> const &mask,
+		 std::vector<bool> const &isfixed) const;
 };
 
 #endif /* SCALAR_FUNC_H_ */

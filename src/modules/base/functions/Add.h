@@ -23,8 +23,6 @@ public:
 		  std::vector<bool> const &fixmask) const;
     bool isScale(std::vector<bool> const &mask,
 		 std::vector<bool> const &fixmask) const;
-    bool isScaleMix(std::vector<bool> const &mask,
-		    std::vector<bool> const &fixmask) const;
 };
 
 }

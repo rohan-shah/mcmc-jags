@@ -33,12 +33,5 @@ namespace bugs {
     {
 	return true;
     }
-
-    bool Mean::isScaleMix(vector<bool> const &mask, 
-			  vector<bool> const &fix) const
-    {
-	return false;
-    }
-
 }
 

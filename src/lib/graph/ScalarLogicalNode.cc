@@ -62,18 +62,18 @@ bool ScalarLogicalNode::isClosed(set<Node const *> const &ancestors,
 
     vector<bool> mask(par.size());
     vector<bool> fixed_mask;
-    bool valid_mask = false;
+    unsigned int nmask = 0;
     for (unsigned int i = 0; i < par.size(); ++i) {
 	mask[i] = ancestors.count(par[i]);
 	if (mask[i]) {
-	    valid_mask = true; //At least one element of mask must be true
+	    ++nmask;
 	}
 	if (fixed) {
 	    fixed_mask.push_back(par[i]->isObserved());
 	}
     }
 
-    if (!valid_mask) {
+    if (nmask == 0) {
         throw logic_error("Invalid mask in LogicalNode::isClosed");
     }
 
@@ -88,10 +88,11 @@ bool ScalarLogicalNode::isClosed(set<Node const *> const &ancestors,
 	return _func->isScale(mask, fixed_mask);
 	break;
     case DNODE_SCALE_MIX:
-        return _func->isScaleMix(mask, fixed_mask);
+        return (nmask == 1) && _func->isScale(mask, fixed_mask);
 	break;
     }
 }
+
 
 bool ScalarLogicalNode::checkParentValues(unsigned int chain) const
 {

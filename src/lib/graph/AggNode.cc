@@ -81,6 +81,7 @@ bool AggNode::isClosed(set<Node const *> const &ancestors,
 {
     switch(fc) {
     case DNODE_SCALE:
+	//All parents must be scale transformations
 	for (unsigned int i = 0; i < parents().size(); ++i) {
 	    if (ancestors.count(parents()[i]) == 0) {
 		return false;
@@ -88,8 +89,21 @@ bool AggNode::isClosed(set<Node const *> const &ancestors,
 	}
 	return true;
 	break;
-    case DNODE_LINEAR: case DNODE_SCALE_MIX: case DNODE_POWER:
+    case DNODE_SCALE_MIX:
+	//The aggnode must be a subset so only one distinct parent
+	if (ancestors.count(parents()[0]) == 0)
+	    return false;
+	for (unsigned int i = 1; i < parents().size(); ++i) {
+	    if (parents()[i] != parents()[0])
+		return false;
+	}
 	return true;
+	break;
+    case DNODE_LINEAR:
+	return true;
+	break;
+    case DNODE_POWER:
+	return false;
 	break;
     }
 }

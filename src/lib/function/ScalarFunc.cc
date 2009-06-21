@@ -102,3 +102,18 @@ bool ScalarFunc::checkScalarValue(vector<double const *> const &args) const
 {
     return true;
 }
+
+bool ScalarFunc::isPower(std::vector<bool> const &mask,
+	     std::vector<bool> const &isfixed) const
+{
+    unsigned int nmask = 0;
+    for (unsigned int i = 0; i < mask.size(); ++i) {
+	nmask += mask[i];
+    }
+    
+    if (nmask > 1)
+	return false;
+    else
+	return isScale(mask, vector<bool>());
+
+}

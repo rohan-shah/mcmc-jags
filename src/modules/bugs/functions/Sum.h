@@ -26,8 +26,6 @@ namespace bugs {
 	bool isDiscreteValued(std::vector<bool> const &mask) const;
 	bool isScale(std::vector<bool> const &mask,
 		      std::vector<bool> const &isfixed) const;
-	bool isScaleMix(std::vector<bool> const &mask,
-			std::vector<bool> const &isfixed) const;
     };
     
 }
