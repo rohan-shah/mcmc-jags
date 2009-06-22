@@ -4,8 +4,7 @@
 \usepackage{url}
 \usepackage{multirow}
 \usepackage{amsfonts}
-%\usepackage{amssym}
-\newcommand{\release}{1.0.3}
+\newcommand{\release}{2.0.0}
 \newcommand{\JAGS}{\textsf{JAGS}}
 \newcommand{\BUGS}{\textsf{BUGS}}
 \newcommand{\WinBUGS}{\textsf{WinBUGS}}
@@ -101,12 +100,13 @@ model. A {\em deterministic relation} (\verb+<-+) defines a
 deterministic node, the value of which is determined exactly by the
 values of its parents.
 
-Nodes defined by a relation are embedded in named arrays. The node
-array \verb+mu+ is a vector of length $N$ containing $N$ nodes
-(\verb+mu[1]+, $\ldots$, \verb+mu[N]+). The node array \verb+alpha+ is
-a scalar.  \JAGS\ follows the S language convention that scalars are
-considered as vectors of length 1. Hence the array \verb+alpha+
-contains a single node \verb+alpha[1]+.
+Nodes defined by a relation are embedded in named arrays. Array names may
+contain letters, numbers, decimal points and underscores, but they must
+start with a letter.  The node array \verb+mu+ is a vector of length
+$N$ containing $N$ nodes (\verb+mu[1]+, $\ldots$, \verb+mu[N]+). The
+node array \verb+alpha+ is a scalar.  \JAGS\ follows the S language
+convention that scalars are considered as vectors of length 1. Hence
+the array \verb+alpha+ contains a single node \verb+alpha[1]+.
 
 Deterministic nodes do not need to be embedded in node arrays. The
 node \verb+Y[i]+ could equivalently be defined as
