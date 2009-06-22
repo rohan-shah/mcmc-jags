@@ -5,7 +5,13 @@ AC_PREREQ(2.63)
 AC_INIT([JAGS],[2.0.0],[martyn_plummer@users.sourceforge.net],[JAGS])
 AC_CANONICAL_HOST
 AC_CONFIG_SRCDIR(src/lib/Console.cc)
+AC_CONFIG_AUX_DIR([libltdl/config])
+AC_CONFIG_MACRO_DIR([m4])
 AM_INIT_AUTOMAKE(AC_PACKAGE_NAME, AC_PACKAGE_VERSION)
+
+LT_CONFIG_LTDL_DIR([libltdl])
+LT_INIT
+LTDL_INIT
 
 AC_PROG_CC
 AC_PROG_CXX
@@ -35,7 +41,7 @@ AC_DISABLE_STATIC
 AC_LIBTOOL_DLOPEN
 AC_LIBLTDL_CONVENIENCE
 AC_PROG_LIBTOOL
-AC_CONFIG_SUBDIRS(libltdl)
+dnl AC_CONFIG_SUBDIRS(libltdl)
 AC_SUBST(INCLTDL)
 AC_SUBST(LIBLTDL)
 
@@ -141,5 +147,7 @@ AC_CONFIG_FILES([
   src/terminal/Makefile
   win32/Makefile
   win32/lapack/Makefile
+  doc/Makefile
+  doc/manual/Makefile
 ])
 AC_OUTPUT
