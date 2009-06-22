@@ -115,5 +115,5 @@ bool ScalarFunc::isPower(std::vector<bool> const &mask,
 	return false;
     else
 	return isScale(mask, vector<bool>());
-
+    
 }

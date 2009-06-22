@@ -24,8 +24,6 @@ namespace bugs {
 	bool checkParameterDim(std::vector<std::vector<unsigned int> > const &dims)
 	    const;
 	bool isDiscreteValued(std::vector<bool> const &mask) const;
-        bool isPower(std::vector<bool> const &mask,
-                     std::vector<bool> const &fix) const;
     };
 
 }

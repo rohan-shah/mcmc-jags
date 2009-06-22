@@ -53,8 +53,6 @@ void ScalarLogicalNode::deterministicSample(unsigned int chain)
     _data[chain] = _func->evaluateScalar(_parameters[chain]);
 }
 
-//FIXME: Identical to LogicalNode::isClosed
-
 bool ScalarLogicalNode::isClosed(set<Node const *> const &ancestors, 
 			   ClosedFuncClass fc, bool fixed) const
 {
@@ -81,15 +79,15 @@ bool ScalarLogicalNode::isClosed(set<Node const *> const &ancestors,
     case DNODE_LINEAR:
 	return _func->isLinear(mask, fixed_mask);
         break;
-    case DNODE_POWER:
-	return _func->isPower(mask, fixed_mask);
-        break;
     case DNODE_SCALE:
 	return _func->isScale(mask, fixed_mask);
 	break;
     case DNODE_SCALE_MIX:
         return (nmask == 1) && _func->isScale(mask, fixed_mask);
 	break;
+    case DNODE_POWER:
+	return _func->isPower(mask, fixed_mask);
+        break;
     }
 }
 

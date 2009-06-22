@@ -124,15 +124,15 @@ bool LogicalNode::isClosed(set<Node const *> const &ancestors,
     case DNODE_LINEAR:
 	return _func->isLinear(mask, fixed_mask);
         break;
-    case DNODE_POWER:
-	return _func->isPower(mask, fixed_mask);
-        break;
     case DNODE_SCALE:
 	return _func->isScale(mask, fixed_mask);
 	break;
     case DNODE_SCALE_MIX:
         return (nmask == 1) && _func->isScale(mask, fixed_mask);
 	break;
+    case DNODE_POWER:
+	return false;
+        break;
     }
 }
 

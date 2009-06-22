@@ -108,40 +108,6 @@ bool AggNode::isClosed(set<Node const *> const &ancestors,
     }
 }
 
-/*
-bool AggNode::isScale(GraphMarks const &scale_marks, bool fixed) const
-{
-    Node const *p = 0;
-    unsigned int offset = 0;
-    vector<Node const *> const &par = parents();
-    for (unsigned int i = 0; i < par.size(); ++i) {
-        if (scale_marks.graph().contains(par[i])) {
-            switch(scale_marks.mark(par[i])) {
-	    case MARK_NULL:
-		break;
-            case MARK_TRUE:
-                if (p == 0) {
-                    p = par[i];   
-                    offset = _offsets[i];
-                }
-                else if (par[i] != p || _offsets[i] != offset) {
-                    //There can only be one parent in the graph
-                    return false; 
-                }
-                break;
-            case MARK_FALSE:
-                return false;
-                break;
-            default:
-                throw logic_error("Invalid graphmarks in AggNode::isLinear");
-            }
-        }
-    }
-    return true;
-
-}
-*/
-
 bool AggNode::checkParentValues(unsigned int) const
 {
    return true;

@@ -142,21 +142,6 @@ public:
     virtual bool isLinear(std::vector<bool> const &mask,
 			  std::vector<bool> const &isfixed) const;
     /**
-     * Tests whether the function preserves power transformations,
-     * i.e.  can be expressed as f(x) = a*b^x for some value of a,b,
-     * where a,b, and x are all scalar.
-     *
-     * Most functions are not power functions, so the default method
-     * returns false.
-     *
-     * Note that if a > 0 then a power function is a linear function on
-     * the log scale: log(f(x)) = log(a) + log(b) * x.
-     *
-     * @see Function#isScale
-     */
-    virtual bool isPower(std::vector<bool> const &mask,
-			 std::vector<bool> const &isfixed) const;
-    /**
      * Returns a BUGS-language expression representing the function call.
      * The default behaviour for a function named "foo" is to return
      * "foo(arg1,arg2)". Functions that are represented as prefix or infix

@@ -33,7 +33,8 @@ bool checkLinear(std::vector<StochasticNode *> const &snodes,
 /**
  * Helper function to check for scale transformations. The function
  * returns true if all deterministic descendants of the given node
- * (within the given graph) are scale transformations.
+ * (within the given graph) are scale transformations or scale-mixture
+ * transformations.
  *
  * @param snode Node whose descendants are to be checked.
  *
@@ -46,21 +47,6 @@ bool checkLinear(std::vector<StochasticNode *> const &snodes,
  * @see Node#isClosed
  */
 bool checkScale(StochasticNode *snode, Graph const &graph, bool fixed);
-
-
-/**
- * Helper function to check for scale transformations. The function
- * returns true if all deterministic descendants of the given node
- * (within the given graph) are scale mixture transformations.
- *
- * @param snode Node whose descendants are to be checked.
- *
- * @param graph Graph within which testing takes place.  paths outside
- * this graph are ignored.
- *
- * @see Node#isClosed
- */
-bool checkScaleMix(StochasticNode *snode, Graph const &graph);
 
 /**
  * Helper function to check for power transformations. The function
