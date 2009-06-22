@@ -12,3 +12,8 @@ win32-installer:
 	    ${INSTALL} $${f} inst/lib; \
 	  done;) 
 	makensis -DVERSION=${PACKAGE_VERSION} win32/jags.nsi
+
+docs: FORCE
+	-@(cd doc && $(MAKE) $@)
+
+FORCE:
