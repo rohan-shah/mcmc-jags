@@ -1,0 +1,2246 @@
+\documentclass[11pt, a4paper, titlepage]{report}
+\usepackage{amsmath}
+\usepackage{a4wide}
+\usepackage{url}
+\usepackage{multirow}
+\usepackage{amsfonts}
+%\usepackage{amssym}
+\newcommand{\release}{1.0.3}
+\newcommand{\JAGS}{\textsf{JAGS}}
+\newcommand{\BUGS}{\textsf{BUGS}}
+\newcommand{\WinBUGS}{\textsf{WinBUGS}}
+\newcommand{\R}{\textsf{R}}
+\newcommand{\CODA}{\textsf{coda}}
+\begin{document}
+
+\title{JAGS Version \release\ manual}
+\author{Martyn Plummer}
+\maketitle
+
+\tableofcontents
+
+\chapter{Introduction}
+
+JAGS is Just Another Gibbs Sampler.  It is a program for the analysis
+of Bayesian models using Markov Chain Monte Carlo (MCMC) which is not
+wholly unlike
+\WinBUGS\ (\url{http://www.mrc-bsu.cam.ac.uk}). \JAGS\ was written
+with three aims in mind: to have an engine for the \BUGS\ language
+that runs on Unix; to be extensible, allowing users to write their own
+functions, distributions, and samplers; and to be a platform for
+experimentation with ideas in Bayesian modelling.
+
+\JAGS\ is designed to work closely with the \R\ language and
+environment for statistical computation and graphics
+(\url{http://www.r-project.org}).  In particular, you will need \R\ to
+prepare the input data for \JAGS, and you will find it useful to
+install the \CODA\ package for \R\ to analyze the output.
+
+\JAGS\ is licensed under the GNU General Public License
+version 2. You may freely modify and redistribute it under certain
+conditions (see the file \texttt{COPYING} for details).
+
+\chapter{Running a model in \JAGS}
+
+\JAGS\ is designed for inference on Bayesian models using Markov Chain
+Monte Carlo (MCMC) simulation.  Running a model refers to generating
+samples from the posterior distribution of the model parameters.  This
+takes place in five steps:
+\begin{enumerate}
+\item Defining the model
+\item Compiling
+\item Initializing
+\item Adapting and burning-in
+\item Monitoring
+\end{enumerate}
+The next stages of analysis are done outside of \JAGS: convergence
+diagnostics, model criticism, and summarizing the samples must be done
+using other packages more suited to this task. There are several
+\R\ packages designed for analyzing MCMC output, and \JAGS\ is
+designed for easy transition of data to and from \R.
+
+\section{Definition}
+
+There are two parts to the definition of a model in \JAGS: a
+description of the model and the definition of the data.
+
+\subsection{Model definition}
+
+The model is defined in a text file using a dialect of the
+\BUGS\ language.  The model definition consists of a series of
+relations inside a block delimited by curly brackets \verb+{+ and
+\verb+}+ and preceded by the keyword \verb+model+. Here is the standard
+linear regression example:
+
+\begin{verbatim}
+model {
+    for (i in 1:N) {
+          Y[i]   ~ dnorm(mu[i], tau)
+          mu[i] <- alpha + beta * (x[i] - x.bar)
+    }
+    x.bar   <- mean(x)
+    alpha    ~ dnorm(0.0, 1.0E-4)
+    beta     ~ dnorm(0.0, 1.0E-4)
+    sigma   <- 1.0/sqrt(tau)
+    tau      ~ dgamma(1.0E-3, 1.0E-3)
+}
+\end{verbatim}
+
+Each relation defines a node in the model in terms of other nodes that
+appear on the right hand side. These are referred to as the parent
+nodes. Taken together, the nodes in the model (together with the
+parent/child relationships represented as directed edges) form a
+directed acyclic graph. The very top-level nodes in the graph, with no
+parents, are constant nodes, which are defined either in the model
+definition ({\em e.g.}  \verb+1.0E-3+), or in the data file ({\em
+  e.g.}  \verb+x[1]+).
+
+Relations can be of two types. A {\em stochastic relation} (\verb+~+)
+defines a stochastic node, representing a random variable in the
+model. A {\em deterministic relation} (\verb+<-+) defines a
+deterministic node, the value of which is determined exactly by the
+values of its parents.
+
+Nodes defined by a relation are embedded in named arrays. The node
+array \verb+mu+ is a vector of length $N$ containing $N$ nodes
+(\verb+mu[1]+, $\ldots$, \verb+mu[N]+). The node array \verb+alpha+ is
+a scalar.  \JAGS\ follows the S language convention that scalars are
+considered as vectors of length 1. Hence the array \verb+alpha+
+contains a single node \verb+alpha[1]+.
+
+Deterministic nodes do not need to be embedded in node arrays. The
+node \verb+Y[i]+ could equivalently be defined as
+\begin{verbatim}
+Y[i] ~ dnorm(alpha + beta * (x[i] - x.bar), tau)
+\end{verbatim}
+In this version of the model definition, the node previously defined
+as \verb+mu[i]+ still exists, but is not accessible to the user as it
+does not have a name.  This ability to hide deterministic nodes by
+embedding them in other expressions underscores an important fact:
+only the stochastic nodes in a model are really
+important. Deterministic nodes are merely a syntactically convenient
+way of describing the relations between, or transformations of, the
+stochastic nodes.
+
+\subsection{Data}
+\label{section:data}
+
+The data are defined in a separate file from the model definition, in
+the format created by the \texttt{dump()} function in \R.  The
+simplest way to prepare your data is to read them into \R\ and then
+dump them.  Only numeric vectors, matrices and arrays are
+allowed. More complex data structures such as factors, lists and data
+frames cannot be parsed by \JAGS\, nor can non-numeric vectors.  Any
+\R\ attributes of the data (such as names and dimnames) are stripped
+when they are read into \JAGS.
+
+The data may contain missing values, but you cannot supply partially
+missing values for a multivariate node. In \JAGS\ a node is either
+completely observed, or completely unobserved.  The unobserved nodes
+are referred to as the {\em parameters} of the model. The data file
+therefore defines, by omission, the parameters of the model.
+
+Here are the data for the \verb+LINE+ example:
+\begin{verbatim}
+`x` <-
+c(1, 2, 3, 4, 5)
+#R-style comments, like this one, can be embedded in the data file
+`Y` <-
+c(1, 3, 3, 3, 5)
+`N` <-
+5
+\end{verbatim}
+
+It is an error to supply a data value for a deterministic node. (See, however,
+section \ref{section:obfun} on observable functions).
+
+\subsection{Node Array dimensions}
+
+\subsubsection*{Array declarations}
+
+\JAGS\ allows the option of declaring the dimensions of node arrays in
+the model file. The declarations are modelled on classic \BUGS, and
+consist of the keyword \texttt{var} (for variable) followed by a
+comma-separated list of array names, with their dimensions in
+square brackets. The dimensions may be given in terms of any
+expression of the data that returns a single integer value.
+
+In the linear regression example, the model block could be preceded by
+\begin{verbatim}
+var x[N], Y[N], mu[N], alpha, beta, tau, sigma, x.bar;
+\end{verbatim}
+
+\subsubsection*{Undeclared nodes}
+
+If a node array is not declared then JAGS has three methods of
+determining its size.
+\begin{enumerate}
+\item {\bf Using the data.}  The dimension of an undeclared node array
+  may be inferred if it is supplied in the data file.
+\item {\bf Using the left hand side of the relations.}  The maximal
+  index values on the left hand side of a relation are taken to be the
+  dimensions of the node array.  For example, in this case:
+\begin{verbatim}
+for (i in 1:N) {
+   for (j in 1:M) {
+      Y[i,j] ~ dnorm(mu[i,j], tau)
+   }
+}
+\end{verbatim}
+$Y$ would be inferred to be an $N \times M$ matrix. Using this method,
+empty indices are not allowed on the left hand side of any relation.
+\item {\bf Using the dimensions of the parents} If a whole node array
+  appears on the left hand side of a relation, then its dimensions can
+  be inferred from the dimensions of the nodes on the right hand side.
+  For example, if \verb+A+ is known to be an $N \times N$ matrix
+  and
+\begin{verbatim}
+B <- inverse(A)
+\end{verbatim}
+Then \verb+B+ is also an $N \times N$ matrix.
+\end{enumerate}
+
+\subsubsection*{Querying array dimensions}  
+
+The \JAGS\ compiler has two built-in functions for querying array
+sizes.  The \verb+length()+ function returns the number of elements in
+a node array, and the \verb+dim()+ function returns a vector
+containing the dimensions of an array.  These two functions may be
+used to simplify the data preparation. For example, if \verb+Y+
+represents a vector of observed values, then using the \verb+length()+
+function in a for loop:
+\begin{verbatim}
+for (i in 1:length(Y)) {
+    Y[i] ~ dnorm(mu[i], tau)
+}
+\end{verbatim}
+avoids the need to put a separate data value \verb+N+ in the file
+representing the length of \verb+Y+.  
+
+For multi-dimensional arrays, the \verb+dim+ function serves a similar
+purpose. The \verb+dim+ function returns a vector, which must be stored
+in an array before its elements can be accessed. For this reason, calls
+to the \verb+dim+ function must always be in a data block (see section
+\ref{section:data:tranformations}).
+\begin{verbatim}
+data {
+   D <- dim(Z)
+}
+model {
+   for (i in 1:D[1]) {
+      for (j in 1:D[2]) {
+         Z[i,j] <- dnorm(alpha[i] + beta[j], tau)
+      }
+   }
+   ...
+}
+\end{verbatim}
+Clearly, the \verb+length()+ and \verb+dim()+ functions can only
+work if the size of the node array can be inferred, using one of the
+three methods outlined above.
+
+Note: the \verb+length()+ and \verb+dim()+ functions are different
+from all other functions in \JAGS: they do not act on nodes, but only
+on node {\em arrays}. As a consequence, an expression such as
+\verb+dim(a %*% b)+ is syntactically incorrect.
+
+\section{Compilation}
+
+When a model is compiled, a graph representing the model is created in
+computer memory. Compilation can fail for a number of reasons:
+\begin{enumerate}
+\item The graph contains a directed cycle.  These are forbidden
+in \JAGS.
+\item A top-level parameter is undefined. Any node that is used on
+the right hand side of a relation, but is not defined on the left
+hand side of any relation, is assumed to be a constant node. Its value
+must be supplied in the data file. 
+\item The model uses a function or distribution that has not been
+defined in any of the loaded modules.
+\end{enumerate}
+The number of parallel chains to be run by \JAGS\ is also defined at
+compilation time.  Each parallel chain should produce an independent
+sequence of samples from the posterior distribution. By default,
+\JAGS\ only runs a single chain.
+
+\section{Initialization}
+
+Before a model can be run, it must be initialized. There are three
+steps in the initialization of a model:
+\begin{enumerate}
+\item The initial values of the model parameters are set.
+\item A Random Number Generator (RNG) is chosen for each parallel chain,
+  and its initial value is set.
+\item The Samplers are chosen for each parameter in the model. 
+\end{enumerate}
+
+\subsection{Parameter values}
+
+The user may supply an initial value file containing values for the
+model parameters. The file may not contain values for logical or
+constant nodes. The format is the same as the data file (see section
+\ref{section:data}).
+
+If initial values are not supplied by the user, then each parameter
+chooses its own initial value based on the values of its parents.  The
+method of choosing the initial value depends on whether the node is
+classified as a fixed effect or a random effect.\footnote{Jean
+  Baptiste Denis points out that this distinction between fixed and
+  random effects is a little artificial since it depends on the
+  parameterization of the model.  However, within the context of a
+  single parameterization, defined by a particular BUGS-language
+  representation of the model, the distinction is unambiguous.}
+\begin{description}
+\item[Fixed effects] are parameters for which all parents are
+  observed.  In this case, the initial value is chosen to be a
+  ``typical value'' from the prior distribution. The exact meaning of
+  ``typical value'' depends on the distribution of the stochastic
+  node, but is usually the mean, median, or mode.
+\item[Random effects] are parameters for which one or more parents are
+  unobserved.  The initial values of these nodes are chosen by taking
+  a random sample from the prior distribution
+\end{description}
+These heuristic rules are designed to create reasonable default starting
+values in a wide range of models.
+
+If you rely on automatic initial value generation and are running
+multiple parallel chains, then the values for the top-level model
+parameters will be the same in all chains.  You may not want this
+behaviour, especially if you are using the Gelman and Rubin convergence
+diagnostic, which assumes that the initial values are over-dispersed
+with respect to the posterior distribution. In this case, you are
+advised to set the starting values manually using the "parameters in"
+statement.
+
+\subsection{RNGs}
+\label{section:rngs}
+
+Each chain in \JAGS\ has its own random number generator (RNG). RNGs
+are more correctly referred to as {\em pseudo}-random number
+generators. They generate a sequence of numbers that merely looks
+random but is, in fact, entirely determined by the initial state.  You
+may optionally set the name of the RNG and its initial state in the
+initial values file.
+
+The name of the RNG is set as follows. 
+\begin{verbatim}
+.RNG.name <- "name"
+\end{verbatim}
+There are four RNGs supplied by the \texttt{base} module in \JAGS\
+with the following names:
+\begin{verbatim}
+"base::Wichmann-Hill"
+"base::Marsaglia-Multicarry"
+"base::Super-Duper"
+"base::Mersenne-Twister"
+\end{verbatim}
+
+There are two ways to set the starting state of the RNG. The simplest
+is to supply an integer value to \texttt{.RNG.seed}, {\em e.g.}
+\begin{verbatim}
+".RNG.seed" <- 314159
+\end{verbatim}
+The second is way to save the state of the RNG from one JAGS session
+(see the ``PARAMETERS TO'' statement, section \ref{parameters:to}) and
+use this as the initial state of a new chain. The state of any RNG in
+JAGS can be saved and loaded as an integer vector with the name
+\texttt{.RNG.state}. For example,
+\begin{verbatim}
+".RNG.state" <- as.integer(c(20899,10892,29018))
+\end{verbatim}
+is a valid state for the Marsaglia-Multicarry generator.  You cannot
+supply an arbitrary integer to \texttt{.RNG.state}. Both the length of
+the vector and the permitted values of its elements are determined by
+the class of the RNG. The only safe way to use \texttt{.RNG.state} is
+to re-use a previously saved state.
+
+If no RNG names are supplied, then RNGs will be chosen automatically
+so that each chain has its own independent random number stream.  The
+exact behaviour depends on which modules are loaded. The
+\texttt{base} module uses the four generators listed above for the
+first four chains.  If you want to work with more than four parallel
+chains, then you need to explicitly supply the RNG name and the random
+seed for each chain.
+
+By default, \JAGS\ bases the initial state on the time stamp. This
+means that, when a model is re-run, it generates an independent set of
+samples. If you want your model run to be reproducible, you must
+explicitly set the \verb+.RNG.seed+ for each chain.
+
+\subsection{Samplers}
+
+A Sampler is an object that acts on a set of parameters and updates
+them from one iteration to the next. During initialization of the
+model, Samplers are chosen automatically for all parameters. 
+
+The Model holds an internal list of {\em Sampler Factory} objects,
+which inspect the graph, recognize sets of parameters that can be
+updated with specific methods, and generate Sampler objects for
+them. The list of Sampler Factories is traversed in order, starting with
+sampling methods that are efficient, but limited to certain specific
+model structures and ending with the most generic, possibly
+inefficient, methods. If no suitable Sampler can be generated for one
+of the model parameters, an error message is generated.
+
+The user has no direct control over the process of choosing
+Samplers. However, you may indirectly control the process by loading a
+module that defines a new Sampler Factory. The module will insert the
+new Sampler Factory at the beginning of the list, where it will be
+queried before all of the other Sampler Factories.
+
+A report on the samplers chosen by the model, and the stochastic nodes
+they act on, can be generated using the ``SAMPLERS TO'' command. See 
+section \ref{samplers:to}.
+ 
+\section{Adaptation and burn-in}
+
+In theory, output from an MCMC sampler converges to the target
+distribution ({\em i.e.} the posterior distribution of the model
+parameters) in the limit as the number of iterations tends to
+infinity. In practice, all MCMC runs are finite.  By convention, the
+MCMC output is divided into two parts: an initial ``burn-in'' period,
+which is discarded, and the remainder of the run, in which the output
+is considered to have converged (sufficiently close) to the target
+distribution. Samples from the second part are used to create
+approximate summary statistics for the target distribution.
+
+By default, \JAGS\ keeps only the current value of each node in the
+model, unless a monitor has been defined for that node. The burn-in
+period of a \JAGS\ run is therefore the interval between model
+initialization and the creation of the first monitor.
+
+When a model is initialized, it is in {\em adaptive mode}, meaning
+that the Samplers used by the model may modify their behaviour for
+increased efficiency. Since this adaptation may depend on the entire
+sample history, the sequence generated by an adapting sampler is no
+longer a Markov chain, and is not guaranteed to converge to the target
+distribution. Therefore, adaptive mode must be turned off at some
+point during burn-in, and a sufficient number of iterations must take
+place {\em after} the adaptive phase to ensure convergence.
+
+By default, adaptive mode is turned off half way through first update
+of a \JAGS\ model, although the user may also control the length of
+the adaptive phase directly.  All samplers have a built in test to
+determine whether they have converged to their optimal sampling
+behaviour.  If any sampler fails this validation test, a warning will
+be printed. To ensure optimal sampling behaviour, the model should be
+run again from scratch using a longer adaptation period.
+
+\section{Monitoring}
+\label{section:monitoring}
+
+A {\em monitor} in \JAGS\ is an object that records sampled
+values. The simplest monitor is a {\em trace monitor}, which stores
+the sampled value of a node, and can dump the stored values to file
+in the format used by the CODA package for \R\ and S-PLUS.
+
+More complex monitors can be defined.  For example, the \verb+dic+
+module defines a {\em deviance monitor}, which records the deviance of
+observed stochastic nodes, and a {\em pD monitor}, which estimates the
+contribution of a stochastic node to the {\em effective number of
+parameters} ($p_D$) of a model.
+
+All monitors can be dumped to a file in \R\ \verb+dump()+ format in
+the form of a list.
+
+\chapter{Running \JAGS}
+
+\JAGS\ has a command line interface. To invoke jags interactively,
+simply type \texttt{jags} at the shell prompt on Unix, or the Windows
+command prompt on Windows. To invoke JAGS with a script file, type
+\begin{verbatim}
+jags <script file>
+\end{verbatim}
+Output from \JAGS\ is printed to the standard output, even when a
+script file is being used.  The \JAGS\ interface is designed to be
+forgiving. It will print a warning message if you make a mistake, but
+otherwise try to keep going.  This may create a cascade of error messages,
+of which only the first is informative.
+
+\section{Scripting commands}
+\label{section:scripting}
+
+\JAGS\ has a simple set of scripting commands with a syntax loosely
+based on \textsf{Stata}. Commands are shown below preceded by a dot
+(.). This is the \JAGS\ prompt. Do not type the dot in when you are
+entering the commands.
+
+C-style block comments taking the form /* ... */ can be
+embedded anywhere in the script file.  Additionally, you may use
+\R-style single-line comments starting with \#.
+
+If a scripting command takes a file name, then the name may be
+optionally enclosed in quotes. Quotes are required when the file name
+contains space, or any character which is not alphanumeric, or one of
+the following: \verb+_+, \verb+-+, \verb+.+, \verb+/+, \verb+\+.
+
+In the descriptions below, angular brackets \verb+<>+, and the text
+inside them, represents a parameter that should be replaced with the
+correct value by you.  Anything inside square brackets \verb+[]+ is
+optional. Do not type the square brackets if you wish to use an
+option.
+
+\subsection{MODEL IN}
+
+\begin{verbatim}
+. model in <file>
+\end{verbatim}
+Checks the syntactic correctness of the model description in
+\texttt{file} and reads it into memory. The next compilation
+statement will compile this model. 
+
+See also: MODEL CLEAR (\ref{model:clear})
+
+\subsection{DATA IN}
+\label{data:in}
+
+\begin{verbatim}
+. data in <file>
+\end{verbatim}
+JAGS keeps an internal data table containing the values of observed
+nodes inside each node array.  The DATA IN statement reads data from a
+file into this data table.
+
+Several data statements may be used to read in data from more than one
+file. If two data files contain data for the same node array, the second
+set of values will overwrite the first, and a warning will be printed.
+
+See also: DATA TO (\ref{data:to}).
+
+\subsection{COMPILE}
+
+\begin{verbatim}
+. compile [, nchains(<n>)]
+\end{verbatim}
+Compiles the model using the information provided in the preceding
+model and data statements. By default, a single Markov chain is
+created for the model, but if the \texttt{nchains} option is given,
+then \texttt{n} chains are created 
+
+Following the compilation of the model, further DATA IN statements are
+legal, but have no effect.  A new model statement, on the other hand,
+will replace the current model.
+
+\subsection{PARAMETERS IN}
+\label{parameters:in}
+
+\begin{verbatim}
+. parameters in <file> [, chain(<n>)]
+\end{verbatim}
+Reads the values in \texttt{file} and writes them to the corresponding
+parameters in chain \texttt{n}. The file has the same format as the
+one in the DATA IN statement.  The \texttt{chain} option may be
+omitted, in which case the parameter values in all chains are set to
+the same value.
+
+The PARAMETERS IN statement may be used before a model has been
+initialized.  You may only supply the values of unobserved stochastic
+nodes in the parameters file. Logical nodes and constant nodes are
+forbidden.
+
+See also: PARAMETERS TO (\ref{parameters:to})
+
+\subsection{INITIALIZE}
+
+\begin{verbatim}
+. initialize
+\end{verbatim}
+Initializes the model using the previously supplied data and parameter
+values supplied for each chain.
+
+\subsection{UPDATE}
+
+\begin{verbatim}
+. update <n> [,by(<m>)]
+\end{verbatim}
+Updates the model by \texttt{n} iterations. 
+
+The first UPDATE statement turns off adaptive mode for all samplers in
+the model after \texttt{n/2} iterations. A warning is printed 
+if adaptation is incomplete. In this case the model must be run again
+with a longer adaptation phase, starting from the MODEL IN statement.
+
+A progress bar is printed on the standard output consisting of 50
+asterisks. If the \texttt{by} option is supplied, a new asterisk is
+printed every \texttt{m} iterations. If this entails more than 50
+asterisks, the progress bar will be wrapped over several lines.  If
+\texttt{m} is zero, the printing of the progress bar is suppressed.
+
+\subsection{ADAPT}
+
+\begin{verbatim}
+. adapt <n> [,by(<m>)]
+\end{verbatim}
+Updates the model by \texttt{n} iterations and then turns of
+adaptive mode.
+
+Use this instead of the first UPDATE statement if you want explicit
+control over the length of the adaptive sampling phase.
+
+\subsection{MONITOR}
+\label{section:monitor}
+
+In \JAGS, a monitor is an object that records a value based on the
+current state of a node.  The simplest monitor simply records the
+value of the node itself. This is called a ``trace'' monitor. More
+complex monitors can be defined that do additional calculations.  For
+example, the \verb+dic+ module defines a ``deviance'' monitor that
+records the deviance of an observed stochastic node, and a ``pD''
+monitor that estimates the contribution of a node to the effective
+number of parameters in the model.
+
+In order to distinguish between different classes of Monitor, all
+monitor statements in the \JAGS\ scripting language have a
+\texttt{type} option. If this is omitted, a trace monitor is assumed.
+
+\begin{verbatim}
+. monitor <varname> [, thin(n), type(<name>)]
+\end{verbatim}
+Sets a monitor for variable \texttt{<varname>}, The \texttt{thin}
+option sets the thinning interval of the monitor so that it will only
+record every nth value. 
+
+\begin{verbatim}
+. monitor [, type(<name>)]
+\end{verbatim}
+A monitor keyword on its own, with no variable name, will create a set
+of monitors for default nodes in the model.  The nodes chosen as
+``default'' nodes depend on the type of monitor.  For a trace monitor,
+the default nodes are all fixed effects ({\em i.e.} all model
+parameters with observed parents).
+
+\begin{verbatim}
+. monitor clear <varname> [, type(<name>)]
+\end{verbatim}
+Clears the monitor of the given type associated with variable
+\texttt{<varname>}. 
+
+\begin{verbatim}
+. monitors to <filename> [, type(<name>)]
+\end{verbatim}
+Dumps the values of all monitors of the given type to the given file
+in a format that can be read into \R\ using the \verb+source()+
+function.  The \R\ structure is a list with one entry for each sampler.
+
+Note the plural (``monitors to'' not ``monitor to'').
+
+\subsection{CODA}
+
+\begin{verbatim}
+. coda <varname> [, stem(<filename>)] 
+\end{verbatim}
+If the named node has a trace monitor, this dumps the monitored values
+of to files \texttt{CODAindex.txt}, \texttt{CODAindex1.out},
+\texttt{CODAindex2.txt}, \ldots in a form that can be read by the
+\CODA\ package of \R.  The file name stem may be changed from
+\texttt{CODA} to another value by using the \texttt{stem()}
+option. The wild-card character ``*'' may be used to dump all
+monitored nodes
+
+\subsection{EXIT}
+
+\begin{verbatim}
+. exit
+\end{verbatim}
+Exits \JAGS. \JAGS\ will also exit when it reads an end-of-file character.
+Note that although \JAGS\ behaves in many ways like classic \BUGS, it 
+will not automatically dump the contents of the monitors on exit. You
+must use the CODA statement before exiting.
+
+\subsection{DATA TO}
+\label{data:to}
+\begin{verbatim}
+. data to <filename>
+\end{verbatim}
+Writes the data ({\em i.e.} the values of the observed nodes) to a
+file in the R \texttt{dump} format. The same file can be used in a
+DATA IN statement for a subsequent model.
+
+See also: DATA IN (\ref{data:in})
+
+\subsection{PARAMETERS TO}
+\label{parameters:to}
+\begin{verbatim}
+. parameters to <file> [, chain(<n>)]
+\end{verbatim}
+Writes the current parameter values ({\em i.e.} the values of the
+unobserved stochastic nodes) in chain \texttt{<n>} to a file in R dump
+format. The name and current state of the RNG for chain \texttt{<n>}
+is also dumped to the file.  The same file can be used as input in a
+PARAMETERS IN statement in a subsequent run.
+
+See also: PARAMETERS IN (\ref{parameters:in})
+
+\subsection{SAMPLERS TO}
+\label{samplers:to}
+\begin{verbatim}
+. samplers to <file>
+\end{verbatim}
+Writes out a summary of the samplers to the given file.  The output appears
+in three tab-separated columns, with one row for each sampled node
+\begin{itemize}
+\item The index number of the sampler (starting with 1). The index number 
+gives the order in which Samplers are updated at each iteration.
+\item The name of the sampler, matching the index number
+\item The name of the sampled node. 
+\end{itemize}
+If a Sampler updates multiple nodes then it is represented by multiple rows
+with the same index number.
+
+\subsection{LOAD}
+\label{load}
+\begin{verbatim}
+. load <module>
+\end{verbatim}
+Loads a module into \JAGS\ (see chapter \ref{section:modules}). Once
+loaded, a module cannot be unloaded in the same \JAGS\ session.
+
+\subsection{MODEL CLEAR}
+\label{model:clear}
+\begin{verbatim}
+. model clear
+\end{verbatim}
+Clears the current model.  The data table (see section \ref{data:in})
+remains intact
+
+\subsection{Print Working Directory (PWD)}
+\begin{verbatim}
+. pwd
+\end{verbatim}
+Prints the name of the current working directory. This is where \JAGS\
+will look for files when the file name is given without a full path, 
+{\em e.g.} \verb+"mymodel.bug"+.
+
+\subsection{Change Directory (CD)}
+\begin{verbatim}
+. cd <dirname>
+\end{verbatim}
+Changes the working directory to \texttt{<dirname>}
+
+\subsection{Directory list (DIR)}
+\begin{verbatim}
+. dir
+\end{verbatim}
+Lists the files in the current working directory.
+
+\subsection{RUN}
+\begin{verbatim}
+. run <cmdfile>
+\end{verbatim}
+Opens the file \texttt{<cmdfile>} and reads further scripting commands
+until the end of the file.  Note that if the file contains an EXIT
+statement, then the \JAGS\ session will terminate. 
+
+\section{Errors}
+
+There are two kinds of errors in \JAGS: runtime errors, which are due to
+mistakes in the model specification, and logic errors which are internal
+errors in the JAGS program. 
+
+Logic errors are generally created in the lower-level parts of the \JAGS\
+library, where it is not possible to give an informative error message.
+The upper layers of the \JAGS\ program are supposed to catch such errors
+before they occur, and return a useful error message that will help you
+diagnose the problem.  Inevitably, some errors slip through. Hence,
+if you get a logic error, there is probably an error in your input to
+\JAGS, although it may not be obvious what it is. Please send a bug
+report (see ``Feedback'' below) whenever you get a logic error.
+
+Error messages may also be generated when parsing files (model files,
+data files, command files).  The error messages generated in this case
+are created automatically by the program \texttt{yacc}. They
+generally take the form ``syntax error, unexpected FOO, expecting BAR''
+and are not always abundantly clear.
+
+If a model compiles and initializes correctly, but an error occurs
+during updating, then the current state of the model will be dumped
+to a file named \verb+jags.dumpN.R+ where $N$ is the chain number.
+You should then load the dumped data into R to inspect the state of
+each chain when the error occurred.
+
+\chapter{Modules}
+\label{section:modules}
+
+The \JAGS\  library is distributed along with certain dynamically
+loadable modules that extend its functionality. A module can define
+new objects of the following classes:
+\begin{enumerate}
+\item {\bf functions} and {\bf distributions}, the basic building
+blocks of the BUGS language.
+\item {\bf samplers}, the objects which update the parameters of the
+model at each iteration, and {\bf sampler factories}, the objects that 
+create new samplers for specific model structures.  If the module
+defines a new distribution, then it will typically also define a new
+sampler for that distribution.
+\item {\bf monitors}, the objects that record sampled values for
+later analysis, and {\bf monitor factories} that create them. 
+\item {\bf random number generators}, the objects that drive the
+MCMC algorithm and {\bf RNG factories} that create them.
+\end{enumerate}
+
+The \verb+base+ module and the \verb+bugs+ module are loaded automatically
+at start time.  Others may be loaded by the user.
+
+\section{The base module}
+
+The base module supply the base functionality for the \JAGS\ library
+to function correctly. It is loaded first by default.  
+
+\subsection{Base Samplers}
+
+The \verb+base+ module defines samplers that use highly generic update
+methods.  These sampling methods only require basic information about
+the stochastic nodes they sample.  Conversely, they may not be fully
+efficient.
+
+Three samplers are currently defined:
+\begin{enumerate}
+\item The Finite sampler can sample a discrete-valued node with
+fixed support of less than 20 possible values. The node must not
+be bounded using the \verb+T(,)+ construct
+\item The Real Slice Sampler can sample any scalar real-valued 
+stochastic node.
+\item The Discrete Slice Sampler can sample any scalar
+discrete-valued stochastic node.
+\end{enumerate}
+
+\subsection{Base RNGs}
+
+The \verb+base+ module defines four RNGs, taken directly from \R,
+with the following names:
+\begin{enumerate}
+\item \verb+"base::Wichmann-Hill"+
+\item \verb+"base::Marsaglia-Multicarry"+
+\item \verb+"base::Super-Duper"+
+\item \verb+"base::Mersenne-Twister"+
+\end{enumerate}
+
+A single RNG factory object is also defined by the \verb+base+
+module which will supply these RNGs for chains 1 to 4 respectively, if
+``RNG.name'' is not specified in the initial values file.  All chains
+generated by the base RNG factory are initialized using the current
+time stamp.
+
+The base RNG factory can only generate four independent RNGs from a
+single seed. Hence \JAGS\ is limited to four parallel chains, unless
+the user specifies the RNG name and seed in each initial value file.
+
+\subsection{Base Monitors}
+
+The \verb+base+ module defines the TraceMonitor class (type
+``trace''). This is the monitor class that simply records the current
+value of the node at each iteration.
+
+When default nodes for monitoring are requested, the factory object
+for TraceMonitors will select all fixed effects (Unobserved stochastic
+nodes with observed parents) in the model. In a typical model, these
+will be the highest-level model parameters.
+
+\section{The bugs module}
+
+The \verb+bugs+ module defines some of the functions and distributions
+from \WinBUGS. These are described in more detail in sections
+\ref{section:functions} and \ref{section:distributions}.  The
+\verb+bugs+ module also defines conjugate samplers for efficient Gibbs
+sampling.
+
+\section{The mix module}
+
+The \verb+mix+ module defines a novel distribution
+\verb+dnormmix(mu,tau,pi)+ representing a finite mixture of normal
+distributions. In the parameterization of the \verb+dnormmix+
+distribution, $\mu$, $\tau$, and $\pi$ are vectors of the same length,
+and the density of \verb+y ~ dnormmix(mu, tau, pi)+ is
+\[
+f(y | \mu, \tau, \pi) = \sum_i \pi_i \tau_i^{\frac{1}{2}} \phi( \tau^{\frac{1}{2}}_i (y - \mu_i))
+\]
+where $\phi()$ is the probability density function of a standard
+normal distribution.
+
+The \verb+mix+ module also defines a sampler that is designed to act
+on finite normal mixtures. It uses tempered transitions to jump
+between distant modes of the multi-modal posterior distribution
+generated by such models. This sampler is still experimental and has
+not been tested on a sufficiently wide range of problems.
+
+\section{The dic module}
+
+The \verb+dic+ module defines new monitor classes for Bayesian model
+criticism using deviance-based measures. The \texttt{deviance} monitor
+records the deviance of an observed stochastic node. The \texttt{pD}
+monitor can be used to estimate the contribution of a stochastic node
+to the {\em effective number of parameters} in the model. Finally, the
+\texttt{popt} monitor can be used to estimate the optimism of the
+expected deviance.
+
+The \texttt{rjags} package provides classes and functions for
+manipulating penalized deviances. See the rjags manual for details.
+The use of these monitors through the command-line interface is
+described below.
+
+\subsection{The deviance monitor}
+
+The \JAGS\ library already has the facility to create a deviance node
+even without the \verb+dic+ module being loaded.  The deviance node
+gives the {\em total} deviance of the model. The deviance monitor
+defined in the \verb+dic+ module allows more a more detailed
+evaluation of the model deviance by recording the deviance of {\em
+  individual} nodes. The command
+\begin{verbatim}
+monitor, type(deviance)
+\end{verbatim}
+will create a deviance monitor for all observed stochastic
+nodes. These monitors cannot be dumped to file in CODA format. Instead
+they are dumped using the command
+\begin{verbatim}
+monitors to "myfile.R", type(deviance)
+\end{verbatim}
+The file ``myfile.R'' can then be read into \R\ with the \texttt{source()}
+function. This creates a list named ``deviance'' which contains the
+sampled values.
+
+\subsection{The \texttt{pD} monitor}
+
+The \verb+pD+ monitor estimates the contribution to the effective
+number of parameters ($p_D$) \cite{spiegelhalter:etal:2002} from an
+observed stochastic node by comparing the deviance deviance across
+multiple chains \cite{plummer:2002}. It is created by using the option
+\texttt{type(pD)}. If the model has only one chain then a \verb+pD+
+monitor cannot be defined.
+
+Like the deviance monitor, the \verb+pD+ monitor factory will create a
+monitor for every observed stochastic node using the command.
+\begin{verbatim}
+monitor, type(pD)
+\end{verbatim}
+The sum of the monitor values gives the effective number of parameters
+of the model, in the same way that the sum of the deviance monitor
+values gives the total deviance of the model. 
+
+Again, the values of the \verb+pD+ monitors are dumped to file using
+\begin{verbatim}
+monitors to "myfile.R", type(pD)
+\end{verbatim}
+When read into \R\ using the \verb+source()+ function, this creates
+a list object named ``pD'' containing the sampled values.
+
+\subsection{The \texttt{popt} monitor}
+
+The \verb+popt+ monitor works exactly like the \verb+pD+ monitor, but
+is created using the option \verb+type(popt)+.  It gives an estimate
+of the optimism of the expected deviance ($p_{opt}$), which can be
+added to the mean deviance to give the penalized expected deviance
+\cite{plummer:2008}.
+
+Under asymptotically favourable conditions in which $p_D \ll n$, where
+$n$ is the sample size
+\[
+p_{opt} \approx 2 p_D
+\]
+For generalized linear models, a better approximation is
+\[
+p_{opt} \approx \sum_{i=1}^n \frac {p_{D_i}}{1 - p_{D_i}}
+\]
+where $p_D = \sum_i p_{D_i}$.
+
+The \verb+popt+ monitor uses importance weights to estimate
+$p_{opt}$. The resulting estimates may be numerically unstable when
+$p_{D_i}$ is not small.  This typically occurs in random-effects
+models, so it is recommended to check the output of the \verb+popt+
+monitor with MCMC diagnostics.
+
+\section{The msm module}
+
+The \verb+msm+ module defines the matrix exponential function
+\verb+mexp+ and the multi-state distribution \verb+dmstate+ which
+describes the transitions between observed states in continuous-time
+multi-state Markov transition models. 
+
+\chapter{Functions}
+\label{section:functions}
+
+Functions allow deterministic nodes to be defined using the \verb+<-+
+(``gets'') operator.  Most of the functions in \JAGS\ are scalar
+functions taking scalar arguments. However, \JAGS\ also allows
+arbitrary vector- and array-valued functions, such as the matrix
+multiplication operator \verb+%*%+ and the transpose function
+\verb+t()+ defined in the \verb+bugs+ module, and the matrix
+exponential function \verb+mexp()+ defined in the \verb+msm+
+module. \JAGS\ also uses an enriched dialect of the BUGS language with
+a number of operators that are used in the S language.
+
+Scalar functions taking scalar arguments are automatically vectorized.
+They can also be called when the arguments are arrays with conforming
+dimensions, or scalars. So, for example, the scalar $c$ can be added to
+the matrix $A$ using
+\begin{verbatim}
+B <- A + c
+\end{verbatim}
+instead of the more verbose form
+\begin{verbatim}
+D <- dim(A)
+for (i in 1:D[1])
+   for (j in 1:D[2]) {
+      B[i,j] <- A[i,j] + c
+   }
+}
+\end{verbatim}
+
+\section{Base functions}
+
+The functions defined by the \verb+base+ module all appear as infix or
+prefix operators. The syntax of these operators is built into the
+\JAGS\ parser. They are therefore considered part of the modelling
+language.  Table \ref{table:base:functions} lists them in reverse
+order of precedence.
+
+\begin{table}[h]
+\begin{center}
+\begin{tabular}{lll}
+\hline
+Type & Usage & Description\\ 
+\hline
+Logical           & \verb+x || y+ & Or \\
+operators         & \verb+x && y+ & And \\
+                  & \verb+!x+     & Not \\
+\hline
+Comparison  & \verb+x > y+ & Greater than\\
+operators   & \verb+x >= y+ & Greater than or equal to  \\
+            & \verb+x < y+ & Less than \\
+            & \verb+x <= y+ & Less than or equal to \\
+            & \verb+x == y+ & Equal \\
+\hline
+Arithmetic  & \verb-x + y- & Addition \\
+operators   & \verb+x - y+ & Subtraction\\
+            & \verb+x * y+ & Multiplication \\
+            & \verb+x / y+ & Division \\
+            & \verb+x %special% y+ &User-defined operators\\
+            & \verb+-x+ & Unary minus\\
+\hline
+Power function & \verb+x^y+ & \\
+\hline
+\end{tabular}
+\caption{Base functions listed in reverse order of precedence 
+  \label{table:base:functions}}
+\end{center}
+\end{table}
+
+Logical operators convert numerical arguments to logical values: zero
+arguments are converted to FALSE and non-zero arguments to
+TRUE. Logical and comparison operators return the value 1 if the
+result is TRUE and 0 if the result is FALSE.  Comparison operators are
+non-associative: the expression \verb+x < y < z+, for example, is
+syntactically incorrect.
+
+The \verb+%special%+ function is an exception in table
+\ref{table:base:functions}. It is not a function defined by the
+\verb+base+ module, but is a place-holder for any function
+with a name starting and ending with the character ``\verb+%+'' Such
+functions are automatically recognized as infix operators by the
+\JAGS\ model parser, with precedence defined by table
+\ref{table:base:functions}.
+
+\section{Functions in the bugs module}
+
+\subsection{Scalar functions}
+
+Table \ref{table:bugs:scalar} lists the scalar-valued functions in the
+\texttt{bugs} module that also have scalar arguments.  These functions
+are automatically vectorized when they are given vector, matrix, or
+array arguments with conforming dimensions.
+
+Table \ref{table:bugs:link} lists the link functions in the
+\texttt{bugs} module.  These are smooth scalar-valued functions that
+may be specified using an S-style replacement function notation. So,
+for example, the log link
+\begin{verbatim}
+log(y) <- x
+\end{verbatim}
+is equivalent to the more direct use of its inverse, the exponential
+function:
+\begin{verbatim}
+y <- exp(x)
+\end{verbatim}
+This usage comes from the use of link functions in generalized linear
+models.
+
+\begin{table}
+\begin{center}
+\begin{tabular}{llll}
+\hline
+Usage  & Description & Value & Restrictions on arguments \\ 
+\hline
+\verb+abs(x)+       & Absolute value      & Real & \\
+\verb+cos(x)+       & Cosine              & Real & \\
+\verb+cloglog(x)+   & Complementary log log & Real & $0 < x < 1$ \\
+\verb+equals(x,y)+  & Test for equality   & Logical & \\
+\verb+exp(x)+       & Exponential         & Real & \\
+\verb+icloglog(x)+  & Inverse complementary & Real & \\
+                    & log log function    & \\
+\verb+ilogit(x)+    & Inverse logit       & Real & \\
+\verb+log(x)+       & Log function        & Real & $x > 0$ \\
+\verb+logfact(x)+   & Log factorial       & Real & $x > -1$ \\
+\verb+loggam(x)+    & Log gamma           & Real & $x > 0$ \\
+\verb+logit(x)+     & Logit               & Real & $0 < x < 1$ \\
+\verb+phi(x)+       & Standard normal cdf & Real & \\
+\verb+pow(x,z)+     & Power function      & Real & If $x < 0$ then $z$ is integer \\ 
+\verb+probit(x)+    & Probit              & Real & $0 < x < 1$ \\
+\verb+round(x)+     & Round to integer    & Integer & \\
+                    & away from zero      &      & \\
+\verb+sin(x)+       & Sine                & Real & \\
+\verb+sqrt(x)+      & Square-root         & Real & $x >= 0$ \\
+\verb+step(x)+      & Test for $x \geq 0$ & Logical & \\
+\verb+trunc(x)+     & Round to integer    & Integer & \\
+                    & towards zero        & \\
+\hline
+\end{tabular}
+\caption{Scalar functions in the \texttt{bugs} module \label{table:bugs:scalar}}
+\end{center}
+\end{table}
+
+\begin{table}
+\begin{center}
+\begin{tabular}{llll}
+\hline
+Link function         & Description & Range & Inverse \\
+\hline
+\verb+cloglog(y) <- x+ & Complementary log log & $0 < y < 1$ & \verb+y <- icloglog(x)+ \\
+\verb+log(y) <- x+    & Log           & $0 < y$ &  \verb+y <- exp(x)+ \\
+\verb+logit(y) <- x+  & Logit         & $0 < y < 1$ &  \verb+y <- ilogit(x)+ \\
+\verb+probit(y) <- x+ & Probit        & $0 < y < 1$ &  \verb+y <- phi(x)+\\
+\hline
+\end{tabular}
+\caption{Link functions in the \texttt{bugs} module \label{table:bugs:link}}
+\end{center}
+\end{table}
+
+\section{Scalar-valued functions with vector arguments}
+
+Table \ref{table:bugs:scalar2} lists the scalar-valued functions in the
+\texttt{bugs} module that take general arguments. Unless otherwise
+stated in table \ref{table:bugs:scalar2}, the arguments to these functions
+may be scalar, vector, or higher-dimensional arrays.
+
+The \verb+max()+ and \verb+min()+ functions work like the
+corresponding \R\ functions. They take a variable number of arguments
+and return the maximum/minimum element over all supplied
+arguments. This usage is  compatible with \WinBUGS, although more general.
+
+\begin{table}
+\begin{tabular}{lll}
+\hline
+Function & Description & Restrictions \\
+\hline
+\verb+inprod(x1,x2)+ & Inner product & Dimensions of $a$, $b$ conform \\
+\verb+interp.lin(e,v1,v2)+ & Linear Interpolation & $e$ scalar, \\
+                          &                     & $v1,v2$ conforming vectors \\
+\verb+logdet(a)+ & Log determinant & $a$ is a square matrix \\
+\verb+max(x1,x2,...)+ & Maximum element among all arguments & \\
+\verb+mean(x)+  & Mean of elements of $a$ & \\
+\verb+min(x1,x2,...)+ & Minimum element among all arguments & \\
+\verb+prod(x)+  & Product of elements of $a$ & \\
+\verb+sum(a)+   & Sum of elements of $a$& \\
+\verb+sd(a)+    & Standard deviation of elements of $a$ & \\
+\hline
+\end{tabular}
+\caption{Scalar-valued functions with general
+  arguments in the \texttt{bugs} module \label{table:bugs:scalar2}}
+\end{table}
+
+\section{Vector- and array-valued functions}
+
+Table \ref{table:bugs:vector} lists vector- or matrix-valued functions
+in the \texttt{bugs} module.
+
+The \texttt{sort} and \texttt{rank} functions behaves like their R
+namesakes: \texttt{sort} accepts a vector and returns the same values
+sorted in ascending order; \texttt{rank} returns a vector of ranks.
+This is distinct from \WinBUGS, which has two scalar-valued functions
+\verb+rank+ and \verb+ranked+.
+
+\begin{table}
+\begin{center}
+\begin{tabular}{lll}
+\hline
+Usage & Description & Restrictions \\
+\hline
+\verb+inverse(a)+ & Matrix inverse & $a$ is a square matrix  \\
+\verb+mexp(a)+ & Matrix exponential & $a$ is a square matrix \\
+\verb+rank(v)+ & Ranks of elements of $v$ & $v$ is a vector   \\
+\verb+sort(v)+ & Elements of $v$ in order & $v$ is a vector  \\
+\verb+t(a)+    & Transpose                & $a$ is a matrix \\
+\verb+a %*% b+  & Matrix multiplication & $a,b$ conforming vector or matrices\\
+
+\hline
+\end{tabular}
+\caption{Vector- or matrix-valued functions in the \texttt{bugs}
+  module \label{table:bugs:vector}}
+\end{center}
+\end{table}
+
+\chapter{Distributions}
+\label{section:distributions}
+
+Distributions are used to define stochastic nodes using the \verb+~+
+operator. The distributions defined in the bugs module are listed in
+table \ref{table:bugs:distributions:real} (real-valued distributions),
+\ref{table:bugs:distributions:discrete} (discrete-valued
+distributions), and \ref{table:bugs:distributions:multi}
+(multivariate distributions).
+
+Some distributions have restrictions on the valid parameter values,
+and these are indicated in the tables. If a Distribution object is
+given invalid parameter values when evaluating the log-likelihood, it
+returns $-\infty$. When a model is initialized, all stochastic nodes
+are checked to ensure that the initial parameter values are valid for
+their distribution.
+
+
+\begin{table}
+  \begin{center}
+    \begin{tabular}{llcll}
+      \hline
+      Name & Usage & Density & Lower & Upper \\
+      \hline
+      Beta & \verb+dbeta(a,b)+ & 
+      \multirow{2}{*}{
+        $\frac{\textstyle x^{a-1}(1-x)^{b-1}}{\textstyle \beta(a,b)}$
+      } & $0$ & $1$ \\
+      & $a > 0$, $b > 0$ \\
+      Chi-square & \verb+dchisqr(k)+ & 
+      \multirow{2}{*}{
+        $\frac{\textstyle x^{\frac{k}{2} - 1} \exp(-x/2)}
+        {\textstyle 2^{\frac{k}{2}} \Gamma({\scriptstyle \frac{k}{2}})}$
+      } & 0 & \\
+      & $k > 0$ \\
+      Double  & \verb+ddexp(mu,tau)+ & 
+      \multirow{2}{*}{$\tau \exp(-\tau | x-\mu |)/2$} & & \\
+      exponential & $\tau > 0$ \\
+      Exponential & \verb+dexp(lambda)+ & 
+      \multirow{2}{*}{$\lambda \exp(-\lambda x)$} & 0 & \\ 
+      & $\lambda > 0$ \\
+      Gamma       & \verb+dgamma(r, mu)+ & 
+      \multirow{2}{*}{
+        $\frac{\textstyle \mu^r x^{r - 1} \exp(-\mu x)}
+        {\textstyle \Gamma(r)}$} & 0 & \\
+      & $\mu > 0$, $r > 0$ \\
+      Generalized & \verb+dgen.gamma(r,mu,beta)+ &  
+      \multirow{2}{*}{
+        $\beta \mu^{\beta r} x^{\beta r - 1}  \exp\{-(\mu x)^{\beta}\}$
+      } & $0$ & \\
+      gamma       & $\mu >0$, $\beta > 0$, $r > 0$ \\
+      Log-normal  & \verb+dlnorm(mu,tau)+ & 
+      \multirow{2}{*}{
+        $\tau^{\frac{1}{2}} x^{-1} \exp \left\{-\tau (\log(x) - \mu)^2/2 \right\}$} & 0 \\
+      ~ & $\tau > 0$ \\
+      Normal   & \verb+dnorm(mu,tau)+ & 
+      \multirow{2}{*}{
+        $\left(\frac{\tau}{2\pi}\right)^{\frac{1}{2}} \exp\{-(x - \mu)^2 \tau\}$} & & \\
+      ~ & $\tau > 0$ \\
+      Pareto      & \verb+dpar(alpha, c)+ & 
+      \multirow{2}{*}{
+        $\alpha c^{\alpha} x^{-(\alpha + 1)}$
+      } & $c$ & \\
+      ~ & $\alpha > 0$, $c > 0$ \\
+      Student t   & \verb+dt(mu,tau,k)+ & 
+      \multirow{2}{*}{
+        $\textstyle \frac{\Gamma(\frac{k+1}{2})}{\Gamma(\frac{k}{2})} 
+        \left(\frac{\tau}{k\pi} \right)^{\frac{1}{2}} 
+        \left\{1 + \frac{\tau (x - \mu)^2}{k} \right\}^{-\frac{(k+1)}{2}}$} & & \\
+      ~ & $\tau > 0$, $k > 0$ \\
+      Uniform     & \verb+dunif(a,b)+ & 
+      \multirow{2}{*}{$\frac{\textstyle 1}{\textstyle b - a}$} & $a$ & $b$ \\
+      ~ & $a < b$ \\ 
+      Weibull     & \verb+dweib(v, lambda)+ & 
+      \multirow{2}{*}{$v  \lambda  x^{v - 1} \exp (- \lambda x^v)$} & 0 & \\
+      ~ & $v > 0$, $\lambda > 0$ \\
+      \hline
+    \end{tabular}
+    \caption{Univariate real-valued distributions in the \texttt{bugs} module
+      \label{table:bugs:distributions:real}}
+  \end{center}
+\end{table}
+
+\begin{table}
+  \begin{center}
+    \begin{tabular}{llllll}
+      \hline
+      Name & Usage & Density & Lower & Upper \\
+      \hline
+      Bernoulli & \verb+dbern(p)+ & 
+      \multirow{2}{*}{$p^x (1 - p)^{1 -x}$} & 
+      $0$ & $1$ \\
+      ~ & $0 < p < 1$ \\
+      Binomial  & \verb+dbin(p,n)+ & 
+      %\multirow{2}{*}{$\begin{array}{c} n \\ x \end{array} p^x (1-p)^{n-x}$}
+      \multirow{2}{*}{${n \choose x}  p^x (1-p)^{n-x}$}
+      ~  & $0$ & $n$ \\
+      ~ & $0 < p < 1$, $n \in \mathbb{N}^*$ \\
+      Categorical & \verb+dcat(p)+ & \multirow{2}{*}{$\frac{\textstyle p_x}{\textstyle \sum_i p_i}$} & $1$ & $N$ \\
+      ~ & $p \in (\mathbb{R}^+)^N$  \\
+      Hypergeometric & \verb+dhyper(n1,n2,m1,psi)+ &
+      \multirow{2}{*}{
+        $\textstyle {n_1 \choose x} {n_2 \choose m_1 - x} \psi^x$
+      } &
+      $\text{max}(0,n_+ - m_1)$ & $\text{min}(n_1,m_1)$ \\
+      ~ & $0 \leq n_i$, $0 < m_1 \leq n_+$  \\
+      Negative & \verb+dnegbin(p, r)+ &
+      \multirow{2}{*}{${x + r -1 \choose x} p^r (1-p)^x$} & 0 & \\
+      binomial & $0 < p < 1$, $r \in \mathbb{N}^+$ \\
+      Poisson & \verb+dpois(lambda)+ & 
+      \multirow{2}{*}{$\frac{\textstyle \exp(-\lambda) \lambda^x}{\textstyle x!}$} & 0 & \\
+      ~ & $\lambda > 0$ \\
+      \hline
+    \end{tabular}
+  \caption{Discrete univariate distributions in the \texttt{bugs} module
+    \label{table:bugs:distributions:discrete}}
+  \end{center}
+\end{table}
+
+
+\begin{table}
+  \begin{center}
+    \begin{tabular}{lll}
+      \hline
+      Name & Usage & Density \\
+      \hline
+      Dirichlet & \verb+p ~ ddirch(alpha)+ & 
+      \multirow{2}{*}{$\Gamma(\sum_i \alpha_i) \prod_j 
+        \frac{\textstyle p_j^{\alpha_j - 1}}{\textstyle \Gamma(\alpha_j)}$} \\
+      ~ & $\alpha_j \geq 0$ \\
+      & \\
+      Multivariate & \verb+x ~ dmnorm(mu,Omega)+ &
+      \multirow{2}{*}{
+        $\left(\frac{|\Omega|}{2\pi}\right)^{\frac{1}{2}} exp\{-(x-\mu)^T \Omega (x-\mu) / 2\}$} \\
+      normal & $\Omega$ positive definite \\
+      Wishart & \verb+Omega ~ dwish(R,k)+ &
+      \multirow{2}{*}{
+        $\frac{\textstyle |\Omega|^{(k-p-1)/2} |R|^{k/2} \exp\{-\text{Tr}(R\Omega/2)\}}
+               {\textstyle 2^{pk/2} \Gamma_p (k/2)}$
+      } \\
+      & $R$ pos. def. \\
+      Multivariate & \verb+x ~ dmt(mu,Omega,k)+ &
+      \multirow{2}{*}{
+        $\frac{\textstyle \Gamma \{(k+p)/2\}}{\textstyle \Gamma(k/2) (n\pi)^{p/2}}
+        |\Omega|^{1/2}
+        \left\{1 + \frac{1}{k} (x - \mu)^T \Omega (x - \mu) \right\}^{-\frac{(k+p)}{2}}$   } \\
+      Student t &  $\Omega$ pos. def. & \\
+      Multinomial  & \verb+x ~ dmulti(p, n)+ & 
+      \multirow{2}{*}{$n! \prod_j 
+        \frac{\textstyle p_j^{x_j}}{\textstyle x_j!}$} \\
+      ~ & $\sum_i x_i = n$ \\
+      & \\
+    \hline
+    \end{tabular}
+    \caption{Multivariate distributions in the \texttt{bugs} module
+      \label{table:bugs:distributions:multi}}
+  \end{center}
+\end{table}
+
+\chapter{Differences between \JAGS\ and \WinBUGS}
+
+Although \JAGS\ aims for the same functionality as \WinBUGS, there are
+a number of important differences.
+
+\subsection{Data format}
+
+There is no need to transpose matrices and arrays when transferring
+data between \R\ and \JAGS, since \JAGS\ stores the values of an array
+in ``column major'' order, like \R\ and FORTRAN ({\em i.e.} filling
+the left-hand index first).
+
+If you have an \textsf{S}-style data file for \WinBUGS\ and you wish
+to convert it for \JAGS, then use the command \texttt{bugs2jags},
+which is supplied with the \CODA\ package.
+
+
+\subsection{Samplers}
+
+\JAGS\ has a more limited set of samplers than \WinBUGS, which leads
+to relatively poor performance. 
+
+\subsection{Distributions}
+
+Structural zeros are allowed in the Dirichlet distribution. If
+\begin{verbatim}
+p ~ ddirch(alpha)
+\end{verbatim}
+and some of the elements of alpha are zero, then the corresponding
+elements of p will be fixed to zero.
+
+The Multinomial (\verb+dmulti+) and Categorical (\verb+dcat+)
+distributions, which take a vector of probabilities as a parameter,
+may use unnormalized probabilities. The probability vector is
+normalized internally so that
+\[
+p_i \rightarrow \frac{p_i}{\sum_j p_j}
+\]
+
+\subsection{Observable Functions}
+\label{section:obfun}
+
+Logical nodes in the \BUGS\ language are a convenient way of
+describing the relationships between observables (constant and
+stochastic nodes), but are not themselves observable. You cannot
+supply data values for a logical node.  
+
+This restriction can occasionally be inconvenient, as there are
+important cases where the data are a deterministic function of
+unobserved variables.  Two important examples are
+\begin{enumerate}
+\item Censored data, which commonly occurs in survival analysis. In
+the most general case, we know that unobserved failure time $T$
+lies in the interval $(L,U]$.
+\item Aggregate data when we observe the sum of two or more
+unobserved variables.
+\end{enumerate}
+\JAGS\ contains two novel distributions to handle these situations.  
+\begin{enumerate}
+\item The \texttt{dinterval} distribution represents interval-censored
+data. It has two parameters: $t$ the original continuous variable, and
+$c[]$, a vector of cut points of length $M$, say. If \texttt{X $\sim$
+dinterval(t, c)} then 
+
+\begin{tabular}{lll}
+$X=0$   & if & $t < c[1]$\\
+$X=m$   & if & $c[m] \leq t < c[m+1]$ for $1 \leq m < M$\\
+$X = M$ & if & $c[M] \leq t$.
+\end{tabular}
+
+\item The \texttt{dsum} distribution represents the sum of two
+variables.  It has two parameters, $x1$ and $x2$. If \texttt{Y $\sim$
+dsum(x1,x2)} then $Y=x1+x2$.
+\end{enumerate}
+These distributions exist to give a likelihood to data that is, in fact,
+a deterministic function of the parameters.  The relation
+\begin{verbatim}
+Y ~ dsum(x1, x2)
+\end{verbatim}
+is logically equivalent to
+\begin{verbatim}
+Y <- x1 + x2
+\end{verbatim}
+But the latter form does not create a contribution to the likelihood,
+and does not allow you to define $Y$ as data.  The likelihood function
+is trivial: it is 1 if the parameters are consistent with the data and
+0 otherwise.  The \texttt{dsum} distribution also requires a special
+sampler, which can currently only handle the case where both $x1$ and
+$x2$ are discrete-valued.
+
+\subsection{Data transformations}
+\label{section:data:tranformations}
+
+\JAGS\ allows data transformations, but the syntax is different from
+\BUGS.  \BUGS\ allows you to put a stochastic node twice on the left
+hand side of a relation, as in this example taken from the manual
+\begin{verbatim}
+   for (i in 1:N) {
+      z[i] <- sqrt(y[i])
+      z[i] ~ dnorm(mu, tau)
+   }
+\end{verbatim}
+This is forbidden in \JAGS. You must put data transformations in a 
+separate block of relations preceded by the keyword \texttt{data}:
+\begin{verbatim}
+data {
+   for (i in 1:N) {
+      z[i] <- sqrt(y[i])
+   }
+}
+model {
+   for (i in 1:N) {
+      z[i] ~ dnorm(mu, tau)
+   }
+   ...
+}
+\end{verbatim}
+This syntax preserves the declarative nature of the \BUGS\ language.
+In effect, the data block defines a distinct model, which describes
+how the data is generated. Each node in this model is forward-sampled
+once, and then the node values are read back into the data table. The
+data block is not limited to logical relations, but may also include
+stochastic relations. You may therefore use it in simulations,
+generating data from a stochastic model that is different from the one
+used to analyse the data in the \texttt{model} statement.
+
+This example shows a simple location-scale problem in which the ``true''
+values of the parameters \texttt{mu} and \texttt{tau} are generated
+from a given prior in the \texttt{data} block, and the generated
+data is analyzed in the \texttt{model} block.
+\begin{verbatim}
+data {
+   for (i in 1:N) {
+      y[i] ~ dnorm(mu.true, tau.true) 
+   }
+   mu.true ~ dnorm(0,1);
+   tau.true ~ dgamma(1,3);
+}
+model {
+   for (i in 1:N) {
+      y[i] ~ dnorm(mu, tau)
+   }
+   mu ~ dnorm(0, 1.0E-3)
+   tau ~ dgamma(1.0E-3, 1.0E-3)
+}
+\end{verbatim}
+Beware, however, that every node in the \texttt{data} statement will
+be considered as data in the subsequent \texttt{model} statement. This
+example, although superficially similar, has a quite different interpretation.
+\begin{verbatim}
+data {
+   for (i in 1:N) {
+      y[i] ~ dnorm(mu, tau) 
+   }
+   mu ~ dnorm(0,1);
+   tau ~ dgamma(1,3);
+}
+model {
+   for (i in 1:N) {
+      y[i] ~ dnorm(mu, tau)
+   }
+   mu ~ dnorm(0, 1.0E-3)
+   tau ~ dgamma(1.0E-3, 1.0E-3)
+}
+\end{verbatim}
+Since the names \texttt{mu} and \texttt{tau} are used in both
+\texttt{data} and \texttt{model} blocks, these nodes will be
+considered as {\em observed} in the model and their values will be
+fixed at those values generated in the \texttt{data} block.
+
+\subsection{Directed cycles}
+
+Directed cycles are forbidden in \JAGS. There are two important
+instances where directed cycles are used in \BUGS.
+\begin{itemize}
+\item Defining autoregressive priors
+\item Defining ordered priors
+\end{itemize}
+For the first case, the \texttt{GeoBUGS} extension to \WinBUGS\ provides
+some convenient ways of defining autoregressive priors. These should be
+available in a future version of \JAGS.
+
+\subsection{Censoring, truncation and prior ordering}
+\label{section:censoring}
+
+These are three, closely related issues that are all handled using
+the \texttt{I(,)} construct in \BUGS.
+
+Censoring occurs when a variable $X$ is not observed directly,
+but is observed only to lie in the range $(L,U]$.  Censoring is
+an {\em a posteriori} restriction of the data, and is represented
+in WinBUGS by the \texttt{I(,)} construct, {\em e.g.}
+\begin{verbatim}
+X ~ dnorm(theta, tau) I(L,U)
+\end{verbatim}
+where $L$ and $U$ are constant nodes.
+
+Truncation occurs when a variable is known {\em a priori} to lie in
+a certain range.  Although \BUGS\ has no construct for representing
+truncated variables, it turns out that there is no difference between
+censoring and truncation for top-level parameters ({\em i.e.} variables
+with no unobserved parents).  Hence, for example, this
+\begin{verbatim}
+theta ~ dnorm(0, 1.0E-3) I(0, )
+\end{verbatim}
+is a perfectly valid way to describe a parameter $\theta$ with a
+half-normal prior distribution.
+
+Prior ordering occurs when a vector of nodes is known {\em a priori}
+to be strictly increasing or decreasing. It can be represented in
+WinBUGS with symmetric $I(,)$ constructs,  {\em e.g.}
+\begin{verbatim}
+X[1] ~ dnorm(0, 1.0E-3) I(,X[2])
+X[2] ~ dnorm(0, 1.0E-3) I(X[1],)
+\end{verbatim}
+ensures that $X[1] \leq X[2]$.
+
+\JAGS\ makes an attempt to separate these three concepts.
+
+Censoring is handled in \JAGS\ using the new distribution
+\texttt{dinterval} (section \ref{section:obfun}). This can be
+illustrated with a survival analysis example.  A right-censored
+survival time $t_i$ with a Weibull distribution is described in
+\WinBUGS\ as follows:
+\begin{verbatim}
+t[i] ~ dweib(r, mu[i]) I(c[i], )
+\end{verbatim}
+where $t_i$ is unobserved if $t_i > c_i$.  In \JAGS\ this becomes
+\begin{verbatim}
+is.censored[i] ~ dinterval(t[i], c[i])
+t[i] ~ dweib(r, mu[i])
+\end{verbatim}
+where \verb+is.censored[i]+ is an indicator variable that takes the
+value 1 if $t_i$ is censored and 0 otherwise. See the MICE and KIDNEY
+examples in the ``classic bugs'' set of examples.
+
+Truncation is represented in \JAGS\ using the \texttt{T(,)} construct,
+which has the same syntax as the \texttt{I(,)} construct in \WinBUGS,
+but has a different interpretation. If
+\begin{verbatim}
+X ~ dfoo(theta) T(L,U)
+\end{verbatim}
+then {\em a priori} $X$ is known to lie between $L$ and $U$. This
+generates a likelihood
+\[
+\frac{p(x \mid \theta)}{P(L \leq X \leq U \mid \theta)}
+\]
+if $L \leq X \leq U$ and zero otherwise, where $p(x \mid \theta)$ is
+the density of $X$ given $\theta$ according to the distribution
+\texttt{foo}. Note that calculation of the denominator may be
+computationally expensive.
+
+Prior ordering of top-level parameters in the model can be achieved
+using the \texttt{sort} function, which sorts a vector in ascending
+order.
+
+Symmetric truncation relations like this
+\begin{verbatim}
+alpha[1] ~ dnorm(0, 1.0E-3) I(,alpha[2])
+alpha[2] ~ dnorm(0, 1.0E-3) I(alpha[1],alpha[3])
+alpha[3] ~ dnorm(0, 1.0E-3) I(alpha[2],)
+\end{verbatim}
+Should be replaced by this
+\begin{verbatim}
+for (i in 1:3) {
+   alpha0[i] ~ dnorm(0, 1.0E-3)
+}
+alpha[1:3] <- sort(alpha0)
+\end{verbatim}
+
+\chapter{Development}
+
+At some point there will be a separate manual for \JAGS\ developers.
+At the moment, if you want to start hacking \JAGS\ then you must rely
+on the source file documentation.  This is written in JavaDoc style
+and can be processed using \texttt{doxygen} to generate a reference
+manual in the \texttt{doc} directory.
+
+The \JAGS\ source is divided into three main directories:
+\texttt{lib}, \texttt{modules}, and \texttt{terminal}. The
+\texttt{lib} directory contains the \JAGS\ library, which contains all
+the facilities for defining a Bayesian graphical model in the \BUGS\
+language, running the Gibbs sampler and monitoring the sampled
+values. The \JAGS\ library is divided into several convenience
+libraries
+\begin{description}
+\item[sarray] which defines the basic SArray class, modelled on an
+\textsf{S} language array, and its associated classes.
+\item[function] which defines the interface for functions and
+the \texttt{FuncTab} class that allows you to reference them by name.
+\item[distribution] which defines the interface for distribution and
+the \texttt{DistTab} class that allows you to reference them by name.
+\item[graph] which defines the various Node classes used by \JAGS\
+when constructing a Bayesian graphical model, as well as the \texttt{Graph}
+class which is a container for nodes.
+\item[sampler] which defines the interface for Samplers, which update
+stochastic nodes in the graph.
+\item[model] which defines all the classes needed to create a model,
+including monitor classes.
+\item[compiler] which contains the Compiler class and a number of 
+supporting classes designed for an efficient translation of a BUGS-language
+description the model into a \texttt{Graph}.
+\item[rng] which defines the interface for random number generators (RNGs)
+and the factories that create them.
+\item[util] which contains some utility functions used in the rest of
+the \JAGS\ library.
+\end{description}
+The \texttt{Console} class provides a clean interface to the \JAGS\
+library.  The member functions of the \texttt{Console} class conduct
+all of the operations one may wish to do on a Bayesian graphical
+model.  They are designed to catch any exceptions thrown by the
+library and print an informative message to either an output stream or
+an error stream, depending on the result.
+
+The \texttt{modules} directory contains the source code for JAGS
+modules, which contain concrete classes corresponding to the abstract
+classes defined in the \JAGS\ library.
+
+The \texttt{terminal} directory contains the source code for a
+reference front end for the \JAGS\ library, which uses the
+\textsf{Stata}-like syntax described in section
+\ref{section:scripting}.
+
+\chapter{Feedback}
+
+Please send feedback to \url{martyn_plummer@users.sourceforge.net}.
+I am particularly interested in the following problems:
+
+\begin{itemize}
+\item Crashes, including both segmentation faults and uncaught exceptions.
+\item Incomprehensible error messages
+\item Models that should compile, but don't 
+\item Output that cannot be validated against \WinBUGS
+\item Documentation erors
+\end{itemize}
+
+If you want to send a bug report, it must be reproducible. Send the
+model file, the data file, the initial value file and a script file
+that will reproduce the problem. Describe what you think should
+happen, and what did happen.
+
+\chapter{Acknowledgments}
+
+Many thanks to the \BUGS\ development team, without whom \JAGS\ would
+not exist.  Thanks also to Simon Frost for pioneering \JAGS\ on
+Windows and Bill Northcott for getting \JAGS\ on Mac OS X to
+work. Kostas Oikonomou found many bugs while getting \JAGS\ to work on
+Solaris using Sun development tools and libraries.  Bettina Gruen,
+Chris Jackson, Greg Ridgeway and Geoff Evans also provided useful
+feedback.  Special thanks to Jean-Baptiste Denis who has been very
+diligent in providing feedback on JAGS and who kindly proof-read this
+manual.
+
+Testing of \JAGS\ on IRIX 6.5 was carried out on Helix Systems at the
+National Institutes of Health, Bethesda, MD (\url{http://helix.nih.gov}).
+
+\bibliographystyle{plain}
+\bibliography{jags_user_manual}
+
+\clearpage
+
+\appendix
+\chapter{Installation}
+
+\JAGS\ is currently distributed in source form only. If you want to
+use it, you have to compile it.  An exception is made for Microsoft
+Windows, for which a binary distribution is available.
+
+\JAGS\ has been successfully built on GNU/Linux, FreeBSD, Windows XP,
+Mac OS X, IRIX and Solaris. If you manage to build \JAGS\ on any other
+platform, then please let me know at
+\url{martyn_plummer@users.sourceforge.net}.
+
+These instructions assume that you in a unix environment. If you
+are working on Windows, then you should skip straight to section
+\ref{section:windows}
+
+\section{Configuration}
+
+\JAGS\ follows the usual GNU convention of 
+\begin{verbatim}
+./configure
+make
+make install
+\end{verbatim}
+which is described in more detail in the file \texttt{INSTALL} in
+the top-level source directory. On some UNIX platforms, you may
+be required to use GNU make (gmake) instead of the native make
+command.
+
+At configure time you also have the option of defining options such
+as:
+\begin{itemize}
+\item The names of the C, C++, and Fortran compilers.  Although
+  \JAGS\ contains no Fortran code, you are required to define a
+  Fortran compiler so that \JAGS\ modules can be linked against
+  libraries written in Fortran (such as BLAS and LAPACK)
+\item Optimization flags for the C and C++ compilers.  \JAGS\ is
+  optimized by default if the GNU compiler (gcc) is used. Otherwise
+  you must explicitly supply optimization flags.
+\item Installation directories. \JAGS\ conforms to the GNU standards
+  for where files are installed. You can control the installation
+  directories in more detail using the flags that are listed when
+  you type \verb+./configure --help+.
+\end{itemize}
+
+\subsection{Configuration for a private installation}
+
+If you do not have administrative privileges, you may wish to install
+\JAGS\ in your home directory. This can be done with the following
+configuration options
+\begin{verbatim}
+export JAGS_HOME=$HOME/jags #or wherever you want it
+./configure --bindir=$JAGS_HOME/bin --libdir=$JAGS_HOME/lib \
+ --libexecdir=$JAGS_HOME/bin --includedir=$JAGS_HOME/include
+\end{verbatim}
+You then need to modify your PATH environment variable to include
+\verb+$JAGS_HOME/bin+. You may also need to set \verb+LD_LIBRARY_PATH+
+to include \verb+$JAGS_HOME/lib+ (On Linux this is not necessary as
+the location of libjags and libjrmath is hard-coded into the
+\JAGS\ binary).
+
+\section{BLAS and LAPACK}
+\label{section:blas:lapack}
+
+BLAS (Basic Linear Algebra System) and LAPACK (Linear Algebra Pack)
+are two libraries of routines for linear algebra. They are used by the
+multivariate functions and distributions in the \texttt{bugs} module.
+BLAS and LAPACK must be available as {\em shared} libraries. Although
+earlier versions of \JAGS\ could be statically linked, this is no
+longer possible.  Most unix-like operating system vendors supply
+shared libraries that provide the BLAS and LAPACK functions, although
+the libraries may not literally be called ``blas'' and ``lapack''.
+During configuration, a default list of these libraries will be
+checked. If \texttt{configure} cannot find a suitable library, it will
+stop with an error message.
+
+You may use alternative BLAS and LAPACK libraries using the configure
+options \texttt{--with-blas} and \texttt{--with-lapack}
+\begin{verbatim}
+./configure --with-blas="-lmyblas" --with-lapack="-lmylapack"
+\end{verbatim}
+
+If the BLAS and LAPACK libraries are in a directory that is not on the
+default linker path, you must set the \verb+LDFLAGS+ environment variable
+to point to this directory at configure time:
+\begin{verbatim}
+LDFLAGS="-L/path/to/my/libs" ./configure ...
+\end{verbatim}
+If your BLAS and LAPACK libraries depend on other libraries that are
+not on the linker path, you must supply these dependency libraries as
+additional arguments to \texttt{--with-blas} and
+\texttt{--with-lapack} (See section \ref{section:gnulinux} for some
+examples of this).
+
+At runtime, if you have linked \JAGS\ against BLAS or LAPACK in
+a non-standard location, you must supply this location with the
+environment variable \verb+LD_LIBRARY_PATH+, {\em e.g.}
+\begin{verbatim}
+LD_LIBRARY_PATH="/path/to/my/libs:${LD_LIBRARY_PATH}"
+\end{verbatim} %$
+Alternatively, you may hard-code the paths to the blas and lapack
+libraries at compile time. This is compiler and platform-specific,
+but is typically achieved with
+\begin{verbatim}
+LDFLAGS="-L/path/to/my/libs -R/path/to/my/libs
+\end{verbatim}
+
+Note: You should not link to BLAS and LAPACK libraries by giving
+the shared object files as arguments to \texttt{--with-blas} and
+\texttt{--with-lapack}:
+\begin{verbatim}
+#DON'T DO THIS!
+./configure --with-blas=/path/to/my/libblas.so \
+--with-lapack=/path/to/my/liblapack.so 
+\end{verbatim}
+Although \JAGS\ will compile correctly, the resulting \texttt{bugs}
+module will not be linked to your BLAS or LAPACK libraries.  Although
+this can be rectified using the \verb+LD_PRELOAD+ environment variable
+it is not recommended.
+
+\section{Platform-specific notes}
+
+\subsection{GNU/Linux}
+\label{section:gnulinux}
+
+\subsubsection{Fortran compiler}
+
+The GNU FORTRAN compiler changed between gcc 3.x and gcc 4.x from
+\verb+g77+ to \verb+gfortran+. Code produced by the two compilers is
+binary incompatible. If your BLAS and LAPACK libraries are linked
+against \verb+libgfortran+, then they were built with \verb+gfortran+
+and you must also use this to compile \JAGS. 
+
+Most recent GNU/Linux distributions have moved completely to gcc 4.x.
+However, some older systems may have both compilers installed.
+Unfortunately, if \verb+g77+ is on your path then the configure script
+will find it first, and will attempt to use it to build \JAGS. This
+results in a failure to recognize the installed BLAS and LAPACK
+libraries. In this event, set the \verb+F77+ variable at configure time.
+\begin{verbatim}
+F77=gfortran ./configure
+\end{verbatim}
+
+\subsubsection{BLAS and LAPACK}
+
+The {\bf BLAS} and {\bf LAPACK} libraries from Netlib
+(\url{http://www.netlib.org}) should be provided as part of your Linux
+distribution. If your Linux distribution splits packages into ``user''
+and ``developer'' versions, then you must install the developer
+package ({\em e.g.}  \texttt{blas-devel} and \texttt{lapack-devel}).
+
+{\bf Suse Linux Enterprise Server (SLES)} does not include BLAS and
+LAPACK in the main distribution. They are included in the SLES SDK, on
+a set of CD/DVD images which can be downloaded from the Novell web
+site.  See \url{http://developer.novell.com/wiki/index.php/SLES_SDK}
+for more information.
+
+It is quite common for the Netlib implementations of BLAS and LAPACK
+to break when they are compiled with the latest GNU compilers.  Linux
+distributions that use ``bleeding edge'' development tools -- such as
+{\bf Fedora} -- may ship with a broken version of BLAS and
+LAPACK. Normally, this problem is quickly identified and
+fixed. However, you need to take care to use the online updates of the
+BLAS and LAPACK packages from your Linux Distributor, and not rely on
+the version that came on the installation disk.
+
+\subsubsection{ATLAS}
+
+On Fedora Linux, pre-compiled atlas libraries are available via the
+\texttt{atlas} and \texttt{atlas-devel} RPMs.  These RPMs install the
+atlas libraries in the non-standard directory \texttt{/usr/lib/atlas}
+(or \texttt{/usr/lib64/atlas} for 64-bit builds) to avoid conflicts
+with the standard \texttt{blas} and \texttt{lapack} RPMs. To use the
+atlas libraries, you must supply their location using the
+\verb+LDFLAGS+ variable (see section \ref{section:blas:lapack})
+\begin{verbatim}
+./configure LDFLAGS="-L/usr/lib/atlas"
+\end{verbatim}
+Runtime linking to the correct libraries is ensured by the automatic
+addition of \texttt{/usr/lib/atlas} to the linker path (see the file
+\texttt{/etc/ld.so.conf}), so you do not need to set the
+environment variable \verb+LD_LIBRARY_PATH+ at run time.
+
+\subsubsection{AMD Core Math Library}
+\label{section:acml:linux}
+
+The AMD Core Math Library (acml) provides optimized BLAS and LAPACK
+routines for AMD processors. To link \JAGS\ with \texttt{acml}, you
+must supply the \texttt{acml} library, {\em and its dependencies}, as
+arguments to \texttt{--with-blas}.  It is not necessary to set the
+\texttt{--with-lapack} argument as \texttt{acml} provides both sets of
+functions.
+
+For example, to link to the 64-bit acml using gcc 4.0+:
+\begin{verbatim}
+LDFLAGS="-L/opt/acml4.0.0/gfortran64/lib" \
+./configure --with-blas="-lacml -lacml_mv -lgfortran" 
+\end{verbatim}
+The last version that supports gcc 3.4 is \texttt{acml} 3.6.0. When
+using gcc 3.4, link against \texttt{libg2c}.
+\begin{verbatim}
+LDFLAGS="-L/opt/acml3.6.0/gnu64/lib" \
+./configure --with-blas="-lacml -lacml_mv -lg2c"
+\end{verbatim}
+See also section~\ref{section:blas:lapack} for run-time instructions.
+
+\subsubsection{Intel Math Kernel Library}
+
+The Intel Math Kernel library (MKL) provides optimized BLAS and LAPACK
+routines for Intel processors. The structure of the MKL changes with
+each major release, but a configuration that works with both 
+MKL 9.x and MKL 10.0 is
+\begin{verbatim}
+MKLPATH=/opt/intel/mkl/<version>/lib/<arch> \
+LDFLAGS="-L${MKLPATH}" \
+./configure --with-blas="-lmkl -lguide -lpthread" --with-lapack="-lmkl_lapack"
+\end{verbatim}
+
+MKL 10.0 allows an alternative ``pure layered'' linking model, in which
+individual libraries are selected from each layer (interface, threading,
+computational, and RTL) of the MKL architecture.  Using the pure layered
+model, the configuration above can be re-expressed as
+\begin{verbatim}
+./configure \
+--with-blas="-lmkl_intel -lmkl_intel_thread -lmkl_core -lguide -lpthread"
+\end{verbatim}
+or, for 64-bit Linux,
+\begin{verbatim}
+./configure \
+--with-blas="-lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -lguide -lpthread"
+\end{verbatim}
+See the MKL User's guide for details.
+
+\subsubsection{Using Intel Compilers}
+
+\JAGS\ has been successfully built with the Intel C, C++ and Fortran
+compilers.  Naturally, if you are using the Intel compilers, you
+should also link \JAGS\ against MKL, as outlined above. The additional
+configure options required to use the Intel compilers are:
+\begin{verbatim}
+source /opt/intel/fc/10.0.023/bin/ifortvars.sh
+source /opt/intel/cc/10.0.023/bin/iccvars.sh
+CC=icc CXX=icpc F77=ifort ./configure 
+\end{verbatim}
+
+\subsection{OpenSolaris}
+
+\JAGS\ has been successfully built and tested on the Intel x86
+platform under OpenSolaris 2008.05 using the Sun Studio Express 5/08
+compilers.
+\begin{verbatim}
+./configure CC=cc CXX=CC F77=f95 \
+CFLAGS="-xO3 -xarch=sse2" \
+FFLAGS="-xO3 -xarch=sse2" \
+CXXFLAGS="-xO3 -xarch=sse2"
+\end{verbatim}
+The Sun Studio compiler is not optimized by default. Use the option
+\verb+-xO3+ for optimization (NB This is the letter ``O'' not the
+number ``0'') In order to use the optimization flag \verb+-xO3+ you
+must specify the architecture with the \verb+-xarch+ flag. The options
+above are for an Intel processor with SSE2 instructions. This must be
+adapted to your own platform.
+
+To compile a 64-bit version of JAGS, add the option \verb+-m64+ to
+all the compiler flags.
+
+Solaris provides two versions of the C++ standard library:
+\texttt{libCrun}, which is the default, and \texttt{libstlport4},
+which conforms more closely to the C++ standard. \JAGS\ may be linked
+to the stlport4 library by adding the options
+\verb+-library=stlport4 -lCrun+ to \verb+CXXFLAGS+.
+
+The configure script automatically detects the Sun Performance library,
+which implements the BLAS/LAPACK functions.  Automatic detection may
+not work on older versions of Sun Studio, which used a different syntax
+for specifying this library.  In this case, you may need to use the
+configure option
+\begin{verbatim}
+--with-blas="-xlic_lib=sunperf -lsunmath"
+\end{verbatim}
+
+\subsubsection{Using acml}
+
+AMD provides a version of their Core Math Library (acml) for
+Solaris. To use this library instead of the Sun Performance library
+add the following configure options (changing paths as appropriate):
+\begin{verbatim}
+--with-blas="-lacml -lacml_mv -lfsu" \
+LDFLAGS="-L/opt/acml4.1.0/sun64/lib \
+-R/opt/acml4.1.0/sun64/lib:/opt/SunStudioExpress/lib"
+\end{verbatim}
+The acml library is only available in 64-bit mode, so the option
+\verb+-m64+ must also be added to all the compiler flags.
+
+As with using acml on Linux (section \ref{section:acml:linux}), the
+configure option \verb+--with-blas+ must include not only the acml
+library, but also its dependencies. The \verb+LDFLAGS+ option \verb+-R+
+hard-codes the paths to these libraries into the JAGS modules that
+require them.
+
+\subsection{IRIX}
+
+\JAGS\ has been successfully built using the MIPSpro 7.4 compiler on
+IRIX 6.5. The following configure options were used:
+\begin{verbatim}
+./configure CC=cc CXX=CC F77=f77 \
+CFLAGS="-O2 -g2 -OPT:IEEE_NaN_inf=ON" \
+CXXFLAGS="-O2 -g2 -OPT:IEEE_NaN_inf=ON" 
+\end{verbatim}
+and \JAGS\ was built with \verb+gmake+ (GNU make).
+
+BLAS and LAPACK functions on IRIX are provided by the Scientific
+Computing Software library (\verb+scs+). The presence of this library
+is detected automatically by the configure script.
+
+When using the MIPSpro compiler, optimization flags must be given
+explicitly at configure time. If this is not done, then \JAGS\ will
+not be optimized at all and will run slowly.
+
+\subsection{Mac OS X: instructions from Bill Northcott}
+
+If trying to build software on Mac OS X you really need to use Leopard
+(10.5.x). Unless otherwise stated these instruction assume Leopard
+(10.5.x). The open source support has improved greatly in recent
+releases. You also need the latest version of Apple's Xcode
+development tools. The current version is Xcode 3.1.  Earlier versions 
+have serious bugs which affect R and
+\JAGS.  Xcode is available as a free download from
+\url{http://developer.apple.com}. You need to set up a free login to
+ADC. The Apple developer tools do not include a Fortran
+compiler. Without Fortran, you will not be able to build \JAGS.
+
+For instructions for building on Tiger or for older versions of \R\ see  
+previous versions of this manual.
+
+The GNU gfortran Fortran compiler is included in the \R\ binary  
+distribution available on CRAN. Install the \R\ binary and select all  
+the optional components in the `Customize' step of the installer.  
+These instructions assume R-2.7.x.  
+
+The default C/C++ compiler for Leopard is gcc-4.x. Xcode 3.1 also
+includes gcc-4.2 and llvm-gcc4.2.  The code has been successfully
+built with these optional compilers but will only run on Leopard.
+llvm is being actively developed by Apple and may produce better code.
+
+MacOS X 10.2 and onwards include optimised versions of the BLAS and
+LAPACK libraries.  So nothing is needed for Leopard. Optimisation
+continues and Apple are working on using GPUs for this sort of math.
+Make sure your OS is up to date.
+
+To ensure the \JAGS\ configure script can find the Fortran compiler
+for a bash shell
+\begin{verbatim}
+export F77=/usr/local/bin/gfortran
+\end{verbatim}
+or for tchsh
+\begin{verbatim}
+setenv F77 /usr/local/bin/gfortran
+\end{verbatim}
+
+To build \JAGS\ unpack the source code and cd into the source  
+directory. Type the following:
+\begin{verbatim}
+./configure
+make
+\end{verbatim}
+(if you have multiple CPUs try \verb+make -j 2+ or
+\verb+make -j 4+. It may need to be issued more than once)
+\begin{verbatim}
+sudo make install
+\end{verbatim}
+
+You need to ensure \texttt{/usr/local/bin} is in your PATH in order
+for `jags' to work from a shell prompt.
+
+This will build the default architecture for you Mac: ppc on a G4 or
+G5 and i386 on an Intel Mac.  If you want to build 64bit versions or
+multiple architecture fat binaries, you will need to ensure that
+libtool in the JAGS sources is version 1.5.24 or later.  Then you can
+use configure commands like
+\begin{verbatim}
+CXXFLAGS="-O3 -arch i386 -arch x86_64" ./configure
+\end{verbatim}
+
+Make will then build fat binaries.  See the R Mac developers page 
+\url{http://r.research.att.com/} for instructions to build fat R packages.
+
+
+\subsection{Windows}
+\label{section:windows}
+
+These instructions use MinGW, The Minimalist GNU system for Windows.
+You need some familiarity with Unix in order to follow the build
+instructions but, once built, \JAGS\ can be installed on any PC
+running windows, where it can be run from the Windows command prompt.
+
+\subsubsection*{Preparing the build environment}
+
+You need to install the following packages
+\begin{itemize}
+\item MinGW 
+\item MSYS  
+\item NSIS  
+\end{itemize}
+
+MinGW (Minimalist GNU for Windows) is a build environment for Windows.
+There is an official release from \url{http://www.mingw.org}.
+However, we used the MinGW distribution that comes as part of the R
+tools for windows (\url{http://www.murdoch-sutherland.com/Rtools}),
+since the compilers in this distribution match the compilers used to
+build the binary distribution of R for windows, as well as the R
+packages distributed via CRAN (\url{http://cran.r-project.org}).
+
+We used version 2.7 of \verb+Rtools+.  You only need to install the
+``MingGW components and tools'', not the other components of
+\verb+Rtools+. The installer will also ask if you wish to modify the
+Windows PATH. You do not need this.
+
+MSYS (the Minimal SYStem) provides a bash shell for you to build Unix
+software. These instructions were tested with MSYS 1.0.10.  It can be
+downloaded, as a self-extracting executable, from the MinGW web site
+\url{http://www.mingw.org}. At the end of the installation process, it
+will launch a post-install script that will allow you to use MSYS in
+conjunction with MinGW. Note that you do {\em not} need the MSYS
+developer toolkit (DTK) to compile \JAGS.
+
+MSYS creates a home directory for you in
+\verb+c:\msys\<version>\home\<username>+, where \texttt{<version>} is
+the version of MSYS and \texttt{<username>} is your user name under
+Windows. You will need to copy and paste the source files for LAPACK
+and JAGS into this directory.
+
+The Nullsoft Scriptable Install System
+(\url{http:\\nsis.sourceforge.net}) allows you to create a
+self-extracting executable that installs \JAGS\ on the target PC.
+These instructions were tested with NSIS 2.33.
+
+\subsubsection*{LAPACK}
+
+Download the LAPACK source file \verb+lapack-lite-3.1.1.tgz+ from
+\url{http://www.netlib.org/lapack} and unpack it in your home
+directory.
+\begin{verbatim}
+tar xfvz lapack-lite-3.1.1.tgz
+cd lapack-lite-3.1.1
+\end{verbatim}
+Replace the file \texttt{make.inc} with
+\texttt{INSTALL/make.inc.LINUX}.  Then edit \texttt{make.inc},
+replacing the line
+\begin{verbatim}
+PLAT = _LINUX
+\end{verbatim}
+with something more sensible, like
+\begin{verbatim}
+PLAT = _MinGW
+\end{verbatim} 
+If using gcc 4.2 (the version that comes with Rtools 2.7), you need
+to set the \verb+FORTRAN+ and \verb+LOADER+ variables so that they use
+gfortran.
+\begin{verbatim}
+FORTRAN = gfortran
+LOADER = gfortran
+\end{verbatim}
+and uncomment the line
+\begin{verbatim}
+TIME = INT_ETIME
+\end{verbatim}
+
+Edit the file \texttt{Makefile} so that it builds the BLAS library. The
+line that starts \texttt{lib:} should read
+\begin{verbatim}
+lib: blaslib lapacklib tmglib
+\end{verbatim}
+Type
+\begin{verbatim}
+make 
+\end{verbatim}
+The compilation process is slow. Eventually, it will create two static
+libraries \verb+blas_MinGW.a+ and \verb+lapack_MingGW.a+. These are
+insufficient for building \JAGS: you need to create dynamic link
+library (DLL) for each one.
+
+First create a definition file \verb+blas.def+ that exports all the
+symbols from the BLAS library
+\begin{verbatim}
+dlltool -z blas.def --export-all-symbols blas_MinGW.a
+\end{verbatim}
+Then link this with the static library to create a DLL
+(\verb+blas.dll+) and an import library (\verb+libblas.dll.a+)
+\begin{verbatim}
+gcc -shared -o blas.dll -Wl,--out-implib=libblas.dll.a \
+blas.def blas_MinGW.a -lgfortran
+\end{verbatim}
+(If using gcc 3.4, the library should be linked with \verb+-lg2c+ 
+instead of \verb+-lgfortran+)
+ 
+Repeat the same steps for the LAPACK library, creating an import library
+(\verb+liblapack.dll.a+) and DLL (\verb+lapack.dll+)
+\begin{verbatim}
+dlltool -z lapack.def --export-all-symbols lapack_MinGW.a
+gcc -shared -o lapack.dll -Wl,--out-implib=liblapack.dll.a \
+lapack.def lapack_MinGW.a  -L./ -lblas -lgfortran
+\end{verbatim}
+
+\subsubsection{Compiling \JAGS}
+
+Unpack the JAGS source
+\begin{verbatim}
+tar xfvz JAGS-1.0.3.tar.gz
+cd JAGS-1.0.3
+\end{verbatim}
+and configure JAGS
+\begin{verbatim}
+./configure LDFLAGS="-L/path/to/import/libs/" 
+\end{verbatim}
+where \verb+/path/to/import/libs+ is a directory that contains the
+import libraries (\verb+libblas.dll.a+ and \verb+liblapack.dll.a+).
+This must be an {\em absolute} path name, and not relative to
+the JAGS build directory.
+
+Normally you will want to distribute the blas and lapack libraries
+with JAGS.  In this case, put the DLLs and import libraries in the
+sub-directory \verb+win32/lapack+. They will be detected and included
+with the distribution.
+
+Make sure that the file \verb+makensis.exe+, provided by NSIS, is in
+your PATH. For a typical installation of NSIS:
+\begin{verbatim}
+PATH=$PATH:/c/Program\ files/NSIS
+\end{verbatim}
+Then type
+\begin{verbatim}
+make win32-installer
+\end{verbatim}
+The self extracting archive will be in the subdirectory \verb+win32+.
+
+Note that you must go straight from the configure step to \texttt{make
+  win32-installer} without the usual step of typing \texttt{make} on
+its own.  The \texttt{win32-installer} make target resets the
+installation prefix, and this will cause an error if the source is
+already compiled.
+
+\end{document}
+
+
+
