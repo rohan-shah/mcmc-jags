@@ -67,13 +67,11 @@ bool checkScale(StochasticNode* snode, Graph const &graph, bool fixed)
 {
     vector<StochasticNode const *> stoch_nodes;
     vector<DeterministicNode *> dtrm_nodes;
-    Sampler::classifyChildren(snodes, graph, stoch_nodes, dtrm_nodes);
+    Sampler::classifyChildren(vector<StochasticNode*>(1, snode), 
+			      graph, stoch_nodes, dtrm_nodes);
     
     set<Node const*> ancestors;
-    for (unsigned int i = 0; i < snodes.size(); ++i) {
-	//Stochastic nodes are trivial (fixed) scale functions of themselves
-	ancestors.insert(snodes[i]);
-    }
+    ancestors.insert(snode);
 
     //Start off looking for scale transformations, then fall back on
     //scale mixture transformations if fixed is false.
@@ -110,13 +108,11 @@ bool checkPower(StochasticNode* snode, Graph const &graph, bool fixed)
 {
     vector<StochasticNode const *> stoch_nodes;
     vector<DeterministicNode *> dtrm_nodes;
-    Sampler::classifyChildren(snodes, graph, stoch_nodes, dtrm_nodes);
+    Sampler::classifyChildren(vector<StochasticNode*>(1,snode), graph, 
+			      stoch_nodes, dtrm_nodes);
 
     set<Node const*> ancestors;
-    for (unsigned int i = 0; i < snodes.size(); ++i) {
-	//Stochastic nodes are trivial (fixed) power functions of themselves
-	ancestors.insert(snodes[i]);
-    }
+    ancestors.insert(snode);
     
     for (unsigned int j = 0; j < dtrm_nodes.size(); ++j) {
 	if (dtrm_nodes[j]->isClosed(ancestors, DNODE_POWER, fixed)) {
