@@ -5,4 +5,9 @@ To make the installer, type "make win32-installer" in the top-level build
 directory after configuration. Full details are given in the JAGS
 user manual.
 
+The File jags.nsi contains is an NSIS script file for building the
+installer (and uninstaller). This script uses the header AdvUninstLog.nsh
+which is not distributed with NSIS itself. Therefore, a copy is included
+in the JAGS distribution.
+
 See also lapack/README.LAPACK
