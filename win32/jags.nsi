@@ -1,26 +1,47 @@
-!include "MUI.nsh"
+!define APP_NAME "JAGS"
+!define PUBLISHER "JAGS"
 
-Name "JAGS"
-OutFile "jags-${VERSION}-setup.exe"
-InstallDir "$PROGRAMFILES\JAGS\JAGS-${VERSION}"
-InstallDirRegKey HKEY_LOCAL_MACHINE "SOFTWARE\JAGS\JAGS-${VERSION}" ""
-RequestExecutionLevel admin
+!define MULTIUSER_MUI
+!define MULTIUSER_EXECUTIONLEVEL Highest
+!define MULTIUSER_INSTALLMODE_COMMANDLINE
+
+!define INSTDIR_REG_ROOT "SHELL_CONTEXT"
+!define INSTDIR_REG_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}-${VERSION}"
+
+!define MULTIUSER_INSTALLMODE_INSTDIR "${APP_NAME}-${VERSION}"
+!define MULTIUSER_INSTALLMODE_INSTDIR_REGISTRY_KEY "SOFTWARE\${PUBLISHER}\${APP_NAME}-${VERSION}"
+!define MULTIUSER_INSTDIR_REGISTRY_VALUENAME "InstallDir"
+
+!include AdvUninstLog.nsh
+!include MultiUser.nsh
+!include "MUI2.nsh"
+
+Name "${APP_NAME} ${VERSION}"
+OutFile "${APP_NAME}-${VERSION}-setup.exe"
 
 Var SM_FOLDER
-Var MUI_TEMP
+
+!define APP_REG_KEY "Software\${PUBLISHER}\${APP_NAME}-${VERSION}"
+!define PUB_REG_KEY "Software\${PUBLISHER}"
+
+;Start Menu Folder Page Configuration
+!define MUI_STARTMENUPAGE_DEFAULTFOLDER "${APP_NAME}"
+!define MUI_STARTMENUPAGE_REGISTRY_ROOT "${INSTDIR_REG_ROOT}" 
+!define MUI_STARTMENUPAGE_REGISTRY_KEY "${APP_REG_KEY}"
+!define MUI_STARTMENUPAGE_REGISTRY_VALUENAME "StartMenuFolder"
+
+; Installer pages
+
+!insertmacro UNATTENDED_UNINSTALL
 
 !insertmacro MUI_PAGE_WELCOME
 !insertmacro MUI_PAGE_LICENSE "../COPYING"
 !insertmacro MUI_PAGE_DIRECTORY
-
-;Start Menu Folder Page Configuration
-!define MUI_STARTMENUPAGE_REGISTRY_ROOT "HKCU" 
-!define MUI_STARTMENUPAGE_REGISTRY_KEY "SOFTWARE\JAGS\JAGS-${VERSION}" 
-!define MUI_STARTMENUPAGE_REGISTRY_VALUENAME "Start Menu Folder"
-
 !insertmacro MUI_PAGE_STARTMENU Application $SM_FOLDER
 !insertmacro MUI_PAGE_INSTFILES
 !insertmacro MUI_PAGE_FINISH
+
+; Uninstaller pages
 
 !insertmacro MUI_UNPAGE_CONFIRM
 !insertmacro MUI_UNPAGE_INSTFILES
@@ -31,35 +52,31 @@ Var MUI_TEMP
 Section # Default section
 
    SetOutPath "$INSTDIR"
+   !insertmacro UNINSTALL.LOG_OPEN_INSTALL
    File /r inst\bin
+   !insertmacro UNINSTALL.LOG_CLOSE_INSTALL
 
    SetOutPath "$INSTDIR\bin"
+   !insertmacro UNINSTALL.LOG_OPEN_INSTALL
    File inst\libexec\jags-terminal.exe
+   !insertmacro UNINSTALL.LOG_CLOSE_INSTALL
 
    SetOutPath "$INSTDIR\lib"
+   !insertmacro UNINSTALL.LOG_OPEN_INSTALL
    File inst\lib\*.dll.a
    File inst\lib\*.la
+   !insertmacro UNINSTALL.LOG_CLOSE_INSTALL
 
    SetOutPath "$INSTDIR\include"
+   !insertmacro UNINSTALL.LOG_OPEN_INSTALL
    File inst\include\JAGS\*.h
    File /r inst\include\JAGS\*
+   !insertmacro UNINSTALL.LOG_CLOSE_INSTALL
 
    SetOutPath "$INSTDIR\modules-${VERSION}"
-   File inst\lib\JAGS\modules-${VERSION}\basemod.dll
-   File inst\lib\JAGS\modules-${VERSION}\basemod.dll.a
-   File inst\lib\JAGS\modules-${VERSION}\basemod.la
-   File inst\lib\JAGS\modules-${VERSION}\bugs.dll
-   File inst\lib\JAGS\modules-${VERSION}\bugs.dll.a
-   File inst\lib\JAGS\modules-${VERSION}\bugs.la
-   File inst\lib\JAGS\modules-${VERSION}\mix.dll
-   File inst\lib\JAGS\modules-${VERSION}\mix.dll.a
-   File inst\lib\JAGS\modules-${VERSION}\mix.la
-   File inst\lib\JAGS\modules-${VERSION}\msm.dll
-   File inst\lib\JAGS\modules-${VERSION}\msm.dll.a
-   File inst\lib\JAGS\modules-${VERSION}\msm.la
-   File inst\lib\JAGS\modules-${VERSION}\dic.dll
-   File inst\lib\JAGS\modules-${VERSION}\dic.dll.a
-   File inst\lib\JAGS\modules-${VERSION}\dic.la
+   !insertmacro UNINSTALL.LOG_OPEN_INSTALL
+   File /r inst\lib\JAGS\modules-${VERSION}\*
+   !insertmacro UNINSTALL.LOG_CLOSE_INSTALL
 
    Push @JAGS_HOME@               #text to be replaced
    Push $INSTDIR                  #replace with
@@ -68,10 +85,16 @@ Section # Default section
    Push $INSTDIR\bin\jags.bat     #file to replace in
    Call AdvReplaceInFile
 
-   WriteRegStr HKLM "SOFTWARE\JAGS\JAGS-${VERSION}" "Install_Dir" "$INSTDIR"
-   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\JAGS-${VERSION}" "DisplayName" "JAGS ${VERSION}"
-   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\JAGS-${VERSION}" "UninstallString" '"$INSTDIR\uninst.exe"'
-   WriteUninstaller "$INSTDIR\uninst.exe"
+   Push @VERSION@               #text to be replaced
+   Push ${VERSION}              #replace with
+   Push all                     #replace all occurrences
+   Push all                     #replace all occurrences
+   Push $INSTDIR\bin\jags.bat   #file to replace in
+   Call AdvReplaceInFile
+
+   WriteRegStr ${INSTDIR_REG_ROOT} "${INSTDIR_REG_KEY}" "InstallDir" "$INSTDIR"
+   WriteRegStr ${INSTDIR_REG_ROOT} "${INSTDIR_REG_KEY}" "DisplayName" "JAGS ${VERSION}"
+   WriteRegStr ${INSTDIR_REG_ROOT} "${INSTDIR_REG_KEY}" "UninstallString" "${UNINST_EXE}"
 
    !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
       CreateDirectory "$SMPROGRAMS\$SM_FOLDER"
@@ -80,64 +103,62 @@ Section # Default section
       SetOutPath "%USERPROFILE%"
       CreateShortCut "$SMPROGRAMS\$SM_FOLDER\JAGS ${VERSION}.lnk" "$INSTDIR\bin\jags.bat"
       SetOutPath ""
-      CreateShortCut "$SMPROGRAMS\$SM_FOLDER\Uninstall JAGS ${VERSION}.lnk" "$INSTDIR\uninst.exe"
+      ;create shortcut for uninstaller always use ${UNINST_EXE} instead of uninstall.exe
+      CreateShortCut "$SMPROGRAMS\$SM_FOLDER\Uninstall JAGS ${VERSION}.lnk" "${UNINST_EXE}"
    !insertmacro MUI_STARTMENU_WRITE_END
 
 SectionEnd #End of default section
 
+Function .onInit
+   !insertmacro MULTIUSER_INIT
+   !insertmacro UNINSTALL.LOG_PREPARE_INSTALL
+FunctionEnd
+
+Function .onInstSuccess
+   ;create/update log always within .onInstSuccess function
+   !insertmacro UNINSTALL.LOG_UPDATE_INSTALL
+FunctionEnd
+
 Section "Uninstall"
 
-  #Hopefully the user didn't put anything in these directories!
-  RMDir /r "$INSTDIR\bin"
-  RMDir /r "$INSTDIR\lib"
-  RMDir /r "$INSTDIR\include"
-  #Modules have to be handled more carefully, in case there are 
-  #custom user-installed modules-${VERSION}
-  Delete "$INSTDIR\modules-${VERSION}\basemod.dll"
-  Delete "$INSTDIR\modules-${VERSION}\basemod.dll.a"
-  Delete "$INSTDIR\modules-${VERSION}\basemod.la"
-  Delete "$INSTDIR\modules-${VERSION}\bugs.dll"
-  Delete "$INSTDIR\modules-${VERSION}\bugs.dll.a"
-  Delete "$INSTDIR\modules-${VERSION}\bugs.la"
-  Delete "$INSTDIR\modules-${VERSION}\mix.dll"
-  Delete "$INSTDIR\modules-${VERSION}\mix.dll.a"
-  Delete "$INSTDIR\modules-${VERSION}\mix.la"
-  Delete "$INSTDIR\modules-${VERSION}\msm.dll"
-  Delete "$INSTDIR\modules-${VERSION}\msm.dll.a"
-  Delete "$INSTDIR\modules-${VERSION}\msm.la"
-  Delete "$INSTDIR\modules-${VERSION}\dic.dll"
-  Delete "$INSTDIR\modules-${VERSION}\dic.dll.a"
-  Delete "$INSTDIR\modules-${VERSION}\dic.la"
-  RMDir $INSTDIR\modules-${VERSION}"
-  #Uninstaller
-  Delete "$INSTDIR\uninst.exe"
+   ;uninstall from path, must be repeated for every install logged path individual
+   !insertmacro UNINSTALL.LOG_UNINSTALL "$INSTDIR"
+   !insertmacro UNINSTALL.LOG_UNINSTALL "$INSTDIR\bin"
+   !insertmacro UNINSTALL.LOG_UNINSTALL "$INSTDIR\lib"
+   !insertmacro UNINSTALL.LOG_UNINSTALL "$INSTDIR\include"
+   !insertmacro UNINSTALL.LOG_UNINSTALL "$INSTDIR\modules-${VERSION}"
+   !insertmacro UNINSTALL.LOG_END_UNINSTALL
 
-  RMDir "$INSTDIR"
+   RMDir "$INSTDIR"
   
-  !insertmacro MUI_STARTMENU_GETFOLDER Application $MUI_TEMP
+   !insertmacro MUI_STARTMENU_GETFOLDER Application $SM_FOLDER
     
-  Delete "$SMPROGRAMS\$MUI_TEMP\JAGS ${VERSION}.lnk"
-  Delete "$SMPROGRAMS\$MUI_TEMP\Uninstall JAGS ${VERSION}.lnk"
+   Delete "$SMPROGRAMS\$SM_FOLDER\JAGS ${VERSION}.lnk"
+   Delete "$SMPROGRAMS\$SM_FOLDER\Uninstall JAGS ${VERSION}.lnk"
   
-  ;Delete empty start menu parent diretories
-  StrCpy $MUI_TEMP "$SMPROGRAMS\$MUI_TEMP"
+   ;Delete empty start menu parent diretories
+   StrCpy $SM_FOLDER "$SMPROGRAMS\$SM_FOLDER"
  
-  startMenuDeleteLoop:
-	ClearErrors
-    RMDir $MUI_TEMP
-    GetFullPathName $MUI_TEMP "$MUI_TEMP\.."
+   startMenuDeleteLoop:
+      ClearErrors
+      RMDir $SM_FOLDER
+   GetFullPathName $SM_FOLDER "$SM_FOLDER\.."
     
-    IfErrors startMenuDeleteLoopDone
+   IfErrors startMenuDeleteLoopDone
   
-    StrCmp $MUI_TEMP $SMPROGRAMS startMenuDeleteLoopDone startMenuDeleteLoop
-  startMenuDeleteLoopDone:
+   StrCmp $SM_FOLDER $SMPROGRAMS startMenuDeleteLoopDone startMenuDeleteLoop
+   startMenuDeleteLoopDone:
 
-  DeleteRegKey HKLM "SOFTWARE\JAGS\JAGS-${VERSION}"
-  DeleteRegKey HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\JAGS-${VERSION}"
-  DeleteRegKey /ifempty HKCU "SOFTWARE\JAGS\JAGS-${VERSION}"
-  DeleteRegKey /ifempty HKCU "SOFTWARE\JAGS"
+   DeleteRegKey /ifempty ${INSTDIR_REG_ROOT} "${INSTDIR_REG_KEY}"
+   DeleteRegKey /ifempty ${INSTDIR_REG_ROOT} "${APP_REG_KEY}"
+   DeleteRegKey /ifempty ${INSTDIR_REG_ROOT} "${PUB_REG_KEY}"
 
 SectionEnd # end of uninstall section
+
+Function un.onInit
+   !insertmacro MULTIUSER_UNINIT
+   !insertmacro UNINSTALL.LOG_BEGIN_UNINSTALL
+FunctionEnd
 
 #This is a function taken from the NSIS Wiki to replace one text string
 #with another.  It doesn't work properly if there is more than one instance
