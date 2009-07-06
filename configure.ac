@@ -4,13 +4,17 @@ AC_PREREQ(2.63)
 
 AC_INIT([JAGS],[2.0.0],[martyn_plummer@users.sourceforge.net],[JAGS])
 AC_CANONICAL_HOST
-AC_CONFIG_SRCDIR(src/lib/Console.cc)
+AC_CONFIG_SRCDIR([src/lib/Console.cc])
 AC_CONFIG_MACRO_DIR([m4])
-AM_INIT_AUTOMAKE(AC_PACKAGE_NAME, AC_PACKAGE_VERSION)
+AC_CONFIG_HEADERS([config.h])
+AM_INIT_AUTOMAKE
 
+dnl libtool and ltdl configuration
+LT_PREREQ(2.2.6)
 LT_CONFIG_LTDL_DIR([libltdl])
-LT_INIT
-LTDL_INIT
+LT_INIT([dlopen disable-static win32-dll])
+LTDL_INIT([recursive])
+
 
 AC_PROG_CC
 AC_PROG_CXX
@@ -34,15 +38,6 @@ case "${host_os}" in
     win=false ;;
 esac
 AM_CONDITIONAL(WINDOWS, test x$win = xtrue)
-
-dnl libtool dynamic loading
-AC_DISABLE_STATIC
-AC_LIBTOOL_DLOPEN
-AC_LIBLTDL_CONVENIENCE
-AC_PROG_LIBTOOL
-dnl AC_CONFIG_SUBDIRS(libltdl)
-AC_SUBST(INCLTDL)
-AC_SUBST(LIBLTDL)
 
 dnl fortran stuff
 AC_F77_WRAPPERS
@@ -91,12 +86,12 @@ dnl End Rmath stuff
 jagsmoddir=${libdir}/JAGS/modules-${PACKAGE_VERSION}
 AC_SUBST(jagsmoddir)
 
-AC_CONFIG_HEADERS([src/include/config.h])
 AC_CONFIG_FILES([
   Makefile
   m4/Makefile
   etc/Makefile
   etc/jags.pc
+  libltdl/Makefile
   src/Makefile
   src/lib/Makefile
   src/lib/version.cc
