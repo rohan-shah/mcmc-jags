@@ -5,7 +5,6 @@ AC_PREREQ(2.63)
 AC_INIT([JAGS],[2.0.0],[martyn_plummer@users.sourceforge.net],[JAGS])
 AC_CANONICAL_HOST
 AC_CONFIG_SRCDIR(src/lib/Console.cc)
-AC_CONFIG_AUX_DIR([libltdl/config])
 AC_CONFIG_MACRO_DIR([m4])
 AM_INIT_AUTOMAKE(AC_PACKAGE_NAME, AC_PACKAGE_VERSION)
 
