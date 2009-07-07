@@ -21,7 +21,8 @@ namespace cut {
 	bool adaptOff();
 	bool isAdaptive() const;
 	std::string name() const;
-	static bool cansample(StochasticNode* cutnode, Graph const &graph);
+	static bool cansample(vector<StochasticNode*> const &cutnodes, 
+			      Graph const &graph);
     };
     
 }

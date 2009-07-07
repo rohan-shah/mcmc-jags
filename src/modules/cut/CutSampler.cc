@@ -66,21 +66,23 @@ namespace cut {
 	return "CutSampler";
     }
 
-    bool CutSampler::cansample(StochasticNode *cutnode, Graph const &graph)
+    bool CutSampler::cansample(vector<StochasticNode*> const &cutnodes, 
+			       Graph const &graph)
     {
-	//Check that stochastic children within the graph are all continuous
-	//with fixed support
+	//Check that unobserved stochastic children within the graph
+	//are all continuous with fixed support
 
 	set<StochasticNode*> children;
-	Sampler::getStochasticChildren(vector<StochasticNode*>(1, node), 
-				       graph, children);
+	Sampler::getStochasticChildren(cutnodes, graph, children);
 	for (set<StochasticNode*>::const_iterator p = children.begin();
 	     p != children.end(); ++p)
 	{
-	    if ((*p)->isDiscreteValued())
-		return false;
-	    if (!(*p)->isSupportFixed())
-		return false;
+	    if (!(*p)->isObserved()) {
+		if ((*p)->isDiscreteValued())
+		    return false;
+		if (!(*p)->isSupportFixed())
+		    return false;
+	    }
 	}
 	return true;
     }
