@@ -73,7 +73,7 @@ Section # Default section
    File /r inst\include\JAGS\*
    !insertmacro UNINSTALL.LOG_CLOSE_INSTALL
 
-   SetOutPath "$INSTDIR\modules-${VERSION}"
+   SetOutPath "$INSTDIR\modules"
    !insertmacro UNINSTALL.LOG_OPEN_INSTALL
    File /r inst\lib\JAGS\modules-${VERSION}\*
    !insertmacro UNINSTALL.LOG_CLOSE_INSTALL
@@ -85,16 +85,10 @@ Section # Default section
    Push $INSTDIR\bin\jags.bat     #file to replace in
    Call AdvReplaceInFile
 
-   Push @VERSION@               #text to be replaced
-   Push ${VERSION}              #replace with
-   Push all                     #replace all occurrences
-   Push all                     #replace all occurrences
-   Push $INSTDIR\bin\jags.bat   #file to replace in
-   Call AdvReplaceInFile
-
    WriteRegStr ${INSTDIR_REG_ROOT} "${INSTDIR_REG_KEY}" "InstallDir" "$INSTDIR"
    WriteRegStr ${INSTDIR_REG_ROOT} "${INSTDIR_REG_KEY}" "DisplayName" "JAGS ${VERSION}"
    WriteRegStr ${INSTDIR_REG_ROOT} "${INSTDIR_REG_KEY}" "UninstallString" "${UNINST_EXE}"
+   WriteRegStr ${INSTDIR_REG_ROOT} "${APP_REG_KEY}"     "InstallDir" "$INSTDIR"
 
    !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
       CreateDirectory "$SMPROGRAMS\$SM_FOLDER"
@@ -126,7 +120,7 @@ Section "Uninstall"
    !insertmacro UNINSTALL.LOG_UNINSTALL "$INSTDIR\bin"
    !insertmacro UNINSTALL.LOG_UNINSTALL "$INSTDIR\lib"
    !insertmacro UNINSTALL.LOG_UNINSTALL "$INSTDIR\include"
-   !insertmacro UNINSTALL.LOG_UNINSTALL "$INSTDIR\modules-${VERSION}"
+   !insertmacro UNINSTALL.LOG_UNINSTALL "$INSTDIR\modules"
    !insertmacro UNINSTALL.LOG_END_UNINSTALL
 
    RMDir "$INSTDIR"
