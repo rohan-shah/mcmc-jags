@@ -405,6 +405,12 @@ getMixtureNode3(NodeArray *array, vector<SSI> const &limits, Compiler *compiler)
 	}
     }
 
+    if (sparents.size() > 10) {
+	//This algorithm grinds to a halt with too many stochastic parents.
+	//So bail out after 10
+	return 0;
+    }
+
     for (set<StochasticNode const*>::const_iterator p = sparents.begin();
 	 p != sparents.end(); ++p)
     {
@@ -641,7 +647,10 @@ Node * getMixtureNode(ParseTree const * var, Compiler *compiler)
     //Check validity of subset index
     if (ssi.node) {
       if (!ssi.node->isDiscreteValued()) {
-         throw NodeError(ssi.node, "Invalid index: not discrete-valued");
+         throw NodeError(ssi.node, "Continuous node used as index");
+      }
+      if (ssi.node->length() != 1) {
+         throw NodeError(ssi.node, "Vector node used as index");
       }
     }
     else {
