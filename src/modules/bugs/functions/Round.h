@@ -16,6 +16,7 @@ namespace bugs {
     public:
 	Round ();
 	double evaluateScalar(std::vector<double const *> const &args) const;
+	bool isDiscreteValued(std::vector<bool> const &mask) const;
     };
 }
 

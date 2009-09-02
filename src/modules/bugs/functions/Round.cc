@@ -18,4 +18,8 @@ namespace bugs {
 	return floor(*args[0] + 0.5);
     }
 
+    bool Round::isDiscreteValued(vector<bool> const &mask) const
+    {
+	return true;
+    }
 }
