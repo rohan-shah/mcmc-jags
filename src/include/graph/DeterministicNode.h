@@ -7,29 +7,30 @@
  * @short Closed classes of deterministic nodes
  *
  * A deterministic node may be considered as a function of any of its
- * ancestors.  Some classes of function are closed under composition:
- * if g() and f() both belong to the class, then so does g(f()). This
- * property is used by some Samplers to determine whether a node, or
- * block of nodes, can be sampled.
+ * deterministic ancestors.  Some classes of function are closed under
+ * composition: if g() and f() both belong to the class, then so does
+ * g(f()). This property is used by some Samplers to determine whether
+ * a node, or block of nodes, can be sampled.
  *
  * DNODE_LINEAR denotes a linear function of the ancestor nodes X =
- * (X1, ... Nn). A linear function takes the form A + B %*% X1 + B2
- * %*% X2 + ... * + Bn %*% * Xn. 
+ * (X1, ... XN). A linear function takes the form A + B %*% X1 + B2
+ * %*% X2 + ... * + BN %*% * XN. 
  *
  * DNODE_SCALE denotes a scale function of the single ancestor node X.
- * This is a function of the form B*X.
+ * This is a function of the form B %*% X.
  *
  * DNODE_SCALE_MIX denotes a generalization of the scale function
- * class used in mixture models. These functions are linear functions
- * of the form A + B * X * where at least one of A or B is zero.
+ * class used in mixture models. Scale mixture functions are linear
+ * functions of the form A + B %*% X, where at least one of
+ * A or B is zero.
  *
- * DNODE_POWER denostes a power function of the single ancestor node
- * X.  This is a function of the form A * X^B.  Power functions become
- * linear functions if we transform to a log scale: i.e. if Y=A*X^B
- * and A > 0, then log(Y) is a linear function of log(X).
+ * DNODE_POWER denotes a power function of the single ancestor node X.
+ * This is a function of the form Y = A * X^B.  Power
+ * functions are linear functions on a log scale: i.e. if Y=A*X^B and
+ * A > 0, then log(Y) is a linear function of log(X).
  *
  * A function is considered to be a fixed function if the coefficient
- * B, or coefficients B=(B1...Bn) is fixed. 
+ * B, or coefficients B=(B1...BN) is fixed. 
  *
  * @see DeterministicNode#isClosed
  */
@@ -62,9 +63,9 @@ public:
      */
     bool isObserved() const;
     /**
-     * Tests whether the value of the node is belongs to a closed
-     * class when considered as a function of a given ancestor node X,
-     * or nodes X1 ... Xn.
+     * Tests whether the node belongs to a closed class when
+     * considered as a function of a given ancestor node X, or nodes
+     * X1 ... Xn.
      *
      * False negative responses are permitted: i.e. the value false
      * may be returned when the node is, in fact, in the closed class,
@@ -80,7 +81,7 @@ public:
      * @param ancestors Set containing all ancestors of the test node
      * that are in the closed class.
      *
-     * @param dnfunc Closed class to be tested.
+     * @param fc Closed class to be tested.
      *
      * @param fixed When true, the closed class is restricted to the
      * sub-class of functions that are considered fixed.
