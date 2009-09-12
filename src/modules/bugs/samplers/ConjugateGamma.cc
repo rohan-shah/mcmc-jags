@@ -32,7 +32,7 @@ getScale(StochasticNode const *snode, ConjugateDist d, unsigned int chain)
 {
     //Get scale parameter of snode
     switch(d) {
-    case GAMMA: case NORM: case DEXP: case WEIB:
+    case GAMMA: case NORM: case DEXP: case WEIB: case LNORM:
 	return *snode->parents()[1]->value(chain);
 	break;
     case EXP: case POIS:
@@ -122,7 +122,7 @@ bool ConjugateGamma::canSample(StochasticNode *snode, Graph const &graph)
 	switch(getDist(stoch_nodes[i])) {
 	case EXP: case POIS:
 	    break;
-	case GAMMA: case NORM: case DEXP: case WEIB:
+	case GAMMA: case NORM: case DEXP: case WEIB: case LNORM:
 	    if (paramset.count(param[0])) {
 		return false; //non-scale parameter depends on snode
 	    }
@@ -191,10 +191,10 @@ void ConjugateGamma::update(ConjugateSampler *sampler,
 	    StochasticNode const *schild = stoch_children[i];
 	    vector<Node const*> const &cparam = schild->parents();
 	    double Y = *schild->value(chain);
-	    double ymean; //normal mean
+	    double m = *cparam[0]->value(chain); //location parameter 
 	    switch(child_dist[i]) {
 	    case GAMMA:
-		r += *cparam[0]->value(chain);
+		r += m;
 		mu += coef_i * Y ;
 		break;
 	    case EXP:
@@ -203,8 +203,7 @@ void ConjugateGamma::update(ConjugateSampler *sampler,
 		break;
 	    case NORM:
 		r += 0.5;
-		ymean = *cparam[0]->value(chain);
-		mu += coef_i * (Y - ymean) * (Y - ymean) / 2;
+		mu += coef_i * (Y - m) * (Y - m) / 2;
 		break;
 	    case POIS:
 		r += Y;
@@ -212,12 +211,15 @@ void ConjugateGamma::update(ConjugateSampler *sampler,
 		break;
 	    case DEXP:
 		r += 1;
-		ymean = *cparam[0]->value(chain);
-		mu += coef_i * fabs(Y - ymean);
+		mu += coef_i * fabs(Y - m);
 		break;
 	    case WEIB:
 		r += 1; 
-		mu += coef_i * pow(Y, *cparam[0]->value(chain));
+		mu += coef_i * pow(Y, m);
+		break;
+	    case LNORM:
+		r+= 0.5;
+		mu += coef_i * (log(Y) - m) * (log(Y) - m) / 2;
 		break;
 	    default:
 		throw logic_error("Invalid distribution in Conjugate Gamma sampler");
