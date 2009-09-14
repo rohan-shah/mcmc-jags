@@ -27,7 +27,7 @@ bool Subtract::isDiscreteValued(vector<bool> const &mask) const
 bool 
 Subtract::isScale(vector<bool> const &mask, vector<bool> const &fix) const
 {
-    return true;
+    return allTrue(mask);
 }
 
 }
