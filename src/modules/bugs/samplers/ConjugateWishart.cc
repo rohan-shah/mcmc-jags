@@ -7,6 +7,8 @@
 #include <rng/RNG.h>
 #include <graph/LogicalNode.h>
 #include <graph/StochasticNode.h>
+#include <graph/MixtureNode.h>
+#include <sampler/Linear.h>
 
 #include <set>
 #include <stdexcept>
@@ -61,12 +63,20 @@ bool ConjugateWishart::canSample(StochasticNode *snode, Graph const &graph)
 	}
     }
   
-    // Only direct children are allowed
     if (!dtrm_nodes.empty()) {
-	return false;
+	// Deterministic children must be scale functions
+	if (!checkScale(snode, graph, false)) {
+	    return false;
+	}
+	// Only mixture nodes are allowed.  If we allowed arbitrary
+	// functions, the complexity would be O(nrow^4).
+	for (unsigned int i = 0; i < dtrm_nodes.size(); ++i) {
+	    if (!isMixture(dtrm_nodes[i]))
+		return false;
+	}
     }
 
-    return true; //We made it!
+    return true;
 }
 
 void ConjugateWishart::initialize(ConjugateSampler *sampler,
@@ -83,7 +93,7 @@ void ConjugateWishart::update(ConjugateSampler *sampler, unsigned int chain,
 
     vector<Node const *> const &param = sampler->node()->parents();  
 
-    double k = *param[1]->value(chain);
+    double df = *param[1]->value(chain);
     double const *Rprior = param[0]->value(chain);
     int nrow = param[0]->dim()[0];
 
@@ -93,31 +103,54 @@ void ConjugateWishart::update(ConjugateSampler *sampler, unsigned int chain,
 	R[i] = Rprior[i];
     }
 
+    //Logical mask to determine which stochastic children are active.
+    vector<bool> active(nchildren, true);
+
+    if (!sampler->deterministicChildren().empty()) {
+	//Save first element of precision matrix for each child
+	vector<double> precision0(nchildren); 
+	for (unsigned int i = 0; i < nchildren; ++i) {
+	    precision0[i] = stoch_children[i]->value(chain)[0];
+	}
+	//Double the current value
+	double const *x = sampler->node()->value(chain);
+	double *x2 = new double[N];
+	for (unsigned int j = 0; j < N; ++j) {
+	    x2[j] = 2 * x[j];
+	}
+	sampler->setValue(x2, N, chain);
+	delete [] x2;
+	//See if precision matrix has changed
+	for (unsigned int i = 0; i < nchildren; ++i) {
+	    if (stoch_children[i]->value(chain)[0] == precision0[i]) {
+		active[i] = false; //not active
+	    }
+	}
+    }
+
     vector<ConjugateDist> const &child_dist = sampler->childDist();
     double *delta = new double[nrow];
     for (unsigned int i = 0; i < nchildren; ++i) {
-	StochasticNode const *schild = stoch_children[i];
-	if (child_dist[i] != MNORM)
-	    throw logic_error("Invalid distribution in Conjugate Wishart sampler");
-	vector<Node const *> const &cparam = schild->parents();
-    
-	double const *Y = schild->value(chain);
-	double const *mu = cparam[0]->value(chain);
-
-	for (int j = 0; j < nrow; j++) {
-	    delta[j] = Y[j] - mu[j];
-	}
-	for (int j = 0; j < nrow; j++) {
-	    for (int l = 0; l < nrow; l++) {
-		R[j*nrow + l] += delta[j] * delta[l];
+	if (active[i]) {
+	    StochasticNode const *schild = stoch_children[i];
+	    double const *Y = schild->value(chain);
+	    double const *mu = schild->parents()[0]->value(chain);
+	    
+	    for (int j = 0; j < nrow; j++) {
+		delta[j] = Y[j] - mu[j];
 	    }
+	    for (int j = 0; j < nrow; j++) {
+		for (int k = 0; k < nrow; k++) {
+		    R[j*nrow + k] += delta[j] * delta[k];
+		}
+	    }
+	    df += 1;
 	}
-	k += 1;
     }
     delete [] delta;
 
     double *xnew = new double[N];
-    DWish::randomSample(xnew, N, R, k, nrow, rng);
+    DWish::randomSample(xnew, N, R, df, nrow, rng);
 
     delete [] R;
     sampler->setValue(xnew, N, chain);
