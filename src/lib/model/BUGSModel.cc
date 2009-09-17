@@ -267,7 +267,7 @@ void BUGSModel::setParameters(std::map<std::string, SArray> const &param_table,
     //Strip off .RNG.seed (user-supplied random seed)
     if (param_table.find(".RNG.seed") != param_table.end()) {
 	if (rng(chain) == 0) {
-	    throw runtime_error(".RNG.seed supplied RNG type not set");
+	    throw runtime_error(".RNG.seed supplied but RNG type not set");
 	}
 	SArray const &seed = param_table.find(".RNG.seed")->second;
 	if (seed.length() != 1) {
