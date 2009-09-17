@@ -105,6 +105,10 @@ DistScalarRmath::scalarLogLikelihood(double x,
 	    ll = isDiscreteValued() ? *lower - 1 : *lower;
 	}
 
+	/* In theory, we just have to subtract log[P(lower <= X <=
+           upper)] from the log likelihood. But we need to work around
+           numerical problems. */
+
 	bool have_lower = lower && p(ll, parameters, true, false) > 0;
 	bool have_upper = upper && p(*upper, parameters, false, false) > 0;
 
