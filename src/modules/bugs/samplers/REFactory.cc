@@ -26,12 +26,12 @@ static bool is_stoch(Node const *node)
    return asStochastic(node);
 }
 
-void REFactory::makeSampler(set<StochasticNode*> &nodes,
+void REFactory::makeSampler(set<StochasticNode*, less_sampler> &nodes,
 			    Graph const &graph,
 			    vector<vector<Sampler*> > &samplers) const
 {
 
-    set<StochasticNode*>::const_iterator p;
+    set<StochasticNode*, less_sampler>::const_iterator p;
     vector<StochasticNode*> effect_nodes;
     vector<StochasticNode*> variance_nodes;
     GraphMarks marks(graph);

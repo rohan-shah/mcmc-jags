@@ -45,6 +45,7 @@ class StochasticNode : public Node {
     Node const *_lower;
     Node const *_upper;
     bool _observed;
+    unsigned long _serial;
 public:
     /**
      * Constructs a new StochasticNode given a distribution, a vector
@@ -139,6 +140,11 @@ public:
      * not considered to be a random variable.
      */
     bool isRandomVariable() const;
+    /**
+     * Orders stochastic nodes. If A < B for nodes A and B then there
+     * is no path from A to B
+     */
+    bool operator<(StochasticNode const &rhs) const;
     std::string deparse(std::vector<std::string> const &parameters) const;
     Node * clone(std::vector<Node const *> const &parents) const;
     bool isDiscreteValued() const;

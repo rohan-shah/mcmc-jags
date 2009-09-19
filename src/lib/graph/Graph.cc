@@ -109,8 +109,8 @@ bool Graph::isClosed() const
 	}
 
 	// Check children
-	set<StochasticNode*> const *sch = (*i)->stochasticChildren();
-	for (set<StochasticNode*>::iterator k = sch->begin(); k != sch->end(); k++)
+	StochasticNodeSet const *sch = (*i)->stochasticChildren();
+	for (StochasticNodeSet::iterator k = sch->begin(); k != sch->end(); k++)
 	{
 	    if (!this->contains(*k)) {
 		return false;
@@ -272,7 +272,7 @@ bool Graph::hasCycle() const
 }
 */
 
-set<StochasticNode*> const &Graph::stochasticNodes() const
+StochasticNodeSet const &Graph::stochasticNodes() const
 {
     return _stoch_nodes;
 }
@@ -358,4 +358,10 @@ void Graph::getSortedNodes(vector<Node*> &sortednodes) const
 {
     set<Node*> S = _nodes;
     getSortedNodes(S, sortednodes);
+}
+
+//FIXME. Should have its own file
+bool less_snode::operator()(StochasticNode const *lhs, StochasticNode const *rhs) const
+{
+	return *lhs < *rhs;
 }

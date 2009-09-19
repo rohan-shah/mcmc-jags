@@ -58,7 +58,7 @@ Node::Node(vector<unsigned int> const &dim, unsigned int nchain)
     }
 
     _dtrm_children = new set<DeterministicNode*>;
-    _stoch_children = new set<StochasticNode*>;
+    _stoch_children = new StochasticNodeSet;
 }
 
 Node::Node(vector<unsigned int> const &dim, 
@@ -83,7 +83,7 @@ Node::Node(vector<unsigned int> const &dim,
 	_data[i] = JAGS_NA;
     }
   
-    _stoch_children = new set<StochasticNode*>;
+    _stoch_children = new StochasticNodeSet;
     _dtrm_children = new set<DeterministicNode*>;
 }
 
@@ -117,7 +117,7 @@ vector <Node const *> const &Node::parents() const
     return _parents;
 }
 
-set<StochasticNode*> const *Node::stochasticChildren() 
+StochasticNodeSet const *Node::stochasticChildren() 
 {
     return _stoch_children;
 }

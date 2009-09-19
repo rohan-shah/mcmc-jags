@@ -18,6 +18,18 @@ using std::string;
 using std::runtime_error;
 using std::logic_error;
 
+static unsigned long getSerial()
+{
+    /*
+      Called only by the constructor, this assigns a unique serial
+      number to each stochastic node, which in turn gives these nodes
+      a unique ordering via the "<" operator. This is necessary for
+      reproducibility of JAGS runs.
+    */
+    static unsigned long s = 0;
+    return ++s;
+}
+
 static vector<unsigned int> mkDim(Distribution const *dist, 
 				  vector<Node const *> const &parents)
 {
@@ -70,7 +82,7 @@ StochasticNode::StochasticNode(Distribution const *dist,
 			       Node const *lower, Node const *upper)
     : Node(mkDim(dist, parameters), mkParents(parameters, lower, upper)), 
       _dist(dist), _parameters(nchain()), _dims(mkParameterDims(parameters)),
-      _lower(lower), _upper(upper), _observed(false)
+      _lower(lower), _upper(upper), _observed(false), _serial(getSerial())
 {
  
     if (parameters.size() != _dist->npar()) {
@@ -316,6 +328,11 @@ void StochasticNode::setObserved()
 {
     _observed = true;
 } 
+
+bool StochasticNode::operator<(StochasticNode const &rhs) const
+{
+    return rhs._serial < _serial;
+}
 
 StochasticNode const *asStochastic(Node const* node) {
    return dynamic_cast<StochasticNode const*>(node);

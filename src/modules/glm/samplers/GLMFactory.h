@@ -23,7 +23,7 @@ namespace glm {
 	unsigned int canSample(StochasticNode *snode, Graph const &graph) const;
     public:
 	virtual ~GLMFactory();
-	Sampler * makeSampler(std::set<StochasticNode*> const &nodes, 
+	Sampler * makeSampler(std::set<StochasticNode*,less_snode> const &nodes, 
 			      Graph const &graph) const;
 	virtual bool checkOutcome(StochasticNode const *snode) const = 0;
 	virtual bool checkLink(InverseLinkFunc const *link) const = 0;

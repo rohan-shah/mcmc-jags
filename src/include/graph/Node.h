@@ -4,6 +4,7 @@
 #include <set>
 #include <vector>
 #include <string>
+#include <graph/NodeSet.h>
 
 class RNG;
 class StochasticNode;
@@ -26,7 +27,7 @@ class Graph;
  */
 class Node {
     std::vector<Node const *> _parents;
-    std::set<StochasticNode *> *_stoch_children;
+    StochasticNodeSet *_stoch_children;
     std::set<DeterministicNode *> *_dtrm_children;
 
     /* Forbid copying of Node objects */
@@ -104,7 +105,7 @@ public:
     /**
      * Returns the stochastic children of the node
      */
-    std::set<StochasticNode*> const *stochasticChildren();
+    StochasticNodeSet const *stochasticChildren();
     /**
      * Returns the deterministic children of the node
      */
@@ -208,6 +209,5 @@ public:
  * if the parameters are inconsistent
  */
 unsigned int countChains(std::vector<Node const *> const &parameters);
-
 
 #endif /* NODE_H_ */

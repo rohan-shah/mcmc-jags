@@ -31,9 +31,10 @@ namespace base {
 	vector<Node const*> dnodes;
 
         if (type == "trace") {
-	    set<StochasticNode*> const &snodes = model->graph().stochasticNodes();
-	    set<StochasticNode*>::const_iterator p = snodes.begin(); 
-	    for ( ; p != snodes.end(); ++p) {
+	    set<StochasticNode*,less_snode> const &snodes = 
+		model->graph().stochasticNodes();
+	    set<StochasticNode*, less_snode>::const_iterator p ;
+	    for (p = snodes.begin() ; p != snodes.end(); ++p) {
 		//Find stochastic nodes with observed parents
 		bool istop = true;
 		vector<Node const*> const &parents = (*p)->parents();

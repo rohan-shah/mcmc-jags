@@ -2,6 +2,7 @@
 #define SINGLETON_FACTORY_H_
 
 #include <sampler/SamplerFactory.h>
+
 /**
  * @short Factory object for a Sampler that samples a single node
  *
@@ -24,12 +25,12 @@ public:
      * function is called by SingletonFactory#makeSampler.
      */
     virtual Sampler *makeSampler(StochasticNode *node,
-				  Graph const &graph) const = 0;
+				 Graph const &graph) const = 0;
     /**
      * This traverses the graph, creating a Sampler, when possible,
      * for each individual StochasticNode.
      */
-    Sampler * makeSampler(std::set<StochasticNode*> const &nodes, 
+    Sampler * makeSampler(StochasticNodeSet const &nodes, 
 			  Graph const &graph) const;
 };
 

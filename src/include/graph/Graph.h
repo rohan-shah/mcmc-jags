@@ -4,6 +4,8 @@
 #include <set>
 #include <vector>
 
+#include <graph/NodeSet.h>
+
 class Node;
 class StochasticNode;
 
@@ -16,7 +18,7 @@ class StochasticNode;
  */
 class Graph {
   std::set<Node*> _nodes;
-  std::set<StochasticNode*> _stoch_nodes;
+  StochasticNodeSet _stoch_nodes;
 
   /* forbid copying */
   Graph(Graph const &orig);
@@ -83,7 +85,7 @@ public:
   /**
    * The set of stochastic nodes contained in the graph
    */
-  std::set<StochasticNode*> const &stochasticNodes() const;
+  StochasticNodeSet const &stochasticNodes() const;
   /**
    * Adds all nodes in the graph to the given vector
    */

@@ -16,7 +16,7 @@ class Graph;
 class REFactory : public SamplerFactory
 {
 public:
-    virtual void makeSampler(std::set<StochasticNode*> &nodes, 
+    virtual void makeSampler(std::set<StochasticNode*, less_sampler> &nodes, 
 			     Graph const &graph,
 			     std::vector<std::vector<Sampler*> > &samplers)
 	const;

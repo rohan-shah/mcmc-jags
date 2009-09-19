@@ -82,7 +82,7 @@ namespace glm {
 	delete [] xnew;
     
     }
-
+    
     GLMMethod::GLMMethod()
 	: _beta(0), _symbol(0), _fixed(false), _length_max(0), _nz_prior(0)
     {
@@ -93,7 +93,7 @@ namespace glm {
 	cs_spfree(_beta);
     }
 
-    static void getIndices(set<StochasticNode const*> const &schildren,
+    static void getIndices(ConstStochasticNodeSet const &schildren,
 			   vector<StochasticNode const*> const &rows,
 			   vector<int> &indices)
     {
@@ -184,7 +184,7 @@ namespace glm {
 	{
 	    StochasticNode *snode = *p;
 
-	    set<StochasticNode const *> children_p;
+	    ConstStochasticNodeSet children_p;
 	    Sampler::getStochasticChildren(vector<StochasticNode*>(1,snode), 
 					   graph, children_p);
 	    vector<int> indices;

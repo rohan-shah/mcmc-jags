@@ -195,7 +195,7 @@ struct less_sampler {
 };
 
 static bool anyChildInSet(Sampler const *sampler, 
-			  set<StochasticNode const*> const &sset)
+			  ConstStochasticNodeSet const &sset)
 {
     vector<StochasticNode const*> const &schildren 
 	= sampler->stochasticChildren();
@@ -263,8 +263,8 @@ void Model::chooseSamplers()
 
     // Add observed stochastic nodes to the sample graph and mark
     // the informative nodes
-    set<StochasticNode*> const &stoch_nodes = _graph.stochasticNodes();
-    set<StochasticNode*>::const_iterator p;
+    StochasticNodeSet const &stoch_nodes = _graph.stochasticNodes();
+    StochasticNodeSet::const_iterator p;
     for (p = stoch_nodes.begin(); p != stoch_nodes.end(); ++p) {
 	if ((*p)->isObserved()) {
 	    sample_graph.add(*p);
@@ -280,7 +280,7 @@ void Model::chooseSamplers()
     //Triage on marked nodes. We do this twice: once for stochastic
     //nodes and once for all nodes.
 
-    set<StochasticNode*> sset;
+    StochasticNodeSet sset;
     for(p = stoch_nodes.begin(); p != stoch_nodes.end(); ++p) {
 	switch(marks.mark(*p)) {
 	case 0:
@@ -338,7 +338,7 @@ void Model::chooseSamplers()
     // Collect nodes to be sampled in another set. This one contains
     // constant pointers.
 
-    set<StochasticNode const*> sset2;
+    ConstStochasticNodeSet sset2;
     for(p = stoch_nodes.begin(); p != stoch_nodes.end(); ++p) {
 	if (marks.mark(*p) == 1) {
 	    sset2.insert(*p);

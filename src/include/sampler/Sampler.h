@@ -2,8 +2,8 @@
 #define SAMPLER_H_
 
 #include <vector>
-#include <set>
 #include <string>
+#include <graph/NodeSet.h>
 
 class StochasticNode;
 class DeterministicNode;
@@ -170,7 +170,7 @@ public:
    */
   static void getStochasticChildren(std::vector<StochasticNode *> const &nodes,
 				    Graph const &graph,
-				    std::set<StochasticNode const*> &children);
+				    ConstStochasticNodeSet &children);
 };
 
 #endif /* SAMPLER_H_ */
