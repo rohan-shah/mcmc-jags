@@ -114,7 +114,7 @@ Node * Compiler::constFromTable(ParseTree const *p)
 	    }
 	    return cnode;
 	}
-	_index_graph.add(cnode);
+	_index_nodes.push_back(cnode);
 	return cnode;
     }
 }
@@ -142,7 +142,7 @@ bool Compiler::indexExpression(ParseTree const *p, int &value)
        getParameter and getArraySubset.  The counter tracks the levels
        of nesting of index expressions.
        
-       The graph _index_graph holds the Nodes created during the 
+       The vector _index_nodes holds the Nodes created during the 
        evaluation of the index expression.
     */
 
@@ -165,7 +165,11 @@ bool Compiler::indexExpression(ParseTree const *p, int &value)
     value = asInteger(node->value(0)[0]);
 	
     if (_index_expression == 0) {
-        _index_graph.clear();
+	while(!_index_nodes.empty()) {
+	    Node *inode = _index_nodes.back();
+	    _index_nodes.pop_back();
+	    delete inode;
+	}
     }
     return true;
 }
@@ -342,7 +346,7 @@ Node *Compiler::getArraySubset(ParseTree const *p)
     if (counter) {
 	if (_index_expression) {
 	    node = new ConstantNode((*counter)[0], _model.nchain());
-	    _index_graph.add(node);
+	    _index_nodes.push_back(node);
 	}
 	else {
 	    node = _constantfactory.getConstantNode((*counter)[0], _model);
@@ -441,8 +445,8 @@ Node *Compiler::getLength(ParseTree const *p, SymTab const &symtab)
 	    double length = product(subset_range.dim(true));
 	    if (_index_expression) {
 		Node *node = new ConstantNode(length, _model.nchain());
-		_index_graph.add(node);
-	    return node;
+		_index_nodes.push_back(node);
+		return node;
 	    }
 	    else {
 		return _constantfactory.getConstantNode(length, _model);
@@ -481,8 +485,8 @@ Node *Compiler::getDim(ParseTree const *p, SymTab const &symtab)
 
 	    if (_index_expression) {
 		Node *node = new ConstantNode(d, ddim, _model.nchain());
-		_index_graph.add(node);
-	    return node;
+		_index_nodes.push_back(node);
+		return node;
 	    }
 	    else {
 		return _constantfactory.getConstantNode(d, ddim, _model);
@@ -509,7 +513,7 @@ Node * Compiler::getParameter(ParseTree const *t)
     case P_VALUE:
 	if (_index_expression) {
 	    node = new ConstantNode(t->value(), _model.nchain());
-	    _index_graph.add(node);
+	    _index_nodes.push_back(node);
 	}
 	else {
 	    node =  _constantfactory.getConstantNode(t->value(), _model);
@@ -539,7 +543,7 @@ Node * Compiler::getParameter(ParseTree const *t)
 	    Function const *func = getFunction(t, funcTab());
 	    if (_index_expression) {
 		node = new LogicalNode(func, parents);
-		_index_graph.add(node);
+		_index_nodes.push_back(node);
 	    }
 	    else {	    
 		/* Test first to see if it is a link function */
@@ -977,7 +981,7 @@ Compiler::Compiler(BUGSModel &model, map<string, SArray> const &data_table)
     : _model(model), _countertab(), 
       _data_table(data_table), _n_resolved(0), 
       _n_relations(0), _is_resolved(0), _strict_resolution(false),
-      _index_expression(0), _index_graph(),
+      _index_expression(0), _index_nodes(),
       _constantfactory(model.nchain())
 {
   if (_model.graph().size() != 0)
