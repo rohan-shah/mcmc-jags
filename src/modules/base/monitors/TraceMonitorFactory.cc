@@ -2,10 +2,8 @@
 #include "TraceMonitor.h"
 
 #include <model/Model.h>
-#include <graph/StochasticNode.h>
-#include <graph/NodeSet.h>
-
-#include <set>
+#include <graph/Graph.h>
+#include <graph/Node.h>
 
 using std::set;
 using std::string;
@@ -32,22 +30,23 @@ namespace base {
 	vector<Node const*> dnodes;
 
         if (type == "trace") {
-	    StochasticNodeSet const &snodes = 
-		model->graph().stochasticNodes();
-	    StochasticNodeSet::const_iterator p ;
-	    for (p = snodes.begin() ; p != snodes.end(); ++p) {
-		//Find stochastic nodes with observed parents
-		bool istop = true;
-		vector<Node const*> const &parents = (*p)->parents();
-		vector<Node const*>::const_iterator q;
-		for (q = parents.begin(); q != parents.end(); ++q) {
-		    if (!(*q)->isObserved()) {
-			istop = false;
-			break;
+	    set<Node*> const &nodes = model->graph().nodes();
+	    set<Node*>::const_iterator p;
+	    for (p = nodes.begin() ; p != nodes.end(); ++p) {
+		//Find random variables with observed parents
+		if ((*p)->isRandomVariable() && !(*p)->isObserved()) {
+		    vector<Node const*> const &parents = (*p)->parents();
+		    bool istop = true;
+		    vector<Node const*>::const_iterator q;
+		    for (q = parents.begin(); q != parents.end(); ++q) {
+			if (!(*q)->isObserved()) {
+			    istop = false;
+			    break;
+			}
 		    }
-		}
-		if (istop) {
-		    dnodes.push_back(*p);
+		    if (istop) {
+			dnodes.push_back(*p);
+		    }
 		}
 	    }
 	}
