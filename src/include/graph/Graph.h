@@ -4,10 +4,7 @@
 #include <set>
 #include <vector>
 
-#include <graph/NodeSet.h>
-
 class Node;
-class StochasticNode;
 
 /**
  * A graph is a container class for (pointers to) Nodes. A Node may
@@ -18,7 +15,6 @@ class StochasticNode;
  */
 class Graph {
   std::set<Node*> _nodes;
-  StochasticNodeSet _stoch_nodes;
 
   /* forbid copying */
   Graph(Graph const &orig);
@@ -29,27 +25,11 @@ public:
    */
   Graph();
   /**
-   * Destructor.  The reference count of all nodes in the graph
-   * is decremented.
-   */
-  ~Graph();
-  /**
-   * Adds a StochasticNode to the graph
-   */
-  void add(StochasticNode *snode);
-  /**
-   * Adds node to graph.  The reference count of the node is
-   * incremented.  If node is already in the graph, no action is
-   * taken.
+   * Adds node to graph.  
    */
   void add(Node *node);
   /**
-   * Removes a StochasticNode from the graph
-   */
-  void remove(StochasticNode *snode);
-  /**
-   * Removes node from graph. The reference count of the node is
-   * decremented. If node is not a member, no action is taken.
+   * Removes node from graph. 
    */
   void remove(Node *node);
   /**
@@ -65,27 +45,14 @@ public:
    */
   unsigned int size() const;
   /**
-   * Checks if the graph is connected.
-   */
-  bool isConnected() const;
-  /**
    * Checks if the parents and children of every node in the
    * graph are also contained in the graph.
    */
   bool isClosed() const;
   /**
-   * Checks if there is any path in the graph leading from a
-   * node to itself.
-   */
-  bool hasCycle() const;
-  /**
    * The set of nodes contained in the graph
    */
   std::set<Node*> const &nodes() const;
-  /**
-   * The set of stochastic nodes contained in the graph
-   */
-  StochasticNodeSet const &stochasticNodes() const;
   /**
    * Adds all nodes in the graph to the given vector
    */
