@@ -185,78 +185,19 @@ void Model::initializeNodes()
 
 struct less_sampler {  
     /* 
-       Comparison operator for Samplers which sorts them according to
-       the ordering defined by the supplied sampler_map.
+       Comparison operator for Samplers which sorts them in 
+       order according to the supplied sampler map
     */
-    map<Sampler const*, vector<unsigned int> > const & _sampler_map;
+    map<Sampler const*, unsigned int>  const & _sampler_map;
 
-    less_sampler(map<Sampler const*, vector<unsigned int> > const &sampler_map) 
+    less_sampler(map<Sampler const*, unsigned int> const &sampler_map) 
 	: _sampler_map(sampler_map) {};
 
     bool operator()(Sampler const *x, Sampler const *y) const {
-	map<Sampler const*, vector<unsigned int> >::const_iterator i 
-	    = _sampler_map.find(x);
-	map<Sampler const*, vector<unsigned int> >::const_iterator j 
-	    = _sampler_map.find(y);
-
-	if (i == _sampler_map.end() || j == _sampler_map.end()) {
-	    throw logic_error("Invalid sampler map");
-	}
-	return i->second < j->second;
+	return _sampler_map.find(x)->second < _sampler_map.find(y)->second;
     };
+
 };
-
-static bool anyChildInSet(Sampler const *sampler, 
-			  ConstStochasticNodeSet const &sset)
-{
-    vector<StochasticNode const*> const &schildren 
-	= sampler->stochasticChildren();
-    for (unsigned int i = 0; i < schildren.size(); ++i) {
-	if (sset.find(schildren[i]) != sset.end())
-	    return true;
-    }
-    return false;
-}
-
-static void 
-samplerLimits(Sampler const *sampler, unsigned int &lower, unsigned int &upper)
-{
-    //Gather the sampled nodes and deterministic children into a test set
-    set<Node const *> testset;
-    testset.insert(sampler->nodes().begin(), sampler->nodes().end());
-    testset.insert(sampler->deterministicChildren().begin(), 
-		   sampler->deterministicChildren().end());
-    
-    vector<StochasticNode const *> const &sch = sampler->stochasticChildren();
-
-    lower = upper = 0; //in case sch is empty
-    
-    for (unsigned int i = 0; i < sch.size(); ++i) {
-	
-	vector<Node const *> const &parents = sch[i]->parents();
-	unsigned int lp = parents.size();
-	unsigned int up = 0;
-
-	for (unsigned int j = 0; j < parents.size(); ++j) {
-	    if (testset.find(parents[j]) != testset.end()) {
-		lp = min(j, lp);
-		up = max(j, up);
-	    }
-	}
-	if (lp > up) {
-	    throw logic_error("Invalid sampler");
-	}
-
-	if (i == 0) {
-	    lower = lp;
-	    upper = up;
-	}
-	else {
-	    lower = min(lower, lp);
-	    upper = max(upper, up);
-	}
-    }
-}
 
 void Model::chooseSamplers()
 {
@@ -271,19 +212,18 @@ void Model::chooseSamplers()
 
     GraphMarks marks(_graph);
     Graph sample_graph;
-    set<Sampler*> samplerSet;
 
     // Add observed stochastic nodes to the sample graph and mark
     // the informative nodes
-    StochasticNodeSet const &stoch_nodes = _graph.stochasticNodes();
-    StochasticNodeSet::const_iterator p;
-    for (p = stoch_nodes.begin(); p != stoch_nodes.end(); ++p) {
+
+    vector<StochasticNode*>::const_iterator p;
+    for (p = _stochastic_nodes.begin(); p != _stochastic_nodes.end(); ++p) {
 	if ((*p)->isObserved()) {
 	    sample_graph.add(*p);
 	    marks.markAncestors(*p, 1);
 	}
     }
-    for (p = stoch_nodes.begin(); p != stoch_nodes.end(); ++p) {
+    for (p = _stochastic_nodes.begin(); p != _stochastic_nodes.end(); ++p) {
 	if ((*p)->isObserved()) {
 	    marks.mark(*p, 2);
 	}
@@ -293,14 +233,15 @@ void Model::chooseSamplers()
     //nodes and once for all nodes.
 
     StochasticNodeSet sset;
-    for(p = stoch_nodes.begin(); p != stoch_nodes.end(); ++p) {
+    for(p = _stochastic_nodes.begin(); p != _stochastic_nodes.end(); ++p) {
 	switch(marks.mark(*p)) {
 	case 0:
 	    _extra_nodes.insert(*p);
 	    break;
 	case 1:
 	    sset.insert(*p); 
-	    //falling through!
+	    sample_graph.add(*p);
+	    break;
 	case 2:
 	    sample_graph.add(*p);
 	    break;
@@ -333,7 +274,7 @@ void Model::chooseSamplers()
 	    for (unsigned int i = 0; i < nodes.size(); ++i) {
 		sset.erase(nodes[i]);
 	    }
-	    samplerSet.insert(sampler);
+	    _samplers.push_back(sampler);
 	    sampler = (*p)->makeSampler(sset, sample_graph);
 	}
     }
@@ -345,65 +286,38 @@ void Model::chooseSamplers()
 			"Unable to find appropriate sampler");
     }
   
-    // Now sort the samplers in order
-
-    // Collect nodes to be sampled in another set. This one contains
-    // constant pointers.
-
-    ConstStochasticNodeSet sset2;
-    for(p = stoch_nodes.begin(); p != stoch_nodes.end(); ++p) {
-	if (marks.mark(*p) == 1) {
-	    sset2.insert(*p);
-	}
-    }
-
-
     // Samplers are sorted in reverse sampling order: i.e. samplers
     // that are closer to the data are updated before samplers that
     // only affect higher-order parameters
-
-    _samplers.reserve(samplerSet.size());
-
-    while (!samplerSet.empty()) {
-
-	// Vector of samplers that may be pushed onto the stack
-	vector<Sampler*> vsamplers;
-
-	for(set<Sampler*>::iterator i = samplerSet.begin(); 
-	    i != samplerSet.end(); ++i) 
-	{
-	    if (!anyChildInSet(*i, sset2)) {
-		vsamplers.push_back(*i);
-	    }
-	}
-	if (vsamplers.empty()) {
-	    throw logic_error("Loop check failed in Model::chooseSamplers");
-	}
-
-	/* Order vsamplers so that a sampler that affects lower order
-	   parameters of a stochastic node (e.g. a location parameter)
-	   acts before a sampler that affects higher order parameters
-	   (e.g. a precision parameter)
-	*/
-
-	map<Sampler const *, vector<unsigned int> > sampler_map;
-	vector<unsigned int> limits(2);
-
-	for (unsigned int j = 0; j < vsamplers.size(); ++j) {
-	    samplerLimits(vsamplers[j], limits[0], limits[1]);
-	    sampler_map.insert(pair<Sampler const*, vector<unsigned int> >(vsamplers[j], limits));
-	}
-	stable_sort(vsamplers.begin(), vsamplers.end(), 
-		    less_sampler(sampler_map));
-
-	for (unsigned int j = 0; j < vsamplers.size(); ++j) {
-	    _samplers.push_back(vsamplers[j]);
-	    samplerSet.erase(vsamplers[j]);
-	    for (unsigned int k = 0; k < vsamplers[j]->nodes().size(); ++k) {
-		sset2.erase(vsamplers[j]->nodes()[k]);
-	    }
-	}
+    
+    // Create a map associating each stochastic node with its index
+    // in the vector _stochastic_nodes, corresponding to the order
+    // in which they were added to the model
+    map<StochasticNode const *, unsigned int> snode_map;
+    for (unsigned int i = 0; i < _stochastic_nodes.size(); ++i) {
+	snode_map[_stochastic_nodes[i]] = i;
     }
+
+    // Create a map associating each sampler with the minimal index
+    // of its sampled nodes.
+    map<Sampler const *, unsigned int> sampler_map;
+    for (unsigned int i = 0; i < _samplers.size(); ++i) {
+	unsigned int min_index = _stochastic_nodes.size();
+	vector<StochasticNode*> const &snodes = _samplers[i]->nodes();
+	for (unsigned int j = 0; j < snodes.size(); ++j) {
+	    map<StochasticNode const*, unsigned int>::const_iterator p 
+		= snode_map.find(snodes[j]);
+	    if (p == snode_map.end()) {
+		throw logic_error("Invalid stochastic node map");
+	    }
+	    if (p->second < min_index) {
+		min_index = p->second;
+	    }
+	}
+	sampler_map[_samplers[i]] = min_index;
+    }
+
+    stable_sort(_samplers.begin(), _samplers.end(), less_sampler(sampler_map));
 }
 
 void Model::update(unsigned int niter)
@@ -677,6 +591,7 @@ void Model::clearDefaultMonitors(string const &type)
 void Model::addNode(StochasticNode *node)
 {
     _graph.add(node);
+    _stochastic_nodes.push_back(node);
 }
 
 void Model::addNode(DeterministicNode *node)
