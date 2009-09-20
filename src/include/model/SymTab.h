@@ -18,17 +18,15 @@
  */
 class SymTab  
 {
-  Graph &_graph;
-  unsigned int _nchain;
+  Model *_model;
   std::map<std::string, NodeArray*> _varTable;
   std::map<Node const*, std::string> _names;
 public:
   /**
    * Constructs an empty symbol table
-   * @param graph Graph to which newly allocated nodes are added.
-   * @param nchain Number of chains of nodes in the Symbol table.
+   * @param model Model to which newly allocated nodes are added.
    */
-  SymTab(Graph &graph, unsigned int nchain);
+  SymTab(Model *model);
   ~SymTab();
   /**
    * Adds an array variable to the symbol table. This creates a

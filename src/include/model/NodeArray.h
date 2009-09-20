@@ -8,6 +8,7 @@
 #include <map>
 
 class SArray;
+class Model;
 
 /**
  * @short Multi-dimensional array that can be tiled with Node objects
@@ -65,10 +66,10 @@ public:
    * Returns an arbitrary subset of the NodeArray. If the range
    * corresponds to a previously inserted node, this will be
    * returned. Otherwise, an aggregate node will be created, and it
-   * will be added to the given graph.  If the range is not completely
+   * will be added to the given model.  If the range is not completely
    * covered by inserted nodes, a NULL pointer will be returned.
    */
-  Node* getSubset(Range const &range, Graph &graph);
+  Node* getSubset(Range const &range, Model &model);
   /**
    * Sets the values of the nodes in the array. 
    *
@@ -102,7 +103,7 @@ public:
    * given for an index with no node, then a new ConstantNode is created
    * with that value.
    */
-  void setData(SArray const &value, Graph &graph);
+  void setData(SArray const &value, Model *model);
   /**
    * Returns the name of the node array
    */
@@ -111,12 +112,6 @@ public:
    * Returns the range of indices covered by the NodeArray
    */
   Range const &range() const;
-  /**
-   * Returns the graph associated with the NodeArray.  This graph
-   * contains all the nodes that were either used in a call to
-   * insert, or created during a call to getSubset.
-   */
-  //Graph const &graph() const;
   /**
    * Returns the range corresponding to the given node, if it
    * belongs to the graph associated with the NodeArray. If it is
