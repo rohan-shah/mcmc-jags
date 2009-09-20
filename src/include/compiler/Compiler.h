@@ -8,6 +8,7 @@
 #include <distribution/DistTab.h>
 #include <function/FuncTab.h>
 #include <model/BUGSModel.h>
+#include <graph/Graph.h>
 
 #include <map>
 #include <string>
@@ -15,7 +16,6 @@
 #include <list>
 
 class ParseTree;
-class Graph;
 class SymTab;
 class FuncTab;
 class DistTab;
