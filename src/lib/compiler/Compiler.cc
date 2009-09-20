@@ -345,8 +345,7 @@ Node *Compiler::getArraySubset(ParseTree const *p)
 	    _index_graph.add(node);
 	}
 	else {
-	    node = _constantfactory.getConstantNode((*counter)[0], 
-						    _model.graph());
+	    node = _constantfactory.getConstantNode((*counter)[0], _model);
 	}
     }
     else {
@@ -360,7 +359,7 @@ Node *Compiler::getArraySubset(ParseTree const *p)
 			+ print(subset_range) + " out of range";
 		    CompileError(p, msg);
 		}
-		node = array->getSubset(subset_range, _model.graph());
+		node = array->getSubset(subset_range, _model);
 		if (node == 0 && _strict_resolution) {
 		    string msg = string("Unable to resolve parameter ")
 			+ array->name() + print(subset_range);
@@ -446,7 +445,7 @@ Node *Compiler::getLength(ParseTree const *p, SymTab const &symtab)
 	    return node;
 	    }
 	    else {
-		return _constantfactory.getConstantNode(length, _model.graph());
+		return _constantfactory.getConstantNode(length, _model);
 	    }
 	}
     }
@@ -486,8 +485,7 @@ Node *Compiler::getDim(ParseTree const *p, SymTab const &symtab)
 	    return node;
 	    }
 	    else {
-		return _constantfactory.getConstantNode(d, ddim, 
-							_model.graph());
+		return _constantfactory.getConstantNode(d, ddim, _model);
 	    }
 	}
     }
@@ -514,8 +512,7 @@ Node * Compiler::getParameter(ParseTree const *t)
 	    _index_graph.add(node);
 	}
 	else {
-	    node =  _constantfactory.getConstantNode(t->value(), 
-						     _model.graph());
+	    node =  _constantfactory.getConstantNode(t->value(), _model);
 	}
 	break;
     case P_VAR:
@@ -534,7 +531,7 @@ Node * Compiler::getParameter(ParseTree const *t)
 	    if (!link) {
 		CompileError(t, "Unknown link function:", t->name());
 	    }
-	    node = _logicalfactory.getLinkNode(link, parents, _model.graph());
+	    node = _logicalfactory.getLinkNode(link, parents, _model);
 	}
 	break;
     case P_FUNCTION:
@@ -549,12 +546,10 @@ Node * Compiler::getParameter(ParseTree const *t)
 		InverseLinkFunc const *link = 
 		    funcTab().findInverseLink(t->name(), false);
 		if (link) {
-		    node = _logicalfactory.getLinkNode(link, parents, 
-						       _model.graph());
+		    node = _logicalfactory.getLinkNode(link, parents, _model);
 		}
 		else {
-		    node = _logicalfactory.getNode(func, parents, 
-						   _model.graph());
+		    node = _logicalfactory.getNode(func, parents, _model);
 		}
 	    }
 	}
@@ -714,7 +709,7 @@ Node * Compiler::allocateStochastic(ParseTree const *stoch_relation)
 	Function const *func = funcTab().find(distname);
 	if (func) {
 	    DeterministicNode *dnode = new LogicalNode(func, parameters);
-	    _model.graph().add(dnode);
+	    _model.addNode(dnode);
             return dnode;
 	}
     }	
@@ -722,7 +717,7 @@ Node * Compiler::allocateStochastic(ParseTree const *stoch_relation)
     // Create Stochastic Node
     StochasticNode *snode =  new StochasticNode(dist, parameters, 
 						lBound, uBound);
-    _model.graph().add(snode);
+    _model.addNode(snode);
     
     // If Node is observed, set the data
     if (this_data) {
@@ -740,12 +735,14 @@ Node * Compiler::allocateLogical(ParseTree const *rel)
 {
     ParseTree *expression = rel->parameters()[1];
     Node *node = 0;
+    ConstantNode *cnode = 0;
     vector <Node const *> parents;
 
     switch (expression->treeClass()) {
     case P_VALUE: 
-	node = new ConstantNode(expression->value(), _model.nchain());
-	_model.graph().add(node); 
+	cnode = new ConstantNode(expression->value(), _model.nchain());
+	_model.addNode(cnode);
+	node = cnode;
 	/* The reason we aren't using a ConstantFactory here is to ensure
 	   that the nodes are correctly named */
 	break;

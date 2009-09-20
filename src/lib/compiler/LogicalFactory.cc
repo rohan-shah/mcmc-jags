@@ -2,6 +2,7 @@
 
 #include <compiler/LogicalFactory.h>
 #include <compiler/NodeFactory.h>
+#include <model/Model.h>
 #include <graph/LogicalNode.h>
 #include <graph/Node.h>
 #include <graph/ScalarLogicalNode.h>
@@ -35,7 +36,7 @@ bool lt(LogicalPair const &arg1, LogicalPair const &arg2)
 
 Node* LogicalFactory::getLinkNode(InverseLinkFunc const *link, 
 				  vector<Node const *> const &parents,
-				  Graph &graph)
+				  Model &model)
 {
     if (link == 0) {
 	throw invalid_argument("NULL function passed to getLogicalNode");
@@ -50,7 +51,7 @@ Node* LogicalFactory::getLinkNode(InverseLinkFunc const *link,
     else {
 	// Create a node
 
-	Node *lnode = 0;
+	DeterministicNode *lnode = 0;
 	if (isScalar(parents[0]->dim())) {
 	    lnode = new LinkNode(link, parents);
 	}
@@ -59,14 +60,14 @@ Node* LogicalFactory::getLinkNode(InverseLinkFunc const *link,
 	    lnode = new LogicalNode(link, parents);
 	}
 	_logicalmap[lpair] = lnode;
-	graph.add(lnode);
+	model.addNode(lnode);
 	return lnode;
     }
 }
 
 Node* LogicalFactory::getNode(Function const *func, 
 			      vector<Node const *> const &parents,
-			      Graph &graph)
+			      Model &model)
 {
     if (func == 0) {
 	throw invalid_argument("NULL function passed to getLogicalNode");
@@ -94,7 +95,7 @@ Node* LogicalFactory::getNode(Function const *func,
 	    }
 	}
 
-	Node *lnode = 0;
+	DeterministicNode *lnode = 0;
 	if (sfunc && !vectorized) {
 	    lnode = new ScalarLogicalNode(sfunc, parents);
 	}
@@ -102,7 +103,7 @@ Node* LogicalFactory::getNode(Function const *func,
 	    lnode = new LogicalNode(func, parents);
 	}
 	_logicalmap[lpair] = lnode;
-	graph.add(lnode);
+	model.addNode(lnode);
 	return lnode;
     }
 }

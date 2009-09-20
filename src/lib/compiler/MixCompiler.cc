@@ -179,14 +179,13 @@ getMixtureNode1(NodeArray *array, vector<SSI> const &limits, Compiler *compiler)
 	}
     }
 
-    Graph &compiler_graph = compiler->model().graph();
-
     /* Find stochastic parents (ancestors) and deterministic ancestors in
        forward sampling order */
   
     vector<StochasticNode*> stoch_parents;
     vector<Node*> dtrm_nodes;
-    classifyParents(indices, compiler_graph, stoch_parents, dtrm_nodes);
+    classifyParents(indices, compiler->model().graph(), stoch_parents, 
+		    dtrm_nodes);
 
     /* Test to see if all stochastic parents are discrete, scalar, with
        bounded support. If not we give up. */
@@ -303,11 +302,12 @@ getMixtureNode1(NodeArray *array, vector<SSI> const &limits, Compiler *compiler)
 
     //Look out for trivial mixture nodes in which all subsets are the same.
     bool trivial = true;
-    Node *subset_node0 = array->getSubset(ranges[0].second, compiler_graph);
+    Node *subset_node0 = array->getSubset(ranges[0].second, compiler->model());
 
     map<vector<int>, Node const *> subsets;  
     for (unsigned int i = 0; i < ranges.size(); ++i) {
-	Node *subset_node = array->getSubset(ranges[i].second, compiler_graph);
+	Node *subset_node = array->getSubset(ranges[i].second, 
+					     compiler->model());
 	if (!subset_node)
 	    return 0;
 	subsets[ranges[i].first] = subset_node;
@@ -322,7 +322,7 @@ getMixtureNode1(NodeArray *array, vector<SSI> const &limits, Compiler *compiler)
     }
 
     return compiler->mixtureFactory1().getMixtureNode(indices, subsets, 
-						     compiler_graph);
+						      compiler->model());
 }
 
 /* Add stochastic parents of given node to the set */
@@ -522,17 +522,14 @@ getMixtureNode3(NodeArray *array, vector<SSI> const &limits, Compiler *compiler)
 	ranges.push_back(pair<vector<int>, Range>(i, Range(lower_index, upper_index)));
     }
 
-
-    /* Convert these into subsets */
-    Graph &compiler_graph = compiler->model().graph();
-    
     //Look out for trivial mixture nodes in which all subsets are the same.
     bool trivial = true;
-    Node *subset_node0 = array->getSubset(ranges[0].second, compiler_graph);
+    Node *subset_node0 = array->getSubset(ranges[0].second, compiler->model());
 
     map<vector<int>, Node const *> subsets;  
     for (unsigned int i = 0; i < ranges.size(); ++i) {
-	Node *subset_node = array->getSubset(ranges[i].second, compiler_graph);
+	Node *subset_node = array->getSubset(ranges[i].second, 
+					     compiler->model());
 	if (!subset_node)
 	    return 0;
 	subsets[ranges[i].first] = subset_node;
@@ -547,20 +544,19 @@ getMixtureNode3(NodeArray *array, vector<SSI> const &limits, Compiler *compiler)
     }
 
     return compiler->mixtureFactory1().getMixtureNode(indices, subsets, 
-						     compiler_graph);
+						      compiler->model());
 }
 
 static Node * 
 getMixtureNode2(NodeArray *array, vector<SSI> const &limits, Compiler *compiler)
 {
-    Graph &cgraph = compiler->model().graph();
-
     vector<pair<vector<int>, Range> > ranges;  
     getSubsetRanges(ranges, limits, array->range());
 
     map<vector<int>, Node const *> subsets;
     for (unsigned int i = 0; i < ranges.size(); ++i) {
-	Node *subset_node =   array->getSubset(ranges[i].second, cgraph);
+	Node *subset_node =   array->getSubset(ranges[i].second, 
+					       compiler->model());
 	if (!subset_node)
 	    return 0;
 	subsets[ranges[i].first] = subset_node;
@@ -573,7 +569,8 @@ getMixtureNode2(NodeArray *array, vector<SSI> const &limits, Compiler *compiler)
 	}
     }
 
-    return compiler->mixtureFactory2().getMixtureNode(indices, subsets, cgraph);
+    return compiler->mixtureFactory2().getMixtureNode(indices, subsets, 
+						      compiler->model());
 }
 
 Node * getMixtureNode(ParseTree const * var, Compiler *compiler)

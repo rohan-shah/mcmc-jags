@@ -1,5 +1,6 @@
 #include <config.h>
 #include <compiler/ConstantFactory.h>
+#include <model/Model.h>
 #include <graph/ConstantNode.h>
 #include <compiler/NodeFactory.h>
 #include <util/integer.h>
@@ -19,7 +20,7 @@ ConstantFactory::ConstantFactory(unsigned int nchain)
 {
 }
 
-ConstantNode * ConstantFactory::getConstantNode(double value, Graph &graph)
+ConstantNode * ConstantFactory::getConstantNode(double value, Model &model)
 {
     ConstantNode *cnode = 0;
     const double eps = sqrt(DBL_EPSILON);
@@ -35,7 +36,7 @@ ConstantNode * ConstantFactory::getConstantNode(double value, Graph &graph)
 	}
 	
 	_constmap[value] = cnode;
-	graph.add(cnode);
+	model.addNode(cnode);
 	return cnode;
     }
     else {
@@ -45,7 +46,7 @@ ConstantNode * ConstantFactory::getConstantNode(double value, Graph &graph)
 
 ConstantNode * ConstantFactory::getConstantNode(vector<unsigned int> const &dim,
 						vector<double> const &value,
-                                                Graph &graph)
+                                                Model &model)
 {
     const double eps = sqrt(DBL_EPSILON);
     ConstantNode *cnode = 0;
@@ -76,7 +77,7 @@ ConstantNode * ConstantFactory::getConstantNode(vector<unsigned int> const &dim,
 	}
 	
 	_mv_constmap[cp] = cnode;
-	graph.add(cnode);
+	model.addNode(cnode);
 	return cnode;
     }
     else {
