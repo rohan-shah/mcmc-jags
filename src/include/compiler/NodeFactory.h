@@ -1,10 +1,10 @@
 #ifndef NODE_FACTORY_H_
 #define NODE_FACTORY_H_
 
-#include <graph/Graph.h>
-
 #include <vector>
 #include <cfloat>
+
+class Node;
 
 inline bool lt(double value1, double value2)
 {

@@ -1,15 +1,14 @@
 #ifndef MIXTURE_FACTORY_H_
 #define MIXTURE_FACTORY_H_
 
-#include <graph/Graph.h>
-#include <graph/Node.h>
-#include <graph/MixtureNode.h>
-
 #include <vector>
 #include <map>
 #include <cfloat>
 
+#include <graph/MixtureNode.h>
+
 class NodeArray;
+class Model;
 
 /**
  * A "mixture pair" uniquely indexes a mixture node. The first element
@@ -50,11 +49,11 @@ public:
    * shows the corresponding parent from which the mixture node copies
    * its value.
    *
-   * @param graph Graph to which newly allocated mixturenodes are added.
+   * @param graph Model to which newly allocated mixturenodes are added.
    *
    */
   MixtureNode *getMixtureNode(std::vector<Node const *> const &index,
-			      MixMap const &parameters, Graph &graph);
+			      MixMap const &parameters, Model &model);
 };
 
 #endif /* MIXTURE_FACTORY_H_ */
