@@ -44,15 +44,23 @@ namespace mix {
     {
 	vector<StochasticNode*> sparents;
         StochasticNodeSet::const_iterator p;
-	for (p = graph.stochasticNodes().begin(); p != graph.stochasticNodes().end(); ++p) {
-	 
-	    if ((*p)->distribution()->name() == "dnormmix") {
-		sparents = stochasticParents(*p, nodes, graph);
-		if (MixSampler::canSample(sparents, graph))
-		    break;
+	for (p = nodes.begin(); p != nodes.end(); ++p) {
+	    //Search candidate nodes for one with a stochastic child with distribution dnormmix
+	    StochasticNodeSet const *stoch_children = (*p)->stochasticChildren();
+	    StochasticNodeSet::const_iterator q;
+	    for (q = stoch_children->begin(); q != stoch_children->end(); ++q) {
+		if ((*q)->distribution()->name() == "dnormmix" && graph.contains(*q)) {
+		    //Find all stochastic parents of the dnormmix node
+		    sparents = stochasticParents(*q, nodes, graph);
+		    //Can we sample them?
+		    if (MixSampler::canSample(sparents, graph))
+			break;
+		}
 	    }
+	    if (q != stoch_children->end())
+		break;
 	}
-	if (p == graph.stochasticNodes().end()) {
+	if (p == nodes.end()) {
 	    return 0;
 	}
 
