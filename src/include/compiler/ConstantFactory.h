@@ -5,17 +5,17 @@
 #include <compiler/NodeFactory.h>
 
 class ConstantNode;
-class Graph;
+class Model;
 
 /**
  * @short STL function object for the map class using double as a key
  */
 struct ltdouble
 {
-  bool operator()(double arg1, double arg2) const
-  {
-    return lt(arg1, arg2);
-  }
+    bool operator()(double arg1, double arg2) const
+    {
+	return lt(arg1, arg2);
+    }
 };
 
 typedef std::pair<std::vector<unsigned int>, std::vector<double> > constpair;
@@ -25,8 +25,8 @@ typedef std::pair<std::vector<unsigned int>, std::vector<double> > constpair;
  *
  * The purpose of a ConstantFactory is to avoid unnecessary
  * duplication of constant nodes by having a container class and
- * factory for them that will create and/or lookup constant
- * nodes based on their value.
+ * factory for them that will create and/or lookup constant nodes
+ * based on their value.
  */
 class ConstantFactory 
 { 
@@ -38,17 +38,17 @@ public:
     /**
      * Get a constant node with a given value.  The results are cached,
      * so if a request is repeated, the same node will be returned.
-     * If a node is newly allocated, it is inserted into the given graph.
+     * If a node is newly allocated, it is added to the given model.
      */
-    ConstantNode *getConstantNode(double value, Graph &graph);
+    ConstantNode *getConstantNode(double value, Model &graph);
     /**
      * Get a multivariate constant node. The results are cached
      * so that if a request is repeated, the same node will be returned.
-     * If a node is newly allocated, it is inserted into the given graph.
+     * If a node is newly allocated, it is added to the given model.
      */
     ConstantNode *getConstantNode(std::vector<unsigned int> const &dim,
 				  std::vector<double> const &value,
-				  Graph &graph);
+				  Model &graph);
 };
 
 #endif /* CONSTANT_FACTORY_H_ */
