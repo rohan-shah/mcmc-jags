@@ -2,6 +2,7 @@
 #define DSUM_FACTORY_H_
 
 #include <sampler/SamplerFactory.h>
+
 class StochasticNode;
 class Graph;
 
@@ -11,7 +12,7 @@ class Graph;
 class DSumFactory : public SamplerFactory
 {
  public:
-    Sampler * makeSampler(std::set<StochasticNode*, less_snode> const &nodes, 
+    Sampler * makeSampler(StochasticNodeSet const &nodes, 
 		     Graph const &graph) const;
 };
 

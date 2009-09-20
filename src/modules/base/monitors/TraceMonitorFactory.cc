@@ -3,6 +3,7 @@
 
 #include <model/Model.h>
 #include <graph/StochasticNode.h>
+#include <graph/NodeSet.h>
 
 #include <set>
 
@@ -31,9 +32,9 @@ namespace base {
 	vector<Node const*> dnodes;
 
         if (type == "trace") {
-	    set<StochasticNode*,less_snode> const &snodes = 
+	    StochasticNodeSet const &snodes = 
 		model->graph().stochasticNodes();
-	    set<StochasticNode*, less_snode>::const_iterator p ;
+	    StochasticNodeSet::const_iterator p ;
 	    for (p = snodes.begin() ; p != snodes.end(); ++p) {
 		//Find stochastic nodes with observed parents
 		bool istop = true;

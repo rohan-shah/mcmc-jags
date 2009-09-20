@@ -11,7 +11,7 @@ namespace mix {
     class MixSamplerFactory : public SamplerFactory
     {
     public:
-	Sampler * makeSampler(std::set<StochasticNode*, less_snode> const &nodes, 
+	Sampler * makeSampler(StochasticNodeSet const &nodes, 
 			      Graph const &graph) const;
     };
 

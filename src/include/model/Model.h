@@ -35,6 +35,7 @@ private:
   std::vector<Node*> _sampled_extra;
   std::list<Monitor*> _monitors;
   std::list<Monitor*> _default_monitors;
+  std::vector<StochasticNode*> _stochastic_nodes;
   bool _is_initialized;
   bool _adapt;
   bool _data_gen;

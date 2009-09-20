@@ -45,7 +45,6 @@ class StochasticNode : public Node {
     Node const *_lower;
     Node const *_upper;
     bool _observed;
-    unsigned long _serial;
 public:
     /**
      * Constructs a new StochasticNode given a distribution, a vector

@@ -77,6 +77,7 @@ unsigned int Graph::size() const
   return _nodes.size();
 }
 
+#include <graph/NodeError.h>
 bool Graph::isClosed() const
 {
     //Determine whether any nodes in the graph have children or
@@ -90,6 +91,7 @@ bool Graph::isClosed() const
 	     j != parents.end(); j++) 
 	{
 	    if (!this->contains(*j)) {
+	        throw NodeError(*i, "Bad parent"); //debuggin
 		return false;
 	    }
 	}
@@ -99,6 +101,7 @@ bool Graph::isClosed() const
 	for (StochasticNodeSet::iterator k = sch->begin(); k != sch->end(); k++)
 	{
 	    if (!this->contains(*k)) {
+	        throw NodeError(*k, "is bad stochastic child"); //debuggin
 		return false;
 	    }
 	}
@@ -107,6 +110,7 @@ bool Graph::isClosed() const
 	for (set<DeterministicNode*>::iterator k = dch->begin(); k != dch->end(); k++)
 	{
 	    if (!this->contains(*k)) {
+	        throw NodeError(*k, "is bad deterministic child"); //debuggin
 		return false;
 	    }
 	}
@@ -200,10 +204,4 @@ void Graph::getSortedNodes(vector<Node*> &sortednodes) const
 {
     set<Node*> S = _nodes;
     getSortedNodes(S, sortednodes);
-}
-
-//FIXME. Should have its own file
-bool less_snode::operator()(StochasticNode const *lhs, StochasticNode const *rhs) const
-{
-	return *lhs < *rhs;
 }

@@ -36,7 +36,7 @@ class Compiler {
   bool *_is_resolved;
   bool _strict_resolution;
   int _index_expression;
-  Graph _index_graph;
+  std::vector<Node*> _index_nodes;
   ConstantFactory _constantfactory;
   LogicalFactory _logicalfactory;
   MixtureFactory _mixfactory1;

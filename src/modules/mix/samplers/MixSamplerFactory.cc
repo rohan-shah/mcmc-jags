@@ -20,14 +20,14 @@ static bool isStoch(Node const *node)
 //FIXME: This could be more generally useful - in library?
 static 
 vector<StochasticNode*> stochasticParents(Node const *node, 
-					  set<StochasticNode*,less_snode> const &nodes,
+					  StochasticNodeSet const &nodes,
 					  Graph const &graph)
 {
     GraphMarks marks(graph);
     marks.markParents(node, isStoch, 2);
     
     vector<StochasticNode*> parents;
-    for (set<StochasticNode*, less_snode>::const_iterator q = nodes.begin();
+    for (StochasticNodeSet::const_iterator q = nodes.begin();
 	 q != nodes.end(); ++q)
     {
 	if (marks.mark(*q) == 2) {
@@ -39,11 +39,11 @@ vector<StochasticNode*> stochasticParents(Node const *node,
 
 namespace mix {
 
-    Sampler * MixSamplerFactory::makeSampler(set<StochasticNode*, less_snode> const &nodes, 
+    Sampler * MixSamplerFactory::makeSampler(StochasticNodeSet const &nodes, 
 					     Graph const &graph) const
     {
 	vector<StochasticNode*> sparents;
-        set<StochasticNode*, less_snode>::const_iterator p;
+        StochasticNodeSet::const_iterator p;
 	for (p = graph.stochasticNodes().begin(); p != graph.stochasticNodes().end(); ++p) {
 	 
 	    if ((*p)->distribution()->name() == "dnormmix") {
