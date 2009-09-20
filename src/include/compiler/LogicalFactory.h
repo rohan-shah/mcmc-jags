@@ -1,9 +1,6 @@
 #ifndef LOGICAL_FACTORY_H_
 #define LOGICAL_FACTORY_H_
 
-#include <graph/Graph.h>
-#include <graph/Node.h>
-
 #include <vector>
 #include <utility>
 #include <map>
@@ -12,6 +9,8 @@
 class InverseLinkFunc;
 class Function;
 class LinkNode;
+class Node;
+class Model;
 
 /**
  * A "logical pair", consisting of a function and a vector of arguments,
@@ -63,17 +62,17 @@ public:
      * Get a logical node with a given function and given parameters.
      * The results are cached, so if a request is repeated, the same
      * node will be returned. If a newly allocated node is returned,
-     * it is also added to the given Graph.
+     * it is also added to the given Model.
      */
     Node *getNode(Function const *func, 
 		  std::vector<Node const*> const &param,
-		  Graph &graph);
+		  Model &model);
     /**
      * Get a link node
      */
     Node *getLinkNode(InverseLinkFunc const *link, 
 		      std::vector<Node const *> const &parents,
-		      Graph &graph);
+		      Model &model);
 };
 
 #endif /* LOGICAL_FACTORY_H_ */
