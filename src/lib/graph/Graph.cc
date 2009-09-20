@@ -24,10 +24,6 @@ Graph::Graph()
 
 Graph::~Graph()
 {
-  for (set<Node*>::iterator p = _nodes.begin(); p != _nodes.end(); p++) {
-    (*p)->unref();
-  }
-  Node::sweep();
 }
 
 void Graph::add(StochasticNode *snode)
@@ -36,7 +32,6 @@ void Graph::add(StochasticNode *snode)
       throw invalid_argument("Attempt to add null node to graph");
     }
     if (!this->contains(snode)) {
-      snode->ref();
       _nodes.insert(snode);
       _stoch_nodes.insert(snode);
     }
@@ -48,7 +43,6 @@ void Graph::add(Node *node)
     throw invalid_argument("Attempt to add null node to graph");
   }
   if (!this->contains(node)) {
-    node->ref();
     _nodes.insert(node);
   }
 }
@@ -58,27 +52,19 @@ void Graph::remove(StochasticNode *snode)
     if (this->contains(snode)) {
        _stoch_nodes.erase(snode);
        _nodes.erase(snode);
-       snode->unref();
     }
-    Node::sweep();
 }
 
 void Graph::remove(Node *node)
 {
   if (this->contains(node)) {
       _nodes.erase(node);
-      node->unref();
   }
-  Node::sweep();
 }
 
 void Graph::clear()
 {
-    for (set<Node*>::iterator p = _nodes.begin(); p != _nodes.end(); ++p) {
-	(*p)->unref();
-    }
     _nodes.clear();
-    Node::sweep();
 }
 
 bool Graph::contains(Node const *node) const
@@ -127,150 +113,6 @@ bool Graph::isClosed() const
     }
     return true;
 }
-
-/*
-bool Graph::isConnected() const
-{
-  GraphMarks marks(*this);
- 
-  // Start by taking an arbitrary node 
-  set<Node*>::const_iterator i = _nodes.begin();
-  Node *anode = *i;
-
-  // Mark the node, its parents and ancestors 
-  marks.mark(anode, 1);
-  marks.markAncestors(anode, 1);
-  marks.markDescendants(anode, 1);
-  
-  // If the graph is connected, all the other nodes will be marked 
-  for (++i; i != _nodes.end(); ++i) {
-    if (marks.mark(*i) == 0) {
-      return false;
-    }
-  }
-  return true;
-}
-*/
-
-/*
-bool Graph::isTree()
-{
-     Determine whether a graph is a tree
-     All nodes in the graph have exactly one parent in the graph,
-     except for the root node which has none. The root node is unique
-  
-  bool foundroot = false;
-
-  for (set<Node*>::iterator i = _nodes.begin(); 
-       i != _nodes.end(); i++) {
-    
-    int nparents = 0;
-    vector<Node*> const &parents = (*i)->parents();
-    for (vector<Node*>::const_iterator p = parents.begin(); 
-	 p != parents.end(); ++i) {
-      
-      if (contains(*p))
-	nparents++;
-    }
-      
-    switch (nparents) {
-    case 0:
-      if (foundroot)
-	return false;
-      else 
-	foundroot = true;
-      break;
-    case 1:
-      break;
-    default:
-      return false;
-      break;
-    }
-  }
-  return true;
-}
-*/
-
-/*
-static bool findDescendant(Node const *node, Node const *target, 
-			   Graph const *graph, GraphMarks &marks)
-{
-  //Determine whether "target" is a descendent of "node" within the graph,
-  //   excluding nodes that are already marked.
-
-  if (marks.mark(node) == 1)
-    return false;
-
-  for (set<Node*>::const_iterator i = node->children().begin(); 
-       i != node->children().end(); i++) 
-    {
-      if (graph->contains(*i)) {
-	if (*i == target)
-	  return true;
-	if (findDescendant(*i, target, graph, marks))
-	  return true;
-      }
-    }
-
-  marks.mark(node, 1);
-  return false;
-}
-
-bool Graph::hasCycle()
-{
-  GraphMarks marks(*this);
-  for (set<Node*>::const_iterator p = _nodes.begin(); p != _nodes.end(); ++p) 
-    {
-      if (findDescendant(*p, *p, this, marks))
-	return true;
-    }
-  return false;
-}
-*/
-
-/*
-bool Graph::hasCycle() const
-{
-  //   Recursively grows a an acyclic graph G, consisting of marked
-  //   nodes. If G grows to the whole graph then it is acyclic.
-  //
-  //   We start with nodes that have no children. On each iteration
-  //   we add nodes whose children are all in G. Adding such nodes
-  //   cannot create a cycle.
-
-  GraphMarks marks(*this);
-  while (true) {
-    long marked = 0;
-    long unmarked = 0;
-    for (set<Node*>::const_iterator p = _nodes.begin(); p != _nodes.end();
-	 ++p)
-      {
-	if (marks.mark(*p) == 0) {
-	  bool can_mark = true;
-	  set<Node*> const *children = (*p)->children();
-	  for(set<Node*>::const_iterator c = children->begin();
-	      c != children->end(); ++c) 
-	    {
-	      if (marks.mark(*c) == 0) {
-		can_mark = false;
-		break;
-	      }
-	    }
-	  if (can_mark) {
-	    marks.mark(*p,1);
-	    ++marked;
-	  }
-	  else {
-	    ++unmarked;
-	  }
-	}
-      }
-    if (marked == 0) {
-      return (unmarked > 0);
-    }
-  }
-}
-*/
 
 StochasticNodeSet const &Graph::stochasticNodes() const
 {

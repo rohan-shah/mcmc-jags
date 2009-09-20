@@ -9,6 +9,7 @@
 #include <graph/GraphMarks.h>
 #include <graph/StochasticNode.h>
 #include <graph/DeterministicNode.h>
+#include <graph/ConstantNode.h>
 #include <graph/NodeError.h>
 #include <graph/Node.h>
 
@@ -56,9 +57,20 @@ Model::~Model()
     {
 	delete *p;
     }
+
+    //Delete nodes in reverse sampling order
+    vector<Node*> managed_nodes;
+    _graph.getSortedNodes(managed_nodes);
+    while(!managed_nodes.empty())
+    {
+	Node *node = managed_nodes.back();
+	delete node;
+	managed_nodes.pop_back();
+    }
+
 }
 
-Graph &Model::graph() 
+Graph const &Model::graph() 
 {
     return _graph;
 }
@@ -662,3 +674,17 @@ void Model::clearDefaultMonitors(string const &type)
     setSampledExtra();
 }
 
+void Model::addNode(StochasticNode *node)
+{
+    _graph.add(node);
+}
+
+void Model::addNode(DeterministicNode *node)
+{
+    _graph.add(node);
+}
+
+void Model::addNode(ConstantNode *node)
+{
+    _graph.add(node);
+}

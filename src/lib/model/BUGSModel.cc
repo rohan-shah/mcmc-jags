@@ -31,7 +31,7 @@ using std::runtime_error;
 typedef pair<string, Range> NodeId;
 
 BUGSModel::BUGSModel(unsigned int nchain)
-  : Model(nchain), _symtab(graph(), nchain)
+    : Model(nchain), _symtab(this)
 {
 }
 
@@ -75,7 +75,7 @@ Node *BUGSModel::getNode(string const &name, Range const &target_range,
     }
     message.clear();
     unsigned int NNode = graph().size();
-    Node *node = array->getSubset(range, graph());
+    Node *node = array->getSubset(range, *this);
     if (graph().size() != NNode) {
 	addExtraNode(node); // Node was newly allocated
     }

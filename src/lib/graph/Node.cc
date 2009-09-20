@@ -17,34 +17,8 @@ using std::find;
 class DeterminsticNode;
 class StochasticNode;
 
-static vector<Node const*> &marked_nodes()
-{
-    // Vector of nodes marked for deletion
-
-    static vector<Node const*> _marked_nodes;
-    return _marked_nodes;
-}
-
-void Node::sweep() {
-
-    //Memory management for nodes
-
-    while (!marked_nodes().empty()) {
-
-	//When nodes are deleted, they may push other nodes onto the 
-	//marked list. So we copy it to a new vector.
-
-	vector<Node const*> delete_list = marked_nodes();
-	marked_nodes().clear();
-	
-	for (unsigned int i = 0; i < delete_list.size(); ++i) {
-	    delete delete_list[i];
-	}
-    }
-}
-
 Node::Node(vector<unsigned int> const &dim, unsigned int nchain)
-    : _parents(0), _stoch_children(0), _dtrm_children(0), _ref(0), 
+    : _parents(0), _stoch_children(0), _dtrm_children(0), 
       _dim(getUnique(dim)), _length(product(dim)), _nchain(nchain), _data(0)
       
 {
@@ -63,7 +37,7 @@ Node::Node(vector<unsigned int> const &dim, unsigned int nchain)
 
 Node::Node(vector<unsigned int> const &dim, 
 	   vector<Node const *> const &parents)
-    : _parents(parents), _stoch_children(0), _dtrm_children(0),  _ref(0),
+    : _parents(parents), _stoch_children(0), _dtrm_children(0), 
       _dim(getUnique(dim)), _length(product(dim)),
       _nchain(countChains(parents)), _data(0)
 {
@@ -92,24 +66,6 @@ Node::~Node()
     delete [] _data;
     delete _stoch_children;
     delete _dtrm_children;
-}
-
-void Node::ref()
-{
-    _ref++;
-}
-
-void Node::unref()
-{
-    _ref--;
-    if (_ref == 0 && _dtrm_children->empty() && _stoch_children->empty()) {
-	marked_nodes().push_back(this);
-    }
-}
-
-unsigned int Node::refCount() const
-{
-    return _ref;
 }
 
 vector <Node const *> const &Node::parents() const

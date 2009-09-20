@@ -1,5 +1,6 @@
 #include <config.h>
 #include <model/NodeArray.h>
+#include <model/Model.h>
 #include <graph/ConstantNode.h>
 #include <graph/StochasticNode.h>
 #include <graph/AggNode.h>
@@ -111,7 +112,7 @@ Node *NodeArray::find(Range const &target_range) const
   return node;
 }
 
-Node *NodeArray::getSubset(Range const &target_range, Graph &graph)
+Node *NodeArray::getSubset(Range const &target_range, Model &model)
 {
   //Check validity of target range
     if (!_range.contains(target_range)) {
@@ -142,11 +143,11 @@ Node *NodeArray::getSubset(Range const &target_range, Graph &graph)
     nodes.push_back(_node_pointers[offset]);
     offsets.push_back(_offsets[offset]);
   }
-  node = new AggNode(target_range.dim(true), nodes, offsets);
-  _generated_nodes.insert(std::pair<Range,Node*>(target_range, node));
-  graph.add(node);
-  _member_graph.add(node);
-  return node;
+  AggNode *anode = new AggNode(target_range.dim(true), nodes, offsets);
+  _generated_nodes.insert(std::pair<Range,Node*>(target_range, anode));
+  model.addNode(anode);
+  _member_graph.add(anode);
+  return anode;
 }
 
 void NodeArray::setValue(SArray const &value, unsigned int chain)
@@ -237,7 +238,7 @@ void NodeArray::getValue(SArray &value, unsigned int chain,
 //FIXME: A lot of code overlap with setValue here.
 
 #include <iostream>
-void NodeArray::setData(SArray const &value, Graph &graph)
+void NodeArray::setData(SArray const &value, Model *model)
 {
     if (!(_range == value.range())) {
 	throw runtime_error(string("Dimension mismatch when setting value of node array ") + name());
@@ -253,7 +254,7 @@ void NodeArray::setData(SArray const &value, Graph &graph)
 	    if (_node_pointers[i] == 0) {
 		//Insert a new constant node
 		ConstantNode *cnode = new ConstantNode(x[i], _nchain);
-		graph.add(cnode);
+		model->addNode(cnode);
 		insert(cnode, _range.leftIndex(i));
 	    }
 	    else {
@@ -302,13 +303,6 @@ Range const &NodeArray::range() const
 {
   return _range;
 }
-
-/*
-Graph const &NodeArray::graph() const
-{
-  return _graph;
-}
-*/
 
 bool NodeArray::findActiveIndices(vector<unsigned int> &ind, unsigned int k, 
 				  vector<int> const &lower, vector<unsigned int> const &dim) const
