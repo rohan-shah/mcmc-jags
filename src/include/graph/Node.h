@@ -12,18 +12,7 @@ class DeterministicNode;
 class Graph;
 
 /**
- * @short Node in a directed acyclic graph representingn a Bayesian model 
- *
- * Nodes are reference managed and will delete themselves when the
- * reference count reaches zero.  Referencing and dereferencing
- * takes place automatically when a node is inserted into/removed
- * from a graph, but can also be done by calling the ref and
- * unref member functions.
- *
- * Nodes should be dynamically allocated, and should be inserted
- * into a Graph as soon as they are created.  
- *
- * @see Graph
+ * @short Node in a directed acyclic graph
  */
 class Node {
     std::vector<Node const *> _parents;
@@ -35,7 +24,6 @@ class Node {
     Node &operator=(Node const &rhs);
 
 protected:
-    unsigned int _ref;
     std::vector<unsigned int> const &_dim;
     unsigned int _length;
     const unsigned int _nchain;
@@ -64,21 +52,6 @@ public:
      * Destructor. 
      */
     virtual ~Node();
-    /**
-     * Increments the reference count.
-     */
-    void ref();
-    /**
-     * Decrements reference count. When the reference count is zero,
-     * the node is marked for deletion.
-     *
-     * @see Node##sweep
-     */
-    void unref();
-    /**
-     * Shows the current reference count.
-     */
-    unsigned int refCount() const;
     /**
      * Number of chains.
      */ 
@@ -193,11 +166,6 @@ public:
      * @param parents Parents of the cloned node. 
      */
     virtual Node * clone(std::vector<Node const *> const &parents) const = 0;
-    /**
-     * Deletes nodes that have been marked for deletion because their
-     * reference count has reached zero.
-     */
-    static void sweep();
     void addChild(StochasticNode *node) const;
     void removeChild(StochasticNode *node) const;
     void addChild(DeterministicNode *node) const;

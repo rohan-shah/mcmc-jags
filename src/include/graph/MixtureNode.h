@@ -5,6 +5,8 @@
 #include <map>
 #include <vector>
 
+class Node;
+
 /**
  * A MixMap is an STL map object.  The key represents an integer-valued
  * index, and the value is the corresponding Node from which a

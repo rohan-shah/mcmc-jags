@@ -13,6 +13,9 @@ class SamplerFactory;
 class RNG;
 class RNGFactory;
 class MonitorFactory;
+class StochasticNode;
+class DeterministicNode;
+class ConstantNode;
 
 /**
  * @short Graphical model 
@@ -49,7 +52,7 @@ public:
    * Returns the Graph associated with the model. This graph contains
    * all the nodes in the model
    */
-  Graph &graph();
+  Graph const &graph();
   /**
    * Initializes the model.  Initialization takes place in three steps.
    *
@@ -118,6 +121,26 @@ public:
    * to setDefaultMonitors, and deletes them.
    */
   void clearDefaultMonitors(std::string const &type);
+  /**
+   * Adds a stochastic node to the model.  The node must be
+   * dynamically allocated.  The model is responsible for memory
+   * management of the added node and will delete the node when it is
+   * destroyed.
+   */
+  void addNode(StochasticNode *node);
+  /**
+   * Adds a deterministc node to the model.  The node must be
+   * dynamically allocated.  The model is responsible for memory
+   * management of the added node and will delete the node when it is
+   * destroyed.
+   */
+  void addNode(DeterministicNode *node);
+  /**
+   * Adds a constant node to the model.  The node must be dynamically
+   * allocated.  The model is responsible for memory management of the
+   * added node and will delete the node when it is destroyed.
+   */
+  void addNode(ConstantNode *node);
   /**
    * After the model is initialized, extra uninformative nodes may be
    * added to the graph (For example, a node may be added that
