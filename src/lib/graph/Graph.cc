@@ -17,24 +17,8 @@ using std::logic_error;
 using std::reverse;
 
 Graph::Graph()
-    : _nodes(), _stoch_nodes()
+    : _nodes() 
 {
-}
-
-
-Graph::~Graph()
-{
-}
-
-void Graph::add(StochasticNode *snode)
-{
-    if (!snode) {
-      throw invalid_argument("Attempt to add null node to graph");
-    }
-    if (!this->contains(snode)) {
-      _nodes.insert(snode);
-      _stoch_nodes.insert(snode);
-    }
 }
 
 void Graph::add(Node *node)
@@ -45,14 +29,6 @@ void Graph::add(Node *node)
   if (!this->contains(node)) {
     _nodes.insert(node);
   }
-}
-
-void Graph::remove(StochasticNode *snode)
-{
-    if (this->contains(snode)) {
-       _stoch_nodes.erase(snode);
-       _nodes.erase(snode);
-    }
 }
 
 void Graph::remove(Node *node)
@@ -116,11 +92,6 @@ bool Graph::isClosed() const
 	}
     }
     return true;
-}
-
-StochasticNodeSet const &Graph::stochasticNodes() const
-{
-    return _stoch_nodes;
 }
 
 set<Node*> const &Graph::nodes() const
