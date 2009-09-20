@@ -1,5 +1,6 @@
 #include <config.h>
 #include <model/SymTab.h>
+#include <model/Model.h>
 #include <graph/Node.h>
 #include <util/nainf.h>
 
@@ -16,8 +17,8 @@ using std::runtime_error;
 using std::logic_error;
 using std::set;
 
-SymTab::SymTab(Graph &graph, unsigned int nchain)
-    : _graph(graph), _nchain(nchain)
+SymTab::SymTab(Model *model)
+    : _model(model)
 {
 }
 
@@ -38,7 +39,7 @@ void SymTab::addVariable(string const &name, vector<unsigned int> const &dim)
     throw runtime_error(msg);
   }
 
-  NodeArray *array = new NodeArray(name, dim, _nchain);
+  NodeArray *array = new NodeArray(name, dim, _model->nchain());
   _varTable[name] = array;
 }
 
@@ -65,7 +66,7 @@ void SymTab::writeData(std::map<std::string, SArray> const &data_table)
 	msg.append(p->first);
 	throw runtime_error(msg);
       }
-      array->setData(p->second, _graph);
+      array->setData(p->second, _model);
     }
   }
 }
@@ -106,7 +107,7 @@ void SymTab::readValues(map<string, SArray> &data_table,
 		        unsigned int chain,
                         bool (*condition)(Node const *)) const
 {
-    if (chain > _nchain) 
+    if (chain > _model->nchain()) 
 	throw logic_error("Invalid chain in SymTab::readValues");
     if (!condition) 
 	throw logic_error("NULL condition in Symtab::readValues");
@@ -289,8 +290,9 @@ string SymTab::getName(Node const *node) const
     return node->deparse(parnames);
 }
 
+//FIXME: Necessary?
 unsigned int SymTab::nchain() const
 {
-  return _nchain;
+    return _model->nchain();
 }
     
