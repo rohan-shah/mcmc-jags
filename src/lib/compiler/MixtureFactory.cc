@@ -1,6 +1,7 @@
 #include <config.h>
 #include <compiler/MixtureFactory.h>
 #include <compiler/NodeFactory.h>
+#include <model/Model.h>
 #include <graph/MixtureNode.h>
 #include <model/NodeArray.h>
 
@@ -13,7 +14,7 @@ using std::logic_error;
 
 MixtureNode * 
 MixtureFactory::getMixtureNode(vector<Node const *> const &index_nodes,
-			       MixMap const &mixmap, Graph &graph)
+			       MixMap const &mixmap, Model &model)
 {
     /* 
        Separate the index values from the parameters. Only the latter
@@ -41,7 +42,7 @@ MixtureFactory::getMixtureNode(vector<Node const *> const &index_nodes,
 	
 	MixtureNode *mix = new MixtureNode(index_nodes, mixmap);
 	_mix_node_map[mpair] = mix;
-	graph.add(mix);
+	model.addNode(mix);
 	return mix;
     }
 }
