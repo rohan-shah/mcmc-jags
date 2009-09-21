@@ -62,7 +62,7 @@ static bool isInformative(StochasticNode *node, Graph const &sample_graph)
     if (node->isObserved())
 	return true;
 
-    for (StochasticNodeSet::iterator p = node->stochasticChildren()->begin();
+    for (set<StochasticNode*>::iterator p = node->stochasticChildren()->begin();
          p != node->stochasticChildren()->end(); ++p) 
     {
         if (isInformative(*p, sample_graph)) 
@@ -82,7 +82,7 @@ static bool isInformative(DeterministicNode *node, Graph const &sample_graph)
     if (!sample_graph.contains(node))
 	return false;
 
-    for (StochasticNodeSet::iterator p = node->stochasticChildren()->begin();
+    for (set<StochasticNode*>::iterator p = node->stochasticChildren()->begin();
          p != node->stochasticChildren()->end(); ++p) 
     {
         if (isInformative(*p, sample_graph)) 
@@ -98,7 +98,7 @@ static bool isInformative(DeterministicNode *node, Graph const &sample_graph)
 }
 
 static bool classifyNode(StochasticNode *snode, Graph const &sample_graph, 
-			 ConstStochasticNodeSet &sset)
+			 set<StochasticNode const *> &sset)
 {
     // classification function for stochastic nodes
       
@@ -116,7 +116,7 @@ static bool classifyNode(StochasticNode *snode, Graph const &sample_graph,
 }
 
 static bool classifyNode(DeterministicNode *dnode, Graph const &sample_graph,
-                         ConstStochasticNodeSet &sset,
+                         set<StochasticNode const *> &sset,
 			 set<DeterministicNode const *> &dset,
 			 vector<DeterministicNode *> &dvec)
 {
@@ -129,7 +129,7 @@ static bool classifyNode(DeterministicNode *dnode, Graph const &sample_graph,
 	return true;
     
     bool informative = false;
-    StochasticNodeSet::const_iterator p; 
+    set<StochasticNode*>::const_iterator p; 
     for (p = dnode->stochasticChildren()->begin(); 
 	 p != dnode->stochasticChildren()->end(); ++p)
     {
@@ -157,7 +157,7 @@ void Sampler::classifyChildren(vector<StochasticNode *> const &nodes,
 			       vector<DeterministicNode*> &dtrm_nodes)
 {
     set<DeterministicNode const *> dset;
-    ConstStochasticNodeSet sset;
+    set<StochasticNode const *> sset;
 
     dtrm_nodes.clear();
 
@@ -167,8 +167,8 @@ void Sampler::classifyChildren(vector<StochasticNode *> const &nodes,
 	if (!graph.contains(*p)) {
 	    throw logic_error("Sampled node outside of sampling graph");
 	}
-	StochasticNodeSet const *sch = (*p)->stochasticChildren();
-	for (StochasticNodeSet::const_iterator q = sch->begin();
+	set<StochasticNode*> const *sch = (*p)->stochasticChildren();
+	for (set<StochasticNode*>::const_iterator q = sch->begin();
 	     q != sch->end(); ++q)
 	{
 	    classifyNode(*q, graph, sset);
@@ -190,7 +190,7 @@ void Sampler::classifyChildren(vector<StochasticNode *> const &nodes,
     }
 
     stoch_nodes.clear();
-    for (ConstStochasticNodeSet::const_iterator i = sset.begin();
+    for (set<StochasticNode const *>::const_iterator i = sset.begin();
          i != sset.end(); ++i)
     {
        stoch_nodes.push_back(*i);
@@ -350,10 +350,10 @@ unsigned int Sampler::length() const
 }
 
 static void stochChildren(Node *node, Graph const &graph,
-			  ConstStochasticNodeSet &children)
+			  set<StochasticNode const *> &children)
 {
-    StochasticNodeSet const *sch = node->stochasticChildren();
-    for (StochasticNodeSet::const_iterator p = sch->begin();
+    set<StochasticNode*> const *sch = node->stochasticChildren();
+    for (set<StochasticNode*>::const_iterator p = sch->begin();
 	 p != sch->end(); ++p)
     {
 	if (graph.contains(*p))
@@ -370,7 +370,7 @@ static void stochChildren(Node *node, Graph const &graph,
     
 void Sampler::getStochasticChildren(vector<StochasticNode *> const &nodes,
 				    Graph const &graph,
-				    ConstStochasticNodeSet &children)
+				    set<StochasticNode const *> &children)
 
 {
 

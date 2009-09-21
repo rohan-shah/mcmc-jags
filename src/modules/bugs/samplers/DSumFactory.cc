@@ -4,7 +4,6 @@
 #include <graph/StochasticNode.h>
 #include <graph/Graph.h>
 #include <graph/NodeError.h>
-#include <graph/NodeSet.h>
 #include <sampler/DensitySampler.h>
 
 #include "DSumFactory.h"
@@ -24,7 +23,7 @@ static StochasticNode const *getDSumChild(StochasticNode *node)
     if (node->length() != 1 || !node->isDiscreteValued())
 	return 0;
     
-    StochasticNodeSet::const_iterator p;
+    set<StochasticNode*>::const_iterator p;
     for (p = node->stochasticChildren()->begin(); 
 	 p != node->stochasticChildren()->end(); ++p) 
     {
@@ -37,12 +36,12 @@ static StochasticNode const *getDSumChild(StochasticNode *node)
 
 
 Sampler * 
-DSumFactory::makeSampler(StochasticNodeSet const &nodes,
+DSumFactory::makeSampler(set<StochasticNode*> const &nodes,
 			 Graph const &graph) const
 {
     //Find DSum node
     StochasticNode const *dsum_node = 0;
-    for (StochasticNodeSet::const_iterator p = nodes.begin(); 
+    for (set<StochasticNode*>::const_iterator p = nodes.begin(); 
 	 p != nodes.end(); ++p) 
     {
 	dsum_node = getDSumChild(*p);
@@ -60,7 +59,7 @@ DSumFactory::makeSampler(StochasticNodeSet const &nodes,
     vector<Node const *> const &parents = dsum_node->parents();
     vector<Node const *>::const_iterator pp;
     for (pp = parents.begin(); pp != parents.end(); ++pp) {
-	StochasticNodeSet::const_iterator q =
+	set<StochasticNode*>::const_iterator q =
 	    find(nodes.begin(), nodes.end(), *pp);
 	if (q != nodes.end()) {
 	    parameters.push_back(*q);

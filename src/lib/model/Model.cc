@@ -232,7 +232,7 @@ void Model::chooseSamplers()
     //Triage on marked nodes. We do this twice: once for stochastic
     //nodes and once for all nodes.
 
-    StochasticNodeSet sset;
+    set<StochasticNode*> sset;
     for(p = _stochastic_nodes.begin(); p != _stochastic_nodes.end(); ++p) {
 	switch(marks.mark(*p)) {
 	case 0:

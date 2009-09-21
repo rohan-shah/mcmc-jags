@@ -12,7 +12,7 @@ class Graph;
 class DSumFactory : public SamplerFactory
 {
  public:
-    Sampler * makeSampler(StochasticNodeSet const &nodes, 
+    Sampler * makeSampler(std::set<StochasticNode*> const &nodes, 
 		     Graph const &graph) const;
 };
 

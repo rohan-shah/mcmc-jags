@@ -35,7 +35,7 @@ using std::string;
 */
 static bool aggregateLinear(StochasticNode *candidate_node,
 			    vector<StochasticNode*> &sample_nodes,
-			    ConstStochasticNodeSet &stochastic_children,
+			    set<StochasticNode const *> &stochastic_children,
 			    Graph const &graph)
 {
 
@@ -76,14 +76,14 @@ static bool aggregateLinear(StochasticNode *candidate_node,
 }
 
 //Utility function
-static ConstStochasticNodeSet
+static set<StochasticNode const *>
 getStochasticChildren(StochasticNode *snode, Graph const &graph)
 {
     vector<StochasticNode const*> stoch_nodes;
     vector<DeterministicNode*> dtrm_nodes;
     Sampler::classifyChildren(vector<StochasticNode*>(1,snode), 
 			      graph, stoch_nodes, dtrm_nodes);
-    ConstStochasticNodeSet stochastic_children;
+    set<StochasticNode const *> stochastic_children;
     for (unsigned int i = 0; i < stoch_nodes.size(); ++i) {
 	stochastic_children.insert(stoch_nodes[i]);
     }
@@ -174,7 +174,7 @@ namespace glm {
     {}
     
     Sampler * 
-    GLMFactory::makeSampler(StochasticNodeSet const &nodes, 
+    GLMFactory::makeSampler(set<StochasticNode*> const &nodes, 
 			    Graph const &graph) const
     {
 	/* 
@@ -183,7 +183,7 @@ namespace glm {
 	*/
 	vector<StochasticNode*> candidate_nodes;
 	map<Node const*, unsigned int> candidate_map;
-	for (StochasticNodeSet::const_iterator p = nodes.begin();
+	for (set<StochasticNode*>::const_iterator p = nodes.begin();
 	     p != nodes.end(); ++p)
 	{
 	    unsigned int size = canSample(*p, graph);
@@ -202,7 +202,7 @@ namespace glm {
 	for (unsigned int i = 0; i < candidate_nodes.size(); ++i) {
 	    
 	    vector<StochasticNode*> sample_nodes(1, candidate_nodes[i]);
-	    ConstStochasticNodeSet stochastic_children
+	    set<StochasticNode const *> stochastic_children
 		= getStochasticChildren(candidate_nodes[i], graph);
 
 	    //Find a joint linear model.

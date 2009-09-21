@@ -93,7 +93,7 @@ namespace glm {
 	cs_spfree(_beta);
     }
 
-    static void getIndices(ConstStochasticNodeSet const &schildren,
+    static void getIndices(set<StochasticNode const *> const &schildren,
 			   vector<StochasticNode const*> const &rows,
 			   vector<int> &indices)
     {
@@ -184,7 +184,7 @@ namespace glm {
 	{
 	    StochasticNode *snode = *p;
 
-	    ConstStochasticNodeSet children_p;
+	    set<StochasticNode const *> children_p;
 	    Sampler::getStochasticChildren(vector<StochasticNode*>(1,snode), 
 					   graph, children_p);
 	    vector<int> indices;
