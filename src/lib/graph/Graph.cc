@@ -73,8 +73,8 @@ bool Graph::isClosed() const
 	}
 
 	// Check children
-	StochasticNodeSet const *sch = (*i)->stochasticChildren();
-	for (StochasticNodeSet::iterator k = sch->begin(); k != sch->end(); k++)
+	set<StochasticNode*> const *sch = (*i)->stochasticChildren();
+	for (set<StochasticNode*>::iterator k = sch->begin(); k != sch->end(); k++)
 	{
 	    if (!this->contains(*k)) {
 	        throw NodeError(*k, "is bad stochastic child"); //debuggin
