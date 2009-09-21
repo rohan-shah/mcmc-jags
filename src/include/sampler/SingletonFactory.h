@@ -30,7 +30,7 @@ public:
      * This traverses the graph, creating a Sampler, when possible,
      * for each individual StochasticNode.
      */
-    Sampler * makeSampler(StochasticNodeSet const &nodes, 
+    Sampler * makeSampler(std::set<StochasticNode*> const &nodes, 
 			  Graph const &graph) const;
 };
 

@@ -4,7 +4,6 @@
 #include <set>
 #include <vector>
 #include <string>
-#include <graph/NodeSet.h>
 
 class RNG;
 class StochasticNode;
@@ -16,7 +15,7 @@ class Graph;
  */
 class Node {
     std::vector<Node const *> _parents;
-    StochasticNodeSet *_stoch_children;
+    std::set<StochasticNode*> *_stoch_children;
     std::set<DeterministicNode *> *_dtrm_children;
 
     /* Forbid copying of Node objects */
@@ -78,7 +77,7 @@ public:
     /**
      * Returns the stochastic children of the node
      */
-    StochasticNodeSet const *stochasticChildren();
+    std::set<StochasticNode*> const *stochasticChildren();
     /**
      * Returns the deterministic children of the node
      */

@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <string>
-#include <graph/NodeSet.h>
+#include <set>
 
 class StochasticNode;
 class DeterministicNode;
@@ -170,7 +170,7 @@ public:
    */
   static void getStochasticChildren(std::vector<StochasticNode *> const &nodes,
 				    Graph const &graph,
-				    ConstStochasticNodeSet &children);
+				    std::set<StochasticNode const*> &children);
 };
 
 #endif /* SAMPLER_H_ */

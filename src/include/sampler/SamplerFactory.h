@@ -4,8 +4,6 @@
 #include <vector>
 #include <set>
 
-#include <graph/NodeSet.h>
-
 class Sampler;
 class StochasticNode;
 class Graph;
@@ -23,7 +21,7 @@ public:
      * for them.  If no sampler can be created, a NULL pointer is
      * returned.
      */
-    virtual Sampler* makeSampler(StochasticNodeSet const &nodes, 
+    virtual Sampler* makeSampler(std::set<StochasticNode*> const &nodes, 
 				 Graph const &graph) const = 0;
 };
 
