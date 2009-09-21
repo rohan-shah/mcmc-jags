@@ -14,7 +14,6 @@ using std::time;
 namespace base {
 
     BaseRNGFactory::BaseRNGFactory()
-	: _index(0)
     {
     }
 
@@ -30,7 +29,7 @@ namespace base {
 	unsigned int seed = static_cast<unsigned int>(time(NULL));
 
 	vector<RNG *> ans;
-	for (unsigned int i = 0; i < n; ++i) {
+	for (unsigned int i = _rngvec.size(); i < n; ++i) {
 	    RNG *rng = 0;
 	    switch(i) {
 	    case 0:
