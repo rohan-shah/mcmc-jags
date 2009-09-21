@@ -63,15 +63,13 @@ R_CHECK_FUNCS([expm1 log1p], [#include <math.h>])
 ## a) that would comment out #undef statements in Rmath.h.in and
 ## b) Rmath.h should be a self-contained file for standalone Rmath use.
 ## </NOTE>
-#if test "${ac_cv_func_expm1}" = yes; then
 if test "${ac_cv_have_decl_expm1}" = yes; then
   RMATH_HAVE_EXPM1="# define HAVE_EXPM1 1"
 else
   RMATH_HAVE_EXPM1="# undef HAVE_EXPM1"
 fi
 AC_SUBST(RMATH_HAVE_EXPM1)
-#if test "${ac_cv_func_log1p}" = yes; then
-if test "${ac_cv_have_decl_expm1}" = yes; then
+if test "${ac_cv_have_decl_log1p}" = yes; then
   RMATH_HAVE_LOG1P="# define HAVE_LOG1P 1"
 else
   RMATH_HAVE_LOG1P="# undef HAVE_LOG1P"
