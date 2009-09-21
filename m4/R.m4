@@ -529,7 +529,7 @@ fi
 ## ----------
 ## modified version of AC_C_INLINE to use R_INLINE not inline
 AC_DEFUN([R_C_INLINE],
-[AC_REQUIRE([AC_PROG_CC_STDC])dnl
+[AC_REQUIRE([AC_PROG_CC_STDC]) dnl
 AC_CACHE_CHECK([for inline], r_cv_c_inline,
 [r_cv_c_inline=""
 for ac_kw in inline __inline__ __inline; do
@@ -2994,7 +2994,7 @@ AC_DEFUN([R_C99_COMPLEX],
     for ac_func in cexp clog csqrt cpow ccos csin ctan cacos casin catan \
 	 	   ccosh csinh ctanh cacosh casinh catanh
     do
-      R_CHECK_DECL($ac_func, , [r_cv_c99_complex=no], [#include<complex.h>])dnl
+      R_CHECK_DECL($ac_func, , [r_cv_c99_complex=no], [#include<complex.h>]) dnl
     done
   fi
   dnl Now check if the representation is the same as Rcomplex
@@ -3042,7 +3042,7 @@ fi
 ## -------------------------------------------------------
 ## Check if SYMBOL (a variable or a function) is declared.
 AC_DEFUN([R_CHECK_DECL],
-[AS_VAR_PUSHDEF([ac_Symbol], [ac_cv_have_decl_$1])dnl
+[AS_VAR_PUSHDEF([ac_Symbol], [ac_cv_have_decl_$1]) dnl
 AC_CACHE_CHECK([whether $1 exists and is declared], ac_Symbol,
 [AC_LINK_IFELSE([AC_LANG_PROGRAM([AC_INCLUDES_DEFAULT([$4])],
 [#ifndef $1
@@ -3051,8 +3051,8 @@ AC_CACHE_CHECK([whether $1 exists and is declared], ac_Symbol,
 ])],
                    [AS_VAR_SET(ac_Symbol, yes)],
                    [AS_VAR_SET(ac_Symbol, no)])])
-AS_IF([test AS_VAR_GET(ac_Symbol) = yes], [$2], [$3])[]dnl
-AS_VAR_POPDEF([ac_Symbol])dnl
+AS_IF([test AS_VAR_GET(ac_Symbol) = yes], [$2], [$3])[] dnl
+AS_VAR_POPDEF([ac_Symbol]) dnl
 ])# R_CHECK_DECL
 
 ## R_CHECK_FUNCS(SYMBOLS,
@@ -3062,11 +3062,11 @@ AS_VAR_POPDEF([ac_Symbol])dnl
 AC_DEFUN([R_CHECK_FUNCS],
 [AC_FOREACH([AC_Func], [$1],
   [AH_TEMPLATE(AS_TR_CPP([HAVE_]AC_Func),
-               [Define to 1 if you have the `]AC_Func[' function.])])dnl
+               [Define to 1 if you have the `]AC_Func[' function.])]) dnl
 for ac_func in $1
 do
 R_CHECK_DECL($ac_func,
-             [AC_DEFINE_UNQUOTED(AS_TR_CPP([HAVE_$ac_func]), 1)], , [$2])dnl
+             [AC_DEFINE_UNQUOTED(AS_TR_CPP([HAVE_$ac_func]), 1)], , [$2]) dnl
 done
 ])# R_CHECK_FUNCS
 
