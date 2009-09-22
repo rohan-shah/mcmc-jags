@@ -514,9 +514,6 @@ RNG *Model::rng(unsigned int chain) const
 
 bool Model::setRNG(string const &name, unsigned int chain)
 {
-  /* Assign default RNG objects for any chain that does not
-     currently have one */
-
   if (chain >= _nchain)
      throw logic_error("Invalid chain number in Model::setRNG");
 
