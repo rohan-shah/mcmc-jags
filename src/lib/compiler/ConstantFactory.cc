@@ -23,7 +23,6 @@ ConstantFactory::ConstantFactory(unsigned int nchain)
 ConstantNode * ConstantFactory::getConstantNode(double value, Model &model)
 {
     ConstantNode *cnode = 0;
-    const double eps = sqrt(DBL_EPSILON);
 
     map<double, ConstantNode*, ltdouble>::const_iterator i 
 	= _constmap.find(value);
@@ -48,7 +47,6 @@ ConstantNode * ConstantFactory::getConstantNode(vector<unsigned int> const &dim,
 						vector<double> const &value,
                                                 Model &model)
 {
-    const double eps = sqrt(DBL_EPSILON);
     ConstantNode *cnode = 0;
 
     constpair cp(dim, value);
