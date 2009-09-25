@@ -4,7 +4,7 @@
 #include <sampler/Metropolis.h>
 
 /**
- * @short Random Walk Metropolis-Hastings update method
+ * @short Random Walk Metropolis-Hastings sampling method
  *
  * This class provides an update function which modifies the current
  * value by a random walk. This step size is adapted to achieve the
@@ -20,7 +20,7 @@ class RWMetropolis : public Metropolis
     unsigned int _niter;
 public:
     /**
-     * Constructs a random walk Metropolis sampler. 
+     * Constructor. 
      *
      * @param value Initial value vector.
      * @param step Initial step size for the random walk updates.
@@ -49,10 +49,14 @@ public:
      */
     bool checkAdaptation() const;
     /**
-     * Modifies the given value vector by adding an independent normal
-     * increment to each element.  It can be overridden to provide
-     * non-normal increments, or a random walk on some transformed
-     * scale (but see RMetropolis#logJacobian).
+     * Modifies the given value vector in place by adding an
+     * independent normal increment to each element.  It can be
+     * overridden to provide non-normal increments, or a random walk
+     * on some transformed scale (but see RMetropolis#logJacobian).
+     *
+     * Note that this function does not modify the value of the
+     * RWMetropolis object.
+     * 
      */
     virtual void step(std::vector<double> &value, double s, RNG *rng) const;
     /**
