@@ -1,26 +1,23 @@
 #ifndef METROPOLIS_H_
 #define METROPOLIS_H_
 
-#include <sampler/DensityMethod.h>
+#include <sampler/SampleMethod.h>
 #include <vector>
 
 class StochasticNode;
 
 /**
- * @short Metropolis-Hastings update method
+ * @short Metropolis-Hastings sampling method
  *
  * This class is used by Metropolis Hastings samplers.  It provides
- * only basic infrastructure.
- *
- * A Subclass of Metropolis must provide an implementation of the
- * virtual functions setValue, getValue, rescale and checkAdaptation.
+ * only basic infrastructure.  
  *
  * The Metropolis class provides no update member function. A subclass
  * of Metropolis must provide this. It should contain one or more
- * calls to Metropolis#setValue, then calculate the acceptance
- * probability, and then call the function Metropolis#accept.
+ * calls to Metropolis#setValue, calculate the acceptance probability,
+ * and then call the function Metropolis#accept.
  */
-class Metropolis : public DensityMethod
+class Metropolis : public SampleMethod
 {
     std::vector<double> _last_value;
     bool _adapt;
