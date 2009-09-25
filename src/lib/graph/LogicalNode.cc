@@ -134,6 +134,8 @@ bool LogicalNode::isClosed(set<Node const *> const &ancestors,
 	return false;
         break;
     }
+
+    return false; //Wall
 }
 
 bool LogicalNode::checkParentValues(unsigned int chain) const

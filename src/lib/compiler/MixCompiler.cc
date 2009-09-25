@@ -162,169 +162,6 @@ static void classifyParents(vector<Node const *> const &indices,
     dgraph.getSortedNodes(dtrm_nodes);
 }
 
-static Node* 
-getMixtureNode1(NodeArray *array, vector<SSI> const &limits, Compiler *compiler)
-/* Try to simplify the mixture node by enumerating all possible values
-   that the indices can take. This can only be done under certain
-   conditions. */
-{
-    unsigned int ndim = limits.size();
-
-    vector<Node const*> indices;
-    unsigned int nvi = 0;
-    for (unsigned int i = 0; i < ndim; ++i) {
-	if (limits[i].node) {
-	    indices.push_back(limits[i].node);
-	    ++nvi;
-	}
-    }
-
-    /* Find stochastic parents (ancestors) and deterministic ancestors in
-       forward sampling order */
-  
-    vector<StochasticNode*> stoch_parents;
-    vector<Node*> dtrm_nodes;
-    classifyParents(indices, compiler->model().graph(), stoch_parents, 
-		    dtrm_nodes);
-
-    /* Test to see if all stochastic parents are discrete, scalar, with
-       bounded support. If not we give up. */
-
-    unsigned int nparents = stoch_parents.size();  
-    for (unsigned int i = 0; i < nparents; ++i) {
-	StochasticNode const *snode = stoch_parents[i];
-	if (snode->length() != 1 || !snode->isDiscreteValued() ||
-	    snode->isObserved() || isBounded(snode)) 
-	{
-	    return 0;
-	}
-    }
-
-    vector<int> lower(nparents,1), upper(nparents,1);
-    for (unsigned int i = 0; i < nparents; ++i) {
-	StochasticNode const *snode = stoch_parents[i];
-
-	/* Check that support of node is fixed */
-	if (!isSupportFixed(snode)) {
-	    return 0;
-	}
-
-	/* To be safe, we cycle over all chains */
-	for (unsigned int n = 0; n < snode->nchain(); ++n) {
-	    // Get lower and upper limits of support
-	    double l = JAGS_NEGINF, u = JAGS_POSINF;
-	    support(&l, &u, 1U, snode, n);
-	    if (!jags_finite(l) || !jags_finite(u)) {
-		return 0; //Unbounded parent => serious trouble
-	    }
-	    if (l < -INT_MAX || u > INT_MAX) {
-		return 0; //Can't cast to int
-	    }
-	    int il = static_cast<int>(l);
-	    int iu = static_cast<int>(u);
-	    if (n == 0 || il < lower[i]) {
-		lower[i] = il;
-	    }
-	    if (n == 0 || iu > upper[i]) {
-		upper[i] = iu;
-	    }
-	}
-    }
-
-    /* Save current stochastic node values in chain 0 */
-    vector<double> vsave(stoch_parents.size());
-    for (unsigned int j = 0; j < stoch_parents.size(); ++j) {
-	vsave[j] = *stoch_parents[j]->value(0);
-    }
-
-    /* Create a set containing all possible values that the stochastic
-       indices can take */
-
-    set<vector<int> > index_values;
-    vector<int>  this_index(indices.size(),1);
-    Range stoch_node_range(lower, upper);
-
-    for (RangeIterator i(stoch_node_range); !i.atEnd(); i.nextLeft()) {
-
-	for (unsigned int j = 0; j < stoch_parents.size(); ++j) {
-	    double v = i[j];
-	    stoch_parents[j]->setValue(&v, 1, 0);
-	}
-
-	for (unsigned int k = 0; k < dtrm_nodes.size(); ++k) {
-	    dtrm_nodes[k]->deterministicSample(0);
-	}
-    
-	for (unsigned int l = 0; l < indices.size(); ++l) {
-	    this_index[l] = static_cast<int>(*indices[l]->value(0));
-	}
-    
-	index_values.insert(this_index);
-    }
-
-    /* Restore saved values to chain 0 */
-    for (unsigned int j = 0; j < stoch_parents.size(); ++j) {
-	double v = vsave[j];
-	stoch_parents[j]->setValue(&v, 1, 0);
-    }
-    for (unsigned int k = 0; k < dtrm_nodes.size(); ++k) {
-	dtrm_nodes[k]->deterministicSample(0);
-    }
-
-    /* Now set up the possible subsets defined by the stochastic indices */
-
-    vector<int> variable_offset(nvi, 1);
-    vector<int> lower_index(ndim, 1), upper_index(ndim, 1);
-    int k = 0;
-    for (unsigned int j = 0; j < ndim; ++j) {
-	if (limits[j].node != 0) {
-	    variable_offset[k++] = j;
-	}
-	else {
-	    lower_index[j] = limits[j].lower;
-	    upper_index[j] = limits[j].upper;
-	}
-    }
-
-    vector<pair<vector<int>, Range> > ranges;  
-    set<vector<int> >::const_iterator p;
-    for (p = index_values.begin(); p != index_values.end(); ++p) {
-
-	vector<int> const &i = *p;
-	for (unsigned int k = 0; k < nvi; ++k) {
-	    lower_index[variable_offset[k]] = i[k];
-	    upper_index[variable_offset[k]] = i[k];
-	}
-	ranges.push_back(pair<vector<int>, Range>(i, Range(lower_index, upper_index)));
-    }
-
-    /* Convert these into subsets */
-
-    //Look out for trivial mixture nodes in which all subsets are the same.
-    bool trivial = true;
-    Node *subset_node0 = array->getSubset(ranges[0].second, compiler->model());
-
-    map<vector<int>, Node const *> subsets;  
-    for (unsigned int i = 0; i < ranges.size(); ++i) {
-	Node *subset_node = array->getSubset(ranges[i].second, 
-					     compiler->model());
-	if (!subset_node)
-	    return 0;
-	subsets[ranges[i].first] = subset_node;
-	if (subset_node != subset_node0)
-	    trivial = false;
-    }
-
-    if (trivial) {
-	// Nothing to do here! All subset nodes are the same, so we
-	// just return the subset node.
-	return subset_node0;
-    }
-
-    return compiler->mixtureFactory1().getMixtureNode(indices, subsets, 
-						      compiler->model());
-}
-
 /* Add stochastic parents of given node to the set */
 static void classifyParents(Node const *node, 
 			    set<StochasticNode const*> &sparents,
@@ -385,7 +222,7 @@ static void cloneNodes(vector<Node const*> const &nodes,
 
 
 static Node* 
-getMixtureNode3(NodeArray *array, vector<SSI> const &limits, Compiler *compiler)
+getMixtureNode1(NodeArray *array, vector<SSI> const &limits, Compiler *compiler)
 /* Try to simplify the mixture node by enumerating all possible values
    that the indices can take. This can only be done under certain
    conditions. */
@@ -667,10 +504,7 @@ Node * getMixtureNode(ParseTree const * var, Compiler *compiler)
     throw logic_error("Trivial mixture node");
   }
 
-  //return getMixtureNode2(array, limits, compiler);
-
-  //Node *mnode = getMixtureNode1(array, limits, compiler);
-  Node *mnode = getMixtureNode3(array, limits, compiler);
+  Node *mnode = getMixtureNode1(array, limits, compiler);
   if (mnode)
     return mnode;
   else

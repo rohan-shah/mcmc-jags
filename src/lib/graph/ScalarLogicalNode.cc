@@ -54,7 +54,7 @@ void ScalarLogicalNode::deterministicSample(unsigned int chain)
 }
 
 bool ScalarLogicalNode::isClosed(set<Node const *> const &ancestors, 
-			   ClosedFuncClass fc, bool fixed) const
+				 ClosedFuncClass fc, bool fixed) const
 {
     vector<Node const *> const &par = parents();
 
@@ -89,6 +89,8 @@ bool ScalarLogicalNode::isClosed(set<Node const *> const &ancestors,
 	return _func->isPower(mask, fixed_mask);
         break;
     }
+
+    return false; //Wall
 }
 
 
