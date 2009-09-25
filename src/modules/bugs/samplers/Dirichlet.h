@@ -3,15 +3,19 @@
 
 #include <sampler/RWMetropolis.h>
 
+class Updater;
+
 class DirchMetropolis : public RWMetropolis
 {
+    Updater const *_updater;
+    unsigned int _chain;
 public:
-    DirchMetropolis(StochasticNode * node);
-    void transform(double const *v, unsigned int length,
-		   double *nv, unsigned int nlength) const;
-    void untransform(double const *nv, unsigned int nlength,
-		     double *v, unsigned int length) const;
-    void update(RNG *rng);
+    DirchMetropolis(Updater const *updater, unsigned int chain);
+    void getValue(std::vector<double> &x) const;
+    void setValue(std::vector<double> const &x);
+    void step(std::vector<double> &x, double size, RNG *rng) const;
+    double logDensity() const;
+    double logJacobian(std::vector<double> const &x) const;
     std::string name() const;
 };
 

@@ -7,6 +7,7 @@
 #include <graph/LogicalNode.h>
 #include <graph/StochasticNode.h>
 #include <graph/MixtureNode.h>
+#include <sampler/Updater.h>
 
 #include <set>
 #include <stdexcept>
@@ -44,7 +45,7 @@ bool ConjugateBeta::canSample(StochasticNode *snode, Graph const &graph)
 
     vector<StochasticNode const*> stoch_nodes;
     vector<DeterministicNode*> dtrm_nodes;
-    Sampler::classifyChildren(vector<StochasticNode*>(1,snode), 
+    Updater::classifyChildren(vector<StochasticNode*>(1,snode), 
 		              graph, stoch_nodes, dtrm_nodes);
 
     /* 
@@ -95,20 +96,21 @@ bool ConjugateBeta::canSample(StochasticNode *snode, Graph const &graph)
     return true; //We made it!
 }
 
-void ConjugateBeta::initialize(ConjugateSampler *sampler, Graph const &graph)
+
+ConjugateBeta::ConjugateBeta(Updater const *updater)
+    : ConjugateMethod(updater)
 {
 }
 
-void 
-ConjugateBeta::update(ConjugateSampler *sampler, unsigned int chain, 
-                      RNG *rng) const
+void ConjugateBeta::update(Updater *updater, unsigned int chain, RNG *rng)
+    const
 {
     vector<StochasticNode const*> const &stoch_children = 
-	sampler->stochasticChildren();
-    StochasticNode const *snode = sampler->node();
+	updater->stochasticChildren();
+    StochasticNode const *snode = updater->nodes()[0];
 
     double a, b;
-    switch (getDist(snode)) {
+    switch (_target_dist) {
     case BETA:
 	a = *snode->parents()[0]->value(chain);
 	b = *snode->parents()[1]->value(chain);
@@ -125,7 +127,7 @@ ConjugateBeta::update(ConjugateSampler *sampler, unsigned int chain,
     /* For mixture models, we count only stochastic children that
        depend on snode */
     double *C = 0;
-    bool is_mix = !sampler->deterministicChildren().empty();
+    bool is_mix = !updater->deterministicChildren().empty();
     if (is_mix) {
 	C = new double[Nchild];
 	for (unsigned int i = 0; i < Nchild; ++i) {
@@ -134,7 +136,7 @@ ConjugateBeta::update(ConjugateSampler *sampler, unsigned int chain,
 	// Perturb current value, keeping in the legal range [0,1]
 	double x = *snode->value(chain);
 	x = x > 0.5 ? x - 0.4 : x + 0.4;
-	sampler->setValue(&x, 1, chain);
+	updater->setValue(&x, 1, chain);
 	// C[i] == 1 if parameter of child i has changed (so depends on snode)
 	// C[i] == 0 otherwise
 	for (unsigned int i = 0; i < Nchild; ++i) {
@@ -142,12 +144,12 @@ ConjugateBeta::update(ConjugateSampler *sampler, unsigned int chain,
 	}
     }
 
-    vector<ConjugateDist> const &child_dist = sampler->childDist();
+
     for (unsigned int i = 0; i < stoch_children.size(); ++i) {
 	if (!(is_mix && C[i] == 0)) {
 	    double y = *stoch_children[i]->value(chain);
 	    double n, aplus, bplus;
-	    switch(child_dist[i]) {
+	    switch(_child_dist[i]) {
 	    case BIN:
 		n = *stoch_children[i]->parents()[1]->value(chain);
 		aplus = y;
@@ -185,7 +187,7 @@ ConjugateBeta::update(ConjugateSampler *sampler, unsigned int chain,
 	/* Try 4 more attempts to get random sample within the bounds */
 	for (int i = 0; i < 4; i++) {
 	    if (xnew >= lower && xnew <= upper) {
-		sampler->setValue(&xnew, 1, chain);
+		updater->setValue(&xnew, 1, chain);
                 if (is_mix) delete [] C;
 		return;
 	    }
@@ -197,7 +199,7 @@ ConjugateBeta::update(ConjugateSampler *sampler, unsigned int chain,
 	double p = runif(plower, pupper, rng);
 	xnew = qbeta(p, a, b, 1, 0);   
     }
-    sampler->setValue(&xnew, 1, chain);
+    updater->setValue(&xnew, 1, chain);
 
     if (is_mix) {
 	delete [] C;

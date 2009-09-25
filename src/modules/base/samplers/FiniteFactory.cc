@@ -1,7 +1,6 @@
 #include <config.h>
-#include <distribution/Distribution.h>
-#include <graph/StochasticNode.h>
 #include <sampler/DensitySampler.h>
+#include <sampler/Updater.h>
 #include <sampler/DensityMethod.h>
 
 #include "FiniteMethod.h"
@@ -22,14 +21,13 @@ namespace base {
     Sampler *  FiniteFactory::makeSampler(StochasticNode *snode,
 					  Graph const &graph) const
     {
-	unsigned int nchain = snode->nchain();
-	vector<DensityMethod*> methods(nchain, 0);
-	for (unsigned int i = 0; i < nchain; ++i) {
-	    methods[i] = new FiniteMethod(snode);
+	Updater *updater = new Updater(snode, graph);
+	unsigned int N = nchain(updater);
+	vector<DensityMethod*> methods(N, 0);
+	for (unsigned int ch = 0; ch < N; ++ch) {
+	    methods[ch] = new FiniteMethod(updater, ch);
 	}
-	
-	vector<StochasticNode*> sample_nodes(1, snode);
-	return new DensitySampler(sample_nodes, graph, methods);
+	return new DensitySampler(updater, methods);
     }
     
 }

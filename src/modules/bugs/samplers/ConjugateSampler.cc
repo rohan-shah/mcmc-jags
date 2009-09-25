@@ -3,6 +3,7 @@
 #include <graph/LogicalNode.h>
 #include <distribution/Distribution.h>
 #include <function/Function.h>
+#include <sampler/Updater.h>
 
 #include <map>
 #include <string>
@@ -60,19 +61,22 @@ ConjugateDist getDist(StochasticNode const *snode)
 	return p->second;
 }
 
-ConjugateSampler::ConjugateSampler(StochasticNode *node, Graph const &graph, 
-				   ConjugateMethod *method)
-    : Sampler(vector<StochasticNode*>(1,node), graph),
-      _snode(node),
-      _method(method),
-      _target_dist(getDist(node))
+static vector<ConjugateDist> getChildDist(Updater const *updater)
 {
-    vector<StochasticNode const*> const &children = stochasticChildren();
-    for (unsigned int i = 0; i < children.size(); ++i) {
-	_child_dist.push_back(getDist(children[i]));
+    vector<StochasticNode const*> const &child = updater->stochasticChildren();
+    vector<ConjugateDist> ans;
+    for (unsigned int i = 0; i < child.size(); ++i) {
+	ans.push_back(getDist(child[i]));
     }
-    
-    method->initialize(this, graph);
+    return ans;
+}
+
+ConjugateSampler::ConjugateSampler(Updater *updater, ConjugateMethod *method)
+  : Sampler(updater),
+    _updater(updater),  _method(method),
+    _target_dist(getDist(updater->nodes()[0])),
+    _child_dist(getChildDist(updater))
+{
 }
 
 ConjugateSampler::~ConjugateSampler()
@@ -82,9 +86,9 @@ ConjugateSampler::~ConjugateSampler()
 
 void ConjugateSampler::update(vector<RNG*> const &rngs)
 {
-    unsigned int nchain = _snode->nchain();
-    for (unsigned int ch = 0; ch < nchain; ++ch) {
-	_method->update(this, ch, rngs[ch]);
+    unsigned int N = nchain(_updater);
+    for (unsigned int ch = 0; ch < N; ++ch) {
+	_method->update(_updater, ch, rngs[ch]);
     }
 }
 
@@ -96,21 +100,6 @@ bool ConjugateSampler::isAdaptive() const
 bool ConjugateSampler::adaptOff()
 {
     return true;
-}
-
-StochasticNode *ConjugateSampler::node() const
-{
-    return _snode;
-}
-
-vector<ConjugateDist> const &ConjugateSampler::childDist() const
-{
-    return _child_dist;
-}
-
-ConjugateDist ConjugateSampler::targetDist() const
-{
-    return _target_dist;
 }
 
 string ConjugateSampler::name() const

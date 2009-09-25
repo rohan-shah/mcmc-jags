@@ -22,10 +22,9 @@ class ConjugateMNormal : public ConjugateMethod {
   double *_betas;
   unsigned int _length_betas;
  public:
-  ConjugateMNormal();
+  ConjugateMNormal(Updater const *updater);
   ~ConjugateMNormal();
-  void initialize(ConjugateSampler *sampler, Graph const &graph);
-  void update(ConjugateSampler *sampler, unsigned int chain, RNG *rng) const;
+  void update(Updater *updater, unsigned int chain, RNG *rng) const;
   static bool canSample(StochasticNode *snode, Graph const &graph);
   std::string name() const;
 };

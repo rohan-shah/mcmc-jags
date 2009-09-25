@@ -3,10 +3,12 @@
 
 #include <sampler/Metropolis.h>
 
-class DensitySampler;
+class Updater;
 
 class MNormMetropolis : public Metropolis
 {
+    Updater const *_updater;
+    unsigned int _chain;
     double *_mean;
     double *_var;
     double *_prec;
@@ -17,16 +19,14 @@ class MNormMetropolis : public Metropolis
     unsigned int _nstep;
     unsigned int _p_over_target;
 public:
-    MNormMetropolis(StochasticNode* node);
+    MNormMetropolis(Updater const *updater, unsigned int chain);
     ~MNormMetropolis();
     void rescale(double p);
-    void transform(double const *v, unsigned int length,
-		   double *nv, unsigned int nlength) const;
-    void untransform(double const *nv, unsigned int nlength,
-		     double *v, unsigned int length) const;
     void update(RNG *rng);
     bool checkAdaptation() const;
     std::string name() const;
+    void getValue(std::vector<double> &value) const;
+    void setValue(std::vector<double> const &value);
 };
 
 #endif /* MNORM_METROPOLIS_H_ */

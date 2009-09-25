@@ -63,7 +63,6 @@ namespace dic {
 		double loglik = (wsum - w[i]) * _repnode.logDensity(i);
 		
 		double const *v = _repnode.value(i);
-		double lik1 = 0;
 		for (unsigned int j = 0; j < nchain; ++j) {
 		    if (j != i) {
 			_repnode.setValue(v, len, j);

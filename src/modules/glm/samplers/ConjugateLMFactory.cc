@@ -18,9 +18,9 @@ namespace glm {
 	return false;
     }
 
-    GLMMethod *ConjugateLMFactory::newMethod() const
+    GLMMethod *ConjugateLMFactory::newMethod(Updater const *updater) const
     {
-	return new ConjugateLM;
+	return new ConjugateLM(updater);
     }
 
 }

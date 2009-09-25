@@ -11,6 +11,7 @@
 #include <distribution/Distribution.h>
 #include <sampler/DensitySampler.h>
 #include <sampler/Linear.h>
+#include <sampler/Updater.h>
 
 #include <set>
 #include <map>
@@ -45,7 +46,7 @@ static bool aggregateLinear(StochasticNode *candidate_node,
 
     vector<StochasticNode const*> stoch_nodes;
     vector<DeterministicNode*> dtrm_nodes;
-    Sampler::classifyChildren(vector<StochasticNode*>(1, candidate_node),
+    Updater::classifyChildren(vector<StochasticNode*>(1, candidate_node),
                               graph, stoch_nodes, dtrm_nodes);
 
     bool overlap = false;
@@ -81,7 +82,7 @@ getStochasticChildren(StochasticNode *snode, Graph const &graph)
 {
     vector<StochasticNode const*> stoch_nodes;
     vector<DeterministicNode*> dtrm_nodes;
-    Sampler::classifyChildren(vector<StochasticNode*>(1,snode), 
+    Updater::classifyChildren(vector<StochasticNode*>(1,snode), 
 			      graph, stoch_nodes, dtrm_nodes);
     set<StochasticNode const *> stochastic_children;
     for (unsigned int i = 0; i < stoch_nodes.size(); ++i) {
@@ -124,7 +125,7 @@ namespace glm {
     
 	vector<StochasticNode const*> stoch_nodes;
 	vector<DeterministicNode*> dtrm_nodes;
-	Sampler::classifyChildren(vector<StochasticNode*>(1,snode), 
+	Updater::classifyChildren(vector<StochasticNode*>(1,snode), 
 				  graph, stoch_nodes, dtrm_nodes);
 
 	/* 
@@ -224,7 +225,8 @@ namespace glm {
 
 	    if (sample_nodes.size() > 1) {
 		//We must have at least two nodes to sample
-		return new GLMSampler(sample_nodes, newMethod(), graph); 
+		Updater *updater = new Updater(sample_nodes, graph);
+		return new GLMSampler(updater, newMethod(updater)); 
 	    }
 	}
 	

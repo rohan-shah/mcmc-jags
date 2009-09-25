@@ -1,7 +1,6 @@
 #include <config.h>
 
 #include "ConjugateWishart.h"
-#include "ConjugateSampler.h"
 #include "DWish.h"
 
 #include <rng/RNG.h>
@@ -9,6 +8,7 @@
 #include <graph/StochasticNode.h>
 #include <graph/MixtureNode.h>
 #include <sampler/Linear.h>
+#include <sampler/Updater.h>
 
 #include <set>
 #include <stdexcept>
@@ -34,7 +34,7 @@ bool ConjugateWishart::canSample(StochasticNode *snode, Graph const &graph)
   
     vector<StochasticNode const*> stoch_nodes;
     vector<DeterministicNode*> dtrm_nodes;
-    Sampler::classifyChildren(vector<StochasticNode*>(1,snode), 
+    Updater::classifyChildren(vector<StochasticNode*>(1,snode), 
 			      graph, stoch_nodes, dtrm_nodes);
     /* 
        Create a set of nodes containing snode and its deterministic
@@ -79,19 +79,18 @@ bool ConjugateWishart::canSample(StochasticNode *snode, Graph const &graph)
     return true;
 }
 
-void ConjugateWishart::initialize(ConjugateSampler *sampler,
-				  Graph const &graph)
-{
-}
+ConjugateWishart::ConjugateWishart(Updater const *updater)
+    : ConjugateMethod(updater)
+{}
 
-void ConjugateWishart::update(ConjugateSampler *sampler, unsigned int chain, 
-			      RNG *rng) const
+void 
+ConjugateWishart::update(Updater *updater, unsigned int chain, RNG *rng) const
 {
     vector<StochasticNode const*> const &stoch_children = 
-	sampler->stochasticChildren();
+	updater->stochasticChildren();
     unsigned int nchildren = stoch_children.size();
 
-    vector<Node const *> const &param = sampler->node()->parents();  
+    vector<Node const *> const &param = updater->nodes()[0]->parents();  
 
     double df = *param[1]->value(chain);
     double const *Rprior = param[0]->value(chain);
@@ -106,19 +105,19 @@ void ConjugateWishart::update(ConjugateSampler *sampler, unsigned int chain,
     //Logical mask to determine which stochastic children are active.
     vector<bool> active(nchildren, true);
 
-    if (!sampler->deterministicChildren().empty()) {
+    if (!updater->deterministicChildren().empty()) {
 	//Save first element of precision matrix for each child
 	vector<double> precision0(nchildren); 
 	for (unsigned int i = 0; i < nchildren; ++i) {
 	    precision0[i] = stoch_children[i]->value(chain)[0];
 	}
 	//Double the current value
-	double const *x = sampler->node()->value(chain);
+	double const *x = updater->nodes()[0]->value(chain);
 	double *x2 = new double[N];
 	for (unsigned int j = 0; j < N; ++j) {
 	    x2[j] = 2 * x[j];
 	}
-	sampler->setValue(x2, N, chain);
+	updater->setValue(x2, N, chain);
 	delete [] x2;
 	//See if precision matrix has changed
 	for (unsigned int i = 0; i < nchildren; ++i) {
@@ -128,7 +127,6 @@ void ConjugateWishart::update(ConjugateSampler *sampler, unsigned int chain,
 	}
     }
 
-    vector<ConjugateDist> const &child_dist = sampler->childDist();
     double *delta = new double[nrow];
     for (unsigned int i = 0; i < nchildren; ++i) {
 	if (active[i]) {
@@ -153,7 +151,7 @@ void ConjugateWishart::update(ConjugateSampler *sampler, unsigned int chain,
     DWish::randomSample(xnew, N, R, df, nrow, rng);
 
     delete [] R;
-    sampler->setValue(xnew, N, chain);
+    updater->setValue(xnew, N, chain);
     delete [] xnew;
 }
 

@@ -7,7 +7,7 @@
 #include <rng/RNG.h>
 #include <util/dim.h>
 #include <util/nainf.h>
-#include <sampler/DensitySampler.h>
+#include <sampler/Updater.h>
 
 #include <cmath>
 #include <algorithm>
@@ -23,8 +23,6 @@ using std::min;
 using std::string;
 
 #define N_REFRESH 100
-
-//#include <iostream>
 
 static void read_bounds(vector<StochasticNode*> const &snodes, 
 			unsigned int chain,
@@ -48,12 +46,20 @@ static void read_bounds(vector<StochasticNode*> const &snodes,
     }
 }
 
+static vector<double> initialValue(Updater const *updater, unsigned int chain)
+{
+    vector<double> ivalue(updater->length());
+    updater->getValue(ivalue, chain);
+    return ivalue;
+}
+
 namespace mix {
 
-    MixSampler::MixSampler(vector<StochasticNode*> const &nodes,
+    MixSampler::MixSampler(Updater const *updater, unsigned int chain,
 			   unsigned int max_level, double delta, 
 			   unsigned int nrep)
-	: Metropolis(nodes), 
+	: Metropolis(initialValue(updater, chain)),
+	  _updater(updater), _chain(chain),
 	  _max_level(max_level), 
 	  _delta(delta),
 	  _nrep(nrep),
@@ -71,10 +77,10 @@ namespace mix {
 	_lstep[0] = -5;
 	_pmean[0] = 0;
 
-	unsigned int N = value_length();
+	unsigned int N = _updater->length();
 	_lower = new double[N];
 	_upper = new double[N];
-	read_bounds(nodes, 0, _lower, _upper, N);
+	read_bounds(_updater->nodes(), 0, _lower, _upper, N);
     }
 
     MixSampler::~MixSampler()
@@ -83,53 +89,32 @@ namespace mix {
 	delete [] _upper;
     }
 
-    void MixSampler::transform(double const *v, unsigned int length,
-			       double *nv, unsigned int nlength) const
+    //FIXME! This transformed random walk is useless without
+    //Jacobian penalty!
+    void MixSampler::updateStep(vector<double>  &x, double step, RNG *rng)
     {
-	if (length != value_length() || nlength != length) {
-	    throw logic_error("Length error in MixSampler::transform");
-	}
-
-	for (unsigned int i = 0; i < length; ++i) {
+	for (unsigned int i = 0; i < x.size(); ++i) {
 	    bool bb = jags_finite(_lower[i]); //bounded below
 	    bool ba = jags_finite(_upper[i]); //bounded above
+	    double eps = rng->normal() * step;
 	    if (bb && ba) {
-		double w = 1.0 / (1 + exp(-v[i]));
-		nv[i] = (1 - w) * _lower[i] + w * _upper[i];
+		x[i] = log(x[i] - _lower[i]) - log(_upper[i] - x[i]);
+		x[i] += eps;
+		double w = 1.0 / (1 + exp(-x[i]));
+		x[i] = (1 - w) * _lower[i] + w * _upper[i];
 	    }
 	    else if (bb) {
-		nv[i] = _lower[i] + exp(v[i]);
+		x[i] = log(x[i] - _lower[i]); 
+		x[i] += eps;
+		x[i] = _lower[i] + exp(x[i]);
 	    }
 	    else if (ba) {
-		nv[i] = _upper[i] - exp(v[i]);
+		x[i] = log(_upper[i] - x[i]);
+		x[i] += eps;
+		x[i] = _upper[i] - exp(x[i]);
 	    }
 	    else {
-		nv[i] = v[i];
-	    }
-	}
-    }
-
-    void MixSampler::untransform(double const *nv, unsigned int nlength,
-				 double *v, unsigned int length) const
-    {
-	if (length != value_length() || length != nlength) {
-	    throw logic_error("Length error in MixSampler::untransform");
-	}
-
-	for (unsigned int i = 0; i < length; ++i) {
-	    bool bb = jags_finite(_lower[i]); //bounded below
-	    bool ba = jags_finite(_upper[i]); //bounded above
-	    if (bb && ba) {
-		v[i] = log(nv[i] - _lower[i]) - log(_upper[i] - nv[i]);
-	    }
-	    else if (bb) {
-		v[i] = log(nv[i] - _lower[i]); 
-	    }
-	    else if (ba) {
-		v[i] = log(_upper[i] - nv[i]);
-	    }
-	    else {
-		v[i] = nv[i];
+		x[i] = x[i] + eps;
 	    }
 	}
     }
@@ -164,27 +149,22 @@ namespace mix {
 
     void MixSampler::update(RNG *rng)
     {
-	unsigned int length = value_length();
-	double *proposal = new double[length];
-	double *last_proposal = new double[length];
-	copy(value(), value() + length, last_proposal);
+	unsigned int length = _updater->length();
+	vector<double> value1(length);
+	getValue(value1);
 
 	//We first do a non-tempered update
-
+	
 	_temper = false;
 	double pmean = 0;
 	for (unsigned int i = 0; i < _nrep; ++i) {
-	    double lprob = -_sampler->logFullConditional(_chain);
-	    double step = exp(_lstep[0]);
-	    for (unsigned int j = 0; j < length; ++j) {
-		proposal[j] = last_proposal[j] + rng->normal() * step;
-	    }
-	    propose(proposal, length);
-	    lprob += _sampler->logFullConditional(_chain);
+	    double lprob = -_updater->logFullConditional(_chain);
+	    getValue(value1);
+	    updateStep(value1, exp(_lstep[0]),rng);
+	    setValue(value1);
+	    lprob += _updater->logFullConditional(_chain);
 	    double prob = min(exp(lprob), 1.0);
-	    if(accept(rng, prob)) {
-		copy(proposal, proposal + length, last_proposal);
-	    }
+	    accept(rng, prob);
 	    pmean += prob / _nrep;
 	}
 	_pmean[0] += pmean / N_REFRESH;
@@ -193,9 +173,6 @@ namespace mix {
 	//Now do a tempered update
 
 	_temper = true;
-
-	double lprior0 = _sampler->logPrior(_chain);
-	double llik0 = _sampler->logLikelihood(_chain);
     
 	unsigned int nstep = 2 * _level;
 	vector<double> pwr(nstep + 2);
@@ -205,8 +182,15 @@ namespace mix {
 	    pwr[t] = pwr[nstep + 1 - t] = exp(-(t * _delta));
 	}
 
-	double log_global_prob = (pwr[1] - pwr[0]) * llik0;
 
+	//Save a copy of the current state(value, likelihood, prior)
+	vector<double> value0(length);
+	getValue(value0);
+	double lprior0 = _updater->logPrior(_chain);
+	double llik0 = _updater->logLikelihood(_chain);
+
+	double log_global_prob = (pwr[1] - pwr[0]) * llik0;
+	
 	for (unsigned int t = 1; t <= nstep; ++t) {
 
 	    unsigned int l = (t <= _level) ? t : (nstep + 1 - t);
@@ -215,21 +199,20 @@ namespace mix {
 	    pmean = 0;
 	    for (unsigned int i = 0; i < _nrep; ++i) {
 		// Generate new proposal
-		for (unsigned int j = 0; j < length; ++j) {
-		    proposal[j] = last_proposal[j] + rng->normal() * step;
-		}
-		propose(proposal, length);
+		copy(value0.begin(), value0.end(), value1.begin());
+		updateStep(value1, step, rng);
+		setValue(value1);
 	    
 		// Calculate new prior and likelihood
-		double lprior1 = _sampler->logPrior(_chain);
-		double llik1 = _sampler->logLikelihood(_chain);
+		double lprior1 = _updater->logPrior(_chain);
+		double llik1 = _updater->logLikelihood(_chain);
 	    
 		// Calculate acceptance probability for new proposal
 		double lprob = (lprior1 - lprior0) + pwr[t] * (llik1 - llik0);
 		double prob = exp(lprob);
 		if (rng->uniform() <= prob) {
 		    //Accept modified proposal
-		    copy(proposal, proposal + length, last_proposal);
+		    copy(value1.begin(), value1.end(), value0.begin());
 		    lprior0 = lprior1;
 		    llik0 = llik1;
 		}
@@ -240,12 +223,9 @@ namespace mix {
 		_pmean[t] += pmean / N_REFRESH;
 	    }
 	}
-
-	propose(last_proposal, length); //Revert to last known good proposal
+	//Revert to last known good proposal
+	setValue(value0); 
 	accept(rng, exp(log_global_prob));
-
-	delete [] proposal;
-	delete [] last_proposal;
     }
 
     void MixSampler::rescale(double prob)
@@ -296,6 +276,16 @@ namespace mix {
     string MixSampler::name() const
     {
 	return "MixSampler";
+    }
+
+    void MixSampler::getValue(vector<double> &x) const 
+    {
+	_updater->getValue(x, _chain);
+    }
+
+    void MixSampler::setValue(vector<double> const &x)
+    {
+	_updater->setValue(x, _chain);
     }
 
 }

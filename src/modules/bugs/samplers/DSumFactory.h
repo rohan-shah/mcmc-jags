@@ -13,7 +13,7 @@ class DSumFactory : public SamplerFactory
 {
  public:
     Sampler * makeSampler(std::set<StochasticNode*> const &nodes, 
-		     Graph const &graph) const;
+			  Graph const &graph) const;
 };
 
 #endif /* DSUM_FACTORY_H_ */

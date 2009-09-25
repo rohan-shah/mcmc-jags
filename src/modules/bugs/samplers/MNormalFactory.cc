@@ -5,6 +5,7 @@
 #include <graph/StochasticNode.h>
 #include <distribution/Distribution.h>
 #include <sampler/DensitySampler.h>
+#include <sampler/Updater.h>
 
 #include <string>
 #include <vector>
@@ -21,11 +22,12 @@ MNormalFactory::canSample(StochasticNode * snode, Graph const &graph) const
 Sampler *
 MNormalFactory::makeSampler(StochasticNode *snode, Graph const &graph) const
 {
-    unsigned int nchain = snode->nchain();
-    vector<DensityMethod*> methods(nchain, 0);
-    vector<StochasticNode*> nodes(1, snode);
-    for (unsigned int ch = 0; ch < nchain; ++ch) {
-        methods[ch] = new MNormMetropolis(snode);
+    unsigned int N = snode->nchain();
+    vector<DensityMethod*> methods(N, 0);
+
+    Updater *updater = new Updater(snode, graph);
+    for (unsigned int ch = 0; ch < N; ++ch) {
+        methods[ch] = new MNormMetropolis(updater, ch);
     }
-    return new DensitySampler(nodes, graph, methods);
+    return new DensitySampler(updater, methods);
 }

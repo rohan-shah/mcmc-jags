@@ -1,6 +1,5 @@
 #include <config.h>
 #include <sampler/RWMetropolis.h>
-//#include <sampler/ParallelDensitySampler.h>
 #include <rng/RNG.h>
 
 #include <cmath>
@@ -21,11 +20,10 @@ using std::fabs;
 */
 #define INITIAL_N 10
 
-RWMetropolis::RWMetropolis(vector<StochasticNode*> const &nodes,
+RWMetropolis::RWMetropolis(vector<double> const &value,
 			   double step, double prob)
-    : Metropolis(nodes),
-      _prob(prob), _lstep(log(step)), _p_over_target(false), _n(INITIAL_N),
-      _pmean(0), _niter(2)
+    : Metropolis(value), _prob(prob), _lstep(log(step)), 
+      _p_over_target(false), _n(INITIAL_N), _pmean(0), _niter(2)
 {
     if (prob < 0 || prob > 1 || step < 0)
 	throw logic_error("Invalid initial values in RWMetropolis");
@@ -53,26 +51,17 @@ void RWMetropolis::rescale(double p)
     _niter++;
 }
 
-/*
 void RWMetropolis::update(RNG *rng)
 {
-    unsigned int d = value_length();
-    double *new_value = new double[d];
-    double const *old_value = value();
+    vector<double> value(length());
+    getValue(value);
 
-    double log_p = -_sampler->logFullConditional(_chain);
-    double step = exp(_lstep);
-    for (unsigned int i = 0; i < d; ++i) {
-        new_value[i] = old_value[i] + step * rng->normal();
-    }
-    propose(new_value, d);
-    log_p += _sampler->logFullConditional(_chain);
-    double p = exp(log_p);
-    accept(rng, p);
-
-    delete [] new_value;
+    double log_p = -logDensity() - logJacobian(value);
+    step(value, exp(_lstep), rng);
+    setValue(value);
+    log_p += logDensity() + logJacobian(value);
+    accept(rng, exp(log_p));
 }
-*/
 
 bool RWMetropolis::checkAdaptation() const
 {
@@ -85,7 +74,14 @@ bool RWMetropolis::checkAdaptation() const
     return fabs(logit_target - logit_accept) < 0.5;
 }
 
-double RWMetropolis::step() const
+void RWMetropolis::step(vector<double> &value, double s, RNG *rng) const
 {
-    return exp(_lstep);
+    for (unsigned int i = 0; i < value.size(); ++i) {
+	value[i] += rng->normal() * s;
+    }
+}
+
+double RWMetropolis::logJacobian(vector<double> const &value) const
+{
+    return 0;
 }

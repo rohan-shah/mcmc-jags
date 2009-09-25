@@ -17,6 +17,8 @@ namespace base {
  * on the real line.  We sample Y and then set X = floor(Y).
  */
     class DiscreteSlicer : public Slicer {
+	Updater const *_updater;
+	unsigned int _chain;
 	double _x;
     public:
 	/**
@@ -24,7 +26,7 @@ namespace base {
 	 * @param width Initial width of slice
 	 * @param ndoubles Maximum number of doublings of slice 
 	 */
-	DiscreteSlicer(StochasticNode const *snode, unsigned int chain,
+	DiscreteSlicer(Updater const *updater, unsigned int chain,
                        double width=2, long ndoubles = 10);
 	void setValue(double x);
 	double value() const;
@@ -32,6 +34,7 @@ namespace base {
 	void update(RNG*);
 	static bool canSample(StochasticNode const *node);
 	std::string name() const;
+	double logDensity() const;
     };
 
 }

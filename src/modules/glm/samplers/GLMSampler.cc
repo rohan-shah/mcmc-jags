@@ -18,11 +18,10 @@ using std::vector;
 
 namespace glm {
 
-    GLMSampler::GLMSampler(vector<StochasticNode *> const &sample_nodes, 
-			   GLMMethod *method, Graph const &graph)
-	: Sampler(sample_nodes, graph), _method(method)
+    GLMSampler::GLMSampler(Updater *updater, GLMMethod *method)
+	: Sampler(updater), _updater(updater), _method(method)
     {
-	_method->initialize(this, graph);
+	//_method->initialize(this, graph);
     }
 
     GLMSampler::~GLMSampler()
@@ -34,7 +33,7 @@ namespace glm {
     {
 	unsigned int nchain = nodes()[0]->nchain();
 	for (unsigned int ch = 0; ch < nchain; ++ch) {
-	    _method->update(this, ch, rngs[ch]);
+	    _method->update(_updater, ch, rngs[ch]);
 	}
     }
 

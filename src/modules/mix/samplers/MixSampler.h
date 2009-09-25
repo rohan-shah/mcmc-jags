@@ -7,6 +7,7 @@
 #include <vector>
 
 class Graph;
+class Updater;
 
 namespace mix {
 
@@ -53,6 +54,8 @@ namespace mix {
  */
     class MixSampler : public Metropolis
     {
+	Updater const *_updater;
+	unsigned int _chain;
 	const unsigned int _max_level;
 	const double _delta; 
 	const unsigned int _nrep;
@@ -75,7 +78,7 @@ namespace mix {
 	 *
 	 * @param nrep Number of Metropolis-Hastings updates to do at each level
 	 */
-	MixSampler(std::vector<StochasticNode*> const &nodes,
+	MixSampler(Updater const *updater, unsigned int chain,
 		   unsigned int max_level=50, double delta = 0.10, 
 		   unsigned int nrep = 4);
 	~MixSampler();
@@ -86,14 +89,13 @@ namespace mix {
 	 */
 	void update(RNG *rng);
 	void rescale(double prob);
-	void transform(double const *v, unsigned int length,
-		       double *nv, unsigned int nlength) const;
-	void untransform(double const *nv, unsigned int nlength,
-			 double *v, unsigned int length) const;
+	void updateStep(std::vector<double> &value, double step, RNG *rng);
 	static bool canSample(std::vector<StochasticNode *> const &snodes, 
 			      Graph const &graph);
 	bool checkAdaptation() const;
 	std::string name() const;
+	void getValue(std::vector<double> &value) const;
+	void setValue(std::vector<double> const &value);
     };
 
 }

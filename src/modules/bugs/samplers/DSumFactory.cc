@@ -5,6 +5,7 @@
 #include <graph/Graph.h>
 #include <graph/NodeError.h>
 #include <sampler/DensitySampler.h>
+#include <sampler/Updater.h>
 
 #include "DSumFactory.h"
 #include "DSumSampler.h"
@@ -72,12 +73,13 @@ DSumFactory::makeSampler(set<StochasticNode*> const &nodes,
     if (!DSumMethod::canSample(parameters, graph)) {
 	return 0;
     }
-	
+
+    Updater *updater = new Updater(parameters, graph);
     unsigned int nchain = parameters[0]->nchain();
     vector<DensityMethod*> methods(nchain, 0);
     for (unsigned int ch = 0; ch < nchain; ++ch) {
-	methods[ch] = new DSumMethod;
+	methods[ch] = new DSumMethod(updater, ch);
     }
-    return new DensitySampler(parameters, graph, methods);
+    return new DensitySampler(updater, methods);
 
 }

@@ -2,7 +2,7 @@
 #include <distribution/Distribution.h>
 #include <graph/StochasticNode.h>
 #include <graph/Graph.h>
-#include <sampler/DensitySampler.h>
+#include <sampler/Updater.h>
 #include "DSumSampler.h"
 
 #include <cfloat>
@@ -22,37 +22,14 @@ using std::min;
 using std::exp;
 using std::string;
 
-DSumMethod::DSumMethod()
-    : Slicer(2, 10)
+DSumMethod::DSumMethod(Updater const *updater, unsigned int chain)
+    : Slicer(2, 10), _updater(updater), _chain(chain),
+      _x(updater->nodes()[0]->value(chain)[0]),
+      _sum(static_cast<long>(updater->stochasticChildren()[0]->value(chain)[0]))
 {
-}
-
-void DSumMethod::initialize(DensitySampler *sampler, unsigned int chain)
-{
-    _sampler = sampler;
-    _chain = chain;
-
-    vector<StochasticNode *> const &nodes = sampler->nodes();
-    vector<StochasticNode const *> const &stoch_children = 
-	sampler->stochasticChildren();
-
-    /* One of the stochastic children of the sampled nodes is an observed
-       StochasticNode with a DSum distribution. Find it */
-    Node const *dsum = 0;
-    for (unsigned int i = 0; i < stoch_children.size(); ++i) {
-	StochasticNode const *child = stoch_children[i];
-	if (child->isObserved() && child->distribution()->name() == "dsum") {
-	    dsum = child;
-	    break;
-	}
-    }
-    
-    _sum = static_cast<long>(*dsum->value(chain));
-    _x = *nodes[0]->value(chain);
-
     //Make sure values are consistent at start
     double x2 = _sum - static_cast<long>(_x);
-    nodes[1]->setValue(&x2,1,chain);
+    updater->nodes()[1]->setValue(&x2, 1, chain);
 }
 
 DSumMethod::~DSumMethod()
@@ -82,7 +59,7 @@ bool DSumMethod::canSample(vector<StochasticNode *> const &nodes,
        node with distribution DSum  */
     vector<StochasticNode const*> stoch_nodes;
     vector<DeterministicNode*> dtrm_nodes;
-    Sampler::classifyChildren(nodes, graph, stoch_nodes, dtrm_nodes);
+    Updater::classifyChildren(nodes, graph, stoch_nodes, dtrm_nodes);
     if (!dtrm_nodes.empty())
 	return false;
     if (stoch_nodes.size() != 1)
@@ -102,7 +79,7 @@ void DSumMethod::setValue(double x)
     double value[2];
     value[0] = static_cast<long>(x);
     value[1] = _sum - value[0];
-    _sampler->setValue(value, 2, _chain);
+    _updater->setValue(value, 2, _chain);
 }
 
 double DSumMethod::value() const
@@ -112,7 +89,7 @@ double DSumMethod::value() const
 
 void DSumMethod::getLimits(double *lower, double *upper) const
 {
-    vector<StochasticNode *> const &n = _sampler->nodes();
+    vector<StochasticNode *> const &n = _updater->nodes();
     double l0, u0, l1, u1;
     support(&l0, &u0, 1U, n[0], _chain);
     support(&l1, &u1, 1U, n[1], _chain);
@@ -128,4 +105,9 @@ void DSumMethod::update(RNG *rng)
 string DSumMethod::name() const
 {
     return "DSumMethod";
+}
+
+double DSumMethod::logDensity() const
+{
+    return _updater->logFullConditional(_chain);
 }

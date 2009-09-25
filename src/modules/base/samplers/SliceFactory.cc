@@ -5,6 +5,7 @@
 #include "SliceFactory.h"
 
 #include <sampler/DensitySampler.h>
+#include <sampler/Updater.h>
 #include <graph/StochasticNode.h>
 
 #include <vector>
@@ -25,23 +26,23 @@ namespace base {
     }
 
     Sampler *SliceFactory::makeSampler(StochasticNode *snode,
-					Graph const &graph) const
+				       Graph const &graph) const
     {
 	unsigned int nchain = snode->nchain();
 	vector<DensityMethod*> methods(nchain, 0);
-	bool discrete = snode->isDiscreteValued();
+	Updater *updater = new Updater(snode, graph);
 
+	bool discrete = snode->isDiscreteValued();
 	for (unsigned int ch = 0; ch < nchain; ++ch) {
 	    if (discrete) {
-		methods[ch] = new DiscreteSlicer(snode, ch);
+		methods[ch] = new DiscreteSlicer(updater, ch);
 	    }
 	    else {
-		methods[ch] = new RealSlicer();
+		methods[ch] = new RealSlicer(updater, ch);
 	    }
 	}
 
-	vector<StochasticNode*> nodes(1, snode);
-	return new DensitySampler(nodes, graph, methods);
+	return new DensitySampler(updater, methods);
     }
 
 }

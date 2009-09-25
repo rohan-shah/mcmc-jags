@@ -6,6 +6,7 @@
 #include <graph/StochasticNode.h>
 #include <distribution/Distribution.h>
 #include <sampler/DensitySampler.h>
+#include <sampler/Updater.h>
 
 #include <set>
 
@@ -64,12 +65,13 @@ namespace mix {
 	    return 0;
 	}
 
+	Updater *updater = new Updater(sparents, graph);
 	unsigned int nchain = sparents[0]->nchain();
 	vector<DensityMethod*> methods(nchain,0);	    
 	for (unsigned int ch = 0; ch < nchain; ++ch) {
-	    methods[ch] = new MixSampler(sparents);
+	    methods[ch] = new MixSampler(updater, ch);
 	}
-	return new DensitySampler(sparents, graph, methods);
+	return new DensitySampler(updater, methods);
     }
 
 }

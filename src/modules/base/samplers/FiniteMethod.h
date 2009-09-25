@@ -9,9 +9,11 @@ namespace base {
  * Sampler for discrete distributions with support on a finite set.
  */
     class FiniteMethod : public DensityMethod {
+	Updater const *_updater;
+	unsigned int _chain;
 	int _lower, _upper;
     public:
-	FiniteMethod(StochasticNode const *snode);
+	FiniteMethod(Updater const *updater, unsigned int chain);
 	void update(RNG *rng);
 	/**
 	 * FiniteMethod is not adaptive. This function returns false.

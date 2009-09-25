@@ -3,16 +3,19 @@
 
 #include <sampler/Sampler.h>
 
+class Updater;
+class GLMMethod;
+
 namespace glm {
 
     class GLMMethod;
 
     class GLMSampler : public Sampler
     {
+	Updater const *_updater;
 	GLMMethod  *_method;
     public:
-	GLMSampler(std::vector<StochasticNode*> const &nodes, 
-		   GLMMethod *method, Graph const &graph);
+	GLMSampler(Updater *updater, GLMMethod *method);
 	~GLMSampler();
 	void update(std::vector<RNG*> const &);
 	bool isAdaptive() const;

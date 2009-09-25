@@ -4,6 +4,7 @@
 #include <sampler/Slicer.h>
 
 class StochasticNode;
+class Updater;
 
 namespace base {
 
@@ -12,6 +13,8 @@ namespace base {
  */
     class RealSlicer : public Slicer 
     {
+	Updater const *_updater;
+	unsigned int _chain;
     public:
 	/**
 	 * Constructor for Slice Sampler
@@ -21,13 +24,15 @@ namespace base {
 	 * parameter
 	 * @param nburn Length of burnin
 	 */
-	RealSlicer(double width = 1, long maxwidth = 10);
+	RealSlicer(Updater const *updater, unsigned int chain,
+		   double width = 1, long maxwidth = 10);
 	double value() const;
 	void setValue(double value);
 	void getLimits(double *lower, double *upper) const;
 	void update(RNG *rng);
 	std::string name() const;
 	static bool canSample(StochasticNode const *node);
+	double logDensity() const;
     };
 
 }

@@ -6,7 +6,7 @@
 #include <graph/MixtureNode.h>
 #include <graph/StochasticNode.h>
 #include <graph/NodeError.h>
-#include "ConjugateSampler.h"
+#include <sampler/Updater.h>
 
 #include <set>
 #include <stdexcept>
@@ -31,7 +31,7 @@ bool ConjugateDirichlet::canSample(StochasticNode *snode, Graph const &graph)
 
     vector<StochasticNode const*> stoch_nodes;
     vector<DeterministicNode*> dtrm_nodes;
-    Sampler::classifyChildren(vector<StochasticNode*>(1,snode), 
+    Updater::classifyChildren(vector<StochasticNode*>(1,snode), 
 			      graph, stoch_nodes, dtrm_nodes);
     /* 
        Create a set of nodes containing snode and its deterministic
@@ -89,15 +89,14 @@ static bool allzero(double const *x, long length)
     return true;
 }
 
-void ConjugateDirichlet::initialize(ConjugateSampler *sampler,
-				    Graph const &graph)
-{
-}
+ConjugateDirichlet::ConjugateDirichlet(Updater const *updater)
+    : ConjugateMethod(updater)
+{}
 
-void ConjugateDirichlet::update(ConjugateSampler *sampler, unsigned int chain, 
+void ConjugateDirichlet::update(Updater *updater, unsigned int chain, 
 				RNG *rng) const
 {
-    StochasticNode *snode = sampler->node();
+    StochasticNode *snode = updater->nodes()[0];
     unsigned long size = snode->length();
     double *alpha = new double[size];
     double const *prior = snode->parents()[0]->value(chain);
@@ -114,11 +113,10 @@ void ConjugateDirichlet::update(ConjugateSampler *sampler, unsigned int chain,
     for (unsigned long i = 0; i < size; ++i) {
 	xnew[i] = 0;
     }
-    sampler->setValue(xnew, size, chain);
+    updater->setValue(xnew, size, chain);
 
     vector<StochasticNode const*> const &stoch_children = 
-	sampler->stochasticChildren();
-    vector<ConjugateDist> const &child_dist = sampler->childDist();
+	updater->stochasticChildren();
     unsigned int nchildren = stoch_children.size();
     for (unsigned int i = 0; i < nchildren; ++i) {
 	StochasticNode const *schild = stoch_children[i];
@@ -126,7 +124,7 @@ void ConjugateDirichlet::update(ConjugateSampler *sampler, unsigned int chain,
 	double const *N = 0;
 	if (allzero(schild->parents()[0]->value(chain), 
 		    schild->parents()[0]->length())) {
-	    switch(child_dist[i]) {
+	    switch(_child_dist[i]) {
 	    case MULTI:
 		N = schild->value(chain);
 		for (unsigned long j = 0; j < size; ++j) {
@@ -138,7 +136,7 @@ void ConjugateDirichlet::update(ConjugateSampler *sampler, unsigned int chain,
 		alpha[index - 1] += 1;
 		break;
 	    default:
-		throw logic_error("Invalid distribution in Conjugate Dirichlet sampler");
+		throw logic_error("Invalid distribution in Conjugate Dirichlet method");
 	    }
 	}
     }
@@ -169,7 +167,7 @@ void ConjugateDirichlet::update(ConjugateSampler *sampler, unsigned int chain,
 	xnew[i] /= xsum;
     }
 
-    sampler->setValue(xnew, size, chain);
+    updater->setValue(xnew, size, chain);
 
     delete [] xnew;
     delete [] alpha;

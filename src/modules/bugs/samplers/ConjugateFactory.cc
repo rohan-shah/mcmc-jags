@@ -12,6 +12,7 @@
 
 #include <graph/StochasticNode.h>
 #include <distribution/Distribution.h>
+#include <sampler/Updater.h>
 
 #include <stdexcept>
 #include <string>
@@ -36,9 +37,11 @@ ConjugateFactory::ConjugateFactory()
 bool ConjugateFactory::canSample(StochasticNode * snode,
 				 Graph const &graph) const
 {
+    /*
     if (Censored::canSample(snode, graph))
       return true;
-
+    */
+    
     //FIXME: Could use a typedef here to make it readable
     map<string, bool (*)(StochasticNode *, Graph const &)>::const_iterator
 	p = _func_table.find(snode->distribution()->name());
@@ -51,34 +54,39 @@ bool ConjugateFactory::canSample(StochasticNode * snode,
 }
 
 Sampler *ConjugateFactory::makeSampler(StochasticNode *snode, 
-					Graph const &graph) const
+				       Graph const &graph) const
 {
+    /*
     if (Censored::canSample(snode, graph))
-      return new Censored(snode, graph);
+    return new Censored(snode, graph);
+    */
+
+    Updater *updater = new Updater(snode, graph);
     
     ConjugateMethod* method = 0;
     switch (getDist(snode)) {
     case NORM:
-	method = new ConjugateNormal();
+	method = new ConjugateNormal(updater);
 	break;
     case GAMMA: case EXP: case CHISQ:
-	method = new ConjugateGamma();
+	method = new ConjugateGamma(updater);
 	break;
     case BETA:
-	method = new ConjugateBeta();
+	method = new ConjugateBeta(updater);
 	break;
     case DIRCH:
-	method = new ConjugateDirichlet();
+	method = new ConjugateDirichlet(updater);
 	break;
     case MNORM:
-	method = new ConjugateMNormal();
+	method = new ConjugateMNormal(updater);
 	break;
     case WISH:
-	method = new ConjugateWishart();
+	method = new ConjugateWishart(updater);
 	break;
     default:
 	throw invalid_argument("Unable to create conjugate sampler");
     }
     
-    return new ConjugateSampler(snode, graph, method);
+    
+    return new ConjugateSampler(updater, method);
 }

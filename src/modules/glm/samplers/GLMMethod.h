@@ -11,10 +11,9 @@ extern "C" {
 class Graph;
 class RNG;
 class StochasticNode;
+class Updater;
 
 namespace glm {
-
-    class GLMSampler;
 
     /**
      * Abstract method for generalized linear models.
@@ -27,23 +26,18 @@ namespace glm {
 	unsigned int _length_max;
 	unsigned _nz_prior;
 	std::vector<StochasticNode const*> const *_children;
-	void symbolic(GLMSampler const *sampler);
-	void calBeta(cs *_beta, GLMSampler *sampler, unsigned int chain) const;
+	void symbolic(Updater const *updater);
+	void calBeta(cs *_beta, Updater const *updater, unsigned int chain) 
+	    const;
     public:
-	GLMMethod();
+	GLMMethod(Updater const *updater);
 	virtual ~GLMMethod();
-	void initialize(GLMSampler *sampler, Graph const &graph);
-	void update(GLMSampler *sampler, unsigned int chain, RNG *rng) const;
+	void update(Updater const *updater, unsigned int chain, RNG *rng) const;
 	virtual std::string name() const = 0;
-	virtual double 
-	    getMean(std::vector<StochasticNode const *> const &children,
-		    unsigned int i, unsigned int chain) const = 0;
-	virtual double 
-	    getPrecision(std::vector<StochasticNode const *> const &children, 
-			 unsigned int i, unsigned int chain) const = 0;
-	virtual double 
-	    getValue(std::vector<StochasticNode const *> const &children,
-		     unsigned int i, unsigned int chain) const = 0;
+	virtual double getMean(unsigned int i, unsigned int chain) const = 0;
+	virtual double getPrecision(unsigned int i, unsigned int chain) 
+	    const = 0;
+	virtual double getValue(unsigned int i, unsigned int chain) const = 0;
     };
 
 }

@@ -7,12 +7,13 @@
 #include <algorithm>
 
 #include "GLMMethod.h"
-#include "GLMSampler.h"
 
+#include <sampler/Updater.h>
 #include <sampler/Linear.h>
+#include <graph/Graph.h>
 #include <graph/StochasticNode.h>
 #include <graph/DeterministicNode.h>
-#include <sampler/Sampler.h>
+
 
 using std::string;
 using std::vector;
@@ -31,27 +32,58 @@ static void updateDeterministic(Node *node, unsigned int chain)
     }
 }
 
+static void 
+getStochasticChildren(Node *node, set<StochasticNode const*> &schildren)
+{
+    schildren.insert(node->stochasticChildren()->begin(),
+		     node->stochasticChildren()->end());
+    set<DeterministicNode*>::const_iterator q;
+    for (q = node->deterministicChildren()->begin();
+	 q != node->deterministicChildren()->end(); ++q)
+    {
+	getStochasticChildren(*q, schildren);
+    }
+}
+
+static void getIndices(set<StochasticNode const *> const &schildren,
+		       vector<StochasticNode const*> const &rows,
+		       vector<int> &indices)
+{
+    indices.clear();
+    
+    for (int i = 0; i < rows.size(); ++i) {
+	if (schildren.count(rows[i])) {
+	    indices.push_back(i);
+	}
+    }
+    
+    if (indices.size() != schildren.size()) {
+	throw logic_error("Size mismatch in getIndices");
+    }
+}
+
 namespace glm {
 
-    void GLMMethod::calBeta(cs *beta, GLMSampler *sampler, unsigned int chain)
+    void 
+    GLMMethod::calBeta(cs *beta, Updater const *updater, unsigned int chain)
 	const
     {
-	vector<StochasticNode *> const &snodes = sampler->nodes();
+	vector<StochasticNode *> const &snodes = updater->nodes();
 	vector<StochasticNode const *> const &schildren = 
-	    sampler->stochasticChildren();
+	    updater->stochasticChildren();
 
 	int *Bi = beta->i;
 	int *Bp = beta->p;
 	double *Bx = beta->x;
 
 	int nrow = schildren.size();
-	int ncol = sampler->length();
+	int ncol = updater->length();
 	if (nrow != beta->m || ncol != beta->n) {
 	    throw logic_error("Dimension mismatch in GLMMethod::calBeta");
 	}
 
 	for (unsigned int r = 0; r < Bp[ncol]; ++r) {
-	    Bx[r] = -getMean(schildren, Bi[r], chain);
+	    Bx[r] = -getMean(Bi[r], chain);
 	}
 
 	int c = 0; //column counter
@@ -71,7 +103,7 @@ namespace glm {
 		updateDeterministic(snode, chain); 
 				
 		for (int r = Bp[c]; r < Bp[c + 1]; ++r) {
-		    Bx[r] += getMean(schildren, Bi[r], chain);
+		    Bx[r] += getMean(Bi[r], chain);
 		}
 
 		xnew[i] -= 1;
@@ -83,9 +115,60 @@ namespace glm {
     
     }
     
-    GLMMethod::GLMMethod()
+    GLMMethod::GLMMethod(Updater const *updater)
 	: _beta(0), _symbol(0), _fixed(false), _length_max(0), _nz_prior(0)
     {
+	vector<StochasticNode *> const &snodes = updater->nodes();
+	vector<StochasticNode const*> const &schildren = 
+	    updater->stochasticChildren();
+
+	int nrow = schildren.size();
+	int ncol = updater->length();
+
+	vector<int> Bp(ncol + 1);
+	vector<int> Bi;
+    
+	int c = 0; //column counter
+	int r = 0; //count of number of non-zero entries
+	for (vector<StochasticNode*>::const_iterator p = snodes.begin();
+	     p != snodes.end(); ++p)
+	{
+	    StochasticNode *snode = *p;
+
+	    set<StochasticNode const *> children_p;
+	    getStochasticChildren(snode, children_p);
+	    vector<int> indices;
+	    getIndices(children_p, schildren, indices);
+
+	    unsigned int length = snode->length();
+	    for (unsigned int i = 0; i < length; ++i, ++c) {
+		Bp[c] = r;
+		for (unsigned int j = 0; j < indices.size(); ++j, ++r) {
+		    Bi.push_back(indices[j]);
+		}
+	    }
+
+	    //Save these values for later calculations
+	    _nz_prior += length * length; //Number of non-zeros in prior precision
+	    if (length > _length_max) {
+		_length_max = length; //Length of longest sampled node
+	    }
+	}
+	Bp[c] = r;
+
+	//Set up sparse matrix representation of beta coefficients
+	_beta = cs_spalloc(nrow, ncol, r, 1, 0);
+	copy(Bp.begin(), Bp.end(), _beta->p);
+	copy(Bi.begin(), Bi.end(), _beta->i);
+
+	//Symbolic analysis
+	calBeta(_beta, updater, 0);
+	symbolic(updater);
+
+	// Check for constant linear terms
+	if (checkLinear(updater, true)) {
+	    _fixed = true;
+	}
     }
 
     GLMMethod::~GLMMethod()
@@ -93,22 +176,7 @@ namespace glm {
 	cs_spfree(_beta);
     }
 
-    static void getIndices(set<StochasticNode const *> const &schildren,
-			   vector<StochasticNode const*> const &rows,
-			   vector<int> &indices)
-    {
-	indices.clear();
 
-	for (int i = 0; i < rows.size(); ++i) {
-	    if (schildren.count(rows[i])) {
-		indices.push_back(i);
-	    }
-	}
-	
-	if (indices.size() != schildren.size()) {
-	    throw logic_error("Size mismatch in getIndices");
-	}
-    }
     
 /* 
    Symbolic analysis of the posterior precision matrix for the
@@ -118,13 +186,9 @@ namespace glm {
    stripped-down version of the code in update.  Note that the values
    of the sparse matrices are never referenced.
 */
-    void GLMMethod::symbolic(GLMSampler const *sampler)  
+    void GLMMethod::symbolic(Updater const *updater)  
     {
-	vector<StochasticNode const*> const &schildren = 
-	    sampler->stochasticChildren();
-	unsigned int nchildren = schildren.size();
-    
-	unsigned int nrow = sampler->length();
+	unsigned int nrow = updater->length();
 	cs *Aprior = cs_spalloc(nrow, nrow, _nz_prior, 0, 0); 
     
 	// Prior contribution
@@ -133,7 +197,7 @@ namespace glm {
 
 	int c = 0;
 	int r = 0;
-	vector<StochasticNode*> const &snodes = sampler->nodes();
+	vector<StochasticNode*> const &snodes = updater->nodes();
 	for (vector<StochasticNode*>::const_iterator p = snodes.begin();
 	     p != snodes.end(); ++p)
 	{
@@ -165,70 +229,11 @@ namespace glm {
 	cs_spfree(A);
     }
 
-    void GLMMethod::initialize(GLMSampler *sampler, Graph const &graph)
-    {
-	vector<StochasticNode *> const &snodes = sampler->nodes();
-	vector<StochasticNode const*> const &schildren = 
-	    sampler->stochasticChildren();
-
-	int nrow = schildren.size();
-	int ncol = sampler->length();
-
-	vector<int> Bp(ncol + 1);
-	vector<int> Bi;
-    
-	int c = 0; //column counter
-	int r = 0; //count of number of non-zero entries
-	for (vector<StochasticNode*>::const_iterator p = snodes.begin();
-	     p != snodes.end(); ++p)
-	{
-	    StochasticNode *snode = *p;
-
-	    set<StochasticNode const *> children_p;
-	    Sampler::getStochasticChildren(vector<StochasticNode*>(1,snode), 
-					   graph, children_p);
-	    vector<int> indices;
-	    getIndices(children_p, schildren, indices);
-
-	    unsigned int length = snode->length();
-	    for (unsigned int i = 0; i < length; ++i, ++c) {
-		Bp[c] = r;
-		for (unsigned int j = 0; j < indices.size(); ++j, ++r) {
-		    Bi.push_back(indices[j]);
-		}
-	    }
-
-	    //Save these values for later calculations
-	    _nz_prior += length * length; //Number of non-zeros in prior precision
-	    if (length > _length_max) {
-		_length_max = length; //Length of longest sampled node
-	    }
-	}
-	Bp[c] = r;
-
-	//Set up sparse matrix representation of beta coefficients
-	_beta = cs_spalloc(nrow, ncol, r, 1, 0);
-	copy(Bp.begin(), Bp.end(), _beta->p);
-	copy(Bi.begin(), Bi.end(), _beta->i);
-
-	//Symbolic analysis
-	calBeta(_beta, sampler, 0);
-	symbolic(sampler);
-
-	// Check for constant linear terms
-	if (checkLinear(sampler->nodes(), graph, true)) {
-	    _fixed = true;
-	}
-    }
 
 
     void 
-    GLMMethod::update(GLMSampler *sampler, unsigned int chain, RNG *rng) const
+    GLMMethod::update(Updater const *updater, unsigned int chain, RNG *rng) const
     {
-	vector<StochasticNode const *> const &schildren =
-	    sampler->stochasticChildren();
-	unsigned int nchildren = schildren.size();
-    
 	//   The log of the full conditional density takes the form
 	//   -(t(x) %*% A %*% x - 2 * b %*% x)/2
 	//   where A is the posterior precision and the mean mu solves
@@ -237,7 +242,7 @@ namespace glm {
 	//   For computational convenience we take xold, the current value
 	//   of the sampled nodes, as the origin
 
-	unsigned int nrow = sampler->length();
+	unsigned int nrow = updater->length();
 	double *b = new double[nrow];
 	cs *Aprior = cs_spalloc(nrow, nrow, _nz_prior, 1, 0); 
     
@@ -248,7 +253,7 @@ namespace glm {
 
 	int c = 0;
 	int r = 0;
-	vector<StochasticNode*> const &snodes = sampler->nodes();
+	vector<StochasticNode*> const &snodes = updater->nodes();
 	for (vector<StochasticNode*>::const_iterator p = snodes.begin();
 	     p != snodes.end(); ++p)
 	{
@@ -274,7 +279,7 @@ namespace glm {
 	if (!_fixed) {
 	    //Fixme: could be more efficient if we don't have to recalculate
 	    //all coefficients
-	    calBeta(_beta, sampler, chain);
+	    calBeta(_beta, updater, chain);
 	}
 
 	// Likelihood contributions
@@ -294,9 +299,9 @@ namespace glm {
 	double *Tx = tbeta->x;
     
 	for (int c = 0; c < tbeta->n; ++c) {
-	    double tau = getPrecision(schildren, c, chain);
-	    double delta = getValue(schildren, c, chain) - 
-		getMean(schildren, c, chain);
+	    double tau = getPrecision(c, chain);
+	    double delta = getValue(c, chain) - 
+		getMean(c, chain);
 	    for (int r = Tp[c]; r < Tp[c+1]; ++r) {
 		Tx[r] *= tau;
 		b[Ti[r]] += Tx[r] * delta;
@@ -345,7 +350,7 @@ namespace glm {
 	    }
 	}
 
-	sampler->setValue(b, nrow, chain);
+	updater->setValue(b, nrow, chain);
 	delete [] b;
     }
 

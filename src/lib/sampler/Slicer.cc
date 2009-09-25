@@ -1,20 +1,18 @@
 #include <config.h>
 #include <sampler/Slicer.h>
-#include <sampler/Sampler.h>
-#include <graph/StochasticNode.h>
-#include <graph/NodeError.h>
 #include <rng/RNG.h>
 #include <util/nainf.h>
-#include <sampler/DensitySampler.h>
 
 #include <cmath>
 #include <cfloat>
+#include <stdexcept>
 
 //Minimum length of adaptive phase before we adjust width
 #define MIN_ADAPT 50
 
 using std::vector;
 using std::fabs;
+using std::runtime_error;
 
 Slicer::Slicer(double width, unsigned int max)
     : DensityMethod(), _width(width), _adapt(true), _max(max), _sumdiff(0),
@@ -25,14 +23,14 @@ Slicer::Slicer(double width, unsigned int max)
 void Slicer::updateStep(RNG *rng)
 {
     // Test current value
-    double g0 = _sampler->logFullConditional(_chain);
+    double g0 = logDensity();
     if (!jags_finite(g0)) {
 	if (g0 > 0) {
 	    return;
 	}
 	else {
-	    throw NodeError(_sampler->nodes()[0],
-                            "Current value is inconsistent with data");
+	    //FIXME: Not very informative
+	    throw runtime_error("Error in Slicer: Current value is inconsistent with data");
 	}
     }
 
@@ -60,7 +58,7 @@ void Slicer::updateStep(RNG *rng)
     }
     else {
 	setValue(L);
-	while (j-- > 0 && _sampler->logFullConditional(_chain) > z) {
+	while (j-- > 0 && logDensity() > z) {
 	    L -= _width;
 	    if (L < lower) {
 		L = lower;
@@ -75,7 +73,7 @@ void Slicer::updateStep(RNG *rng)
     }
     else {
 	setValue(R);
-	while (k-- > 0 && _sampler->logFullConditional(_chain) > z) {
+	while (k-- > 0 && logDensity() > z) {
 	    R += _width;
 	    if (R > upper) {
 		R = upper;
@@ -91,7 +89,7 @@ void Slicer::updateStep(RNG *rng)
     for(;;) {
 	xnew =  L + rng->uniform() * (R - L);
 	setValue(xnew);
-	double g = _sampler->logFullConditional(_chain);
+	double g = logDensity();
 	if (g >= z - DBL_EPSILON) {
 	    // Accept point
 	    break;
@@ -121,11 +119,10 @@ void Slicer::updateDouble(RNG *rng)
   using namespace std;
 
   // Test current value
-  double g0 = _sampler->logFullConditional(_chain);
+  double g0 = logDensity();
   if (!jags_finite(g0)) {
     if (g0 < 0) {
-      throw NodeError(_sampler->nodes()[0],
-                      "Current value is inconsistent with data");
+	throw runtime_error("Error in Slicer: Current value is inconsistent with data");
     }
     else {
       return;
@@ -154,7 +151,7 @@ void Slicer::updateDouble(RNG *rng)
         }
         else {
 	    setValue(L);
-	    left_ok = _sampler->logFullConditional(_chain) < z;
+	    left_ok = logDensity() < z;
         }
       }
       else {
@@ -169,7 +166,7 @@ void Slicer::updateDouble(RNG *rng)
         }
         else {
 	    setValue(R);
-	    right_ok = _sampler->logFullConditional(_chain) < z;
+	    right_ok = logDensity() < z;
         }
       }
       else {
@@ -188,7 +185,7 @@ void Slicer::updateDouble(RNG *rng)
     xnew =  Lbar + rng->uniform() * (Rbar - Lbar);
     if (xnew >= lower && xnew <= upper) {
 	setValue(xnew);
-	double g = _sampler->logFullConditional(_chain);
+	double g = logDensity();
 	if (g >= z && accept(xold, xnew, z, L, R, lower, upper)) {
 	    // The accept function will alter the current value. So we
 	    // must reset it.
@@ -234,12 +231,12 @@ bool Slicer::accept(double xold, double xnew, double z, double L, double R,
       bool right_ok = true;
       if (R <= upper) {
 	  setValue(R);
-	  right_ok = _sampler->logFullConditional(_chain) < z;
+	  right_ok = logDensity() < z;
       }
       bool left_ok = true;
       if (L >= lower) {
 	  setValue(L);
-         left_ok = _sampler->logFullConditional(_chain) < z;
+         left_ok = logDensity() < z;
       }
       if (left_ok && right_ok) {
 	return false;

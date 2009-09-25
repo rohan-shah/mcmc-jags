@@ -6,7 +6,7 @@
 #include <lapack.h>
 
 #include <graph/StochasticNode.h>
-#include <sampler/DensitySampler.h>
+#include <sampler/Updater.h>
 #include <rng/RNG.h>
 
 #include <cmath>
@@ -23,12 +23,26 @@ using std::sqrt;
 using std::min;
 using std::string;
 
-MNormMetropolis::MNormMetropolis(StochasticNode* node)
-    : Metropolis(vector<StochasticNode*>(1,node)), _mean(0), _var(0), _prec(0),
+static vector<double> initValue(Updater const *updater, unsigned int chain)
+{
+    double const *x = updater->nodes()[0]->value(chain);
+    unsigned int N = updater->nodes()[0]->length();
+    vector<double> ivalue(N);
+    for (unsigned int i = 0; i < N; ++i) {
+	ivalue[i] = x[i];
+    }
+    return ivalue;
+}
+
+
+MNormMetropolis::MNormMetropolis(Updater const *updater, unsigned int chain)
+    : Metropolis(initValue(updater, chain)),
+      _updater(updater), _chain(chain), 
+      _mean(0), _var(0), _prec(0), 
       _n(0), _n_isotonic(0), _sump(0), _meanp(0), _lstep(0), _nstep(10), 
       _p_over_target(true)
 {
-    unsigned int N = node->length();
+    unsigned int N = updater->length();
 
     _mean = new double[N];
     _var = new double[N * N];
@@ -52,24 +66,23 @@ MNormMetropolis::~MNormMetropolis()
 
 void MNormMetropolis::update(RNG *rng)
 {
-    double const *old_value = value();
-    unsigned int N = value_length();
-    
-    double logdensity = -_sampler->logFullConditional(_chain);
+    double logdensity = -_updater->logFullConditional(_chain);
     double step = exp(_lstep);
 
-    double *x = new double[N];
-    
-    DMNorm::randomsample(x, 0, _var, false, N, rng);
+    double const *xold = _updater->nodes()[0]->value(_chain);
+    unsigned int N = _updater->length();
+
+    double *eps = new double[N];
+    DMNorm::randomsample(eps, 0, _var, false, N, rng);
+    vector<double> xnew(N);
     for (unsigned int i = 0; i < N; ++i) {
-	x[i] = old_value[i] + x[i] * step;
+	xnew[i] = xold[i] + eps[i] * step;
     }
+    delete [] eps;
 
-    propose(x, N);
-    logdensity += _sampler->logFullConditional(_chain);
+    setValue(xnew);
+    logdensity += _updater->logFullConditional(_chain);
     accept(rng, exp(logdensity));
-
-    delete [] x;
 }
 
 void MNormMetropolis::rescale(double p)
@@ -107,12 +120,6 @@ void MNormMetropolis::rescale(double p)
         //This give better adaptation in the orange tree example
 	_lstep += (p - 0.234) / sqrt(static_cast<double>(_nstep));
         _nstep++;
-/*
-	if ((p > 0.234) != _p_over_target) {
-	    _p_over_target = !_p_over_target;
-	    ++_nstep;
-	}
-*/
 	/* 
 	   Adaptive random walk: The variance of the proposal
 	   distribution is adapted to the empirical variance of the
@@ -134,36 +141,19 @@ void MNormMetropolis::rescale(double p)
 	   random walk.
 	*/
 
-	unsigned int N = _sampler->length();
-	double const *x = value();
+	unsigned int N = _updater->length();
+	double const *x = _updater->nodes()[0]->value(_chain);
 	for (unsigned int i = 0; i < N; ++i) {
 	    _mean[i] += 2 * (x[i] - _mean[i]) / (_n - _n_isotonic + 1);
 	}
 	for (unsigned int i = 0; i < N; ++i) {
 	    for (unsigned int j = 0; j < N; ++j) {
-		_var[i + N * j] += 2 * ((x[i] - _mean[i]) * (x[j] - _mean[j]) -
-					_var[i + N * j]) / _n;
+		_var[i + N * j] += 2 * ((x[i] - _mean[i]) * 
+					    (x[j] - _mean[j]) -
+					    _var[i + N * j]) / _n;
 	    }
 	}
     }
-}
-
-void MNormMetropolis::transform(double const *v, unsigned int length,
-			     double *nv, unsigned int nlength) const
-{
-    if (length != nlength) {
-	throw logic_error("Invalid length in MNormMetropolis::transformValues");
-    }
-    copy(v, v + length, nv);
-}
-
-void MNormMetropolis::untransform(double const *nv, unsigned int nlength,
-			     double *v, unsigned int length) const
-{
-    if (length != nlength) {
-	throw logic_error("Invalid length in MNormMetropolis::transformValues");
-    }
-    copy(nv, nv + nlength, v);
 }
 
 bool MNormMetropolis::checkAdaptation() const
@@ -174,4 +164,15 @@ bool MNormMetropolis::checkAdaptation() const
 string MNormMetropolis::name() const
 {
     return "MNormMetropolis";
+}
+
+void MNormMetropolis::getValue(vector<double> &value) const
+{
+    double const *v = _updater->nodes()[0]->value(_chain);
+    copy(v, v + _updater->length(), value.begin());
+}
+
+void MNormMetropolis::setValue(vector<double> const &value)
+{
+    _updater->setValue(value, _chain);
 }

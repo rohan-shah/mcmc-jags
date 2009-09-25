@@ -9,11 +9,10 @@ class Graph;
 class ConjugateGamma : public ConjugateMethod {
     double *_coef;
 public:
-    ConjugateGamma();
+    ConjugateGamma(Updater const *updater);
     ~ConjugateGamma();
     static bool canSample(StochasticNode *snode, Graph const &graph);
-    void update(ConjugateSampler *sampler, unsigned int chain, RNG *rng) const;
-    void initialize(ConjugateSampler *sampler, Graph const &graph);
+    void update(Updater *updater, unsigned int chain, RNG *rng) const;
     std::string name() const;
 };
 

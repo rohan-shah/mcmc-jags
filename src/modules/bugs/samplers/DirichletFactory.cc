@@ -5,6 +5,7 @@
 #include <graph/StochasticNode.h>
 #include <distribution/Distribution.h>
 #include <sampler/DensitySampler.h>
+#include <sampler/Updater.h>
 
 #include <string>
 #include <vector>
@@ -24,8 +25,9 @@ DirichletFactory::makeSampler(StochasticNode *snode, Graph const &graph) const
     unsigned int nchain = snode->nchain();
     vector<DensityMethod*> methods(nchain, 0);
     vector<StochasticNode*> nodes(1, snode);
+    Updater *updater = new Updater(snode, graph);
     for (unsigned int ch = 0; ch < nchain; ++ch) {
-        methods[ch] = new DirchMetropolis(snode);
+        methods[ch] = new DirchMetropolis(updater, ch);
     }
-    return new DensitySampler(nodes, graph, methods);
+    return new DensitySampler(updater, methods);
 }

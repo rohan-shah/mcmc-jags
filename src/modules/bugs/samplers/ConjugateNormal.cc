@@ -6,6 +6,7 @@
 #include <graph/LogicalNode.h>
 #include <graph/StochasticNode.h>
 #include <sampler/Linear.h>
+#include <sampler/Updater.h>
 
 #include <set>
 #include <stdexcept>
@@ -13,7 +14,6 @@
 #include <cmath>
 
 #include "ConjugateNormal.h"
-#include "ConjugateSampler.h"
 
 #include <JRmath.h>
 
@@ -23,16 +23,16 @@ using std::sqrt;
 using std::invalid_argument;
 using std::string;
 
-static void calBeta(double *beta, ConjugateSampler *sampler, unsigned int chain)
+static void calBeta(double *beta, Updater const *updater, unsigned int chain)
 {
-    StochasticNode *snode = sampler->node();
+    StochasticNode *snode = updater->nodes()[0];
 
     const double xold = *snode->value(chain);
     vector<StochasticNode const*> const &stoch_children = 
-	sampler->stochasticChildren();
+	updater->stochasticChildren();
 
     double xnew = xold + 1;
-    sampler->setValue(&xnew, 1, chain);
+    updater->setValue(&xnew, 1, chain);
 
     double *bp = beta;    
     for (unsigned int i = 0; i < stoch_children.size(); ++i) {
@@ -45,7 +45,7 @@ static void calBeta(double *beta, ConjugateSampler *sampler, unsigned int chain)
 	bp += nrow;
     }
 
-    sampler->setValue(&xold, 1, chain);
+    updater->setValue(&xold, 1, chain);
 
     bp = beta;    
     for (unsigned int i = 0; i < stoch_children.size(); ++i) {
@@ -60,10 +60,24 @@ static void calBeta(double *beta, ConjugateSampler *sampler, unsigned int chain)
 }
 
 
-ConjugateNormal::ConjugateNormal()
-    : _betas(0), _length_betas(0)
+ConjugateNormal::ConjugateNormal(Updater const *updater)
+    : ConjugateMethod(updater), _betas(0), _length_betas(0)
 {
-    
+    if (!updater->deterministicChildren().empty()) {
+
+	//Need to allocate vector of coefficients
+	vector<StochasticNode const *> const &children = 
+	    updater->stochasticChildren();
+	for (unsigned int i = 0; i < children.size(); ++i) {
+	    _length_betas += children[i]->length();
+	}
+
+	if (checkLinear(updater, true)) {
+	    //One-time calculation of fixed coefficients
+	    _betas = new double[_length_betas];
+	    calBeta(_betas, updater, 0);
+	}
+    }
 }
 
 ConjugateNormal::~ConjugateNormal()
@@ -71,25 +85,7 @@ ConjugateNormal::~ConjugateNormal()
     delete [] _betas;
 }
 
-void ConjugateNormal::initialize(ConjugateSampler *sampler, Graph const &graph)
-{
-    if (sampler->deterministicChildren().empty()) 
-	return;
 
-    vector<StochasticNode const *> const &children = 
-	sampler->stochasticChildren();
-    for (unsigned int i = 0; i < children.size(); ++i) {
-	_length_betas += children[i]->length();
-    }
-
-    // Check for constant linear terms
-    if (!checkLinear(sampler->nodes(), graph, true))
-	return;
-
-    //One-time calculation of fixed coefficients
-    _betas = new double[_length_betas];
-    calBeta(_betas, sampler, 0);
-}
 
 
 bool ConjugateNormal::canSample(StochasticNode *snode, Graph const &graph)
@@ -105,7 +101,7 @@ bool ConjugateNormal::canSample(StochasticNode *snode, Graph const &graph)
 
     vector<StochasticNode const*> stoch_nodes;
     vector<DeterministicNode*> dtrm_nodes;
-    Sampler::classifyChildren(vector<StochasticNode*>(1,snode), 
+    Updater::classifyChildren(vector<StochasticNode*>(1,snode), 
 		              graph, stoch_nodes, dtrm_nodes);
 
     /* 
@@ -142,13 +138,13 @@ bool ConjugateNormal::canSample(StochasticNode *snode, Graph const &graph)
     return true; //We made it!
 }
 
-void ConjugateNormal::update(ConjugateSampler *sampler, unsigned int chain, 
+void ConjugateNormal::update(Updater *updater, unsigned int chain, 
 			     RNG *rng) const
 {
     vector<StochasticNode const*> const &stoch_children = 
-	sampler->stochasticChildren();
+	updater->stochasticChildren();
     unsigned int nchildren = stoch_children.size();
-    StochasticNode *snode = sampler->node();
+    StochasticNode *snode = updater->nodes()[0];
 
     /* For convenience in the following computations, we shift the
        origin to xold, the previous value of the node */
@@ -160,7 +156,7 @@ void ConjugateNormal::update(ConjugateSampler *sampler, unsigned int chain,
     double A = priormean * priorprec; //Weighted sum of means
     double B = priorprec; //Sum of weights
 
-    if (sampler->deterministicChildren().empty()) {
+    if (updater->deterministicChildren().empty()) {
 
 	// This can only happen if the stochastic children are all
 	// univariate normal. We know alpha = 0, beta = 1.
@@ -179,7 +175,7 @@ void ConjugateNormal::update(ConjugateSampler *sampler, unsigned int chain,
 	bool temp_beta = (_betas == 0);
 	if (temp_beta) {
 	    beta = new double[_length_betas];
-	    calBeta(beta, sampler, chain);
+	    calBeta(beta, updater, chain);
 	}
 	else {
 	    beta = _betas;
@@ -228,7 +224,7 @@ void ConjugateNormal::update(ConjugateSampler *sampler, unsigned int chain,
     else {
 	xnew = rnorm(postmean, postsd, rng);  
     }
-    sampler->setValue(&xnew, 1, chain);
+    updater->setValue(&xnew, 1, chain);
 
 }
 

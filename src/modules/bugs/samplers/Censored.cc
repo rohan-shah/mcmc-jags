@@ -2,10 +2,11 @@
 
 #include "Censored.h"
 #include "DInterval.h"
-//#include "RNG.h"
 
+#include <sampler/Updater.h>
 #include <graph/NodeError.h>
 #include <graph/StochasticNode.h>
+
 
 #include <stdexcept>
 #include <vector>
@@ -16,19 +17,24 @@ using std::invalid_argument;
 using std::logic_error;
 using std::string;
 
-Censored::Censored(StochasticNode *snode, Graph const &graph)
-    : Sampler(vector<StochasticNode*>(1,snode), graph), _snode(snode)
+int indicator(Updater const *updater, unsigned int ch)
 {
-    if (!canSample(snode, graph)) {
-	throw invalid_argument("Can't construct Censored sampler");
-    }
+    return static_cast<int>(updater->stochasticChildren()[0]->value(ch)[0]);
+}
 
-    StochasticNode const *child = stochasticChildren()[0];
-    _breaks = child->parents()[1];
-    _y = static_cast<int>(*child->value(0));
+static Node const *breaks(Updater const *updater)
+{
+    return updater->stochasticChildren()[0]->parents()[1];
+}
 
-    if (_y < 0 || _y > _breaks->length())
-	throw NodeError(_snode, "Bad interval-censored node");
+
+Censored::Censored(Updater const *updater, unsigned int chain)
+    : _updater(updater), _chain(chain)
+{
+    int y = indicator(updater, chain);
+    
+    if (y < 0 || y > breaks(updater)->length())
+	throw NodeError(updater->nodes()[0], "Bad interval-censored node");
 }
 
 
@@ -49,39 +55,46 @@ bool Censored::canSample(StochasticNode *snode, Graph const &graph)
     // draw truncated random samples. However, the node itself must not
     // be bounded as we don't want the additional complication of combining
     // a priori and a posteriori bounds on the distribution.
+
     if (!snode->distribution()->canBound())
 	return false;
     if (isBounded(snode))
 	return false;
   
-    if (snode->stochasticChildren()->size() != 1)
-	return false;
-    //FIXME: We should take note of whether this is informative
-    if (!snode->deterministicChildren()->empty())
-	return false;
+    //Check that we have a single stochastic child, which is a direct
+    //child of the sampled node which has distribution "dinterval"
+    vector<StochasticNode const*> stoch_nodes;
+    vector<DeterministicNode*> dtrm_nodes;
+    Updater::classifyChildren(vector<StochasticNode*>(1,snode), graph,
+			      stoch_nodes, dtrm_nodes);
 
-    StochasticNode const *child = *snode->stochasticChildren()->begin();
-    if (!child->isObserved())
+    if(stoch_nodes.size() != 1)
+	return false; //Too many children
+    if(!dtrm_nodes.empty())
+	return false; //Not direct child
+    if (stoch_nodes[0]->distribution()->name() != "dinterval")
 	return false;
+    if (stoch_nodes[0]->parents()[1] == snode)
+	return false; //Breaks depend on snode
 
-    return (child->distribution()->name() == "dinterval");
+    return true;
 }	
 
-void Censored::update(vector<RNG *> const &rng)
+void Censored::update(RNG * rng)
 {
-    unsigned int nchain = _snode->nchain();    
-    for (unsigned int n = 0; n < nchain; ++n) {
+    int y = indicator(_updater, _chain);
+    double const *b = breaks(_updater)->value(_chain);
+    int ymax = breaks(_updater)->length();
 
-        double const *b = _breaks->value(n);
-	double const *lower = (_y == 0) ? 0 : b + _y - 1;
-	double const *upper = (_y == _breaks->length()) ? 0: b + _y;
+    double const *lower = (y == 0) ? 0 : b + y - 1;
+    double const *upper = (y == ymax) ? 0 : b + y;
 	
-	double x;
-	_snode->distribution()->randomSample(&x, 1U, _snode->parameters(n),
-                                             _snode->parameterDims(), 
-                                             lower, upper, rng[n]);
-	setValue(&x,1,n);
-    }
+    double x;
+    StochasticNode const *snode = _updater->nodes()[0];
+    snode->distribution()->randomSample(&x, 1U, snode->parameters(_chain),
+					snode->parameterDims(), 
+					lower, upper, rng);
+    _updater->setValue(&x, 1U, _chain);
 }
 
 bool Censored::isAdaptive() const
