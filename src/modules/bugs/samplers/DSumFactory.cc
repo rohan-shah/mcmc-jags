@@ -4,7 +4,7 @@
 #include <graph/StochasticNode.h>
 #include <graph/Graph.h>
 #include <graph/NodeError.h>
-#include <sampler/DensitySampler.h>
+#include <sampler/ParallelSampler.h>
 #include <sampler/Updater.h>
 
 #include "DSumFactory.h"
@@ -76,10 +76,10 @@ DSumFactory::makeSampler(set<StochasticNode*> const &nodes,
 
     Updater *updater = new Updater(parameters, graph);
     unsigned int nchain = parameters[0]->nchain();
-    vector<DensityMethod*> methods(nchain, 0);
+    vector<SampleMethod*> methods(nchain, 0);
     for (unsigned int ch = 0; ch < nchain; ++ch) {
 	methods[ch] = new DSumMethod(updater, ch);
     }
-    return new DensitySampler(updater, methods);
+    return new ParallelSampler(updater, methods);
 
 }

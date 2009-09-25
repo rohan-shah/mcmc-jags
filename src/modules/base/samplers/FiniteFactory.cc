@@ -1,7 +1,7 @@
 #include <config.h>
-#include <sampler/DensitySampler.h>
+#include <sampler/ParallelSampler.h>
 #include <sampler/Updater.h>
-#include <sampler/DensityMethod.h>
+#include <sampler/SampleMethod.h>
 
 #include "FiniteMethod.h"
 #include "FiniteFactory.h"
@@ -23,11 +23,11 @@ namespace base {
     {
 	Updater *updater = new Updater(snode, graph);
 	unsigned int N = nchain(updater);
-	vector<DensityMethod*> methods(N, 0);
+	vector<SampleMethod*> methods(N, 0);
 	for (unsigned int ch = 0; ch < N; ++ch) {
 	    methods[ch] = new FiniteMethod(updater, ch);
 	}
-	return new DensitySampler(updater, methods);
+	return new ParallelSampler(updater, methods);
     }
     
 }

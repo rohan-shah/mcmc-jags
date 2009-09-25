@@ -9,7 +9,7 @@
 #include <graph/DeterministicNode.h>
 #include <graph/LinkNode.h>
 #include <distribution/Distribution.h>
-#include <sampler/DensitySampler.h>
+#include <sampler/ParallelSampler.h>
 #include <sampler/Linear.h>
 #include <sampler/Updater.h>
 

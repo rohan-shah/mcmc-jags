@@ -4,7 +4,7 @@
 #include "DiscreteSlicer.h"
 #include "SliceFactory.h"
 
-#include <sampler/DensitySampler.h>
+#include <sampler/ParallelSampler.h>
 #include <sampler/Updater.h>
 #include <graph/StochasticNode.h>
 
@@ -29,7 +29,7 @@ namespace base {
 				       Graph const &graph) const
     {
 	unsigned int nchain = snode->nchain();
-	vector<DensityMethod*> methods(nchain, 0);
+	vector<SampleMethod*> methods(nchain, 0);
 	Updater *updater = new Updater(snode, graph);
 
 	bool discrete = snode->isDiscreteValued();
@@ -42,7 +42,7 @@ namespace base {
 	    }
 	}
 
-	return new DensitySampler(updater, methods);
+	return new ParallelSampler(updater, methods);
     }
 
 }

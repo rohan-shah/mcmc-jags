@@ -1,7 +1,7 @@
 #ifndef CENSORED_H_
 #define CENSORED_H_
 
-#include <sampler/DensityMethod.h>
+#include <sampler/SampleMethod.h>
 
 class Updater;
 class StochasticNode;
@@ -10,7 +10,7 @@ class Graph;
 /**
  * Update Method for censored real-valued distributions.
  */
-class Censored : public DensityMethod {
+class Censored : public SampleMethod {
     Updater const *_updater;
     unsigned int _chain;
 public:

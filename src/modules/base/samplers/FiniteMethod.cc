@@ -1,7 +1,7 @@
 #include <config.h>
 #include <distribution/Distribution.h>
 #include <graph/StochasticNode.h>
-#include <sampler/DensitySampler.h>
+#include <sampler/ParallelSampler.h>
 #include <rng/RNG.h>
 #include <util/nainf.h>
 #include <graph/NodeError.h>

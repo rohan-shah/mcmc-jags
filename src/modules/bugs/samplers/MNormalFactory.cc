@@ -4,7 +4,7 @@
 #include "MNormalFactory.h"
 #include <graph/StochasticNode.h>
 #include <distribution/Distribution.h>
-#include <sampler/DensitySampler.h>
+#include <sampler/ParallelSampler.h>
 #include <sampler/Updater.h>
 
 #include <string>
@@ -23,11 +23,11 @@ Sampler *
 MNormalFactory::makeSampler(StochasticNode *snode, Graph const &graph) const
 {
     unsigned int N = snode->nchain();
-    vector<DensityMethod*> methods(N, 0);
+    vector<SampleMethod*> methods(N, 0);
 
     Updater *updater = new Updater(snode, graph);
     for (unsigned int ch = 0; ch < N; ++ch) {
         methods[ch] = new MNormMetropolis(updater, ch);
     }
-    return new DensitySampler(updater, methods);
+    return new ParallelSampler(updater, methods);
 }
