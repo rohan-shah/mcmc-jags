@@ -1,6 +1,6 @@
 #include <sampler/DensitySampler.h>
 #include <sampler/DensityMethod.h>
-#include <graph/StochasticNode.h>
+#include <sampler/Updater.h>
 
 #include <stdexcept>
 
@@ -8,20 +8,10 @@ using std::vector;
 using std::logic_error;
 using std::string;
 
-DensitySampler::DensitySampler(
-    vector<StochasticNode *> const &nodes, Graph const &graph,
-    vector<DensityMethod *> const &methods)
-    : Sampler(nodes, graph), _methods(methods)
+DensitySampler::DensitySampler(Updater *updater,
+			       vector<DensityMethod *> const &methods)
+    : Sampler(updater), _methods(methods)
 {
-    for (unsigned int i = 0; i < nodes.size(); ++i) {
-	if (nodes[i]->nchain() != methods.size()) {
-	    throw logic_error("Chain  mismatch in DensitySampler");
-	}
-    }
-    for (unsigned int ch = 0; ch < methods.size(); ++ch) {
-	_methods[ch]->setData(this, ch);
-	_methods[ch]->initialize(this, ch);
-    }
 }
 
 DensitySampler::~DensitySampler()
@@ -61,3 +51,5 @@ string DensitySampler::name() const
 {
     return _methods[0]->name();
 }
+
+
