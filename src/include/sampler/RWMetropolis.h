@@ -6,9 +6,9 @@
 /**
  * @short Random Walk Metropolis-Hastings update method
  *
- * This class provides a step function, which gives the size of random
- * walk steps. This step size is adapted to achieve the target acceptance
- * rate using a noisy gradient algorithm.
+ * This class provides an update function which modifies the current
+ * value by a random walk. This step size is adapted to achieve the
+ * target acceptance rate using a noisy gradient algorithm.
  */
 class RWMetropolis : public Metropolis
 {
@@ -22,25 +22,25 @@ public:
     /**
      * Constructs a random walk Metropolis sampler. 
      *
-     * @param scale Initial scale for the random walk updates.
-     *
+     * @param value Initial value vector.
+     * @param step Initial step size for the random walk updates.
      * @param prob Target acceptance probability. The default seems to
      *              be a fairly robust optimal value.
      */
-    RWMetropolis(std::vector<StochasticNode*> const &nodes, double scale, 
-		 double prob = 0.234);
+    RWMetropolis(std::vector<double> const &value, double step, 
+                 double prob = 0.234);
     ~RWMetropolis();
     /**
-     * Returns the current step size for the random walk updates.
+     * Updates the current value by adding a random increment.
      */
-    double step() const;
+    void update(RNG *rng);
     /**
-     * Modifies the scale to achieve the target acceptance probability
-     * using a noisy gradient algorithm
+     * Modifies the step size to achieve the target acceptance
+     * probability using a noisy gradient algorithm
      *
-     * @param p acceptance probability at current update
+     * @param prob acceptance probability at current update
      */
-    void rescale(double p);
+    void rescale(double prob);
     /**
      * The RWMetropolis method keeps a running mean of the acceptance
      * probabilities, which is updated every time the rescale function
@@ -48,7 +48,29 @@ public:
      * of the running mean is within 0.50 of the target.
      */
     bool checkAdaptation() const;
-
+    /**
+     * Modifies the given value vector by adding an independent normal
+     * increment to each element.  It can be overridden to provide
+     * non-normal increments, or a random walk on some transformed
+     * scale (but see RMetropolis#logJacobian).
+     */
+    virtual void step(std::vector<double> &value, double s, RNG *rng) const;
+    /**
+     * If the random walk takes place on a transformed scale
+     * (e.g. log, logistic), then the log density of the target
+     * distribution must be penalized by the log Jacobian of the
+     * transformation.
+     *
+     * This function calculates the log Jacobian at the given value.
+     * By default, the random walk takes place on the original scale
+     * and therefore the penalty is zero.
+     */
+    virtual double logJacobian(std::vector<double> const &value) const;
+    /**
+     * Returns the log of the probability density function of the target
+     * distribution at the current value.
+     */
+    virtual double logDensity() const = 0;
 };
 
 #endif /* RW_METROPOLIS_H_ */

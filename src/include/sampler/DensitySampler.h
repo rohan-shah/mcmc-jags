@@ -9,8 +9,8 @@ class DensityMethod;
 /**
  * @short Samples multiple chains in parallel 
  *
- * A DensitySampler uses a set of DensityMethod update methods
- * to update each chain independently. 
+ * A DensitySampler uses a vector of DensityMethod objects to update
+ * each chain independently.
  */
 class DensitySampler : public Sampler
 {
@@ -24,11 +24,10 @@ public:
      * will take ownership of them, and will delete them when its
      * destructor is called
      */
-    DensitySampler(std::vector<StochasticNode*> const &nodes,
-			   Graph const &graph, 
-			   std::vector<DensityMethod*> const &methods);
+    DensitySampler(Updater *updater,
+		   std::vector<DensityMethod*> const &methods);
     ~DensitySampler();
-    void update(std::vector<RNG*> const &);
+    void update(std::vector<RNG*> const &rngs);
     bool adaptOff();
     bool isAdaptive() const;
     std::string name() const;

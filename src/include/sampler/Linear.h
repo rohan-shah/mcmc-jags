@@ -66,4 +66,11 @@ bool checkScale(StochasticNode *snode, Graph const &graph, bool fixed);
 bool checkPower(StochasticNode *snode, Graph const &graph, bool fixed);
 
 
+//FIXME: Need to define this
+class Updater;
+bool checkScale(Updater const *updater, bool fixed);
+bool checkLinear(Updater const *updater, bool fixed, bool link=false);
+
+
+
 #endif /* LINEAR_H_ */

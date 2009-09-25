@@ -76,7 +76,11 @@ public:
      * The slicer method is adaptive.  The step size adapts to the
      * mean distance between consecutive updates
      */
-   bool isAdaptive() const;
+    bool isAdaptive() const;
+    /**
+     * Returns the log probability density function of the target distribution.
+     */
+    virtual double logDensity() const = 0;
 };
 
 #endif /* SLICER_H_ */

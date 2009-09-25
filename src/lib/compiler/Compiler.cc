@@ -405,6 +405,7 @@ static Function const *getFunction(ParseTree const *t, FuncTab const &functab)
     return func;
 }
 
+/*
 static Distribution const *getDistribution(ParseTree const *pstoch_rel, 
 				           DistTab const &table)
 {
@@ -425,6 +426,7 @@ static Distribution const *getDistribution(ParseTree const *pstoch_rel,
   }
   return dist;
 }
+*/
 
 Node *Compiler::getLength(ParseTree const *p, SymTab const &symtab)
 {
