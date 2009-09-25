@@ -15,8 +15,7 @@ using std::fabs;
 using std::runtime_error;
 
 Slicer::Slicer(double width, unsigned int max)
-    : DensityMethod(), _width(width), _adapt(true), _max(max), _sumdiff(0),
-      _iter(0)
+    : _width(width), _adapt(true), _max(max), _sumdiff(0), _iter(0)
 {
 }
 
