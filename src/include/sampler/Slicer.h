@@ -1,22 +1,17 @@
 #ifndef SLICER_H_
 #define SLICER_H_
 
-#include <sampler/DensityMethod.h>
+#include <sampler/SampleMethod.h>
 
 class Sampler;
 
 /**
- * @short Slice Sampling updating method
+ * @short Slice Sampling method
  * 
  * The slice sampler is defined by Neal R (2003) Slice Sampling,
  * Ann. Statist.  31; 3: 705-767.
- *
- * The Slicer class is written with a high level of abstraction to
- * allow it to be easily adapted: for example, a slice sampler can be
- * used to sample from a discrete distribution or from a univariate
- * "slice" of a multivariate distribution.
  */
-class Slicer : public DensityMethod 
+class Slicer : public SampleMethod 
 {
     double _width;
     bool _adapt;
@@ -48,22 +43,17 @@ public:
      */
     void updateDouble(RNG *rng);
     /**
-     * Returns the current value of the Slicer. A Slicer may have it's
-     * own value, distinct from the value of the StochasticNode being
-     * updated.
+     * Returns the current value of the Slicer. 
      */
     virtual double value() const = 0;
     /**
-     * Sets the value of the sampler, and additionally updates all the
-     * deterministic descendants. This function is virtual because the
-     * value of the sampler and the value of the sampled node must be
-     * defined by a subclass of Slicer.
+     * Sets the value of the Slicer.
      *
      * @param x value to set
      */
     virtual void setValue(double x) = 0;
     /**
-     * Gets the lowest and highest possible values of the sampler
+     * Gets the lowest and highest possible values of the Slicer
      */
     virtual void getLimits(double *lower, double *upper) const = 0;
     /**
@@ -78,7 +68,8 @@ public:
      */
     bool isAdaptive() const;
     /**
-     * Returns the log probability density function of the target distribution.
+     * Returns the log probability density function of the target
+     * distribution.
      */
     virtual double logDensity() const = 0;
 };
