@@ -13,6 +13,13 @@ namespace glm {
     ConjugateLM::ConjugateLM(Updater const *updater)
 	: GLMMethod(updater), _updater(updater)
     {
+	/* NB We have to do this here, not in the constructor for
+	   GLMMethod because calBeta calls virtual functions
+	   (e.g. getMean) that are pure in GLMMethod */
+
+	//Symbolic analysis
+ 	calBeta(_beta, updater, 0);
+ 	symbolic(updater);
     }
 
     double ConjugateLM::getMean(unsigned int i, unsigned int chain) const

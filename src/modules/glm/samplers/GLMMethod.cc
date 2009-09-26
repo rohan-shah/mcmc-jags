@@ -161,10 +161,6 @@ namespace glm {
 	copy(Bp.begin(), Bp.end(), _beta->p);
 	copy(Bi.begin(), Bi.end(), _beta->i);
 
-	//Symbolic analysis
-	calBeta(_beta, updater, 0);
-	symbolic(updater);
-
 	// Check for constant linear terms
 	if (checkLinear(updater, true)) {
 	    _fixed = true;
@@ -175,8 +171,6 @@ namespace glm {
     {
 	cs_spfree(_beta);
     }
-
-
     
 /* 
    Symbolic analysis of the posterior precision matrix for the
