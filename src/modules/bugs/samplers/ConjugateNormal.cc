@@ -85,9 +85,6 @@ ConjugateNormal::~ConjugateNormal()
     delete [] _betas;
 }
 
-
-
-
 bool ConjugateNormal::canSample(StochasticNode *snode, Graph const &graph)
 {
     /*
@@ -128,7 +125,7 @@ bool ConjugateNormal::canSample(StochasticNode *snode, Graph const &graph)
     }
 
     // Check linearity of deterministic descendants
-    if (!checkLinear(vector<StochasticNode*>(1, snode), graph, false))
+    if (!checkLinear(&updater, false))
 	return false;
 
     return true; //We made it!

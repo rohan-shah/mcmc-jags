@@ -3,9 +3,7 @@
 
 #include<vector>
 
-class StochasticNode;
-class Node;
-class Graph;
+class Updater;
 
 /**
  * Helper function to check linearity. The function returns true if
@@ -27,8 +25,7 @@ class Graph;
  *
  * @see Node#isClosed
  */
-bool checkLinear(std::vector<StochasticNode *> const &snodes,
-		 Graph const &graph, bool fixed, bool link=false);
+bool checkLinear(Updater const *updater, bool fixed, bool link=false);
 
 /**
  * Helper function to check for scale transformations. The function
@@ -46,7 +43,7 @@ bool checkLinear(std::vector<StochasticNode *> const &snodes,
  *
  * @see Node#isClosed
  */
-bool checkScale(StochasticNode *snode, Graph const &graph, bool fixed);
+bool checkScale(Updater const *updater, bool fixed);
 
 /**
  * Helper function to check for power transformations. The function
@@ -63,14 +60,6 @@ bool checkScale(StochasticNode *snode, Graph const &graph, bool fixed);
  *
  * @see Node#isClosed
  */
-bool checkPower(StochasticNode *snode, Graph const &graph, bool fixed);
-
-
-//FIXME: Need to define this
-class Updater;
-bool checkScale(Updater const *updater, bool fixed);
-bool checkLinear(Updater const *updater, bool fixed, bool link=false);
-
-
+bool checkPower(Updater const *updater, bool fixed);
 
 #endif /* LINEAR_H_ */

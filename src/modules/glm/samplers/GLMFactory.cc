@@ -161,8 +161,7 @@ namespace glm {
 	}
 
 	// Check linearity of deterministic descendants
-	if (!checkLinear(vector<StochasticNode*>(1, snode), graph, false,
-			 have_link))
+	if (!checkLinear(&updater, false, have_link))
 	    return 0;
 
 	return stoch_nodes.size();
