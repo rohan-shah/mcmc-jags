@@ -31,7 +31,7 @@ using std::string;
   together they may not form a valid linear model. We therefore test
   the validity of the joint linear model before aggregating.
   
-  Modifies the arguments in place and returns true the status of
+  Modifies the arguments in place and returns true if the status of
   the candidate node can be resolved.
 */
 static bool aggregateLinear(StochasticNode *candidate_node,
@@ -44,10 +44,9 @@ static bool aggregateLinear(StochasticNode *candidate_node,
     // candidate node and current set.  If no, then we have to defer
     // judgement.
 
-    vector<StochasticNode const*> stoch_nodes;
-    vector<DeterministicNode*> dtrm_nodes;
-    Updater::classifyChildren(vector<StochasticNode*>(1, candidate_node),
-                              graph, stoch_nodes, dtrm_nodes);
+    Updater updater(candidate_node, graph);
+    vector<StochasticNode const*> const &stoch_nodes = 
+	updater.stochasticChildren();
 
     bool overlap = false;
     for (unsigned int i = 0; i < stoch_nodes.size(); ++i) {
@@ -63,7 +62,8 @@ static bool aggregateLinear(StochasticNode *candidate_node,
     // Check linearity of joint model
     
     sample_nodes.push_back(candidate_node);
-    if (!checkLinear(sample_nodes, graph, false, true)) {
+    Updater updater2(sample_nodes, graph);
+    if (!checkLinear(&updater2, false, true)) {
 	sample_nodes.pop_back();
 	return true;
     }
@@ -80,15 +80,11 @@ static bool aggregateLinear(StochasticNode *candidate_node,
 static set<StochasticNode const *>
 getStochasticChildren(StochasticNode *snode, Graph const &graph)
 {
-    vector<StochasticNode const*> stoch_nodes;
-    vector<DeterministicNode*> dtrm_nodes;
-    Updater::classifyChildren(vector<StochasticNode*>(1,snode), 
-			      graph, stoch_nodes, dtrm_nodes);
-    set<StochasticNode const *> stochastic_children;
-    for (unsigned int i = 0; i < stoch_nodes.size(); ++i) {
-	stochastic_children.insert(stoch_nodes[i]);
-    }
-    return stochastic_children;
+    Updater updater(snode, graph);
+    set<StochasticNode const *> ans;
+    ans.insert(updater.stochasticChildren().begin(),
+	       updater.stochasticChildren().end());
+    ans;
 }
 
 struct less_node {
@@ -123,20 +119,21 @@ namespace glm {
 	if (dname != "dnorm" && dname != "dmnorm")
 	    return 0;
     
-	vector<StochasticNode const*> stoch_nodes;
-	vector<DeterministicNode*> dtrm_nodes;
-	Updater::classifyChildren(vector<StochasticNode*>(1,snode), 
-				  graph, stoch_nodes, dtrm_nodes);
+
+	Updater updater(snode, graph);
+	vector<StochasticNode const*> const &stoch_nodes = 
+	    updater.stochasticChildren();
+	vector<DeterministicNode *> const &dtrm_nodes =
+	    updater.deterministicChildren();
 
 	/* 
-	   Create a set of nodes containing snode and its deterministic
-	   descendants for the checks below.
+	   Create a set of nodes containing snode and its descendants
+	   for the checks below.
 	*/
 	set<Node const*> paramset;
 	paramset.insert(snode);
-	for (unsigned int j = 0; j < dtrm_nodes.size(); ++j) {
-	    paramset.insert(dtrm_nodes[j]);
-	}
+	paramset.insert(stoch_nodes.begin(), stoch_nodes.end());
+	paramset.insert(dtrm_nodes.begin(), dtrm_nodes.end());
 
 	// Check stochastic children
 	bool have_link = false;

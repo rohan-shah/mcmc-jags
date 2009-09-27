@@ -199,6 +199,31 @@ bool checkScale(StochasticNode* snode, Graph const &graph, bool fixed)
 }
 */
 
+bool checkPower(Updater *updater, bool fixed)
+{
+    set<Node const*> ancestors;
+    ancestors.insert(updater->nodes().begin(), updater->nodes().end());
+
+    vector<DeterministicNode *> dnodes = updater->deterministicChildren();    
+    for (unsigned int j = 0; j < dnodes.size(); ++j) {
+	if (dnodes[j]->isClosed(ancestors, DNODE_POWER, fixed)) {
+	    ancestors.insert(dnodes[j]);
+	}
+	else {
+	    return false;
+	}
+    }
+    
+    return true;
+}
+
+bool checkPower(StochasticNode* snode, Graph const &graph, bool fixed)
+{
+    Updater up(snode, graph);
+    return checkPower(&up, fixed);
+}
+
+/*
 bool checkPower(StochasticNode* snode, Graph const &graph, bool fixed)
 {
     vector<StochasticNode const *> stoch_nodes;
@@ -220,4 +245,4 @@ bool checkPower(StochasticNode* snode, Graph const &graph, bool fixed)
     
     return true;
 }
-
+*/

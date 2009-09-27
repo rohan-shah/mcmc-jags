@@ -63,18 +63,17 @@ bool Censored::canSample(StochasticNode *snode, Graph const &graph)
   
     //Check that we have a single stochastic child, which is a direct
     //child of the sampled node which has distribution "dinterval"
-    vector<StochasticNode const*> stoch_nodes;
-    vector<DeterministicNode*> dtrm_nodes;
-    Updater::classifyChildren(vector<StochasticNode*>(1,snode), graph,
-			      stoch_nodes, dtrm_nodes);
+    Updater updater(snode, graph);
+    vector<StochasticNode const*> const &schild = updater.stochasticChildren();
+    vector<DeterministicNode*> const &dchild = updater.deterministicChildren();
 
-    if(stoch_nodes.size() != 1)
+    if(schild.size() != 1)
 	return false; //Too many children
-    if(!dtrm_nodes.empty())
+    if(!dchild.empty())
 	return false; //Not direct child
-    if (stoch_nodes[0]->distribution()->name() != "dinterval")
+    if (schild[0]->distribution()->name() != "dinterval")
 	return false;
-    if (stoch_nodes[0]->parents()[1] == snode)
+    if (schild[0]->parents()[1] == snode)
 	return false; //Breaks depend on snode
 
     return true;

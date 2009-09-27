@@ -42,6 +42,10 @@ class Updater {
   std::vector<StochasticNode *> _nodes;
   std::vector<StochasticNode const *> _stoch_children;
   std::vector<DeterministicNode*> _determ_children;
+  void classifyChildren(std::vector<StochasticNode *> const &nodes,
+                               Graph const &graph,
+                               std::vector<StochasticNode const*> &stoch_nodes,
+                               std::vector<DeterministicNode*> &dtrm_nodes);
 public:
   /**
    * Constructs an Updater for the given vector of nodes.  
@@ -109,41 +113,6 @@ public:
    * to give the log full conditional density
    */
   double logLikelihood(unsigned int chain) const;
-  /**
-   * Static function that identifies the Marginal Stochastic Children
-   * and the Immediate Deterministic Descendants of the given nodes
-   * within the given graph.
-   *
-   * @param nodes Set of Nodes whose descendants are to be classified.
-   *
-   * @param graph Graph within which calculations are to take place.
-   * Nodes outside of this graph will be ignored.
-   *
-   * @param stoch_nodes Vector which will contain the Marginal
-   * Stochastic Children on exit.
-   *
-   * @param dtrm_nodes Vector which will contain the Immediate 
-   * Deterministic Descendants, in forward sampling order, on exit.
-   */
-  static void classifyChildren(std::vector<StochasticNode *> const &nodes,
-			       Graph const &graph,
-			       std::vector<StochasticNode const*> &stoch_nodes,
-			       std::vector<DeterministicNode*> &dtrm_nodes);
-  /**
-   * Simplified version of classifyChildren that finds only the stochastic
-   * children within the graph.
-   *
-   * @param nodes Set of Nodes whose stochastic children are to be found.
-   *
-   * @param graph Graph within which calculations are to take place.
-   * Nodes outside of this graph will be ignored.
-   *
-   * @param children Set which will contain the marginal stochastic
-   * children on exit.
-   */
-  static void getStochasticChildren(std::vector<StochasticNode *> const &nodes,
-				    Graph const &graph,
-				    std::set<StochasticNode const*> &children);
 };
 
 unsigned int nchain(Updater const *updater);

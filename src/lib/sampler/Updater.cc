@@ -404,6 +404,7 @@ static void stochChildren(Node *node, Graph const &graph,
     }
 }
     
+/*
 void Updater::getStochasticChildren(vector<StochasticNode *> const &nodes,
 				    Graph const &graph,
 				    set<StochasticNode const *> &children)
@@ -425,6 +426,7 @@ void Updater::getStochasticChildren(vector<StochasticNode *> const &nodes,
 	children.erase(*p);
     }
 }
+*/
 
 unsigned int nchain(Updater const *updater)
 {

@@ -111,30 +111,29 @@ bool ConjugateMNormal::canSample(StochasticNode *snode, Graph const &graph)
     if (isBounded(snode))
 	return false;
 
-    vector<StochasticNode const*> stoch_nodes;
-    vector<DeterministicNode*> dtrm_nodes, extra_nodes;
-    Updater::classifyChildren(vector<StochasticNode*>(1,snode), 
-		              graph, stoch_nodes, dtrm_nodes);
+
+    Updater updater(snode, graph);
+    vector<DeterministicNode*> const &dchild = updater.deterministicChildren();
+    vector<StochasticNode const*> const &schild = updater.stochasticChildren();
+
     /* 
        Create a set of nodes containing snode and its deterministic
        descendants for the checks below.
     */
     set<Node const *> paramset;
     paramset.insert(snode);
-    for (unsigned int j = 0; j < dtrm_nodes.size(); ++j) {
-	paramset.insert(dtrm_nodes[j]);
-    }
+    paramset.insert(dchild.begin(), dchild.end());
 
     // Check stochastic children
-    for (unsigned int i = 0; i < stoch_nodes.size(); ++i) {
-	if (getDist(stoch_nodes[i]) != MNORM &&
-	    getDist(stoch_nodes[i]) != NORM) {
+    for (unsigned int i = 0; i < schild.size(); ++i) {
+	if (getDist(schild[i]) != MNORM &&
+	    getDist(schild[i]) != NORM) {
 	    return false; //Not normal or multivariate normal
 	}
-	if (isBounded(stoch_nodes[i])) {
+	if (isBounded(schild[i])) {
 	    return false;
 	}
-	vector<Node const *> const &param = stoch_nodes[i]->parents();
+	vector<Node const *> const &param = schild[i]->parents();
 	if (paramset.count(param[1])) {
 	    return false; //Precision depends on snode
 	}

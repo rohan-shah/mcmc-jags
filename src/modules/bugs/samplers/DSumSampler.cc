@@ -57,16 +57,18 @@ bool DSumMethod::canSample(vector<StochasticNode *> const &nodes,
 
     /* Nodes must be direct parents of a single observed stochastic
        node with distribution DSum  */
-    vector<StochasticNode const*> stoch_nodes;
-    vector<DeterministicNode*> dtrm_nodes;
-    Updater::classifyChildren(nodes, graph, stoch_nodes, dtrm_nodes);
-    if (!dtrm_nodes.empty())
+
+    Updater updater(nodes, graph);
+    vector<DeterministicNode*> const &dchild = updater.deterministicChildren();
+    vector<StochasticNode const*> const &schild = updater.stochasticChildren();
+
+    if (!dchild.empty())
 	return false;
-    if (stoch_nodes.size() != 1)
+    if (schild.size() != 1)
 	return false;
-    if (!stoch_nodes[0]->isObserved())
+    if (!schild[0]->isObserved())
 	return false;
-    if (stoch_nodes[0]->distribution()->name() != "dsum")
+    if (schild[0]->distribution()->name() != "dsum")
 	return false;
 
     // And so, their work was done...

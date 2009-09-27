@@ -32,27 +32,25 @@ bool ConjugateWishart::canSample(StochasticNode *snode, Graph const &graph)
     if (isBounded(snode))
 	return false;
   
-    vector<StochasticNode const*> stoch_nodes;
-    vector<DeterministicNode*> dtrm_nodes;
-    Updater::classifyChildren(vector<StochasticNode*>(1,snode), 
-			      graph, stoch_nodes, dtrm_nodes);
+    Updater updater(snode, graph);
+    vector<StochasticNode const*> const &schild = updater.stochasticChildren();
+    vector<DeterministicNode*> const &dchild = updater.deterministicChildren();
+
     /* 
        Create a set of nodes containing snode and its deterministic
        descendants for the checks below.
     */
     set<Node const *> paramset;
     paramset.insert(snode);
-    for (unsigned int j = 0; j < dtrm_nodes.size(); ++j) {
-	paramset.insert(dtrm_nodes[j]);
-    }
+    paramset.insert(dchild.begin(), dchild.end());
 
     // Check stochastic children
-    for (unsigned int i = 0; i < stoch_nodes.size(); ++i) {
-	vector<Node const*> const &param = stoch_nodes[i]->parents();
-	if (isBounded(stoch_nodes[i])) {
+    for (unsigned int i = 0; i < schild.size(); ++i) {
+	vector<Node const*> const &param = schild[i]->parents();
+	if (isBounded(schild[i])) {
 	    return false; //Bounded
 	}
-	switch(getDist(stoch_nodes[i])) {
+	switch(getDist(schild[i])) {
 	case MNORM:
 	    if (paramset.count(param[0])) {
 		return false; //mean parameter depends on snode
@@ -63,15 +61,15 @@ bool ConjugateWishart::canSample(StochasticNode *snode, Graph const &graph)
 	}
     }
   
-    if (!dtrm_nodes.empty()) {
+    if (!dchild.empty()) {
 	// Deterministic children must be scale functions
-	if (!checkScale(snode, graph, false)) {
+	if (!checkScale(&updater, false)) {
 	    return false;
 	}
 	// Only mixture nodes are allowed.  If we allowed arbitrary
 	// functions, the complexity would be O(nrow^4).
-	for (unsigned int i = 0; i < dtrm_nodes.size(); ++i) {
-	    if (!isMixture(dtrm_nodes[i]))
+	for (unsigned int i = 0; i < dchild.size(); ++i) {
+	    if (!isMixture(dchild[i]))
 		return false;
 	}
     }

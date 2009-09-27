@@ -8,6 +8,7 @@
 #include <graph/StochasticNode.h>
 #include <graph/MixtureNode.h>
 #include <sampler/Updater.h>
+#include <sampler/Linear.h>
 
 #include <set>
 #include <stdexcept>
@@ -43,46 +44,37 @@ bool ConjugateBeta::canSample(StochasticNode *snode, Graph const &graph)
 	return false;
     }
 
-    vector<StochasticNode const*> stoch_nodes;
-    vector<DeterministicNode*> dtrm_nodes;
-    Updater::classifyChildren(vector<StochasticNode*>(1,snode), 
-		              graph, stoch_nodes, dtrm_nodes);
-
-    /* 
-       Create a set of nodes containing snode and its deterministic
-       descendants for the checks below.
-    */
-    set<Node const *> paramset;
-    paramset.insert(snode);
-    for (unsigned int j = 0; j < dtrm_nodes.size(); ++j) {
-	paramset.insert(dtrm_nodes[j]);
-    }
+    Updater updater(snode, graph);
+    vector<DeterministicNode*> const &dchild = updater.deterministicChildren();
+    vector<StochasticNode const*> const &schild = updater.stochasticChildren();
 
     // Check deterministic descendants
     // Only Mixture nodes are allowed
-    for (unsigned int j = 0; j < dtrm_nodes.size(); ++j) {
-	if (isMixture(dtrm_nodes[j])) {
-	    // Check that indices do not depend on snode
-	    vector<Node const*> const &parents = dtrm_nodes[j]->parents();
-	    unsigned int nindex = asMixture(dtrm_nodes[j])->index_size();
-	    for (unsigned int i = 0; i < nindex; ++i) {
-		if (paramset.count(parents[i]))
-		    return false;
-	    }
-	}
-	else {
+    for (unsigned int j = 0; j < dchild.size(); ++j) {
+	if (!isMixture(dchild[j])) {
 	    return false;
 	}
     }
+    if (!checkScale(&updater, false)) {
+	return false;
+    }
+
+   /* 
+       Create a set of nodes containing snode and its descendants for the 
+       checks below.
+    */
+    set<Node const *> paramset;
+    paramset.insert(snode);
+    paramset.insert(dchild.begin(), dchild.end());
 
     // Check stochastic children
-    for (unsigned int i = 0; i < stoch_nodes.size(); ++i) {
-	if (isBounded(stoch_nodes[i])) {
+    for (unsigned int i = 0; i < schild.size(); ++i) {
+	if (isBounded(schild[i])) {
 	    return false; //Bounded
 	}
-	switch(getDist(stoch_nodes[i])) {
+	switch(getDist(schild[i])) {
 	case BIN: case NEGBIN:
-	    if (paramset.count(stoch_nodes[i]->parents()[1])) {
+	    if (paramset.count(schild[i]->parents()[1])) {
 		return false; //n depends on snode
 	    }      
 	    break;

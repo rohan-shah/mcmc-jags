@@ -195,6 +195,7 @@ bool MixtureNode::isClosed(set<Node const *> const &ancestors,
     case DNODE_LINEAR: case DNODE_SCALE_MIX: case DNODE_POWER:
 	return true;
     case DNODE_SCALE:
+	//Only a scale function if all possible parents are scale functions
 	for (unsigned int i = _Nindex; i < par.size(); ++i) {
 	    if (ancestors.count(par[i])==0)
 		return false;

@@ -99,34 +99,30 @@ bool ConjugateNormal::canSample(StochasticNode *snode, Graph const &graph)
     if (getDist(snode) != NORM)
 	return false;
 
-    vector<StochasticNode const*> stoch_nodes;
-    vector<DeterministicNode*> dtrm_nodes;
-    Updater::classifyChildren(vector<StochasticNode*>(1,snode), 
-		              graph, stoch_nodes, dtrm_nodes);
+
+    Updater updater(snode, graph);
+    vector<DeterministicNode*> const &dchild = updater.deterministicChildren();
+    vector<StochasticNode const*> const &schild = updater.stochasticChildren();
 
     /* 
        Create a set of nodes containing snode and its deterministic
        descendants for the checks below.
     */
     set<Node const*> paramset;
-    paramset.insert(snode);
-    for (unsigned int j = 0; j < dtrm_nodes.size(); ++j) {
-	paramset.insert(dtrm_nodes[j]);
-    }
+    paramset.insert(dchild.begin(), dchild.end());
 
     // Check stochastic children
-    for (unsigned int i = 0; i < stoch_nodes.size(); ++i) {
-	switch (getDist(stoch_nodes[i])) {
+    for (unsigned int i = 0; i < schild.size(); ++i) {
+	switch (getDist(schild[i])) {
 	case NORM: case MNORM:
 	    break;
 	default:
 	    return false; //Not normal
 	}
-	if (isBounded(stoch_nodes[i])) {
+	if (isBounded(schild[i])) {
 	    return false; //Truncated distribution
 	}
-	vector<Node const*> const &param = stoch_nodes[i]->parents();
-	if (paramset.count(param[1])) {
+	if (paramset.count(schild[i]->parents()[1])) {
 	    return false; //Precision depends on snode
 	}
     }
