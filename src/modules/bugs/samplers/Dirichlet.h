@@ -14,7 +14,6 @@ public:
     void getValue(std::vector<double> &x) const;
     void setValue(std::vector<double> const &x);
     void step(std::vector<double> &x, double size, RNG *rng) const;
-    double logDensity() const;
     double logJacobian(std::vector<double> const &x) const;
     std::string name() const;
 };
