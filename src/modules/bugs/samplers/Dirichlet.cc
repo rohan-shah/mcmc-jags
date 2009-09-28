@@ -28,32 +28,59 @@ DirchMetropolis::DirchMetropolis(Updater const *updater, unsigned int chain)
 {
 }
 
-void DirchMetropolis::step(vector<double> &value,  double s, RNG *rng) const
+/* 
+   Generates a reversible transition from xold to xnew in detailed
+   balance with the exponential distribution (mean = 1).
+
+   The proposal is generated from a nested Metropolis-Hastings
+   algorithm.  
+*/
+static double nextPoint(double xold, double s, RNG *rng, int max_step = 10)
 {
-    double sumv = 0;
-    for (unsigned int i = 0; i < value.size(); ++i) {
-	if (value[i] != 0) {
-	    value[i] = exp(log(value[i]) + rng->normal() * s);
-	    if (value[i] == 0) {
-		value[i] = 16 * DBL_EPSILON; //underflow
-	    }
-	    sumv += value[i];
-	}
+    // Do a random walk on the log scale. The acceptance probability
+    // includes a Jacobian term to account for the log transform.
+    for (int i = 0; i < max_step; ++i) {
+        double xnew = xold * exp(s * rng->normal());
+	double R = exp(xold - xnew) * (xnew / xold);
+	if (rng->uniform() < R)
+	    return xnew;
     }
-    for (unsigned int i = 0; i < value.size(); ++i) {
-	value[i] /= sumv;
-    }
+    return xold;
 }
 
-double DirchMetropolis::logJacobian(vector<double> const &value) const
+/* 
+   We want to generate a random walk on the N-dimensional simplex X[1]
+   ... X[N].  The constraint sum(X) = 1 makes this hard, so we embed
+   the problem in a higher-dimensional model.
+
+   Y[i] ~ dexp(1) for i = 1 ... N
+   S = sum(Y)
+   X[i] = Y[i]/S
+
+   The nextPoint function generates a reversible transition for a single
+   element Y[i].
+
+   The algorithm rests on the fact that X ~ Dirichlet(1,1,...1) (so
+   that p(X) = 1) and S is independent of X. So after generating
+   a proposal in the larger model (Y) we can renormalize to get a
+   proposal on the simplex X such that P(X -> Xnew) = P(Xnew -> X).
+*/
+void DirchMetropolis::step(vector<double> &value,  double s, RNG *rng) const
 {
-    double ljacobian = 0;
+    double S = 0;
     for (unsigned int i = 0; i < value.size(); ++i) {
+	//Update as if value[i] was a sample from dexp(1)
 	if (value[i] != 0) {
-	    ljacobian += log(value[i]);
+	    value[i] = nextPoint(value[i], s, rng);
+	    S += value[i];
 	}
     }
-    return ljacobian;
+    for (unsigned int i = 0; i < value.size(); ++i) {
+	//Renormalize
+	if (value[i] != 0) {
+	    value[i] /= S;
+	}
+    }
 }
 
 void DirchMetropolis::getValue(vector<double> &value) const
