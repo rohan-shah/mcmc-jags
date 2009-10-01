@@ -4,4 +4,4 @@ libsampler_la_CPPFLAGS = -I$(top_srcdir)/src/include
 
 libsampler_la_SOURCES = Sampler.cc Updater.cc Slicer.cc	\
 Metropolis.cc RWMetropolis.cc ParallelSampler.cc SampleMethod.cc \
-Linear.cc SamplerFactory.cc SingletonFactory.cc
+Linear.cc SamplerFactory.cc SingletonFactory.cc StepAdapter.cc
