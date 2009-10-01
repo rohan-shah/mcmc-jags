@@ -2,6 +2,7 @@
 #define RW_METROPOLIS_H_
 
 #include <sampler/Metropolis.h>
+#include <sampler/StepAdapter.h>
 
 /**
  * @short Random Walk Metropolis-Hastings sampling method
@@ -12,10 +13,7 @@
  */
 class RWMetropolis : public Metropolis
 {
-    const double _prob;
-    double _lstep;
-    bool  _p_over_target;
-    unsigned int _n;
+    StepAdapter _step_adapter;
     double _pmean;
     unsigned int _niter;
 public:
