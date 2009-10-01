@@ -1,5 +1,5 @@
-#ifndef DSUM_SAMPLER_H_
-#define DSUM_SAMPLER_H_
+#ifndef DSUM_METHOD_H_
+#define DSUM_METHOD_H_
 
 #include <sampler/Slicer.h>
 
@@ -8,7 +8,6 @@
 
 class StochasticNode;
 class DeterministicNode;
-class Node;
 class Updater;
 
 /**
@@ -34,4 +33,4 @@ public:
     double logDensity() const;
 };
 
-#endif /* DSUM_SAMPLER_H_ */
+#endif /* DSUM_METHOD_H_ */
