@@ -3,9 +3,6 @@
 
 #include "ConjugateMethod.h"
 
-class StochasticNode;
-class Graph;
-
 class ConjugateGamma : public ConjugateMethod {
     double *_coef;
 public:

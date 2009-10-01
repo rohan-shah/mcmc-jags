@@ -3,8 +3,6 @@
 
 #include "ConjugateMethod.h"
 
-class Graph;
-
 /**
  * Special conjugate sampler for multivariate normal distribution
  * in the case where all stochastic children are scalars with a 

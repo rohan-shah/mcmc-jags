@@ -8,7 +8,7 @@
 #include <sampler/Updater.h>
 
 #include "DSumFactory.h"
-#include "DSumSampler.h"
+#include "DSumMethod.h"
 
 #include <stdexcept>
 #include <algorithm>

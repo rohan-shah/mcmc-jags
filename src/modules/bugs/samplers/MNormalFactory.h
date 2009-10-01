@@ -4,7 +4,6 @@
 #include "MNormal.h"
 
 #include <sampler/SingletonFactory.h>
-class StochasticNode;
 
 /**
  * @short Factory object for multivariate normal samplers

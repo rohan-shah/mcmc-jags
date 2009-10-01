@@ -3,8 +3,6 @@
 
 #include "ConjugateMethod.h"
 
-class Graph;
-
 /**
  * Conjugate sampler for multivariate normal distribution
  *

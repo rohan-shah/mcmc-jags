@@ -3,9 +3,6 @@
 
 #include "ConjugateMethod.h"
 
-class Graph;
-class StochasticNode;
-
 /**
  * @short Conjugate sampler for Dirichlet distribution.  
  *

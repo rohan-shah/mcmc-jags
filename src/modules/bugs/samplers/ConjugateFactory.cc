@@ -37,10 +37,8 @@ ConjugateFactory::ConjugateFactory()
 bool ConjugateFactory::canSample(StochasticNode * snode,
 				 Graph const &graph) const
 {
-    /*
     if (Censored::canSample(snode, graph))
       return true;
-    */
     
     //FIXME: Could use a typedef here to make it readable
     map<string, bool (*)(StochasticNode *, Graph const &)>::const_iterator
@@ -56,35 +54,35 @@ bool ConjugateFactory::canSample(StochasticNode * snode,
 Sampler *ConjugateFactory::makeSampler(StochasticNode *snode, 
 				       Graph const &graph) const
 {
-    /*
-    if (Censored::canSample(snode, graph))
-    return new Censored(snode, graph);
-    */
-
     Updater *updater = new Updater(snode, graph);
-    
     ConjugateMethod* method = 0;
-    switch (getDist(snode)) {
-    case NORM:
-	method = new ConjugateNormal(updater);
-	break;
-    case GAMMA: case EXP: case CHISQ:
-	method = new ConjugateGamma(updater);
-	break;
-    case BETA:
-	method = new ConjugateBeta(updater);
-	break;
-    case DIRCH:
-	method = new ConjugateDirichlet(updater);
-	break;
-    case MNORM:
-	method = new ConjugateMNormal(updater);
-	break;
-    case WISH:
-	method = new ConjugateWishart(updater);
-	break;
-    default:
-	throw invalid_argument("Unable to create conjugate sampler");
+    
+    if (Censored::canSample(snode, graph)) {
+	method = new Censored(updater);
+    }
+    else {
+	switch (getDist(snode)) {
+	case NORM:
+	    method = new ConjugateNormal(updater);
+	    break;
+	case GAMMA: case EXP: case CHISQ:
+	    method = new ConjugateGamma(updater);
+	    break;
+	case BETA:
+	    method = new ConjugateBeta(updater);
+	    break;
+	case DIRCH:
+	    method = new ConjugateDirichlet(updater);
+	    break;
+	case MNORM:
+	    method = new ConjugateMNormal(updater);
+	    break;
+	case WISH:
+	    method = new ConjugateWishart(updater);
+	    break;
+	default:
+	    throw invalid_argument("Unable to create conjugate sampler");
+	}
     }
     
     

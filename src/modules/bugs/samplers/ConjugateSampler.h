@@ -1,13 +1,8 @@
 #ifndef CONJUGATE_SAMPLER_H_
 #define CONJUGATE_SAMPLER_H_
 
-#include <sampler/Sampler.h>
 #include "ConjugateMethod.h"
-
-class StochasticNode;
-class LogicalNode;
-
-
+#include <sampler/Sampler.h>
 
 class ConjugateSampler : public Sampler
 {

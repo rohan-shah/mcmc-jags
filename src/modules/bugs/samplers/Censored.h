@@ -1,26 +1,16 @@
 #ifndef CENSORED_H_
 #define CENSORED_H_
 
-#include <sampler/SampleMethod.h>
-
-class Updater;
-class StochasticNode;
-class Graph;
+#include "ConjugateMethod.h"
 
 /**
  * Update Method for censored real-valued distributions.
  */
-class Censored : public SampleMethod {
-    Updater const *_updater;
-    unsigned int _chain;
+class Censored : public ConjugateMethod {
 public:
-    Censored(Updater const *updater, unsigned int chain);
-    ~Censored();
-
+    Censored(Updater const *updater);
     static bool canSample(StochasticNode *snode, Graph const &graph);
-    void update(RNG * rng);
-    bool isAdaptive() const;
-    bool adaptOff();
+    void update(Updater *updater, unsigned int chain, RNG * rng) const;
     std::string name() const;
 };
 

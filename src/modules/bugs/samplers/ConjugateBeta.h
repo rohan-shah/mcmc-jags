@@ -3,10 +3,6 @@
 
 #include "ConjugateMethod.h"
 
-class StochasticNode;
-class Graph;
-class Updater;
-
 /**
  * @short Conjugate sampler for the beta distribution
  *

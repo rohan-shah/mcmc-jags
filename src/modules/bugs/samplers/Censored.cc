@@ -28,18 +28,17 @@ static Node const *breaks(Updater const *updater)
 }
 
 
-Censored::Censored(Updater const *updater, unsigned int chain)
-    : _updater(updater), _chain(chain)
+Censored::Censored(Updater const *updater)
+    : ConjugateMethod(updater)
 {
-    int y = indicator(updater, chain);
-    
-    if (y < 0 || y > breaks(updater)->length())
-	throw NodeError(updater->nodes()[0], "Bad interval-censored node");
-}
-
-
-Censored::~Censored()
-{
+    int nbreaks = breaks(updater)->length();
+    StochasticNode const *snode = updater->nodes()[0];
+    for (unsigned int ch = 0; ch < snode->nchain(); ++ch) {
+	int y = indicator(updater, ch);
+	if (y < 0 || y > nbreaks) {
+	    throw NodeError(snode, "Bad interval-censored node");
+	}
+    }
 }
 
 bool Censored::canSample(StochasticNode *snode, Graph const &graph)
@@ -79,31 +78,21 @@ bool Censored::canSample(StochasticNode *snode, Graph const &graph)
     return true;
 }	
 
-void Censored::update(RNG * rng)
+void Censored::update(Updater *updater, unsigned int chain, RNG * rng) const
 {
-    int y = indicator(_updater, _chain);
-    double const *b = breaks(_updater)->value(_chain);
-    int ymax = breaks(_updater)->length();
+    int y = indicator(updater, chain);
+    double const *b = breaks(updater)->value(chain);
+    int ymax = breaks(updater)->length();
 
     double const *lower = (y == 0) ? 0 : b + y - 1;
     double const *upper = (y == ymax) ? 0 : b + y;
 	
     double x;
-    StochasticNode const *snode = _updater->nodes()[0];
-    snode->distribution()->randomSample(&x, 1U, snode->parameters(_chain),
+    StochasticNode const *snode = updater->nodes()[0];
+    snode->distribution()->randomSample(&x, 1U, snode->parameters(chain),
 					snode->parameterDims(), 
 					lower, upper, rng);
-    _updater->setValue(&x, 1U, _chain);
-}
-
-bool Censored::isAdaptive() const
-{
-    return false;
-}
-
-bool Censored::adaptOff()
-{
-    return true;
+    updater->setValue(&x, 1U, chain);
 }
 
 string Censored::name() const

@@ -6,8 +6,6 @@
 #include <sampler/SingletonFactory.h>
 #include <map>
 #include <string>
-class StochasticNode;
-
 
 /**
  * @short Factory object for conjugate samplers
@@ -15,7 +13,7 @@ class StochasticNode;
 class ConjugateFactory : public SingletonFactory
 {
     std::map<std::string, bool (*)(StochasticNode *,
-					 Graph const &)> _func_table;
+				   Graph const &)> _func_table;
 public:
     ConjugateFactory();
     /**

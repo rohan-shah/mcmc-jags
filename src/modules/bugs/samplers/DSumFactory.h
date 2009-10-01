@@ -3,9 +3,6 @@
 
 #include <sampler/SamplerFactory.h>
 
-class StochasticNode;
-class Graph;
-
 /**
  * @short Factory object for discrete sum samplers
  */

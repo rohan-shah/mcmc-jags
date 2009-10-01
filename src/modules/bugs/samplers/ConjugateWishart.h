@@ -3,9 +3,6 @@
 
 #include "ConjugateMethod.h"
 
-class StochasticNode;
-class Graph;
-
 /**
  * Conjugate method for the Wishart distribution
  *

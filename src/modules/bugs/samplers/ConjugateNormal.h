@@ -3,9 +3,6 @@
 
 #include "ConjugateMethod.h"
 
-class StochasticNode;
-class Graph;
-
 /**
  * Conjugate sampler for the normal distribution.
  * A conjugate sampler can be created for a stochastic node "snode"
