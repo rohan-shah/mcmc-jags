@@ -106,7 +106,7 @@ void TemperedMetropolis::rescale(double p)
 
     _step_adapter[_t]->rescale(p);
 
-    if (_t == _tmax && _tmax != _max_level) {
+    if (_t == _tmax && _tmax < _max_level) {
 
 	// We keep a weighted mean estimate of the mean acceptance probability
 	//  with the weights in favour of more recent iterations
@@ -119,6 +119,7 @@ void TemperedMetropolis::rescale(double p)
 	if (_niter > MIN_STEP + 2 && fabs(delta) < 0.25) {
 	    _niter = 2;
 	    _pmean = 0;
+	    _tmax++;
 	    double step = _step_adapter.back()->stepSize();
 	    StepAdapter *adapter = new StepAdapter(step);
 	    _step_adapter.push_back(adapter);
