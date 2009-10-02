@@ -1,6 +1,6 @@
 #include <config.h>
 #include "MixSamplerFactory.h"
-#include "MixSampler.h"
+#include "NormMix.h"
 #include <graph/GraphMarks.h>
 #include <graph/Graph.h>
 #include <graph/StochasticNode.h>
@@ -43,35 +43,34 @@ namespace mix {
     Sampler * MixSamplerFactory::makeSampler(set<StochasticNode*> const &nodes, 
 					     Graph const &graph) const
     {
-	vector<StochasticNode*> sparents;
-        set<StochasticNode*>::const_iterator p;
-	for (p = nodes.begin(); p != nodes.end(); ++p) {
-	    //Search candidate nodes for one with a stochastic child with distribution dnormmix
-	    set<StochasticNode*> const *stoch_children = (*p)->stochasticChildren();
-	    set<StochasticNode*>::const_iterator q;
-	    for (q = stoch_children->begin(); q != stoch_children->end(); ++q) {
-		if ((*q)->distribution()->name() == "dnormmix" && graph.contains(*q)) {
-		    //Find all stochastic parents of the dnormmix node
-		    sparents = stochasticParents(*q, nodes, graph);
-		    //Can we sample them?
-		    if (MixSampler::canSample(sparents, graph))
-			break;
-		}
+	set<Node*> const &gnodes = graph.nodes();
+	vector<Node const*> normmix_nodes;
+        for (set<Node*>::const_iterator p = gnodes.begin(); 
+	     p != gnodes.end(); ++p) 
+	{
+	    StochasticNode const *snode = asStochastic(*p);
+	    if (snode && snode->distribution()->name() == "dnormmix") {
+		normmix_nodes.push_back(*p);
 	    }
-	    if (q != stoch_children->end())
-		break;
 	}
-	if (p == nodes.end()) {
-	    return 0;
+	
+	for (unsigned int i = 0; i < normmix_nodes.size(); ++i) {
+
+	    vector<StochasticNode*> sparents = 
+		stochasticParents(normmix_nodes[i], nodes, graph);
+
+	    if (NormMix::canSample(sparents, graph)) {
+		
+		Updater *updater = new Updater(sparents, graph);
+		unsigned int nchain = sparents[0]->nchain();
+		vector<SampleMethod*> methods(nchain,0);	    
+		for (unsigned int ch = 0; ch < nchain; ++ch) {
+		    methods[ch] = new NormMix(updater, ch);
+		}
+		return new ParallelSampler(updater, methods);		
+	    }
 	}
 
-	Updater *updater = new Updater(sparents, graph);
-	unsigned int nchain = sparents[0]->nchain();
-	vector<SampleMethod*> methods(nchain,0);	    
-	for (unsigned int ch = 0; ch < nchain; ++ch) {
-	    methods[ch] = new MixSampler(updater, ch);
-	}
-	return new ParallelSampler(updater, methods);
+	return 0;
     }
-
 }

@@ -1234,6 +1234,7 @@ static void loadModule(std::string const &name)
   std::list<Distribution const *> const &masked_dist = 
      Compiler::distTab().masked();
   unsigned int n_dist = masked_dist.size(); 
+  std::cout << "OPENING " << name.c_str() << "\n";
   lt_dlhandle mod = lt_dlopenext(name.c_str());
   if (mod == NULL) {
       std::cout << lt_dlerror() << std::endl;
