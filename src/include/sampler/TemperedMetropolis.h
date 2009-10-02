@@ -2,6 +2,7 @@
 #define MIX_METHOD_H_
 
 #include <sampler/Metropolis.h>
+#include <sampler/StepAdapter.h>
 #include <vector>
 
 class StepAdapter;
@@ -45,13 +46,15 @@ class StepAdapter;
 class TemperedMetropolis : public Metropolis
 {
     const int _max_level;
-    const double _delta; 
     const unsigned int _nrep;
-    int _level;
-    vector<StepAdapter*> _step_adapter;
-    vector<double> _step;
-    bool tempAccept(RNG *rng, double prob, int level);
-    double tempUpdate(RNG *rng, int t, double pwr, double log_density0);
+    const std::vector<double> _pwr;
+    int _t;
+    int _tmax;
+    std::vector<StepAdapter*> _step_adapter;
+    double _pmean;
+    unsigned int _niter;
+    void temperedUpdate(RNG *rng, double &log_density0, 
+                        std::vector<double> &value0);
 public:
     /**
      * Constructor.
@@ -65,14 +68,52 @@ public:
      * @param nrep Number of Metropolis-Hastings updates to do at each
      * level
      */
-    TemperedMetropolis(unsigned int max_level=50, double delta = 0.10, 
-		       unsigned int nrep = 4);
+    TemperedMetropolis(std::vector<double> const &value, 
+                       int max_level=50, double max_temp = 100,
+		       unsigned int nrep = 5);
     ~TemperedMetropolis();
+    /**
+     * Updates the current value using tempered transitions.
+     */
     void update(RNG *rng);
+    /**
+     * Modifies the step size at each temperature level to achieve the
+     * target acceptance probability using a noisy gradient algorithm
+     *
+     * When the mean acceptance probability is within the target range, the
+     * maximum temperature is increased up to max_temp.
+     *
+     * @param prob acceptance probability at current update
+     */
     void rescale(double prob);
+    /**
+     * Checks whether the maximum temperature has been reached.
+     */
     bool checkAdaptation() const;
-    virtual void getValue(std::vector<double> &value) const = 0;
-    virtual void setValue(std::vector<double> const &value) const = 0;
+    /**
+     * Returns the log of the probability density function of the target
+     * distribution at the current value.
+     */    
+    virtual double logDensity() = 0;
+    /**
+     * Modifies the given value vector in place by adding an
+     * independent normal increment to each element.  It can be
+     * overridden to provide non-normal increments, or a random walk
+     * on some transformed scale (but see RMetropolis#logJacobian).
+     *
+     * Note that this function does not modify the value of the
+     * RWMetropolis object.
+     */
+    virtual void step(std::vector<double> &value, double s, RNG *rng) const;
+    /**
+     * If the random walk takes place on a transformed scale
+     * (e.g. log, logistic), then the log density of the target
+     * distribution must be penalized by the log Jacobian of the
+     * transformation.
+     *
+     * This function calculates the log Jacobian at the given value.
+     */
+    virtual double logJacobian(std::vector<double> const &value) const;
 };
 
 #endif /* MIX_METHOD_H_ */

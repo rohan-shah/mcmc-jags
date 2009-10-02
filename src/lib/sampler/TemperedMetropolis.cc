@@ -1,113 +1,145 @@
 #include <config.h>
-#include "MixMethod.h"
+#include <sampler/TemperedMetropolis.h>
 #include <rng/RNG.h>
 
 #include <cmath>
-//#include <algorithm>
 #include <stdexcept>
 
 using std::vector;
-//using std::copy;
-//using std::logic_error;
-//using std::invalid_argument;
-//using std::log;
-//using std::exp;
-//using std::min;
-//using std::string;
+using std::invalid_argument;
+using std::log;
+using std::exp;
 
-TemperedMetropolis::TemperedMetropolis(int max_level, double delta, 
-				       unsigned int nrep)
-    : _max_level(max_level), 
-      _delta(delta),
-      _nrep(nrep),
-      _level(0)
+//Minimum number of iterations before we can go to the next level
+#define MIN_STEP 50
+
+static vector<double> makePower(int max_level, double max_temp)
 {
-    if (_delta <= 0) {
-	throw invalid_argument("Invalid delta in TemperedMetropolis ");
+    vector<double> pwr(max_level + 1);
+    double delta = log(max_temp) / max_level;
+    for (int t = 0; t <= max_level; ++t) {
+	pwr[t] = exp(-t * delta);
+    }
+    return pwr;
+}
+
+TemperedMetropolis::TemperedMetropolis(vector<double> const &value,
+				       int max_level, double max_temp, 
+				       unsigned int nrep)
+    : Metropolis(value),
+      _max_level(max_level), 
+      _nrep(nrep),
+      _pwr(makePower(max_level, max_temp)),
+      _t(0), _tmax(1), _step_adapter(0),
+      _pmean(0), _niter(2)
+{
+    if (max_temp <= 1) {
+	throw invalid_argument("Invalid max_temp in TemperedMetropolis ");
     }
     if (max_level <= 0) {
 	throw invalid_argument("Invalid max_level in TemperedMetropolis");
     }
+    
+    _step_adapter.push_back(0);
+    StepAdapter *adapter = new StepAdapter(0.1);
+    _step_adapter.push_back(adapter);
 }
 
 TemperedMetropolis::~TemperedMetropolis()
 {
+    for (unsigned int i = 1; i < _step_adapter.size(); ++i) {
+	delete _step_adapter[i];
+    }
 }
 
-bool TemperedMetropolis::tempAccept(RNG *rng, double prob, int level)
+void TemperedMetropolis::temperedUpdate(RNG *rng, double &log_density0, vector<double> &value0)
 {
-    bool accept = rng->uniform() <= prob;
-    if (accept) {
-	//Store current value as last accepted value
-	getValue(_last_temp_value);
-    }
-    else {
-	//Revert to last accepted value
-	setValue(_last_temp_value);
-    }
-    if (_adapt) {
-	_step_adapter[t]->update(prob);
-	_step[t] = step_adapter[t]->stepSize();
-    }
-    return accept;
-}
-
-void rescale(double prob)
-{
-    //Nothing to do here.  We want the global acceptance probability
-    //to be very high.
-}
-
-double 
-TemperedMetropolis::tempUpdate(RNG *rng, int t, double pwr, double log_density0)
-{
-    vector<double> x(length());
+    vector<double> x = value0;
     for (unsigned int r = 0; r < _nrep; ++r) {
-	getValue(x);
-	step(x, _step[t], rng);
+	step(x, _step_adapter[_t]->stepSize(), rng);
 	setValue(x);
 	double log_density1 = logDensity() + logJacobian(x);
-	double lprob = pwr * (log_density1 - log_density0);
-	if (tempAccept(rng, exp(lprob), t)) {
+	double lprob = _pwr[_t] * (log_density1 - log_density0);
+	if (accept(rng, exp(lprob))) {
 	    log_density0 = log_density1;
+	    value0 = x;
+	}
+	else {
+	    x = value0;
 	}
     }
-    return log_density0;
 }
 
-void MixMethod::update(RNG *rng)
+void TemperedMetropolis::update(RNG *rng)
 {
-    vector<double> pwr(_level + 1);
-    for (int t = 0; t <= _level; ++t) {
-	pwr[t] = exp(-(t * _delta));
-    }
+    //Save the current state
+    vector<double> last_value(length());
+    getValue(last_value);
 
-    //Save a copy of the current state
-    getValue(_last_temp_value);
-    double log_density = logDensity() + logJacobian(_last_temp_value);
+    //Make copies of the current state and log density
+    //These are modified in place by temperedUpdate
+    double log_density = logDensity() + logJacobian(last_value);
+    vector<double> current_value = last_value;
 
     double log_global_prob = 0;
-    for (unsigned int t = 1; t <= _level; ++t) {
-	log_global_prob += (pwr[t] - pwr[t-1]) * log_density;
-	log_density = tempUpdate(rng, t, pwr[t]);
+    for (_t = 1; _t <= _tmax; _t++) {
+	log_global_prob += (_pwr[_t] - _pwr[_t-1]) * log_density;
+	temperedUpdate(rng, log_density, current_value);
     }
-    for (unsigned int t = _level; t >= 1; --t) {
-	log_density = tempUpdate(rng, t, pwr[t]);
-	log_global_prob -= (pwr[t] - pwr[t-1])  * log_density;
+    for (_t = _tmax; _t >= 1; _t--) {
+	temperedUpdate(rng, log_density, current_value);
+	log_global_prob -= (_pwr[_t] - _pwr[_t-1])  * log_density;
     }
 
     //Global Metropolis-Hastings acceptance step
-    accept(rng, exp(log_global_prob));
+    if (!accept(rng, exp(log_global_prob))) {
+	//Force return to last good value
+	setValue(last_value);
+	accept(rng, 1.0);
+    }
 }
 
-bool Tempered::checkAdaptation() const
+void TemperedMetropolis::rescale(double p)
 {
-    // True if all up-phase transitions are within target range
-    // for acceptance
-    return (_level == _max_level);
+    if (_t == 0)
+	return; //No adaptation for global acceptance step
+
+    _step_adapter[_t]->rescale(p);
+
+    if (_t == _tmax && _tmax != _max_level) {
+
+	// We keep a weighted mean estimate of the mean acceptance probability
+	//  with the weights in favour of more recent iterations
+	_pmean += 2 * (p - _pmean) / _niter++;
+
+	// If mean acceptance probability is in target range, increase
+	// temperature to the next level. We enforce a delay of
+	// MIN_STEP iterations first.
+	double delta = _step_adapter[_t]->logitDeviation(_pmean);
+	if (_niter > MIN_STEP + 2 && fabs(delta) < 0.25) {
+	    _niter = 2;
+	    _pmean = 0;
+	    double step = _step_adapter.back()->stepSize();
+	    StepAdapter *adapter = new StepAdapter(step);
+	    _step_adapter.push_back(adapter);
+	}
+    }
 }
 
-double MixMethod::logJacobian(vector<double> const &x)
+
+bool TemperedMetropolis::checkAdaptation() const
+{
+    return (_tmax == _max_level);
+}
+
+void TemperedMetropolis::step(vector<double> &value, double s, RNG *rng) const
+{
+    for (unsigned int i = 0; i < value.size(); ++i) {
+	value[i] += rng->normal() * s;
+    }
+}
+
+double TemperedMetropolis::logJacobian(vector<double> const &value) const
 {
     return 0;
 }
