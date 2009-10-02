@@ -69,7 +69,7 @@ public:
      * level
      */
     TemperedMetropolis(std::vector<double> const &value, 
-                       int max_level=50, double max_temp = 100,
+                       int max_level=50, double max_temp = 10,
 		       unsigned int nrep = 5);
     ~TemperedMetropolis();
     /**
@@ -94,7 +94,7 @@ public:
      * Returns the log of the probability density function of the target
      * distribution at the current value.
      */    
-    virtual double logDensity() = 0;
+    virtual double logDensity() const = 0;
     /**
      * Modifies the given value vector in place by adding an
      * independent normal increment to each element.  It can be
