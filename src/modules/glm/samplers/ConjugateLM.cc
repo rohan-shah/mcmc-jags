@@ -1,7 +1,6 @@
 #include <config.h>
 
 #include "ConjugateLM.h"
-#include "GLMSampler.h"
 #include <graph/StochasticNode.h>
 #include <sampler/Updater.h>
 
@@ -10,37 +9,39 @@ using std::string;
 
 namespace glm {
 
-    ConjugateLM::ConjugateLM(Updater const *updater)
-	: GLMMethod(updater), _updater(updater)
+    ConjugateLM::ConjugateLM(Updater const *updater, unsigned int chain)
+	: GLMMethod(updater, chain, false)
     {
-	/* NB We have to do this here, not in the constructor for
-	   GLMMethod because calBeta calls virtual functions
-	   (e.g. getMean) that are pure in GLMMethod */
-
-	//Symbolic analysis
- 	calDesign(_X, updater, 0);
- 	symbolic(updater);
     }
 
-    double ConjugateLM::getMean(unsigned int i, unsigned int chain) const
+    double ConjugateLM::getMean(unsigned int i) const
     {
-	return _updater->stochasticChildren()[i]->parents()[0]->value(chain)[0];
+	return _updater->stochasticChildren()[i]->parents()[0]->value(_chain)[0];
     }
     
     double 
-    ConjugateLM::getPrecision(unsigned int i, unsigned int chain) const 
+    ConjugateLM::getPrecision(unsigned int i) const 
     {
-	return _updater->stochasticChildren()[i]->parents()[1]->value(chain)[0];
+	return _updater->stochasticChildren()[i]->parents()[1]->value(_chain)[0];
     }
 
-    double ConjugateLM::getValue(unsigned int i, unsigned int chain) const 
+    double ConjugateLM::getValue(unsigned int i) const 
     {
-	return _updater->stochasticChildren()[i]->value(chain)[0];
+	return _updater->stochasticChildren()[i]->value(_chain)[0];
     }
     
     string ConjugateLM::name() const
     {
 	return "ConjugateLM";
     }
-    
+
+    void ConjugateLM::initAuxiliary(RNG *rng) 
+    {
+	return; //Nothing to do
+    }
+
+    void ConjugateLM::updateAuxiliary(double *b, csn const *N, RNG *rng)
+    {
+	return; //Nothing to do
+    }
 }

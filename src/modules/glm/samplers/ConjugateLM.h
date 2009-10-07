@@ -9,12 +9,13 @@ namespace glm {
      * Conjugate sampler for normal linear models.
      */
     class ConjugateLM : public GLMMethod {
-	Updater const *_updater;
     public:
-	ConjugateLM(Updater const *updater);
-	double getMean(unsigned int i, unsigned int chain) const;
-	double getPrecision(unsigned int i, unsigned int chain) const;
-	double getValue(unsigned int i, unsigned int chain) const;
+	ConjugateLM(Updater const *updater, unsigned int chain);
+	double getMean(unsigned int i) const;
+	double getPrecision(unsigned int i) const;
+	double getValue(unsigned int i) const;
+	void initAuxiliary(RNG *rng);
+	void updateAuxiliary(double *b, csn const *N, RNG *rng);
 	std::string name() const;
     };
     

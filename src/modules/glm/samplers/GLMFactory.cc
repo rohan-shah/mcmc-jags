@@ -1,7 +1,6 @@
 #include <config.h>
 
 #include "GLMFactory.h"
-#include "GLMSampler.h"
 
 #include <graph/GraphMarks.h>
 #include <graph/Graph.h>
@@ -219,8 +218,15 @@ namespace glm {
 
 	    if (sample_nodes.size() > 1) {
 		//We must have at least two nodes to sample
+		
 		Updater *updater = new Updater(sample_nodes, graph);
-		return new GLMSampler(updater, newMethod(updater)); 
+		unsigned int Nch = nchain(updater);
+		vector<SampleMethod*> methods(Nch, 0);
+		
+		for (unsigned int ch = 0; ch < Nch; ++ch) {
+		    methods[ch] = newMethod(updater, ch);
+		}
+		return new ParallelSampler(updater, methods);
 	    }
 	}
 	

@@ -21,17 +21,6 @@ using std::set;
 using std::logic_error;
 using std::copy;
 
-static void updateDeterministic(Node *node, unsigned int chain)
-{
-    set<DeterministicNode*> const *dch = node->deterministicChildren();
-    for (set<DeterministicNode*>::const_iterator p = dch->begin();
-	 p != dch->end(); ++p)
-    {
-	(*p)->deterministicSample(chain);
-	updateDeterministic(*p, chain);
-    }
-}
-
 static void 
 getStochasticChildren(Node *node, set<StochasticNode const*> &schildren)
 {
@@ -64,26 +53,26 @@ static void getIndices(set<StochasticNode const *> const &schildren,
 
 namespace glm {
 
-    void 
-    GLMMethod::calDesign(cs *X, Updater const *updater, unsigned int chain)
-	const
+    void GLMMethod::calDesign(cs *X) const
     {
-	vector<StochasticNode *> const &snodes = updater->nodes();
+	vector<StochasticNode *> const &snodes = _updater->nodes();
 	vector<StochasticNode const *> const &schildren = 
-	    updater->stochasticChildren();
+	    _updater->stochasticChildren();
+	vector<DeterministicNode *> const &dchildren = 
+	    _updater->deterministicChildren();
 
-	int *Bi = X->i;
-	int *Bp = X->p;
-	double *Bx = X->x;
+	int *Xi = X->i;
+	int *Xp = X->p;
+	double *Xx = X->x;
 
 	int nrow = schildren.size();
-	int ncol = updater->length();
+	int ncol = _updater->length();
 	if (nrow != X->m || ncol != X->n) {
 	    throw logic_error("Dimension mismatch in GLMMethod::calDesign");
 	}
 
-	for (unsigned int r = 0; r < Bp[ncol]; ++r) {
-	    Bx[r] = -getMean(Bi[r], chain);
+	for (unsigned int r = 0; r < Xp[ncol]; ++r) {
+	    Xx[r] = -getMean(Xi[r]);
 	}
 
 	int c = 0; //column counter
@@ -92,31 +81,36 @@ namespace glm {
 	     p != snodes.end(); ++p)
 	{
 	    Node *snode = *p;
-	    double const *xold = snode->value(chain);
+	    double const *xold = snode->value(_chain);
 	    unsigned int length = snode->length();
 	
 	    copy(xold, xold + length, xnew);
 	    for (unsigned int i = 0; i < length; ++i, ++c) {
 
 		xnew[i] += 1;
-		snode->setValue(xnew, length, chain);
-		updateDeterministic(snode, chain); 
-				
-		for (int r = Bp[c]; r < Bp[c + 1]; ++r) {
-		    Bx[r] += getMean(Bi[r], chain);
+		snode->setValue(xnew, length, _chain);
+		for (unsigned int j = 0; j < dchildren.size(); ++j) {
+		    dchildren[j]->deterministicSample(_chain);
+		}
+		for (int r = Xp[c]; r < Xp[c + 1]; ++r) {
+		    Xx[r] += getMean(Xi[r]);
 		}
 
 		xnew[i] -= 1;
 	    }
-	    snode->setValue(xnew, length, chain);
-	    updateDeterministic(snode, chain);
+	    snode->setValue(xnew, length, _chain);
+	    for (unsigned int j = 0; j < dchildren.size(); ++j) {
+		dchildren[j]->deterministicSample(_chain);
+	    }
 	}
 	delete [] xnew;
     
     }
     
-    GLMMethod::GLMMethod(Updater const *updater)
-	: _X(0), _symbol(0), _fixed(false), _length_max(0), _nz_prior(0)
+    GLMMethod::GLMMethod(Updater const *updater, unsigned int chain, bool link)
+	: _updater(updater), _chain(chain),
+	  _X(0), _symbol(0), _fixed(false), _length_max(0), _nz_prior(0), 
+	  _init(true)
     {
 	vector<StochasticNode *> const &snodes = updater->nodes();
 	vector<StochasticNode const*> const &schildren = 
@@ -125,8 +119,8 @@ namespace glm {
 	int nrow = schildren.size();
 	int ncol = updater->length();
 
-	vector<int> Bp(ncol + 1);
-	vector<int> Bi;
+	vector<int> Xp(ncol + 1);
+	vector<int> Xi;
     
 	int c = 0; //column counter
 	int r = 0; //count of number of non-zero entries
@@ -142,9 +136,9 @@ namespace glm {
 
 	    unsigned int length = snode->length();
 	    for (unsigned int i = 0; i < length; ++i, ++c) {
-		Bp[c] = r;
+		Xp[c] = r;
 		for (unsigned int j = 0; j < indices.size(); ++j, ++r) {
-		    Bi.push_back(indices[j]);
+		    Xi.push_back(indices[j]);
 		}
 	    }
 
@@ -154,15 +148,15 @@ namespace glm {
 		_length_max = length; //Length of longest sampled node
 	    }
 	}
-	Bp[c] = r;
+	Xp[c] = r;
 
 	//Set up sparse representation of the design matrix
 	_X = cs_spalloc(nrow, ncol, r, 1, 0);
-	copy(Bp.begin(), Bp.end(), _X->p);
-	copy(Bi.begin(), Bi.end(), _X->i);
+	copy(Xp.begin(), Xp.end(), _X->p);
+	copy(Xi.begin(), Xi.end(), _X->i);
 
 	// Check for constant linear terms
-	if (checkLinear(updater, true)) {
+	if (checkLinear(updater, true, link)) {
 	    _fixed = true;
 	}
     }
@@ -172,17 +166,18 @@ namespace glm {
 	cs_spfree(_X);
     }
     
-/* 
-   Symbolic analysis of the posterior precision matrix for the
-   Cholesky decomposition.
-
-   This only needs to be done once, at initialization.  It is a
-   stripped-down version of the code in update.  Note that the values
-   of the sparse matrices are never referenced.
-*/
-    void GLMMethod::symbolic(Updater const *updater)  
+    /* 
+       Symbolic analysis of the posterior precision matrix for the
+       Cholesky decomposition.
+       
+       This only needs to be done once, when the GLMMethod is
+       craeted. It is a stripped-down version of the code in update.
+       Note that the values of the sparse matrices are never
+       referenced.
+    */
+    void GLMMethod::symbolic()  
     {
-	unsigned int nrow = updater->length();
+	unsigned int nrow = _updater->length();
 	cs *Aprior = cs_spalloc(nrow, nrow, _nz_prior, 0, 0); 
     
 	// Prior contribution
@@ -191,7 +186,7 @@ namespace glm {
 
 	int c = 0;
 	int r = 0;
-	vector<StochasticNode*> const &snodes = updater->nodes();
+	vector<StochasticNode*> const &snodes = _updater->nodes();
 	for (vector<StochasticNode*>::const_iterator p = snodes.begin();
 	     p != snodes.end(); ++p)
 	{
@@ -223,10 +218,7 @@ namespace glm {
 	cs_spfree(A);
     }
 
-
-
-    void 
-    GLMMethod::update(Updater const *updater, unsigned int chain, RNG *rng) const
+    void GLMMethod::update(RNG *rng) 
     {
 	//   The log of the full conditional density takes the form
 	//   -(t(x) %*% A %*% x - 2 * b %*% x)/2
@@ -236,7 +228,14 @@ namespace glm {
 	//   For computational convenience we take xold, the current value
 	//   of the sampled nodes, as the origin
 
-	unsigned int nrow = updater->length();
+	if (_init) {
+	    initAuxiliary(rng);
+	    calDesign(_X);
+	    symbolic();
+	    _init = false;
+	}
+
+	unsigned int nrow = _updater->length();
 	double *b = new double[nrow];
 	cs *Aprior = cs_spalloc(nrow, nrow, _nz_prior, 1, 0); 
     
@@ -247,14 +246,14 @@ namespace glm {
 
 	int c = 0;
 	int r = 0;
-	vector<StochasticNode*> const &snodes = updater->nodes();
+	vector<StochasticNode*> const &snodes = _updater->nodes();
 	for (vector<StochasticNode*>::const_iterator p = snodes.begin();
 	     p != snodes.end(); ++p)
 	{
 	    StochasticNode *snode = *p;
-	    double const *priormean = snode->parents()[0]->value(chain);
-	    double const *priorprec = snode->parents()[1]->value(chain);
-	    double const *xold = snode->value(chain);
+	    double const *priormean = snode->parents()[0]->value(_chain);
+	    double const *priorprec = snode->parents()[1]->value(_chain);
+	    double const *xold = snode->value(_chain);
 	    int length = snode->length();
 	
 	    int cbase = c; //first column of this diagonal block
@@ -262,9 +261,9 @@ namespace glm {
 		b[c] = 0;
 		Ap[c] = r;
 		for (unsigned int j = 0; j < length; ++j, ++r) {
-		    b[c] += priorprec[i + length * j] * (priormean[j] - xold[j]);
+		    b[c] += priorprec[i + length*j] * (priormean[j] - xold[j]);
 		    Ai[r] = cbase + j;
-		    Ax[r] = priorprec[i + length * j];
+		    Ax[r] = priorprec[i + length*j];
 		}
 	    }
 	}
@@ -273,7 +272,7 @@ namespace glm {
 	if (!_fixed) {
 	    //Fixme: could be more efficient if we don't have to recalculate
 	    //all coefficients
-	    calDesign(_X, updater, chain);
+	    calDesign(_X);
 	}
 
 	// Likelihood contributions
@@ -293,9 +292,8 @@ namespace glm {
 	double *Tx = t_X->x;
     
 	for (int c = 0; c < t_X->n; ++c) {
-	    double tau = getPrecision(c, chain);
-	    double delta = getValue(c, chain) - 
-		getMean(c, chain);
+	    double tau = getPrecision(c);
+	    double delta = getValue(c) - getMean(c);
 	    for (int r = Tp[c]; r < Tp[c+1]; ++r) {
 		Tx[r] *= tau;
 		b[Ti[r]] += Tx[r] * delta;
@@ -316,10 +314,13 @@ namespace glm {
 	}
 	cs_spfree(A);
 
+	//Modify auxiliary variables. This may also modify the vector b in place.
+	updateAuxiliary(b, N, rng);
+
 	// Use the Cholesky decomposition to generate a new sample
 	// with mean mu such that A %*% mu = b and precision A. The
 	// vector b is overwritten with the result
-
+	
 	double *w = new double[nrow];
 	cs_ipvec(_symbol->pinv, b, w, nrow);
 	cs_lsolve(N->L, w);
@@ -338,15 +339,25 @@ namespace glm {
 	{
 	    StochasticNode *snode = *p;
 	    unsigned int length = snode->length();
-	    double const *xold = snode->value(chain);
+	    double const *xold = snode->value(_chain);
 	    for (unsigned int i = 0; i < length; ++i, ++r) {
 		b[r] += xold[i];
 	    }
 	}
 
-	updater->setValue(b, nrow, chain);
+	_updater->setValue(b, nrow, _chain);
 	delete [] b;
     }
 
+    
+    bool GLMMethod::isAdaptive() const
+    {
+	return false;
+    }
+    
+    bool GLMMethod::adaptOff()
+    {
+	return true;
+    }
 
 }

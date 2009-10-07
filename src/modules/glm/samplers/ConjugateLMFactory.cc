@@ -18,9 +18,10 @@ namespace glm {
 	return false;
     }
 
-    GLMMethod *ConjugateLMFactory::newMethod(Updater const *updater) const
+    GLMMethod *ConjugateLMFactory::newMethod(Updater const *updater,
+					     unsigned int chain) const
     {
-	return new ConjugateLM(updater);
+	return new ConjugateLM(updater, chain);
     }
 
 }
