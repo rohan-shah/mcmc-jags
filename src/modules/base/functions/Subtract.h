@@ -22,6 +22,8 @@ public:
     bool isDiscreteValued(std::vector<bool> const &mask) const;
     bool isScale(std::vector<bool> const &mask, 
 		 std::vector<bool> const &fix) const;
+    bool isLinear(std::vector<bool> const &mask, 
+		  std::vector<bool> const &fix) const;
 };
 
 }
