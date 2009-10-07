@@ -114,8 +114,10 @@ namespace glm {
 
 	string dname = snode->distribution()->name();
 	if (dname != "dnorm" && dname != "dmnorm")
-	    return 0;
-    
+	    return 0; //Must have normal prior
+
+	if (isBounded(snode))
+	    return 0; //Cannot have bounded prior
 
 	Updater updater(snode, graph);
 	vector<StochasticNode const*> const &stoch_nodes = 
@@ -129,7 +131,6 @@ namespace glm {
 	*/
 	set<Node const*> paramset;
 	paramset.insert(snode);
-	paramset.insert(stoch_nodes.begin(), stoch_nodes.end());
 	paramset.insert(dtrm_nodes.begin(), dtrm_nodes.end());
 
 	// Check stochastic children
