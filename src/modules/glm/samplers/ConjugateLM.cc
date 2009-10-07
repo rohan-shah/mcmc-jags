@@ -18,7 +18,7 @@ namespace glm {
 	   (e.g. getMean) that are pure in GLMMethod */
 
 	//Symbolic analysis
- 	calBeta(_beta, updater, 0);
+ 	calDesign(_X, updater, 0);
  	symbolic(updater);
     }
 

@@ -65,21 +65,21 @@ static void getIndices(set<StochasticNode const *> const &schildren,
 namespace glm {
 
     void 
-    GLMMethod::calBeta(cs *beta, Updater const *updater, unsigned int chain)
+    GLMMethod::calDesign(cs *X, Updater const *updater, unsigned int chain)
 	const
     {
 	vector<StochasticNode *> const &snodes = updater->nodes();
 	vector<StochasticNode const *> const &schildren = 
 	    updater->stochasticChildren();
 
-	int *Bi = beta->i;
-	int *Bp = beta->p;
-	double *Bx = beta->x;
+	int *Bi = X->i;
+	int *Bp = X->p;
+	double *Bx = X->x;
 
 	int nrow = schildren.size();
 	int ncol = updater->length();
-	if (nrow != beta->m || ncol != beta->n) {
-	    throw logic_error("Dimension mismatch in GLMMethod::calBeta");
+	if (nrow != X->m || ncol != X->n) {
+	    throw logic_error("Dimension mismatch in GLMMethod::calDesign");
 	}
 
 	for (unsigned int r = 0; r < Bp[ncol]; ++r) {
@@ -116,7 +116,7 @@ namespace glm {
     }
     
     GLMMethod::GLMMethod(Updater const *updater)
-	: _beta(0), _symbol(0), _fixed(false), _length_max(0), _nz_prior(0)
+	: _X(0), _symbol(0), _fixed(false), _length_max(0), _nz_prior(0)
     {
 	vector<StochasticNode *> const &snodes = updater->nodes();
 	vector<StochasticNode const*> const &schildren = 
@@ -156,10 +156,10 @@ namespace glm {
 	}
 	Bp[c] = r;
 
-	//Set up sparse matrix representation of beta coefficients
-	_beta = cs_spalloc(nrow, ncol, r, 1, 0);
-	copy(Bp.begin(), Bp.end(), _beta->p);
-	copy(Bi.begin(), Bi.end(), _beta->i);
+	//Set up sparse representation of the design matrix
+	_X = cs_spalloc(nrow, ncol, r, 1, 0);
+	copy(Bp.begin(), Bp.end(), _X->p);
+	copy(Bi.begin(), Bi.end(), _X->i);
 
 	// Check for constant linear terms
 	if (checkLinear(updater, true)) {
@@ -169,7 +169,7 @@ namespace glm {
 
     GLMMethod::~GLMMethod()
     {
-	cs_spfree(_beta);
+	cs_spfree(_X);
     }
     
 /* 
@@ -210,12 +210,12 @@ namespace glm {
 
 	// Likelihood contribution
     
-	cs *tbeta = cs_transpose(_beta, 0);
-	cs *Alik = cs_multiply(tbeta, _beta);
+	cs *t_X = cs_transpose(_X, 0);
+	cs *Alik = cs_multiply(t_X, _X);
 	cs *A = cs_add(Aprior, Alik, 0, 0);
     
 	//Free working matrices
-	cs_spfree(tbeta);
+	cs_spfree(t_X);
 	cs_spfree(Aprior);
 	cs_spfree(Alik);
 
@@ -273,26 +273,26 @@ namespace glm {
 	if (!_fixed) {
 	    //Fixme: could be more efficient if we don't have to recalculate
 	    //all coefficients
-	    calBeta(_beta, updater, chain);
+	    calDesign(_X, updater, chain);
 	}
 
 	// Likelihood contributions
 	//   
-	//   b += t(beta) %*% tau %*% (Y - mu)
-	//   A += t(beta) %*% tau %*% beta
+	//   b += t(X) %*% tau %*% (Y - mu)
+	//   A += t(X) %*% tau %*% X
     
 	//   where 
-	//   - beta is a matrix of linear coefficients
+	//   - X is the design matrix
 	//   - tau is the (diagonal) variance matrix of the stochastic children
 	//   - mu is the mean of the stochastic children
 	//   - Y is the value of the stochastic children
 
-	cs *tbeta = cs_transpose(_beta, 1);
-	int *Tp = tbeta->p;
-	int *Ti = tbeta->i;
-	double *Tx = tbeta->x;
+	cs *t_X = cs_transpose(_X, 1);
+	int *Tp = t_X->p;
+	int *Ti = t_X->i;
+	double *Tx = t_X->x;
     
-	for (int c = 0; c < tbeta->n; ++c) {
+	for (int c = 0; c < t_X->n; ++c) {
 	    double tau = getPrecision(c, chain);
 	    double delta = getValue(c, chain) - 
 		getMean(c, chain);
@@ -303,8 +303,8 @@ namespace glm {
 	    }
 	}
 
-	cs *Alik = cs_multiply(tbeta, _beta);
-	cs_spfree(tbeta);
+	cs *Alik = cs_multiply(t_X, _X);
+	cs_spfree(t_X);
 	cs *A = cs_add(Aprior, Alik, 1, 1);
 	cs_spfree(Aprior);
 	cs_spfree(Alik);

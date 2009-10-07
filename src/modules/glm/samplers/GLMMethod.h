@@ -20,14 +20,17 @@ namespace glm {
      */
     class GLMMethod {
     protected:
-	cs *_beta;
+	cs *_X;
 	css *_symbol;
 	bool _fixed;
 	unsigned int _length_max;
 	unsigned _nz_prior;
 	std::vector<StochasticNode const*> const *_children;
 	void symbolic(Updater const *updater);
-	void calBeta(cs *_beta, Updater const *updater, unsigned int chain) 
+	/**
+	 * Calculates the design matrix of the GLM
+	 */
+	void calDesign(cs *X, Updater const *updater, unsigned int chain) 
 	    const;
     public:
 	GLMMethod(Updater const *updater);
