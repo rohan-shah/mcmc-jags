@@ -45,12 +45,12 @@ static bool aggregateLinear(StochasticNode *candidate_node,
     // judgement.
 
     Updater updater(candidate_node, graph);
-    vector<StochasticNode const*> const &stoch_nodes = 
+    vector<StochasticNode const*> const &candidate_children = 
 	updater.stochasticChildren();
 
     bool overlap = false;
-    for (unsigned int i = 0; i < stoch_nodes.size(); ++i) {
-	if (stochastic_children.count(stoch_nodes[i]) > 0) {
+    for (unsigned int i = 0; i < candidate_children.size(); ++i) {
+	if (stochastic_children.count(candidate_children[i]) > 0) {
 	    overlap = true;
 	    break;
 	}
@@ -69,9 +69,7 @@ static bool aggregateLinear(StochasticNode *candidate_node,
     }
 
     // Add stochastic children of candidate node to set
-    for (unsigned int i = 0; i < stoch_nodes.size(); ++i) {
-	stochastic_children.insert(stoch_nodes[i]);
-    }
+    stochastic_children.insert(candidate_children.begin(), candidate_children.end());
     
     return true;
 }
@@ -84,7 +82,7 @@ getStochasticChildren(StochasticNode *snode, Graph const &graph)
     set<StochasticNode const *> ans;
     ans.insert(updater.stochasticChildren().begin(),
 	       updater.stochasticChildren().end());
-    ans;
+    return ans;
 }
 
 struct less_node {
