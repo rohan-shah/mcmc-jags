@@ -13,7 +13,7 @@ namespace glm {
      * @param left Left limit of the truncated distribution
      * @param rng Random Number Generator
      */
-    double LNormal(double mu, double sigma, double left, RNG *rng);
+    double LNorm(double mu, double sigma, double left, RNG *rng);
 
     /**
      * Draws a random sample from a left-truncated normal distribution
@@ -23,7 +23,7 @@ namespace glm {
      * @param right Right limit of the distribution
      * @param rng Random Number Generator
      */
-    double RNormal(double mu, double sigma, double right, RNG *rng);
+    double RNorm(double mu, double sigma, double right, RNG *rng);
 
     /**
      * Draws a random sample from an interval-truncated normal
@@ -35,7 +35,7 @@ namespace glm {
      * @param right Right limit of the distribution
      * @param rng Random Number Generator
      */
-    double INormal(double mu, double sigma, double left, double right, 
+    double INorm(double mu, double sigma, double left, double right, 
 		   RNG *rng);
 
 }

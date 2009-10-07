@@ -54,10 +54,10 @@ namespace glm {
 	for (unsigned int r = 0; r < _z.size(); ++r) {
 	    double yr = schildren[r]->value(_chain)[0];
 	    if (yr == 1) {
-		_z[r] = LNormal(getMean(r), 1, 0, rng);
+		_z[r] = LNorm(getMean(r), 1, 0, rng);
 	    }
 	    else if (yr == 0) {
-		_z[r] = RNormal(getMean(r), 1, 0, rng);
+		_z[r] = RNorm(getMean(r), 1, 0, rng);
 	    }
 	    else {
 		throw logic_error("Invalid child value in Probit");
@@ -104,7 +104,7 @@ namespace glm {
 	    cs_ipvec(_symbol->pinv, xr, w, ncol);
 	    cs_lsolve(N->L, w);
 	    cs_ltsolve(N->L, w);
-	    cs_pvec(_symbol->pinv, w, S, nrow);
+	    cs_pvec(_symbol->pinv, w, S, ncol);
 	    
 	    double hr = 0; // Hat[r,r]
 	    double zr_mean = 0;
@@ -117,10 +117,10 @@ namespace glm {
 
 	    double yr = schildren[r]->value(_chain)[0];
 	    if (yr == 1) {
-		_z[r] = LNormal(zr_mean, sqrt(zr_var), 0, rng);
+		_z[r] = LNorm(zr_mean, sqrt(zr_var), 0, rng);
 	    }
 	    else if (yr == 0) {
-		_z[r] = RNormal(zr_mean, sqrt(zr_var), 0, rng);
+		_z[r] = RNorm(zr_mean, sqrt(zr_var), 0, rng);
 	    }
 	    else {
 		throw logic_error("Invalid child value in Probit");
@@ -128,7 +128,7 @@ namespace glm {
 
 	    //Add new contribution of row r back to b
 	    for (unsigned int i = 0; i < ncol; ++i) {
-		b[i] -= _z[r] * xr[i];
+		b[i] += _z[r] * xr[i];
 	    }
 	}
 
