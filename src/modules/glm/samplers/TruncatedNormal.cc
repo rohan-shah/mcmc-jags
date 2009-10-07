@@ -30,20 +30,20 @@ static double lnorm(double left, RNG *rng)
 {
     if (left < 0) {
 	//Repeated sampling until truncation satisfied
-	double y = rng->normal();
-	while(y < left) {
-	    y = rng->normal();
+	while(true) {
+	    double y = rng->normal();
+	    if (y >= left)
+		return y;
 	}
-	return y;
     }
     else {
 	//Rejection sampling with exponential envelope
 	double alpha = Alpha(left);
-	double z = left + rng->exponential() / alpha;
-	while (rng->uniform() < exp(-(alpha - z)*(alpha - z)/2)) {
-	    z = left + rng->exponential() / alpha;
+	while (true) {
+	    double z = left + rng->exponential() / alpha;
+	    if (rng->uniform() <= exp(-(alpha - z)*(alpha - z)/2))
+		return z;
 	}
-	return z;
     }
 }
 
@@ -65,7 +65,7 @@ static double inorm_unif(double left, double right, RNG *rng)
 
     while (true) {
 	double z = left + (right - left) * rng->uniform();
-	if (rng->uniform() < exp((zmax*zmax - z*z)/2)) {
+	if (rng->uniform() <= exp((zmax*zmax - z*z)/2)) {
 	    return z;
 	}
     }
