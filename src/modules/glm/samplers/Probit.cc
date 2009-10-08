@@ -1,9 +1,9 @@
 #include <config.h>
 
 #include "Probit.h"
-#include "TruncatedNormal.h"
 #include <graph/StochasticNode.h>
 #include <sampler/Updater.h>
+#include <rng/TruncatedNormal.h>
 #include <rng/RNG.h>
 
 #include <stdexcept>
@@ -15,6 +15,14 @@ using std::logic_error;
 static unsigned int nchildren(Updater const *updater)
 {
     return updater->stochasticChildren().size();
+}
+
+static double LNorm(double mu, double sigma, double left, RNG *rng) {
+    return mu + sigma * lnormal((left - mu)/sigma, rng);
+}
+
+static double RNorm(double mu, double sigma, double right, RNG *rng) {
+    return mu + sigma * rnormal((mu - right)/sigma, rng);
 }
 
 namespace glm {

@@ -4,9 +4,9 @@
 */
 #include <config.h>
 
-#include "TruncatedNormal.h"
-
+#include <rng/TruncatedNormal.h>
 #include <rng/RNG.h>
+
 #include <cmath>
 #include <stdexcept>
 
@@ -23,10 +23,7 @@ static double Alpha(double mu)
     return (mu + sqrt(mu*mu + 4))/2;
 }
 
-/*
-  Left truncated standard normal
-*/
-static double lnorm(double left, RNG *rng)
+double lnormal(double left, RNG *rng)
 {
     if (left < 0) {
 	//Repeated sampling until truncation satisfied
@@ -47,6 +44,11 @@ static double lnorm(double left, RNG *rng)
     }
 }
 
+double rnormal(double right, RNG *rng)
+{
+    return -lnormal(-right, rng);
+}
+
 /* 
    Rejection sampling of interval-truncated standard normal
    distribution using a uniform envelope.  This works best when we are
@@ -54,8 +56,7 @@ static double lnorm(double left, RNG *rng)
 */
 static double inorm_unif(double left, double right, RNG *rng)
 {
-    //Value of z at which density reaches maximum value
-    double zmax;
+    double zmax; //Value of z at which density is maximum
     if (left > 0)
 	zmax = left;
     else if (right < 0)
@@ -107,16 +108,16 @@ static bool inorm_right_tail(double left, double right, RNG *rng)
     else {
 	//Interval too wide for rejection sampling. Do repeat sampling
 	//from left-truncated normal
-	double y = lnorm(left, rng);
+	double y = lnormal(left, rng);
 	while (y >= right) {
-	    y = lnorm(left, rng);
+	    y = lnormal(left, rng);
 	}
 	return y;
     }
 }
 
 
-static double inorm(double left, double right, RNG *rng)
+double inormal(double left, double right, RNG *rng)
 {
     if (right < left) {
 	throw logic_error("Invalid limits in inorm");
@@ -135,21 +136,3 @@ static double inorm(double left, double right, RNG *rng)
 	return inorm_repeat(left, right, rng);
     }
 }
-
-namespace glm {
-
-    double LNorm(double mu, double sigma, double left, RNG *rng) {
-	return mu + sigma * lnorm((left - mu)/sigma, rng);
-    }
-
-    double RNorm(double mu, double sigma, double right, RNG *rng) {
-	return mu - sigma * lnorm((mu - right)/sigma, rng);
-    }
-
-    double INorm(double mu, double sigma, double left, double right, RNG *rng) {
-	return mu + sigma * inorm((left - mu)/sigma, (right - mu)/sigma, rng);
-    }
-
-}
-
-    

@@ -26,6 +26,14 @@ class DNorm : public DistScalarRmath {
   bool checkParameterValue(std::vector<double const *> const &parameters,
 			   std::vector<std::vector<unsigned int> > const &dims)
     const;
+  /**
+   * Exploits the capacity to sample truncted normal distributions that
+   * is built into the JAGS library, overloading the generic functionality
+   * of DistScalarRmath.
+   */
+  double scalarRandomSample(std::vector<double const *> const &par,
+			    double const *lower, double const *upper,
+			    RNG *rng) const;
 };
 
 #endif /* DNORM_H_ */

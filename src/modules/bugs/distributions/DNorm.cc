@@ -1,6 +1,8 @@
 #include <config.h>
 #include "DNorm.h"
 
+#include <rng/TruncatedNormal.h>
+
 #include <cmath>
 
 #include <JRmath.h>
@@ -48,3 +50,27 @@ DNorm::r(vector<double const *> const &par, RNG *rng) const
     return rnorm(MU(par), SIGMA(par), rng);
 }
 
+double DNorm::scalarRandomSample(vector<double const *> const &par,
+				 double const *lower, double const *upper,
+				 RNG *rng) const
+{
+    double mu = MU(par);
+    double sigma = SIGMA(par);
+    
+    if (lower && upper) {
+	double left = (*lower - mu)/sigma;
+	double right = (*upper - mu)/sigma;
+	return mu + sigma * inormal(left, right, rng);
+    }
+    else if (lower) {
+	double left = (*lower - mu)/sigma;
+	return mu + sigma * lnormal(left, rng);
+    }
+    else if (upper) {
+	double right = (*upper - mu)/sigma;
+	return mu + sigma * rnormal(right, rng);
+    }
+    else {
+	return rnorm(mu, sigma, rng);
+    }
+}
