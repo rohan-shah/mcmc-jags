@@ -21,19 +21,6 @@ using std::set;
 using std::logic_error;
 using std::copy;
 
-static void 
-getStochasticChildren(Node *node, set<StochasticNode const*> &schildren)
-{
-    schildren.insert(node->stochasticChildren()->begin(),
-		     node->stochasticChildren()->end());
-    set<DeterministicNode*>::const_iterator q;
-    for (q = node->deterministicChildren()->begin();
-	 q != node->deterministicChildren()->end(); ++q)
-    {
-	getStochasticChildren(*q, schildren);
-    }
-}
-
 static void getIndices(set<StochasticNode const *> const &schildren,
 		       vector<StochasticNode const*> const &rows,
 		       vector<int> &indices)
@@ -53,60 +40,53 @@ static void getIndices(set<StochasticNode const *> const &schildren,
 
 namespace glm {
 
-    void GLMMethod::calDesign(cs *X) const
+    void GLMMethod::calDesign() const
     {
 	vector<StochasticNode *> const &snodes = _updater->nodes();
 	vector<StochasticNode const *> const &schildren = 
 	    _updater->stochasticChildren();
-	vector<DeterministicNode *> const &dchildren = 
-	    _updater->deterministicChildren();
 
-	int *Xi = X->i;
-	int *Xp = X->p;
-	double *Xx = X->x;
+	int *Xi = _X->i;
+	int *Xp = _X->p;
+	double *Xx = _X->x;
 	
 	int nrow = schildren.size();
 	int ncol = _updater->length();
-	if (nrow != X->m || ncol != X->n) {
+	if (nrow != _X->m || ncol != _X->n) {
 	    throw logic_error("Dimension mismatch in GLMMethod::calDesign");
 	}
-	
-	for (unsigned int r = 0; r < Xp[ncol]; ++r) {
-	    Xx[r] = -getMean(Xi[r]);
-	}
-	
+
 	int c = 0; //column counter
 	double *xnew = new double[_length_max];
 	
 	for (unsigned int i = 0; i < snodes.size(); ++i) {
 
-	    Node *snode = snodes[i];
-	    double const *xold = snode->value(_chain);
-	    unsigned int length = snode->length();
-	    
-	    copy(xold, xold + length, xnew);
-	    for (unsigned int j = 0; j < length; ++j, ++c) {
-		
-		xnew[j] += 1;
-		_sub_updaters[i]->setValue(xnew, length, _chain);
-		/*
-		  snode->setValue(xnew, length, _chain);
-		  for (unsigned int j = 0; j < dchildren.size(); ++j) {
-		  dchildren[j]->deterministicSample(_chain);
-		  }
-		*/
-		for (int r = Xp[c]; r < Xp[c + 1]; ++r) {
-		    Xx[r] += getMean(Xi[r]);
+	    unsigned int length = snodes[i]->length();
+
+	    if (_init || !_fixed[i]) {
+
+		for (unsigned int j = 0; j < length; ++j) {
+		    for (int r = Xp[c+j]; r < Xp[c+j+1]; ++r) {
+			Xx[r] = -getMean(Xi[r]);
+		    }
 		}
-		xnew[j] -= 1;
+		
+		double const *xold = snodes[i]->value(_chain);	    
+		copy(xold, xold + length, xnew);
+		
+		for (unsigned int j = 0; j < length; ++j) {
+		    
+		    xnew[j] += 1;
+		    _sub_updaters[i]->setValue(xnew, length, _chain);
+		    for (int r = Xp[c+j]; r < Xp[c+j+1]; ++r) {
+			Xx[r] += getMean(Xi[r]);
+		    }
+		    xnew[j] -= 1;
+		}
+		_sub_updaters[i]->setValue(xnew, length, _chain);
 	    }
-	    _sub_updaters[i]->setValue(xnew, length, _chain);
-	    /*
-	      snode->setValue(xnew, length, _chain);
-	      for (unsigned int j = 0; j < dchildren.size(); ++j) {
-	      dchildren[j]->deterministicSample(_chain);
-	      }
-	    */
+	    
+	    c += length;
 	}
 
 	delete [] xnew;
@@ -117,8 +97,8 @@ namespace glm {
 			 vector<Updater const *> const &sub_updaters,
 			 unsigned int chain, bool link)
 	: _updater(updater), _chain(chain), _sub_updaters(sub_updaters),
-	  _X(0), _symbol(0), _fixed(false), _length_max(0), _nz_prior(0), 
-	  _init(true)
+	  _X(0), _symbol(0), _fixed(sub_updaters.size(), false), 
+	  _length_max(0), _nz_prior(0), _init(true)
     {
 	vector<StochasticNode *> const &snodes = updater->nodes();
 	vector<StochasticNode const*> const &schildren = 
@@ -132,17 +112,16 @@ namespace glm {
     
 	int c = 0; //column counter
 	int r = 0; //count of number of non-zero entries
-	for (vector<StochasticNode*>::const_iterator p = snodes.begin();
-	     p != snodes.end(); ++p)
-	{
-	    StochasticNode *snode = *p;
+
+	for (unsigned int p = 0; p < _sub_updaters.size(); ++p) {
 
 	    set<StochasticNode const *> children_p;
-	    getStochasticChildren(snode, children_p);
+	    children_p.insert(sub_updaters[p]->stochasticChildren().begin(),
+			      sub_updaters[p]->stochasticChildren().end());
 	    vector<int> indices;
 	    getIndices(children_p, schildren, indices);
 
-	    unsigned int length = snode->length();
+	    unsigned int length = _sub_updaters[p]->length();
 	    for (unsigned int i = 0; i < length; ++i, ++c) {
 		Xp[c] = r;
 		for (unsigned int j = 0; j < indices.size(); ++j, ++r) {
@@ -151,7 +130,7 @@ namespace glm {
 	    }
 
 	    //Save these values for later calculations
-	    _nz_prior += length * length; //Number of non-zeros in prior precision
+	    _nz_prior += length * length; //No. of non-zeros in prior precision
 	    if (length > _length_max) {
 		_length_max = length; //Length of longest sampled node
 	    }
@@ -164,8 +143,8 @@ namespace glm {
 	copy(Xi.begin(), Xi.end(), _X->i);
 
 	// Check for constant linear terms
-	if (checkLinear(updater, true, link)) {
-	    _fixed = true;
+	for (unsigned int i = 0; i < sub_updaters.size(); ++i) {
+	    _fixed[i] = checkLinear(sub_updaters[i], true, link);
 	}
     }
 
@@ -238,7 +217,7 @@ namespace glm {
 
 	if (_init) {
 	    initAuxiliary(rng);
-	    calDesign(_X);
+	    calDesign();
 	    symbolic();
 	    _init = false;
 	}
@@ -277,11 +256,8 @@ namespace glm {
 	}
 	Ap[c] = r;
 
-	if (!_fixed) {
-	    //Fixme: could be more efficient if we don't have to recalculate
-	    //all coefficients
-	    calDesign(_X);
-	}
+	// Recalculate the design matrix, if necessary
+	calDesign();
 
 	// Likelihood contributions
 	//   

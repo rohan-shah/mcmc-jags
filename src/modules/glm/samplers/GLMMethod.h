@@ -28,12 +28,12 @@ namespace glm {
 	cs *_X;
 	css *_symbol;
     private:
-	bool _fixed;
+	std::vector<bool> _fixed;
 	unsigned int _length_max;
 	unsigned _nz_prior;
 	bool _init;
 	void symbolic();
-	void calDesign(cs *X) const;
+	void calDesign() const;
     public:
 	GLMMethod(Updater const *updater, 
 		  std::vector<Updater const *> const &sub_updaters,
