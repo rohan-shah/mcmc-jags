@@ -13,8 +13,9 @@ namespace glm {
     public:
 	bool checkOutcome(StochasticNode const *snode) const;
 	bool checkLink(InverseLinkFunc const *link) const;
-	GLMMethod *newMethod(Updater const *updater, unsigned int chain) 
-	    const;
+	GLMMethod *newMethod(Updater const *updater, 
+			     std::vector<Updater const *> const &sub_updaters,
+			     unsigned int chain) const;
     };
 
 }

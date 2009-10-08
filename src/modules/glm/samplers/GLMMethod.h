@@ -6,6 +6,7 @@ extern "C" {
 }
 
 #include <sampler/SampleMethod.h>
+#include <sampler/Updater.h>
 
 #include <string>
 #include <vector>
@@ -13,7 +14,6 @@ extern "C" {
 class Graph;
 class RNG;
 class StochasticNode;
-class Updater;
 
 namespace glm {
 
@@ -24,6 +24,7 @@ namespace glm {
     protected:
 	Updater const *_updater;
 	unsigned int _chain;
+	std::vector<Updater const *> _sub_updaters;
 	cs *_X;
 	css *_symbol;
     private:
@@ -34,7 +35,9 @@ namespace glm {
 	void symbolic();
 	void calDesign(cs *X) const;
     public:
-	GLMMethod(Updater const *updater, unsigned int chain, bool link);
+	GLMMethod(Updater const *updater, 
+		  std::vector<Updater const *> const &sub_updaters,
+		  unsigned int chain, bool link);
 	virtual ~GLMMethod();
 	void update(RNG *rng);
 	bool isAdaptive() const;

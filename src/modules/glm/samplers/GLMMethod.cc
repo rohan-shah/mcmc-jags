@@ -64,51 +64,59 @@ namespace glm {
 	int *Xi = X->i;
 	int *Xp = X->p;
 	double *Xx = X->x;
-
+	
 	int nrow = schildren.size();
 	int ncol = _updater->length();
 	if (nrow != X->m || ncol != X->n) {
 	    throw logic_error("Dimension mismatch in GLMMethod::calDesign");
 	}
-
+	
 	for (unsigned int r = 0; r < Xp[ncol]; ++r) {
 	    Xx[r] = -getMean(Xi[r]);
 	}
-
+	
 	int c = 0; //column counter
 	double *xnew = new double[_length_max];
-	for (vector<StochasticNode*>::const_iterator p = snodes.begin();
-	     p != snodes.end(); ++p)
-	{
-	    Node *snode = *p;
+	
+	for (unsigned int i = 0; i < snodes.size(); ++i) {
+
+	    Node *snode = snodes[i];
 	    double const *xold = snode->value(_chain);
 	    unsigned int length = snode->length();
-	
+	    
 	    copy(xold, xold + length, xnew);
-	    for (unsigned int i = 0; i < length; ++i, ++c) {
-
-		xnew[i] += 1;
-		snode->setValue(xnew, length, _chain);
-		for (unsigned int j = 0; j < dchildren.size(); ++j) {
-		    dchildren[j]->deterministicSample(_chain);
-		}
+	    for (unsigned int j = 0; j < length; ++j, ++c) {
+		
+		xnew[j] += 1;
+		_sub_updaters[i]->setValue(xnew, length, _chain);
+		/*
+		  snode->setValue(xnew, length, _chain);
+		  for (unsigned int j = 0; j < dchildren.size(); ++j) {
+		  dchildren[j]->deterministicSample(_chain);
+		  }
+		*/
 		for (int r = Xp[c]; r < Xp[c + 1]; ++r) {
 		    Xx[r] += getMean(Xi[r]);
 		}
-
-		xnew[i] -= 1;
+		xnew[j] -= 1;
 	    }
-	    snode->setValue(xnew, length, _chain);
-	    for (unsigned int j = 0; j < dchildren.size(); ++j) {
-		dchildren[j]->deterministicSample(_chain);
-	    }
+	    _sub_updaters[i]->setValue(xnew, length, _chain);
+	    /*
+	      snode->setValue(xnew, length, _chain);
+	      for (unsigned int j = 0; j < dchildren.size(); ++j) {
+	      dchildren[j]->deterministicSample(_chain);
+	      }
+	    */
 	}
+
 	delete [] xnew;
-    
+	
     }
     
-    GLMMethod::GLMMethod(Updater const *updater, unsigned int chain, bool link)
-	: _updater(updater), _chain(chain),
+    GLMMethod::GLMMethod(Updater const *updater, 
+			 vector<Updater const *> const &sub_updaters,
+			 unsigned int chain, bool link)
+	: _updater(updater), _chain(chain), _sub_updaters(sub_updaters),
 	  _X(0), _symbol(0), _fixed(false), _length_max(0), _nz_prior(0), 
 	  _init(true)
     {

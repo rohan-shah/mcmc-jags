@@ -10,6 +10,7 @@
 #include <function/InverseLinkFunc.h>
 
 using std::string;
+using std::vector;
 
 namespace glm {
 
@@ -39,10 +40,12 @@ namespace glm {
 	return link->linkName() == "probit";
     }
 
-    GLMMethod *ProbitFactory::newMethod(Updater const *updater,
-					     unsigned int chain) const
+    GLMMethod *
+    ProbitFactory::newMethod(Updater const *updater,
+			     vector<Updater const *> const &sub_updaters,
+			     unsigned int chain) const
     {
-	return new Probit(updater, chain);
+	return new Probit(updater, sub_updaters, chain);
     }
 
 }

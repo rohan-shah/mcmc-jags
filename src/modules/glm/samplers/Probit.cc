@@ -19,8 +19,10 @@ static unsigned int nchildren(Updater const *updater)
 
 namespace glm {
 
-    Probit::Probit(Updater const *updater, unsigned int chain)
-	: GLMMethod(updater, chain, true), _z(nchildren(updater))
+    Probit::Probit(Updater const *updater,
+		   vector<Updater const *> const &sub_updaters,
+		   unsigned int chain)
+	: GLMMethod(updater, sub_updaters, chain, true), _z(nchildren(updater))
     {
     }
 
@@ -71,8 +73,8 @@ namespace glm {
 	vector<StochasticNode const *> const &schildren = 
 	    _updater->stochasticChildren();
 
-	int nrow = schildren.size();
-	int ncol = _updater->length();
+	unsigned int nrow = schildren.size();
+	unsigned int ncol = _updater->length();
 
 	//Create transpose of design matrix for easier access to rows
 	cs *t_X = cs_transpose(_X, 1);
@@ -89,13 +91,14 @@ namespace glm {
 	    for (unsigned int i = 0; i < ncol; ++i) {
 		xr[i] = 0;
 	    }
-	    for (unsigned int c = Tp[r]; c < Tp[r+1]; ++c) {
+	    for (int c = Tp[r]; c < Tp[r+1]; ++c) {
 		xr[Ti[c]] = Tx[c];
 	    }
 	
 	    //Subtract contribution of row r to b
+	    double mu_r = getMean(r);
 	    for (unsigned int i = 0; i < ncol; ++i) {
-		b[i] -= _z[r] * xr[i];
+		b[i] -= (_z[r] - mu_r) * xr[i];
 	    }
 
 	    //Calculate mean and variance of z[r] conditional
@@ -117,10 +120,10 @@ namespace glm {
 
 	    double yr = schildren[r]->value(_chain)[0];
 	    if (yr == 1) {
-		_z[r] = LNorm(zr_mean, sqrt(zr_var), 0, rng);
+		_z[r] = LNorm(mu_r + zr_mean, sqrt(zr_var), 0, rng);
 	    }
 	    else if (yr == 0) {
-		_z[r] = RNorm(zr_mean, sqrt(zr_var), 0, rng);
+		_z[r] = RNorm(mu_r + zr_mean, sqrt(zr_var), 0, rng);
 	    }
 	    else {
 		throw logic_error("Invalid child value in Probit");
@@ -128,7 +131,7 @@ namespace glm {
 
 	    //Add new contribution of row r back to b
 	    for (unsigned int i = 0; i < ncol; ++i) {
-		b[i] += _z[r] * xr[i];
+		b[i] += (_z[r] - mu_r) * xr[i];
 	    }
 	}
 

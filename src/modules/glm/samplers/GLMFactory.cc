@@ -1,6 +1,7 @@
 #include <config.h>
 
 #include "GLMFactory.h"
+#include "GLMSampler.h"
 
 #include <graph/GraphMarks.h>
 #include <graph/Graph.h>
@@ -8,7 +9,6 @@
 #include <graph/DeterministicNode.h>
 #include <graph/LinkNode.h>
 #include <distribution/Distribution.h>
-#include <sampler/ParallelSampler.h>
 #include <sampler/Linear.h>
 #include <sampler/Updater.h>
 
@@ -224,11 +224,18 @@ namespace glm {
 		unsigned int Nch = nchain(updater);
 		vector<SampleMethod*> methods(Nch, 0);
 		
-		for (unsigned int ch = 0; ch < Nch; ++ch) {
-		    methods[ch] = newMethod(updater, ch);
+		vector<Updater*> sub_updaters(sample_nodes.size());
+		vector<Updater const*> const_sub_updaters(sample_nodes.size());
+		for (unsigned int i = 0; i < sample_nodes.size(); ++i) {
+		    sub_updaters[i] = new Updater(sample_nodes[i], graph);
+		    const_sub_updaters[i] = sub_updaters[i];
 		}
-		return new ParallelSampler(updater, methods);
+		for (unsigned int ch = 0; ch < Nch; ++ch) {
+		    methods[ch] = newMethod(updater, const_sub_updaters, ch);
+		}
+		return new GLMSampler(updater, sub_updaters, methods);
 	    }
+		    
 	}
 	
 	return 0;

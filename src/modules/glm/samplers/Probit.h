@@ -11,7 +11,9 @@ namespace glm {
     class Probit : public GLMMethod {
 	std::vector<double> _z;
     public:
-	Probit(Updater const *updater, unsigned int chain);
+	Probit(Updater const *updater, 
+	       std::vector<Updater const *> const &sub_updaters,
+	       unsigned int chain);
 	double getMean(unsigned int i) const;
 	double getPrecision(unsigned int i) const;
 	double getValue(unsigned int i) const;

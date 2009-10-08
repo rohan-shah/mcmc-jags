@@ -9,8 +9,10 @@ using std::string;
 
 namespace glm {
 
-    ConjugateLM::ConjugateLM(Updater const *updater, unsigned int chain)
-	: GLMMethod(updater, chain, false)
+    ConjugateLM::ConjugateLM(Updater const *updater, 
+			     vector<Updater const *> const &sub_updaters,
+			     unsigned int chain)
+	: GLMMethod(updater, sub_updaters, chain, false)
     {
     }
 

@@ -26,8 +26,10 @@ namespace glm {
 			      Graph const &graph) const;
 	virtual bool checkOutcome(StochasticNode const *snode) const = 0;
 	virtual bool checkLink(InverseLinkFunc const *link) const = 0;
-	virtual GLMMethod *newMethod(Updater const *updater,
-				unsigned int chain) const = 0;
+	virtual GLMMethod *
+	    newMethod(Updater const *updater,
+		      std::vector<Updater const *> const &sub_updaters, 
+		      unsigned int chain) const = 0;
     };
 
 }
