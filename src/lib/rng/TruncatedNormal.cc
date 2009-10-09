@@ -97,7 +97,7 @@ static double inorm_repeat(double left, double right, RNG *rng)
   sampling. Otherwise we do it by repeated sampling from a left
   truncated normal until the right limit is also satisfied.
 */
-static bool inorm_right_tail(double left, double right, RNG *rng)
+static double inorm_right_tail(double left, double right, RNG *rng)
 {
     double alpha = Alpha(left);
     double maxdiff = exp((left*left - alpha*left + 1)/2)/alpha;
