@@ -299,7 +299,7 @@ namespace glm {
 	cs_spfree(A);
 
 	//Modify auxiliary variables. This may also modify the vector b in place.
-	updateAuxiliary(b, N, rng);
+	//updateAuxiliary(b, N, rng);
 
 	// Use the Cholesky decomposition to generate a new sample
 	// with mean mu such that A %*% mu = b and precision A. The
@@ -308,6 +308,7 @@ namespace glm {
 	double *w = new double[nrow];
 	cs_ipvec(_symbol->pinv, b, w, nrow);
 	cs_lsolve(N->L, w);
+	//updateAuxiliary(w, N, rng);
 	for (r = 0; r < nrow; ++r) {
 	    w[r] += rng->normal();
 	}
@@ -331,6 +332,8 @@ namespace glm {
 
 	_updater->setValue(b, nrow, _chain);
 	delete [] b;
+
+	initAuxiliary(rng); //Carlin-Chib
     }
 
     
@@ -343,5 +346,4 @@ namespace glm {
     {
 	return true;
     }
-
 }

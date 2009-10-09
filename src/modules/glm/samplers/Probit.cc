@@ -25,6 +25,9 @@ static double RNorm(double mu, double sigma, double right, RNG *rng) {
     return mu + sigma * rnormal((mu - right)/sigma, rng);
 }
 
+//debuggin
+#include <iostream>
+
 namespace glm {
 
     Probit::Probit(Updater const *updater,
@@ -78,6 +81,8 @@ namespace glm {
     
     void Probit::updateAuxiliary(double *b, csn const *N, RNG *rng)
     {
+	//Holmes-Held algorithm
+
 	vector<StochasticNode const *> const &schildren = 
 	    _updater->stochasticChildren();
 
@@ -85,14 +90,14 @@ namespace glm {
 	unsigned int ncol = _updater->length();
 
 	//Create transpose of design matrix for easier access to rows
+	//Fixme: done in calling function
 	cs *t_X = cs_transpose(_X, 1);
 	int *Tp = t_X->p;
 	int *Ti = t_X->i;
 	double *Tx = t_X->x;
 
 	double *xr = new double[ncol]; // Row r of design matrix
-	double *S = new double[ncol];  // V %*% xr
-	double *w = new double[ncol];  // work space
+	double *ur = new double[ncol];  // Transformed xr
 	for (unsigned int r = 0; r < nrow; ++r) {
 
 	    //Copy row i of design matrix to array xr;
@@ -102,52 +107,51 @@ namespace glm {
 	    for (int c = Tp[r]; c < Tp[r+1]; ++c) {
 		xr[Ti[c]] = Tx[c];
 	    }
-	
-	    //Subtract contribution of row r to b
-	    double mu_r = getMean(r);
-	    for (unsigned int i = 0; i < ncol; ++i) {
-		b[i] -= (_z[r] - mu_r) * xr[i];
-	    }
 
-	    //Calculate mean and variance of z[r] conditional
-	    //on z[s] for s != r
-
-	    cs_ipvec(_symbol->pinv, xr, w, ncol);
-	    cs_lsolve(N->L, w);
-	    cs_ltsolve(N->L, w);
-	    cs_pvec(_symbol->pinv, w, S, ncol);
+	    //Pivot and transform xr to the same space as b.
+	    //q.v. GLMMethod::update
+	    cs_ipvec(_symbol->pinv, xr, ur, ncol);
+	    cs_lsolve(N->L, ur);
 	    
-	    double hr = 0; // Hat[r,r]
-	    double zr_mean = 0;
+	    //Subtract contribution of row r from b
+	    double mu_r = getMean(r);
+	    double delta = _z[r] - mu_r;
 	    for (unsigned int i = 0; i < ncol; ++i) {
-		hr += S[i] * xr[i];
-		zr_mean +=  S[i] * b[i];
+		b[i] -= ur[i] * delta; //fixme: BLAS
 	    }
-	    zr_mean /= (1 - hr);
-	    double zr_var = 1/(1 - hr);
+
+	    //Calculate mean and precision of z[r] conditional
+	    //on z[s] for s != r
+	    double zr_mean = 0;
+	    double zr_prec = 1; // 
+	    for (unsigned int i = 0; i < ncol; ++i) {
+		zr_mean  += ur[i] * b[i]; //fixme: BLAS
+		zr_prec  -= ur[i] * ur[i]; //fixme: BLAS
+	    }
+	    zr_mean /= zr_prec;
 
 	    double yr = schildren[r]->value(_chain)[0];
 	    if (yr == 1) {
-		_z[r] = LNorm(mu_r + zr_mean, sqrt(zr_var), 0, rng);
+		_z[r] = LNorm(mu_r + zr_mean, 1/sqrt(zr_prec), 0, rng);
 	    }
 	    else if (yr == 0) {
-		_z[r] = RNorm(mu_r + zr_mean, sqrt(zr_var), 0, rng);
+		_z[r] = RNorm(mu_r + zr_mean, 1/sqrt(zr_prec), 0, rng);
 	    }
 	    else {
 		throw logic_error("Invalid child value in Probit");
 	    }
 
 	    //Add new contribution of row r back to b
+	    delta = _z[r] - mu_r;
 	    for (unsigned int i = 0; i < ncol; ++i) {
-		b[i] += (_z[r] - mu_r) * xr[i];
+		b[i] += ur[i] * delta; //fixme: BLAS
 	    }
 	}
 
 	//Free workspace
-	delete [] w;
-	delete [] S;
+	delete [] ur;
 	delete [] xr;
 	cs_spfree(t_X);
-
     }
+
 }
