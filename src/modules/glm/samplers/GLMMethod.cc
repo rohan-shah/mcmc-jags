@@ -100,7 +100,6 @@ namespace glm {
 	  _X(0), _symbol(0), _fixed(sub_updaters.size(), false), 
 	  _length_max(0), _nz_prior(0), _init(true)
     {
-	vector<StochasticNode *> const &snodes = updater->nodes();
 	vector<StochasticNode const*> const &schildren = 
 	    updater->stochasticChildren();
 
@@ -298,9 +297,6 @@ namespace glm {
 	}
 	cs_spfree(A);
 
-	//Modify auxiliary variables. This may also modify the vector b in place.
-	//updateAuxiliary(b, N, rng);
-
 	// Use the Cholesky decomposition to generate a new sample
 	// with mean mu such that A %*% mu = b and precision A. The
 	// vector b is overwritten with the result
@@ -308,7 +304,7 @@ namespace glm {
 	double *w = new double[nrow];
 	cs_ipvec(_symbol->pinv, b, w, nrow);
 	cs_lsolve(N->L, w);
-	//updateAuxiliary(w, N, rng);
+	updateAuxiliary(w, N, rng);
 	for (r = 0; r < nrow; ++r) {
 	    w[r] += rng->normal();
 	}
@@ -333,7 +329,7 @@ namespace glm {
 	_updater->setValue(b, nrow, _chain);
 	delete [] b;
 
-	initAuxiliary(rng); //Carlin-Chib
+	//initAuxiliary(rng); //Albert-Chib
     }
 
     
