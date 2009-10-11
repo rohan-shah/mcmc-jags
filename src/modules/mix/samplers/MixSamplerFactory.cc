@@ -12,6 +12,7 @@
 
 using std::set;
 using std::vector;
+using std::string;
 
 static bool isStoch(Node const *node)
 {
@@ -39,6 +40,10 @@ vector<StochasticNode*> stochasticParents(Node const *node,
 }
 
 namespace mix {
+
+    MixSamplerFactory::MixSamplerFactory()
+	: _name("MixSampler")
+    {}
 
     Sampler * MixSamplerFactory::makeSampler(set<StochasticNode*> const &nodes, 
 					     Graph const &graph) const
@@ -73,4 +78,11 @@ namespace mix {
 
 	return 0;
     }
+
+
+    string const &MixSamplerFactory::name() const
+    {
+	return _name;
+    }
+
 }

@@ -10,9 +10,12 @@ namespace mix {
  */
     class MixSamplerFactory : public SamplerFactory
     {
+	std::string _name;
     public:
+	MixSamplerFactory();
 	Sampler * makeSampler(std::set<StochasticNode*> const &nodes, 
 			      Graph const &graph) const;
+	std::string const &name() const;
     };
 
 }
