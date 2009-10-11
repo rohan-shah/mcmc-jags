@@ -1,5 +1,4 @@
 #include <Module.h>
-#include <distribution/DistTab.h>
 
 #include <distributions/DNormMix.h>
 #include <samplers/MixSamplerFactory.h>
