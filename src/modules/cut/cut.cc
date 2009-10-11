@@ -13,7 +13,9 @@ public:
     ~CutModule();
 };
 
-CutModule::CutModule() {
+CutModule::CutModule() 
+    : Module("cut")
+{
 
     //Load distributions
     insert(new DCut);
