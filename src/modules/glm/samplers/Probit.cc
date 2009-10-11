@@ -22,11 +22,8 @@ static double LNorm(double mu, double sigma, double left, RNG *rng) {
 }
 
 static double RNorm(double mu, double sigma, double right, RNG *rng) {
-    return mu + sigma * rnormal((mu - right)/sigma, rng);
+    return mu + sigma * rnormal((right - mu)/sigma, rng);
 }
-
-//debuggin
-#include <iostream>
 
 namespace glm {
 
@@ -76,7 +73,6 @@ namespace glm {
 		throw logic_error("Invalid child value in Probit");
 	    }
 	}
-	
     }
     
     void Probit::updateAuxiliary(double *b, csn const *N, RNG *rng)
