@@ -15,7 +15,9 @@ namespace msm {
 	~MSMModule();
     };
     
-    MSMModule::MSMModule() {
+    MSMModule::MSMModule() 
+	: Module("msm")
+    {
 	
 	insert(new DMState);
 	insert(new Mexp);
