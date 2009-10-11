@@ -14,7 +14,9 @@ namespace dic {
 	~DICModule();
     };
     
-    DICModule::DICModule() {
+    DICModule::DICModule() 
+	: Module("dic")
+    {
 	
 	insert(new DevianceMonitorFactory);
 	insert(new PDMonitorFactory);

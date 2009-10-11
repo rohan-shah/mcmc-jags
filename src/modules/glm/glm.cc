@@ -14,7 +14,9 @@ namespace glm {
 	~GLMModule();
     };
     
-    GLMModule::GLMModule() {
+    GLMModule::GLMModule() 
+	: Module("glm")
+    {
 	
 	insert(new ConjugateLMFactory);
 	insert(new ProbitFactory);
