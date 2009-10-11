@@ -11,12 +11,17 @@
 #include <vector>
 
 using std::vector;
-
+using std::string;
 
 bool 
 DirichletFactory::canSample(StochasticNode * snode, Graph const &graph) const
 {
     return snode->distribution()->name() == "ddirch";
+}
+
+DirichletFactory::DirichletFactory()
+    : _name("Dirichlet")
+{
 }
 
 Sampler *
@@ -30,4 +35,9 @@ DirichletFactory::makeSampler(StochasticNode *snode, Graph const &graph) const
         methods[ch] = new DirchMetropolis(updater, ch);
     }
     return new ParallelSampler(updater, methods);
+}
+
+string const &DirichletFactory::name() const
+{
+    return _name;
 }

@@ -11,7 +11,11 @@
 #include <vector>
 
 using std::vector;
+using std::string;
 
+MNormalFactory::MNormalFactory()
+    : _name("MNormal")
+{}
 
 bool 
 MNormalFactory::canSample(StochasticNode * snode, Graph const &graph) const
@@ -30,4 +34,9 @@ MNormalFactory::makeSampler(StochasticNode *snode, Graph const &graph) const
         methods[ch] = new MNormMetropolis(updater, ch);
     }
     return new ParallelSampler(updater, methods);
+}
+
+string const &MNormalFactory::name() const 
+{
+    return _name;
 }

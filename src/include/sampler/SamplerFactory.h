@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <set>
+#include <string>
 
 class Sampler;
 class StochasticNode;
@@ -23,6 +24,11 @@ public:
      */
     virtual Sampler* makeSampler(std::set<StochasticNode*> const &nodes, 
 				 Graph const &graph) const = 0;
+     /**
+      * Returns the name of the sampler factory
+      */
+    virtual std::string const &name() const = 0;
+
 };
 
 #endif /* SAMPLER_FACTORY_H_ */

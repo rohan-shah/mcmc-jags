@@ -12,6 +12,7 @@
  */
 class ConjugateFactory : public SingletonFactory
 {
+    std::string _name;
     std::map<std::string, bool (*)(StochasticNode *,
 				   Graph const &)> _func_table;
 public:
@@ -27,6 +28,7 @@ public:
      * Creates a ConjugateSampler for a stochastic node. 
      */
     Sampler *makeSampler(StochasticNode *snode, Graph const &graph) const;
+    std::string const &name() const;
 };
 
 #endif /* CONJUGATE_FACTORY_H_ */

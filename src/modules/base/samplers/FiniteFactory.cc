@@ -9,9 +9,14 @@
 #include <vector>
 
 using std::vector;
+using std::string;
 
 namespace base {
 
+    FiniteFactory::FiniteFactory()
+	: _name("Finite")
+    {}
+    
     bool 
     FiniteFactory::canSample(StochasticNode *snode, Graph const &graph) const
     {
@@ -29,5 +34,9 @@ namespace base {
 	}
 	return new ParallelSampler(updater, methods);
     }
-    
+
+    string const &FiniteFactory::name() const
+    {
+	return _name;
+    }
 }

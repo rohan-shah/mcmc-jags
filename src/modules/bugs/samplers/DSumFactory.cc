@@ -16,6 +16,7 @@
 using std::set;
 using std::vector;
 using std::runtime_error;
+using std::string;
 
 static StochasticNode const *getDSumChild(StochasticNode *node)
 {
@@ -35,10 +36,13 @@ static StochasticNode const *getDSumChild(StochasticNode *node)
     return 0;
 }
 
+DSumFactory::DSumFactory()
+    : _name("DSum")
+{}
 
-Sampler * 
-DSumFactory::makeSampler(set<StochasticNode*> const &nodes,
-			 Graph const &graph) const
+
+Sampler * DSumFactory::makeSampler(set<StochasticNode*> const &nodes,
+				   Graph const &graph) const
 {
     //Find DSum node
     StochasticNode const *dsum_node = 0;
@@ -82,4 +86,9 @@ DSumFactory::makeSampler(set<StochasticNode*> const &nodes,
     }
     return new ParallelSampler(updater, methods);
 
+}
+
+string const &DSumFactory::name() const
+{
+    return _name;
 }

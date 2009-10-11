@@ -12,9 +12,12 @@ namespace base {
  */
     class SliceFactory : public SingletonFactory
     {
+	std::string _name;
     public:
+	SliceFactory();
 	bool canSample(StochasticNode *snode, Graph const &graph) const;
 	Sampler *makeSampler(StochasticNode *snode, Graph const &graph) const;
+	std::string const &name() const;
     };
 
 }

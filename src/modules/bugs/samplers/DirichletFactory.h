@@ -10,9 +10,12 @@
  */
 class DirichletFactory : public SingletonFactory
 {
+    std::string _name;
 public:
+    DirichletFactory();
     bool canSample(StochasticNode *snode, Graph const &graph) const;
     Sampler *makeSampler(StochasticNode *snode, Graph const &graph) const;
+    std::string const &name() const;
 };
 
 #endif /* DIRICHLET_FACTORY_H_ */

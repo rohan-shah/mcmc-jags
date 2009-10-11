@@ -23,6 +23,7 @@ using std::map;
 using std::invalid_argument;
 
 ConjugateFactory::ConjugateFactory()
+    : _name("Conjugate")
 {
     _func_table["dnorm"] = ConjugateNormal::canSample;
     _func_table["dgamma"] = ConjugateGamma::canSample;
@@ -87,4 +88,9 @@ Sampler *ConjugateFactory::makeSampler(StochasticNode *snode,
     
     
     return new ConjugateSampler(updater, method);
+}
+
+string const &ConjugateFactory::name() const
+{
+    return _name;
 }

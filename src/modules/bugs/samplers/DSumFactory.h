@@ -8,9 +8,12 @@
  */
 class DSumFactory : public SamplerFactory
 {
- public:
+    std::string _name;
+public:
+    DSumFactory();
     Sampler * makeSampler(std::set<StochasticNode*> const &nodes, 
 			  Graph const &graph) const;
+    std::string const &name() const;
 };
 
 #endif /* DSUM_FACTORY_H_ */
