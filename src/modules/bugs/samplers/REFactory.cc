@@ -16,6 +16,7 @@ using std::set;
 using std::vector;
 using std::runtime_error;
 using std::log;
+using std::string;
 
 /* Smallest number of random effects that will be sampled */
 #define N_MIN 20
@@ -25,6 +26,10 @@ static bool is_stoch(Node const *node)
 {
    return asStochastic(node);
 }
+
+REFactory::REFactory()
+    : _name("RE")
+{}
 
 void REFactory::makeSampler(set<StochasticNode*, less_sampler> &nodes,
 			    Graph const &graph,
@@ -153,4 +158,9 @@ void REFactory::makeSampler(set<StochasticNode*, less_sampler> &nodes,
 	    }
 	}
     }
+}
+
+string const &REFactory::name() const
+{
+    return _name;
 }

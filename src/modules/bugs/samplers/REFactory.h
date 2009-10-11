@@ -15,11 +15,13 @@ class Graph;
  */
 class REFactory : public SamplerFactory
 {
+    std::string _name;
 public:
-    virtual void makeSampler(std::set<StochasticNode*, less_sampler> &nodes, 
-			     Graph const &graph,
-			     std::vector<std::vector<Sampler*> > &samplers)
-	const;
+    REFactory();
+    void makeSampler(std::set<StochasticNode*, less_sampler> &nodes, 
+		     Graph const &graph,
+		     std::vector<std::vector<Sampler*> > &samplers) const;
+    std::string const &name() const;
 };
 
 #endif /* RANDOM_EFFECT_FACTORY_H_ */
