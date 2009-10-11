@@ -102,6 +102,10 @@ struct less_node {
 
 namespace glm {
     
+    GLMFactory::GLMFactory(string const &name)
+	: _name(name)
+    {}
+
     unsigned int 
     GLMFactory::canSample(StochasticNode *snode, Graph const &graph) const
     {
@@ -241,5 +245,9 @@ namespace glm {
 	return 0;
     }
 
+    string const &GLMFactory::name() const
+    {
+	return _name;
+    }
 }
 

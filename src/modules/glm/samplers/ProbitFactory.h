@@ -11,6 +11,7 @@ namespace glm {
     class ProbitFactory : public GLMFactory
     {
     public:
+	ProbitFactory();
 	bool checkOutcome(StochasticNode const *snode) const;
 	bool checkLink(InverseLinkFunc const *link) const;
 	GLMMethod *newMethod(Updater const *updater, 

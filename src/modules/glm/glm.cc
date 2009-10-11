@@ -1,5 +1,4 @@
 #include <Module.h>
-#include <distribution/DistTab.h>
 
 #include "samplers/ConjugateLMFactory.h"
 #include "samplers/ProbitFactory.h"
@@ -17,10 +16,8 @@ namespace glm {
     GLMModule::GLMModule() 
 	: Module("glm")
     {
-	
 	insert(new ConjugateLMFactory);
 	insert(new ProbitFactory);
-	
     }
     
     GLMModule::~GLMModule() {

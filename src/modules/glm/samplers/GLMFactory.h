@@ -19,8 +19,10 @@ namespace glm {
  */
     class GLMFactory : public SamplerFactory
     {
+	std::string _name;
 	unsigned int canSample(StochasticNode *snode, Graph const &graph) const;
     public:
+	GLMFactory(std::string const &name);
 	virtual ~GLMFactory();
 	Sampler * makeSampler(std::set<StochasticNode*> const &nodes, 
 			      Graph const &graph) const;
@@ -30,6 +32,7 @@ namespace glm {
 	    newMethod(Updater const *updater,
 		      std::vector<Updater const *> const &sub_updaters, 
 		      unsigned int chain) const = 0;
+	std::string const &name() const;
     };
 
 }

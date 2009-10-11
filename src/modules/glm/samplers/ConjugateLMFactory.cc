@@ -10,6 +10,11 @@ using std::vector;
 
 namespace glm {
 
+    ConjugateLMFactory::ConjugateLMFactory()
+	: GLMFactory("ConjugateLM")
+    {
+    }
+    
     bool ConjugateLMFactory::checkOutcome(StochasticNode const *snode) const
     {
 	return snode->distribution()->name() == "dnorm";

@@ -14,6 +14,10 @@ using std::vector;
 
 namespace glm {
 
+    ProbitFactory::ProbitFactory()
+	: GLMFactory("Probit")
+    {}
+
     bool ProbitFactory::checkOutcome(StochasticNode const *snode) const
     {
 	string const &dname = snode->distribution()->name();
