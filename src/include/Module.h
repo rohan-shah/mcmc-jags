@@ -2,6 +2,8 @@
 #define _MODULE_H_
 
 #include <vector>
+#include <string>
+#include <list>
 
 class InverseLinkFunc;
 class Function;
@@ -23,6 +25,7 @@ class MonitorFactory;
  * member function.
  */
 class Module {
+    std::string _name;
     std::vector<Function*> _internal_functions;
     std::vector<InverseLinkFunc*> _internal_link_functions;
     std::vector<Function*> _functions;
@@ -31,7 +34,7 @@ class Module {
     std::vector<RNGFactory*> _rng_factories;
     std::vector<MonitorFactory*> _monitor_factories;
 public:
-    Module();
+    Module(std::string const &name);
     virtual ~Module();
     void insert(InverseLinkFunc*);
     void insert(Function*);
@@ -44,6 +47,10 @@ public:
     std::vector<SamplerFactory*> const &samplerFactories() const;
     std::vector<RNGFactory*> const &rngFactories() const;
     std::vector<MonitorFactory*> const &monitorFactories() const;
+    void load();
+    void unload();
+    std::string const &name() const;
+    static std::list<Module *> &modules();
 };
 
 #endif /* _MODULE_H_ */

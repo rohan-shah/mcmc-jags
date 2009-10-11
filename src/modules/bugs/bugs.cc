@@ -76,7 +76,9 @@ public:
     ~BUGSModule();
 };
 
-BUGSModule::BUGSModule() {
+BUGSModule::BUGSModule() 
+    : Module("bugs")
+{
 
     //Load distributions
     insert(new DBern);

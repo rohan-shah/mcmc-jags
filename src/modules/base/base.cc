@@ -35,7 +35,9 @@ namespace base {
 	~BaseModule();
     };
 
-    BaseModule::BaseModule() {
+    BaseModule::BaseModule() 
+	: Module("basemod")
+    {
 
 	insert(new Add);
 	insert(new And);

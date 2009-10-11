@@ -14,6 +14,7 @@ using std::time;
 namespace base {
 
     BaseRNGFactory::BaseRNGFactory()
+	: _index(0)
     {
     }
 
@@ -29,9 +30,9 @@ namespace base {
 	unsigned int seed = static_cast<unsigned int>(time(NULL));
 
 	vector<RNG *> ans;
-	for (unsigned int i = 0; i < n; ++i) {
+	for (unsigned int i = 0; i < n; i++) {
 	    RNG *rng = 0;
-	    switch(i) {
+	    switch(_index) {
 	    case 0:
 		rng =  new WichmannHillRNG(seed, DEFAULT_NORM_KIND);
 		break;
@@ -47,11 +48,22 @@ namespace base {
 	    default:
 		break;
 	    }
-	    if (rng) {
-		// Store generated RNG for memory management
-		_rngvec.push_back(rng);
-		ans.push_back(rng);
-	    }
+
+	    //Move onto the next generator
+	    if (_index == 3) 
+		_index = 0;
+	    else
+		_index++;
+
+	    //Reset the seed
+	    vector<int> state;
+	    rng->getState(state);
+	    seed = static_cast<unsigned int>(state[0]);
+	    
+	    // Store generated RNG for memory management
+	    _rngvec.push_back(rng);
+	    ans.push_back(rng);
+
 	}
 	return ans;
     }

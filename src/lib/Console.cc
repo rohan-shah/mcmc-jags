@@ -12,6 +12,7 @@
 #include <sarray/SArray.h>
 #include <rng/RNG.h>
 #include <util/dim.h>
+#include <Module.h>
 
 #include <map>
 #include <list>
@@ -647,4 +648,40 @@ bool Console::dumpSamplers(vector<vector<string> > &sampler_names)
     CATCH_ERRORS
 
     return true;
+}
+
+void Console::loadModule(string const &name)
+{
+    list<Module*>::const_iterator p;
+    for ( p = Module::modules().begin(); p != Module::modules().end(); ++p)
+    {
+	if ((*p)->name() == name) {
+	    break;
+	}
+    }
+    if (p != Module::modules().end()) {
+	(*p)->load();
+	loadedModules().push_back(*p);
+    }
+}
+
+void Console::unloadModule(string const &name)
+{
+    list<Module*>::iterator p;
+    for (p = loadedModules().begin(); p != loadedModules().end(); ++p)
+    {
+	if ((*p)->name() == name) {
+	    break;
+	}
+    }
+    if (p != loadedModules().end()) {
+	(*p)->unload();
+	loadedModules().erase(p);
+    }
+}
+
+list<Module *> &Console::loadedModules()
+{
+    static list<Module*> _modules;
+    return _modules;
 }

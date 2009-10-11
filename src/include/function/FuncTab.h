@@ -60,7 +60,9 @@ public:
   InverseLinkFunc const *findInverseLink (std::string const &name,
 					  bool link_name) const;
   /**
-   * Removes an inverse link function from the table
+   * Removes an inverse link function from the table. This can only be
+   * called by the module that owns the inverse link function as it
+   * requires a non-constant pointer.
    */
   void erase(InverseLinkFunc *func);
   /**
