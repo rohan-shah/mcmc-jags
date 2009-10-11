@@ -20,6 +20,7 @@
 #include <iterator>
 
 #include <Console.h>
+#include <Module.h>
 #include <compiler/ParseTree.h>
 #include <util/nainf.h>
 #include <cstring>
@@ -59,7 +60,7 @@
     extern int command_buffer_count;
     void setName(ParseTree *p, std::string *name);
     std::map<std::string, SArray> _data_table;
-    std::deque<lt_dlhandle> _modules;
+    std::deque<lt_dlhandle> _dyn_lib;
     bool open_data_buffer(std::string const *name);
     bool open_command_buffer(std::string const *name);
     void return_to_main_buffer();
@@ -80,6 +81,7 @@
     static void setParameters(ParseTree *p, std::vector<ParseTree*> *parameters);
     static void setParameters(ParseTree *p, ParseTree *param1, ParseTree *param2);
     static void loadModule(std::string const &name);
+    static void unloadModule(std::string const &name);
     static void dumpSamplers(std::string const &file);
     static void delete_pvec(std::vector<ParseTree*> *);
     static void print_unused_variables();
@@ -351,7 +353,7 @@ update: UPDATE INT {
 }
 ;
 
-exit: EXIT {return 0;}
+exit: EXIT { return 0; }
 ;
 
 var: NAME {
@@ -1239,7 +1241,7 @@ static void loadModule(std::string const &name)
       std::cout << lt_dlerror() << std::endl;
   }
   else {
-      _modules.push_front(mod);
+      _dyn_lib.push_front(mod);
       std::cout << "Loading module: " << name << std::endl;
       //Warn about newly masked distributions
       if (masked_dist.size() > n_dist) {
@@ -1253,6 +1255,13 @@ static void loadModule(std::string const &name)
 	  std::cerr << std::endl;
       }
   }
+  console->loadModule(name); //fixme: match file name and module name?
+}
+
+static void unloadModule(std::string const &name)
+{
+    std::cout << "Unloading module: " << name << std::endl;
+    console->unloadModule(name);
 }
 
 int main (int argc, char **argv)
@@ -1314,10 +1323,16 @@ int main (int argc, char **argv)
   if (argc==2) {
       std::fclose(cmdfile);
   }
+  
+  //Unload modules
+  while (!Console::loadedModules().empty()) {
+      Module *mod = Console::loadedModules().back();
+      console->unloadModule(mod->name());
+  }
   delete console;
-  //We have to unload modules *AFTER* deleting the console. 
-  for (unsigned int i = 0; i < _modules.size(); ++i) {
-      lt_dlclose(_modules[i]);
+  //Release dynamic libraries. 
+  for (unsigned int i = 0; i < _dyn_lib.size(); ++i) {
+      lt_dlclose(_dyn_lib[i]);
   }
   lt_dlexit();
 }
