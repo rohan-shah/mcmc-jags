@@ -12,7 +12,9 @@ namespace lecuyer {
 	~LecuyerModule();
     };
 
-    LecuyerModule::LecuyerModule() {
+    LecuyerModule::LecuyerModule() 
+	: Module("lecuyer") 
+    {
 	
 	insert(new RngStreamFactory);
 	
