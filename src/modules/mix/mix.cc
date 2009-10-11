@@ -14,7 +14,8 @@ namespace mix {
 	~MIXModule();
     };
 
-    MIXModule::MIXModule() {
+    MIXModule::MIXModule() 
+	: Module("mix") {
 
 	insert(new DNormMix);
 	insert(new MixSamplerFactory);
