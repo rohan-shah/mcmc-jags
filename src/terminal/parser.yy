@@ -131,6 +131,7 @@
 %token <intval> NCHAINS
 %token <intval> CHAIN
 %token <intval> LOAD
+%token <intval> UNLOAD
 %token <intval> SAMPLERS
 
 %token <intval> LIST 
@@ -194,6 +195,7 @@ command: model
 | monitors_to
 | coda
 | load
+| unload
 | exit
 | read_dir
 | get_working_dir
@@ -478,6 +480,9 @@ coda: CODA var {
 ;
 
 load: LOAD file_name { loadModule(*$2); }
+;
+
+unload: UNLOAD NAME { unloadModule(*$2); }
 ;
 
 samplers_to: SAMPLERS TO file_name 

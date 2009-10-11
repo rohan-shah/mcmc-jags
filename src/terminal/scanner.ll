@@ -51,6 +51,7 @@ coda			zzlval.intval=CODA; return CODA;
 stem			zzlval.intval=STEM; return STEM;
 
 load                    zzlval.intval=LOAD; return LOAD;
+unload                  zzlval.intval=UNLOAD; return UNLOAD;
 exit			zzlval.intval=EXIT; return EXIT;
 
 dir                     zzlval.intval=DIRECTORY; return DIRECTORY;
