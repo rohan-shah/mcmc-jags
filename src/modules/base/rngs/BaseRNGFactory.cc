@@ -5,6 +5,7 @@
 #include "MersenneTwisterRNG.h"
 
 #include <ctime>
+#include <climits>
 
 using std::vector;
 using std::time;
@@ -56,9 +57,7 @@ namespace base {
 		_index++;
 
 	    //Reset the seed
-	    vector<int> state;
-	    rng->getState(state);
-	    seed = static_cast<unsigned int>(state[0]);
+	    seed = static_cast<unsigned int>(rng->uniform() * UINT_MAX);
 	    
 	    // Store generated RNG for memory management
 	    _rngvec.push_back(rng);
