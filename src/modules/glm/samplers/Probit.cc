@@ -75,9 +75,18 @@ namespace glm {
 	}
     }
     
-    void Probit::updateAuxiliary(double *b, csn const *N, RNG *rng)
+    void Probit::updateAuxiliary(double *w, csn const *N, RNG *rng)
     {
 	//Holmes-Held algorithm
+	
+	/* 
+	   In the parent GLMMethod class, the posterior precision is
+	   represented by the matrix "A"; the posterior mean "mu"
+	   solves A %*% mu = b.
+	   
+	   In this call, "w" solves A %*% w = P %*% b and "N" holds
+	   the Cholesky decomposition of P %*% A %*% t(P). 
+	*/
 
 	vector<StochasticNode const *> const &schildren = 
 	    _updater->stochasticChildren();
@@ -85,44 +94,30 @@ namespace glm {
 	unsigned int nrow = schildren.size();
 	unsigned int ncol = _updater->length();
 
-	//Create transpose of design matrix for easier access to rows
-	//Fixme: done in calling function
+	//Transpose and permute the design matrix
 	cs *t_X = cs_transpose(_X, 1);
-	int *Tp = t_X->p;
-	int *Ti = t_X->i;
-	double *Tx = t_X->x;
+	cs *Pt_X = cs_permute(t_X, _symbol->pinv, 0, 1);
+	cs_spfree(t_X);
 
-	double *xr = new double[ncol]; // Row r of design matrix
-	double *ur = new double[ncol];  // Transformed xr
+	double *ur = new double[ncol];
+	int *xi = new int[2*ncol]; //Stack
 	for (unsigned int r = 0; r < nrow; ++r) {
-
-	    //Copy row i of design matrix to array xr;
-	    for (unsigned int i = 0; i < ncol; ++i) {
-		xr[i] = 0;
-	    }
-	    for (int c = Tp[r]; c < Tp[r+1]; ++c) {
-		xr[Ti[c]] = Tx[c];
-	    }
-
-	    //Pivot and transform xr to the same space as b.
-	    //q.v. GLMMethod::update
-	    cs_ipvec(_symbol->pinv, xr, ur, ncol);
-	    cs_lsolve(N->L, ur);
 	    
+	    int top = cs_spsolve(N->L, Pt_X, r, xi, ur, 0, 1);
 	    //Subtract contribution of row r from b
 	    double mu_r = getMean(r);
 	    double delta = _z[r] - mu_r;
-	    for (unsigned int i = 0; i < ncol; ++i) {
-		b[i] -= ur[i] * delta; //fixme: BLAS
+	    for (unsigned int j = top; j < ncol; ++j) {
+		w[xi[j]] -= ur[xi[j]] * delta;
 	    }
-
+	    
 	    //Calculate mean and precision of z[r] conditional
 	    //on z[s] for s != r
 	    double zr_mean = 0;
 	    double zr_prec = 1; // 
-	    for (unsigned int i = 0; i < ncol; ++i) {
-		zr_mean  += ur[i] * b[i]; //fixme: BLAS
-		zr_prec  -= ur[i] * ur[i]; //fixme: BLAS
+	    for (unsigned int j = top; j < ncol; ++j) {
+		zr_mean  += ur[xi[j]] * w[xi[j]];
+		zr_prec  -= ur[xi[j]] * ur[xi[j]];
 	    }
 	    zr_mean /= zr_prec;
 
@@ -139,15 +134,16 @@ namespace glm {
 
 	    //Add new contribution of row r back to b
 	    delta = _z[r] - mu_r;
-	    for (unsigned int i = 0; i < ncol; ++i) {
-		b[i] += ur[i] * delta; //fixme: BLAS
+	    for (unsigned int j = top; j < ncol; ++j) {
+		w[xi[j]] += ur[xi[j]] * delta; 
 	    }
 	}
 
 	//Free workspace
 	delete [] ur;
-	delete [] xr;
-	cs_spfree(t_X);
+	//delete [] xr;
+	delete [] xi;
+	cs_spfree(Pt_X);
     }
 
 }
