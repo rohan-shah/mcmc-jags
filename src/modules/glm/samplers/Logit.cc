@@ -51,11 +51,8 @@ static bool l_intvl(double u, double lambda)
 	if (h + log(z) > logu)
 	    return true;
 	j++;
-	/*
 	int j2 = (j+1)*(j+1);
 	z += j2*pow(x,j2-1);
-	*/
-	z += k*pow(x, j*j-1);
 	if (h + log(z) < logu)
 	    return false;
     }
