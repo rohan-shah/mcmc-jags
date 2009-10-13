@@ -650,7 +650,7 @@ bool Console::dumpSamplers(vector<vector<string> > &sampler_names)
     return true;
 }
 
-void Console::loadModule(string const &name)
+bool Console::loadModule(string const &name)
 {
     list<Module*>::const_iterator p;
     for ( p = Module::modules().begin(); p != Module::modules().end(); ++p)
@@ -662,10 +662,14 @@ void Console::loadModule(string const &name)
     if (p != Module::modules().end()) {
 	(*p)->load();
 	loadedModules().push_back(*p);
+	return true;
+    }
+    else {
+	return false;
     }
 }
 
-void Console::unloadModule(string const &name)
+bool Console::unloadModule(string const &name)
 {
     list<Module*>::iterator p;
     for (p = loadedModules().begin(); p != loadedModules().end(); ++p)
@@ -677,6 +681,10 @@ void Console::unloadModule(string const &name)
     if (p != loadedModules().end()) {
 	(*p)->unload();
 	loadedModules().erase(p);
+	return true;
+    }
+    else {
+	return false;
     }
 }
 

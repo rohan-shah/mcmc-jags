@@ -1246,8 +1246,10 @@ static void loadModule(std::string const &name)
       std::cout << lt_dlerror() << std::endl;
   }
   else {
-      _dyn_lib.push_front(mod);
       std::cout << "Loading module: " << name << std::endl;
+      _dyn_lib.push_front(mod);
+      Console::loadModule(name);
+/*
       //Warn about newly masked distributions
       if (masked_dist.size() > n_dist) {
 	  std::cerr << "Warning: the following distributions were masked "
@@ -1259,14 +1261,16 @@ static void loadModule(std::string const &name)
 	  }
 	  std::cerr << std::endl;
       }
+*/
   }
-  console->loadModule(name); //fixme: match file name and module name?
+
+
 }
 
 static void unloadModule(std::string const &name)
 {
     std::cout << "Unloading module: " << name << std::endl;
-    console->unloadModule(name);
+    Console::unloadModule(name);
 }
 
 int main (int argc, char **argv)
