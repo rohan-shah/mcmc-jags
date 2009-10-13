@@ -2,6 +2,7 @@
 
 #include "samplers/ConjugateLMFactory.h"
 #include "samplers/ProbitFactory.h"
+#include "samplers/LogitFactory.h"
 
 using std::vector;
 
@@ -18,6 +19,7 @@ namespace glm {
     {
 	insert(new ConjugateLMFactory);
 	insert(new ProbitFactory);
+        insert(new LogitFactory);
     }
     
     GLMModule::~GLMModule() {
