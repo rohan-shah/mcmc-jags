@@ -222,11 +222,11 @@ public:
   /**
    * Load a module by name
    */
-  void loadModule(std::string const &name);
+  static bool loadModule(std::string const &name);
   /**
    * Unload a module by name
    */ 
-  void unloadModule(std::string const &name);
+  static bool unloadModule(std::string const &name);
 };
 
 #endif /* CONSOLE_H_ */
