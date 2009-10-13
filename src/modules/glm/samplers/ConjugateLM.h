@@ -18,6 +18,7 @@ namespace glm {
 	double getValue(unsigned int i) const;
 	void initAuxiliary(RNG *rng);
 	void updateAuxiliary(double *b, csn const *N, RNG *rng);
+	void updatePrecision(RNG *rng);
 	std::string name() const;
     };
     

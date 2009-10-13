@@ -329,7 +329,6 @@ namespace glm {
 	_updater->setValue(b, nrow, _chain);
 	delete [] b;
 
-	//initAuxiliary(rng); //Albert-Chib
     }
 
     

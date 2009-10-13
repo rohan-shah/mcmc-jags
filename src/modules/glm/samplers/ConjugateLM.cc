@@ -46,4 +46,9 @@ namespace glm {
     {
 	return; //Nothing to do
     }
+
+    void ConjugateLM::updatePrecision(RNG *rng)
+    {
+	return; //Nothing to do
+    }
 }
