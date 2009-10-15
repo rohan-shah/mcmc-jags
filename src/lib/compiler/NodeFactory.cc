@@ -43,14 +43,17 @@ bool lt(Node const *node1, Node const *node2)
 	return false; 
     }
 
-    if (node1->isObserved() && !node2->isObserved()) {
+    bool ob1 = node1->isObserved();
+    bool ob2 = node2->isObserved();
+
+    if (ob1 && !ob2) {
 	//Observed nodes come before unobserved nodes
 	return true;
     }
-    else if (!node1->isObserved() && node2->isObserved()) {
+    else if (!ob1 && ob2) {
 	return false;
     }
-    else if (node1->isObserved() && node2->isObserved()) {
+    else if (ob1 && ob2) {
 	//Observed nodes are sorted by dimension, then value
 	if (node1->dim() < node2->dim()) {
 	    return true;
