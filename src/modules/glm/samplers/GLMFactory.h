@@ -20,7 +20,8 @@ namespace glm {
     class GLMFactory : public SamplerFactory
     {
 	std::string _name;
-	unsigned int canSample(StochasticNode *snode, Graph const &graph) const;
+	Updater * canSample(StochasticNode *snode, Graph const &graph) const;
+	bool checkDescendants(Updater const *updater) const;
     public:
 	GLMFactory(std::string const &name);
 	virtual ~GLMFactory();

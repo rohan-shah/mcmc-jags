@@ -30,22 +30,25 @@ using std::string;
   together they may not form a valid linear model. We therefore test
   the validity of the joint linear model before aggregating.
   
-  Modifies the arguments in place and returns true if the status of
-  the candidate node can be resolved.
+  returns 2 if the candidate can be aggregated with the sample nodes
+  returns 1 if the candidate cannot be aggregated because there is
+            overlap but the joint model is non-linear
+  returns 0 if there is no overlap
+
+  If return value is 2, the arguments sample_nodes and stochastic_children
+  are augmented.
 */
-static bool aggregateLinear(StochasticNode *candidate_node,
+static bool aggregateLinear(Updater const *candidate,
 			    vector<StochasticNode*> &sample_nodes,
 			    set<StochasticNode const *> &stochastic_children,
 			    Graph const &graph)
 {
 
     // Check that there is some overlap in stochastic children between
-    // candidate node and current set.  If no, then we have to defer
-    // judgement.
+    // candidate node and current set.  
 
-    Updater updater(candidate_node, graph);
     vector<StochasticNode const*> const &candidate_children = 
-	updater.stochasticChildren();
+	candidate->stochasticChildren();
 
     bool overlap = false;
     for (unsigned int i = 0; i < candidate_children.size(); ++i) {
@@ -54,51 +57,28 @@ static bool aggregateLinear(StochasticNode *candidate_node,
 	    break;
 	}
     }
-    if (!overlap) {
-	return false;
-    }
-
-    // Check linearity of joint model
     
-    sample_nodes.push_back(candidate_node);
-    Updater updater2(sample_nodes, graph);
-    if (!checkLinear(&updater2, false, true)) {
-	sample_nodes.pop_back();
-	return true;
+    if (overlap) {
+	sample_nodes.push_back(candidate->nodes()[0]); 
+	stochastic_children.insert(candidate_children.begin(), 
+				   candidate_children.end());
     }
-
-    // Add stochastic children of candidate node to set
-    stochastic_children.insert(candidate_children.begin(), candidate_children.end());
     
-    return true;
+    return overlap;
 }
 
-//Utility function
-static set<StochasticNode const *>
-getStochasticChildren(StochasticNode *snode, Graph const &graph)
-{
-    Updater updater(snode, graph);
-    set<StochasticNode const *> ans;
-    ans.insert(updater.stochasticChildren().begin(),
-	       updater.stochasticChildren().end());
-    return ans;
-}
-
-struct less_node {
+struct less_updater {
     /* 
-       Comparison operator for candidate nodes which sorts them in
-       reverse order according to the supplied map.
+       Comparison operator for updaters which sorts them in
+       reverse order of the number of stochastic children
     */
-    map<Node const *, unsigned int > const & _map;
 
-    less_node(map<Node const *, unsigned int > const &map)
-	: _map(map) {};
-
-    bool operator()(Node const *x, Node const *y) const {
-	return _map.find(x)->second > _map.find(y)->second;
+    bool operator()(Updater const *x, Updater const *y) const {
+	return (x->stochasticChildren().size() > 
+		y->stochasticChildren().size());
+	
     };
 };
-
 
 namespace glm {
     
@@ -106,14 +86,59 @@ namespace glm {
 	: _name(name)
     {}
 
-    unsigned int 
+    bool GLMFactory::checkDescendants(Updater const *updater) const
+    {
+	// Create a set of nodes containing snode and its
+	// deterministic descendants
+	set<Node const*> paramset;
+	paramset.insert(updater->nodes().begin(),
+			updater->nodes().end());
+	paramset.insert(updater->deterministicChildren().begin(), 
+			updater->deterministicChildren().end());
+
+	// Check stochastic children
+	vector<StochasticNode const*> const &stoch_nodes = 
+	    updater->stochasticChildren();
+	bool have_link = false;
+	for (unsigned int i = 0; i < stoch_nodes.size(); ++i) {
+	    if (isBounded(stoch_nodes[i])) {
+		return false; //Truncated outcome variable
+	    }
+	    if (!checkOutcome(stoch_nodes[i])) {
+		return false; //Invalid outcome distribution
+	    }
+	    vector<Node const *> const &param = stoch_nodes[i]->parents();
+	    //Check for link functions
+	    LinkNode const *lnode = dynamic_cast<LinkNode const*>(param[0]);
+	    if (lnode) {
+		have_link = true;
+		if (!checkLink(lnode->link()))
+		    return false;
+	    }
+	    //Check that other parameters do not depend on snode	    
+	    for (unsigned int j = 1; j < param.size(); ++j) {
+		if (paramset.count(param[j])) {
+		    return false;
+		}
+	    }
+	}
+
+	// Check linearity of deterministic descendants
+	if (!checkLinear(updater, false, have_link))
+	    return false;
+
+	return true;
+    }
+
+
+    Updater * 
     GLMFactory::canSample(StochasticNode *snode, Graph const &graph) const
     {
 	/*
 	  Check whether whether an individual node can be sampled 
 
-	  Returns the number of stochastic children if successful,
-	  otherwise zero.
+	  Returns a newly allocated Updater if successful, otherwise
+	  zero.
 	*/
 
 	string dname = snode->distribution()->name();
@@ -123,50 +148,14 @@ namespace glm {
 	if (isBounded(snode))
 	    return 0; //Cannot have bounded prior
 
-	Updater updater(snode, graph);
-	vector<StochasticNode const*> const &stoch_nodes = 
-	    updater.stochasticChildren();
-	vector<DeterministicNode *> const &dtrm_nodes =
-	    updater.deterministicChildren();
-
-	/* 
-	   Create a set of nodes containing snode and its descendants
-	   for the checks below.
-	*/
-	set<Node const*> paramset;
-	paramset.insert(snode);
-	paramset.insert(dtrm_nodes.begin(), dtrm_nodes.end());
-
-	// Check stochastic children
-	bool have_link = false;
-	for (unsigned int i = 0; i < stoch_nodes.size(); ++i) {
-	    if (isBounded(stoch_nodes[i])) {
-		return 0; //Truncated outcome variable
-	    }
-	    if (!checkOutcome(stoch_nodes[i])) {
-		return 0; //Invalid outcome distribution
-	    }
-	    vector<Node const *> const &param = stoch_nodes[i]->parents();
-	    //Check for link functions
-	    LinkNode const *lnode = dynamic_cast<LinkNode const*>(param[0]);
-	    if (lnode) {
-		have_link = true;
-		if (!checkLink(lnode->link()))
-		    return 0;
-	    }
-	    //Check that other parameters do not depend on snode	    
-	    for (unsigned int j = 1; j < param.size(); ++j) {
-		if (paramset.count(param[j])) {
-		    return 0;
-		}
-	    }
-	}
-
-	// Check linearity of deterministic descendants
-	if (!checkLinear(&updater, false, have_link))
+	Updater *updater = new Updater(snode, graph);
+	if (!checkDescendants(updater)) {
+	    delete updater;
 	    return 0;
-
-	return stoch_nodes.size();
+	}
+	else {
+	    return updater;
+	}
     }
 
     GLMFactory::~GLMFactory()
@@ -180,69 +169,93 @@ namespace glm {
 	   Find candidate nodes that could be in a linear model.
 	   Keep track of the number of stochastic children
 	*/
-	vector<StochasticNode*> candidate_nodes;
-	map<Node const*, unsigned int> candidate_map;
+	vector<Updater*> candidates;
 	for (set<StochasticNode*>::const_iterator p = nodes.begin();
 	     p != nodes.end(); ++p)
 	{
-	    unsigned int size = canSample(*p, graph);
-	    if (size > 0) {
-		candidate_nodes.push_back(*p);
-                candidate_map[*p] = size;
+	    Updater *up = canSample(*p, graph);
+	    if (up) {
+		candidates.push_back(up);
 	    }
 	}
-	if (candidate_nodes.empty())
+	if (candidates.empty())
 	    return 0;
 
 	//Sort candidates in order of decreasing number of stochastic children
-	stable_sort(candidate_nodes.begin(), candidate_nodes.end(),
-		    less_node(candidate_map));
+	stable_sort(candidates.begin(), candidates.end(), less_updater());
 
-	for (unsigned int i = 0; i < candidate_nodes.size(); ++i) {
+	//Now try to aggregate nodes into a joint linear model
+	unsigned int Nc = candidates.size();
+	vector<bool> keep(Nc, false);
+	Updater *updater = 0;
+	for (unsigned int i = 0; i < Nc; ++i) {
 	    
-	    vector<StochasticNode*> sample_nodes(1, candidate_nodes[i]);
-	    set<StochasticNode const *> stochastic_children
-		= getStochasticChildren(candidate_nodes[i], graph);
+	    keep[i] = true;
+
+	    vector<StochasticNode*> sample_nodes(1, candidates[i]->nodes()[0]);
+	    set<StochasticNode const *> stoch_children;
+	    stoch_children.insert(candidates[i]->stochasticChildren().begin(),
+				  candidates[i]->stochasticChildren().end());
 
 	    //Find a joint linear model.
-	    unsigned int nchildren;
-	    vector<bool> resolved(candidate_nodes.size(), false);
+	    bool loop = false;
 	    do {
-		nchildren = stochastic_children.size();
+		loop = false;
+		for (unsigned int j = i+1; j < candidates.size(); ++j) {
 
-		for (unsigned int j = i+1; j < candidate_nodes.size(); ++j) {
-
-		    if (!resolved[j]) {
-			resolved[j] = aggregateLinear(candidate_nodes[j], 
-						      sample_nodes, 
-						      stochastic_children, 
-						      graph);
+		    if (!keep[j]) {
+			keep[j] = aggregateLinear(candidates[j], 
+						  sample_nodes, 
+						  stoch_children, 
+						  graph);
+			if (keep[j])
+			    loop = true;
 		    }
 		}
-	    } while (nchildren < stochastic_children.size());
+	    } while (loop);
 
 	    if (sample_nodes.size() > 1) {
-		//We must have at least two nodes to sample
-		
-		Updater *updater = new Updater(sample_nodes, graph);
-		unsigned int Nch = nchain(updater);
-		vector<SampleMethod*> methods(Nch, 0);
-		
-		vector<Updater*> sub_updaters(sample_nodes.size());
-		vector<Updater const*> const_sub_updaters(sample_nodes.size());
-		for (unsigned int i = 0; i < sample_nodes.size(); ++i) {
-		    sub_updaters[i] = new Updater(sample_nodes[i], graph);
-		    const_sub_updaters[i] = sub_updaters[i];
+		updater = new Updater(sample_nodes, graph);
+		if (checkLinear(updater, false, true)) {
+		    break;
 		}
-		for (unsigned int ch = 0; ch < Nch; ++ch) {
-		    methods[ch] = newMethod(updater, const_sub_updaters, ch);
+		else {
+		    delete updater; updater = 0;
 		}
-		return new GLMSampler(updater, sub_updaters, methods);
 	    }
-		    
+	    
+	    for (unsigned int j = i; j < candidates.size(); ++j) {
+		keep[j] = false;
+	    }
 	}
-	
-	return 0;
+
+	vector<Updater*> sub_updaters;
+	for (unsigned int i = 0; i < Nc; ++i) {
+	    if (keep[i]) {
+		sub_updaters.push_back(candidates[i]);
+	    }
+	    else {
+		delete candidates[i];
+	    }
+	}
+
+	if (!sub_updaters.empty()) {
+		
+	    unsigned int Nch = nchain(updater);
+	    vector<SampleMethod*> methods(Nch, 0);
+		
+	    vector<Updater const*> const_sub_updaters(sub_updaters.size());
+	    for (unsigned int i = 0; i < sub_updaters.size(); ++i) {
+		const_sub_updaters[i] = sub_updaters[i];
+	    }
+	    for (unsigned int ch = 0; ch < Nch; ++ch) {
+		methods[ch] = newMethod(updater, const_sub_updaters, ch);
+	    }
+	    return new GLMSampler(updater, sub_updaters, methods);
+	}
+	else {
+	    return 0;
+	}
     }
 
     string const &GLMFactory::name() const
