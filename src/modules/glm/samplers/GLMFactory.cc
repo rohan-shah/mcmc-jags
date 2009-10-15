@@ -187,10 +187,12 @@ namespace glm {
 	//Now try to aggregate nodes into a joint linear model
 	unsigned int Nc = candidates.size();
 	vector<bool> keep(Nc, false);
+	vector<bool> resolved(Nc, false);
 	Updater *updater = 0;
 	for (unsigned int i = 0; i < Nc; ++i) {
 	    
 	    keep[i] = true;
+	    resolved[i] = true;
 
 	    vector<StochasticNode*> sample_nodes(1, candidates[i]->nodes()[0]);
 	    set<StochasticNode const *> stoch_children;
@@ -203,13 +205,15 @@ namespace glm {
 		loop = false;
 		for (unsigned int j = i+1; j < candidates.size(); ++j) {
 
-		    if (!keep[j]) {
+		    if (!resolved[j]) {
 			keep[j] = aggregateLinear(candidates[j], 
 						  sample_nodes, 
 						  stoch_children, 
 						  graph);
-			if (keep[j])
+			if (keep[j]) {
 			    loop = true;
+			    resolved[j] = true;
+			}
 		    }
 		}
 	    } while (loop);
