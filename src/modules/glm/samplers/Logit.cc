@@ -67,7 +67,7 @@ static double sample_lambda(double delta, RNG *rng)
 	double u = rng->uniform();
 	double lambda = (u <= 1/(1+y)) ? delta/y : delta*y;
 	u = rng->uniform();
-	bool ok = (lambda > 4.0/3.0) ? r_intvl(u, lambda) : l_intvl(u, lambda);
+	bool ok = (lambda > 2.25) ? r_intvl(u, lambda) : l_intvl(u, lambda);
 	if (ok)
 	    return lambda;
     }
