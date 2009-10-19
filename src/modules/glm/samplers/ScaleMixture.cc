@@ -75,8 +75,6 @@ namespace glm {
 	   the Cholesky decomposition of P %*% A %*% t(P). 
 	*/
 
-	updatePrecision(rng);
-
 	vector<StochasticNode const *> const &schildren = 
 	    _updater->stochasticChildren();
 
@@ -114,7 +112,6 @@ namespace glm {
 	    zr_mean /= (1 - Hr);
 	    double zr_prec = (1 - Hr) * tau_r;
 
-
 	    double yr = schildren[r]->value(_chain)[0];
 	    if (yr == 1) {
 		_z[r] = LNorm(mu_r + zr_mean, 1/sqrt(zr_prec), 0, rng);
@@ -138,6 +135,8 @@ namespace glm {
 	//delete [] xr;
 	delete [] xi;
 	cs_spfree(Pt_X);
+
+	updatePrecision(rng);
     }
 
 }
