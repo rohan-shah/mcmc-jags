@@ -39,7 +39,6 @@ using std::string;
   are augmented.
 */
 static bool aggregateLinear(Updater const *candidate,
-			    vector<StochasticNode*> &sample_nodes,
 			    set<StochasticNode const *> &stochastic_children,
 			    Graph const &graph)
 {
@@ -53,15 +52,10 @@ static bool aggregateLinear(Updater const *candidate,
     bool overlap = false;
     for (unsigned int i = 0; i < candidate_children.size(); ++i) {
 	if (stochastic_children.count(candidate_children[i]) > 0) {
-	    overlap = true;
-	    break;
+	    stochastic_children.insert(candidate_children.begin(), 
+				       candidate_children.end());
+	    return true;
 	}
-    }
-    
-    if (overlap) {
-	sample_nodes.push_back(candidate->nodes()[0]); 
-	stochastic_children.insert(candidate_children.begin(), 
-				   candidate_children.end());
     }
     
     return overlap;
@@ -194,7 +188,6 @@ namespace glm {
 	    keep[i] = true;
 	    resolved[i] = true;
 
-	    vector<StochasticNode*> sample_nodes(1, candidates[i]->nodes()[0]);
 	    set<StochasticNode const *> stoch_children;
 	    stoch_children.insert(candidates[i]->stochasticChildren().begin(),
 				  candidates[i]->stochasticChildren().end());
@@ -207,7 +200,6 @@ namespace glm {
 
 		    if (!resolved[j]) {
 			keep[j] = aggregateLinear(candidates[j], 
-						  sample_nodes, 
 						  stoch_children, 
 						  graph);
 			if (keep[j]) {
@@ -218,6 +210,12 @@ namespace glm {
 		}
 	    } while (loop);
 
+	    vector<StochasticNode*> sample_nodes;	    
+	    for (unsigned int i = 0; i < candidates.size(); ++i) {
+		if (keep[i]) {
+		    sample_nodes.push_back(candidates[i]->nodes()[0]);
+		}
+	    }
 	    if (sample_nodes.size() > 1) {
 		updater = new Updater(sample_nodes, graph);
 		if (checkLinear(updater, false, true)) {
