@@ -33,6 +33,15 @@ public:
      */
     bool checkParentValues(unsigned int chain) const;
     /**
+     * Returns the linear predictor
+     */
+    double eta(unsigned int chain) const;
+    /**
+     * Returns the gradient of the inverse link function
+     * @see InverseLinkFunc##grad
+     */
+    double grad(unsigned int chain) const;
+    /**
      * Link nodes are not closed
      */
     bool isClosed(std::set<Node const *> const &ancestors, 

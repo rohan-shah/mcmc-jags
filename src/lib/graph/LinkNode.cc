@@ -69,3 +69,13 @@ bool LinkNode::isDiscreteValued() const
 {
     return false;
 }
+
+double LinkNode::eta(unsigned int chain) const
+{
+    return _parameters[chain];
+}
+
+double LinkNode::grad(unsigned int chain) const
+{
+    _func->grad(_parameters[chain]);
+}
