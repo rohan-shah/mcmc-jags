@@ -82,7 +82,7 @@ namespace glm {
 	}
     }
  
-    GLMFamily getFamily(StochasticNode const *snode)
+    GLMFamily IWLS::getFamily(StochasticNode const *snode)
     {
 	string const &name = snode->distribution()->name();
 	if (name == "dbern") {
