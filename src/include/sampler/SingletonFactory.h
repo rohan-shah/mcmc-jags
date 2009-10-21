@@ -22,7 +22,7 @@ public:
 	const = 0;
     /**
      * Returns a dynamically allocated Sampler for a given node. This
-     * function is called by SingletonFactory#makeSampler.
+     * function is called by SingletonFactory#makeSamplers.
      */
     virtual Sampler *makeSampler(StochasticNode *node,
 				 Graph const &graph) const = 0;
@@ -30,8 +30,8 @@ public:
      * This traverses the graph, creating a Sampler, when possible,
      * for each individual StochasticNode.
      */
-    Sampler * makeSampler(std::set<StochasticNode*> const &nodes, 
-			  Graph const &graph) const;
+    std::vector<Sampler*> makeSamplers(std::set<StochasticNode*> const &nodes, 
+				       Graph const &graph) const;
 };
 
 #endif /* SINGLETON_FACTORY_H */
