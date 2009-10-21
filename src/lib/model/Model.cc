@@ -268,14 +268,16 @@ void Model::chooseSamplers()
     for (list<SamplerFactory const *>::const_iterator p = sfactories.begin();
 	 p != sfactories.end(); ++p)
     {
-	Sampler *sampler = (*p)->makeSampler(sset, sample_graph);
-	while (sampler) {
-	    vector<StochasticNode*> const &nodes = sampler->nodes();
-	    for (unsigned int i = 0; i < nodes.size(); ++i) {
-		sset.erase(nodes[i]);
+	vector<Sampler*> samplers = (*p)->makeSamplers(sset, sample_graph);
+	while (!samplers.empty()) {
+	    for (unsigned int i = 0; i < samplers.size(); ++i) {
+		vector<StochasticNode*> const &nodes = samplers[i]->nodes();
+		for (unsigned int j = 0; j < nodes.size(); ++j) {
+		    sset.erase(nodes[j]);
+		}
+		_samplers.push_back(samplers[i]);
 	    }
-	    _samplers.push_back(sampler);
-	    sampler = (*p)->makeSampler(sset, sample_graph);
+	    samplers = (*p)->makeSamplers(sset, sample_graph);
 	}
     }
   
