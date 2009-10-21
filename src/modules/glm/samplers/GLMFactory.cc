@@ -264,5 +264,17 @@ namespace glm {
     {
 	return _name;
     }
+
+    vector<Sampler*>  
+    GLMFactory::makeSamplers(set<StochasticNode*> const &nodes, 
+			     Graph const &graph) const
+    {
+	Sampler *s = makeSampler(nodes, graph);
+	if (s) 
+	    return vector<Sampler*>(1, s);
+	else 
+	    return vector<Sampler*>();
+    }
+
 }
 

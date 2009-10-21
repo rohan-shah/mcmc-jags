@@ -92,3 +92,13 @@ string const &DSumFactory::name() const
 {
     return _name;
 }
+
+vector<Sampler*>  DSumFactory::makeSamplers(set<StochasticNode*> const &nodes, 
+					    Graph const &graph) const
+{
+    Sampler *s = makeSampler(nodes, graph);
+    if (s)
+	return vector<Sampler*>(1, s);
+    else 
+	return vector<Sampler*>();
+}

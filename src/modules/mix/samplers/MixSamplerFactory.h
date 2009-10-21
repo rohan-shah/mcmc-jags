@@ -15,6 +15,9 @@ namespace mix {
 	MixSamplerFactory();
 	Sampler * makeSampler(std::set<StochasticNode*> const &nodes, 
 			      Graph const &graph) const;
+	std::vector<Sampler*>  
+	    makeSamplers(std::set<StochasticNode*> const &nodes, 
+			 Graph const &graph) const;
 	std::string const &name() const;
     };
 
