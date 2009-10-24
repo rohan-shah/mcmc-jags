@@ -14,8 +14,8 @@ namespace glm {
 	       std::vector<Updater const *> const &sub_updaters,
 	       unsigned int chain);
 	double getPrecision(unsigned int i) const;
-	void updatePrecision(RNG *rng);
 	std::string name() const;
+	void update(RNG *rng);
     };
     
 }

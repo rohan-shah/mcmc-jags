@@ -135,8 +135,5 @@ namespace glm {
 	//delete [] xr;
 	delete [] xi;
 	cs_spfree(Pt_X);
-
-	updatePrecision(rng);
     }
-
 }

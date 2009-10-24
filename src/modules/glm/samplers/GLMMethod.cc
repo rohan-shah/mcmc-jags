@@ -204,7 +204,7 @@ namespace glm {
 	cs_spfree(A);
     }
 
-    void GLMMethod::update(RNG *rng) 
+    void GLMMethod::calCoef(double *&b, cs *&A) 
     {
 	//   The log of the full conditional density takes the form
 	//   -(t(x) %*% A %*% x - 2 * b %*% x)/2
@@ -214,15 +214,8 @@ namespace glm {
 	//   For computational convenience we take xold, the current value
 	//   of the sampled nodes, as the origin
 
-	if (_init) {
-	    initAuxiliary(rng);
-	    calDesign();
-	    symbolic();
-	    _init = false;
-	}
-
 	unsigned int nrow = _updater->length();
-	double *b = new double[nrow];
+	b = new double[nrow];
 	cs *Aprior = cs_spalloc(nrow, nrow, _nz_prior, 1, 0); 
     
 	// Set up prior contributions to A, b
@@ -286,9 +279,31 @@ namespace glm {
 
 	cs *Alik = cs_multiply(t_X, _X);
 	cs_spfree(t_X);
-	cs *A = cs_add(Aprior, Alik, 1, 1);
+	A = cs_add(Aprior, Alik, 1, 1);
 	cs_spfree(Aprior);
 	cs_spfree(Alik);
+    }
+
+    void GLMMethod::updateLM(RNG *rng, bool stochastic) 
+    {
+	//   The log of the full conditional density takes the form
+	//   -(t(x) %*% A %*% x - 2 * b %*% x)/2
+	//   where A is the posterior precision and the mean mu solves
+	//   A %*% mu = b
+
+	//   For computational convenience we take xold, the current value
+	//   of the sampled nodes, as the origin
+
+	if (_init) {
+	    initAuxiliary(rng);
+	    calDesign();
+	    symbolic();
+	    _init = false;
+	}
+
+	double *b = 0;
+	cs *A = 0;
+	calCoef(b, A);
 
 	// Get Cholesky decomposition of posterior precision
 	csn *N = cs_chol(A, _symbol);
@@ -301,12 +316,15 @@ namespace glm {
 	// with mean mu such that A %*% mu = b and precision A. The
 	// vector b is overwritten with the result
 	
+	unsigned int nrow = _updater->length();
 	double *w = new double[nrow];
 	cs_ipvec(_symbol->pinv, b, w, nrow);
 	cs_lsolve(N->L, w);
-	updateAuxiliary(w, N, rng);
-	for (r = 0; r < nrow; ++r) {
-	    w[r] += rng->normal();
+	if (stochastic) {
+	    updateAuxiliary(w, N, rng);
+	    for (unsigned int r = 0; r < nrow; ++r) {
+		w[r] += rng->normal();
+	    }
 	}
 	cs_ltsolve(N->L, w);
 	cs_nfree(N);
@@ -314,13 +332,12 @@ namespace glm {
 	delete [] w;
     
 	//Shift origin back to original scale
-	r = 0;
-	for (vector<StochasticNode*>::const_iterator p = snodes.begin();
-	     p != snodes.end(); ++p)
+	int r = 0;
+	for (vector<StochasticNode*>::const_iterator p = 
+		 _updater->nodes().begin();  p != _updater->nodes().end(); ++p)
 	{
-	    StochasticNode *snode = *p;
-	    unsigned int length = snode->length();
-	    double const *xold = snode->value(_chain);
+	    unsigned int length = (*p)->length();
+	    double const *xold = (*p)->value(_chain);
 	    for (unsigned int i = 0; i < length; ++i, ++r) {
 		b[r] += xold[i];
 	    }
@@ -328,7 +345,6 @@ namespace glm {
 
 	_updater->setValue(b, nrow, _chain);
 	delete [] b;
-
     }
 
     

@@ -93,8 +93,10 @@ namespace glm {
 	return "Logit";
     }
     
-    void Logit::updatePrecision(RNG *rng)
+    void Logit::update(RNG *rng)
     {
+	updateLM(rng);
+
 	for (unsigned int r = 0; r < _tau.size(); ++r)
 	{
 	    double delta = fabs(getValue(r) - getMean(r));

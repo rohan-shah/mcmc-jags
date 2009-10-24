@@ -21,13 +21,12 @@ namespace glm {
 	return 1;
     }
 
-    void Probit::updatePrecision(RNG *rng) 
-    {
-    }
-
     string Probit::name() const
     {
 	return "Probit";
     }
 
+    void Probit::update(RNG *rng) {
+	updateLM(rng);
+    }
 }

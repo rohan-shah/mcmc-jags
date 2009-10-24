@@ -39,9 +39,10 @@ namespace glm {
 		  std::vector<Updater const *> const &sub_updaters,
 		  unsigned int chain, bool link);
 	virtual ~GLMMethod();
-	void update(RNG *rng);
+	void updateLM(RNG *rng, bool stochastic = true);
 	bool isAdaptive() const;
 	bool adaptOff();
+	void calCoef(double *&, cs *&);
 	virtual std::string name() const = 0;
 	virtual double getMean(unsigned int i) const = 0;
 	virtual double getPrecision(unsigned int i) const = 0;

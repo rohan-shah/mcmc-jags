@@ -211,9 +211,9 @@ namespace glm {
 	    } while (loop);
 
 	    vector<StochasticNode*> sample_nodes;	    
-	    for (unsigned int i = 0; i < candidates.size(); ++i) {
-		if (keep[i]) {
-		    sample_nodes.push_back(candidates[i]->nodes()[0]);
+	    for (unsigned int j = 0; j < candidates.size(); ++j) {
+		if (keep[j]) {
+		    sample_nodes.push_back(candidates[j]->nodes()[0]);
 		}
 	    }
 	    if (sample_nodes.size() > 1) {

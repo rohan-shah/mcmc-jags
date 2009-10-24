@@ -18,7 +18,6 @@ namespace glm {
 	double getValue(unsigned int i) const;
 	void initAuxiliary(RNG *rng);
 	void updateAuxiliary(double *b, csn const *N, RNG *rng);
-	virtual void updatePrecision(RNG *rng) = 0;
     };
     
 }

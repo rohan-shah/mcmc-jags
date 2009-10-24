@@ -7,7 +7,7 @@ extern "C" {
 
 #include "GLMMethod.h"
 
-enum GLMFamily {GLM_BERNOULLI=0, GLM_BINOMIAL, GLM_UNKNOWN};
+enum GLMFamily {GLM_BERNOULLI=0, GLM_BINOMIAL, GLM_POISSON, GLM_UNKNOWN};
 
 class LinkNode;
 
@@ -19,6 +19,11 @@ namespace glm {
     class IWLS : public GLMMethod {
 	std::vector<LinkNode const *> _link;
 	std::vector<GLMFamily> _family;
+	bool _init;
+        double var(unsigned int i) const;
+        double logPTransition(std::vector<double> const &xorig,
+                              std::vector<double> const &x,
+                              double const *b, cs const *A);
     public:
 	IWLS(Updater const *updater, 
 	     std::vector<Updater const *> const &sub_updaters,
@@ -27,10 +32,10 @@ namespace glm {
 	double getMean(unsigned int i) const;
 	double getPrecision(unsigned int i) const;
 	double getValue(unsigned int i) const;
-        double getCurve(unsigned int i) const;
-	static GLMFamily getFamily(StochasticNode const *snode);
 	void initAuxiliary(RNG *rng);
 	void updateAuxiliary(double *b, csn const *N, RNG *rng);
+	void update(RNG *rng);
+	static GLMFamily getFamily(StochasticNode const *snode);
     };
 
 }
