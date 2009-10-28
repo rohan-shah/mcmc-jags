@@ -20,6 +20,7 @@ namespace glm {
 	std::vector<LinkNode const *> _link;
 	std::vector<GLMFamily> _family;
 	bool _init;
+	double _w;
         double var(unsigned int i) const;
         double logPTransition(std::vector<double> const &xorig,
                               std::vector<double> const &x,

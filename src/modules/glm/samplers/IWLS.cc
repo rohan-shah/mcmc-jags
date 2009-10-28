@@ -20,10 +20,7 @@ static unsigned int nchildren(Updater const *updater)
     return updater->stochasticChildren().size();
 }
 
-#define MAX_ITER 50
-#define TOL 1.0E-3
-
-#include <iostream>
+#define MAX_ITER 100
 
 namespace glm {
 
@@ -33,7 +30,7 @@ namespace glm {
 	       unsigned int chain)
 	: GLMMethod(updater, sub_updaters, chain, true),
 	  _link(nchildren(updater)), _family(nchildren(updater)), 
-	  _init(true)
+	  _init(true), _w(0)
     {
 	vector<StochasticNode const*> const &children =
 	    updater->stochasticChildren();
@@ -56,7 +53,7 @@ namespace glm {
 
     double IWLS::getPrecision(unsigned int i) const
     {
-	double w = 1;
+	double w = _w;
 	if (_family[i] == GLM_BINOMIAL) {
 	    Node const *size = _updater->stochasticChildren()[i]->parents()[1];
 	    w *= size->value(_chain)[0];
@@ -128,8 +125,8 @@ namespace glm {
     }
 
     double IWLS::logPTransition(vector<double> const &xorig, 
-			       vector<double> const &x,
-			       double const *b, cs const *A)
+				vector<double> const &x,
+				double const *b, cs const *A)
     {
 	unsigned int n = _updater->length();
 	
@@ -173,25 +170,14 @@ namespace glm {
     void IWLS::update(RNG *rng)
     {
 	if (_init) {
-	    /* 
-	       Set initial value of parameters to maximum likelihood
-	       estimate using standard IWLS algorithm
-	    */
-	    double logden = _updater->logFullConditional(_chain);
+	    _w = 0;
 	    for (unsigned int i = 0; i < MAX_ITER; ++i) {
+		_w += 1.0/MAX_ITER;
 		updateLM(rng, false);
-		double logden1 = _updater->logFullConditional(_chain);
-		if (fabs(logden1 - logden) < TOL) {
-		    break;
-		}
-		else {
-		    logden = logden1;
-		}
-	    }
+            }
 	    _init = false;
 	}
 
-	
 	double *b1, *b2;
 	cs *A1, *A2;
 	double logp = 0;
@@ -203,11 +189,11 @@ namespace glm {
 	logp -= _updater->logFullConditional(_chain);
 	updateLM(rng);
 	logp += _updater->logFullConditional(_chain);
-	
+
 	vector<double> xnew(_updater->length());
 	_updater->getValue(xnew, _chain);
 	calCoef(b2, A2);
-	
+
 	logp -= logPTransition(xold, xnew, b1, A1);
 	logp += logPTransition(xnew, xold, b2, A2);
 	

@@ -18,6 +18,7 @@
 using std::string;
 using std::vector;
 using std::set;
+using std::runtime_error;
 using std::logic_error;
 using std::copy;
 
@@ -307,10 +308,11 @@ namespace glm {
 
 	// Get Cholesky decomposition of posterior precision
 	csn *N = cs_chol(A, _symbol);
-	if (!N) {
-	    throw logic_error("Cholesky decomposition failure in GLMMethod");
-	}
 	cs_spfree(A);
+	if (!N) {
+	    delete [] b;
+	    throw runtime_error("Cholesky decomposition failure in GLMMethod");
+	}
 
 	// Use the Cholesky decomposition to generate a new sample
 	// with mean mu such that A %*% mu = b and precision A. The
@@ -320,8 +322,8 @@ namespace glm {
 	double *w = new double[nrow];
 	cs_ipvec(_symbol->pinv, b, w, nrow);
 	cs_lsolve(N->L, w);
+	updateAuxiliary(w, N, rng);
 	if (stochastic) {
-	    updateAuxiliary(w, N, rng);
 	    for (unsigned int r = 0; r < nrow; ++r) {
 		w[r] += rng->normal();
 	    }
