@@ -140,18 +140,18 @@ namespace glm {
 
 	double *w = new double[n];
 	double *mu = new double[n];
+
 	cs const *L = N->L;
 	cs_ipvec(_symbol->pinv, b, w, n);
 	cs_lsolve(L, w);
 	cs_ltsolve(L, w);
 	cs_pvec(_symbol->pinv, w, mu, n);
-	delete [] w;
 
-	vector<double> delta(n);
 	for (unsigned int i = 0; i < n; ++i) {
-	    delta[i] = x[i] - xorig[i] - mu[i];
+	    w[i] = x[i] - xorig[i] - mu[i];
 	}
-	delete [] mu;
+	cs_ipvec(_symbol->pinv, w, mu, n);
+	delete [] w;
 
 	double logp = 0;
 	int const *Li = L->i;
@@ -160,10 +160,11 @@ namespace glm {
 	for (unsigned int i = 0; i < n; ++i) {
 	    double y = 0;
 	    for (int j = Lp[i]; j < Lp[i+1]; ++j) {
-		y += delta[Li[j]] * Lx[j];
+		y += mu[Li[j]] * Lx[j];
 	    }
 	    logp += log(Lx[Lp[i]]) - y * y/2;
 	}
+	delete [] mu;
 	cs_nfree(N);
 
 	return logp;
