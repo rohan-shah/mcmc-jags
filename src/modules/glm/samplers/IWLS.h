@@ -7,7 +7,7 @@ extern "C" {
 
 #include "GLMMethod.h"
 
-enum GLMFamily {GLM_BERNOULLI=0, GLM_BINOMIAL, GLM_POISSON, GLM_UNKNOWN};
+
 
 class LinkNode;
 
@@ -34,9 +34,8 @@ namespace glm {
 	double getPrecision(unsigned int i) const;
 	double getValue(unsigned int i) const;
 	void initAuxiliary(RNG *rng);
-	void updateAuxiliary(double *b, csn const *N, RNG *rng);
+	void updateAuxiliary(double *b, csn *N, RNG *rng);
 	void update(RNG *rng);
-	static GLMFamily getFamily(StochasticNode const *snode);
     };
 
 }

@@ -12,8 +12,8 @@ namespace glm {
     {
     public:
 	ProbitFactory();
-	bool checkOutcome(StochasticNode const *snode) const;
-	bool checkLink(InverseLinkFunc const *link) const;
+	bool checkOutcome(StochasticNode const *snode,
+			  LinkNode const *lnode) const;
 	GLMMethod *newMethod(Updater const *updater, 
 			     std::vector<Updater const *> const &sub_updaters,
 			     unsigned int chain) const;

@@ -64,7 +64,7 @@ namespace glm {
 	}
     }
     
-    void ScaleMixture::updateAuxiliary(double *w, csn const *N, RNG *rng)
+    void ScaleMixture::updateAuxiliary(double *w, csn *N, RNG *rng)
     {
 	/* 
 	   In the parent GLMMethod class, the posterior precision is

@@ -11,16 +11,19 @@ namespace glm {
 	: GLMFactory("IWLS")
     {}
 
-    bool IWLSFactory::checkOutcome(StochasticNode const *snode) const
+    bool IWLSFactory::checkOutcome(StochasticNode const *snode,
+				   LinkNode const *lnode) const
     {
-	return IWLS::getFamily(snode) != GLM_UNKNOWN;
+	switch (GLMMethod::getFamily(snode)) {
+	case GLM_NORMAL:
+	    return lnode == 0;
+	case GLM_UNKNOWN:
+	    return false;
+	default:
+	    return lnode != 0;
+	}
     }
     
-    bool IWLSFactory::checkLink(InverseLinkFunc const *link) const
-    {
-	return true;
-    }
-
     GLMMethod *
     IWLSFactory::newMethod(Updater const *updater,
 			     vector<Updater const *> const &sub_updaters,

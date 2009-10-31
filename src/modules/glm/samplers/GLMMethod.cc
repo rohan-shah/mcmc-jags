@@ -13,7 +13,7 @@
 #include <graph/Graph.h>
 #include <graph/StochasticNode.h>
 #include <graph/DeterministicNode.h>
-
+#include <distribution/Distribution.h>
 
 using std::string;
 using std::vector;
@@ -358,5 +358,22 @@ namespace glm {
     bool GLMMethod::adaptOff()
     {
 	return true;
+    }
+
+    GLMFamily GLMMethod::getFamily(StochasticNode const *snode)
+    {
+	string const &name = snode->distribution()->name();
+	if (name == "dbern") {
+	    return GLM_BERNOULLI;
+	}
+	else if (name == "dbin") {
+	    return GLM_BINOMIAL;
+	}
+	else if (name == "dpois") {
+	    return GLM_POISSON;
+	}
+	else {
+	    return GLM_UNKNOWN;
+	}
     }
 }

@@ -17,7 +17,7 @@ namespace glm {
 	double getMean(unsigned int i) const;
 	double getValue(unsigned int i) const;
 	void initAuxiliary(RNG *rng);
-	void updateAuxiliary(double *b, csn const *N, RNG *rng);
+	void updateAuxiliary(double *b, csn *N, RNG *rng);
     };
     
 }

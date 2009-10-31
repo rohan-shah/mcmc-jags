@@ -15,6 +15,9 @@ class Graph;
 class RNG;
 class StochasticNode;
 
+enum GLMFamily {GLM_NORMAL, GLM_BERNOULLI, GLM_BINOMIAL, GLM_POISSON, 
+		GLM_UNKNOWN};
+
 namespace glm {
 
     /**
@@ -48,7 +51,8 @@ namespace glm {
 	virtual double getPrecision(unsigned int i) const = 0;
 	virtual double getValue(unsigned int i) const = 0;
 	virtual void initAuxiliary(RNG *rng) = 0;
-	virtual void updateAuxiliary(double *b, csn const *N, RNG *rng) = 0;
+	virtual void updateAuxiliary(double *b, csn *N, RNG *rng) = 0;
+	static GLMFamily getFamily(StochasticNode const *snode);
     };
 
 }

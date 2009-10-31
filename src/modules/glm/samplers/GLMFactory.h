@@ -4,7 +4,7 @@
 #include "GLMMethod.h"
 #include <sampler/SamplerFactory.h>
 
-class InverseLinkFunc;
+class LinkNode;
 
 namespace glm {
 
@@ -30,8 +30,8 @@ namespace glm {
 	std::vector<Sampler*> 
 	    makeSamplers(std::set<StochasticNode*> const &nodes, 
 			 Graph const &graph) const;
-	virtual bool checkOutcome(StochasticNode const *snode) const = 0;
-	virtual bool checkLink(InverseLinkFunc const *link) const = 0;
+	virtual bool checkOutcome(StochasticNode const *snode,
+				  LinkNode const *lnode) const = 0;
 	virtual GLMMethod *
 	    newMethod(Updater const *updater,
 		      std::vector<Updater const *> const &sub_updaters, 

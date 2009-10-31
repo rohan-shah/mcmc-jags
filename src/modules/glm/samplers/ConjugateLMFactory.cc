@@ -15,16 +15,12 @@ namespace glm {
     {
     }
     
-    bool ConjugateLMFactory::checkOutcome(StochasticNode const *snode) const
+    bool ConjugateLMFactory::checkOutcome(StochasticNode const *snode,
+					  LinkNode const *lnode) const
     {
-	return snode->distribution()->name() == "dnorm";
+	return snode->distribution()->name() == "dnorm" && lnode == 0;
     }
     
-    bool ConjugateLMFactory::checkLink(InverseLinkFunc const *link) const
-    {
-	return false;
-    }
-
     GLMMethod*
     ConjugateLMFactory::newMethod(Updater const *updater,
 				  vector<Updater const *> const &sub_updaters,

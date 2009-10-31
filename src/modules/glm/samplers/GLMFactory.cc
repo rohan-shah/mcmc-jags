@@ -93,21 +93,14 @@ namespace glm {
 	// Check stochastic children
 	vector<StochasticNode const*> const &stoch_nodes = 
 	    updater->stochasticChildren();
-	bool have_link = false;
 	for (unsigned int i = 0; i < stoch_nodes.size(); ++i) {
 	    if (isBounded(stoch_nodes[i])) {
 		return false; //Truncated outcome variable
 	    }
-	    if (!checkOutcome(stoch_nodes[i])) {
-		return false; //Invalid outcome distribution
-	    }
 	    vector<Node const *> const &param = stoch_nodes[i]->parents();
-	    //Check for link functions
 	    LinkNode const *lnode = dynamic_cast<LinkNode const*>(param[0]);
-	    if (lnode) {
-		have_link = true;
-		if (!checkLink(lnode->link()))
-		    return false;
+	    if (!checkOutcome(stoch_nodes[i], lnode)) {
+		return false; //Invalid outcome or link
 	    }
 	    //Check that other parameters do not depend on snode	    
 	    for (unsigned int j = 1; j < param.size(); ++j) {
@@ -118,7 +111,7 @@ namespace glm {
 	}
 
 	// Check linearity of deterministic descendants
-	if (!checkLinear(updater, false, have_link))
+	if (!checkLinear(updater, false, true))
 	    return false;
 
 	return true;

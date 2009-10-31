@@ -6,6 +6,7 @@
 #include "Logit.h"
 
 #include <graph/StochasticNode.h>
+#include <graph/LinkNode.h>
 #include <distribution/Distribution.h>
 #include <function/InverseLinkFunc.h>
 
@@ -18,14 +19,19 @@ namespace glm {
 	: GLMFactory("Logit")
     {}
 
-    bool LogitFactory::checkOutcome(StochasticNode const *snode) const
+    bool LogitFactory::checkOutcome(StochasticNode const *snode,
+				    LinkNode const *lnode) const
     {
-	string const &dname = snode->distribution()->name();
-	if (dname == "dbern") {
+	if (!lnode || lnode->link()->linkName() != "logit")
+	    return false;
+
+	Node const *N = 0;
+
+	switch(GLMMethod::getFamily(snode)) {
+	case GLM_BERNOULLI:
 	    return true;
-	}
-	else if (dname == "dbin") {
-	    Node const *N = snode->parents()[1];
+	case GLM_BINOMIAL:
+	    N = snode->parents()[1];
 	    if (N->length() != 1)
 		return false;
 	    if (!N->isObserved())
@@ -33,17 +39,11 @@ namespace glm {
 	    if (N->value(0)[0] != 1)
 		return false;
 	    return true;
-	}
-	else {
+	default:
 	    return false;
 	}
     }
     
-    bool LogitFactory::checkLink(InverseLinkFunc const *link) const
-    {
-	return link->linkName() == "logit";
-    }
-
     GLMMethod *
     LogitFactory::newMethod(Updater const *updater,
 			     vector<Updater const *> const &sub_updaters,

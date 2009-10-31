@@ -42,7 +42,7 @@ namespace glm {
 	return; //Nothing to do
     }
 
-    void ConjugateLM::updateAuxiliary(double *b, csn const *N, RNG *rng)
+    void ConjugateLM::updateAuxiliary(double *b, csn *N, RNG *rng)
     {
 	return; //Nothing to do
     }

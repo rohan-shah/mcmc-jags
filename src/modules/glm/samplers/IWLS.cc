@@ -97,29 +97,14 @@ namespace glm {
 	return 0; //-Wall
     }
  
-    GLMFamily IWLS::getFamily(StochasticNode const *snode)
-    {
-	string const &name = snode->distribution()->name();
-	if (name == "dbern") {
-	    return GLM_BERNOULLI;
-	}
-	else if (name == "dbin") {
-	    return GLM_BINOMIAL;
-	}
-	else if (name == "dpois") {
-	    return GLM_POISSON;
-	}
-	else {
-	    return GLM_UNKNOWN;
-	}
-    }
+
 
     void IWLS::initAuxiliary(RNG *rng)
     {
 	//No auxiliary variables in this method
     }
     
-    void IWLS::updateAuxiliary(double *b, csn const *N, RNG *rng)
+    void IWLS::updateAuxiliary(double *b, csn *N, RNG *rng)
     {
 	//No auxiliary variables in this method
     }
