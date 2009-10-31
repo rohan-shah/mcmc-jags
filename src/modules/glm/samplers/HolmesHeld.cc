@@ -43,10 +43,10 @@ static HHOutcome getOutcome(StochasticNode const *snode)
 	if (!lnode) {
 	    throw logic_error("No link in Holmesheld");
 	}
-	else if (lnode->link()->name() == "probit") {
+	else if (lnode->link()->linkName() == "probit") {
 	    return HH_PROBIT;
 	}
-	else if (lnode->link()->name() == "logit") {
+	else if (lnode->link()->linkName() == "logit") {
 	    return HH_LOGIT;
 	}
 	else {
@@ -153,43 +153,46 @@ namespace glm {
 	int *xi = new int[2*ncol]; //Stack
 	for (unsigned int r = 0; r < nrow; ++r) {
 	    
-	    int top = cs_spsolve(N->L, Pt_X, r, xi, ur, 0, 1);
-	    //Subtract contribution of row r from b
-	    double mu_r = getMean(r);
-	    double delta = _z[r] - mu_r;
-	    double tau_r = getPrecision(r);
-	    for (unsigned int j = top; j < ncol; ++j) {
-		w[xi[j]] -= ur[xi[j]] * delta * tau_r;
-	    }
-	    
-	    //Calculate mean and precision of z[r] conditional
-	    //on z[s] for s != r
-	    double zr_mean = 0;
-	    double Hr = 0; // 
-	    for (unsigned int j = top; j < ncol; ++j) {
-		zr_mean  += ur[xi[j]] * w[xi[j]];
-		Hr  += ur[xi[j]] * ur[xi[j]];
-	    }
-	    Hr *= tau_r;
+	    if (_outcome[r] != HH_NORMAL) {
 
-	    zr_mean /= (1 - Hr);
-	    double zr_prec = (1 - Hr) * tau_r;
+		int top = cs_spsolve(N->L, Pt_X, r, xi, ur, 0, 1);
+		//Subtract contribution of row r from b
+		double mu_r = getMean(r);
+		double delta = _z[r] - mu_r;
+		double tau_r = getPrecision(r);
+		for (unsigned int j = top; j < ncol; ++j) {
+		    w[xi[j]] -= ur[xi[j]] * delta * tau_r;
+		}
+		
+		//Calculate mean and precision of z[r] conditional
+		//on z[s] for s != r
+		double zr_mean = 0;
+		double Hr = 0; // 
+		for (unsigned int j = top; j < ncol; ++j) {
+		    zr_mean  += ur[xi[j]] * w[xi[j]];
+		    Hr  += ur[xi[j]] * ur[xi[j]];
+		}
+		Hr *= tau_r;
+		
+		zr_mean /= (1 - Hr);
+		double zr_prec = (1 - Hr) * tau_r;
+		
+		double yr = schildren[r]->value(_chain)[0];
+		if (yr == 1) {
+		    _z[r] = LNorm(mu_r + zr_mean, 1/sqrt(zr_prec), 0, rng);
+		}
+		else if (yr == 0) {
+		    _z[r] = RNorm(mu_r + zr_mean, 1/sqrt(zr_prec), 0, rng);
+		}
+		else {
+		    throw logic_error("Invalid child value in HolmesHeld");
+		}
 
-	    double yr = schildren[r]->value(_chain)[0];
-	    if (yr == 1) {
-		_z[r] = LNorm(mu_r + zr_mean, 1/sqrt(zr_prec), 0, rng);
-	    }
-	    else if (yr == 0) {
-		_z[r] = RNorm(mu_r + zr_mean, 1/sqrt(zr_prec), 0, rng);
-	    }
-	    else {
-		throw logic_error("Invalid child value in HolmesHeld");
-	    }
-
-	    //Add new contribution of row r back to b
-	    delta = _z[r] - mu_r;
-	    for (unsigned int j = top; j < ncol; ++j) {
-		w[xi[j]] += ur[xi[j]] * delta * tau_r; 
+		//Add new contribution of row r back to b
+		delta = _z[r] - mu_r;
+		for (unsigned int j = top; j < ncol; ++j) {
+		    w[xi[j]] += ur[xi[j]] * delta * tau_r; 
+		}
 	    }
 	}
 

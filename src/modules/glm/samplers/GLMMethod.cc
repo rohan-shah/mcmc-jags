@@ -372,6 +372,9 @@ namespace glm {
 	else if (name == "dpois") {
 	    return GLM_POISSON;
 	}
+	else if (name == "dnorm") {
+	    return GLM_NORMAL;
+	}
 	else {
 	    return GLM_UNKNOWN;
 	}
