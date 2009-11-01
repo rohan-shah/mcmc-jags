@@ -3,6 +3,8 @@
 #include "samplers/ConjugateLMFactory.h"
 #include "samplers/ProbitFactory.h"
 #include "samplers/LogitFactory.h"
+#include "samplers/IWLSFactory.h"
+#include "samplers/HolmesHeldFactory.h"
 
 using std::vector;
 
@@ -17,9 +19,11 @@ namespace glm {
     GLMModule::GLMModule() 
 	: Module("glm")
     {
+	//insert(new IWLSFactory);
 	insert(new ConjugateLMFactory);
-	insert(new ProbitFactory);
-        insert(new LogitFactory);
+	//insert(new ProbitFactory);
+        //insert(new LogitFactory);
+	insert(new HolmesHeldFactory);
     }
     
     GLMModule::~GLMModule() {
