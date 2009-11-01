@@ -4,6 +4,7 @@
 
 #include "HolmesHeldFactory.h"
 #include "HolmesHeld.h"
+#include "ConjugateLM.h"
 
 #include <graph/StochasticNode.h>
 #include <graph/LinkNode.h>
@@ -52,7 +53,27 @@ namespace glm {
 			     vector<Updater const *> const &sub_updaters,
 			     unsigned int chain) const
     {
-	return new HolmesHeld(updater, sub_updaters, chain);
+	/* 
+	   If we have a pure guassian linear model then make a
+	   conjugate linear sampler instead. There is no need, in this
+	   case, for the extra machinery of the Holmes-Held sampler.
+	*/
+	bool linear = true;
+	vector<StochasticNode const*> const &children =
+	    updater->stochasticChildren();
+	for (unsigned int i = 0; i < children.size(); ++i) {
+	    if (GLMMethod::getFamily(children[i]) != GLM_NORMAL) {
+		linear = false;
+		break;
+	    }
+	}
+
+	if (linear) {
+	    return new ConjugateLM(updater, sub_updaters, chain);
+	}
+	else {
+	    return new HolmesHeld(updater, sub_updaters, chain);
+	}
     }
 
 }
