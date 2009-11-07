@@ -77,5 +77,5 @@ double LinkNode::eta(unsigned int chain) const
 
 double LinkNode::grad(unsigned int chain) const
 {
-    _func->grad(_parameters[chain]);
+    return _func->grad(_parameters[chain]);
 }

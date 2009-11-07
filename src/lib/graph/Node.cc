@@ -110,7 +110,7 @@ void Node::initializeData()
     }
 }
     
-bool Node::initialize(RNG *rng, unsigned int n)
+bool Node::initialize(unsigned int n)
 {
     // Test whether node is already initialized and, if so, skip it
     if (isInitialized(this, n))
@@ -123,21 +123,8 @@ bool Node::initialize(RNG *rng, unsigned int n)
         }
     }
 
-    bool isfixed = true; //Is it a fixed effect?
-    for (unsigned int i = 0; i < _parents.size(); ++i) {
-	if (!_parents[i]->isObserved()) {
-            isfixed = false; //Not observed
-	    break;
-	}
-    }
+    deterministicSample(n);
 
-    //FIXME: This may not be a great idea
-    if (isfixed) {
-	deterministicSample(n);
-    }
-    else {
-	randomSample(rng, n);
-    }
     return true; 
 }
     
