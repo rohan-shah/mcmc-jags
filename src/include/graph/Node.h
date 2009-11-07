@@ -92,13 +92,11 @@ public:
      * parent nodes is uninitialized, and in this case the return
      * value is false.
      *
-     * @param rng Random number generator 
-     * 
      * @param chain Index number of chain to initialize.
      *
      * @returns a logical value indicating success
      */
-    bool initialize(RNG *rng, unsigned int chain);
+    bool initialize(unsigned int chain);
     /**
      * Initializes a node, in all chains, if it is not a random
      * variable and if all of its parents are observed.  Otherwise the
