@@ -457,7 +457,10 @@ void Model::addExtraNode(Node *node)
 	throw logic_error("Attempt to add extra node to uninitialized model");
     }
     if (node->isObserved()) {
-	throw logic_error("Cannot add observed node to initialized model");
+	for (unsigned int i = 0; i < node->parents().size(); ++i) {
+	    if (!node->parents()[i]->isObserved())
+		throw logic_error("Cannot add observed node to initialized model");
+	}
     }
     if (!node->stochasticChildren()->empty() || !node->deterministicChildren()->empty()) {
 	throw logic_error("Cannot add extra node with children");
