@@ -176,7 +176,7 @@ void Model::initializeNodes()
 	    if (!node->checkParentValues(n)) {
 		throw NodeError(node, "Invalid parent values");
 	    }
-	    if (!node->initialize(_rng[n], n)) {
+	    if (!node->initialize(n)) {
 		throw NodeError(node, "Initialization failure");
 	    } 
 	}
