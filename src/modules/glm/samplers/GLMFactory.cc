@@ -132,8 +132,15 @@ namespace glm {
 	if (dname != "dnorm" && dname != "dmnorm")
 	    return 0; //Must have normal prior
 
-	if (isBounded(snode))
-	    return 0; //Cannot have bounded prior
+	if (trunc()) {
+	    //Sampler handles truncated scalar nodes
+	    if (snode->length() != 1)
+		return 0;
+	}
+	else {
+	    if (isBounded(snode))
+		return 0;
+	}
 
 	Updater *updater = new Updater(snode, graph);
 	if (!checkDescendants(updater)) {

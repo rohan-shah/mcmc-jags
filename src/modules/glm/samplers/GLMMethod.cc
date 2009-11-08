@@ -14,6 +14,7 @@
 #include <graph/StochasticNode.h>
 #include <graph/DeterministicNode.h>
 #include <distribution/Distribution.h>
+#include <rng/TruncatedNormal.h>
 
 using std::string;
 using std::vector;
@@ -22,13 +23,28 @@ using std::runtime_error;
 using std::logic_error;
 using std::copy;
 
+//FIXME: should be in main library
+static double LNorm(double mu, double sigma, double left, RNG *rng) {
+    return mu + sigma * lnormal((left - mu)/sigma, rng);
+}
+
+static double RNorm(double mu, double sigma, double right, RNG *rng) {
+    return mu + sigma * rnormal((right - mu)/sigma, rng);
+}
+
+static double INorm(double mu, double sigma, double left, double right, 
+		    RNG *rng) 
+{
+    return mu + sigma * inormal((left-mu)/sigma, (right - mu)/sigma, rng);
+}
+
 static void getIndices(set<StochasticNode const *> const &schildren,
 		       vector<StochasticNode const*> const &rows,
 		       vector<int> &indices)
 {
     indices.clear();
     
-    for (int i = 0; i < rows.size(); ++i) {
+    for (unsigned int i = 0; i < rows.size(); ++i) {
 	if (schildren.count(rows[i])) {
 	    indices.push_back(i);
 	}
@@ -178,7 +194,7 @@ namespace glm {
 	     p != snodes.end(); ++p)
 	{
 	    StochasticNode *snode = *p;
-	    int length = snode->length();
+	    unsigned int length = snode->length();
 
 	    int cbase = c; //first column in this diagonal block
 	    for (unsigned int i = 0; i < length; ++i, ++c) {
@@ -234,7 +250,7 @@ namespace glm {
 	    double const *priormean = snode->parents()[0]->value(_chain);
 	    double const *priorprec = snode->parents()[1]->value(_chain);
 	    double const *xold = snode->value(_chain);
-	    int length = snode->length();
+	    unsigned int length = snode->length();
 	
 	    int cbase = c; //first column of this diagonal block
 	    for (unsigned int i = 0; i < length; ++i, ++c) {
@@ -349,7 +365,76 @@ namespace glm {
 	delete [] b;
     }
 
-    
+    void GLMMethod::updateLMGibbs(RNG *rng, unsigned int nrep) 
+    {
+	// Update element-wise. Less efficient than updateLM but
+	// does not require a Cholesky decomposition, and is 
+	// necessary for truncated 
+
+	if (_init) {
+	    if (_updater->length() != _sub_updaters.size()) {
+		throw logic_error("updateLMGibbs can only act on scalar nodes");
+	    }
+	    initAuxiliary(rng);
+	    calDesign();
+	    _init = false;
+	}
+
+	double *b = 0;
+	cs *A = 0;
+	calCoef(b, A);
+
+	int nrow = _updater->length();
+	vector<double> theta(nrow);
+	_updater->getValue(theta, _chain);
+
+	//Extract diagonal from A
+	vector<double> diagA(nrow);
+	for (int c = 0; c < nrow; ++c) {
+	    for (int j = A->p[c]; j < A->p[c+1]; ++j) {
+		if (A->i[j] == c) {
+		    diagA[c] = A->x[j];
+		    break;
+		}
+	    }
+	}
+
+	//Update element-wise
+	for (unsigned int r = 0; r < nrep; ++r) {
+	    for (int i = 0; i < nrow; ++i) {
+		
+		double theta_old = theta[i];
+		
+		double mu  = theta[i] + b[i]/diagA[i];
+		double sigma = sqrt(1/diagA[i]);
+		StochasticNode const *snode = _sub_updaters[i]->nodes()[0];
+		double const *l = snode->lowerLimit(_chain);
+		double const *u = snode->upperLimit(_chain);
+		
+		if (l && u) {
+		    theta[i] = INorm(mu, sigma, *l, *u, rng);
+		}
+		else if (l) {
+		    theta[i] = LNorm(mu, sigma, *l, rng);
+		}
+		else if (u) {
+		    theta[i] = RNorm(mu, sigma, *u, rng);
+		}
+		else {
+		    theta[i] = mu + rng->normal() * sigma;
+		}
+		
+		double delta = theta[i] - theta_old;
+		for (int j = A->p[i]; j < A->p[i+1]; ++j) {
+		    b[A->i[j]] -= delta * A->x[j];
+		}
+	    }
+	}
+
+	_updater->setValue(theta,  _chain);
+
+    }
+
     bool GLMMethod::isAdaptive() const
     {
 	return false;

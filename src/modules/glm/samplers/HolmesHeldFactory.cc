@@ -4,7 +4,7 @@
 
 #include "HolmesHeldFactory.h"
 #include "HolmesHeld.h"
-#include "ConjugateLM.h"
+#include "Linear.h"
 
 #include <graph/StochasticNode.h>
 #include <graph/LinkNode.h>
@@ -69,11 +69,16 @@ namespace glm {
 	}
 
 	if (linear) {
-	    return new ConjugateLM(updater, sub_updaters, chain);
+	    return new Linear(updater, sub_updaters, chain, false);
 	}
 	else {
 	    return new HolmesHeld(updater, sub_updaters, chain);
 	}
+    }
+
+    bool HolmesHeldFactory::trunc() const
+    {
+	return false;
     }
 
 }

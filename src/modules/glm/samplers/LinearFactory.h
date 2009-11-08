@@ -1,5 +1,5 @@
-#ifndef CONJUGATE_LM_FACTORY_H_
-#define CONJUGATE_LM_FACTORY_H_
+#ifndef LINEAR_FACTORY_H_
+#define LINEAR_FACTORY_H_
 
 #include "GLMFactory.h"
 
@@ -8,17 +8,19 @@ namespace glm {
 /**
  * @short Factory object for conjugate linear model sampler
  */
-    class ConjugateLMFactory : public GLMFactory
+    class LinearFactory : public GLMFactory
     {
+	bool _gibbs;
     public:
-	ConjugateLMFactory();
+	LinearFactory();
 	bool checkOutcome(StochasticNode const *snode,
 			  LinkNode const *lnode) const;
 	GLMMethod *newMethod(Updater const *updater, 
 			     std::vector<Updater const *> const &sub_updaters,
 			     unsigned int chain) const;
+	bool trunc() const;
     };
 
 }
 
-#endif /* CONJUGATE_LM_FACTORY_H_ */
+#endif /* LINEAR_FACTORY_H_ */

@@ -36,6 +36,7 @@ namespace glm {
 	    newMethod(Updater const *updater,
 		      std::vector<Updater const *> const &sub_updaters, 
 		      unsigned int chain) const = 0;
+	virtual bool trunc() const = 0;
 	std::string const &name() const;
     };
 

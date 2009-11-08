@@ -1,5 +1,5 @@
-#ifndef CONJUGATE_LM_H_
-#define CONJUGATE_LM_H_
+#ifndef LINEAR_H_
+#define LINEAR_H_
 
 #include "GLMMethod.h"
 
@@ -8,11 +8,12 @@ namespace glm {
     /**
      * Conjugate sampler for normal linear models.
      */
-    class ConjugateLM : public GLMMethod {
+    class Linear : public GLMMethod {
+	bool _gibbs;
     public:
-	ConjugateLM(Updater const *updater,
-		    std::vector<Updater const *> const &sub_updaters,
-		    unsigned int chain);
+	Linear(Updater const *updater,
+	       std::vector<Updater const *> const &sub_updaters,
+	       unsigned int chain, bool gibbs);
 	double getMean(unsigned int i) const;
 	double getPrecision(unsigned int i) const;
 	double getValue(unsigned int i) const;
@@ -24,4 +25,4 @@ namespace glm {
     
 }
 
-#endif /* CONJUGATE_LM_H_ */
+#endif /* LINEAR_H_ */

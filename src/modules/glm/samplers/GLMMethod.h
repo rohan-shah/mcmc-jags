@@ -43,6 +43,7 @@ namespace glm {
 		  unsigned int chain, bool link);
 	virtual ~GLMMethod();
 	void updateLM(RNG *rng, bool stochastic = true);
+	void updateLMGibbs(RNG *rng, unsigned int nrep);
 	bool isAdaptive() const;
 	bool adaptOff();
 	void calCoef(double *&, cs *&);
