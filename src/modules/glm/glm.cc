@@ -1,8 +1,9 @@
 #include <Module.h>
 
 #include "samplers/LinearFactory.h"
-#include "samplers/ProbitFactory.h"
-#include "samplers/LogitFactory.h"
+#include "samplers/LinearGibbsFactory.h"
+//#include "samplers/ProbitFactory.h"
+//#include "samplers/LogitFactory.h"
 #include "samplers/IWLSFactory.h"
 #include "samplers/HolmesHeldFactory.h"
 
@@ -21,6 +22,7 @@ namespace glm {
     {
 	//insert(new IWLSFactory);
 	insert(new LinearFactory);
+	insert(new LinearGibbsFactory);
 	//insert(new ProbitFactory);
         //insert(new LogitFactory);
 	insert(new HolmesHeldFactory);

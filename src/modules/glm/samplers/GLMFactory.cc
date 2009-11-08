@@ -22,7 +22,6 @@ using std::map;
 using std::stable_sort;
 using std::string;
 
-
 /*
   Aggregates candidate Nodes into a joint linear model. 
   

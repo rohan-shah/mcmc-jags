@@ -1,6 +1,6 @@
 #include <config.h>
 
-#include "LinearFactory.h"
+#include "LinearGibbsFactory.h"
 #include "Linear.h"
 
 #include <graph/StochasticNode.h>
@@ -10,27 +10,27 @@ using std::vector;
 
 namespace glm {
 
-    LinearFactory::LinearFactory()
-	: GLMFactory("Linear")
+    LinearGibbsFactory::LinearGibbsFactory()
+	: GLMFactory("LinearGibbs")
     {
     }
     
-    bool LinearFactory::checkOutcome(StochasticNode const *snode,
+    bool LinearGibbsFactory::checkOutcome(StochasticNode const *snode,
 					  LinkNode const *lnode) const
     {
 	return snode->distribution()->name() == "dnorm" && lnode == 0;
     }
     
     GLMMethod*
-    LinearFactory::newMethod(Updater const *updater,
+    LinearGibbsFactory::newMethod(Updater const *updater,
 			     vector<Updater const *> const &sub_updaters,
 			     unsigned int chain) const
     {
-	return new Linear(updater, sub_updaters, chain, false);
+	return new Linear(updater, sub_updaters, chain, true);
     }
 
-    bool LinearFactory::trunc() const
+    bool LinearGibbsFactory::trunc() const
     {
-	return false;
+	return true;
     }
 }
