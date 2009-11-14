@@ -4,31 +4,35 @@
 class RNG;
 
 /**
- * Draws a random sample from a left-truncated standard normal
- * distribution.
+ * Draws a random sample from a left-truncated normal distribution.
  *
  * @param left Left limit of the truncated distribution
  * @param rng Pointer to a Random Number Generator
+ * @param mu Mean of untruncated distribution
+ * @param sigma Standard deviation of untruncated distribution
  */
-double lnormal(double left, RNG *rng);
+double lnormal(double left, RNG *rng, double mu = 0, double sigma = 1);
 
 /**
- * Draws a random sample from a right-truncated standard normal
- * distribution.
+ * Draws a random sample from a right-truncated normal distribution.
  *
  * @param right Right limit of the distribution
  * @param rng Pointer to a Random Number Generator
+ * @param mu Mean of untruncated distribution
+ * @param sigma Standard deviation of untruncated distribution
  */
-double rnormal(double right, RNG *rng);
+double rnormal(double right, RNG *rng, double mu = 0, double sigma = 1);
 
 /**
- * Draws a random sample from an interval-truncated standard
- * normal distribution.
+ * Draws a random sample from an interval-truncated normal distribution.
  *
  * @param left Left limit of the distribution
  * @param right Right limit of the distribution
  * @param rng Pointer to a Random Number Generator
+ * @param mu Mean of untruncated distribution
+ * @param sigma Standard deviation of untruncated distribution
  */
-double inormal(double left, double right, RNG *rng);
+double inormal(double left, double right, RNG *rng, 
+	       double mu = 0, double sigma = 1);
 
 #endif /* TRUNCATED_NORMAL_H_ */
