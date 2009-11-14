@@ -17,14 +17,6 @@ static unsigned int nchildren(Updater const *updater)
     return updater->stochasticChildren().size();
 }
 
-static double LNorm(double mu, double sigma, double left, RNG *rng) {
-    return mu + sigma * lnormal((left - mu)/sigma, rng);
-}
-
-static double RNorm(double mu, double sigma, double right, RNG *rng) {
-    return mu + sigma * rnormal((right - mu)/sigma, rng);
-}
-
 namespace glm {
 
     ScaleMixture::ScaleMixture(Updater const *updater,
@@ -53,10 +45,10 @@ namespace glm {
 	for (unsigned int r = 0; r < _z.size(); ++r) {
 	    double yr = schildren[r]->value(_chain)[0];
 	    if (yr == 1) {
-		_z[r] = LNorm(getMean(r), 1, 0, rng);
+		_z[r] = lnormal(0, rng, getMean(r));
 	    }
 	    else if (yr == 0) {
-		_z[r] = RNorm(getMean(r), 1, 0, rng);
+		_z[r] = rnormal(0, rng, getMean(r));
 	    }
 	    else {
 		throw logic_error("Invalid child value in ScaleMixture");
@@ -114,10 +106,10 @@ namespace glm {
 
 	    double yr = schildren[r]->value(_chain)[0];
 	    if (yr == 1) {
-		_z[r] = LNorm(mu_r + zr_mean, 1/sqrt(zr_prec), 0, rng);
+		_z[r] = lnormal(0, rng, mu_r + zr_mean, 1/sqrt(zr_prec));
 	    }
 	    else if (yr == 0) {
-		_z[r] = RNorm(mu_r + zr_mean, 1/sqrt(zr_prec), 0, rng);
+		_z[r] = rnormal(0, rng, mu_r + zr_mean, 1/sqrt(zr_prec));
 	    }
 	    else {
 		throw logic_error("Invalid child value in ScaleMixture");

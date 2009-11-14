@@ -23,14 +23,6 @@ static unsigned int nchildren(Updater const *updater)
     return updater->stochasticChildren().size();
 }
 
-static double LNorm(double mu, double sigma, double left, RNG *rng) {
-    return mu + sigma * lnormal((left - mu)/sigma, rng);
-}
-
-static double RNorm(double mu, double sigma, double right, RNG *rng) {
-    return mu + sigma * rnormal((right - mu)/sigma, rng);
-}
-
 static HHOutcome getOutcome(StochasticNode const *snode)
 {
     LinkNode const *lnode = 0;
@@ -114,10 +106,10 @@ namespace glm {
 		break;
 	    case HH_PROBIT: case HH_LOGIT:
 		if (y == 1) {
-		    _z[i] = LNorm(getMean(i), 1, 0, rng);
+		    _z[i] = lnormal(0, rng, getMean(i));
 		}
 		else if (y == 0) {
-		    _z[i] = RNorm(getMean(i), 1, 0, rng);
+		    _z[i] = rnormal(0, rng, getMean(i));
 		}
 		else {
 		    throw logic_error("Invalid child value in HolmesHeld");
@@ -179,10 +171,10 @@ namespace glm {
 		
 		double yr = schildren[r]->value(_chain)[0];
 		if (yr == 1) {
-		    _z[r] = LNorm(mu_r + zr_mean, 1/sqrt(zr_prec), 0, rng);
+		    _z[r] = lnormal(0, rng, mu_r + zr_mean, 1/sqrt(zr_prec));
 		}
 		else if (yr == 0) {
-		    _z[r] = RNorm(mu_r + zr_mean, 1/sqrt(zr_prec), 0, rng);
+		    _z[r] = rnormal(0, rng, mu_r + zr_mean, 1/sqrt(zr_prec));
 		}
 		else {
 		    throw logic_error("Invalid child value in HolmesHeld");

@@ -23,21 +23,6 @@ using std::runtime_error;
 using std::logic_error;
 using std::copy;
 
-//FIXME: should be in main library
-static double LNorm(double mu, double sigma, double left, RNG *rng) {
-    return mu + sigma * lnormal((left - mu)/sigma, rng);
-}
-
-static double RNorm(double mu, double sigma, double right, RNG *rng) {
-    return mu + sigma * rnormal((right - mu)/sigma, rng);
-}
-
-static double INorm(double mu, double sigma, double left, double right, 
-		    RNG *rng) 
-{
-    return mu + sigma * inormal((left-mu)/sigma, (right - mu)/sigma, rng);
-}
-
 static void getIndices(set<StochasticNode const *> const &schildren,
 		       vector<StochasticNode const*> const &rows,
 		       vector<int> &indices)
@@ -412,13 +397,13 @@ namespace glm {
 		double const *u = snode->upperLimit(_chain);
 		
 		if (l && u) {
-		    theta[i] = INorm(mu, sigma, *l, *u, rng);
+		    theta[i] = inormal(*l, *u, rng, mu, sigma);
 		}
 		else if (l) {
-		    theta[i] = LNorm(mu, sigma, *l, rng);
+		    theta[i] = lnormal(*l, rng, mu, sigma);
 		}
 		else if (u) {
-		    theta[i] = RNorm(mu, sigma, *u, rng);
+		    theta[i] = rnormal(*u, rng, mu, sigma);
 		}
 		else {
 		    theta[i] = mu + rng->normal() * sigma;

@@ -23,7 +23,7 @@ static double Alpha(double mu)
     return (mu + sqrt(mu*mu + 4))/2;
 }
 
-double lnormal(double left, RNG *rng)
+static double lnorm(double left, RNG *rng)
 {
     if (left < 0) {
 	//Repeated sampling until truncation satisfied
@@ -44,7 +44,7 @@ double lnormal(double left, RNG *rng)
     }
 }
 
-double rnormal(double right, RNG *rng)
+static double rnorm(double right, RNG *rng)
 {
     return -lnormal(-right, rng);
 }
@@ -117,7 +117,7 @@ static double inorm_right_tail(double left, double right, RNG *rng)
 }
 
 
-double inormal(double left, double right, RNG *rng)
+static double inorm(double left, double right, RNG *rng)
 {
     if (right < left) {
 	throw logic_error("Invalid limits in inorm");
@@ -135,4 +135,17 @@ double inormal(double left, double right, RNG *rng)
     else {
 	return inorm_repeat(left, right, rng);
     }
+}
+
+
+double lnormal(double left, RNG *rng, double mu, double sigma) {
+    return mu + sigma * lnorm((left - mu)/sigma, rng);
+}
+
+double rnormal(double right, RNG *rng, double mu, double sigma) {
+    return mu + sigma * rnorm((right - mu)/sigma, rng);
+}
+
+double inormal(double left, double right, RNG *rng, double mu, double sigma) {
+    return mu + sigma * inorm((left - mu)/sigma, (right - mu)/sigma, rng);
 }
