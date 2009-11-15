@@ -118,28 +118,19 @@ namespace glm {
 
 
     Updater * 
-    GLMFactory::canSample(StochasticNode *snode, Graph const &graph) const
+    GLMFactory::makeUpdater(StochasticNode *snode, Graph const &graph) const
     {
 	/*
-	  Check whether whether an individual node can be sampled 
-
-	  Returns a newly allocated Updater if successful, otherwise
-	  zero.
+	  Returns a newly allocated Updater if node can be sampled,
+	  otherwise zero pointer.
 	*/
 
 	string dname = snode->distribution()->name();
 	if (dname != "dnorm" && dname != "dmnorm")
 	    return 0; //Must have normal prior
 
-	if (trunc()) {
-	    //Sampler handles truncated scalar nodes
-	    if (snode->length() != 1)
-		return 0;
-	}
-	else {
-	    if (isBounded(snode))
-		return 0;
-	}
+	if (!canSample(snode))
+	    return 0;
 
 	Updater *updater = new Updater(snode, graph);
 	if (!checkDescendants(updater)) {
@@ -166,7 +157,7 @@ namespace glm {
 	for (set<StochasticNode*>::const_iterator p = nodes.begin();
 	     p != nodes.end(); ++p)
 	{
-	    Updater *up = canSample(*p, graph);
+	    Updater *up = makeUpdater(*p, graph);
 	    if (up) {
 		candidates.push_back(up);
 	    }

@@ -2,13 +2,14 @@
 
 #include "AlbertChibFactory.h"
 #include "AlbertChib.h"
+#include <graph/StochasticNode.h>
 
 using std::vector;
 
 namespace glm {
 
     AlbertChibFactory::AlbertChibFactory()
-	: BinaryFactory("Albert-Chib")
+	: BinaryFactory("Albert-Chib", false)
     {}
 
     BinaryGLM *
@@ -17,11 +18,6 @@ namespace glm {
 				 unsigned int chain) const
     {
 	return new AlbertChib(updater, sub_updaters, chain, false);
-    }
-
-    bool AlbertChibFactory::trunc() const
-    {
-	return false;
     }
 
 }

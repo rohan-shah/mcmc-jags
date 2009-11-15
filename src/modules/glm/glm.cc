@@ -20,12 +20,12 @@ namespace glm {
     GLMModule::GLMModule() 
 	: Module("glm")
     {
-	//insert(new IWLSFactory);
+	insert(new IWLSFactory);
 	insert(new LinearGibbsFactory);
 	insert(new LinearFactory);
 	insert(new AlbertChibGibbsFactory);
 	insert(new AlbertChibFactory);
-	//insert(new HolmesHeldFactory);
+	insert(new HolmesHeldFactory);
     }
     
     GLMModule::~GLMModule() {

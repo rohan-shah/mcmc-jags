@@ -16,8 +16,8 @@ using std::vector;
 
 namespace glm {
 
-    BinaryFactory::BinaryFactory(string const &name)
-	: GLMFactory(name)
+    BinaryFactory::BinaryFactory(string const &name, bool gibbs)
+	: GLMFactory(name), _gibbs(gibbs)
     {}
 
     bool BinaryFactory::checkOutcome(StochasticNode const *snode,
@@ -73,6 +73,16 @@ namespace glm {
 	}
 	else {
 	    return newBinary(updater, sub_updaters, chain);
+	}
+    }
+
+    bool BinaryFactory::canSample(StochasticNode const *snode) const
+    {
+	if (_gibbs) {
+	    return snode->length() == 1;
+	}
+	else {
+	    return !isBounded(snode);
 	}
     }
 }

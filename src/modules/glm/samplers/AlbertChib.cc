@@ -59,7 +59,7 @@ namespace glm {
 
 	unsigned int nrow = _updater->stochasticChildren().size();
 	
-	double y, mu, sigma;
+	double y, mu;
 	for (unsigned int r = 0; r < nrow; ++r) {
 	    switch(_outcome[r]) {
 	    case BGLM_NORMAL:

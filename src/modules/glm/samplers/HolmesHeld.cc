@@ -16,13 +16,6 @@ using std::vector;
 using std::string;
 using std::logic_error;
 
-#define CHILD(i) (_updater->stochasticChildren()[i])
-
-static unsigned int nchildren(Updater const *updater)
-{
-    return updater->stochasticChildren().size();
-}
-
 namespace glm {
 
     HolmesHeld::HolmesHeld(Updater const *updater,

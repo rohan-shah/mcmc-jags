@@ -9,13 +9,15 @@ namespace glm {
 
     class BinaryFactory : public GLMFactory
     {
+	bool _gibbs;
     public:
-	BinaryFactory(std::string const &name);
+	BinaryFactory(std::string const &name, bool gibbs);
 	bool checkOutcome(StochasticNode const *snode,
 			  LinkNode const *lnode) const;
 	GLMMethod *newMethod(Updater const *updater,
 			     std::vector<Updater const *> const &sub_updaters,
 			     unsigned int chain) const;
+	bool canSample(StochasticNode const *snode) const;
 	virtual BinaryGLM *newBinary(Updater const *updater,
 				     std::vector<Updater const *> const 
 				     &sub_updaters,

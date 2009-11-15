@@ -8,7 +8,7 @@ using std::vector;
 namespace glm {
 
     HolmesHeldFactory::HolmesHeldFactory()
-	: BinaryFactory("Holmes-Held")
+	: BinaryFactory("Holmes-Held", false)
     {}
 
     BinaryGLM *
@@ -17,11 +17,6 @@ namespace glm {
 				 unsigned int chain) const
     {
 	return new HolmesHeld(updater, sub_updaters, chain);
-    }
-
-    bool HolmesHeldFactory::trunc() const
-    {
-	return false;
     }
 
 }

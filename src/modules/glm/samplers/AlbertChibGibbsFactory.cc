@@ -8,7 +8,7 @@ using std::vector;
 namespace glm {
 
     AlbertChibGibbsFactory::AlbertChibGibbsFactory()
-	: BinaryFactory("Albert-Chib-Gibbs")
+	: BinaryFactory("Albert-Chib-Gibbs", true)
     {}
 
     BinaryGLM *
@@ -17,11 +17,6 @@ namespace glm {
 				 unsigned int chain) const
     {
 	return new AlbertChib(updater, sub_updaters, chain, true);
-    }
-
-    bool AlbertChibGibbsFactory::trunc() const
-    {
-	return true;
     }
 
 }

@@ -29,8 +29,8 @@ namespace glm {
 	return new Linear(updater, sub_updaters, chain, true);
     }
 
-    bool LinearGibbsFactory::trunc() const
+    bool LinearGibbsFactory::canSample(StochasticNode const *snode) const
     {
-	return true;
+	return snode->length() == 1;
     }
 }

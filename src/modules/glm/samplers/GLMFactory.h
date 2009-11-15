@@ -20,7 +20,7 @@ namespace glm {
     class GLMFactory : public SamplerFactory
     {
 	std::string _name;
-	Updater * canSample(StochasticNode *snode, Graph const &graph) const;
+	Updater * makeUpdater(StochasticNode *snode, Graph const &graph) const;
 	bool checkDescendants(Updater const *updater) const;
     public:
 	GLMFactory(std::string const &name);
@@ -36,8 +36,9 @@ namespace glm {
 	    newMethod(Updater const *updater,
 		      std::vector<Updater const *> const &sub_updaters, 
 		      unsigned int chain) const = 0;
-	virtual bool trunc() const = 0;
+	virtual bool canSample(StochasticNode const *snode) const = 0;
 	std::string const &name() const;
+	
     };
 
 }

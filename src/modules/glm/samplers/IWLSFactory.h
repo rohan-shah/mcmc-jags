@@ -17,6 +17,7 @@ namespace glm {
 	GLMMethod *newMethod(Updater const *updater, 
 			     std::vector<Updater const *> const &sub_updaters,
 			     unsigned int chain) const;
+	bool canSample(StochasticNode const *snode) const;
     };
 
 }

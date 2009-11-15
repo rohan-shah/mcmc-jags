@@ -1,5 +1,7 @@
 #include <config.h>
 
+#include <graph/StochasticNode.h>
+
 #include "IWLSFactory.h"
 #include "IWLS.h"
 
@@ -31,5 +33,14 @@ namespace glm {
     {
 	return new IWLS(updater, sub_updaters, chain);
     }
-
+    
+    bool IWLSFactory::canSample(StochasticNode const *snode) const
+    {
+	vector<Node const *> const &parents = snode->parents();
+	for (unsigned int i = 0; i < parents.size(); ++i) {
+	    if (!snode->isObserved())
+		return false;
+	}
+	return !isBounded(snode);
+    }
 }

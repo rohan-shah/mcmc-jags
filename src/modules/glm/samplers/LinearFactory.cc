@@ -29,8 +29,8 @@ namespace glm {
 	return new Linear(updater, sub_updaters, chain, false);
     }
 
-    bool LinearFactory::trunc() const
+    bool LinearFactory::canSample(StochasticNode const *snode) const
     {
-	return false;
+	return !isBounded(snode);
     }
 }

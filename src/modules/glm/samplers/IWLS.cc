@@ -91,6 +91,9 @@ namespace glm {
 	case GLM_POISSON:
 	    return mu;
 	    break;
+	case GLM_NORMAL:
+	    return 1;
+	    break;
 	case GLM_UNKNOWN:
 	    throw logic_error("Unknown GLM family in IWLS");
 	}

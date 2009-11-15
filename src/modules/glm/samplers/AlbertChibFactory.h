@@ -15,7 +15,6 @@ namespace glm {
 	BinaryGLM *newBinary(Updater const *updater, 
 			     std::vector<Updater const *> const &sub_updaters,
 			     unsigned int chain) const;
-	bool trunc() const;
     };
 
 }
