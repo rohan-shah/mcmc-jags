@@ -43,7 +43,7 @@ namespace glm {
 		  unsigned int chain, bool link);
 	virtual ~GLMMethod();
 	void updateLM(RNG *rng, bool stochastic = true);
-	void updateLMGibbs(RNG *rng, unsigned int nrep);
+	void updateLMGibbs(RNG *rng);
 	bool isAdaptive() const;
 	bool adaptOff();
 	void calCoef(double *&, cs *&);
@@ -51,8 +51,8 @@ namespace glm {
 	virtual double getMean(unsigned int i) const = 0;
 	virtual double getPrecision(unsigned int i) const = 0;
 	virtual double getValue(unsigned int i) const = 0;
-	virtual void initAuxiliary(RNG *rng) = 0;
-	virtual void updateAuxiliary(double *b, csn *N, RNG *rng) = 0;
+	virtual void initAuxiliary(RNG *rng);
+	virtual void updateAuxiliary(double *b, csn *N, RNG *rng);
 	static GLMFamily getFamily(StochasticNode const *snode);
     };
 

@@ -40,20 +40,10 @@ namespace glm {
 	    return "Linear";
     }
 
-    void Linear::initAuxiliary(RNG *rng) 
-    {
-	return; //Nothing to do
-    }
-
-    void Linear::updateAuxiliary(double *b, csn *N, RNG *rng)
-    {
-	return; //Nothing to do
-    }
-
     void Linear::update(RNG *rng)
     {
 	if (_gibbs) 
-	    updateLMGibbs(rng, 1);
+	    updateLMGibbs(rng);
 	else
 	    updateLM(rng);
     }

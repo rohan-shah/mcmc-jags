@@ -23,100 +23,13 @@ static unsigned int nchildren(Updater const *updater)
     return updater->stochasticChildren().size();
 }
 
-static HHOutcome getOutcome(StochasticNode const *snode)
-{
-    LinkNode const *lnode = 0;
-
-    switch(glm::GLMMethod::getFamily(snode)) {
-    case GLM_NORMAL:
-	return HH_NORMAL;
-    case GLM_BERNOULLI: case GLM_BINOMIAL:
-	lnode = dynamic_cast<LinkNode const*>(snode->parents()[0]);
-	if (!lnode) {
-	    throw logic_error("No link in Holmesheld");
-	}
-	else if (lnode->link()->linkName() == "probit") {
-	    return HH_PROBIT;
-	}
-	else if (lnode->link()->linkName() == "logit") {
-	    return HH_LOGIT;
-	}
-	else {
-	    throw logic_error("Invalid link in HolmesHeld");
-	}
-    default:
-	throw logic_error("Invalid family in HolmesHeld");
-    }
-}
-
 namespace glm {
 
     HolmesHeld::HolmesHeld(Updater const *updater,
 			   vector<Updater const *> const &sub_updaters,
 			   unsigned int chain)
-	: GLMMethod(updater, sub_updaters, chain, true), 
-	  _outcome(nchildren(updater)),
-	  _z(nchildren(updater)), _tau(nchildren(updater))
+	: BinaryGLM(updater, sub_updaters, chain)
     {
-	for (unsigned int i = 0; i < _outcome.size(); ++i) {
-	    _outcome[i] = getOutcome(CHILD(i));
-	}
-    }
-
-    double HolmesHeld::getMean(unsigned int i) const
-    {
-	switch(_outcome[i]) {
-	case HH_NORMAL:
-	    return CHILD(i)->parents()[0]->value(_chain)[0];
-	case HH_PROBIT: case HH_LOGIT:
-	    return CHILD(i)->parents()[0]->parents()[0]->value(_chain)[0];
-	}
-    }
-    
-    double HolmesHeld::getValue(unsigned int i) const 
-    {
-	switch(_outcome[i]) {
-	case HH_NORMAL:
-	    return CHILD(i)->value(_chain)[0];
-	case HH_PROBIT: case HH_LOGIT:
-	    return _z[i];
-	}
-    }
-
-    double HolmesHeld::getPrecision(unsigned int i) const
-    {
-	switch(_outcome[i]) {
-	case HH_NORMAL:
-	    return CHILD(i)->parents()[1]->value(_chain)[0];
-	case HH_PROBIT:
-	    return 1;
-	case HH_LOGIT:
-	    return _tau[i];
-	}
-    }
-
-    void HolmesHeld::initAuxiliary(RNG *rng)    
-    {	    
-	for (unsigned int i = 0; i < _z.size(); ++i) {
-	    _tau[i] = 1;
-	    double y = CHILD(i)->value(_chain)[0];
-	    switch(_outcome[i]) {
-	    case HH_NORMAL:
-		_z[i] = 0;
-		break;
-	    case HH_PROBIT: case HH_LOGIT:
-		if (y == 1) {
-		    _z[i] = lnormal(0, rng, getMean(i));
-		}
-		else if (y == 0) {
-		    _z[i] = rnormal(0, rng, getMean(i));
-		}
-		else {
-		    throw logic_error("Invalid child value in HolmesHeld");
-		}
-	    }
-	}
-
     }
 
     void HolmesHeld::updateAuxiliary(double *w, csn *N, RNG *rng)
@@ -145,7 +58,7 @@ namespace glm {
 	int *xi = new int[2*ncol]; //Stack
 	for (unsigned int r = 0; r < nrow; ++r) {
 	    
-	    if (_outcome[r] != HH_NORMAL) {
+	    if (_outcome[r] != BGLM_NORMAL) {
 
 		int top = cs_spsolve(N->L, Pt_X, r, xi, ur, 0, 1);
 		//Subtract contribution of row r from b
@@ -201,7 +114,7 @@ namespace glm {
 	
 	for (unsigned int r = 0; r < _tau.size(); ++r)
 	{
-	    if (_outcome[r] == HH_LOGIT) {
+	    if (_outcome[r] == BGLM_LOGIT) {
 		double delta = fabs(getValue(r) - getMean(r));
 		_tau[r] = 1/sample_lambda(delta, rng);
 	    }

@@ -1,18 +1,17 @@
-#ifndef HOLMES_HELD_FACTORY_H_
-#define HOLMES_HELD_FACTORY_H_
+#ifndef ALBERT_CHIB_GIBBS_FACTORY_H_
+#define ALBERT_CHIB_GIBBS_FACTORY_H_
 
 #include "BinaryFactory.h"
-#include "BinaryGLM.h"
 
 namespace glm {
 
     /**
      * @shortFactory object for conjugate linear model sampler
      */
-    class HolmesHeldFactory : public BinaryFactory
+    class AlbertChibGibbsFactory : public BinaryFactory
     {
     public:
-	HolmesHeldFactory();
+	AlbertChibGibbsFactory();
 	BinaryGLM *newBinary(Updater const *updater, 
 			     std::vector<Updater const *> const &sub_updaters,
 			     unsigned int chain) const;
@@ -21,4 +20,4 @@ namespace glm {
 
 }
 
-#endif /* HOLMES_HELD_FACTORY_H_ */
+#endif /* ALBERT_CHIB_GIBBS_FACTORY_H_ */

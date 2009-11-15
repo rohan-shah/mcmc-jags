@@ -2,10 +2,10 @@
 
 #include "samplers/LinearFactory.h"
 #include "samplers/LinearGibbsFactory.h"
-//#include "samplers/ProbitFactory.h"
-//#include "samplers/LogitFactory.h"
 #include "samplers/IWLSFactory.h"
 #include "samplers/HolmesHeldFactory.h"
+#include "samplers/AlbertChibFactory.h"
+#include "samplers/AlbertChibGibbsFactory.h"
 
 using std::vector;
 
@@ -21,11 +21,11 @@ namespace glm {
 	: Module("glm")
     {
 	//insert(new IWLSFactory);
-	insert(new LinearFactory);
 	insert(new LinearGibbsFactory);
-	//insert(new ProbitFactory);
-        //insert(new LogitFactory);
-	insert(new HolmesHeldFactory);
+	insert(new LinearFactory);
+	insert(new AlbertChibGibbsFactory);
+	insert(new AlbertChibFactory);
+	//insert(new HolmesHeldFactory);
     }
     
     GLMModule::~GLMModule() {

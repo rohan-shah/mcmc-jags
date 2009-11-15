@@ -17,8 +17,6 @@ namespace glm {
 	double getMean(unsigned int i) const;
 	double getPrecision(unsigned int i) const;
 	double getValue(unsigned int i) const;
-	void initAuxiliary(RNG *rng);
-	void updateAuxiliary(double *b, csn *N, RNG *rng);
 	void update(RNG *rng);
 	std::string name() const;
     };

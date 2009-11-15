@@ -5,13 +5,13 @@ glmsampler_la_CPPFLAGS = -I$(top_srcdir)/src/include \
 
 glmsampler_la_LDFLAGS = -no-undefined -module -avoid-version
 
-glmsampler_la_SOURCES = Linear.cc GLMMethod.cc LinearFactory.cc		\
-GLMFactory.cc Probit.cc ProbitFactory.cc GLMSampler.cc ScaleMixture.cc	\
-LogitFactory.cc Logit.cc IWLS.cc IWLSFactory.cc KS.cc HolmesHeld.cc	\
-HolmesHeldFactory.cc LinearGibbsFactory.cc
+glmsampler_la_SOURCES = GLMFactory.cc GLMSampler.cc GLMMethod.cc	\
+LinearFactory.cc LinearGibbsFactory.cc Linear.cc BinaryFactory.cc	\
+BinaryGLM.cc KS.cc AlbertChibFactory.cc AlbertChibGibbsFactory.cc	\
+AlbertChib.cc HolmesHeldFactory.cc HolmesHeld.cc IWLSFactory.cc		\
+IWLS.cc
 
-noinst_HEADERS = LinearFactory.h GLMFactory.h Linear.h GLMMethod.h	\
-Probit.h ProbitFactory.h GLMSampler.h ScaleMixture.h LogitFactory.h	\
-Logit.h IWLS.h IWLSFactory.h KS.h HolmesHeld.h HolmesHeldFactory.h	\
-LinearGibbsFactory.h
-
+noinst_HEADERS = GLMFactory.h GLMSampler.h GLMMethod.h LinearFactory.h	\
+LinearGibbsFactory.h Linear.h BinaryFactory.h BinaryGLM.h KS.h		\
+AlbertChibFactory.h AlbertChibGibbsFactory.h AlbertChib.h		\
+HolmesHeldFactory.h HolmesHeld.h IWLSFactory.h IWLS.h

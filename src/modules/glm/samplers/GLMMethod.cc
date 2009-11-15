@@ -350,11 +350,11 @@ namespace glm {
 	delete [] b;
     }
 
-    void GLMMethod::updateLMGibbs(RNG *rng, unsigned int nrep) 
+    void GLMMethod::updateLMGibbs(RNG *rng) 
     {
 	// Update element-wise. Less efficient than updateLM but
 	// does not require a Cholesky decomposition, and is 
-	// necessary for truncated 
+	// necessary for truncated parameters
 
 	if (_init) {
 	    if (_updater->length() != _sub_updaters.size()) {
@@ -385,36 +385,35 @@ namespace glm {
 	}
 
 	//Update element-wise
-	for (unsigned int r = 0; r < nrep; ++r) {
-	    for (int i = 0; i < nrow; ++i) {
+	for (int i = 0; i < nrow; ++i) {
+	    
+	    double theta_old = theta[i];
 		
-		double theta_old = theta[i];
+	    double mu  = theta[i] + b[i]/diagA[i];
+	    double sigma = sqrt(1/diagA[i]);
+	    StochasticNode const *snode = _sub_updaters[i]->nodes()[0];
+	    double const *l = snode->lowerLimit(_chain);
+	    double const *u = snode->upperLimit(_chain);
 		
-		double mu  = theta[i] + b[i]/diagA[i];
-		double sigma = sqrt(1/diagA[i]);
-		StochasticNode const *snode = _sub_updaters[i]->nodes()[0];
-		double const *l = snode->lowerLimit(_chain);
-		double const *u = snode->upperLimit(_chain);
+	    if (l && u) {
+		theta[i] = inormal(*l, *u, rng, mu, sigma);
+	    }
+	    else if (l) {
+		theta[i] = lnormal(*l, rng, mu, sigma);
+	    }
+	    else if (u) {
+		theta[i] = rnormal(*u, rng, mu, sigma);
+	    }
+	    else {
+		theta[i] = mu + rng->normal() * sigma;
+	    }
 		
-		if (l && u) {
-		    theta[i] = inormal(*l, *u, rng, mu, sigma);
-		}
-		else if (l) {
-		    theta[i] = lnormal(*l, rng, mu, sigma);
-		}
-		else if (u) {
-		    theta[i] = rnormal(*u, rng, mu, sigma);
-		}
-		else {
-		    theta[i] = mu + rng->normal() * sigma;
-		}
-		
-		double delta = theta[i] - theta_old;
-		for (int j = A->p[i]; j < A->p[i+1]; ++j) {
-		    b[A->i[j]] -= delta * A->x[j];
-		}
+	    double delta = theta[i] - theta_old;
+	    for (int j = A->p[i]; j < A->p[i+1]; ++j) {
+		b[A->i[j]] -= delta * A->x[j];
 	    }
 	}
+
 
 	_updater->setValue(theta,  _chain);
 
@@ -448,5 +447,13 @@ namespace glm {
 	else {
 	    return GLM_UNKNOWN;
 	}
+    }
+
+    void GLMMethod::initAuxiliary(RNG *rng)
+    {
+    }
+    
+    void GLMMethod::updateAuxiliary(double *b, csn *N, RNG *rng)
+    {
     }
 }

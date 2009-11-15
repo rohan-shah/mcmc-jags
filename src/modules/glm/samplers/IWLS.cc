@@ -96,18 +96,6 @@ namespace glm {
 	}
 	return 0; //-Wall
     }
- 
-
-
-    void IWLS::initAuxiliary(RNG *rng)
-    {
-	//No auxiliary variables in this method
-    }
-    
-    void IWLS::updateAuxiliary(double *b, csn *N, RNG *rng)
-    {
-	//No auxiliary variables in this method
-    }
 
     double IWLS::logPTransition(vector<double> const &xorig, 
 				vector<double> const &x,
