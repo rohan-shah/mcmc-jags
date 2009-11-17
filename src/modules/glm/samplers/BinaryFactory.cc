@@ -69,7 +69,7 @@ namespace glm {
 	}
 
 	if (linear) {
-	    return new Linear(updater, sub_updaters, chain, false);
+	    return new Linear(updater, sub_updaters, chain, _gibbs);
 	}
 	else {
 	    return newBinary(updater, sub_updaters, chain);
