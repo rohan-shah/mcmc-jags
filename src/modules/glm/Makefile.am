@@ -9,7 +9,8 @@ glm_la_CPPFLAGS = -I$(top_srcdir)/src/include \
 
 glm_la_LIBADD = samplers/glmsampler.la 	\
 	CSparse/csparse.la \
-	$(top_builddir)/src/lib/libjags.la
+	$(top_builddir)/src/lib/libjags.la \
+	$(top_builddir)/src/jrmath/libjrmath.la
 
 glm_la_LDFLAGS = -no-undefined -module -avoid-version
 

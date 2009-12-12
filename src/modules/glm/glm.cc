@@ -6,6 +6,7 @@
 #include "samplers/HolmesHeldFactory.h"
 #include "samplers/AlbertChibFactory.h"
 #include "samplers/AlbertChibGibbsFactory.h"
+#include "samplers/AMFactory.h"
 
 using std::vector;
 
@@ -23,6 +24,7 @@ namespace glm {
 	insert(new IWLSFactory);
 	insert(new LinearGibbsFactory);
 	insert(new LinearFactory);
+ 	insert(new AMFactory);
 	insert(new AlbertChibGibbsFactory);
 	insert(new AlbertChibFactory);
 	insert(new HolmesHeldFactory);
