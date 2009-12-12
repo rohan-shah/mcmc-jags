@@ -13,6 +13,7 @@
 #include <graph/Graph.h>
 #include <graph/StochasticNode.h>
 #include <graph/DeterministicNode.h>
+#include <graph/LinkNode.h>
 #include <distribution/Distribution.h>
 #include <rng/TruncatedNormal.h>
 
@@ -38,6 +39,25 @@ static void getIndices(set<StochasticNode const *> const &schildren,
     if (indices.size() != schildren.size()) {
 	throw logic_error("Size mismatch in getIndices");
     }
+}
+
+static Node const *getLinearPredictor(StochasticNode const *snode)
+{
+    Node const *lp = 0;
+
+    switch(glm::GLMMethod::getFamily(snode)) {
+    case GLM_NORMAL: case GLM_BERNOULLI: case GLM_BINOMIAL: case GLM_POISSON:
+	lp = snode->parents()[0];
+	break;
+    case GLM_UNKNOWN:
+	break;
+    }
+    
+    LinkNode const *ln = dynamic_cast<LinkNode const*>(lp);
+    if (ln) 
+	lp = ln->parents()[0];
+    
+    return lp;
 }
 
 namespace glm {
@@ -98,7 +118,8 @@ namespace glm {
     GLMMethod::GLMMethod(Updater const *updater, 
 			 vector<Updater const *> const &sub_updaters,
 			 unsigned int chain, bool link)
-	: _updater(updater), _chain(chain), _sub_updaters(sub_updaters),
+	: _lp(updater->stochasticChildren().size()),
+	  _updater(updater), _chain(chain), _sub_updaters(sub_updaters),
 	  _X(0), _symbol(0), _fixed(sub_updaters.size(), false), 
 	  _length_max(0), _nz_prior(0), _init(true)
     {
@@ -107,6 +128,11 @@ namespace glm {
 
 	int nrow = schildren.size();
 	int ncol = updater->length();
+
+	//Set up linear predictor
+	for (unsigned int i = 0; i < nrow; ++i) {
+	    _lp[i] = getLinearPredictor(schildren[i])->value(chain);
+	}
 
 	vector<int> Xp(ncol + 1);
 	vector<int> Xi;
@@ -147,6 +173,8 @@ namespace glm {
 	for (unsigned int i = 0; i < sub_updaters.size(); ++i) {
 	    _fixed[i] = checkLinear(sub_updaters[i], true, link);
 	}
+
+
     }
 
     GLMMethod::~GLMMethod()
@@ -429,6 +457,11 @@ namespace glm {
 	return true;
     }
 
+    double GLMMethod::getMean(unsigned int i) const
+    {
+	return *_lp[i];
+    }
+
     GLMFamily GLMMethod::getFamily(StochasticNode const *snode)
     {
 	string const &name = snode->distribution()->name();
@@ -456,4 +489,5 @@ namespace glm {
     void GLMMethod::updateAuxiliary(double *b, csn *N, RNG *rng)
     {
     }
+
 }

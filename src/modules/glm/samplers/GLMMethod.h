@@ -24,6 +24,7 @@ namespace glm {
      * Abstract method for generalized linear models.
      */
     class GLMMethod : public SampleMethod {
+	std::vector<double const *> _lp;
     protected:
 	Updater const *_updater;
 	unsigned int _chain;
@@ -47,8 +48,8 @@ namespace glm {
 	bool isAdaptive() const;
 	bool adaptOff();
 	void calCoef(double *&, cs *&);
+	virtual	double getMean(unsigned int i) const;
 	virtual std::string name() const = 0;
-	virtual double getMean(unsigned int i) const = 0;
 	virtual double getPrecision(unsigned int i) const = 0;
 	virtual double getValue(unsigned int i) const = 0;
 	virtual void initAuxiliary(RNG *rng);

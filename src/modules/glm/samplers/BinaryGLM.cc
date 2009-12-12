@@ -61,16 +61,6 @@ namespace glm {
 	    _outcome[i] = getOutcome(CHILD(i));
 	}
     }
-
-    double BinaryGLM::getMean(unsigned int i) const
-    {
-	switch(_outcome[i]) {
-	case BGLM_NORMAL:
-	    return CHILD(i)->parents()[0]->value(_chain)[0];
-	case BGLM_PROBIT: case BGLM_LOGIT:
-	    return CHILD(i)->parents()[0]->parents()[0]->value(_chain)[0];
-	}
-    }
     
     double BinaryGLM::getValue(unsigned int i) const 
     {

@@ -46,11 +46,6 @@ namespace glm {
 	return "IWLS";
     }
 
-    double IWLS::getMean(unsigned int i) const
-    {
-	return _link[i]->eta(_chain);
-    }
-
     double IWLS::getPrecision(unsigned int i) const
     {
 	double w = _w;
