@@ -16,13 +16,7 @@ namespace glm {
     {
     }
 
-    double Linear::getMean(unsigned int i) const
-    {
-	return _updater->stochasticChildren()[i]->parents()[0]->value(_chain)[0];
-    }
-    
-    double 
-    Linear::getPrecision(unsigned int i) const 
+    double Linear::getPrecision(unsigned int i) const 
     {
 	return _updater->stochasticChildren()[i]->parents()[1]->value(_chain)[0];
     }
