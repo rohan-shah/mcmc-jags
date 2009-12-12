@@ -2,6 +2,7 @@
 
 #include "AMMethod.h"
 #include "AuxMixBinomial.h"
+#include "AuxMixBernoulli.h"
 #include "AuxMixPoisson.h"
 #include "AuxMixNormal.h"
 #include "AuxMix.h"
@@ -16,6 +17,12 @@ using std::vector;
 using std::string;
 using std::logic_error;
 
+static double const & one() 
+{
+    static const double x = 1;
+    return x;
+}
+
 static bool checkOutcome(StochasticNode const *snode)
 {
     LinkNode const *lnode = dynamic_cast<LinkNode const*>(snode->parents()[0]);
@@ -26,7 +33,7 @@ static bool checkOutcome(StochasticNode const *snode)
 
 
     switch(glm::GLMMethod::getFamily(snode)) {
-    case GLM_BINOMIAL:
+    case GLM_BINOMIAL: case GLM_BERNOULLI:
 	if (ln != "logit") {
 	    return false;
 	}
@@ -69,7 +76,11 @@ namespace glm {
 	    Node const *tau = 0;
 
 	    switch(GLMMethod::getFamily(y)) {
-	    case GLM_BINOMIAL:
+	    case GLM_BERNOULLI:
+		_aux[i] = new AuxMixBinomial(eta->value(chain)[0], one(),
+					     y->value(chain)[0]);
+		break;
+	    case GLM_BINOMIAL: 
 		tau = y->parents()[1];
 		_aux[i] = new AuxMixBinomial(eta->value(chain)[0],
 					     tau->value(chain)[0],
@@ -85,6 +96,7 @@ namespace glm {
 					   y->value(chain)[0]);
 		break;
 	    default:
+		throw logic_error("Invalid family in AMMethod");
 		break;
 	    }
 	}
