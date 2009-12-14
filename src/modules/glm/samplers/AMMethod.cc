@@ -2,7 +2,6 @@
 
 #include "AMMethod.h"
 #include "AuxMixBinomial.h"
-#include "AuxMixBernoulli.h"
 #include "AuxMixPoisson.h"
 #include "AuxMixNormal.h"
 #include "AuxMix.h"
