@@ -2,7 +2,7 @@
  * This code was initially written by Rudolf Fruehwirth (Institut fuer
  * Hochenergiephysik Oesterreichische Akademie der Wissenschaften,
  * Nikolsdorfer Gasse 18, 1050 Wien), and later adapted to GMRFLib by
- * H.Rue, then adapted to JAGS by Martyn Plummer
+ * H.Rue, then adapted to JAGS by Martyn Plummer.
  *
  * This routine approximates the negative log-gamma distribution, with density
  * 
@@ -173,7 +173,7 @@ static const double V9[15][9] = {
 /*
  * For n >= 20, approximate mixture parameters are calculated using a
  * rational approximation (see function rational_approx below). The
- * coefficients of the rational function are stored in a 4 x ncomp
+ * coefficients of the rational function are stored in an ncomp x 4
  * array, where ncomp is the number of components in the approximation.
  * 
  * Separate coefficents are used for n in the ranges:
@@ -186,146 +186,156 @@ static const double V9[15][9] = {
  * For n > 30000, only a single component is required. In other words
  * the log-gamma distribution is approximated well by a single normal
  * distribution.
+ *
+ * Note that the coefficients for (20...49) are given to 12 decimal
+ * places, whereas the others are given to 15 decimal places. This is
+ * the way they were given in the GMRF library.
  */
 
 /*
  * n from 20 to 49 
  */
-static const double Coeff_p3[4][4] = {
-    {-5.644536495326e-009, 7.299190941772e-009, 
-     -1.788056445701e-008, 9.259794020097e-009},
-    {-1.266992312621e-006, 1.387196986613e-006, 
-     -2.391966642312e-006, 1.224613603301e-006},
-    {0.000000000000e+000, 0.000000000000e+000, 
-     0.000000000000e+000, 0.000000000000e+000},
-    {4.730022618640e+000, 3.672627139064e+000, 
-     4.871566292199e+000, 3.215154075256e+000}
+static const double Coef_p3[4][4] = {
+    {-5.644536495326e-09, -1.266992312621e-06, 
+     0.000000000000e+00, 4.730022618640e+00},
+    {7.299190941772e-09, 1.387196986613e-06, 
+     0.000000000000e+00, 3.672627139064e+00},
+    {-1.788056445701e-08, -2.391966642312e-06, 
+     0.000000000000e+00, 4.871566292199e+00},
+    {9.259794020097e-09, 1.224613603301e-06, 
+     0.000000000000e+00, 3.215154075256e+00}
 };
-static const double Coeff_m3[4][4] = {
-    {4.552797222246e-005, 2.284729919322e-005, 
-     -3.900177124794e-005, -2.486737015928e-005},
-    {4.638009105861e-002, -1.095058888700e-002, 
-     4.731686443506e-002, 2.978371498898e-002},
-    {9.627160143020e-002, -1.690501643196e-002, 
-     -5.610095109269e-001, -4.643825308040e-002},
-    {1.143772956136e+000, 1.944583776810e+000, 
-     -6.033854619021e+000, -1.105498133467e+000}
+static const double Coef_m3[4][4] = {
+    {4.552797222246e-05, 4.638009105861e-02, 
+     9.627160143020e-02, 1.143772956136e+00},
+    {2.284729919322e-05, -1.095058888700e-02, 
+     -1.690501643196e-02, 1.944583776810e+00},
+    {-3.900177124794e-05, 4.731686443506e-02, 
+     -5.610095109269e-01, -6.033854619021e+00},
+    {-2.486737015928e-05, 2.978371498898e-02, 
+     -4.643825308040e-02, -1.105498133467e+00}
 };
-static const double Coeff_v3[4][4] = {
-    {-2.191015160635e-005, 7.060864706965e-005, 
-     1.823003483481e-004, 1.613752763707e-004},
-    {9.939739739229e-002, 1.143203813438e-001, 
-     1.675101633325e-001, 1.943336591437e-001},
-    {9.208564449364e-002, 1.548617268518e-001, 
-     2.735383307281e-001, 2.797653349940e-001},
-    {7.148740127686e-001, 2.428636911969e+000, 
-     4.861423133312e+000, 3.840341872065e+000}
+static const double Coef_v3[4][4] = {
+    {-2.191015160635e-05, 9.939739739229e-02, 
+     9.208564449364e-02, 7.148740127686e-01},
+    {7.060864706965e-05, 1.143203813438e-01, 
+     1.548617268518e-01, 2.428636911969e+00},
+    {1.823003483481e-04, 1.675101633325e-01, 
+     2.735383307281e-01, 4.861423133312e+00},
+    {1.613752763707e-04, 1.943336591437e-01, 
+     2.797653349940e-01, 3.840341872065e+00}
 };
 
 /*
  * n from 50 to 439 
  */
-static const double Coeff_p4[4][3] = {
-    {-5.639545796991280e-010, 2.651836392450035e-010, -2.384482520627535e-011},
-    {4.698743002874532e-007, -1.280380156002802e-007, -1.227680572544847e-007},
-    {0.000000000000000e+000, 0.000000000000000e+000,   0.000000000000000e+000},
-    {4.730482920811330e+000, 2.093982718501769e+000,   3.214956149674574e+000}
+static const double Coef_p4[3][4] = {
+    {-5.639545796991280e-10, 4.698743002874532e-07, 
+     0.000000000000000e+00, 4.730482920811330e+00},
+    {2.651836392450035e-10, -1.280380156002802e-07, 
+     0.000000000000000e+00, 2.093982718501769e+00},
+    {-2.384482520627535e-11, -1.227680572544847e-07, 
+     0.000000000000000e+00, 3.214956149674574e+00}
 };
-static const double Coeff_m4[4][3] = {
-    {-1.653173201148335e-006, -8.298537364426537e-007, -1.431525987300163e-006},
-    {1.036578627632170e-002, 5.017456263052972e-003, 8.386323466104712e-003},
-    {2.349390607953272e-002, 5.123168011502721e-002, -1.841057020139425e-002},
-    {1.432904956685477e+000, 6.453910704667408e+000, -1.410602407670769e+000}
+static const double Coef_m4[3][4] = {
+    {-1.653173201148335e-06, 1.036578627632170e-02, 
+     2.349390607953272e-02, 1.432904956685477e+00},
+    {-8.298537364426537e-07, 5.017456263052972e-03, 
+     5.123168011502721e-02, 6.453910704667408e+00},
+    {-1.431525987300163e-06, 8.386323466104711e-03, 
+     -1.841057020139425e-02, -1.410602407670769e+00}
 };
-static const double Coeff_v4[4][3] = {
-    {-2.726183914412441e-007, 1.118379212729684e-006, 2.197737873275589e-006},
-    {2.788507874891710e-002, 2.433214514397419e-002, 3.186581505796005e-002},
-    {2.777086294607445e-002, 2.778340896223197e-002, 3.808382220884354e-002},
-    {8.369406298984288e-001, 1.489387981224663e+000, 1.958805931276004e+000}
+static const double Coef_v4[3][4] = {
+    {-2.726183914412441e-07, 2.788507874891710e-02, 
+     2.777086294607445e-02, 8.369406298984288e-01},
+    {1.118379212729684e-06, 2.433214514397419e-02, 
+     2.778340896223197e-02, 1.489387981224663e+00},
+    {2.197737873275589e-06, 3.186581505796005e-02, 
+     3.808382220884354e-02, 1.958805931276004e+00}
 };
-
 
 /*
  * n from 440 to 1599 
  */
-static const double Coeff_p5[4][2] = {
-    {1.034981541036597e-010, -2.291586556531707e-010},
-    {-2.445177000398938e-007, 5.414543692806514e-007},
-    {0.000000000000000e+000, 0.000000000000000e+000},
-    {1.451229377475864e+000, 3.216167113242079e+000}
+
+static const double Coef_p5[2][4] = {
+    {1.034981541036597e-10, -2.445177000398938e-07, 
+     0.000000000000000e+00, 1.451229377475864e+00},
+    {-2.291586556531707e-10, 5.414543692806514e-07, 
+     0.000000000000000e+00, 3.216167113242079e+00}
 };
-static const double Coeff_m5[4][2] = {
-    {-6.578325435644067e-008, -6.292364160498604e-008},
-    {1.648723149067166e-003, 1.618047470065775e-003},
-    {1.594968525045459e-002, -7.091699113800587e-003},
-    {5.566082591106806e+000, -2.516741952410371e+000}
+static const double Coef_m5[2][4] = {
+    {-6.578325435644067e-08, 1.648723149067166e-03, 
+     1.594968525045459e-02, 5.566082591106806e+00},
+    {-6.292364160498604e-08, 1.618047470065775e-03, 
+     -7.091699113800587e-03, -2.516741952410371e+00}
 };
-static const double Coeff_v5[4][2] = {
-    {-2.802162650788337e-009, 3.776558110733883e-008}, 
-    {4.051503597935380e-003, 5.022619018941299e-003}, 
-    {4.018981069179972e-003, 5.525253413878772e-003}, 
-    {9.654061278849895e-001, 1.450507513327352e+000}
+static const double Coef_v5[2][4] = {
+    {-2.802162650788337e-09, 4.051503597935380e-03, 
+     4.018981069179972e-03, 9.654061278849895e-01},
+    {3.776558110733883e-08, 5.022619018941299e-03, 
+     5.525253413878772e-03, 1.450507513327352e+00}
 };
 
 /*
  * n from 1600 to 10000 
  */
-static const double Coeff_p6[4][2] = {
-    {-1.586037487404490e-013, 1.291237745205579e-013},
-    {3.575996226727867e-009, -2.911316152726367e-009},
-    {0.000000000000000e+000, 0.000000000000000e+000},
-    {2.228310599179340e+000, 1.814126328168031e+000}
+static const double Coef_p6[2][4] = {
+    {-1.586037487404490e-13, 3.575996226727867e-09, 
+     0.000000000000000e+00, 2.228310599179340e+00},
+    {1.291237745205579e-13, -2.911316152726367e-09, 
+     0.000000000000000e+00, 1.814126328168031e+00}
 };
-static const double Coeff_m6[4][2] = {
-    {-2.419956255676409e-009, -2.419411092563945e-009},
-    {3.245753451748892e-004, 3.245669014250788e-004},
-    {1.895335618211674e-003, -2.327930564510444e-003},
-    {3.388553853864067e+000, -4.162274939236667e+000}
+static const double Coef_m6[2][4] = {
+    {-2.419956255676409e-09, 3.245753451748892e-04, 
+     1.895335618211674e-03, 3.388553853864067e+00},
+    {-2.419411092563945e-09, 3.245669014250788e-04, 
+     -2.327930564510444e-03, -4.162274939236667e+00}
 };
-static const double Coeff_v6[4][2] = {
-    {-6.024563976875348e-011, 5.024317053887777e-010},
-    {-6.540694956580495e-004, 8.898044793516080e-004},
-    {-6.582951415419203e-004, 9.246987493760628e-004},
-    {1.006399508694657e+000, 1.149073788967684e+000}
+static const double Coef_v6[2][4] = {
+    {-6.024563976875348e-11, -6.540694956580495e-04, 
+     -6.582951415419203e-04, 1.006399508694657e+00},
+    {5.024317053887777e-10, 8.898044793516080e-04, 
+     9.246987493760628e-04, 1.149073788967684e+00}
 };
 
 /*
  * n from 10000 to 30000 
  */
-static const double Coeff_p7[4][2] = {
-    {-1.663426552872397e-014, 1.354267905471566e-014},
-    {1.141056828884990e-009, -9.289835742028532e-010},
-    {0.000000000000000e+000, 0.000000000000000e+000},
-    {2.228285989630589e+000, 1.814142639751731e+000}
+static const double Coef_p7[2][4] = {
+    {-1.663426552872397e-14, 1.141056828884990e-09, 
+     0.000000000000000e+00, 2.228285989630589e+00},
+    {1.354267905471566e-14, -9.289835742028532e-10, 
+     0.000000000000000e+00, 1.814142639751731e+00}
 };
-static const double Coeff_m7[4][2] = {
-    {-8.929405559006038e-011, -8.931137480031157e-011},
-    {6.319814700961324e-005, 6.320244393309693e-005},
-    {4.785131212048377e-004, -5.877524860249395e-004},
-    {4.271922830906078e+000, -5.247218808668549e+000}
+static const double Coef_m7[2][4] = {
+    {-8.929405559006038e-11, 6.319814700961324e-05, 
+     4.785131212048377e-04, 4.271922830906078e+00},
+    {-8.931137480031157e-11, 6.320244393309693e-05, 
+     -5.877524860249395e-04, -5.247218808668549e+00}
 };
-static const double Coeff_v7[4][2] = {
-    {-1.418731402291282e-012, 1.576782807097003e-011},
-    {-5.512224505288543e-006, 1.914006058179041e-004},
-    {-5.638714069888806e-006, 1.959753272178233e-004},
-    {1.006201804172733e+000, 1.087101027065273e+000}
+static const double Coef_v7[2][4] = {
+    {-1.418731402291282e-12, -5.512224505288543e-06, 
+     -5.638714069888806e-06, 1.006201804172733e+00},
+    {1.576782807097003e-11, 1.914006058179041e-04, 
+     1.959753272178233e-04, 1.087101027065273e+00}
 };
 
 /*
  * Approximate mixture parameters using a rational function that is
  * quadratic in the numerator and linear in the denominator.  The
- * coefficients are in a 4 x ncol array. If the elements of a column
+ * coefficients are in an nrow x 4 array. If the elements of a row
  * are a,b,c,d then the rational approximation is:
  *
- * (a * n^2 + b * n + 1)/(d * n + e)
+ * (a * n^2 + b * n + 1)/(c * n + d)
  *
  */
-static void rational_approx(double n, double const *coef, int ncol, 
+static void rational_approx(double n, const double (*coef)[4], int nrow, 
 			    double *out)
 {
-    for (int i = 0; i < ncol; i++) {
-	double num = coef[i] * n * n + coef[i+ncol] * n + 1;
-	double denom = coef[i+2*ncol] * n + coef[i+3*ncol];
+    for (int i = 0; i < nrow; i++) {
+	double num = coef[i][0] * n * n + coef[i][1] * n + 1;
+	double denom = coef[i][2] * n + coef[i][3];
 	out[i] = num / denom;
     }
 }
@@ -370,69 +380,33 @@ namespace glm {
      */
     void LGMix::updateNApprox(double n)
     {
-	// Find appropriate range
-	const int range[5] = {50, 440, 1600, 10000, 30000};
-	int r = 0;
-	for ( ; r < 5; r++) {
-	    if (n < range[r])
-		break;
+	//Upper limit of range of n supported by each approximation
+	const int upper[5] = {50, 440, 1600, 10000, 30000};
+	//Number of components in each approximation
+	const int ncomp[5] = {4, 3, 2, 2, 2};
+
+	//Each of P,M,V is a 3-dimensional ragged array.
+	//C array syntax doesn't make this easy
+	const double (*P[5])[4] = {Coef_p3, Coef_p4, Coef_p5, Coef_p6, Coef_p7};
+	const double (*M[5])[4] = {Coef_m3, Coef_m4, Coef_m5, Coef_m6, Coef_m7};
+	const double (*V[5])[4] = {Coef_v3, Coef_v4, Coef_v5, Coef_v6, Coef_v7};
+
+	// Find appropriate range and calculate approximate coefficients
+	for (int r = 0; r < 5; r++) {
+	    if (n < upper[r]) {
+		rational_approx(n, P[r], ncomp[r], _weights);
+		rational_approx(n, M[r], ncomp[r], _means);
+		rational_approx(n, V[r], ncomp[r], _variances);
+		_ncomp = ncomp[r];
+		return;
+	    }
 	}
 
-	/* 
-	   To access the 2-dimensional arrays, we need to "flatten"
-	   them, treating them as 1-dimensional arrays.  This works
-	   because they are static arrays occupying a contiguous block
-	   of memory
-	*/
-	const double *P = 0;
-	const double *M = 0;
-	const double *V = 0;
-
-	switch (r) {
-	case 0:
-	    P = &Coeff_p3[0][0];
-	    M = &Coeff_m3[0][0];
-	    V = &Coeff_v3[0][0];
-	    _ncomp = 4;
-	    break;
-	case 1:
-	    P = &Coeff_p4[0][0];
-	    M = &Coeff_m4[0][0];
-	    V = &Coeff_v4[0][0];
-	    _ncomp = 3;
-	    break;
-	case 2:
-	    P = &Coeff_p5[0][0];
-	    M = &Coeff_m5[0][0];
-	    V = &Coeff_v5[0][0];
-	    _ncomp = 2;
-	    break;
-	case 3:
-	    P = &Coeff_p6[0][0];
-	    M = &Coeff_m6[0][0];
-	    V = &Coeff_v6[0][0];
-	    _ncomp = 2;
-	    break;
-	case 4:
-	    P = &Coeff_p7[0][0];
-	    M = &Coeff_m7[0][0];
-	    V = &Coeff_v7[0][0];
-	    _ncomp = 2;
-	    break;
-	case 5:
-	    //Single component
-	    _weights[0] = 1;
-	    _means[0] = 0;
-	    _variances[0] = 1;
-	    _ncomp = 1;
-	    return;
-	default:
-	    throw logic_error("Logic error in LGMix::updateNApprox");
-	}
-
-	rational_approx(n, P, _ncomp, _weights);
-	rational_approx(n, M, _ncomp, _means);
-	rational_approx(n, V, _ncomp, _variances);
+	//Single component for n > 30000
+	_weights[0] = 1;
+	_means[0] = 0;
+	_variances[0] = 1;
+	_ncomp = 1;
     }
 
     void LGMix::updateN(double n)
