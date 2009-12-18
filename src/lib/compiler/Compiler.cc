@@ -707,12 +707,11 @@ Node * Compiler::allocateStochastic(ParseTree const *stoch_relation)
     if (!this_data) {
 	/* 
 	   Special rule for observable functions, which exist both as
-	   a Function and a Distribution, sharing the same name.  If
-	   the node is unobserved, and we find a Function sharing the
-	   name of the distribution, then we create a LogicalNode
-	   instead.
+	   a Function and a Distribution.  If the node is unobserved,
+	   and we find a function matched to the distribution in the
+	   DistTab, then we create a Logical Node instead.
 	*/
-	Function const *func = funcTab().find(distname);
+	Function const *func = distTab().findFunction(dist);
 	if (func) {
 	    DeterministicNode *dnode = new LogicalNode(func, parameters);
 	    _model.addNode(dnode);
@@ -720,7 +719,6 @@ Node * Compiler::allocateStochastic(ParseTree const *stoch_relation)
 	}
     }	
 
-    // Create Stochastic Node
     StochasticNode *snode =  new StochasticNode(dist, parameters, 
 						lBound, uBound);
     _model.addNode(snode);

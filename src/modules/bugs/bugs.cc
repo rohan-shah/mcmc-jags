@@ -30,6 +30,8 @@
 #include <functions/Abs.h>
 #include <functions/CLogLog.h>
 #include <functions/Cos.h>
+#include <functions/DIntervalFunc.h>
+#include <functions/DSumFunc.h>
 #include <functions/Exp.h>
 #include <functions/Equals.h>
 #include <functions/ICLogLog.h>
@@ -90,7 +92,6 @@ BUGSModule::BUGSModule()
     insert(new DDirch);
     insert(new DExp);
     insert(new DGamma);
-    insert(new DInterval);
     insert(new DLnorm);
     insert(new DLogis);
     insert(new DMNorm);
@@ -105,7 +106,6 @@ BUGSModule::BUGSModule()
     insert(new DWeib);
     insert(new DWish);
     insert(new DHyper);
-    insert(new DSum); 
 
     //Load functions
     insert(new Abs);
@@ -142,6 +142,10 @@ BUGSModule::BUGSModule()
     insert(new Transpose);
     insert(new Trunc);
 
+    //Load observable functions
+    insert(new DSum, new DSumFunc);
+    insert(new DInterval, new DIntervalFunc);
+    
     //Load sampler factories
     insert(new MNormalFactory);
     insert(new DirichletFactory);

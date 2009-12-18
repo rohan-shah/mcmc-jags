@@ -37,38 +37,24 @@ struct isLinkName:
 
 void FuncTab::insert (Function const *func)
 {
-    FuncList::iterator p = find_if(_func_list.begin(), _func_list.end(),
-                                   bind2nd(isFuncName(), &func->name()));
-
-    //Transfer function with same name (if any) to the masked list
-    if (p != _func_list.end()) {
-	_masked_func_list.push_front(*p);
-	_func_list.erase(p);
+    FuncList::iterator p = std::find(_func_list.begin(), _func_list.end(),
+				     func);
+    if (p == _func_list.end()) {
+	_func_list.push_front(func);
     }
-    _func_list.push_front(func);
 }
 
 void FuncTab::insert (InverseLinkFunc const *lfunc)
 {
-    FuncList::iterator p = find_if(_func_list.begin(), _func_list.end(),
-                                   bind2nd(isFuncName(), &lfunc->name()));
+    FuncList::iterator p = std::find(_func_list.begin(), _func_list.end(),
+				     lfunc);
+    LinkList::iterator q = std::find(_link_list.begin(), _link_list.end(),
+				     lfunc);
 
-    //Transfer function with same name (if any) to the masked list
-    if (p != _func_list.end()) {
-	_masked_func_list.push_front(*p);
-	_func_list.erase(p);
+    if (p == _func_list.end() && q == _link_list.end()) {
+	_func_list.push_front(lfunc);
+	_link_list.push_front(lfunc);
     }
-    _func_list.push_front(lfunc);
-
-    LinkList::iterator q = find_if(_link_list.begin(), _link_list.end(),
-				   bind2nd(isLinkName(), &lfunc->linkName()));
-				   
-    //Transfer link function with same name (if any) to the masked list
-    if (q != _link_list.end()) {
-	_masked_link_list.push_front(*q);
-	_link_list.erase(q);
-    }
-    _link_list.push_front(lfunc);
 }
 
 Function const * FuncTab::find (string const &funcname) const
@@ -100,43 +86,21 @@ InverseLinkFunc const * FuncTab::findInverseLink (string const &name,
 
 void FuncTab::erase(Function *func)
 {
-    //Erase from the main list.
     FuncList::iterator p = std::find(_func_list.begin(), _func_list.end(),
 				     func);
-    bool move_masked = false;
-    if (p != _func_list.end()) {
-	_func_list.erase(p);
-	move_masked = true; //Move any masked funcributions into the main list
-    }
+    if (p == _func_list.end())
+	return;
 
-    //Erase from the masked list
-    p = std::find(_masked_func_list.begin(), _masked_func_list.end(), func);
-    if (p != _masked_func_list.end()) {
-        if (move_masked) {
-	    _func_list.push_front(*p);
+
+    //Erase from the function list.
+    _func_list.erase(p);
+
+    //If it's a link function, also erase it from the link list
+    for (LinkList::iterator p = _link_list.begin(); p != _link_list.end(); ++p)
+    {
+	if (func == *p) {
+	    _link_list.erase(p);
+	    break;
 	}
-	_masked_func_list.erase(p);
-    }
-}
-
-
-void FuncTab::erase(InverseLinkFunc *link)
-{
-    //Erase from the main list.
-    LinkList::iterator p = std::find(_link_list.begin(), _link_list.end(),
-				     link);
-    bool move_masked = false;
-    if (p != _link_list.end()) {
-	_link_list.erase(p);
-	move_masked = true; //Move any masked link functions into the main list
-    }
-
-    //Erase from the masked list
-    p = std::find(_masked_link_list.begin(), _masked_link_list.end(), link);
-    if (p != _masked_link_list.end()) {
-        if (move_masked) {
-	    _link_list.push_front(*p);
-	}
-	_masked_link_list.erase(p);
     }
 }

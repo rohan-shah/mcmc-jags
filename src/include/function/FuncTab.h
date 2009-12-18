@@ -10,18 +10,17 @@ class Function;
 /**
  * @short Look-up table for Function objects
  *
- * Since all member functions of the JAGS Function class are constant, only
- * one instance of a Function object is required. The FuncTab class 
- * provides a means of storing Functions and looking them up by name.
+ * Since all member functions of the JAGS Function class are constant,
+ * only one instance of any Function object is required. The FuncTab
+ * class provides a means of storing Functions and looking them up by
+ * name.
  *
  * @see Function DistTab 
  */
 class FuncTab
 {
     std::list<Function const *> _func_list;
-    std::list<Function const *> _masked_func_list;
     std::list<InverseLinkFunc const *> _link_list;
-    std::list<InverseLinkFunc const *> _masked_link_list;
 public:
   /**
    * Inserts an inverse link function into the table. This function
@@ -59,12 +58,6 @@ public:
    */
   InverseLinkFunc const *findInverseLink (std::string const &name,
 					  bool link_name) const;
-  /**
-   * Removes an inverse link function from the table. This can only be
-   * called by the module that owns the inverse link function as it
-   * requires a non-constant pointer.
-   */
-  void erase(InverseLinkFunc *func);
   /**
    * Removes a function from the table. This can only be called by the
    * module that owns the Function object, as it requires a

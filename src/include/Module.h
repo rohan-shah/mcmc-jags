@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include <list>
+#include <utility>
 
 class InverseLinkFunc;
 class Function;
@@ -26,8 +27,9 @@ class MonitorFactory;
  */
 class Module {
     std::string _name;
-    std::vector<Function*> _internal_functions;
-    std::vector<InverseLinkFunc*> _internal_link_functions;
+    std::vector<Function *> _internal_functions;
+    std::vector<InverseLinkFunc *> _internal_link_functions;
+    std::vector<std::pair<Distribution*, Function*> > _obs_functions;
     std::vector<Function*> _functions;
     std::vector<Distribution*> _distributions;
     std::vector<SamplerFactory*> _sampler_factories;
@@ -39,6 +41,12 @@ public:
     void insert(InverseLinkFunc*);
     void insert(Function*);
     void insert(Distribution*);
+    /**
+     * Insertion method for observable functions. These are
+     * represented by a pair consisting of a Distribution and a
+     * Function.
+     */
+    void insert(Distribution*, Function*);
     void insert(SamplerFactory*);
     void insert(RNGFactory*);
     void insert(MonitorFactory*);

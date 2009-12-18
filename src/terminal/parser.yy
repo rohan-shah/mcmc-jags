@@ -1237,34 +1237,15 @@ static void adaptstar(long niter, long refresh, int width)
 
 static void loadModule(std::string const &name)
 {
-  //Record number of masked distributions before loading module
-  std::list<Distribution const *> const &masked_dist = 
-     Compiler::distTab().masked();
-  unsigned int n_dist = masked_dist.size(); 
-  lt_dlhandle mod = lt_dlopenext(name.c_str());
-  if (mod == NULL) {
-      std::cout << lt_dlerror() << std::endl;
-  }
-  else {
-      std::cout << "Loading module: " << name << std::endl;
-      _dyn_lib.push_front(mod);
-      Console::loadModule(name);
-/*
-      //Warn about newly masked distributions
-      if (masked_dist.size() > n_dist) {
-	  std::cerr << "Warning: the following distributions were masked "
-		    << "by module " << name << ":\n";
-	  std::list<Distribution const *>::const_iterator p = 
-             masked_dist.begin();
-	  for(unsigned int i = masked_dist.size(); i > n_dist; --i, ++p) {
-	      std::cerr << (*p)->name() << "\n";
-	  }
-	  std::cerr << std::endl;
-      }
-*/
-  }
-
-
+    lt_dlhandle mod = lt_dlopenext(name.c_str());
+    if (mod == NULL) {
+	std::cout << lt_dlerror() << std::endl;
+    }
+    else {
+	std::cout << "Loading module: " << name << std::endl;
+	_dyn_lib.push_front(mod);
+	Console::loadModule(name);
+    }
 }
 
 static void unloadModule(std::string const &name)

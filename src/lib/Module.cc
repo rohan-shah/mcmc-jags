@@ -11,6 +11,7 @@ using std::vector;
 using std::list;
 using std::string;
 using std::find;
+using std::pair;
 
 Module::Module(string const &name)
     : _name(name)
@@ -41,6 +42,13 @@ void Module::insert(Function *func)
 void Module::insert(Distribution *dist)
 {
     _distributions.push_back(dist);
+}
+
+void Module::insert(Distribution *dist, Function *func)
+{
+    _obs_functions.push_back(pair<Distribution*,Function*>(dist,func));
+    _distributions.push_back(dist);
+    _functions.push_back(func);
 }
 
 void Module::insert(SamplerFactory *fac)
@@ -78,11 +86,21 @@ void Module::load()
     for (unsigned int i = 0; i < _internal_functions.size(); ++i) {
 	Compiler::funcTab().insert(_internal_functions[i]);
     }
+    for (unsigned int i = 0; i < _obs_functions.size(); ++i) {
+	Compiler::distTab().insert(_obs_functions[i].first, 
+				   _obs_functions[i].second);
+	Compiler::funcTab().insert(_obs_functions[i].second);
+    }
 }
 
 void Module::unload()
 {
     unsigned int i;
+    
+    for (i = 0; i < _obs_functions.size(); ++i) {
+	Compiler::distTab().erase(_obs_functions[i].first);
+	Compiler::funcTab().erase(_obs_functions[i].second);
+    }
     for (i = 0; i < _internal_functions.size(); ++i) {
 	Compiler::funcTab().erase(_internal_functions[i]);
     }
