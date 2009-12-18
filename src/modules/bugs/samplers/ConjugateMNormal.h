@@ -18,7 +18,7 @@
  */
 class ConjugateMNormal : public ConjugateMethod {
   double *_betas;
-  unsigned int _length_betas;
+  const unsigned int _length_betas;
  public:
   ConjugateMNormal(Updater const *updater);
   ~ConjugateMNormal();

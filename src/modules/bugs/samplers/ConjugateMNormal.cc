@@ -78,21 +78,25 @@ static void calBeta(double *betas, Updater const *updater,
     delete [] xnew;
 }
 
+static unsigned int sumChildrenLength(Updater const *updater)
+{
+    vector<StochasticNode const *> const &children = 
+	updater->stochasticChildren(); 
+
+    unsigned int N = 0;
+    for (unsigned int i = 0; i < children.size(); ++i) {
+	N += children[i]->length();
+    }
+    return N;
+}
+
+
 ConjugateMNormal::ConjugateMNormal(Updater const *updater)
-    : ConjugateMethod(updater), _betas(0), _length_betas(0)
+    : ConjugateMethod(updater), _betas(0), 
+      _length_betas(sumChildrenLength(updater))
 {
     if(!updater->deterministicChildren().empty() && checkLinear(updater, true))
     {
-	//Onetime calculation of fixed coefficients
-	vector<StochasticNode const *> const &children = 
-	    updater->stochasticChildren();
-	unsigned int N = 0;
-	for (unsigned int i = 0; i < children.size(); ++i) {
-	    N += children[i]->length();
-	}
-	_length_betas = N * updater->nodes()[0]->length();
-	
-
 	_betas = new double[_length_betas];
 	calBeta(_betas, updater, 0);
     }
