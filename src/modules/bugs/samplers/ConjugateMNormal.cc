@@ -93,7 +93,7 @@ static unsigned int sumChildrenLength(Updater const *updater)
 
 ConjugateMNormal::ConjugateMNormal(Updater const *updater)
     : ConjugateMethod(updater), _betas(0), 
-      _length_betas(sumChildrenLength(updater))
+      _length_betas(sumChildrenLength(updater) * updater->length())
 {
     if(!updater->deterministicChildren().empty() && checkLinear(updater, true))
     {
