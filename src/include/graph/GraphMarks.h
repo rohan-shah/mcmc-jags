@@ -3,6 +3,8 @@
 
 #include <map>
 #include <set>
+#include <vector>
+
 class Node;
 class Graph;
 
@@ -76,7 +78,7 @@ public:
      * for which there is a directed path from N to node within the
      * graph.
      */
-    void markAncestors(Node const *node, int m);
+    void markAncestors(std::vector<Node const *> const &nodes, int m);
     /**
      * Marks the descendants of the node in the graph, i.e. every node
      * N for which there is a directed path from the given node to N
