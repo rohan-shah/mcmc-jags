@@ -216,13 +216,16 @@ void Model::chooseSamplers()
     // Add observed stochastic nodes to the sample graph and mark
     // the informative nodes
 
+    vector<Node const*> informative;
     vector<StochasticNode*>::const_iterator p;
     for (p = _stochastic_nodes.begin(); p != _stochastic_nodes.end(); ++p) {
 	if ((*p)->isObserved()) {
 	    sample_graph.add(*p);
-	    marks.markAncestors(*p, 1);
+	    informative.push_back(*p);
 	}
     }
+    marks.markAncestors(informative, 1);
+
     for (p = _stochastic_nodes.begin(); p != _stochastic_nodes.end(); ++p) {
 	if ((*p)->isObserved()) {
 	    marks.mark(*p, 2);
@@ -418,7 +421,8 @@ void Model::setSampledExtra()
 	Node const *node = (*p)->node();
 	if (egraph.contains(node)) {
 	    emarks.mark(node, 1);
-	    emarks.markAncestors(node, 1);
+	    //FIXME: call once
+	    emarks.markAncestors(vector<Node const *>(1, node), 1);
 	}
     }
     //Remove unmarked nodes from graph

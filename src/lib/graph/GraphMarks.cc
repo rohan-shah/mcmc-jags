@@ -6,11 +6,15 @@
 #include <vector>
 #include <set>
 #include <stdexcept>
+#include <utility>
+#include <list>
 
 using std::map;
 using std::vector;
 using std::set;
 using std::logic_error;
+using std::pair;
+using std::list;
 
 GraphMarks::GraphMarks(Graph const &graph)
     : _graph(graph)
@@ -173,6 +177,7 @@ void GraphMarks::markDescendants(Node *node, int m)
 }
 */
 
+/*
 void 
 GraphMarks::do_mark_ancestors(Node const *node, int m, 
 			      set<Node const*> &visited)
@@ -189,15 +194,51 @@ GraphMarks::do_mark_ancestors(Node const *node, int m,
 	}
     }
 }
+*/
 
-void GraphMarks::markAncestors(Node const *node, int m)
+void GraphMarks::markAncestors(vector<Node const *> const &nodes, int m)
 {
-    if (!_graph.contains(node)) {
-	throw logic_error("Can't mark ancestors of node: not in Graph");
+    set<Node const*> visited; //visited nodes
+    list<Node const*> marked; //marked nodes
+
+    vector<vector<Node const*>::const_iterator> begin(1, nodes.begin());
+    vector<vector<Node const*>::const_iterator> end(1, nodes.end());
+
+    while (!begin.empty()) {
+
+	for (vector<Node const*>::const_iterator &i = begin.back();
+	     i != end.back(); ++i) 
+	    {
+	    
+		Node const *inode = *i;
+		if (visited.count(inode) == 0 && _graph.contains(inode)) {
+		    visited.insert(inode);
+		    marked.push_back(inode);
+		    begin.push_back(inode->parents().begin());
+		    end.push_back(inode->parents().end());
+		    break;
+		}
+	    }
+
+	if (begin.back() == end.back()) {
+	    begin.pop_back();
+	    end.pop_back();
+	}
     }
-    //  visited_nodes keeps track of previously visited nodes for efficiency.
-    //  This also protects against directed cycles.
-    set<Node const*> visited_nodes;
-    do_mark_ancestors(node, m, visited_nodes);
+
+    /* 
+       When inserting a large number of nodes into the map, it is
+       more efficient to insert them in order, as we get a hint
+       about the correct placement from the last insertion
+    */
+    marked.sort();
+    list<Node const*>::const_iterator p = marked.begin();
+    map<Node const*,int>::iterator q = 
+	_marks.insert(pair<Node const*,int>(*p,m)).first;
+    
+    for(++p; p != marked.end(); ++p) {
+	q = _marks.insert(q, pair<Node const*,int>(*p,m));
+    }
+
 }
 
