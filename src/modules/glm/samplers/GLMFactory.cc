@@ -200,6 +200,26 @@ namespace glm {
 		}
 	    } while (loop);
 
+	    // Remove candidate nodes that are stochastic children of
+	    // another candidate node. All GLMMethod algorithms rely
+	    // on the stochastic parents being fixed within any update.
+
+	    set<StochasticNode const*> all_children;
+	    for (unsigned int j = 0; j < candidates.size(); ++j) {
+		if (keep[j]) {
+		    vector<StochasticNode const*> const &children_j =
+			candidates[j]->stochasticChildren();
+		    all_children.insert(children_j.begin(), children_j.end());
+		}
+	    }
+	    for (unsigned int j = 0; j < candidates.size(); ++j) {
+		if (keep[j]) {
+		    if (all_children.count(candidates[j]->nodes()[0])) {
+			keep[j] = false;
+		    }
+		}
+	    }
+	    
 	    vector<StochasticNode*> sample_nodes;	    
 	    for (unsigned int j = 0; j < candidates.size(); ++j) {
 		if (keep[j]) {
