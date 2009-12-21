@@ -64,24 +64,36 @@ namespace glm {
     
     double BinaryGLM::getValue(unsigned int i) const 
     {
+	double z = 0;
+	
 	switch(_outcome[i]) {
 	case BGLM_NORMAL:
-	    return CHILD(i)->value(_chain)[0];
+	    z = CHILD(i)->value(_chain)[0];
+	    break;
 	case BGLM_PROBIT: case BGLM_LOGIT:
-	    return _z[i];
+	    z = _z[i];
+	    break;
 	}
+
+	return z;
     }
 
     double BinaryGLM::getPrecision(unsigned int i) const
     {
+	double tau = 0;
 	switch(_outcome[i]) {
 	case BGLM_NORMAL:
-	    return CHILD(i)->parents()[1]->value(_chain)[0];
+	    tau = CHILD(i)->parents()[1]->value(_chain)[0];
+	    break;
 	case BGLM_PROBIT:
-	    return 1;
+	    tau = 1;
+	    break;
 	case BGLM_LOGIT:
-	    return _tau[i];
+	    tau = _tau[i];
+	    break;
 	}
+	
+	return tau;
     }
 
 
@@ -102,7 +114,7 @@ namespace glm {
 		    _z[i] = rnormal(0, rng, getMean(i));
 		}
 		else {
-		    throw logic_error("Invalid child value in HolmesHeld");
+		    throw logic_error("Invalid child value in BinaryGLM");
 		}
 	    }
 	}

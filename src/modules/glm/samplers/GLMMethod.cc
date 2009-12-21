@@ -130,7 +130,7 @@ namespace glm {
 	int ncol = updater->length();
 
 	//Set up linear predictor
-	for (unsigned int i = 0; i < nrow; ++i) {
+	for (int i = 0; i < nrow; ++i) {
 	    _lp[i] = getLinearPredictor(schildren[i])->value(chain);
 	}
 

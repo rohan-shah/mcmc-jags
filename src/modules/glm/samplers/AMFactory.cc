@@ -24,7 +24,6 @@ namespace glm {
     bool AMFactory::checkOutcome(StochasticNode const *snode,
 				 LinkNode const *lnode) const
     {
-	Node const *N = 0;
 	string linkname;
 	if (lnode) {
 	    linkname = lnode->link()->linkName();
