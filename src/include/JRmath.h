@@ -636,7 +636,7 @@ int R_finite(double);
 #endif /* MATHLIB_STANDALONE */
 
 #ifndef R_EXT_PRINT_H_
-void REprintf(char*, ...);
+void REprintf(char const*, ...);
 #endif
 
 #ifdef  __cplusplus
