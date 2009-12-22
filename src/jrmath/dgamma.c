@@ -18,8 +18,8 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ *  along with this program; if not, a copy is available at
+ *  http://www.r-project.org/Licenses/
  *
  *
  * DESCRIPTION
@@ -46,9 +46,11 @@ double dgamma(double x, double shape, double scale, int give_log)
     if (ISNAN(x) || ISNAN(shape) || ISNAN(scale))
         return x + shape + scale;
 #endif
-    if (shape <= 0 || scale <= 0) ML_ERR_return_NAN;
+    if (shape < 0 || scale <= 0) ML_ERR_return_NAN;
     if (x < 0)
 	return R_D__0;
+    if (shape == 0) /* point mass at 0 */
+	return (x == 0)? ML_POSINF : R_D__0;
     if (x == 0) {
 	if (shape < 1) return ML_POSINF;
 	if (shape > 1) return R_D__0;

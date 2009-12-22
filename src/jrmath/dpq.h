@@ -1,3 +1,21 @@
+/*
+ *  R : A Computer Language for Statistical Data Analysis
+ *  Copyright (C) 2000--2007  R Development Core Team
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, a copy is available at
+ *  http://www.r-project.org/Licenses/
+ */
 	/* Utilities for `dpq' handling (density/probability/quantile) */
 
 /* give_log in "d";  log_p in "p" & "q" : */
@@ -9,21 +27,22 @@
 #define R_DT_0	(lower_tail ? R_D__0 : R_D__1)		/* 0 */
 #define R_DT_1	(lower_tail ? R_D__1 : R_D__0)		/* 1 */
 
-#define R_D_Lval(p)	(lower_tail ? (p) : (1 - (p)))	/*  p  */
-#define R_D_Cval(p)	(lower_tail ? (1 - (p)) : (p))	/*  1 - p */
+/* Use 0.5 - p + 0.5 to perhaps gain 1 bit of accuracy */
+#define R_D_Lval(p)	(lower_tail ? (p) : (0.5 - (p) + 0.5))	/*  p  */
+#define R_D_Cval(p)	(lower_tail ? (0.5 - (p) + 0.5) : (p))	/*  1 - p */
 
 #define R_D_val(x)	(log_p	? log(x) : (x))		/*  x  in pF(x,..) */
 #define R_D_qIv(p)	(log_p	? exp(p) : (p))		/*  p  in qF(p,..) */
 #define R_D_exp(x)	(log_p	?  (x)	 : exp(x))	/* exp(x) */
 #define R_D_log(p)	(log_p	?  (p)	 : log(p))	/* log(p) */
-#define R_D_Clog(p)	(log_p	? log1p(-(p)) : (1 - (p)))/* [log](1-p) */
+#define R_D_Clog(p)	(log_p	? log1p(-(p)) : (0.5 - (p) + 0.5)) /* [log](1-p) */
+
+/* log(1 - exp(x))  in more stable form than log1p(- R_D_qIv(x))) : */
+#define R_Log1_Exp(x)   ((x) > -M_LN2 ? log(-expm1(x)) : log1p(-exp(x)))
 
 /* log(1-exp(x)):  R_D_LExp(x) == (log1p(- R_D_qIv(x))) but even more stable:*/
 #define R_D_LExp(x)     (log_p ? R_Log1_Exp(x) : log1p(-x))
 
-/*till 1.8.x:
- * #define R_DT_val(x)	R_D_val(R_D_Lval(x))
- * #define R_DT_Cval(x)	R_D_val(R_D_Cval(x)) */
 #define R_DT_val(x)	(lower_tail ? R_D_val(x)  : R_D_Clog(x))
 #define R_DT_Cval(x)	(lower_tail ? R_D_Clog(x) : R_D_val(x))
 
