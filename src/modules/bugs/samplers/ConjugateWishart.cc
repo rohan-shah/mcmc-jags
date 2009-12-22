@@ -112,7 +112,7 @@ ConjugateWishart::update(Updater *updater, unsigned int chain, RNG *rng) const
 	//Double the current value
 	double const *x = updater->nodes()[0]->value(chain);
 	double *x2 = new double[N];
-	for (unsigned int j = 0; j < N; ++j) {
+	for (int j = 0; j < N; ++j) {
 	    x2[j] = 2 * x[j];
 	}
 	updater->setValue(x2, N, chain);
