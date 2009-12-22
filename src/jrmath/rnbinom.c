@@ -14,8 +14,8 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ *  along with this program; if not, a copy is available at
+ *  http://www.r-project.org/Licenses/
  *
  *  SYNOPSIS
  *
@@ -44,10 +44,17 @@
 
 #include "nmath.h"
 
-double rnbinom(double n /* size */, double p /* prob */, RNG *rng)
+double rnbinom(double size, double prob, RNG *rng)
 {
-    if(!R_FINITE(n) || !R_FINITE(p) || n <= 0 || p <= 0 || p > 1)
-	/* p = 1 is ok, PR#1218 */
+    if(!R_FINITE(size) || !R_FINITE(prob) || size <= 0 || prob <= 0 || prob > 1)
+	/* prob = 1 is ok, PR#1218 */
 	ML_ERR_return_NAN;
-    return (p == 1) ? 0 : rpois(rgamma(n, (1 - p) / p, rng), rng);
+    return (prob == 1) ? 0 : rpois(rgamma(size, (1 - prob) / prob, rng), rng);
+}
+
+double rnbinom_mu(double size, double mu, RNG *rng)
+{
+    if(!R_FINITE(size) || !R_FINITE(mu) || size <= 0 || mu < 0)
+	ML_ERR_return_NAN;
+    return (mu == 0) ? 0 : rpois(rgamma(size, mu / size, rng), rng);
 }

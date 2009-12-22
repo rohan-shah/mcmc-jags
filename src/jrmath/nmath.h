@@ -13,10 +13,8 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301
- *  USA
- *
+ *  along with this program; if not, a copy is available at
+ *  http://www.r-project.org/Licenses/
  */
 
 /* Remap for JAGS */
@@ -28,23 +26,27 @@
 #ifndef MATHLIB_PRIVATE_H
 #define MATHLIB_PRIVATE_H
 
-
-#ifndef MATHLIB_STANDALONE
-/* Mathlib in R */
-# ifdef HAVE_CONFIG_H
+#ifdef HAVE_CONFIG_H
 #  include <config.h>
-# endif
-# if defined(HAVE_GLIBC2) && !defined(_BSD_SOURCE)
-/* ensure that finite and isnan are declared */
-#  define _BSD_SOURCE 1
-# endif
 #endif
 
-/* #include <Rconfig.h> FIXME */
+#ifdef HAVE_LONG_DOUBLE
+#  define LDOUBLE long double
+#else
+#  define LDOUBLE double
+#endif
+
+#include <math.h>
+#include <float.h> /* DBL_MIN etc */
+
 #define MATHLIB_PRIVATE
 #include <JRmath.h>
-#undef  MATHLIB_PRIVATE
-/* #include <R_ext/RS.h> FIXME */
+#undef MATHLIB_PRIVATE
+
+double  jags_d1mach(int);
+#define gamma_cody	jags_gamma_cody
+double	gamma_cody(double);
+
 
 #ifndef MATHLIB_STANDALONE
 
@@ -60,8 +62,9 @@
 #define ML_NEGINF	R_NegInf
 #define ML_NAN		R_NaN
 
+
 void R_CheckUserInterrupt(void);
-/* Ei-ji Nakama reported that AIX 5.2 has calloc as macro and objected
+/* Ei-ji Nakama reported that AIX 5.2 has calloc as a macro and objected
    to redefining it.  Tests added for 2.2.1 */
 #ifdef calloc
 # undef calloc
@@ -83,6 +86,7 @@ void R_CheckUserInterrupt(void);
 /* Mathlib standalone */
 
 #include <stdio.h>
+#include <stdlib.h> /* for exit */
 #define MATHLIB_ERROR(fmt,x)	{ printf(fmt,x); exit(1); }
 #define MATHLIB_WARNING(fmt,x)		printf(fmt,x)
 #define MATHLIB_WARNING2(fmt,x,x2)	printf(fmt,x,x2)
@@ -100,7 +104,6 @@ int R_finite(double);
 #define _(String) String
 #endif /* standalone */
 
-#define ML_UNDERFLOW	(DBL_MIN * DBL_MIN)
 #define ML_VALID(x)	(!ISNAN(x))
 
 #define ME_NONE		0
@@ -136,7 +139,7 @@ int R_finite(double);
 	   msg = "convergence failed in '%s'\n"; \
 	   break; \
        case ME_PRECISION: \
-	   msg = "full precision was not achieved in '%s'\n"; \
+	   msg = "full precision may not have been achieved in '%s'\n"; \
 	   break; \
        case ME_UNDERFLOW: \
 	   msg = "underflow occurred in '%s'\n"; \
@@ -149,10 +152,6 @@ int R_finite(double);
 /* Wilcoxon Rank Sum Distribution */
 
 #define WILCOX_MAX 50
-
-/* Wilcoxon Signed Rank Distribution */
-
-#define SIGNRANK_MAX 50
 
 #ifdef HAVE_VISIBILITY_ATTRIBUTE
 # define attribute_hidden __attribute__ ((visibility ("hidden")))
@@ -170,8 +169,9 @@ int R_finite(double);
 #define lfastchoose	jags_lfastchoose
 #define lgammacor	jags_lgammacor
 #define stirlerr       	jags_stirlerr
+/* in Rmath.h
 #define gamma_cody      jags_gamma_cody
-
+*/
 
 	/* Chebyshev Series */
 
@@ -194,6 +194,8 @@ double  attribute_hidden pnchisq_raw(double, double, double, double, double, int
 double  attribute_hidden pgamma_raw(double, double, int, int);
 double	attribute_hidden pbeta_raw(double, double, double, int, int);
 double  attribute_hidden qchisq_appr(double, double, double, int, int, double tol);
+LDOUBLE	attribute_hidden pnbeta_raw(double, double, double, double, double);
+double	attribute_hidden pnbeta2(double, double, double, double, double, int, int);
 
 int	i1mach(int);
 

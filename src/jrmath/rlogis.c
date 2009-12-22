@@ -1,7 +1,7 @@
 /*
  *  R : A Computer Language for Statistical Data Analysis
  *  Copyright (C) 1995, 1996  Robert Gentleman and Ross Ihaka
- *  Copyright (C) 2000 The R Development Core Team
+ *  Copyright (C) 2000--2008 The R Development Core Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -14,19 +14,21 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ *  along with this program; if not, a copy is available at
+ *  http://www.r-project.org/Licenses/
  */
 
 #include "nmath.h"
 
 double rlogis(double location, double scale, RNG *rng)
 {
-    double u;
-
-    if (!R_FINITE(location) || !R_FINITE(scale))
+    if (ISNAN(location) || !R_FINITE(scale))
 	ML_ERR_return_NAN;
 
-    u = unif_rand(rng);
-    return location + scale * log(u / (1. - u));
+    if (scale == 0. || !R_FINITE(location))
+	return location;
+    else {
+	double u = unif_rand(rng);
+	return location + scale * log(u / (1. - u));
+    }
 }

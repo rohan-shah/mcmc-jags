@@ -14,8 +14,8 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ *  along with this program; if not, a copy is available at
+ *  http://www.r-project.org/Licenses/
  *
  *  DESCRIPTION
  *
@@ -31,12 +31,13 @@ double punif(double x, double a, double b, int lower_tail, int log_p)
     if (ISNAN(x) || ISNAN(a) || ISNAN(b))
 	return x + a + b;
 #endif
-    if (b <= a) ML_ERR_return_NAN;
+    if (b < a) ML_ERR_return_NAN;
+    if (!R_FINITE(a) || !R_FINITE(b)) ML_ERR_return_NAN;
 
-    if (x <= a)
-	return R_DT_0;
     if (x >= b)
 	return R_DT_1;
+    if (x <= a)
+	return R_DT_0;
     if (lower_tail) return R_D_val((x - a) / (b - a));
     else return R_D_val((b - x) / (b - a));
 }

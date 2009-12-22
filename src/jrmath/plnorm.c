@@ -1,7 +1,7 @@
 /*
  *  Mathlib : A C Library of Special Functions
  *  Copyright (C) 1998 Ross Ihaka
- *  Copyright (C) 2000 The R Development Core Team
+ *  Copyright (C) 2000-8 The R Development Core Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -14,8 +14,8 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ *  along with this program; if not, a copy is available at
+ *  http://www.r-project.org/Licenses/
  *
  *  DESCRIPTION
  *
@@ -25,15 +25,15 @@
 #include "nmath.h"
 #include "dpq.h"
 
-double plnorm(double x, double logmean, double logsd, int lower_tail, int log_p)
+double plnorm(double x, double meanlog, double sdlog, int lower_tail, int log_p)
 {
 #ifdef IEEE_754
-    if (ISNAN(x) || ISNAN(logmean) || ISNAN(logsd))
-	return x + logmean + logsd;
+    if (ISNAN(x) || ISNAN(meanlog) || ISNAN(sdlog))
+	return x + meanlog + sdlog;
 #endif
-    if (logsd <= 0) ML_ERR_return_NAN;
+    if (sdlog <= 0) ML_ERR_return_NAN;
 
     if (x > 0)
-	return pnorm(log(x), logmean, logsd, lower_tail, log_p);
-    return 0;
+	return pnorm(log(x), meanlog, sdlog, lower_tail, log_p);
+    return R_DT_0;
 }

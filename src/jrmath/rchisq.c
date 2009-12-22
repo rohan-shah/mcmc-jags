@@ -14,8 +14,8 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ *  along with this program; if not, a copy is available at
+ *  http://www.r-project.org/Licenses/
  *
  *  SYNOPSIS
  *
@@ -35,7 +35,7 @@
 
 double rchisq(double df, RNG *rng)
 {
-    if (!R_FINITE(df) || df <= 0.0) ML_ERR_return_NAN;
+    if (!R_FINITE(df) || df < 0.0) ML_ERR_return_NAN;
 
     return rgamma(df / 2.0, 2.0, rng);
 }

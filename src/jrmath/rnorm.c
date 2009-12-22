@@ -14,8 +14,8 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ *  along with this program; if not, a copy is available at
+ *  http://www.r-project.org/Licenses/
  *
  *  SYNOPSIS
  *
@@ -32,11 +32,10 @@
 
 double rnorm(double mu, double sigma, RNG *rng)
 {
-    if(!R_FINITE(mu) || !R_FINITE(sigma) || sigma < 0.)	
+    if (ISNAN(mu) || !R_FINITE(sigma) || sigma < 0.)
 	ML_ERR_return_NAN;
-
-    if (sigma == 0.)
-	return mu;
+    if (sigma == 0. || !R_FINITE(mu))
+	return mu; /* includes mu = +/- Inf with finite sigma */
     else
 	return mu + sigma * norm_rand(rng);
 }

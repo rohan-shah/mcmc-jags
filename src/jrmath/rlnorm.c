@@ -14,8 +14,8 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ *  along with this program; if not, a copy is available at
+ *  http://www.r-project.org/Licenses/
  *
  *  SYNOPSIS
  *
@@ -29,10 +29,10 @@
 
 #include "nmath.h"
 
-double rlnorm(double logmean, double logsd, RNG *rng)
+double rlnorm(double meanlog, double sdlog, RNG *rng)
 {
-    if(!R_FINITE(logmean) || !R_FINITE(logsd) || logsd < 0.)
+    if(ISNAN(meanlog) || !R_FINITE(sdlog) || sdlog < 0.)
 	ML_ERR_return_NAN;
 
-    return exp(rnorm(logmean, logsd, rng));
+    return exp(rnorm(meanlog, sdlog, rng));
 }

@@ -16,8 +16,8 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ *  along with this program; if not, a copy is available at
+ *  http://www.r-project.org/Licenses/
  *
  *  DESCRIPTION
  *
@@ -61,8 +61,8 @@ static double pdhyper (double x, double NR, double NB, double n, int log_p)
  *     x * (NR + NB) <= n * NR
  *
  */
-    double sum = 0;
-    double term = 1;
+    LDOUBLE sum = 0;
+    LDOUBLE term = 1;
 
     while (x > 0 && term >= DBL_EPSILON * sum) {
 	term *= x * (NB - n + x) / (n + 1 - x) / (NR + 1 - x);
@@ -108,6 +108,8 @@ double phyper (double x, double NR, double NB, double n,
 
     if (x < 0)
 	return R_DT_0;
+    if (x >= NR || x >= n)
+	return R_DT_1;
 
     d  = dhyper (x, NR, NB, n, log_p);
     pd = pdhyper(x, NR, NB, n, log_p);
