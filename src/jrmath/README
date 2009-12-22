@@ -6,7 +6,7 @@ encapsulates the state of the random number generator.
 
 Apart from that, nothing is changed, so it should be fairly 
 straigthforward to resynchronise this library with R. The
-current version comes from R 2.3.0.
+current version comes from R 2.10.1
 
 The file callbacks.cc is a C++ source file that translates the
 functions unif_rand, norm_rand and exp_rand into member function

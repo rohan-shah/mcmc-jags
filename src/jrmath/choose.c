@@ -14,8 +14,8 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
+ *  along with this program; if not, a copy is available at
+ *  http://www.r-project.org/Licenses/
  *
  *  SYNOPSIS
  *
@@ -34,12 +34,10 @@
  *
  *  We use the simple explicit product formula for  k <= k_small_max
  *  and also have added statements to make sure that the symmetry
- *    (n \\ k ) == (n \\ n-k)  is preserved for integer n.
+ *    (n \\ k ) == (n \\ n-k)  is preserved for non-negative integer n.
  */
 
 #include "nmath.h"
-
-extern int R_signgam;		/* set in lgammafn(.) */
 
 double attribute_hidden lfastchoose(double n, double k)
 {
@@ -51,8 +49,7 @@ static
 double lfastchoose2(double n, double k, int *s_choose)
 {
     double r;
-    r = lgammafn(n - k + 1.);
-    *s_choose = R_signgam;
+    r = lgammafn_sign(n - k + 1., s_choose);
     return lgammafn(n + 1.) - lgammafn(k + 1.) - r;
 }
 
@@ -62,11 +59,14 @@ double lfastchoose2(double n, double k, int *s_choose)
 
 double lchoose(double n, double k)
 {
+    double k0 = k;
     k = floor(k + 0.5);
 #ifdef IEEE_754
     /* NaNs propagated correctly */
     if(ISNAN(n) || ISNAN(k)) return n + k;
 #endif
+    if (fabs(k - k0) > 1e-7)
+	MATHLIB_WARNING2(_("'k' (%.2f) must be integer, rounded to %.0f"), k0, k);
     if (k < 2) {
 	if (k <	 0) return ML_NEGINF;
 	if (k == 0) return 0.;
@@ -99,22 +99,25 @@ double lchoose(double n, double k)
 */
 double choose(double n, double k)
 {
-    double r;
+    double r, k0 = k;
     k = floor(k + 0.5);
 #ifdef IEEE_754
     /* NaNs propagated correctly */
     if(ISNAN(n) || ISNAN(k)) return n + k;
 #endif
+    if (fabs(k - k0) > 1e-7)
+	MATHLIB_WARNING2(_("'k' (%.2f) must be integer, rounded to %.0f"), k0, k);
     if (k < k_small_max) {
 	int j;
-	if(R_IS_INT(n) && n-k < k) k = n-k; /* <- Symmetry */
+	if(n-k < k && n >= 0 && R_IS_INT(n)) k = n-k; /* <- Symmetry */
 	if (k <	 0) return 0.;
 	if (k == 0) return 1.;
 	/* else: k >= 1 */
 	r = n;
-	for(j=2; j <= k; j++)
+	for(j = 2; j <= k; j++)
 	    r *= (n-j+1)/j;
-	return r;
+	return R_IS_INT(n) ? floor(r + 0.5) : r;
+	/* might have got rounding errors */
     }
     /* else: k >= k_small_max */
     if (n < 0) {
