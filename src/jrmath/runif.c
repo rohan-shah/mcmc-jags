@@ -14,8 +14,8 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ *  along with this program; if not, a copy is available at
+ *  http://www.r-project.org/Licenses/
  *
  *  DESCRIPTION
  *
@@ -29,6 +29,11 @@ double runif(double a, double b, RNG *rng)
 
     if (a == b)
 	return a;
-    else
-	return a + (b - a) * unif_rand(rng);
+    else {
+	double u;
+	/* This is true of all builtin generators, but protect against
+	   user-supplied ones */
+	do {u = unif_rand(rng);} while (u <= 0 || u >= 1);
+	return a + (b - a) * u;
+    }
 }

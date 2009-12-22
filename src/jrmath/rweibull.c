@@ -14,8 +14,8 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ *  along with this program; if not, a copy is available at
+ *  http://www.r-project.org/Licenses/
  *
  *  DESCRIPTION
  *
@@ -26,9 +26,11 @@
 
 double rweibull(double shape, double scale, RNG *rng)
 {
-    if (
-	!R_FINITE(shape) || !R_FINITE(scale) ||
-	shape <= 0. || scale <= 0.)	ML_ERR_return_NAN;
+    if (!R_FINITE(shape) || !R_FINITE(scale) || shape <= 0. || scale <= 0.) {
+	if(scale == 0.) return 0.;
+	/* else */
+	ML_ERR_return_NAN;
+    }
 
     return scale * pow(-log(unif_rand(rng)), 1.0 / shape);
 }
