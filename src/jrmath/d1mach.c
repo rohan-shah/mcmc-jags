@@ -29,7 +29,7 @@
 
 #include "nmath.h"
 
-attribute_hidden double Rf_d1mach(int i)
+attribute_hidden double jags_d1mach(int i)
 {
     switch(i) {
     case 1: return DBL_MIN;

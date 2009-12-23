@@ -109,7 +109,7 @@ bratio(double a, double b, double x, double y, double *w, double *w1,
 
 /*  eps is a machine dependent constant: the smallest
  *      floating point number for which   1.0 + eps > 1.0 */
-    eps = 2.0 * Rf_d1mach(3); /* == DBL_EPSILON (in R, Rmath) */
+    eps = 2.0 * jags_d1mach(3); /* == DBL_EPSILON (in R, Rmath) */
 
 /* ----------------------------------------------------------------------- */
     *w  = R_D__0;
@@ -1406,10 +1406,10 @@ static double exparg(int l)
     int m;
 
     if (l == 0) {
-	m = Rf_i1mach(16);
+	m = jags_i1mach(16);
 	return m * lnb * .99999;
     }
-    m = Rf_i1mach(15) - 1;
+    m = jags_i1mach(15) - 1;
     return m * lnb * .99999;
 } /* exparg */
 
@@ -1900,7 +1900,7 @@ static double psi(double x)
 		   PSI MAY BE REPRESENTED AS LOG(X).
  * Originally:  xmax1 = amin1(ipmpar(3), 1./spmpar(1))  */
     xmax1 = (double) INT_MAX;
-    d2 = 0.5 / Rf_d1mach(3);
+    d2 = 0.5 / jags_d1mach(3);
     if(xmax1 > d2) xmax1 = d2;
 
 /* --------------------------------------------------------------------- */
