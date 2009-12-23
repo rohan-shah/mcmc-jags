@@ -28,6 +28,16 @@ LinkNode::LinkNode(InverseLinkFunc const *function,
     if (!isScalar(parameters[0]->dim())) {
 	throw runtime_error("Invalid parameter dims in LinkNode");
     }
+
+    /* Initialize if fully observed (rare in practice as the linear
+       predictor should include unobserved parameters 
+    */
+    if (isObserved()) {
+	for (unsigned int ch = 0; ch < _nchain; ++ch) {
+	    deterministicSample(ch);
+	}
+    }
+
 }
 
 string LinkNode::deparse(vector<string> const &parents) const

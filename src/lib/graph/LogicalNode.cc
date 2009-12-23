@@ -78,6 +78,12 @@ LogicalNode::LogicalNode(Function const *function,
 	}
 	
     }
+
+    if (isObserved()) {
+	for (unsigned int ch = 0; ch < _nchain; ++ch) {
+	    deterministicSample(ch);
+	}
+    }
 }
 
 LogicalNode::~LogicalNode()

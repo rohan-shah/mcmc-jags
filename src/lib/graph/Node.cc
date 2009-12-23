@@ -93,23 +93,6 @@ static bool isInitialized(Node const *node, unsigned int n)
     return true;
 }
 
-void Node::initializeData()
-{
-    if (this->isRandomVariable())
-	return;
-    
-    //Test whether all parents are observed
-    for (unsigned int i = 0; i < _parents.size(); ++i) {
-	if (!_parents[i]->isObserved()) {
-            return; //Not observed
-	}
-    }
-
-    for (unsigned int n = 0; n < _nchain; ++n) {
-        deterministicSample(n);
-    }
-}
-    
 bool Node::initialize(unsigned int n)
 {
     // Test whether node is already initialized and, if so, skip it

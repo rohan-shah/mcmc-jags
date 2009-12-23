@@ -91,7 +91,7 @@ MixtureNode::MixtureNode (vector<Node const *> const &index,
 	if (p->first.size() != _Nindex) {
 	    throw invalid_argument("Invalid index in MixtureNode");
 	}
-    }
+    }    
 }
 
 

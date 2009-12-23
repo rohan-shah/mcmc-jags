@@ -37,6 +37,11 @@ ScalarLogicalNode::ScalarLogicalNode(ScalarFunc const *function,
 	
     }
 
+    if (isObserved()) {
+	for (unsigned int ch = 0; ch < _nchain; ++ch) {
+	    deterministicSample(ch);
+	}
+    }
 }
 
 string ScalarLogicalNode::deparse(vector<string> const &parents) const
