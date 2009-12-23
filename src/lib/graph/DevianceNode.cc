@@ -27,6 +27,7 @@ static vector<Node const *> mkParents(set<StochasticNode const *> const &param)
       throw logic_error("Cannot construct a deviance node with no parameters");
    }
    return par;
+
 }
          
 DevianceNode::DevianceNode(set<StochasticNode const *> const &parameters)
@@ -38,6 +39,15 @@ DevianceNode::DevianceNode(set<StochasticNode const *> const &parameters)
     {
       _parameters.push_back(*p);
     }
+
+  /* Initialize if fully observed (very rare in practice as parameters
+   * should be unobserved) */
+   if (isObserved()) {
+      for (unsigned int ch = 0; ch < _nchain; ++ch) {
+	  deterministicSample(ch);
+      }
+  }
+
 }
 
 void DevianceNode::deterministicSample(unsigned int chain)

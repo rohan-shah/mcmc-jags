@@ -98,14 +98,6 @@ public:
      */
     bool initialize(unsigned int chain);
     /**
-     * Initializes a node, in all chains, if it is not a random
-     * variable and if all of its parents are observed.  Otherwise the
-     * function has no effect.
-     *
-     * @see initialize
-     */
-    void initializeData();
-    /**
      * Returns the BUGS-language representation of the node, based on the 
      * names of its parents
      *

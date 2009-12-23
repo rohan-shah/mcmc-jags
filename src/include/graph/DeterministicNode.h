@@ -43,6 +43,7 @@ enum ClosedFuncClass {DNODE_LINEAR, DNODE_SCALE, DNODE_SCALE_MIX, DNODE_POWER};
  * values of its parents.
  */
 class DeterministicNode : public Node {
+    bool _observed;
 public:
     DeterministicNode(std::vector<unsigned int> const &dim,
 		      std::vector<Node const *> const &parents);

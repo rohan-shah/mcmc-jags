@@ -568,14 +568,10 @@ Node * Compiler::getParameter(ParseTree const *t)
     if (!node)
         return 0;
 
-    if (node->isRandomVariable()) {
+    if (_index_expression) {
 	//Random variables in index expressions must be observed
-	if (_index_expression && !node->isObserved())
+	if (node->isRandomVariable() && !node->isObserved())
 	    return 0;
-    }
-    else {
-	//Initialize deterministic nodes now (FIXME: may be expensive)
-	node->initializeData();
     }
 
     return node;

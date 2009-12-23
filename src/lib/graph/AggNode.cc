@@ -36,6 +36,14 @@ AggNode::AggNode(vector<unsigned int> const &dim,
 	  _parent_values[i + ch * _length] = parents[i]->value(ch) + offsets[i];
       }
   }
+
+  /* Initialize if fully observed */
+  if (isObserved()) {
+      for (unsigned int ch = 0; ch < _nchain; ++ch) {
+	  deterministicSample(ch);
+      }
+  }
+
 }
 
 AggNode::~AggNode()
