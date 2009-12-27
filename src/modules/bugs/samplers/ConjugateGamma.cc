@@ -83,8 +83,6 @@ ConjugateGamma::~ConjugateGamma()
 
 bool ConjugateGamma::canSample(StochasticNode *snode, Graph const &graph)
 {
-    Updater updater(vector<StochasticNode*>(1,snode), graph);
-    
     switch (getDist(snode)) {
     case GAMMA: case EXP: case CHISQ:
 	//The exponential and chisquare distributions are both special
@@ -95,21 +93,12 @@ bool ConjugateGamma::canSample(StochasticNode *snode, Graph const &graph)
 	return false;
     }
 
-    // Create a set of nodes containing snode and its deterministic
-    // descendants for the checks below.
-    set<Node const *> paramset;
-    paramset.insert(snode);
-    vector<DeterministicNode*> const &dtrm_nodes = 
-	updater.deterministicChildren();
-    for (unsigned int j = 0; j < dtrm_nodes.size(); ++j) {
-	paramset.insert(dtrm_nodes[j]);
-    }
+    Updater updater(vector<StochasticNode*>(1,snode), graph);
 
     // Check stochastic children
     vector<StochasticNode const*> const &stoch_nodes = 
 	updater.stochasticChildren();
     for (unsigned int i = 0; i < stoch_nodes.size(); ++i) {
-	vector<Node const*> const &param = stoch_nodes[i]->parents();
 	if (isBounded(stoch_nodes[i])) {
 	    return false; //Bounded
 	}
@@ -117,7 +106,7 @@ bool ConjugateGamma::canSample(StochasticNode *snode, Graph const &graph)
 	case EXP: case POIS:
 	    break;
 	case GAMMA: case NORM: case DEXP: case WEIB: case LNORM:
-	    if (paramset.count(param[0])) {
+	    if (updater.isDependent(stoch_nodes[i]->parents()[0])) {
 		return false; //non-scale parameter depends on snode
 	    }
 	    break;

@@ -96,17 +96,8 @@ bool ConjugateNormal::canSample(StochasticNode *snode, Graph const &graph)
     if (getDist(snode) != NORM)
 	return false;
 
-
     Updater updater(snode, graph);
-    vector<DeterministicNode*> const &dchild = updater.deterministicChildren();
     vector<StochasticNode const*> const &schild = updater.stochasticChildren();
-
-    /* 
-       Create a set of nodes containing snode and its deterministic
-       descendants for the checks below.
-    */
-    set<Node const*> paramset;
-    paramset.insert(dchild.begin(), dchild.end());
 
     // Check stochastic children
     for (unsigned int i = 0; i < schild.size(); ++i) {
@@ -119,7 +110,7 @@ bool ConjugateNormal::canSample(StochasticNode *snode, Graph const &graph)
 	if (isBounded(schild[i])) {
 	    return false; //Truncated distribution
 	}
-	if (paramset.count(schild[i]->parents()[1])) {
+	if (updater.isDependent(schild[i]->parents()[1])) {
 	    return false; //Precision depends on snode
 	}
     }

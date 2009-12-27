@@ -34,25 +34,15 @@ bool ConjugateWishart::canSample(StochasticNode *snode, Graph const &graph)
   
     Updater updater(snode, graph);
     vector<StochasticNode const*> const &schild = updater.stochasticChildren();
-    vector<DeterministicNode*> const &dchild = updater.deterministicChildren();
-
-    /* 
-       Create a set of nodes containing snode and its deterministic
-       descendants for the checks below.
-    */
-    set<Node const *> paramset;
-    paramset.insert(snode);
-    paramset.insert(dchild.begin(), dchild.end());
 
     // Check stochastic children
     for (unsigned int i = 0; i < schild.size(); ++i) {
-	vector<Node const*> const &param = schild[i]->parents();
 	if (isBounded(schild[i])) {
 	    return false; //Bounded
 	}
 	switch(getDist(schild[i])) {
 	case MNORM:
-	    if (paramset.count(param[0])) {
+	    if (updater.isDependent(schild[i]->parents()[0])) {
 		return false; //mean parameter depends on snode
 	    }
 	    break;
@@ -60,7 +50,8 @@ bool ConjugateWishart::canSample(StochasticNode *snode, Graph const &graph)
 	    return false;
 	}
     }
-  
+
+    vector<DeterministicNode*> const &dchild = updater.deterministicChildren();
     if (!dchild.empty()) {
 	// Deterministic children must be scale functions
 	if (!checkScale(&updater, false)) {

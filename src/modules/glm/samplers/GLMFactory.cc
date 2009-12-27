@@ -81,14 +81,6 @@ namespace glm {
 
     bool GLMFactory::checkDescendants(Updater const *updater) const
     {
-	// Create a set of nodes containing snode and its
-	// deterministic descendants
-	set<Node const*> paramset;
-	paramset.insert(updater->nodes().begin(),
-			updater->nodes().end());
-	paramset.insert(updater->deterministicChildren().begin(), 
-			updater->deterministicChildren().end());
-
 	// Check stochastic children
 	vector<StochasticNode const*> const &stoch_nodes = 
 	    updater->stochasticChildren();
@@ -103,7 +95,7 @@ namespace glm {
 	    }
 	    //Check that other parameters do not depend on snode	    
 	    for (unsigned int j = 1; j < param.size(); ++j) {
-		if (paramset.count(param[j])) {
+		if (updater->isDependent(param[j])) {
 		    return false;
 		}
 	    }

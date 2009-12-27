@@ -115,30 +115,18 @@ bool ConjugateMNormal::canSample(StochasticNode *snode, Graph const &graph)
     if (isBounded(snode))
 	return false;
 
-
     Updater updater(snode, graph);
-    vector<DeterministicNode*> const &dchild = updater.deterministicChildren();
     vector<StochasticNode const*> const &schild = updater.stochasticChildren();
-
-    /* 
-       Create a set of nodes containing snode and its deterministic
-       descendants for the checks below.
-    */
-    set<Node const *> paramset;
-    paramset.insert(snode);
-    paramset.insert(dchild.begin(), dchild.end());
 
     // Check stochastic children
     for (unsigned int i = 0; i < schild.size(); ++i) {
-	if (getDist(schild[i]) != MNORM &&
-	    getDist(schild[i]) != NORM) {
+	if (getDist(schild[i]) != MNORM && getDist(schild[i]) != NORM) {
 	    return false; //Not normal or multivariate normal
 	}
 	if (isBounded(schild[i])) {
 	    return false;
 	}
-	vector<Node const *> const &param = schild[i]->parents();
-	if (paramset.count(param[1])) {
+	if (updater.isDependent(schild[i]->parents()[1])) {
 	    return false; //Precision depends on snode
 	}
     }

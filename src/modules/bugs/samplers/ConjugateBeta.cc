@@ -59,14 +59,6 @@ bool ConjugateBeta::canSample(StochasticNode *snode, Graph const &graph)
 	return false;
     }
 
-   /* 
-       Create a set of nodes containing snode and its descendants for the 
-       checks below.
-    */
-    set<Node const *> paramset;
-    paramset.insert(snode);
-    paramset.insert(dchild.begin(), dchild.end());
-
     // Check stochastic children
     for (unsigned int i = 0; i < schild.size(); ++i) {
 	if (isBounded(schild[i])) {
@@ -74,7 +66,7 @@ bool ConjugateBeta::canSample(StochasticNode *snode, Graph const &graph)
 	}
 	switch(getDist(schild[i])) {
 	case BIN: case NEGBIN:
-	    if (paramset.count(schild[i]->parents()[1])) {
+	    if (updater.isDependent(schild[i]->parents()[1])) {
 		return false; //n depends on snode
 	    }      
 	    break;

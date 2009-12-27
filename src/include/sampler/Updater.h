@@ -94,6 +94,19 @@ public:
    */
   std::vector<DeterministicNode*> const &deterministicChildren() const;
   /**
+   * Tests whether the node depends deterministically on any of the
+   * sampled nodes.  This function may be used by SamplerFactory
+   * objects to test the validity of sampling methods. For example, we
+   * may need to check that the mean, but not the variance of a
+   * stochastic child depends on the sampled nodes.
+   *
+   * @param node Node to test
+   *
+   * @return true if node is in either the vector of sampled nodes or the
+   * vector of deterministic children, false otherwise.
+   */
+  bool isDependent(Node const *node) const;
+  /**
    * Calculates the log conditional density of the sampled nodes,
    * given all other nodes in the graph that was supplied to the
    * constructor, plus the parents of the nodes (which may be outside

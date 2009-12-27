@@ -385,6 +385,19 @@ unsigned int Updater::length() const
     return _length;
 }
 
+bool Updater::isDependent(Node const *node) const
+{
+    for (unsigned int i = 0; i < _nodes.size(); ++i) {
+	if (_nodes[i] == node)
+	    return true;
+    }
+    for (unsigned int j = 0; j < _determ_children.size(); ++j) {
+	if (_determ_children[j] == node)
+	    return true;
+    }
+    return false;
+}
+      
 static void stochChildren(Node *node, Graph const &graph,
 			  set<StochasticNode const *> &children)
 {
