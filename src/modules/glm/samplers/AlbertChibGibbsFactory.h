@@ -12,8 +12,8 @@ namespace glm {
     {
     public:
 	AlbertChibGibbsFactory();
-	BinaryGLM *newBinary(Updater const *updater, 
-			     std::vector<Updater const *> const &sub_updaters,
+	BinaryGLM *newBinary(GraphView const *view, 
+			     std::vector<GraphView const *> const &sub_views,
 			     unsigned int chain) const;
     };
 
