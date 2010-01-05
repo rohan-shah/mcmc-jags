@@ -19,9 +19,6 @@ using std::logic_error;
 using std::string;
 using std::reverse;
 
-static bool isInformative(StochasticNode *node, Graph const &sample_graph);
-static bool isInformative(DeterministicNode *node, Graph const &sample_graph);
-
 static unsigned int sumLength(vector<StochasticNode *> const &nodes)
 {
     //Adds up the length of a vector of stochastic nodes
@@ -51,71 +48,21 @@ vector<StochasticNode *> const &GraphView::nodes() const
   return _nodes;
 }
 
-/* 
-   A node is informative if it has an observed descendant in the graph. There are two
-   functions to check informativeness: one for stochastic nodes and one
-   for deterministic nodes.  The only difference is that for stochastic nodes
-   we check to see if the node is observed.
-*/
-static bool isInformative(StochasticNode *node, Graph const &sample_graph)
-{
-    if (!sample_graph.contains(node))
-	return false;
-
-    if (node->isObserved())
-	return true;
-
-    for (set<StochasticNode*>::iterator p = node->stochasticChildren()->begin();
-         p != node->stochasticChildren()->end(); ++p) 
-    {
-        if (isInformative(*p, sample_graph)) 
-            return true;
-    }
-    for (set<DeterministicNode*>::iterator p = node->deterministicChildren()->begin();
-         p != node->deterministicChildren()->end(); ++p) 
-    {
-	if (isInformative(*p, sample_graph)) 
-	    return true;
-    }
-    return false;
-}
-
-static bool isInformative(DeterministicNode *node, Graph const &sample_graph)
-{
-    if (!sample_graph.contains(node))
-	return false;
-
-    for (set<StochasticNode*>::iterator p = node->stochasticChildren()->begin();
-         p != node->stochasticChildren()->end(); ++p) 
-    {
-        if (isInformative(*p, sample_graph)) 
-            return true;
-    }
-    for (set<DeterministicNode*>::iterator p = node->deterministicChildren()->begin();
-         p != node->deterministicChildren()->end(); ++p) 
-    {
-	if (isInformative(*p, sample_graph)) 
-	    return true;
-    }
-    return false;
-}
-
 static bool classifyNode(StochasticNode *snode, Graph const &sample_graph, 
 			 set<StochasticNode const *> &sset)
 {
     // classification function for stochastic nodes
-      
-    if (!sample_graph.contains(snode))
-	return false;
 
     if (sset.count(snode))
 	return true;
-
-    if (isInformative(snode, sample_graph)) {
+    
+    if (sample_graph.contains(snode)) {
 	sset.insert(snode);
 	return true;
     }
-    return false;
+    else {
+	return false;
+    }
 }
 
 static bool classifyNode(DeterministicNode *dnode, Graph const &sample_graph,
@@ -155,9 +102,9 @@ static bool classifyNode(DeterministicNode *dnode, Graph const &sample_graph,
 
 
 void GraphView::classifyChildren(vector<StochasticNode *> const &nodes,
-			       Graph const &graph,
-			       vector<StochasticNode const*> &stoch_nodes,
-			       vector<DeterministicNode*> &dtrm_nodes)
+				 Graph const &graph,
+				 vector<StochasticNode const*> &stoch_nodes,
+				 vector<DeterministicNode*> &dtrm_nodes)
 {
     set<DeterministicNode const *> dset;
     set<StochasticNode const *> sset;
