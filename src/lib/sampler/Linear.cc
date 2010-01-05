@@ -1,6 +1,6 @@
 #include <config.h>
 #include <sampler/Linear.h>
-#include <sampler/Updater.h>
+#include <sampler/GraphView.h>
 #include <graph/GraphMarks.h>
 #include <graph/Graph.h>
 #include <graph/StochasticNode.h>
@@ -18,16 +18,16 @@ static bool isLink(DeterministicNode const *dnode)
     return dynamic_cast<LinkNode const*>(dnode) != 0;
 }
 
-bool checkLinear(Updater const *updater, bool fixed, bool link)
+bool checkLinear(GraphView const *gv, bool fixed, bool link)
 {
     vector<StochasticNode const *> const &stoch_nodes
-	= updater->stochasticChildren();
+	= gv->stochasticChildren();
     vector<DeterministicNode *> const &dtrm_nodes
-	= updater->deterministicChildren();
+	= gv->deterministicChildren();
 
     set<Node const*> ancestors;
     //Sampled nodes are trivial (fixed) linear functions of themselves
-    ancestors.insert(updater->nodes().begin(), updater->nodes().end());
+    ancestors.insert(gv->nodes().begin(), gv->nodes().end());
     
     set<Node const*> stoch_node_parents;
     if (link) {
@@ -58,13 +58,13 @@ bool checkLinear(Updater const *updater, bool fixed, bool link)
     return true;
 }
 
-bool checkScale(Updater const *up, bool fixed)
+bool checkScale(GraphView const *gv, bool fixed)
 {
-    vector<DeterministicNode *> const &dnodes = up->deterministicChildren();
+    vector<DeterministicNode *> const &dnodes = gv->deterministicChildren();
     
     set<Node const*> ancestors;
     //FIXME: valid for multiple nodes?
-    ancestors.insert(up->nodes().begin(), up->nodes().end()); 
+    ancestors.insert(gv->nodes().begin(), gv->nodes().end()); 
 
     //Start off looking for scale transformations, then fall back on
     //scale mixture transformations if fixed is false.
@@ -97,12 +97,12 @@ bool checkScale(Updater const *up, bool fixed)
     return true;
 }
 
-bool checkPower(Updater const *updater, bool fixed)
+bool checkPower(GraphView const *gv, bool fixed)
 {
     set<Node const*> ancestors;
-    ancestors.insert(updater->nodes().begin(), updater->nodes().end());
+    ancestors.insert(gv->nodes().begin(), gv->nodes().end());
 
-    vector<DeterministicNode *> dnodes = updater->deterministicChildren();    
+    vector<DeterministicNode *> const &dnodes = gv->deterministicChildren();    
     for (unsigned int j = 0; j < dnodes.size(); ++j) {
 	if (dnodes[j]->isClosed(ancestors, DNODE_POWER, fixed)) {
 	    ancestors.insert(dnodes[j]);

@@ -1,5 +1,5 @@
 #include <config.h>
-#include <sampler/Updater.h>
+#include <sampler/GraphView.h>
 #include <graph/StochasticNode.h>
 #include <graph/DeterministicNode.h>
 #include <graph/Graph.h>
@@ -32,21 +32,21 @@ static unsigned int sumLength(vector<StochasticNode *> const &nodes)
     return n;
 }
 
-Updater::Updater(vector<StochasticNode *> const &nodes, Graph const &graph)
+GraphView::GraphView(vector<StochasticNode *> const &nodes, Graph const &graph)
     : _length(sumLength(nodes)), _nodes(nodes), _stoch_children(0),
       _determ_children(0)
 {
     classifyChildren(nodes, graph, _stoch_children, _determ_children);
 }
 
-Updater::Updater(StochasticNode * node, Graph const &graph)
+GraphView::GraphView(StochasticNode * node, Graph const &graph)
     : _length(node->length()), _nodes(vector<StochasticNode*>(1,node)), 
       _stoch_children(0), _determ_children(0)
 {
     classifyChildren(_nodes, graph, _stoch_children, _determ_children);
 }
 
-vector<StochasticNode *> const &Updater::nodes() const
+vector<StochasticNode *> const &GraphView::nodes() const
 {
   return _nodes;
 }
@@ -154,7 +154,7 @@ static bool classifyNode(DeterministicNode *dnode, Graph const &sample_graph,
 }
 
 
-void Updater::classifyChildren(vector<StochasticNode *> const &nodes,
+void GraphView::classifyChildren(vector<StochasticNode *> const &nodes,
 			       Graph const &graph,
 			       vector<StochasticNode const*> &stoch_nodes,
 			       vector<DeterministicNode*> &dtrm_nodes)
@@ -203,7 +203,7 @@ void Updater::classifyChildren(vector<StochasticNode *> const &nodes,
     reverse(dtrm_nodes.begin(), dtrm_nodes.end());
 }
 
-double Updater::logFullConditional(unsigned int chain) const
+double GraphView::logFullConditional(unsigned int chain) const
 {
     double lprior = 0.0;
     vector<StochasticNode*>::const_iterator p = _nodes.begin();
@@ -268,7 +268,7 @@ double Updater::logFullConditional(unsigned int chain) const
     return lfc;
 }
 
-double Updater::logPrior(unsigned int chain) const
+double GraphView::logPrior(unsigned int chain) const
 {
     double lprior = 0.0;
 
@@ -284,13 +284,13 @@ double Updater::logPrior(unsigned int chain) const
 		throw NodeError(*p, "Failure to calculate log density");
 	    }
 	}
-	throw logic_error("Failure in Updater::logLikelihood");
+	throw logic_error("Failure in GraphView::logLikelihood");
     }
 
     return lprior;
 }
 
-double Updater::logLikelihood(unsigned int chain) const
+double GraphView::logLikelihood(unsigned int chain) const
 {
     double llik = 0.0;
 
@@ -308,27 +308,27 @@ double Updater::logLikelihood(unsigned int chain) const
 	}
 
 	//This could  happen if we try to add +Inf to -Inf
-	throw logic_error("Failure in Updater::logLikelihood");
+	throw logic_error("Failure in GraphView::logLikelihood");
     }
 
     return llik;
 }
 
-vector<StochasticNode const*> const &Updater::stochasticChildren() const
+vector<StochasticNode const*> const &GraphView::stochasticChildren() const
 {
   return _stoch_children;
 }
 
-vector<DeterministicNode*> const &Updater::deterministicChildren() const
+vector<DeterministicNode*> const &GraphView::deterministicChildren() const
 {
   return _determ_children;
 }
 
-void Updater::setValue(double const * value, unsigned int length,
+void GraphView::setValue(double const * value, unsigned int length,
 		       unsigned int chain) const
 {
     if (length != _length) {
-      throw logic_error("Argument length mismatch in Updater::setValue");
+      throw logic_error("Argument length mismatch in GraphView::setValue");
     }
 
     for (unsigned int i = 0; i < _nodes.size(); ++i) {
@@ -343,10 +343,10 @@ void Updater::setValue(double const * value, unsigned int length,
     }
 }
 
-void Updater::setValue(vector<double> const &value, unsigned int chain) const
+void GraphView::setValue(vector<double> const &value, unsigned int chain) const
 {
     if (value.size() != _length) {
-	throw logic_error("Argument length mismatch in Updater::setValue");
+	throw logic_error("Argument length mismatch in GraphView::setValue");
     }
 
     double *x = new double[value.size()];
@@ -366,10 +366,10 @@ void Updater::setValue(vector<double> const &value, unsigned int chain) const
     }
 }
  
-void Updater::getValue(vector<double> &value, unsigned int chain) const 
+void GraphView::getValue(vector<double> &value, unsigned int chain) const 
 {
     if (value.size() != _length) 
-	throw logic_error("length mismatch in Updater::getValue");
+	throw logic_error("length mismatch in GraphView::getValue");
     
     unsigned int k = 0;
     for (unsigned int i = 0; i < _nodes.size(); ++i) {
@@ -380,12 +380,12 @@ void Updater::getValue(vector<double> &value, unsigned int chain) const
     }
 }
 
-unsigned int Updater::length() const
+unsigned int GraphView::length() const
 {
     return _length;
 }
 
-bool Updater::isDependent(Node const *node) const
+bool GraphView::isDependent(Node const *node) const
 {
     for (unsigned int i = 0; i < _nodes.size(); ++i) {
 	if (_nodes[i] == node)
@@ -416,33 +416,9 @@ static void stochChildren(Node *node, Graph const &graph,
 	    stochChildren(*p, graph, children);
     }
 }
-    
-/*
-void Updater::getStochasticChildren(vector<StochasticNode *> const &nodes,
-				    Graph const &graph,
-				    set<StochasticNode const *> &children)
 
+unsigned int nchain(GraphView const *gv)
 {
-
-    vector<StochasticNode  *>::const_iterator p; 
-    
-    for (p = nodes.begin(); p != nodes.end(); ++p) {
-	if (!graph.contains(*p)) {
-	    throw logic_error("Sampled node outside of sampling graph");
-	}
-	stochChildren(*p, graph, children);
-    }
-
-    // Strip given nodes out of the set of stochastic children.
-    
-    for (p = nodes.begin(); p != nodes.end(); ++p) {
-	children.erase(*p);
-    }
-}
-*/
-
-unsigned int nchain(Updater const *updater)
-{
-    return updater->nodes()[0]->nchain();
+    return gv->nodes()[0]->nchain();
 }
     
