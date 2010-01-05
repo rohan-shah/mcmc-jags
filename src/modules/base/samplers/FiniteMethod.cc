@@ -5,7 +5,7 @@
 #include <rng/RNG.h>
 #include <util/nainf.h>
 #include <graph/NodeError.h>
-#include <sampler/Updater.h>
+#include <sampler/GraphView.h>
 
 #include "FiniteMethod.h"
 
@@ -24,13 +24,13 @@ using std::max;
 
 namespace base {
 
-    FiniteMethod::FiniteMethod(Updater const *updater, unsigned int chain)
-	: _updater(updater), _chain(chain)
+    FiniteMethod::FiniteMethod(GraphView const *gv, unsigned int chain)
+	: _gv(gv), _chain(chain)
     {
-	if (updater->nodes().size() != 1)
+	if (gv->nodes().size() != 1)
 	    throw logic_error("Invalid FiniteMethod");
 
-	StochasticNode const *snode = updater->nodes().front();
+	StochasticNode const *snode = gv->nodes().front();
 	if (!canSample(snode)) {
 	    throw logic_error("Invalid FiniteMethod");
 	}
@@ -51,8 +51,8 @@ namespace base {
 	double lik_max = JAGS_NEGINF;
 	for (int i = 0; i < size; i++) {
 	    double ivalue = _lower + i;
-	    _updater->setValue(&ivalue, 1, _chain);
-	    lik[i] = _updater->logFullConditional(_chain);
+	    _gv->setValue(&ivalue, 1, _chain);
+	    lik[i] = _gv->logFullConditional(_chain);
 	    lik_max = max(lik_max, lik[i]);
 	}
 
@@ -64,7 +64,7 @@ namespace base {
 	}
 	
 	if (!jags_finite(liksum)) {
-	    throw NodeError(_updater->nodes()[0],
+	    throw NodeError(_gv->nodes()[0],
 			    "Cannot normalize density");
 	}
 
@@ -79,7 +79,7 @@ namespace base {
 	    }
 	}
 	double ivalue = _lower + i;
-	_updater->setValue(&ivalue, 1, _chain);
+	_gv->setValue(&ivalue, 1, _chain);
     }
 
     bool FiniteMethod::isAdaptive() const

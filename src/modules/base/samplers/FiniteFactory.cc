@@ -1,6 +1,6 @@
 #include <config.h>
 #include <sampler/ParallelSampler.h>
-#include <sampler/Updater.h>
+#include <sampler/GraphView.h>
 #include <sampler/SampleMethod.h>
 
 #include "FiniteMethod.h"
@@ -26,13 +26,13 @@ namespace base {
     Sampler *  FiniteFactory::makeSampler(StochasticNode *snode,
 					  Graph const &graph) const
     {
-	Updater *updater = new Updater(snode, graph);
-	unsigned int N = nchain(updater);
+	GraphView *gv = new GraphView(snode, graph);
+	unsigned int N = nchain(gv);
 	vector<SampleMethod*> methods(N, 0);
 	for (unsigned int ch = 0; ch < N; ++ch) {
-	    methods[ch] = new FiniteMethod(updater, ch);
+	    methods[ch] = new FiniteMethod(gv, ch);
 	}
-	return new ParallelSampler(updater, methods);
+	return new ParallelSampler(gv, methods);
     }
 
     string const &FiniteFactory::name() const
