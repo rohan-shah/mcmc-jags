@@ -14,13 +14,13 @@ namespace glm {
 	BinaryFactory(std::string const &name, bool gibbs);
 	bool checkOutcome(StochasticNode const *snode,
 			  LinkNode const *lnode) const;
-	GLMMethod *newMethod(Updater const *updater,
-			     std::vector<Updater const *> const &sub_updaters,
+	GLMMethod *newMethod(GraphView const *view,
+			     std::vector<GraphView const *> const &sub_views,
 			     unsigned int chain) const;
 	bool canSample(StochasticNode const *snode) const;
-	virtual BinaryGLM *newBinary(Updater const *updater,
-				     std::vector<Updater const *> const 
-				     &sub_updaters,
+	virtual BinaryGLM *newBinary(GraphView const *view,
+				     std::vector<GraphView const *> const 
+				     &sub_views,
 				     unsigned int chain) const = 0;
     };
 
