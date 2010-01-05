@@ -24,8 +24,7 @@ public:
      * will take ownership of them, and will delete them when its
      * destructor is called
      */
-    ParallelSampler(Updater *updater,
-		    std::vector<SampleMethod*> const &methods);
+    ParallelSampler(GraphView *gv, std::vector<SampleMethod*> const &methods);
     ~ParallelSampler();
     void update(std::vector<RNG*> const &rngs);
     bool isAdaptive() const;

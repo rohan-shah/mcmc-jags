@@ -7,7 +7,7 @@
 
 class RNG;
 class StochasticNode;
-class Updater;
+class GraphView;
 
 /**
  * @short Updates a set of stochastic nodes
@@ -15,9 +15,16 @@ class Updater;
  * A sampler updates a set of stochastic nodes.  
  */
 class Sampler {
-    Updater *_updater;
+    GraphView *_gv;
 public:
-    Sampler(Updater *updater);
+    /**
+     * Constructor
+     *
+     * @param gv GraphView providing a view of the sampling graph for
+     * the sampler. The Sampler takes ownership of the GraphView and
+     * deletes it when the destructor is called.
+     */
+    Sampler(GraphView *gv);
     virtual ~Sampler();
     /**
      * Returns the vector of stochastic nodes sampled by the Sampler
