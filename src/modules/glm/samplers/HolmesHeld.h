@@ -10,8 +10,8 @@ namespace glm {
      */
     class HolmesHeld : public BinaryGLM {
     public:
-	HolmesHeld(Updater const *updater, 
-		   std::vector<Updater const *> const &sub_updaters,
+	HolmesHeld(GraphView const *view, 
+		   std::vector<GraphView const *> const &sub_views,
 		   unsigned int chain);
 	void updateAuxiliary(double *b, csn *N, RNG *rng);
 	std::string name() const;
