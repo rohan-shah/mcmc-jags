@@ -5,7 +5,7 @@
 #include <graph/StochasticNode.h>
 #include <graph/LinkNode.h>
 #include <function/InverseLinkFunc.h>
-#include <sampler/Updater.h>
+#include <sampler/GraphView.h>
 #include <rng/TruncatedNormal.h>
 #include <rng/RNG.h>
 
@@ -15,11 +15,11 @@ using std::vector;
 using std::string;
 using std::logic_error;
 
-#define CHILD(i) (_updater->stochasticChildren()[i])
+#define CHILD(i) (_view->stochasticChildren()[i])
 
-static unsigned int nchildren(Updater const *updater)
+static unsigned int nchildren(GraphView const *view)
 {
-    return updater->stochasticChildren().size();
+    return view->stochasticChildren().size();
 }
 
 static BGLMOutcome getOutcome(StochasticNode const *snode)
@@ -50,12 +50,12 @@ static BGLMOutcome getOutcome(StochasticNode const *snode)
 
 namespace glm {
 
-    BinaryGLM::BinaryGLM(Updater const *updater,
-			   vector<Updater const *> const &sub_updaters,
+    BinaryGLM::BinaryGLM(GraphView const *view,
+			   vector<GraphView const *> const &sub_views,
 			   unsigned int chain)
-	: GLMMethod(updater, sub_updaters, chain, true), 
-	  _outcome(nchildren(updater)),
-	  _z(nchildren(updater)), _tau(nchildren(updater))
+	: GLMMethod(view, sub_views, chain, true), 
+	  _outcome(nchildren(view)),
+	  _z(nchildren(view)), _tau(nchildren(view))
     {
 	for (unsigned int i = 0; i < _outcome.size(); ++i) {
 	    _outcome[i] = getOutcome(CHILD(i));
