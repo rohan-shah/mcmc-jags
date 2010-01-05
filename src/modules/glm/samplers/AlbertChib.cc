@@ -6,7 +6,7 @@
 #include <graph/StochasticNode.h>
 #include <graph/LinkNode.h>
 #include <function/InverseLinkFunc.h>
-#include <sampler/Updater.h>
+#include <sampler/GraphView.h>
 #include <rng/TruncatedNormal.h>
 #include <rng/RNG.h>
 #include <cmath>
@@ -36,14 +36,14 @@ static double rlogit(double right, RNG *rng, double mu)
     return mu + log(x) - log(1 - x);
 }
 
-#define CHILD(i) (_updater->stochasticChildren()[i])
+#define CHILD(i) (_view->stochasticChildren()[i])
 
 namespace glm {
 
-    AlbertChib::AlbertChib(Updater const *updater,
-			   vector<Updater const *> const &sub_updaters,
+    AlbertChib::AlbertChib(GraphView const *view,
+			   vector<GraphView const *> const &sub_views,
 			   unsigned int chain, bool gibbs)
-	: BinaryGLM(updater, sub_updaters, chain), _gibbs(gibbs)
+	: BinaryGLM(view, sub_views, chain), _gibbs(gibbs)
     {
     }
 
@@ -57,7 +57,7 @@ namespace glm {
 	    updateLM(rng);
 	}
 
-	unsigned int nrow = _updater->stochasticChildren().size();
+	unsigned int nrow = _view->stochasticChildren().size();
 	
 	double y, mu;
 	for (unsigned int r = 0; r < nrow; ++r) {
