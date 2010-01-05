@@ -56,14 +56,14 @@ static bool checkOutcome(StochasticNode const *snode)
 
 namespace glm {
 
-    AMMethod::AMMethod(Updater const *updater,
-		       vector<Updater const *> const &sub_updaters,
+    AMMethod::AMMethod(GraphView const *view,
+		       vector<GraphView const *> const &sub_views,
 		       unsigned int chain)
-	: GLMMethod(updater, sub_updaters, chain, true), 
-	  _aux(updater->stochasticChildren().size())
+	: GLMMethod(view, sub_views, chain, true), 
+	  _aux(view->stochasticChildren().size())
     {
 	vector<StochasticNode const*> const &children = 
-	    _updater->stochasticChildren();
+	    _view->stochasticChildren();
 
 	for (unsigned int i = 0; i < children.size(); ++i) {
 
