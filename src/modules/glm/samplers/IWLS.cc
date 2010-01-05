@@ -15,9 +15,9 @@ using std::logic_error;
 using std::exp;
 using std::fabs;
 
-static unsigned int nchildren(Updater const *updater)
+static unsigned int nchildren(GraphView const *view)
 {
-    return updater->stochasticChildren().size();
+    return view->stochasticChildren().size();
 }
 
 #define MAX_ITER 100
@@ -25,15 +25,15 @@ static unsigned int nchildren(Updater const *updater)
 namespace glm {
 
 
-    IWLS::IWLS(Updater const *updater, 
-	       vector<Updater const *> const &sub_updaters,
+    IWLS::IWLS(GraphView const *view, 
+	       vector<GraphView const *> const &sub_views,
 	       unsigned int chain)
-	: GLMMethod(updater, sub_updaters, chain, true),
-	  _link(nchildren(updater)), _family(nchildren(updater)), 
+	: GLMMethod(view, sub_views, chain, true),
+	  _link(nchildren(view)), _family(nchildren(view)), 
 	  _init(true), _w(0)
     {
 	vector<StochasticNode const*> const &children =
-	    updater->stochasticChildren();
+	    view->stochasticChildren();
 	
 	for (unsigned int i = 0; i < children.size(); ++i) {
 	    _link[i] = dynamic_cast<LinkNode const*>(children[i]->parents()[0]);
@@ -50,7 +50,7 @@ namespace glm {
     {
 	double w = _w;
 	if (_family[i] == GLM_BINOMIAL) {
-	    Node const *size = _updater->stochasticChildren()[i]->parents()[1];
+	    Node const *size = _view->stochasticChildren()[i]->parents()[1];
 	    w *= size->value(_chain)[0];
 	}
 
@@ -60,7 +60,7 @@ namespace glm {
 
     double IWLS::getValue(unsigned int i) const
     {
-	Node const *child = _updater->stochasticChildren()[i];
+	Node const *child = _view->stochasticChildren()[i];
 
 	double y = child->value(_chain)[0];
 	if (_family[i] == GLM_BINOMIAL) {
@@ -99,7 +99,7 @@ namespace glm {
 				vector<double> const &x,
 				double const *b, cs const *A)
     {
-	unsigned int n = _updater->length();
+	unsigned int n = _view->length();
 	
 	csn *N = cs_chol(A, _symbol);
 	if (!N) {
@@ -153,16 +153,16 @@ namespace glm {
 	cs *A1, *A2;
 	double logp = 0;
 	
-	vector<double> xold(_updater->length());
-	_updater->getValue(xold, _chain);
+	vector<double> xold(_view->length());
+	_view->getValue(xold, _chain);
 	calCoef(b1, A1);
 	
-	logp -= _updater->logFullConditional(_chain);
+	logp -= _view->logFullConditional(_chain);
 	updateLM(rng);
-	logp += _updater->logFullConditional(_chain);
+	logp += _view->logFullConditional(_chain);
 
-	vector<double> xnew(_updater->length());
-	_updater->getValue(xnew, _chain);
+	vector<double> xnew(_view->length());
+	_view->getValue(xnew, _chain);
 	calCoef(b2, A2);
 
 	logp -= logPTransition(xold, xnew, b1, A1);
@@ -173,7 +173,7 @@ namespace glm {
 	
 	//Acceptance step
 	if (rng->uniform() > exp(logp)) {
-	    _updater->setValue(xold, _chain);
+	    _view->setValue(xold, _chain);
 	}
     }
 }
