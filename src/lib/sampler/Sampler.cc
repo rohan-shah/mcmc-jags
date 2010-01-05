@@ -1,20 +1,20 @@
 #include <config.h>
 #include <sampler/Sampler.h>
-#include <sampler/Updater.h>
+#include <sampler/GraphView.h>
 
 using std::vector;
 
-Sampler::Sampler(Updater *updater)
-    : _updater(updater)
+Sampler::Sampler(GraphView *gv)
+    : _gv(gv)
 {
 }
 
 Sampler::~Sampler()
 {
-    delete _updater;
+    delete _gv;
 }
 
 vector<StochasticNode*> const &Sampler::nodes() const
 {
-    return _updater->nodes();
+    return _gv->nodes();
 }
