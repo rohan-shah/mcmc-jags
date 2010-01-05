@@ -1,7 +1,7 @@
 #include <sampler/ParallelSampler.h>
 #include <sampler/SampleMethod.h>
 #include <graph/StochasticNode.h>
-#include <sampler/Updater.h>
+#include <sampler/GraphView.h>
 
 #include <stdexcept>
 
@@ -9,12 +9,12 @@ using std::vector;
 using std::logic_error;
 using std::string;
 
-ParallelSampler::ParallelSampler(Updater *updater,
+ParallelSampler::ParallelSampler(GraphView *gv,
 				 vector<SampleMethod *> const &methods)
-    : Sampler(updater), _methods(methods)
+    : Sampler(gv), _methods(methods)
 {
-    for (unsigned int i = 0; i < updater->nodes().size(); ++i) {
-	if (updater->nodes()[i]->nchain() != methods.size()) {
+    for (unsigned int i = 0; i < gv->nodes().size(); ++i) {
+	if (gv->nodes()[i]->nchain() != methods.size()) {
 	    throw logic_error("Chain  mismatch in ParallelSampler");
 	}
     }
