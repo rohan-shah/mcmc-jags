@@ -1,23 +1,23 @@
 #include <config.h>
 #include "GLMSampler.h"
-#include <sampler/Updater.h>
+#include <sampler/GraphView.h>
 
 using std::vector;
 
 namespace glm {
 
-    GLMSampler::GLMSampler(Updater *updater, 
-			   vector<Updater*> const &sub_updaters,
+    GLMSampler::GLMSampler(GraphView *view, 
+			   vector<GraphView*> const &sub_views,
 			   vector<SampleMethod*> const &methods)
-	: ParallelSampler(updater, methods), _sub_updaters(sub_updaters)
+	: ParallelSampler(view, methods), _sub_views(sub_views)
     {
     }
     
     GLMSampler::~GLMSampler()
     {
-	while (!_sub_updaters.empty()) {
-	    delete _sub_updaters.back();
-	    _sub_updaters.pop_back();
+	while (!_sub_views.empty()) {
+	    delete _sub_views.back();
+	    _sub_views.pop_back();
 	}
     }
 

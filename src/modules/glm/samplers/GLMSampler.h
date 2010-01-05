@@ -5,15 +5,15 @@
 
 #include <vector>
 
-class Updater;
+class GraphView;
 
 namespace glm {
 
     class GLMSampler : public ParallelSampler
     {
-	std::vector<Updater*> _sub_updaters;
+	std::vector<GraphView*> _sub_views;
     public:
-	GLMSampler(Updater *updater, std::vector<Updater*> const &sub_updaters,
+	GLMSampler(GraphView *view, std::vector<GraphView*> const &sub_views,
 		   std::vector<SampleMethod*> const &methods);
 	~GLMSampler();
     }; 
