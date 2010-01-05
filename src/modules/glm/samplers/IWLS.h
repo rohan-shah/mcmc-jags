@@ -26,8 +26,8 @@ namespace glm {
                               std::vector<double> const &x,
                               double const *b, cs const *A);
     public:
-	IWLS(Updater const *updater, 
-	     std::vector<Updater const *> const &sub_updaters,
+	IWLS(GraphView const *view, 
+	     std::vector<GraphView const *> const &sub_views,
 	     unsigned int chain);
 	std::string name() const;
 	double getPrecision(unsigned int i) const;
