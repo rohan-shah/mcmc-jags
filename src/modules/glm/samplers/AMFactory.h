@@ -16,8 +16,8 @@ namespace glm {
 	bool checkOutcome(StochasticNode const *snode,
 			  LinkNode const *lnode) const;
 	bool canSample(StochasticNode const *snode) const;
-	GLMMethod * newMethod(Updater const *updater,
-			      std::vector<Updater const *> const &sub_updaters, 
+	GLMMethod * newMethod(GraphView const *view,
+			      std::vector<GraphView const *> const &sub_views, 
 			      unsigned int chain) const;
     };
 
