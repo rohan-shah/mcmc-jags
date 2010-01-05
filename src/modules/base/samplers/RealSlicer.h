@@ -4,7 +4,7 @@
 #include <sampler/Slicer.h>
 
 class StochasticNode;
-class Updater;
+class GraphView;
 
 namespace base {
 
@@ -13,18 +13,19 @@ namespace base {
  */
     class RealSlicer : public Slicer 
     {
-	Updater const *_updater;
+	GraphView const *_gv;
 	unsigned int _chain;
     public:
 	/**
 	 * Constructor for Slice Sampler
-	 * @param node Node to sample
+	 * @param gv GraphView containing node to sample
+	 * @param chain Index number of chain to sample (starting from zero)
 	 * @param width Initial width of slice
 	 * @param maxwidth Maximal width of slice as a multiple of the width
 	 * parameter
 	 * @param nburn Length of burnin
 	 */
-	RealSlicer(Updater const *updater, unsigned int chain,
+	RealSlicer(GraphView const *gv, unsigned int chain,
 		   double width = 1, long maxwidth = 10);
 	double value() const;
 	void setValue(double value);
