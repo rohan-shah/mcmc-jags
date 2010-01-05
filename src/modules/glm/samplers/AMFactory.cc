@@ -44,8 +44,8 @@ namespace glm {
     }
     
     GLMMethod *
-    AMFactory::newMethod(Updater const *updater,
-			     vector<Updater const *> const &sub_updaters,
+    AMFactory::newMethod(GraphView const *view,
+			     vector<GraphView const *> const &sub_views,
 			     unsigned int chain) const
     {
 	/* 
@@ -54,7 +54,7 @@ namespace glm {
 	*/
 	bool linear = true;
 	vector<StochasticNode const*> const &children =
-	    updater->stochasticChildren();
+	    view->stochasticChildren();
 	for (unsigned int i = 0; i < children.size(); ++i) {
 	    if (GLMMethod::getFamily(children[i]) != GLM_NORMAL) {
 		linear = false;
@@ -63,10 +63,10 @@ namespace glm {
 	}
 
 	if (linear) {
-	    return new Linear(updater, sub_updaters, chain, false);
+	    return new Linear(view, sub_views, chain, false);
 	}
 	else {
-	    return new AMMethod(updater, sub_updaters, chain);
+	    return new AMMethod(view, sub_views, chain);
 	}
     }
 
