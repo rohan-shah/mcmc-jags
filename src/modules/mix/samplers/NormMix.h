@@ -7,7 +7,7 @@
 #include <vector>
 
 class Graph;
-class Updater;
+class GraphView;
 
 namespace mix {
 
@@ -22,7 +22,7 @@ namespace mix {
  */
     class NormMix : public TemperedMetropolis
     {
-	Updater const *_updater;
+	GraphView const *_gv;
 	unsigned int _chain;
 	double *_lower;
 	double *_upper;
@@ -38,7 +38,7 @@ namespace mix {
 	 *
 	 * @param nrep Number of Metropolis-Hastings updates to do at each level
 	 */
-	NormMix(Updater const *updater, unsigned int chain);
+	NormMix(GraphView const *gv, unsigned int chain);
 	~NormMix();
 	void getValue(std::vector<double> &value) const;
 	void setValue(std::vector<double> const &value);

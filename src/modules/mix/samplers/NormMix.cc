@@ -2,7 +2,7 @@
 #include "NormMix.h"
 #include <rng/RNG.h>
 #include <util/nainf.h>
-#include <sampler/Updater.h>
+#include <sampler/GraphView.h>
 
 #include <cmath>
 #include <stdexcept>
@@ -37,23 +37,23 @@ static void read_bounds(vector<StochasticNode*> const &snodes,
     }
 }
 
-static vector<double> initialValue(Updater const *updater, unsigned int chain)
+static vector<double> initialValue(GraphView const *gv, unsigned int chain)
 {
-    vector<double> ivalue(updater->length());
-    updater->getValue(ivalue, chain);
+    vector<double> ivalue(gv->length());
+    gv->getValue(ivalue, chain);
     return ivalue;
 }
 
 namespace mix {
 
-    NormMix::NormMix(Updater const *updater, unsigned int chain)
-	: TemperedMetropolis(initialValue(updater, chain)),
-	  _updater(updater), _chain(chain)
+    NormMix::NormMix(GraphView const *gv, unsigned int chain)
+	: TemperedMetropolis(initialValue(gv, chain)),
+	  _gv(gv), _chain(chain)
     {
-	unsigned int N = updater->length();
+	unsigned int N = gv->length();
 	_lower = new double[N];
 	_upper = new double[N];
-	read_bounds(_updater->nodes(), 0, _lower, _upper, N);
+	read_bounds(_gv->nodes(), 0, _lower, _upper, N);
     }
 
     NormMix::~NormMix()
@@ -141,17 +141,17 @@ namespace mix {
 
     void NormMix::getValue(vector<double> &x) const 
     {
-	_updater->getValue(x, _chain);
+	_gv->getValue(x, _chain);
     }
 
     void NormMix::setValue(vector<double> const &x)
     {
-	_updater->setValue(x, _chain);
+	_gv->setValue(x, _chain);
     }
 
     double NormMix::logDensity() const
     {
-        return _updater->logFullConditional(_chain);
+        return _gv->logFullConditional(_chain);
     }
 
 }
