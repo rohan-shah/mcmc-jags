@@ -48,7 +48,7 @@ double DWish::logLikelihood(double const *x, unsigned int length,
 
     double loglik = 0;
     for (unsigned int i = 0; i < length; ++i) {
-	loglik += scale[i] * x[i];
+	loglik -= scale[i] * x[i];
     }
     loglik += DF(par) * logdet(scale, p) + (DF(par) - p - 1) * logdet(x, p);
     loglik -= DF(par) * p * log(2.0) + 2 * log_multigamma(DF(par)/2, p);
