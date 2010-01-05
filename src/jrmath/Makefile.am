@@ -25,7 +25,7 @@ runif.c dunif.c punif.c qunif.c \
 rweibull.c dweibull.c pweibull.c qweibull.c \
 rnchisq.c dnchisq.c pnchisq.c qnchisq.c \
 rcauchy.c dcauchy.c pcauchy.c qcauchy.c \
-polygamma.c d1mach.c i1mach.c
+polygamma.c
 
 noinst_HEADERS = nmath.h dpq.h 
 
