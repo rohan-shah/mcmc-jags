@@ -12,11 +12,11 @@ namespace glm {
     {}
 
     BinaryGLM *
-    HolmesHeldFactory::newBinary(Updater const *updater,
-				 vector<Updater const *> const &sub_updaters,
+    HolmesHeldFactory::newBinary(GraphView const *view,
+				 vector<GraphView const *> const &sub_views,
 				 unsigned int chain) const
     {
-	return new HolmesHeld(updater, sub_updaters, chain);
+	return new HolmesHeld(view, sub_views, chain);
     }
 
 }
