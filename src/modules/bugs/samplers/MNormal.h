@@ -3,11 +3,11 @@
 
 #include <sampler/Metropolis.h>
 
-class Updater;
+class GraphView;
 
 class MNormMetropolis : public Metropolis
 {
-    Updater const *_updater;
+    GraphView const *_gv;
     unsigned int _chain;
     double *_mean;
     double *_var;
@@ -19,7 +19,7 @@ class MNormMetropolis : public Metropolis
     unsigned int _nstep;
     unsigned int _p_over_target;
 public:
-    MNormMetropolis(Updater const *updater, unsigned int chain);
+    MNormMetropolis(GraphView const *gv, unsigned int chain);
     ~MNormMetropolis();
     void rescale(double p);
     void update(RNG *rng);

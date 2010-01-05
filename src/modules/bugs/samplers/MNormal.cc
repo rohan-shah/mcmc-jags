@@ -6,7 +6,7 @@
 #include <lapack.h>
 
 #include <graph/StochasticNode.h>
-#include <sampler/Updater.h>
+#include <sampler/GraphView.h>
 #include <rng/RNG.h>
 
 #include <cmath>
@@ -23,10 +23,10 @@ using std::sqrt;
 using std::min;
 using std::string;
 
-static vector<double> initValue(Updater const *updater, unsigned int chain)
+static vector<double> initValue(GraphView const *gv, unsigned int chain)
 {
-    double const *x = updater->nodes()[0]->value(chain);
-    unsigned int N = updater->nodes()[0]->length();
+    double const *x = gv->nodes()[0]->value(chain);
+    unsigned int N = gv->nodes()[0]->length();
     vector<double> ivalue(N);
     for (unsigned int i = 0; i < N; ++i) {
 	ivalue[i] = x[i];
@@ -35,14 +35,14 @@ static vector<double> initValue(Updater const *updater, unsigned int chain)
 }
 
 
-MNormMetropolis::MNormMetropolis(Updater const *updater, unsigned int chain)
-    : Metropolis(initValue(updater, chain)),
-      _updater(updater), _chain(chain), 
+MNormMetropolis::MNormMetropolis(GraphView const *gv, unsigned int chain)
+    : Metropolis(initValue(gv, chain)),
+      _gv(gv), _chain(chain), 
       _mean(0), _var(0), _prec(0), 
       _n(0), _n_isotonic(0), _sump(0), _meanp(0), _lstep(0), _nstep(10), 
       _p_over_target(true)
 {
-    unsigned int N = updater->length();
+    unsigned int N = gv->length();
 
     _mean = new double[N];
     _var = new double[N * N];
@@ -66,11 +66,11 @@ MNormMetropolis::~MNormMetropolis()
 
 void MNormMetropolis::update(RNG *rng)
 {
-    double logdensity = -_updater->logFullConditional(_chain);
+    double logdensity = -_gv->logFullConditional(_chain);
     double step = exp(_lstep);
 
-    double const *xold = _updater->nodes()[0]->value(_chain);
-    unsigned int N = _updater->length();
+    double const *xold = _gv->nodes()[0]->value(_chain);
+    unsigned int N = _gv->length();
 
     double *eps = new double[N];
     DMNorm::randomsample(eps, 0, _var, false, N, rng);
@@ -81,7 +81,7 @@ void MNormMetropolis::update(RNG *rng)
     delete [] eps;
 
     setValue(xnew);
-    logdensity += _updater->logFullConditional(_chain);
+    logdensity += _gv->logFullConditional(_chain);
     accept(rng, exp(logdensity));
 }
 
@@ -141,8 +141,8 @@ void MNormMetropolis::rescale(double p)
 	   random walk.
 	*/
 
-	unsigned int N = _updater->length();
-	double const *x = _updater->nodes()[0]->value(_chain);
+	unsigned int N = _gv->length();
+	double const *x = _gv->nodes()[0]->value(_chain);
 	for (unsigned int i = 0; i < N; ++i) {
 	    _mean[i] += 2 * (x[i] - _mean[i]) / (_n - _n_isotonic + 1);
 	}
@@ -168,11 +168,11 @@ string MNormMetropolis::name() const
 
 void MNormMetropolis::getValue(vector<double> &value) const
 {
-    double const *v = _updater->nodes()[0]->value(_chain);
-    copy(v, v + _updater->length(), value.begin());
+    double const *v = _gv->nodes()[0]->value(_chain);
+    copy(v, v + _gv->length(), value.begin());
 }
 
 void MNormMetropolis::setValue(vector<double> const &value)
 {
-    _updater->setValue(value, _chain);
+    _gv->setValue(value, _chain);
 }
