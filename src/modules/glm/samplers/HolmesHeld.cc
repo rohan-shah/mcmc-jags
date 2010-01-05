@@ -6,7 +6,7 @@
 #include <graph/StochasticNode.h>
 #include <graph/LinkNode.h>
 #include <function/InverseLinkFunc.h>
-#include <sampler/Updater.h>
+#include <sampler/GraphView.h>
 #include <rng/TruncatedNormal.h>
 #include <rng/RNG.h>
 
@@ -18,10 +18,10 @@ using std::logic_error;
 
 namespace glm {
 
-    HolmesHeld::HolmesHeld(Updater const *updater,
-			   vector<Updater const *> const &sub_updaters,
+    HolmesHeld::HolmesHeld(GraphView const *view,
+			   vector<GraphView const *> const &sub_views,
 			   unsigned int chain)
-	: BinaryGLM(updater, sub_updaters, chain)
+	: BinaryGLM(view, sub_views, chain)
     {
     }
 
@@ -37,10 +37,10 @@ namespace glm {
 	*/
 
 	vector<StochasticNode const *> const &schildren = 
-	    _updater->stochasticChildren();
+	    _view->stochasticChildren();
 
 	unsigned int nrow = schildren.size();
-	unsigned int ncol = _updater->length();
+	unsigned int ncol = _view->length();
 
 	//Transpose and permute the design matrix
 	cs *t_X = cs_transpose(_X, 1);
