@@ -10,9 +10,9 @@ namespace glm {
     class AMMethod : public GLMMethod {
 	std::vector<AuxMix*> _aux;
       public:
-	AMMethod(Updater const *updater, 
-		     std::vector<Updater const *> const &sub_updaters,
-		     unsigned int chain);
+	AMMethod(GraphView const *view, 
+		 std::vector<GraphView const *> const &sub_views,
+		 unsigned int chain);
 	~AMMethod();
 	std::string name() const;
 	double getPrecision(unsigned int i) const;
