@@ -16,8 +16,8 @@ namespace glm {
 	std::vector<double> _z;
 	std::vector<double> _tau;
     public:
-	BinaryGLM(Updater const *updater, 
-		  std::vector<Updater const *> const &sub_updaters,
+	BinaryGLM(GraphView const *view, 
+		  std::vector<GraphView const *> const &sub_views,
 		  unsigned int chain);
 	void initAuxiliary(RNG *rng);
 	double getValue(unsigned int i) const;
