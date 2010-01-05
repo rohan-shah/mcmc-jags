@@ -11,8 +11,8 @@ namespace glm {
     class AlbertChib : public BinaryGLM {
 	bool _gibbs;
     public:
-	AlbertChib(Updater const *updater, 
-		   std::vector<Updater const *> const &sub_updaters,
+	AlbertChib(GraphView const *view, 
+		   std::vector<GraphView const *> const &sub_views,
 		   unsigned int chain, bool gibbs);
 	std::string name() const;
 	void update(RNG *rng);
