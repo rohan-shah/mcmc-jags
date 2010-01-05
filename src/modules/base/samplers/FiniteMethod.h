@@ -9,11 +9,11 @@ namespace base {
  * Sampler for discrete distributions with support on a finite set.
  */
     class FiniteMethod : public SampleMethod {
-	Updater const *_updater;
+	GraphView const *_gv;
 	unsigned int _chain;
 	int _lower, _upper;
     public:
-	FiniteMethod(Updater const *updater, unsigned int chain);
+	FiniteMethod(GraphView const *gv, unsigned int chain);
 	void update(RNG *rng);
 	/**
 	 * FiniteMethod is not adaptive. This function returns false.
