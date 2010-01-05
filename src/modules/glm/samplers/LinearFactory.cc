@@ -22,11 +22,11 @@ namespace glm {
     }
     
     GLMMethod*
-    LinearFactory::newMethod(Updater const *updater,
-			     vector<Updater const *> const &sub_updaters,
+    LinearFactory::newMethod(GraphView const *view,
+			     vector<GraphView const *> const &sub_views,
 			     unsigned int chain) const
     {
-	return new Linear(updater, sub_updaters, chain, false);
+	return new Linear(view, sub_views, chain, false);
     }
 
     bool LinearFactory::canSample(StochasticNode const *snode) const
