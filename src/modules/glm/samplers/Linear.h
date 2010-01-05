@@ -11,8 +11,8 @@ namespace glm {
     class Linear : public GLMMethod {
 	bool _gibbs;
     public:
-	Linear(Updater const *updater,
-	       std::vector<Updater const *> const &sub_updaters,
+	Linear(GraphView const *view,
+	       std::vector<GraphView const *> const &sub_views,
 	       unsigned int chain, bool gibbs);
 	double getPrecision(unsigned int i) const;
 	double getValue(unsigned int i) const;
