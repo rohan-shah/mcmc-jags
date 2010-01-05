@@ -21,7 +21,7 @@ namespace glm {
     {}
 
     bool BinaryFactory::checkOutcome(StochasticNode const *snode,
-					 LinkNode const *lnode) const
+				     LinkNode const *lnode) const
     {
 	Node const *N = 0;
 	string linkname;
@@ -49,8 +49,8 @@ namespace glm {
     }
     
     GLMMethod *
-    BinaryFactory::newMethod(Updater const *updater,
-			     vector<Updater const *> const &sub_updaters,
+    BinaryFactory::newMethod(GraphView const *view,
+			     vector<GraphView const *> const &sub_views,
 			     unsigned int chain) const
     {
 	/* 
@@ -60,7 +60,7 @@ namespace glm {
 	*/
 	bool linear = true;
 	vector<StochasticNode const*> const &children =
-	    updater->stochasticChildren();
+	    view->stochasticChildren();
 	for (unsigned int i = 0; i < children.size(); ++i) {
 	    if (GLMMethod::getFamily(children[i]) != GLM_NORMAL) {
 		linear = false;
@@ -69,10 +69,10 @@ namespace glm {
 	}
 
 	if (linear) {
-	    return new Linear(updater, sub_updaters, chain, _gibbs);
+	    return new Linear(view, sub_views, chain, _gibbs);
 	}
 	else {
-	    return newBinary(updater, sub_updaters, chain);
+	    return newBinary(view, sub_views, chain);
 	}
     }
 
