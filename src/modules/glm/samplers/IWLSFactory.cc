@@ -27,11 +27,11 @@ namespace glm {
     }
     
     GLMMethod *
-    IWLSFactory::newMethod(Updater const *updater,
-			     vector<Updater const *> const &sub_updaters,
+    IWLSFactory::newMethod(GraphView const *view,
+			     vector<GraphView const *> const &sub_views,
 			     unsigned int chain) const
     {
-	return new IWLS(updater, sub_updaters, chain);
+	return new IWLS(view, sub_views, chain);
     }
     
     bool IWLSFactory::canSample(StochasticNode const *snode) const
