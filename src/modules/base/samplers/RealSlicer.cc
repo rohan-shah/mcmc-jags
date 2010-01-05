@@ -1,5 +1,5 @@
 #include <config.h>
-#include <sampler/Updater.h>
+#include <sampler/GraphView.h>
 #include <graph/StochasticNode.h>
 #include <distribution/Distribution.h>
 
@@ -14,12 +14,12 @@ using std::logic_error;
 
 namespace base {
 
-    RealSlicer::RealSlicer(Updater const *updater, unsigned int chain,
+    RealSlicer::RealSlicer(GraphView const *gv, unsigned int chain,
 			   double width, long maxwidth)
-	: Slicer(width, maxwidth), _updater(updater), _chain(chain)
+	: Slicer(width, maxwidth), _gv(gv), _chain(chain)
     {
-	if (updater->nodes().size() != 1 || 
-	    !canSample(updater->nodes().front()))
+	if (gv->nodes().size() != 1 || 
+	    !canSample(gv->nodes().front()))
 	{
 	    throw logic_error("Invalid RealSlicer");
 	}
@@ -39,17 +39,17 @@ namespace base {
 
     double RealSlicer::value() const
     {
-	return _updater->nodes().front()->value(_chain)[0];
+	return _gv->nodes().front()->value(_chain)[0];
     }
  
     void RealSlicer::setValue(double value)
     {
-	_updater->setValue(&value, 1, _chain);
+	_gv->setValue(&value, 1, _chain);
     }
 
     void RealSlicer::getLimits(double *lower, double *upper) const
     {
-	support(lower, upper, 1, _updater->nodes().front(), _chain);
+	support(lower, upper, 1, _gv->nodes().front(), _chain);
     }
 
     void RealSlicer::update(RNG *rng)
@@ -64,6 +64,6 @@ namespace base {
 
     double RealSlicer::logDensity() const
     {
-	return _updater->logFullConditional(_chain);
+	return _gv->logFullConditional(_chain);
     }
 }
