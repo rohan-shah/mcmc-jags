@@ -6,7 +6,7 @@
 #include <graph/LogicalNode.h>
 #include <graph/StochasticNode.h>
 #include <sampler/Linear.h>
-#include <sampler/Updater.h>
+#include <sampler/GraphView.h>
 
 #include <set>
 #include <stdexcept>
@@ -23,16 +23,16 @@ using std::sqrt;
 using std::invalid_argument;
 using std::string;
 
-static void calBeta(double *beta, Updater const *updater, unsigned int chain)
+static void calBeta(double *beta, GraphView const *gv, unsigned int chain)
 {
-    StochasticNode *snode = updater->nodes()[0];
+    StochasticNode *snode = gv->nodes()[0];
 
     const double xold = *snode->value(chain);
     vector<StochasticNode const*> const &stoch_children = 
-	updater->stochasticChildren();
+	gv->stochasticChildren();
 
     double xnew = xold + 1;
-    updater->setValue(&xnew, 1, chain);
+    gv->setValue(&xnew, 1, chain);
 
     double *bp = beta;    
     for (unsigned int i = 0; i < stoch_children.size(); ++i) {
@@ -45,7 +45,7 @@ static void calBeta(double *beta, Updater const *updater, unsigned int chain)
 	bp += nrow;
     }
 
-    updater->setValue(&xold, 1, chain);
+    gv->setValue(&xold, 1, chain);
 
     bp = beta;    
     for (unsigned int i = 0; i < stoch_children.size(); ++i) {
@@ -60,22 +60,22 @@ static void calBeta(double *beta, Updater const *updater, unsigned int chain)
 }
 
 
-ConjugateNormal::ConjugateNormal(Updater const *updater)
-    : ConjugateMethod(updater), _betas(0), _length_betas(0)
+ConjugateNormal::ConjugateNormal(GraphView const *gv)
+    : ConjugateMethod(gv), _betas(0), _length_betas(0)
 {
-    if (!updater->deterministicChildren().empty()) {
+    if (!gv->deterministicChildren().empty()) {
 
 	//Need to allocate vector of coefficients
 	vector<StochasticNode const *> const &children = 
-	    updater->stochasticChildren();
+	    gv->stochasticChildren();
 	for (unsigned int i = 0; i < children.size(); ++i) {
 	    _length_betas += children[i]->length();
 	}
 
-	if (checkLinear(updater, true)) {
+	if (checkLinear(gv, true)) {
 	    //One-time calculation of fixed coefficients
 	    _betas = new double[_length_betas];
-	    calBeta(_betas, updater, 0);
+	    calBeta(_betas, gv, 0);
 	}
     }
 }
@@ -96,8 +96,8 @@ bool ConjugateNormal::canSample(StochasticNode *snode, Graph const &graph)
     if (getDist(snode) != NORM)
 	return false;
 
-    Updater updater(snode, graph);
-    vector<StochasticNode const*> const &schild = updater.stochasticChildren();
+    GraphView gv(snode, graph);
+    vector<StochasticNode const*> const &schild = gv.stochasticChildren();
 
     // Check stochastic children
     for (unsigned int i = 0; i < schild.size(); ++i) {
@@ -110,25 +110,25 @@ bool ConjugateNormal::canSample(StochasticNode *snode, Graph const &graph)
 	if (isBounded(schild[i])) {
 	    return false; //Truncated distribution
 	}
-	if (updater.isDependent(schild[i]->parents()[1])) {
+	if (gv.isDependent(schild[i]->parents()[1])) {
 	    return false; //Precision depends on snode
 	}
     }
 
     // Check linearity of deterministic descendants
-    if (!checkLinear(&updater, false))
+    if (!checkLinear(&gv, false))
 	return false;
 
     return true; //We made it!
 }
 
-void ConjugateNormal::update(Updater *updater, unsigned int chain, 
+void ConjugateNormal::update(GraphView *gv, unsigned int chain, 
 			     RNG *rng) const
 {
     vector<StochasticNode const*> const &stoch_children = 
-	updater->stochasticChildren();
+	gv->stochasticChildren();
     unsigned int nchildren = stoch_children.size();
-    StochasticNode *snode = updater->nodes()[0];
+    StochasticNode *snode = gv->nodes()[0];
 
     /* For convenience in the following computations, we shift the
        origin to xold, the previous value of the node */
@@ -140,7 +140,7 @@ void ConjugateNormal::update(Updater *updater, unsigned int chain,
     double A = priormean * priorprec; //Weighted sum of means
     double B = priorprec; //Sum of weights
 
-    if (updater->deterministicChildren().empty()) {
+    if (gv->deterministicChildren().empty()) {
 
 	// This can only happen if the stochastic children are all
 	// univariate normal. We know alpha = 0, beta = 1.
@@ -159,7 +159,7 @@ void ConjugateNormal::update(Updater *updater, unsigned int chain,
 	bool temp_beta = (_betas == 0);
 	if (temp_beta) {
 	    beta = new double[_length_betas];
-	    calBeta(beta, updater, chain);
+	    calBeta(beta, gv, chain);
 	}
 	else {
 	    beta = _betas;
@@ -208,7 +208,7 @@ void ConjugateNormal::update(Updater *updater, unsigned int chain,
     else {
 	xnew = rnorm(postmean, postsd, rng);  
     }
-    updater->setValue(&xnew, 1, chain);
+    gv->setValue(&xnew, 1, chain);
 
 }
 

@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-class Updater;
+class GraphView;
 class RNG;
 class Graph;
 class StochasticNode;
@@ -28,9 +28,9 @@ protected:
     const ConjugateDist _target_dist;
     const std::vector<ConjugateDist> _child_dist;
 public:
-    ConjugateMethod(Updater const *updater);
+    ConjugateMethod(GraphView const *gv);
     virtual ~ConjugateMethod();
-    virtual void update(Updater *updater, unsigned int chain, RNG *rng) 
+    virtual void update(GraphView *gv, unsigned int chain, RNG *rng) 
 	const = 0;
     virtual std::string name() const = 0;
 };

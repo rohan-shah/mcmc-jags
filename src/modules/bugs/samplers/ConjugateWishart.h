@@ -13,8 +13,8 @@
  */
 class ConjugateWishart : public ConjugateMethod {
 public:
-    ConjugateWishart(Updater const *updater);
-    void update(Updater *updater, unsigned int chain, RNG *rng) const;
+    ConjugateWishart(GraphView const *gv);
+    void update(GraphView *gv, unsigned int chain, RNG *rng) const;
     static bool canSample(StochasticNode *snode, Graph const &graph);
     std::string name() const;
 };

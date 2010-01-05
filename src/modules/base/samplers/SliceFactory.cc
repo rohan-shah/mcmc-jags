@@ -5,7 +5,7 @@
 #include "SliceFactory.h"
 
 #include <sampler/ParallelSampler.h>
-#include <sampler/Updater.h>
+#include <sampler/GraphView.h>
 #include <graph/StochasticNode.h>
 
 #include <vector>
@@ -35,19 +35,20 @@ namespace base {
     {
 	unsigned int nchain = snode->nchain();
 	vector<SampleMethod*> methods(nchain, 0);
-	Updater *updater = new Updater(snode, graph);
+	//Fixme: use snode and graph in constructor...
+	GraphView *gv = new GraphView(snode, graph);
 
 	bool discrete = snode->isDiscreteValued();
 	for (unsigned int ch = 0; ch < nchain; ++ch) {
 	    if (discrete) {
-		methods[ch] = new DiscreteSlicer(updater, ch);
+		methods[ch] = new DiscreteSlicer(gv, ch);
 	    }
 	    else {
-		methods[ch] = new RealSlicer(updater, ch);
+		methods[ch] = new RealSlicer(gv, ch);
 	    }
 	}
 
-	return new ParallelSampler(updater, methods);
+	return new ParallelSampler(gv, methods);
     }
 
     string const &SliceFactory::name() const

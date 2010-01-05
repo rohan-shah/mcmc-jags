@@ -2,7 +2,7 @@
 #include <distribution/Distribution.h>
 #include <graph/StochasticNode.h>
 #include <graph/Graph.h>
-#include <sampler/Updater.h>
+#include <sampler/GraphView.h>
 
 #include "DSumMethod.h"
 
@@ -23,14 +23,14 @@ using std::min;
 using std::exp;
 using std::string;
 
-DSumMethod::DSumMethod(Updater const *updater, unsigned int chain)
-    : Slicer(2, 10), _updater(updater), _chain(chain),
-      _x(updater->nodes()[0]->value(chain)[0]),
-      _sum(static_cast<long>(updater->stochasticChildren()[0]->value(chain)[0]))
+DSumMethod::DSumMethod(GraphView const *gv, unsigned int chain)
+    : Slicer(2, 10), _gv(gv), _chain(chain),
+      _x(gv->nodes()[0]->value(chain)[0]),
+      _sum(static_cast<long>(gv->stochasticChildren()[0]->value(chain)[0]))
 {
     //Make sure values are consistent at start
     double x2 = _sum - static_cast<long>(_x);
-    updater->nodes()[1]->setValue(&x2, 1, chain);
+    gv->nodes()[1]->setValue(&x2, 1, chain);
 }
 
 DSumMethod::~DSumMethod()
@@ -59,9 +59,9 @@ bool DSumMethod::canSample(vector<StochasticNode *> const &nodes,
     /* Nodes must be direct parents of a single observed stochastic
        node with distribution DSum  */
 
-    Updater updater(nodes, graph);
-    vector<DeterministicNode*> const &dchild = updater.deterministicChildren();
-    vector<StochasticNode const*> const &schild = updater.stochasticChildren();
+    GraphView gv(nodes, graph);
+    vector<DeterministicNode*> const &dchild = gv.deterministicChildren();
+    vector<StochasticNode const*> const &schild = gv.stochasticChildren();
 
     if (!dchild.empty())
 	return false;
@@ -82,7 +82,7 @@ void DSumMethod::setValue(double x)
     double value[2];
     value[0] = static_cast<long>(x);
     value[1] = _sum - value[0];
-    _updater->setValue(value, 2, _chain);
+    _gv->setValue(value, 2, _chain);
 }
 
 double DSumMethod::value() const
@@ -92,7 +92,7 @@ double DSumMethod::value() const
 
 void DSumMethod::getLimits(double *lower, double *upper) const
 {
-    vector<StochasticNode *> const &n = _updater->nodes();
+    vector<StochasticNode *> const &n = _gv->nodes();
     double l0, u0, l1, u1;
     support(&l0, &u0, 1U, n[0], _chain);
     support(&l1, &u1, 1U, n[1], _chain);
@@ -112,5 +112,5 @@ string DSumMethod::name() const
 
 double DSumMethod::logDensity() const
 {
-    return _updater->logFullConditional(_chain);
+    return _gv->logFullConditional(_chain);
 }

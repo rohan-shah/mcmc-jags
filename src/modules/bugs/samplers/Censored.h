@@ -8,9 +8,9 @@
  */
 class Censored : public ConjugateMethod {
 public:
-    Censored(Updater const *updater);
+    Censored(GraphView const *gv);
     static bool canSample(StochasticNode *snode, Graph const &graph);
-    void update(Updater *updater, unsigned int chain, RNG * rng) const;
+    void update(GraphView *gv, unsigned int chain, RNG * rng) const;
     std::string name() const;
 };
 

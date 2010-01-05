@@ -6,7 +6,7 @@
 #include <graph/LogicalNode.h>
 #include <graph/StochasticNode.h>
 #include <sampler/Linear.h>
-#include <sampler/Updater.h>
+#include <sampler/GraphView.h>
 
 #include "lapack.h"
 
@@ -29,10 +29,10 @@ using std::sqrt;
 using std::invalid_argument;
 using std::string;
 
-static void calBeta(double *betas, Updater const *updater,
+static void calBeta(double *betas, GraphView const *gv,
                     unsigned int chain)
 {
-    StochasticNode *snode = updater->nodes()[0];
+    StochasticNode *snode = gv->nodes()[0];
     double const *xold = snode->value(chain);
     unsigned int nrow = snode->length();
 
@@ -42,7 +42,7 @@ static void calBeta(double *betas, Updater const *updater,
     }
 
     vector<StochasticNode const*> const &stoch_children = 
-        updater->stochasticChildren();
+        gv->stochasticChildren();
 
     unsigned long nchildren = stoch_children.size();
     double *beta_j = betas;
@@ -60,7 +60,7 @@ static void calBeta(double *betas, Updater const *updater,
 
     for (unsigned int i = 0; i < nrow; ++i) {
 	xnew[i] += 1;
-	updater->setValue(xnew, nrow, chain);
+	gv->setValue(xnew, nrow, chain);
 	beta_j = betas;
 	for (unsigned int j = 0; j < nchildren; ++j) {
 	    StochasticNode const *snode = stoch_children[j];
@@ -73,15 +73,15 @@ static void calBeta(double *betas, Updater const *updater,
 	}
 	xnew[i] -= 1;
     }
-    updater->setValue(xnew, nrow, chain);
+    gv->setValue(xnew, nrow, chain);
 
     delete [] xnew;
 }
 
-static unsigned int sumChildrenLength(Updater const *updater)
+static unsigned int sumChildrenLength(GraphView const *gv)
 {
     vector<StochasticNode const *> const &children = 
-	updater->stochasticChildren(); 
+	gv->stochasticChildren(); 
 
     unsigned int N = 0;
     for (unsigned int i = 0; i < children.size(); ++i) {
@@ -91,14 +91,14 @@ static unsigned int sumChildrenLength(Updater const *updater)
 }
 
 
-ConjugateMNormal::ConjugateMNormal(Updater const *updater)
-    : ConjugateMethod(updater), _betas(0), 
-      _length_betas(sumChildrenLength(updater) * updater->length())
+ConjugateMNormal::ConjugateMNormal(GraphView const *gv)
+    : ConjugateMethod(gv), _betas(0), 
+      _length_betas(sumChildrenLength(gv) * gv->length())
 {
-    if(!updater->deterministicChildren().empty() && checkLinear(updater, true))
+    if(!gv->deterministicChildren().empty() && checkLinear(gv, true))
     {
 	_betas = new double[_length_betas];
-	calBeta(_betas, updater, 0);
+	calBeta(_betas, gv, 0);
     }
 }
 
@@ -115,8 +115,8 @@ bool ConjugateMNormal::canSample(StochasticNode *snode, Graph const &graph)
     if (isBounded(snode))
 	return false;
 
-    Updater updater(snode, graph);
-    vector<StochasticNode const*> const &schild = updater.stochasticChildren();
+    GraphView gv(snode, graph);
+    vector<StochasticNode const*> const &schild = gv.stochasticChildren();
 
     // Check stochastic children
     for (unsigned int i = 0; i < schild.size(); ++i) {
@@ -126,26 +126,26 @@ bool ConjugateMNormal::canSample(StochasticNode *snode, Graph const &graph)
 	if (isBounded(schild[i])) {
 	    return false;
 	}
-	if (updater.isDependent(schild[i]->parents()[1])) {
+	if (gv.isDependent(schild[i]->parents()[1])) {
 	    return false; //Precision depends on snode
 	}
     }
 
     // Check linearity of deterministic descendants
-    if (!checkLinear(&updater, false))
+    if (!checkLinear(&gv, false))
 	return false;
 
     return true; //We made it!
 }
 
-void ConjugateMNormal::update(Updater *updater, unsigned int chain, 
+void ConjugateMNormal::update(GraphView *gv, unsigned int chain, 
 			      RNG *rng) const
 {
     vector<StochasticNode const*> const &stoch_children = 
-          updater->stochasticChildren();
+          gv->stochasticChildren();
     unsigned int nchildren = stoch_children.size();
     
-    StochasticNode *snode = updater->nodes()[0];
+    StochasticNode *snode = gv->nodes()[0];
     double const *xold = snode->value(chain);
     double const *priormean = snode->parents()[0]->value(chain); 
     double const *priorprec = snode->parents()[1]->value(chain);
@@ -176,7 +176,7 @@ void ConjugateMNormal::update(Updater *updater, unsigned int chain,
     double d1 = 1;
     int i1 = 1;
 
-    if (updater->deterministicChildren().empty()) {
+    if (gv->deterministicChildren().empty()) {
       
 	// This can only happen if the stochastic children are all
 	// multivariate normal with the same number of rows and 
@@ -206,7 +206,7 @@ void ConjugateMNormal::update(Updater *updater, unsigned int chain,
         double *betas = 0;
 	if (temp_beta) {
 	    betas = new double[_length_betas];
-	    calBeta(betas, updater, chain);
+	    calBeta(betas, gv, chain);
 	}
         else {
             betas = _betas;
@@ -310,7 +310,7 @@ void ConjugateMNormal::update(Updater *updater, unsigned int chain,
     double *xnew = new double[nrow];
     //NB. This uses the lower triangle of A
     DMNorm::randomsample(xnew, b, A, true, nrow, rng);
-    updater->setValue(xnew, nrow, chain);
+    gv->setValue(xnew, nrow, chain);
 
     delete [] A;
     delete [] Acopy;

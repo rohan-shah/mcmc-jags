@@ -5,7 +5,7 @@
 #include <graph/Graph.h>
 #include <graph/NodeError.h>
 #include <sampler/ParallelSampler.h>
-#include <sampler/Updater.h>
+#include <sampler/GraphView.h>
 
 #include "DSumFactory.h"
 #include "DSumMethod.h"
@@ -78,13 +78,13 @@ Sampler * DSumFactory::makeSampler(set<StochasticNode*> const &nodes,
 	return 0;
     }
 
-    Updater *updater = new Updater(parameters, graph);
+    GraphView *gv = new GraphView(parameters, graph);
     unsigned int nchain = parameters[0]->nchain();
     vector<SampleMethod*> methods(nchain, 0);
     for (unsigned int ch = 0; ch < nchain; ++ch) {
-	methods[ch] = new DSumMethod(updater, ch);
+	methods[ch] = new DSumMethod(gv, ch);
     }
-    return new ParallelSampler(updater, methods);
+    return new ParallelSampler(gv, methods);
 
 }
 

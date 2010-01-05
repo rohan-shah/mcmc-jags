@@ -3,7 +3,7 @@
 #include <graph/LogicalNode.h>
 #include <distribution/Distribution.h>
 #include <function/Function.h>
-#include <sampler/Updater.h>
+#include <sampler/GraphView.h>
 
 #include <map>
 #include <string>
@@ -61,9 +61,9 @@ ConjugateDist getDist(StochasticNode const *snode)
 	return p->second;
 }
 
-static vector<ConjugateDist> getChildDist(Updater const *updater)
+static vector<ConjugateDist> getChildDist(GraphView const *gv)
 {
-    vector<StochasticNode const*> const &child = updater->stochasticChildren();
+    vector<StochasticNode const*> const &child = gv->stochasticChildren();
     vector<ConjugateDist> ans;
     for (unsigned int i = 0; i < child.size(); ++i) {
 	ans.push_back(getDist(child[i]));
@@ -71,11 +71,11 @@ static vector<ConjugateDist> getChildDist(Updater const *updater)
     return ans;
 }
 
-ConjugateSampler::ConjugateSampler(Updater *updater, ConjugateMethod *method)
-  : Sampler(updater),
-    _updater(updater),  _method(method),
-    _target_dist(getDist(updater->nodes()[0])),
-    _child_dist(getChildDist(updater))
+ConjugateSampler::ConjugateSampler(GraphView *gv, ConjugateMethod *method)
+  : Sampler(gv),
+    _gv(gv),  _method(method),
+    _target_dist(getDist(gv->nodes()[0])),
+    _child_dist(getChildDist(gv))
 {
 }
 
@@ -86,9 +86,9 @@ ConjugateSampler::~ConjugateSampler()
 
 void ConjugateSampler::update(vector<RNG*> const &rngs)
 {
-    unsigned int N = nchain(_updater);
+    unsigned int N = nchain(_gv);
     for (unsigned int ch = 0; ch < N; ++ch) {
-	_method->update(_updater, ch, rngs[ch]);
+	_method->update(_gv, ch, rngs[ch]);
     }
 }
 

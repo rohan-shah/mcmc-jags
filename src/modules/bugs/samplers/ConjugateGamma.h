@@ -6,10 +6,10 @@
 class ConjugateGamma : public ConjugateMethod {
     double *_coef;
 public:
-    ConjugateGamma(Updater const *updater);
+    ConjugateGamma(GraphView const *gv);
     ~ConjugateGamma();
     static bool canSample(StochasticNode *snode, Graph const &graph);
-    void update(Updater *updater, unsigned int chain, RNG *rng) const;
+    void update(GraphView *gv, unsigned int chain, RNG *rng) const;
     std::string name() const;
 };
 

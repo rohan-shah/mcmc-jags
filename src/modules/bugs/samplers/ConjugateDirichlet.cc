@@ -6,7 +6,7 @@
 #include <graph/MixtureNode.h>
 #include <graph/StochasticNode.h>
 #include <graph/NodeError.h>
-#include <sampler/Updater.h>
+#include <sampler/GraphView.h>
 #include <sampler/Linear.h>
 
 #include <set>
@@ -30,9 +30,9 @@ bool ConjugateDirichlet::canSample(StochasticNode *snode, Graph const &graph)
     if (isBounded(snode))
 	return false;
 
-    Updater updater(snode, graph);
-    vector<DeterministicNode*> const &dchild = updater.deterministicChildren();
-    vector<StochasticNode const*> const &schild = updater.stochasticChildren();
+    GraphView gv(snode, graph);
+    vector<DeterministicNode*> const &dchild = gv.deterministicChildren();
+    vector<StochasticNode const*> const &schild = gv.stochasticChildren();
 
     // Check stochastic children
 	for (unsigned int i = 0; i < schild.size(); ++i) {
@@ -58,7 +58,7 @@ bool ConjugateDirichlet::canSample(StochasticNode *snode, Graph const &graph)
 	    return false;
 	}
     }
-    if (!checkScale(&updater, false)) {
+    if (!checkScale(&gv, false)) {
 	return false;
     }
   
@@ -74,14 +74,14 @@ static bool allzero(double const *x, long length)
     return true;
 }
 
-ConjugateDirichlet::ConjugateDirichlet(Updater const *updater)
-    : ConjugateMethod(updater)
+ConjugateDirichlet::ConjugateDirichlet(GraphView const *gv)
+    : ConjugateMethod(gv)
 {}
 
-void ConjugateDirichlet::update(Updater *updater, unsigned int chain, 
+void ConjugateDirichlet::update(GraphView *gv, unsigned int chain, 
 				RNG *rng) const
 {
-    StochasticNode *snode = updater->nodes()[0];
+    StochasticNode *snode = gv->nodes()[0];
     unsigned long size = snode->length();
     double *alpha = new double[size];
     double const *prior = snode->parents()[0]->value(chain);
@@ -98,10 +98,10 @@ void ConjugateDirichlet::update(Updater *updater, unsigned int chain,
     for (unsigned long i = 0; i < size; ++i) {
 	xnew[i] = 0;
     }
-    updater->setValue(xnew, size, chain);
+    gv->setValue(xnew, size, chain);
 
     vector<StochasticNode const*> const &stoch_children = 
-	updater->stochasticChildren();
+	gv->stochasticChildren();
     unsigned int nchildren = stoch_children.size();
     for (unsigned int i = 0; i < nchildren; ++i) {
 	StochasticNode const *schild = stoch_children[i];
@@ -152,7 +152,7 @@ void ConjugateDirichlet::update(Updater *updater, unsigned int chain,
 	xnew[i] /= xsum;
     }
 
-    updater->setValue(xnew, size, chain);
+    gv->setValue(xnew, size, chain);
 
     delete [] xnew;
     delete [] alpha;

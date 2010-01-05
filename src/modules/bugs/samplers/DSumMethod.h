@@ -8,19 +8,19 @@
 
 class StochasticNode;
 class DeterministicNode;
-class Updater;
+class GraphView;
 
 /**
  * @short Sample parents of dsum nodes
  */
 class DSumMethod : public Slicer
 {
-    Updater const *_updater;
+    GraphView const *_gv;
     unsigned int _chain;
     double _x;
     long _sum;
 public:
-    DSumMethod(Updater const *updater, unsigned int chain);
+    DSumMethod(GraphView const *gv, unsigned int chain);
     ~DSumMethod();
     void update(RNG *);
     void setValue(double x);

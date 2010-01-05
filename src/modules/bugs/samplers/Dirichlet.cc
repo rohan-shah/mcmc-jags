@@ -1,7 +1,7 @@
 #include <config.h>
 #include "Dirichlet.h"
 
-#include <sampler/Updater.h>
+#include <sampler/GraphView.h>
 #include <rng/RNG.h>
 
 #include <cmath>
@@ -14,16 +14,16 @@ using std::log;
 using std::string;
 using std::vector;
 
-static vector<double> initValue(Updater const *updater, unsigned int chain)
+static vector<double> initValue(GraphView const *gv, unsigned int chain)
 {
-    vector<double> ivalue(updater->length());
-    updater->getValue(ivalue, chain);
+    vector<double> ivalue(gv->length());
+    gv->getValue(ivalue, chain);
     return ivalue;
 }
 
-DirchMetropolis::DirchMetropolis(Updater const *updater, unsigned int chain)
-    : RWMetropolis(initValue(updater, chain), 0.1),
-      _updater(updater), _chain(chain), _S(1)
+DirchMetropolis::DirchMetropolis(GraphView const *gv, unsigned int chain)
+    : RWMetropolis(initValue(gv, chain), 0.1),
+      _gv(gv), _chain(chain), _S(1)
 {
 }
 
@@ -37,7 +37,7 @@ void DirchMetropolis::step(vector<double> &value,  double step, RNG *rng) const
 
 void DirchMetropolis::getValue(vector<double> &value) const
 {
-    _updater->getValue(value, _chain);
+    _gv->getValue(value, _chain);
     for (unsigned int i = 0; i < value.size(); ++i) {
 	value[i] *= _S;
     }
@@ -55,7 +55,7 @@ void DirchMetropolis::setValue(vector<double> const &value)
 	v[i] /= S;
     }
 
-    _updater->setValue(v, _chain);
+    _gv->setValue(v, _chain);
     _S = S;
 }
 
@@ -66,7 +66,7 @@ double DirchMetropolis::logDensity() const
     // distribution for log(_S) with mean 0 and variance 0.1.
     
     double logS = log(_S);
-    return _updater->logFullConditional(_chain) - 5 * logS * logS;
+    return _gv->logFullConditional(_chain) - 5 * logS * logS;
 }
 
 double DirchMetropolis::logJacobian(vector<double> const &value) const

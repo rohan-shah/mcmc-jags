@@ -7,7 +7,7 @@
 #include <graph/LogicalNode.h>
 #include <graph/StochasticNode.h>
 #include <graph/MixtureNode.h>
-#include <sampler/Updater.h>
+#include <sampler/GraphView.h>
 #include <sampler/Linear.h>
 
 #include <set>
@@ -44,9 +44,9 @@ bool ConjugateBeta::canSample(StochasticNode *snode, Graph const &graph)
 	return false;
     }
 
-    Updater updater(snode, graph);
-    vector<DeterministicNode*> const &dchild = updater.deterministicChildren();
-    vector<StochasticNode const*> const &schild = updater.stochasticChildren();
+    GraphView gv(snode, graph);
+    vector<DeterministicNode*> const &dchild = gv.deterministicChildren();
+    vector<StochasticNode const*> const &schild = gv.stochasticChildren();
 
     // Check deterministic descendants
     // Only Mixture nodes are allowed
@@ -55,7 +55,7 @@ bool ConjugateBeta::canSample(StochasticNode *snode, Graph const &graph)
 	    return false;
 	}
     }
-    if (!checkScale(&updater, false)) {
+    if (!checkScale(&gv, false)) {
 	return false;
     }
 
@@ -66,7 +66,7 @@ bool ConjugateBeta::canSample(StochasticNode *snode, Graph const &graph)
 	}
 	switch(getDist(schild[i])) {
 	case BIN: case NEGBIN:
-	    if (updater.isDependent(schild[i]->parents()[1])) {
+	    if (gv.isDependent(schild[i]->parents()[1])) {
 		return false; //n depends on snode
 	    }      
 	    break;
@@ -81,17 +81,17 @@ bool ConjugateBeta::canSample(StochasticNode *snode, Graph const &graph)
 }
 
 
-ConjugateBeta::ConjugateBeta(Updater const *updater)
-    : ConjugateMethod(updater)
+ConjugateBeta::ConjugateBeta(GraphView const *gv)
+    : ConjugateMethod(gv)
 {
 }
 
-void ConjugateBeta::update(Updater *updater, unsigned int chain, RNG *rng)
+void ConjugateBeta::update(GraphView *gv, unsigned int chain, RNG *rng)
     const
 {
     vector<StochasticNode const*> const &stoch_children = 
-	updater->stochasticChildren();
-    StochasticNode const *snode = updater->nodes()[0];
+	gv->stochasticChildren();
+    StochasticNode const *snode = gv->nodes()[0];
 
     double a, b;
     switch (_target_dist) {
@@ -111,7 +111,7 @@ void ConjugateBeta::update(Updater *updater, unsigned int chain, RNG *rng)
     /* For mixture models, we count only stochastic children that
        depend on snode */
     double *C = 0;
-    bool is_mix = !updater->deterministicChildren().empty();
+    bool is_mix = !gv->deterministicChildren().empty();
     if (is_mix) {
 	C = new double[Nchild];
 	for (unsigned int i = 0; i < Nchild; ++i) {
@@ -120,7 +120,7 @@ void ConjugateBeta::update(Updater *updater, unsigned int chain, RNG *rng)
 	// Perturb current value, keeping in the legal range [0,1]
 	double x = *snode->value(chain);
 	x = x > 0.5 ? x - 0.4 : x + 0.4;
-	updater->setValue(&x, 1, chain);
+	gv->setValue(&x, 1, chain);
 	// C[i] == 1 if parameter of child i has changed (so depends on snode)
 	// C[i] == 0 otherwise
 	for (unsigned int i = 0; i < Nchild; ++i) {
@@ -171,7 +171,7 @@ void ConjugateBeta::update(Updater *updater, unsigned int chain, RNG *rng)
 	/* Try 4 more attempts to get random sample within the bounds */
 	for (int i = 0; i < 4; i++) {
 	    if (xnew >= lower && xnew <= upper) {
-		updater->setValue(&xnew, 1, chain);
+		gv->setValue(&xnew, 1, chain);
                 if (is_mix) delete [] C;
 		return;
 	    }
@@ -183,7 +183,7 @@ void ConjugateBeta::update(Updater *updater, unsigned int chain, RNG *rng)
 	double p = runif(plower, pupper, rng);
 	xnew = qbeta(p, a, b, 1, 0);   
     }
-    updater->setValue(&xnew, 1, chain);
+    gv->setValue(&xnew, 1, chain);
 
     if (is_mix) {
 	delete [] C;

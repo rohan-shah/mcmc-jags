@@ -8,7 +8,7 @@
 #include <graph/StochasticNode.h>
 #include <graph/MixtureNode.h>
 #include <sampler/Linear.h>
-#include <sampler/Updater.h>
+#include <sampler/GraphView.h>
 
 #include <set>
 #include <stdexcept>
@@ -32,8 +32,8 @@ bool ConjugateWishart::canSample(StochasticNode *snode, Graph const &graph)
     if (isBounded(snode))
 	return false;
   
-    Updater updater(snode, graph);
-    vector<StochasticNode const*> const &schild = updater.stochasticChildren();
+    GraphView gv(snode, graph);
+    vector<StochasticNode const*> const &schild = gv.stochasticChildren();
 
     // Check stochastic children
     for (unsigned int i = 0; i < schild.size(); ++i) {
@@ -42,7 +42,7 @@ bool ConjugateWishart::canSample(StochasticNode *snode, Graph const &graph)
 	}
 	switch(getDist(schild[i])) {
 	case MNORM:
-	    if (updater.isDependent(schild[i]->parents()[0])) {
+	    if (gv.isDependent(schild[i]->parents()[0])) {
 		return false; //mean parameter depends on snode
 	    }
 	    break;
@@ -51,10 +51,10 @@ bool ConjugateWishart::canSample(StochasticNode *snode, Graph const &graph)
 	}
     }
 
-    vector<DeterministicNode*> const &dchild = updater.deterministicChildren();
+    vector<DeterministicNode*> const &dchild = gv.deterministicChildren();
     if (!dchild.empty()) {
 	// Deterministic children must be scale functions
-	if (!checkScale(&updater, false)) {
+	if (!checkScale(&gv, false)) {
 	    return false;
 	}
 	// Only mixture nodes are allowed.  If we allowed arbitrary
@@ -68,18 +68,18 @@ bool ConjugateWishart::canSample(StochasticNode *snode, Graph const &graph)
     return true;
 }
 
-ConjugateWishart::ConjugateWishart(Updater const *updater)
-    : ConjugateMethod(updater)
+ConjugateWishart::ConjugateWishart(GraphView const *gv)
+    : ConjugateMethod(gv)
 {}
 
 void 
-ConjugateWishart::update(Updater *updater, unsigned int chain, RNG *rng) const
+ConjugateWishart::update(GraphView *gv, unsigned int chain, RNG *rng) const
 {
     vector<StochasticNode const*> const &stoch_children = 
-	updater->stochasticChildren();
+	gv->stochasticChildren();
     unsigned int nchildren = stoch_children.size();
 
-    vector<Node const *> const &param = updater->nodes()[0]->parents();  
+    vector<Node const *> const &param = gv->nodes()[0]->parents();  
 
     double df = *param[1]->value(chain);
     double const *Rprior = param[0]->value(chain);
@@ -94,19 +94,19 @@ ConjugateWishart::update(Updater *updater, unsigned int chain, RNG *rng) const
     //Logical mask to determine which stochastic children are active.
     vector<bool> active(nchildren, true);
 
-    if (!updater->deterministicChildren().empty()) {
+    if (!gv->deterministicChildren().empty()) {
 	//Save first element of precision matrix for each child
 	vector<double> precision0(nchildren); 
 	for (unsigned int i = 0; i < nchildren; ++i) {
 	    precision0[i] = stoch_children[i]->value(chain)[0];
 	}
 	//Double the current value
-	double const *x = updater->nodes()[0]->value(chain);
+	double const *x = gv->nodes()[0]->value(chain);
 	double *x2 = new double[N];
 	for (int j = 0; j < N; ++j) {
 	    x2[j] = 2 * x[j];
 	}
-	updater->setValue(x2, N, chain);
+	gv->setValue(x2, N, chain);
 	delete [] x2;
 	//See if precision matrix has changed
 	for (unsigned int i = 0; i < nchildren; ++i) {
@@ -140,7 +140,7 @@ ConjugateWishart::update(Updater *updater, unsigned int chain, RNG *rng) const
     DWish::randomSample(xnew, N, R, df, nrow, rng);
 
     delete [] R;
-    updater->setValue(xnew, N, chain);
+    gv->setValue(xnew, N, chain);
     delete [] xnew;
 }
 

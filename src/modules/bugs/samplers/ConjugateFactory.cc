@@ -12,7 +12,7 @@
 
 #include <graph/StochasticNode.h>
 #include <distribution/Distribution.h>
-#include <sampler/Updater.h>
+#include <sampler/GraphView.h>
 
 #include <stdexcept>
 #include <string>
@@ -55,31 +55,31 @@ bool ConjugateFactory::canSample(StochasticNode * snode,
 Sampler *ConjugateFactory::makeSampler(StochasticNode *snode, 
 				       Graph const &graph) const
 {
-    Updater *updater = new Updater(snode, graph);
+    GraphView *gv = new GraphView(snode, graph);
     ConjugateMethod* method = 0;
     
     if (Censored::canSample(snode, graph)) {
-	method = new Censored(updater);
+	method = new Censored(gv);
     }
     else {
 	switch (getDist(snode)) {
 	case NORM:
-	    method = new ConjugateNormal(updater);
+	    method = new ConjugateNormal(gv);
 	    break;
 	case GAMMA: case EXP: case CHISQ:
-	    method = new ConjugateGamma(updater);
+	    method = new ConjugateGamma(gv);
 	    break;
 	case BETA:
-	    method = new ConjugateBeta(updater);
+	    method = new ConjugateBeta(gv);
 	    break;
 	case DIRCH:
-	    method = new ConjugateDirichlet(updater);
+	    method = new ConjugateDirichlet(gv);
 	    break;
 	case MNORM:
-	    method = new ConjugateMNormal(updater);
+	    method = new ConjugateMNormal(gv);
 	    break;
 	case WISH:
-	    method = new ConjugateWishart(updater);
+	    method = new ConjugateWishart(gv);
 	    break;
 	default:
 	    throw invalid_argument("Unable to create conjugate sampler");
@@ -87,7 +87,7 @@ Sampler *ConjugateFactory::makeSampler(StochasticNode *snode,
     }
     
     
-    return new ConjugateSampler(updater, method);
+    return new ConjugateSampler(gv, method);
 }
 
 string const &ConjugateFactory::name() const

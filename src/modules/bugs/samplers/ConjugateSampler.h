@@ -6,12 +6,12 @@
 
 class ConjugateSampler : public Sampler
 {
-    Updater *_updater;
+    GraphView *_gv;
     ConjugateMethod *_method;
     const ConjugateDist _target_dist;
     const std::vector<ConjugateDist> _child_dist;
 public:
-    ConjugateSampler(Updater *updater, ConjugateMethod *method);
+    ConjugateSampler(GraphView *gv, ConjugateMethod *method);
     ~ConjugateSampler();
     void update(std::vector<RNG*> const &);
     /**

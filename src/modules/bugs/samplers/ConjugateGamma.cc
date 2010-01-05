@@ -8,7 +8,7 @@
 #include <graph/NodeError.h>
 #include <sarray/SArray.h>
 #include <sampler/Linear.h>
-#include <sampler/Updater.h>
+#include <sampler/GraphView.h>
 
 #include <set>
 #include <stdexcept>
@@ -44,33 +44,33 @@ getScale(StochasticNode const *snode, ConjugateDist d, unsigned int chain)
     } 
 }
 
-static void calCoef(double *coef, Updater const *updater,
+static void calCoef(double *coef, GraphView const *gv,
 		    vector<ConjugateDist> const &child_dist, unsigned int chain)
 {   
-    const double xold = updater->nodes()[0]->value(chain)[0];
+    const double xold = gv->nodes()[0]->value(chain)[0];
     vector<StochasticNode const*> const &stoch_children =
-        updater->stochasticChildren();
+        gv->stochasticChildren();
     unsigned long nchildren = stoch_children.size();
     
     for (unsigned int i = 0; i < nchildren; ++i) {
         coef[i] = -getScale(stoch_children[i], child_dist[i], chain);
     }
     double val = xold + 1;
-    updater->setValue(&val, 1, chain);
+    gv->setValue(&val, 1, chain);
     for (unsigned int i = 0; i < nchildren; ++i) {
         coef[i] += getScale(stoch_children[i], child_dist[i], chain);
     }
-    updater->setValue(&xold, 1, chain);
+    gv->setValue(&xold, 1, chain);
 }
 
-ConjugateGamma::ConjugateGamma(Updater const *updater)
-    : ConjugateMethod(updater), _coef(0)
+ConjugateGamma::ConjugateGamma(GraphView const *gv)
+    : ConjugateMethod(gv), _coef(0)
 {
-    if(!updater->deterministicChildren().empty() && checkScale(updater, true)) 
+    if(!gv->deterministicChildren().empty() && checkScale(gv, true)) 
     {
 	//One-off calculation of fixed scale transformation
-	_coef = new double[updater->stochasticChildren().size()];
-	calCoef(_coef, updater, _child_dist, 0);
+	_coef = new double[gv->stochasticChildren().size()];
+	calCoef(_coef, gv, _child_dist, 0);
     }
 
 }
@@ -93,11 +93,11 @@ bool ConjugateGamma::canSample(StochasticNode *snode, Graph const &graph)
 	return false;
     }
 
-    Updater updater(vector<StochasticNode*>(1,snode), graph);
+    GraphView gv(vector<StochasticNode*>(1,snode), graph);
 
     // Check stochastic children
     vector<StochasticNode const*> const &stoch_nodes = 
-	updater.stochasticChildren();
+	gv.stochasticChildren();
     for (unsigned int i = 0; i < stoch_nodes.size(); ++i) {
 	if (isBounded(stoch_nodes[i])) {
 	    return false; //Bounded
@@ -106,7 +106,7 @@ bool ConjugateGamma::canSample(StochasticNode *snode, Graph const &graph)
 	case EXP: case POIS:
 	    break;
 	case GAMMA: case NORM: case DEXP: case WEIB: case LNORM:
-	    if (updater.isDependent(stoch_nodes[i]->parents()[0])) {
+	    if (gv.isDependent(stoch_nodes[i]->parents()[0])) {
 		return false; //non-scale parameter depends on snode
 	    }
 	    break;
@@ -116,7 +116,7 @@ bool ConjugateGamma::canSample(StochasticNode *snode, Graph const &graph)
     }
 
     // Check deterministic descendants are scale transformations 
-    if (!checkScale(&updater, false)) {
+    if (!checkScale(&gv, false)) {
 	return false;
     }
     return true; //We made it!
@@ -124,17 +124,17 @@ bool ConjugateGamma::canSample(StochasticNode *snode, Graph const &graph)
 
 
 void 
-ConjugateGamma::update(Updater *updater, unsigned int chain, RNG *rng) const
+ConjugateGamma::update(GraphView *gv, unsigned int chain, RNG *rng) const
 {
     vector<StochasticNode const*> const &stoch_children = 
-	updater->stochasticChildren();
+	gv->stochasticChildren();
     unsigned int nchildren = stoch_children.size();
 
     double r; // shape
     double mu; // 1/scale
 
     //Prior
-    vector<Node const *> const &param = updater->nodes()[0]->parents();
+    vector<Node const *> const &param = gv->nodes()[0]->parents();
     switch(_target_dist) {
     case GAMMA:
 	r = *param[0]->value(chain);
@@ -154,12 +154,12 @@ ConjugateGamma::update(Updater *updater, unsigned int chain, RNG *rng) const
 
     // likelihood 
     double *coef = 0;
-    bool empty = updater->deterministicChildren().empty();
+    bool empty = gv->deterministicChildren().empty();
     bool temp_coef = false;
     if (!empty && _coef == 0) {
 	    temp_coef = true;
 	    coef = new double[nchildren];
-	    calCoef(coef, updater, _child_dist, chain);
+	    calCoef(coef, gv, _child_dist, chain);
     }
     else {
 	coef = _coef;
@@ -214,14 +214,14 @@ ConjugateGamma::update(Updater *updater, unsigned int chain, RNG *rng) const
 
     // Sample from the posterior
     double xnew;
-    if (isBounded(updater->nodes()[0])) {
+    if (isBounded(gv->nodes()[0])) {
 	// Use inversion to get random sample
 	double lower = 0;
-	Node const *lb = updater->nodes()[0]->lowerBound();
+	Node const *lb = gv->nodes()[0]->lowerBound();
 	if (lb) {
 	    lower = max(lower, *lb->value(chain));
 	}
-	Node const *ub = updater->nodes()[0]->upperBound();
+	Node const *ub = gv->nodes()[0]->upperBound();
 	double plower = lb ? pgamma(lower,             r, 1/mu, 1, 0) : 0;
 	double pupper = ub ? pgamma(*ub->value(chain), r, 1/mu, 1, 0) : 1;
 	double p = runif(plower, pupper, rng);
@@ -230,7 +230,7 @@ ConjugateGamma::update(Updater *updater, unsigned int chain, RNG *rng) const
     else {
 	xnew = rgamma(r, 1/mu, rng);
     }
-    updater->setValue(&xnew, 1, chain);  
+    gv->setValue(&xnew, 1, chain);  
 }
 
 string ConjugateGamma::name() const

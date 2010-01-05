@@ -3,15 +3,15 @@
 
 #include <sampler/RWMetropolis.h>
 
-class Updater;
+class GraphView;
 
 class DirchMetropolis : public RWMetropolis
 {
-    Updater const *_updater;
+    GraphView const *_gv;
     unsigned int _chain;
     double _S;
 public:
-    DirchMetropolis(Updater const *updater, unsigned int chain);
+    DirchMetropolis(GraphView const *gv, unsigned int chain);
     void getValue(std::vector<double> &x) const;
     void setValue(std::vector<double> const &x);
     void step(std::vector<double> &x, double size, RNG *rng) const;
