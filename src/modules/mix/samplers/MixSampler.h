@@ -7,7 +7,7 @@
 #include <vector>
 
 class Graph;
-class Updater;
+class GraphView;
 
 namespace mix {
 
@@ -54,7 +54,7 @@ namespace mix {
  */
     class MixSampler : public Metropolis
     {
-	Updater const *_updater;
+	GraphView const *_gv;
 	unsigned int _chain;
 	const unsigned int _max_level;
 	const double _delta; 
@@ -78,7 +78,7 @@ namespace mix {
 	 *
 	 * @param nrep Number of Metropolis-Hastings updates to do at each level
 	 */
-	MixSampler(Updater const *updater, unsigned int chain,
+	MixSampler(GraphView const *gv, unsigned int chain,
 		   unsigned int max_level=50, double delta = 0.10, 
 		   unsigned int nrep = 4);
 	~MixSampler();

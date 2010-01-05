@@ -7,7 +7,7 @@
 #include <rng/RNG.h>
 #include <util/dim.h>
 #include <util/nainf.h>
-#include <sampler/Updater.h>
+#include <sampler/GraphView.h>
 
 #include <cmath>
 #include <algorithm>
@@ -46,20 +46,20 @@ static void read_bounds(vector<StochasticNode*> const &snodes,
     }
 }
 
-static vector<double> initialValue(Updater const *updater, unsigned int chain)
+static vector<double> initialValue(GraphView const *gv, unsigned int chain)
 {
-    vector<double> ivalue(updater->length());
-    updater->getValue(ivalue, chain);
+    vector<double> ivalue(gv->length());
+    gv->getValue(ivalue, chain);
     return ivalue;
 }
 
 namespace mix {
 
-    MixSampler::MixSampler(Updater const *updater, unsigned int chain,
+    MixSampler::MixSampler(GraphView const *gv, unsigned int chain,
 			   unsigned int max_level, double delta, 
 			   unsigned int nrep)
-	: Metropolis(initialValue(updater, chain)),
-	  _updater(updater), _chain(chain),
+	: Metropolis(initialValue(gv, chain)),
+	  _gv(gv), _chain(chain),
 	  _max_level(max_level), 
 	  _delta(delta),
 	  _nrep(nrep),
@@ -77,10 +77,10 @@ namespace mix {
 	_lstep[0] = -5;
 	_pmean[0] = 0;
 
-	unsigned int N = _updater->length();
+	unsigned int N = _gv->length();
 	_lower = new double[N];
 	_upper = new double[N];
-	read_bounds(_updater->nodes(), 0, _lower, _upper, N);
+	read_bounds(_gv->nodes(), 0, _lower, _upper, N);
     }
 
     MixSampler::~MixSampler()
@@ -149,7 +149,7 @@ namespace mix {
 
     void MixSampler::update(RNG *rng)
     {
-	unsigned int length = _updater->length();
+	unsigned int length = _gv->length();
 	vector<double> value1(length);
 	getValue(value1);
 
@@ -158,11 +158,11 @@ namespace mix {
 	_temper = false;
 	double pmean = 0;
 	for (unsigned int i = 0; i < _nrep; ++i) {
-	    double lprob = -_updater->logFullConditional(_chain);
+	    double lprob = -_gv->logFullConditional(_chain);
 	    getValue(value1);
 	    updateStep(value1, exp(_lstep[0]),rng);
 	    setValue(value1);
-	    lprob += _updater->logFullConditional(_chain);
+	    lprob += _gv->logFullConditional(_chain);
 	    double prob = min(exp(lprob), 1.0);
 	    accept(rng, prob);
 	    pmean += prob / _nrep;
@@ -186,8 +186,8 @@ namespace mix {
 	//Save a copy of the current state(value, likelihood, prior)
 	vector<double> value0(length);
 	getValue(value0);
-	double lprior0 = _updater->logPrior(_chain);
-	double llik0 = _updater->logLikelihood(_chain);
+	double lprior0 = _gv->logPrior(_chain);
+	double llik0 = _gv->logLikelihood(_chain);
 
 	double log_global_prob = (pwr[1] - pwr[0]) * llik0;
 	
@@ -204,8 +204,8 @@ namespace mix {
 		setValue(value1);
 	    
 		// Calculate new prior and likelihood
-		double lprior1 = _updater->logPrior(_chain);
-		double llik1 = _updater->logLikelihood(_chain);
+		double lprior1 = _gv->logPrior(_chain);
+		double llik1 = _gv->logLikelihood(_chain);
 	    
 		// Calculate acceptance probability for new proposal
 		double lprob = (lprior1 - lprior0) + pwr[t] * (llik1 - llik0);
@@ -280,12 +280,12 @@ namespace mix {
 
     void MixSampler::getValue(vector<double> &x) const 
     {
-	_updater->getValue(x, _chain);
+	_gv->getValue(x, _chain);
     }
 
     void MixSampler::setValue(vector<double> const &x)
     {
-	_updater->setValue(x, _chain);
+	_gv->setValue(x, _chain);
     }
 
 }
