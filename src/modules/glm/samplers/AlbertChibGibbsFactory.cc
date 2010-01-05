@@ -12,11 +12,11 @@ namespace glm {
     {}
 
     BinaryGLM *
-    AlbertChibGibbsFactory::newBinary(Updater const *updater,
-				 vector<Updater const *> const &sub_updaters,
+    AlbertChibGibbsFactory::newBinary(GraphView const *view,
+				 vector<GraphView const *> const &sub_views,
 				 unsigned int chain) const
     {
-	return new AlbertChib(updater, sub_updaters, chain, true);
+	return new AlbertChib(view, sub_views, chain, true);
     }
 
 }
