@@ -10,7 +10,7 @@
 #include <graph/LinkNode.h>
 #include <distribution/Distribution.h>
 #include <sampler/Linear.h>
-#include <sampler/Updater.h>
+#include <sampler/GraphView.h>
 
 #include <set>
 #include <map>
@@ -37,7 +37,7 @@ using std::string;
   If return value is 2, the arguments sample_nodes and stochastic_children
   are augmented.
 */
-static bool aggregateLinear(Updater const *candidate,
+static bool aggregateLinear(GraphView const *candidate,
 			    set<StochasticNode const *> &stochastic_children,
 			    Graph const &graph)
 {
@@ -60,13 +60,13 @@ static bool aggregateLinear(Updater const *candidate,
     return overlap;
 }
 
-struct less_updater {
+struct less_view {
     /* 
-       Comparison operator for updaters which sorts them in
+       Comparison operator for views which sorts them in
        reverse order of the number of stochastic children
     */
 
-    bool operator()(Updater const *x, Updater const *y) const {
+    bool operator()(GraphView const *x, GraphView const *y) const {
 	return (x->stochasticChildren().size() > 
 		y->stochasticChildren().size());
 	
@@ -79,11 +79,11 @@ namespace glm {
 	: _name(name)
     {}
 
-    bool GLMFactory::checkDescendants(Updater const *updater) const
+    bool GLMFactory::checkDescendants(GraphView const *view) const
     {
 	// Check stochastic children
 	vector<StochasticNode const*> const &stoch_nodes = 
-	    updater->stochasticChildren();
+	    view->stochasticChildren();
 	for (unsigned int i = 0; i < stoch_nodes.size(); ++i) {
 	    if (isBounded(stoch_nodes[i])) {
 		return false; //Truncated outcome variable
@@ -95,25 +95,25 @@ namespace glm {
 	    }
 	    //Check that other parameters do not depend on snode	    
 	    for (unsigned int j = 1; j < param.size(); ++j) {
-		if (updater->isDependent(param[j])) {
+		if (view->isDependent(param[j])) {
 		    return false;
 		}
 	    }
 	}
 
 	// Check linearity of deterministic descendants
-	if (!checkLinear(updater, false, true))
+	if (!checkLinear(view, false, true))
 	    return false;
 
 	return true;
     }
 
 
-    Updater * 
-    GLMFactory::makeUpdater(StochasticNode *snode, Graph const &graph) const
+    GraphView * 
+    GLMFactory::makeView(StochasticNode *snode, Graph const &graph) const
     {
 	/*
-	  Returns a newly allocated Updater if node can be sampled,
+	  Returns a newly allocated GraphView if node can be sampled,
 	  otherwise zero pointer.
 	*/
 
@@ -124,13 +124,13 @@ namespace glm {
 	if (!canSample(snode))
 	    return 0;
 
-	Updater *updater = new Updater(snode, graph);
-	if (!checkDescendants(updater)) {
-	    delete updater;
+	GraphView *view = new GraphView(snode, graph);
+	if (!checkDescendants(view)) {
+	    delete view;
 	    return 0;
 	}
 	else {
-	    return updater;
+	    return view;
 	}
     }
 
@@ -145,11 +145,11 @@ namespace glm {
 	   Find candidate nodes that could be in a linear model.
 	   Keep track of the number of stochastic children
 	*/
-	vector<Updater*> candidates;
+	vector<GraphView*> candidates;
 	for (set<StochasticNode*>::const_iterator p = nodes.begin();
 	     p != nodes.end(); ++p)
 	{
-	    Updater *up = makeUpdater(*p, graph);
+	    GraphView *up = makeView(*p, graph);
 	    if (up) {
 		candidates.push_back(up);
 	    }
@@ -158,13 +158,13 @@ namespace glm {
 	    return 0;
 
 	//Sort candidates in order of decreasing number of stochastic children
-	stable_sort(candidates.begin(), candidates.end(), less_updater());
+	stable_sort(candidates.begin(), candidates.end(), less_view());
 
 	//Now try to aggregate nodes into a joint linear model
 	unsigned int Nc = candidates.size();
 	vector<bool> keep(Nc, false);
 	vector<bool> resolved(Nc, false);
-	Updater *updater = 0;
+	GraphView *view = 0;
 	for (unsigned int i = 0; i < Nc; ++i) {
 	    
 	    keep[i] = true;
@@ -219,12 +219,12 @@ namespace glm {
 		}
 	    }
 	    if (sample_nodes.size() > 1) {
-		updater = new Updater(sample_nodes, graph);
-		if (checkLinear(updater, false, true)) {
+		view = new GraphView(sample_nodes, graph);
+		if (checkLinear(view, false, true)) {
 		    break;
 		}
 		else {
-		    delete updater; updater = 0;
+		    delete view; view = 0;
 		}
 	    }
 	    
@@ -233,29 +233,29 @@ namespace glm {
 	    }
 	}
 
-	vector<Updater*> sub_updaters;
+	vector<GraphView*> sub_views;
 	for (unsigned int i = 0; i < Nc; ++i) {
 	    if (keep[i]) {
-		sub_updaters.push_back(candidates[i]);
+		sub_views.push_back(candidates[i]);
 	    }
 	    else {
 		delete candidates[i];
 	    }
 	}
 
-	if (!sub_updaters.empty()) {
+	if (!sub_views.empty()) {
 		
-	    unsigned int Nch = nchain(updater);
+	    unsigned int Nch = nchain(view);
 	    vector<SampleMethod*> methods(Nch, 0);
 		
-	    vector<Updater const*> const_sub_updaters(sub_updaters.size());
-	    for (unsigned int i = 0; i < sub_updaters.size(); ++i) {
-		const_sub_updaters[i] = sub_updaters[i];
+	    vector<GraphView const*> const_sub_views(sub_views.size());
+	    for (unsigned int i = 0; i < sub_views.size(); ++i) {
+		const_sub_views[i] = sub_views[i];
 	    }
 	    for (unsigned int ch = 0; ch < Nch; ++ch) {
-		methods[ch] = newMethod(updater, const_sub_updaters, ch);
+		methods[ch] = newMethod(view, const_sub_views, ch);
 	    }
-	    return new GLMSampler(updater, sub_updaters, methods);
+	    return new GLMSampler(view, sub_views, methods);
 	}
 	else {
 	    return 0;

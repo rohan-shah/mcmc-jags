@@ -8,7 +8,7 @@
 
 #include "GLMMethod.h"
 
-#include <sampler/Updater.h>
+#include <sampler/GraphView.h>
 #include <sampler/Linear.h>
 #include <graph/Graph.h>
 #include <graph/StochasticNode.h>
@@ -64,16 +64,16 @@ namespace glm {
 
     void GLMMethod::calDesign() const
     {
-	vector<StochasticNode *> const &snodes = _updater->nodes();
+	vector<StochasticNode *> const &snodes = _view->nodes();
 	vector<StochasticNode const *> const &schildren = 
-	    _updater->stochasticChildren();
+	    _view->stochasticChildren();
 
 	int *Xi = _X->i;
 	int *Xp = _X->p;
 	double *Xx = _X->x;
 	
 	int nrow = schildren.size();
-	int ncol = _updater->length();
+	int ncol = _view->length();
 	if (nrow != _X->m || ncol != _X->n) {
 	    throw logic_error("Dimension mismatch in GLMMethod::calDesign");
 	}
@@ -99,13 +99,13 @@ namespace glm {
 		for (unsigned int j = 0; j < length; ++j) {
 		    
 		    xnew[j] += 1;
-		    _sub_updaters[i]->setValue(xnew, length, _chain);
+		    _sub_views[i]->setValue(xnew, length, _chain);
 		    for (int r = Xp[c+j]; r < Xp[c+j+1]; ++r) {
 			Xx[r] += getMean(Xi[r]);
 		    }
 		    xnew[j] -= 1;
 		}
-		_sub_updaters[i]->setValue(xnew, length, _chain);
+		_sub_views[i]->setValue(xnew, length, _chain);
 	    }
 	    
 	    c += length;
@@ -115,19 +115,19 @@ namespace glm {
 	
     }
     
-    GLMMethod::GLMMethod(Updater const *updater, 
-			 vector<Updater const *> const &sub_updaters,
+    GLMMethod::GLMMethod(GraphView const *view, 
+			 vector<GraphView const *> const &sub_views,
 			 unsigned int chain, bool link)
-	: _lp(updater->stochasticChildren().size()),
-	  _updater(updater), _chain(chain), _sub_updaters(sub_updaters),
-	  _X(0), _symbol(0), _fixed(sub_updaters.size(), false), 
+	: _lp(view->stochasticChildren().size()),
+	  _view(view), _chain(chain), _sub_views(sub_views),
+	  _X(0), _symbol(0), _fixed(sub_views.size(), false), 
 	  _length_max(0), _nz_prior(0), _init(true)
     {
 	vector<StochasticNode const*> const &schildren = 
-	    updater->stochasticChildren();
+	    view->stochasticChildren();
 
 	int nrow = schildren.size();
-	int ncol = updater->length();
+	int ncol = view->length();
 
 	//Set up linear predictor
 	for (int i = 0; i < nrow; ++i) {
@@ -140,15 +140,15 @@ namespace glm {
 	int c = 0; //column counter
 	int r = 0; //count of number of non-zero entries
 
-	for (unsigned int p = 0; p < _sub_updaters.size(); ++p) {
+	for (unsigned int p = 0; p < _sub_views.size(); ++p) {
 
 	    set<StochasticNode const *> children_p;
-	    children_p.insert(sub_updaters[p]->stochasticChildren().begin(),
-			      sub_updaters[p]->stochasticChildren().end());
+	    children_p.insert(sub_views[p]->stochasticChildren().begin(),
+			      sub_views[p]->stochasticChildren().end());
 	    vector<int> indices;
 	    getIndices(children_p, schildren, indices);
 
-	    unsigned int length = _sub_updaters[p]->length();
+	    unsigned int length = _sub_views[p]->length();
 	    for (unsigned int i = 0; i < length; ++i, ++c) {
 		Xp[c] = r;
 		for (unsigned int j = 0; j < indices.size(); ++j, ++r) {
@@ -170,8 +170,8 @@ namespace glm {
 	copy(Xi.begin(), Xi.end(), _X->i);
 
 	// Check for constant linear terms
-	for (unsigned int i = 0; i < sub_updaters.size(); ++i) {
-	    _fixed[i] = checkLinear(sub_updaters[i], true, link);
+	for (unsigned int i = 0; i < sub_views.size(); ++i) {
+	    _fixed[i] = checkLinear(sub_views[i], true, link);
 	}
 
 
@@ -193,7 +193,7 @@ namespace glm {
     */
     void GLMMethod::symbolic()  
     {
-	unsigned int nrow = _updater->length();
+	unsigned int nrow = _view->length();
 	cs *Aprior = cs_spalloc(nrow, nrow, _nz_prior, 0, 0); 
     
 	// Prior contribution
@@ -202,7 +202,7 @@ namespace glm {
 
 	int c = 0;
 	int r = 0;
-	vector<StochasticNode*> const &snodes = _updater->nodes();
+	vector<StochasticNode*> const &snodes = _view->nodes();
 	for (vector<StochasticNode*>::const_iterator p = snodes.begin();
 	     p != snodes.end(); ++p)
 	{
@@ -244,7 +244,7 @@ namespace glm {
 	//   For computational convenience we take xold, the current value
 	//   of the sampled nodes, as the origin
 
-	unsigned int nrow = _updater->length();
+	unsigned int nrow = _view->length();
 	b = new double[nrow];
 	cs *Aprior = cs_spalloc(nrow, nrow, _nz_prior, 1, 0); 
     
@@ -255,7 +255,7 @@ namespace glm {
 
 	int c = 0;
 	int r = 0;
-	vector<StochasticNode*> const &snodes = _updater->nodes();
+	vector<StochasticNode*> const &snodes = _view->nodes();
 	for (vector<StochasticNode*>::const_iterator p = snodes.begin();
 	     p != snodes.end(); ++p)
 	{
@@ -347,7 +347,7 @@ namespace glm {
 	// with mean mu such that A %*% mu = b and precision A. The
 	// vector b is overwritten with the result
 	
-	unsigned int nrow = _updater->length();
+	unsigned int nrow = _view->length();
 	double *w = new double[nrow];
 	cs_ipvec(_symbol->pinv, b, w, nrow);
 	cs_lsolve(N->L, w);
@@ -365,7 +365,7 @@ namespace glm {
 	//Shift origin back to original scale
 	int r = 0;
 	for (vector<StochasticNode*>::const_iterator p = 
-		 _updater->nodes().begin();  p != _updater->nodes().end(); ++p)
+		 _view->nodes().begin();  p != _view->nodes().end(); ++p)
 	{
 	    unsigned int length = (*p)->length();
 	    double const *xold = (*p)->value(_chain);
@@ -374,7 +374,7 @@ namespace glm {
 	    }
 	}
 
-	_updater->setValue(b, nrow, _chain);
+	_view->setValue(b, nrow, _chain);
 	delete [] b;
     }
 
@@ -385,7 +385,7 @@ namespace glm {
 	// necessary for truncated parameters
 
 	if (_init) {
-	    if (_updater->length() != _sub_updaters.size()) {
+	    if (_view->length() != _sub_views.size()) {
 		throw logic_error("updateLMGibbs can only act on scalar nodes");
 	    }
 	    initAuxiliary(rng);
@@ -397,9 +397,9 @@ namespace glm {
 	cs *A = 0;
 	calCoef(b, A);
 
-	int nrow = _updater->length();
+	int nrow = _view->length();
 	vector<double> theta(nrow);
-	_updater->getValue(theta, _chain);
+	_view->getValue(theta, _chain);
 
 	//Extract diagonal from A
 	vector<double> diagA(nrow);
@@ -419,7 +419,7 @@ namespace glm {
 		
 	    double mu  = theta[i] + b[i]/diagA[i];
 	    double sigma = sqrt(1/diagA[i]);
-	    StochasticNode const *snode = _sub_updaters[i]->nodes()[0];
+	    StochasticNode const *snode = _sub_views[i]->nodes()[0];
 	    double const *l = snode->lowerLimit(_chain);
 	    double const *u = snode->upperLimit(_chain);
 		
@@ -443,7 +443,7 @@ namespace glm {
 	}
 
 
-	_updater->setValue(theta,  _chain);
+	_view->setValue(theta,  _chain);
 
     }
 

@@ -6,7 +6,7 @@ extern "C" {
 }
 
 #include <sampler/SampleMethod.h>
-#include <sampler/Updater.h>
+#include <sampler/GraphView.h>
 
 #include <string>
 #include <vector>
@@ -26,9 +26,9 @@ namespace glm {
     class GLMMethod : public SampleMethod {
 	std::vector<double const *> _lp;
     protected:
-	Updater const *_updater;
+	GraphView const *_view;
 	unsigned int _chain;
-	std::vector<Updater const *> _sub_updaters;
+	std::vector<GraphView const *> _sub_views;
 	cs *_X;
 	css *_symbol;
     private:
@@ -39,8 +39,8 @@ namespace glm {
 	void symbolic();
 	void calDesign() const;
     public:
-	GLMMethod(Updater const *updater, 
-		  std::vector<Updater const *> const &sub_updaters,
+	GLMMethod(GraphView const *view, 
+		  std::vector<GraphView const *> const &sub_views,
 		  unsigned int chain, bool link);
 	virtual ~GLMMethod();
 	void updateLM(RNG *rng, bool stochastic = true);
