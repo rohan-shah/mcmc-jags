@@ -73,13 +73,13 @@ ConjugateWishart::ConjugateWishart(GraphView const *gv)
 {}
 
 void 
-ConjugateWishart::update(GraphView *gv, unsigned int chain, RNG *rng) const
+ConjugateWishart::update(unsigned int chain, RNG *rng) const
 {
     vector<StochasticNode const*> const &stoch_children = 
-	gv->stochasticChildren();
+	_gv->stochasticChildren();
     unsigned int nchildren = stoch_children.size();
 
-    vector<Node const *> const &param = gv->nodes()[0]->parents();  
+    vector<Node const *> const &param = _gv->nodes()[0]->parents();  
 
     double df = *param[1]->value(chain);
     double const *Rprior = param[0]->value(chain);
@@ -94,19 +94,19 @@ ConjugateWishart::update(GraphView *gv, unsigned int chain, RNG *rng) const
     //Logical mask to determine which stochastic children are active.
     vector<bool> active(nchildren, true);
 
-    if (!gv->deterministicChildren().empty()) {
+    if (!_gv->deterministicChildren().empty()) {
 	//Save first element of precision matrix for each child
 	vector<double> precision0(nchildren); 
 	for (unsigned int i = 0; i < nchildren; ++i) {
 	    precision0[i] = stoch_children[i]->value(chain)[0];
 	}
 	//Double the current value
-	double const *x = gv->nodes()[0]->value(chain);
+	double const *x = _gv->nodes()[0]->value(chain);
 	double *x2 = new double[N];
 	for (int j = 0; j < N; ++j) {
 	    x2[j] = 2 * x[j];
 	}
-	gv->setValue(x2, N, chain);
+	_gv->setValue(x2, N, chain);
 	delete [] x2;
 	//See if precision matrix has changed
 	for (unsigned int i = 0; i < nchildren; ++i) {
@@ -140,7 +140,7 @@ ConjugateWishart::update(GraphView *gv, unsigned int chain, RNG *rng) const
     DWish::randomSample(xnew, N, R, df, nrow, rng);
 
     delete [] R;
-    gv->setValue(xnew, N, chain);
+    _gv->setValue(xnew, N, chain);
     delete [] xnew;
 }
 

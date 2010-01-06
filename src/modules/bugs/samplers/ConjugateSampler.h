@@ -6,10 +6,8 @@
 
 class ConjugateSampler : public Sampler
 {
-    GraphView *_gv;
     ConjugateMethod *_method;
-    const ConjugateDist _target_dist;
-    const std::vector<ConjugateDist> _child_dist;
+    const unsigned int _nchain;
 public:
     ConjugateSampler(GraphView *gv, ConjugateMethod *method);
     ~ConjugateSampler();
