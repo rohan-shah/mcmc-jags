@@ -78,21 +78,21 @@ bool Censored::canSample(StochasticNode *snode, Graph const &graph)
     return true;
 }	
 
-void Censored::update(GraphView *gv, unsigned int chain, RNG * rng) const
+void Censored::update(unsigned int chain, RNG * rng) const
 {
-    int y = indicator(gv, chain);
-    double const *b = breaks(gv)->value(chain);
-    int ymax = breaks(gv)->length();
+    int y = indicator(_gv, chain);
+    double const *b = breaks(_gv)->value(chain);
+    int ymax = breaks(_gv)->length();
 
     double const *lower = (y == 0) ? 0 : b + y - 1;
     double const *upper = (y == ymax) ? 0 : b + y;
 	
     double x;
-    StochasticNode const *snode = gv->nodes()[0];
+    StochasticNode const *snode = _gv->nodes()[0];
     snode->distribution()->randomSample(&x, 1U, snode->parameters(chain),
 					snode->parameterDims(), 
 					lower, upper, rng);
-    gv->setValue(&x, 1U, chain);
+    _gv->setValue(&x, 1U, chain);
 }
 
 string Censored::name() const
