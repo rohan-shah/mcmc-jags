@@ -86,12 +86,12 @@ ConjugateBeta::ConjugateBeta(GraphView const *gv)
 {
 }
 
-void ConjugateBeta::update(GraphView *gv, unsigned int chain, RNG *rng)
+void ConjugateBeta::update(unsigned int chain, RNG *rng)
     const
 {
     vector<StochasticNode const*> const &stoch_children = 
-	gv->stochasticChildren();
-    StochasticNode const *snode = gv->nodes()[0];
+	_gv->stochasticChildren();
+    StochasticNode const *snode = _gv->nodes()[0];
 
     double a, b;
     switch (_target_dist) {
@@ -111,7 +111,7 @@ void ConjugateBeta::update(GraphView *gv, unsigned int chain, RNG *rng)
     /* For mixture models, we count only stochastic children that
        depend on snode */
     double *C = 0;
-    bool is_mix = !gv->deterministicChildren().empty();
+    bool is_mix = !_gv->deterministicChildren().empty();
     if (is_mix) {
 	C = new double[Nchild];
 	for (unsigned int i = 0; i < Nchild; ++i) {
@@ -120,7 +120,7 @@ void ConjugateBeta::update(GraphView *gv, unsigned int chain, RNG *rng)
 	// Perturb current value, keeping in the legal range [0,1]
 	double x = *snode->value(chain);
 	x = x > 0.5 ? x - 0.4 : x + 0.4;
-	gv->setValue(&x, 1, chain);
+	_gv->setValue(&x, 1, chain);
 	// C[i] == 1 if parameter of child i has changed (so depends on snode)
 	// C[i] == 0 otherwise
 	for (unsigned int i = 0; i < Nchild; ++i) {
@@ -171,7 +171,7 @@ void ConjugateBeta::update(GraphView *gv, unsigned int chain, RNG *rng)
 	/* Try 4 more attempts to get random sample within the bounds */
 	for (int i = 0; i < 4; i++) {
 	    if (xnew >= lower && xnew <= upper) {
-		gv->setValue(&xnew, 1, chain);
+		_gv->setValue(&xnew, 1, chain);
                 if (is_mix) delete [] C;
 		return;
 	    }
@@ -183,7 +183,7 @@ void ConjugateBeta::update(GraphView *gv, unsigned int chain, RNG *rng)
 	double p = runif(plower, pupper, rng);
 	xnew = qbeta(p, a, b, 1, 0);   
     }
-    gv->setValue(&xnew, 1, chain);
+    _gv->setValue(&xnew, 1, chain);
 
     if (is_mix) {
 	delete [] C;
