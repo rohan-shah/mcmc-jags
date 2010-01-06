@@ -27,11 +27,11 @@ class ConjugateMethod
 protected:
     const ConjugateDist _target_dist;
     const std::vector<ConjugateDist> _child_dist;
+    GraphView const *_gv;
 public:
     ConjugateMethod(GraphView const *gv);
     virtual ~ConjugateMethod();
-    virtual void update(GraphView *gv, unsigned int chain, RNG *rng) 
-	const = 0;
+    virtual void update(unsigned int chain, RNG *rng) const = 0;
     virtual std::string name() const = 0;
 };
 

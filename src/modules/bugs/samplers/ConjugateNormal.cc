@@ -122,13 +122,12 @@ bool ConjugateNormal::canSample(StochasticNode *snode, Graph const &graph)
     return true; //We made it!
 }
 
-void ConjugateNormal::update(GraphView *gv, unsigned int chain, 
-			     RNG *rng) const
+void ConjugateNormal::update(unsigned int chain, RNG *rng) const
 {
     vector<StochasticNode const*> const &stoch_children = 
-	gv->stochasticChildren();
+	_gv->stochasticChildren();
     unsigned int nchildren = stoch_children.size();
-    StochasticNode *snode = gv->nodes()[0];
+    StochasticNode *snode = _gv->nodes()[0];
 
     /* For convenience in the following computations, we shift the
        origin to xold, the previous value of the node */
@@ -140,7 +139,7 @@ void ConjugateNormal::update(GraphView *gv, unsigned int chain,
     double A = priormean * priorprec; //Weighted sum of means
     double B = priorprec; //Sum of weights
 
-    if (gv->deterministicChildren().empty()) {
+    if (_gv->deterministicChildren().empty()) {
 
 	// This can only happen if the stochastic children are all
 	// univariate normal. We know alpha = 0, beta = 1.
@@ -159,7 +158,7 @@ void ConjugateNormal::update(GraphView *gv, unsigned int chain,
 	bool temp_beta = (_betas == 0);
 	if (temp_beta) {
 	    beta = new double[_length_betas];
-	    calBeta(beta, gv, chain);
+	    calBeta(beta, _gv, chain);
 	}
 	else {
 	    beta = _betas;
@@ -208,7 +207,7 @@ void ConjugateNormal::update(GraphView *gv, unsigned int chain,
     else {
 	xnew = rnorm(postmean, postsd, rng);  
     }
-    gv->setValue(&xnew, 1, chain);
+    _gv->setValue(&xnew, 1, chain);
 
 }
 
