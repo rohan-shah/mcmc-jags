@@ -25,14 +25,6 @@ using std::invalid_argument;
 ConjugateFactory::ConjugateFactory()
     : _name("Conjugate")
 {
-    _func_table["dnorm"] = ConjugateNormal::canSample;
-    _func_table["dgamma"] = ConjugateGamma::canSample;
-    _func_table["dexp"] = ConjugateGamma::canSample;
-    _func_table["dchisq"] = ConjugateGamma::canSample;
-    _func_table["dbeta"] = ConjugateBeta::canSample;
-    _func_table["ddirch"] = ConjugateDirichlet::canSample;
-    _func_table["dmnorm"] = ConjugateMNormal::canSample;
-    _func_table["dwish"] = ConjugateWishart::canSample;
 }
 
 bool ConjugateFactory::canSample(StochasticNode * snode,
@@ -40,16 +32,32 @@ bool ConjugateFactory::canSample(StochasticNode * snode,
 {
     if (Censored::canSample(snode, graph))
       return true;
-    
-    //FIXME: Could use a typedef here to make it readable
-    map<string, bool (*)(StochasticNode *, Graph const &)>::const_iterator
-	p = _func_table.find(snode->distribution()->name());
 
-    if (p == _func_table.end())
-	return false;
-    else {
-	return p->second(snode, graph);
+    bool ans = false;
+    switch(getDist(snode)) {
+    case NORM:
+	ans = ConjugateNormal::canSample(snode, graph);
+	break;
+    case GAMMA: case EXP: case CHISQ:
+	ans = ConjugateGamma::canSample(snode, graph);
+	break;
+    case BETA:
+	ans = ConjugateBeta::canSample(snode, graph);
+	break;
+    case DIRCH:
+	ans = ConjugateDirichlet::canSample(snode, graph);
+	break;
+    case MNORM:
+	ans = ConjugateMNormal::canSample(snode, graph);
+	break;
+    case WISH:
+	ans = ConjugateWishart::canSample(snode, graph);
+	break;
+    default:
+	break;
     }
+    
+    return ans;
 }
 
 Sampler *ConjugateFactory::makeSampler(StochasticNode *snode, 

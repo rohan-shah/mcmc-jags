@@ -7,16 +7,12 @@
 #include <map>
 #include <string>
 
-typedef bool (*)(StochasticNode *, Graph const &) SampleTestFunc;
-
 /**
  * @short Factory object for conjugate samplers
  */
 class ConjugateFactory : public SingletonFactory
 {
     std::string _name;
-    std::map<std::string, bool (*)(StochasticNode *,
-				   Graph const &)> _func_table;
 public:
     ConjugateFactory();
     /**
