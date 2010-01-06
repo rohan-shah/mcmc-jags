@@ -7,6 +7,8 @@
 #include <map>
 #include <string>
 
+typedef bool (*)(StochasticNode *, Graph const &) SampleTestFunc;
+
 /**
  * @short Factory object for conjugate samplers
  */
