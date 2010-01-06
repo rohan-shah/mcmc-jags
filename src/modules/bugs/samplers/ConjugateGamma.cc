@@ -124,17 +124,17 @@ bool ConjugateGamma::canSample(StochasticNode *snode, Graph const &graph)
 
 
 void 
-ConjugateGamma::update(GraphView *gv, unsigned int chain, RNG *rng) const
+ConjugateGamma::update(unsigned int chain, RNG *rng) const
 {
     vector<StochasticNode const*> const &stoch_children = 
-	gv->stochasticChildren();
+	_gv->stochasticChildren();
     unsigned int nchildren = stoch_children.size();
 
     double r; // shape
     double mu; // 1/scale
 
     //Prior
-    vector<Node const *> const &param = gv->nodes()[0]->parents();
+    vector<Node const *> const &param = _gv->nodes()[0]->parents();
     switch(_target_dist) {
     case GAMMA:
 	r = *param[0]->value(chain);
@@ -154,12 +154,12 @@ ConjugateGamma::update(GraphView *gv, unsigned int chain, RNG *rng) const
 
     // likelihood 
     double *coef = 0;
-    bool empty = gv->deterministicChildren().empty();
+    bool empty = _gv->deterministicChildren().empty();
     bool temp_coef = false;
     if (!empty && _coef == 0) {
 	    temp_coef = true;
 	    coef = new double[nchildren];
-	    calCoef(coef, gv, _child_dist, chain);
+	    calCoef(coef, _gv, _child_dist, chain);
     }
     else {
 	coef = _coef;
@@ -214,14 +214,14 @@ ConjugateGamma::update(GraphView *gv, unsigned int chain, RNG *rng) const
 
     // Sample from the posterior
     double xnew;
-    if (isBounded(gv->nodes()[0])) {
+    if (isBounded(_gv->nodes()[0])) {
 	// Use inversion to get random sample
 	double lower = 0;
-	Node const *lb = gv->nodes()[0]->lowerBound();
+	Node const *lb = _gv->nodes()[0]->lowerBound();
 	if (lb) {
 	    lower = max(lower, *lb->value(chain));
 	}
-	Node const *ub = gv->nodes()[0]->upperBound();
+	Node const *ub = _gv->nodes()[0]->upperBound();
 	double plower = lb ? pgamma(lower,             r, 1/mu, 1, 0) : 0;
 	double pupper = ub ? pgamma(*ub->value(chain), r, 1/mu, 1, 0) : 1;
 	double p = runif(plower, pupper, rng);
@@ -230,7 +230,7 @@ ConjugateGamma::update(GraphView *gv, unsigned int chain, RNG *rng) const
     else {
 	xnew = rgamma(r, 1/mu, rng);
     }
-    gv->setValue(&xnew, 1, chain);  
+    _gv->setValue(&xnew, 1, chain);  
 }
 
 string ConjugateGamma::name() const

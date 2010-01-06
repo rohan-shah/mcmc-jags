@@ -9,7 +9,7 @@ public:
     ConjugateGamma(GraphView const *gv);
     ~ConjugateGamma();
     static bool canSample(StochasticNode *snode, Graph const &graph);
-    void update(GraphView *gv, unsigned int chain, RNG *rng) const;
+    void update(unsigned int chain, RNG *rng) const;
     std::string name() const;
 };
 
