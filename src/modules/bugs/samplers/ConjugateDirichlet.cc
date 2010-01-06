@@ -78,10 +78,9 @@ ConjugateDirichlet::ConjugateDirichlet(GraphView const *gv)
     : ConjugateMethod(gv)
 {}
 
-void ConjugateDirichlet::update(GraphView *gv, unsigned int chain, 
-				RNG *rng) const
+void ConjugateDirichlet::update(unsigned int chain, RNG *rng) const
 {
-    StochasticNode *snode = gv->nodes()[0];
+    StochasticNode *snode = _gv->nodes()[0];
     unsigned long size = snode->length();
     double *alpha = new double[size];
     double const *prior = snode->parents()[0]->value(chain);
@@ -98,10 +97,10 @@ void ConjugateDirichlet::update(GraphView *gv, unsigned int chain,
     for (unsigned long i = 0; i < size; ++i) {
 	xnew[i] = 0;
     }
-    gv->setValue(xnew, size, chain);
+    _gv->setValue(xnew, size, chain);
 
     vector<StochasticNode const*> const &stoch_children = 
-	gv->stochasticChildren();
+	_gv->stochasticChildren();
     unsigned int nchildren = stoch_children.size();
     for (unsigned int i = 0; i < nchildren; ++i) {
 	StochasticNode const *schild = stoch_children[i];
@@ -152,7 +151,7 @@ void ConjugateDirichlet::update(GraphView *gv, unsigned int chain,
 	xnew[i] /= xsum;
     }
 
-    gv->setValue(xnew, size, chain);
+    _gv->setValue(xnew, size, chain);
 
     delete [] xnew;
     delete [] alpha;
