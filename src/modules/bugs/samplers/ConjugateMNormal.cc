@@ -138,14 +138,13 @@ bool ConjugateMNormal::canSample(StochasticNode *snode, Graph const &graph)
     return true; //We made it!
 }
 
-void ConjugateMNormal::update(GraphView *gv, unsigned int chain, 
-			      RNG *rng) const
+void ConjugateMNormal::update(unsigned int chain, RNG *rng) const
 {
     vector<StochasticNode const*> const &stoch_children = 
-          gv->stochasticChildren();
+          _gv->stochasticChildren();
     unsigned int nchildren = stoch_children.size();
     
-    StochasticNode *snode = gv->nodes()[0];
+    StochasticNode *snode = _gv->nodes()[0];
     double const *xold = snode->value(chain);
     double const *priormean = snode->parents()[0]->value(chain); 
     double const *priorprec = snode->parents()[1]->value(chain);
@@ -176,7 +175,7 @@ void ConjugateMNormal::update(GraphView *gv, unsigned int chain,
     double d1 = 1;
     int i1 = 1;
 
-    if (gv->deterministicChildren().empty()) {
+    if (_gv->deterministicChildren().empty()) {
       
 	// This can only happen if the stochastic children are all
 	// multivariate normal with the same number of rows and 
@@ -206,7 +205,7 @@ void ConjugateMNormal::update(GraphView *gv, unsigned int chain,
         double *betas = 0;
 	if (temp_beta) {
 	    betas = new double[_length_betas];
-	    calBeta(betas, gv, chain);
+	    calBeta(betas, _gv, chain);
 	}
         else {
             betas = _betas;
@@ -310,7 +309,7 @@ void ConjugateMNormal::update(GraphView *gv, unsigned int chain,
     double *xnew = new double[nrow];
     //NB. This uses the lower triangle of A
     DMNorm::randomsample(xnew, b, A, true, nrow, rng);
-    gv->setValue(xnew, nrow, chain);
+    _gv->setValue(xnew, nrow, chain);
 
     delete [] A;
     delete [] Acopy;
