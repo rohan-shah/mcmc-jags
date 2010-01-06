@@ -15,7 +15,7 @@
 class ConjugateBeta : public ConjugateMethod {
 public:
     ConjugateBeta(GraphView const *gv);
-    void update(GraphView *gv, unsigned int chain, RNG *rng) const;
+    void update(unsigned int chain, RNG *rng) const;
     static bool canSample(StochasticNode *snode, Graph const &graph);
     std::string name() const;
 };
