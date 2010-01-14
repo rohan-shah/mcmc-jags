@@ -6,12 +6,16 @@
 #include <list>
 #include <utility>
 
-class InverseLinkFunc;
-class Function;
+#include <function/FunctionPtr.h>
+
 class Distribution;
 class SamplerFactory;
 class RNGFactory;
 class MonitorFactory;
+class InverseLinkFunction;
+class ScalarFunction;
+class VectorFunction;
+class ArrayFunction;
 
 /**
  * @short Memory management for dynamically loadable modules
@@ -27,10 +31,9 @@ class MonitorFactory;
  */
 class Module {
     std::string _name;
-    std::vector<Function *> _internal_functions;
-    std::vector<InverseLinkFunc *> _internal_link_functions;
-    std::vector<std::pair<Distribution*, Function*> > _obs_functions;
+    std::vector<FunctionPtr> _fp_list;
     std::vector<Function*> _functions;
+    std::vector<std::pair<Distribution*, FunctionPtr> > _obs_functions;
     std::vector<Distribution*> _distributions;
     std::vector<SamplerFactory*> _sampler_factories;
     std::vector<RNGFactory*> _rng_factories;
@@ -38,15 +41,15 @@ class Module {
 public:
     Module(std::string const &name);
     virtual ~Module();
+    void insert(ScalarFunction*);
     void insert(InverseLinkFunc*);
-    void insert(Function*);
+    void insert(VectorFunction*);
+    void insert(ArrayFunction*);
     void insert(Distribution*);
-    /**
-     * Insertion method for observable functions. These are
-     * represented by a pair consisting of a Distribution and a
-     * Function.
-     */
-    void insert(Distribution*, Function*);
+    void insert(Distribution*, ScalarFunction*);
+    void insert(Distribution*, InverseLinkFunc*);
+    void insert(Distribution*, VectorFunction*);
+    void insert(Distribution*, ArrayFunction*);
     void insert(SamplerFactory*);
     void insert(RNGFactory*);
     void insert(MonitorFactory*);
