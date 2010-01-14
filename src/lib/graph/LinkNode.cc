@@ -16,48 +16,26 @@ using std::set;
 using std::logic_error;
 using std::runtime_error;
 
-LinkNode::LinkNode(InverseLinkFunc const *function,  
-                   vector<Node const *> const &parameters)
-    : DeterministicNode(vector<unsigned int>(1,1), parameters),
-      _func(function),
-      _parameters(parameters[0]->value(0))
+LinkNode::LinkNode(InverseLinkFunc const *function, 
+		   vector<Node const *> const &parents)
+    : LogicalNode(vector<unsigned int>(1,1), parents, function), 
+      _func(function)
 {
-    if (!parameters.size() == 1) {
-        throw runtime_error("Invalid number of parameters in LinkNode");
-    }
-    if (!isScalar(parameters[0]->dim())) {
-	throw runtime_error("Invalid parameter dims in LinkNode");
+    if (!isScalar(parents[0]->dim())) {
+	throw runtime_error("Invalid parent dims in LinkNode");
     }
 
-    /* Initialize if fully observed (rare in practice as the linear
-       predictor should include unobserved parameters 
-    */
+    // Initialize if fully observed 
     if (isObserved()) {
 	for (unsigned int ch = 0; ch < _nchain; ++ch) {
 	    deterministicSample(ch);
 	}
     }
-
-}
-
-string LinkNode::deparse(vector<string> const &parents) const
-{
-    string name = "(";
-    name.append(_func->deparse(parents));
-    name.append(")");
-	      
-    return name;
 }
 
 void LinkNode::deterministicSample(unsigned int chain)
 {
-    _data[chain] = _func->inverseLink(_parameters[chain]);
-}
-
-bool LinkNode::isClosed(std::set<Node const *> const &ancestors, 
-			ClosedFuncClass fc, bool fixed) const
-{
-    return false;
+    _data[chain] = _func->inverseLink(*_parameters[chain][0]);
 }
 
 bool LinkNode::checkParentValues(unsigned int chain) const
@@ -75,17 +53,12 @@ Node *LinkNode::clone(vector<Node const *> const &parents) const
     return new LinkNode(_func, parents);
 }
 
-bool LinkNode::isDiscreteValued() const
-{
-    return false;
-}
-
 double LinkNode::eta(unsigned int chain) const
 {
-    return _parameters[chain];
+    return *_parameters[chain][0];
 }
 
 double LinkNode::grad(unsigned int chain) const
 {
-    return _func->grad(_parameters[chain]);
+    return _func->grad(*_parameters[chain][0]);
 }

@@ -17,60 +17,27 @@ using std::set;
 using std::logic_error;
 using std::runtime_error;
 
-static vector<unsigned int> mkDim(Function const *func, 
-				  vector<Node const *> const &parents)
+static vector<vector<double const *> > 
+mkParams(vector<Node const*> const &parents, unsigned int nchain)
 {
-  /* 
-     Calculates dimension of logical node as a function of its
-     parameters.
-  */
-
-  vector<vector<unsigned int> > parameter_dims(parents.size());
-  for (unsigned int j = 0; j < parents.size(); ++j) {
-    parameter_dims[j] = parents[j]->dim();
-  }
-  if (!func) {
-    throw logic_error("NULL function in LogicalNode constructor");
-  }
-  if (!func->checkParameterLength(parameter_dims.size())) {
-    //FIXME: logic_error or runtime_error?
-    throw runtime_error(string("Incorrect number of parameters for function ")
-		      + func->name());
-  }
-  if (!func->checkParameterDim(parameter_dims)) {
-    throw runtime_error(string("Non-conforming parameters for function ")
-		      + func->name());
-  }
-  return func->dim(parameter_dims);
-}
-
-static vector<unsigned int> const &
-mkLengths(vector<Node const *> const &parameters) {
-    vector<unsigned int> lengths(parameters.size());
-    for (unsigned int j = 0; j < parameters.size(); ++j) {
-        lengths[j] = parameters[j]->length();
-
+    vector<vector<double const *> > ans(nchain);
+    for (unsigned int n = 0; n < nchain; ++n) {
+	ans[n].reserve(parents.size());
+	for (unsigned long j = 0; j < parents.size(); ++j) {
+	    ans[n].push_back(parents[j]->value(n));
+	}
+	
     }
-    return getUnique(lengths);
+    return ans;
 }
 
-static vector<vector<unsigned int> > const &
-mkParameterDims(vector<Node const *> const &parameters) {
-    vector<vector<unsigned int> > dims(parameters.size());
-    for (unsigned int j = 0; j < parameters.size(); ++j) {
-        dims[j] = parameters[j]->dim();
-    }
-    return getUnique(dims);
-}
-
-LogicalNode::LogicalNode(Function const *function, 
-			 vector<Node const *> const &parameters)
-  : DeterministicNode(mkDim(function,parameters), parameters),
-    _func(function),
-    _parameters(nchain()),
-    _dims(mkParameterDims(parameters)),
-    _lengths(mkLengths(parameters))
+LogicalNode::LogicalNode(vector<unsigned int> const &dim, 
+			 vector<Node const *> const &parameters,
+			 Function const *function)
+    : DeterministicNode(dim, parameters), _func(function), 
+      _parameters(mkParams(parameters, nchain()))
 {
+    /*
     for (unsigned int n = 0; n < nchain(); ++n) {
 	_parameters[n].reserve(parameters.size());
 	for (unsigned long j = 0; j < parameters.size(); ++j) {
@@ -78,16 +45,7 @@ LogicalNode::LogicalNode(Function const *function,
 	}
 	
     }
-
-    if (isObserved()) {
-	for (unsigned int ch = 0; ch < _nchain; ++ch) {
-	    deterministicSample(ch);
-	}
-    }
-}
-
-LogicalNode::~LogicalNode()
-{
+    */
 }
 
 string LogicalNode::deparse(vector<string> const &parents) const
@@ -97,11 +55,6 @@ string LogicalNode::deparse(vector<string> const &parents) const
     name.append(")");
 	      
     return name;
-}
-
-void LogicalNode::deterministicSample(unsigned int chain)
-{
-  _func->evaluate(_data + chain * _length, _parameters[chain], _lengths, _dims);
 }
 
 bool LogicalNode::isClosed(set<Node const *> const &ancestors, 
@@ -142,16 +95,6 @@ bool LogicalNode::isClosed(set<Node const *> const &ancestors,
     }
 
     return false; //Wall
-}
-
-bool LogicalNode::checkParentValues(unsigned int chain) const
-{
-    return _func->checkParameterValue(_parameters[chain], _lengths, _dims);
-}
-
-Node *LogicalNode::clone(vector<Node const*> const &parents) const
-{
-    return new LogicalNode(_func, parents);
 }
 
 bool LogicalNode::isDiscreteValued() const
