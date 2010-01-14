@@ -1,23 +1,21 @@
 #ifndef FUNC_DINTERVAL_H_
 #define FUNC_DINTERVAL_H_
 
-#include <function/Function.h>
+#include <function/VectorFunction.h>
 
 namespace bugs {
 
     /**
      * @short Function version of dinterval distribution
      */
-    class DIntervalFunc: public Function
+    class DIntervalFunc: public VectorFunction
     {
     public:
 	DIntervalFunc ();
 	void evaluate (double *value,
 		       std::vector <double const *> const &args,
-		       std::vector<unsigned int> const &lengths,
-		       std::vector<std::vector<unsigned int> > const &dims) 
-	    const;
-	bool checkParameterDim (std::vector <std::vector<unsigned int> > const &dims) const;
+		       std::vector<unsigned int> const &lengths) const;
+	bool checkParameterLength (std::vector<unsigned int> const &args) const;
 	bool isDiscreteValued(std::vector<bool> const &mask) const;
     };
 
