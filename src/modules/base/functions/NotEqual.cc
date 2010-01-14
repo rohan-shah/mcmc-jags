@@ -12,7 +12,7 @@ NotEqual::NotEqual () : Infix ("!=")
 {
 }
 
-double NotEqual::evaluateScalar(vector<double const *> const &args) const
+double NotEqual::evaluate(vector<double const *> const &args) const
 {
   return *args[0] != *args[1];
 }
