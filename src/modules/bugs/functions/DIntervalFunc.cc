@@ -6,7 +6,6 @@ using std::vector;
 
 #define T(args) (*args[0])
 #define CUTPOINTS(args) (args[1])
-#define NCUT(dims) (dims[1][0])
 
 static unsigned int value(vector<double const *> const &args, unsigned int ncut)
 {
@@ -20,23 +19,21 @@ static unsigned int value(vector<double const *> const &args, unsigned int ncut)
 
 namespace bugs {
 
-    DIntervalFunc::DIntervalFunc () : Function ("dinterval", 2)
+    DIntervalFunc::DIntervalFunc () : VectorFunction ("dinterval", 2)
     {
     }
 
     void 
     DIntervalFunc::evaluate(double *x, vector<double const *> const &args,
-			    vector<unsigned int> const &lengths,
-			    vector<vector<unsigned int> > const &dims) const
+			    vector<unsigned int> const &lengths) const
     {
-	*x = value(args, NCUT(dims));
+	*x = value(args, lengths[1]);
     }
     
-    bool 
-    DIntervalFunc::checkParameterDim (vector<vector<unsigned int> > const &dims)
+    bool DIntervalFunc::checkParameterLength (vector<unsigned int> const &args)
 	const
     {
-	return isScalar(dims[0]) && dims[1].size() == 1;
+	return args[0] == 1;
     }
     
     bool DIntervalFunc::isDiscreteValued(std::vector<bool> const &mask) const
