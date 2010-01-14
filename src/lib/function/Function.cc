@@ -19,15 +19,7 @@ string const & Function::name () const
   return _name;
 }
 
-bool Function::checkParameterValue(vector<double const *> const &args,
-                                   vector<unsigned int> const &lengths,
-			           vector<vector<unsigned int> > const &dims)
-const
-{
-  return true;
-}
-
-bool Function::checkParameterLength (unsigned int npar) const
+bool Function::checkNPar (unsigned int npar) const
 {
   return _npar == 0 ||  npar == _npar;
 }
@@ -47,12 +39,6 @@ bool Function::isLinear(vector<bool> const &mask,
 			vector<bool> const &isfixed) const
 {
     return isScale(mask, isfixed);
-}
-
-vector<unsigned int> 
-Function::dim(vector <vector<unsigned int> > const &dims) const
-{
-    return vector<unsigned int>(1,1);
 }
 
 string Function::deparse(vector<string> const &par) const

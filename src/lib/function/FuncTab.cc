@@ -1,106 +1,68 @@
 #include <config.h>
 #include <function/FuncTab.h>
-#include <function/Function.h>
 #include <function/InverseLinkFunc.h>
 
 #include <functional>
-#include <iostream>
 #include <algorithm>
 
-using std::list;
 using std::string;
 using std::binary_function;
 using std::find_if;
 
-typedef std::list<Function const*> FuncList;
-typedef std::list<InverseLinkFunc const*> LinkList;
+typedef std::list<FunctionPtr> FuncList;
 
-/* Adaptable binary predicate for find_if algorithm */
-struct isFuncName: 
-    public binary_function<Function const *, string const *, bool> 
+// Adaptable binary predicate for find_if algorithm 
+struct isFuncName: public binary_function<FunctionPtr, string, bool> 
 {
-    bool operator()(Function const *func, string const *name) const
+    bool operator()(FunctionPtr const &func, string const &name) const
     {
-	return func->name() == *name;
+	if (LINK(func))
+	    return LINK(func)->name() == name;
+	if (SCALAR(func))
+	    return SCALAR(func)->name() == name;
+	if (VECTOR(func))
+	    return VECTOR(func)->name() == name;
+	if (ARRAY(func))
+	    return ARRAY(func)->name() == name;
+	return false;
     }
 };
 
-/* Adaptable binary predicate for find_if algorithm */
-struct isLinkName: 
-    public binary_function<InverseLinkFunc const *, string const *, bool> 
+// Adaptable binary predicate for find_if algorithm
+struct isLinkName: public binary_function<FunctionPtr, string, bool> 
 {
-    bool operator()(InverseLinkFunc const *lfunc, string const *name) const
+    bool operator()(FunctionPtr const &func, string const &name) const
     {
-	return lfunc->linkName() == *name;
+	return LINK(func) != 0 && LINK(func)->linkName() == name;
     }
 };
 
-void FuncTab::insert (Function const *func)
+void FuncTab::insert (FunctionPtr const &func)
 {
-    FuncList::iterator p = std::find(_func_list.begin(), _func_list.end(),
-				     func);
-    if (p == _func_list.end()) {
-	_func_list.push_front(func);
-    }
+    FuncList::const_iterator p = std::find(_flist.begin(), _flist.end(), func);
+    if (p == _flist.end())
+	_flist.push_front(func);
 }
 
-void FuncTab::insert (InverseLinkFunc const *lfunc)
+FunctionPtr const &FuncTab::find(string const &name) const
 {
-    FuncList::iterator p = std::find(_func_list.begin(), _func_list.end(),
-				     lfunc);
-    LinkList::iterator q = std::find(_link_list.begin(), _link_list.end(),
-				     lfunc);
+    FuncList::const_iterator p = 
+	find_if(_flist.begin(), _flist.end(), bind2nd(isFuncName(), name));
 
-    if (p == _func_list.end() && q == _link_list.end()) {
-	_func_list.push_front(lfunc);
-	_link_list.push_front(lfunc);
-    }
+    return (p == _flist.end()) ? _nullfun : *p;
 }
 
-Function const * FuncTab::find (string const &funcname) const
+InverseLinkFunc const * FuncTab::findInverseLink (string const &name) const
 {
-    //Note scoping operator to distinguish std::find from FuncTab::find
-    FuncList::const_iterator p = std::find_if(_func_list.begin(), 
-					      _func_list.end(),
-					      bind2nd(isFuncName(), &funcname));
+    FuncList::const_iterator p =
+	find_if(_flist.begin(), _flist.end(), bind2nd(isLinkName(), name));
 
-    return (p == _func_list.end()) ? 0 : *p;
+    return (p == _flist.end()) ? 0 : LINK(*p);
 }
 
-InverseLinkFunc const * FuncTab::findInverseLink (string const &name,
-						  bool link_name) const
+void FuncTab::erase(FunctionPtr const &func)
 {
-
-    LinkList::const_iterator p = _link_list.end();
-    if (link_name) {
-	//Note scoping operator to distinguish std::find from FuncTab::find
-	p = std::find_if(_link_list.begin(), _link_list.end(),
-			 bind2nd(isLinkName(), &name));
-    }
-    else {
-	p = std::find_if(_link_list.begin(), _link_list.end(),
-			 bind2nd(isFuncName(), &name));
-    }
-    return (p == _link_list.end()) ? 0 : *p;
-}
-
-void FuncTab::erase(Function *func)
-{
-    FuncList::iterator p = std::find(_func_list.begin(), _func_list.end(),
-				     func);
-    if (p == _func_list.end())
-	return;
-
-
-    //Erase from the function list.
-    _func_list.erase(p);
-
-    //If it's a link function, also erase it from the link list
-    for (LinkList::iterator p = _link_list.begin(); p != _link_list.end(); ++p)
-    {
-	if (func == *p) {
-	    _link_list.erase(p);
-	    break;
-	}
-    }
+    FuncList::iterator p = std::find(_flist.begin(), _flist.end(), func);
+    if (p != _flist.end())
+	_flist.erase(p);
 }
