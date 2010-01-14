@@ -31,7 +31,7 @@ public:
      * @return Pointer to the inverse link function or a NULL pointer
      * if it was not found.
      */
-    InverseLinkFunc const *findInverseLink (std::string const &name) const;
+    LinkFunction const *findLink (std::string const &name) const;
     /**
      * Finds a function by name.
      *
