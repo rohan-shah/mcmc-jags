@@ -10,11 +10,11 @@ namespace bugs {
 
 
     Sin::Sin ()
-	: ScalarFunc ("sin", 1)
+	: ScalarFunction ("sin", 1)
     {
     }
 
-    double Sin::evaluateScalar(vector<double const *> const &args) const
+    double Sin::evaluate(vector<double const *> const &args) const
     {
 	return sin(*args[0]);
     }

@@ -1,7 +1,7 @@
 #ifndef FUNC_SIN_H_
 #define FUNC_SIN_H_
 
-#include <function/ScalarFunc.h>
+#include <function/ScalarFunction.h>
 
 namespace bugs {
 
@@ -12,11 +12,11 @@ namespace bugs {
      * y <- sin(x)
      * </pre>
      */
-    class Sin : public ScalarFunc
+    class Sin : public ScalarFunction
     {
     public:
 	Sin ();
-	double evaluateScalar(std::vector<double const *> const &args) const;
+	double evaluate(std::vector<double const *> const &args) const;
     };
 }
 

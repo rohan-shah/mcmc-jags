@@ -13,13 +13,12 @@ using std::logic_error;
 namespace bugs {
 
     Sort::Sort ()
-	: Function ("sort", 1)
+	: VectorFunction ("sort", 1)
     {
     }
 
     void Sort::evaluate (double *value, vector <double const *> const &args,
-			 vector<unsigned int> const &lengths, 
-			 vector<vector<unsigned int> > const &dims) const
+			 vector<unsigned int> const &lengths) const
     {
 	for (unsigned int i = 0; i < lengths[0]; ++i) {
 	    value[i] = args[0][i];
@@ -27,16 +26,9 @@ namespace bugs {
 	sort(value, value + lengths[0]);
     }
 
-    vector<unsigned int>  
-    Sort::dim (vector <vector<unsigned int> > const &dims) const
+    unsigned int Sort::length (vector<unsigned int> const &parlengths) const
     {
-	return dims[0];
-    }
-
-    bool 
-    Sort::checkParameterDim (vector<vector<unsigned int> > const &dims) const
-    {
-	return isVector(dims[0]) || isScalar(dims[0]);
+	return parlengths[0];
     }
 
     bool Sort::isDiscreteValued(vector<bool> const &mask) const

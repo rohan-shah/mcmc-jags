@@ -9,13 +9,12 @@ using std::sqrt;
 namespace bugs {
 
     SD::SD ()
-	: Function ("sd", 1)
+	: VectorFunction ("sd", 1)
     {
     }
 
     void SD::evaluate (double *x, vector<double const *>const &args,
-		       vector<unsigned int> const &lengths,
-		       vector<vector<unsigned int> > const &dims) const
+		       vector<unsigned int> const &lengths) const
     {
 	double svalue = 0;
 	if (lengths[0] > 1) {
@@ -35,9 +34,9 @@ namespace bugs {
 	*x = svalue;
     }
 
-    bool SD::checkParameterDim (vector<vector<unsigned int> > const &dims) const
+    bool SD::checkParameterLength (vector<unsigned int> const &lengths) const
     {
-	return dims[0][0] >= 2;
+	return lengths[0] >= 2;
     }
 
 }

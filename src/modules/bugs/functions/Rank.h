@@ -1,7 +1,7 @@
 #ifndef FUNC_RANK_H_
 #define FUNC_RANK_H_
 
-#include <function/Function.h>
+#include <function/VectorFunction.h>
 
 namespace bugs {
 
@@ -12,18 +12,14 @@ namespace bugs {
      * y <- sort(x[])
      * </pre>
      */
-    class Rank : public Function
+    class Rank : public VectorFunction
     {
     public:
 	Rank ();
 	void evaluate(double *value, 
 		      std::vector<double const *> const &args,
-		      std::vector<unsigned int> const &lengths,
-		      std::vector<std::vector<unsigned int> > const &dims) 
-	    const;
-	bool checkParameterDim(std::vector<std::vector<unsigned int> > const &dims) const;
-	std::vector<unsigned int> 
-	    dim(std::vector<std::vector<unsigned int> > const &dims) const;
+		      std::vector<unsigned int> const &lengths) const;
+	unsigned int length(std::vector<unsigned int> const &args) const;
 	bool isDiscreteValued(std::vector<bool> const &mask) const;
     };
     
