@@ -9,12 +9,12 @@ namespace base {
     {
     }
 
-    double Divide::evaluateScalar(vector <double const *> const &args) const
+    double Divide::evaluate(vector <double const *> const &args) const
     {
 	return *args[0] / *args[1];
     }
 
-    bool Divide::checkScalarValue(vector<double const*> const &args) const
+    bool Divide::checkParameterValue(vector<double const*> const &args) const
     {
 	return *args[1] != 0;
     }
