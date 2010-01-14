@@ -14,38 +14,32 @@ bool lt_doubleptr (double const *arg1, double const *arg2) {
 namespace bugs {
 
     Rank::Rank ()
-	: Function ("rank", 1)
+	: VectorFunction ("rank", 1)
     {
     }
 
     void Rank::evaluate(double *value, vector<double const *> const &args,
-			vector<unsigned int> const &lengths,
-			vector<vector<unsigned int> > const &dims) const
+			vector<unsigned int> const &lengths) const
     {
-	long len = product(dims[0]);
+	int N = lengths[0];
 
 	//Create a vector of pointers to the elements of arg and sort it
-	double const **argptrs = new double const *[len];
-	for (long i = 0; i < len; ++i) {
+	double const **argptrs = new double const *[N];
+	for (int i = 0; i < N; ++i) {
 	    argptrs[i] = args[0] + i;
 	}
-	stable_sort(argptrs, argptrs + len, lt_doubleptr);
+	stable_sort(argptrs, argptrs + N, lt_doubleptr);
 
 	//Ranks can be inferred from the sorted vector of pointers
-	for (long i = 0; i < len; ++i) {
+	for (int i = 0; i < N; ++i) {
 	    value[argptrs[i] - args[0]] = i + 1;
 	}
 	delete [] argptrs;
     }
 
-    vector<unsigned int>  Rank::dim (vector <vector<unsigned int> > const &dims) const
+    unsigned int Rank::length (vector<unsigned int> const &lengths) const
     {
-	return dims[0];
-    }
-
-    bool Rank::checkParameterDim (vector<vector<unsigned int> > const &dims) const
-    {
-	return isVector(dims[0]) || isScalar(dims[0]);
+	return lengths[0];
     }
 
     bool Rank::isDiscreteValued(vector<bool> const &mask) const
