@@ -6,17 +6,18 @@
 #include <map>
 #include <cfloat>
 
-class InverseLinkFunc;
+#include <function/FunctionPtr.h>
+
 class Function;
-class LinkNode;
 class Node;
 class Model;
+class LogicalNode;
 
 /**
  * A "logical pair", consisting of a function and a vector of arguments,
  * uniquely defines a logical node.
  */
-typedef std::pair<Function const*,std::vector<Node const *> > LogicalPair;
+typedef std::pair<FunctionPtr,std::vector<Node const *> > LogicalPair;
 
 /**
  * @short "Less than" operator for LogicalPair objects. 
@@ -64,15 +65,14 @@ public:
      * node will be returned. If a newly allocated node is returned,
      * it is also added to the given Model.
      */
-    Node *getNode(Function const *func, 
+    Node *getNode(FunctionPtr const &func, 
 		  std::vector<Node const*> const &param,
 		  Model &model);
     /**
-     * Get a link node
+     * Returns a newly allocated LogicalNode.
      */
-    Node *getLinkNode(InverseLinkFunc const *link, 
-		      std::vector<Node const *> const &parents,
-		      Model &model);
+    static LogicalNode* newNode(FunctionPtr const &func, 
+				std::vector<Node const *> const &parents);
 };
 
 #endif /* LOGICAL_FACTORY_H_ */
