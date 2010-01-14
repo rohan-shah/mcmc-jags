@@ -2,7 +2,7 @@
 #include "IWLS.h"
 #include <graph/LinkNode.h>
 #include <graph/StochasticNode.h>
-#include <function/InverseLinkFunc.h>
+//#include <function/LinkFunction.h>
 #include <distribution/Distribution.h>
 #include <rng/RNG.h>
 
