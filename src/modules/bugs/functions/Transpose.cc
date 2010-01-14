@@ -7,18 +7,18 @@ using std::vector;
 namespace bugs {
 
     Transpose::Transpose()
-	: Function("t",1)
+	: ArrayFunction("t",1)
     {
     }
 
     void
     Transpose::evaluate (double *value, vector<double const *> const &args,
-			 vector<unsigned int> const &lengths,
 			 vector<vector<unsigned int> > const &dims) const
     {
 	unsigned int nrow = dims[0][0];
 	unsigned int ncol = dims[0].size() == 2 ? dims[0][1] : 1;
-	for (unsigned int i = 0; i < lengths[0]; ++i) {
+	unsigned int length = nrow * ncol;
+	for (unsigned int i = 0; i < length; ++i) {
 	    value[i] = args[0][(i / ncol) + (i % ncol) * nrow];
 	}
     }
