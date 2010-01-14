@@ -1,6 +1,6 @@
 #include <config.h>
 #include <function/FuncTab.h>
-#include <function/InverseLinkFunc.h>
+#include <function/LinkFunction.h>
 
 #include <functional>
 #include <algorithm>
@@ -52,7 +52,7 @@ FunctionPtr const &FuncTab::find(string const &name) const
     return (p == _flist.end()) ? _nullfun : *p;
 }
 
-InverseLinkFunc const * FuncTab::findInverseLink (string const &name) const
+LinkFunction const * FuncTab::findLink (string const &name) const
 {
     FuncList::const_iterator p =
 	find_if(_flist.begin(), _flist.end(), bind2nd(isLinkName(), name));
