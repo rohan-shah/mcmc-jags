@@ -1,7 +1,7 @@
 #ifndef FUNC_INPROD_H_
 #define FUNC_INPROD_H_
 
-#include <function/Function.h>
+#include <function/VectorFunction.h>
 
 namespace bugs {
 
@@ -13,16 +13,13 @@ namespace bugs {
      * y <- inprod(a[],b[])
      * </pre>
      */
-    class InProd : public Function
+    class InProd : public VectorFunction
     {
     public:
 	InProd ();
-	void evaluate (double *value,
-		       std::vector <double const *> const &args,
-		       std::vector<unsigned int> const &lengths,
-		       std::vector<std::vector<unsigned int> > const &dims) 
-	    const;
-	bool checkParameterDim (std::vector <std::vector<unsigned int> > const &dims) const;
+	void evaluate(double *value, std::vector <double const *> const &args,
+		      std::vector<unsigned int> const &lengths) const;
+	bool checkParameterLength (std::vector<unsigned int> const &len) const;
 	bool isDiscreteValued(std::vector<bool> const &mask) const;
 	bool isScale(std::vector<bool> const &mask,
 		     std::vector<bool> const &fix) const;
