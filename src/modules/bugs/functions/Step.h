@@ -1,7 +1,7 @@
 #ifndef FUNC_STEP_H_
 #define FUNC_STEP_H_
 
-#include <function/ScalarFunc.h>
+#include <function/ScalarFunction.h>
 
 namespace bugs {
 
@@ -13,11 +13,11 @@ namespace bugs {
      *     0 if x <  0
      * </pre>
      */
-    class Step : public ScalarFunc
+    class Step : public ScalarFunction
     {
     public:
 	Step ();
-	double evaluateScalar(std::vector <double const *> const &args) const;
+	double evaluate(std::vector <double const *> const &args) const;
 	bool isDiscreteValued(std::vector<bool> const &mask) const;
     };
     

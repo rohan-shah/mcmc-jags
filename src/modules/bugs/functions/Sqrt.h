@@ -1,7 +1,7 @@
 #ifndef FUNC_SQRT_H_
 #define FUNC_SQRT_H_
 
-#include <function/ScalarFunc.h>
+#include <function/ScalarFunction.h>
 
 namespace bugs {
 
@@ -12,11 +12,11 @@ namespace bugs {
      * tau = sigma * sigma; tau > 0
      * </pre>
      */
-    class Sqrt : public ScalarFunc
+    class Sqrt : public ScalarFunction
     {
     public:
 	Sqrt ();
-	double evaluateScalar(std::vector<double const *> const &args) const;
+	double evaluate(std::vector<double const *> const &args) const;
 	bool checkScalarValue(std::vector<double const *> const &args) const;
         bool isPower(std::vector<bool> const &mask,
                      std::vector<bool> const &fix) const;

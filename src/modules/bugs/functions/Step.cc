@@ -6,12 +6,12 @@ using std::vector;
 namespace bugs {
 
     Step::Step ()
-	: ScalarFunc ("step", 1)
+	: ScalarFunction ("step", 1)
     {
     }
 
     double
-    Step::evaluateScalar(vector<double const *> const &args) const
+    Step::evaluate(vector<double const *> const &args) const
     {
 	return *args[0] >= 0 ? 1 : 0;
     }

@@ -1,7 +1,7 @@
 #ifndef FUNC_SUM_H_
 #define FUNC_SUM_H_
 
-#include <function/Function.h>
+#include <function/VectorFunction.h>
 
 namespace bugs {
 
@@ -13,19 +13,16 @@ namespace bugs {
      * y <- sum(x[])
      * </pre>
      */
-    class Sum : public Function
+    class Sum : public VectorFunction
     {
     public:
 	Sum ();
 	void evaluate(double *x, std::vector <double const *> const &args,
-		      std::vector<unsigned int> const &lengths,
-		      std::vector<std::vector<unsigned int> > const &dims) 
-	    const;
-	bool checkParameterDim(std::vector<std::vector<unsigned int> > const &dims)
-	    const;
+		      std::vector<unsigned int> const &lengths) const;
+	bool checkParameterLength(std::vector<unsigned int> const &args) const;
 	bool isDiscreteValued(std::vector<bool> const &mask) const;
 	bool isScale(std::vector<bool> const &mask,
-		      std::vector<bool> const &isfixed) const;
+		     std::vector<bool> const &isfixed) const;
     };
     
 }
