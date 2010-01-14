@@ -7,14 +7,15 @@ using std::vector;
 
 namespace bugs {
 
+    //FIXME: deparse?
+
     MatMult::MatMult()
-	: Function("%*%", 2)
+	: ArrayFunction("%*%", 2)
     {
     }
 
     void 
     MatMult::evaluate (double *value, vector<double const *> const &args,
-		       vector<unsigned int> const &lengths,
 		       vector<vector<unsigned int> > const &dims) const
     {
 	unsigned int d1, d2, d3;

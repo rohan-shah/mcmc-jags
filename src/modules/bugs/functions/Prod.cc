@@ -6,13 +6,12 @@ using std::vector;
 
 namespace bugs {
 
-    Prod::Prod () : Function("prod", 1)
+    Prod::Prod () : VectorFunction("prod", 1)
     {
     }
 
     void Prod::evaluate(double *x, vector <double const *> const &args,
-			vector<unsigned int> const &lengths,
-			vector<vector<unsigned int> > const &dims) const
+			vector<unsigned int> const &lengths) const
     {
 	double value = args[0][0];
 	for (unsigned int i = 1; i < lengths[0]; ++i) {
@@ -21,8 +20,7 @@ namespace bugs {
 	*x = value;
     }
 
-    bool Prod::checkParameterDim (vector<vector<unsigned int> > const &args) 
-	const
+    bool Prod::checkParameterLength (vector<unsigned int> const &args) const
     {
 	return true;
     }

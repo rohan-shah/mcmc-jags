@@ -1,7 +1,7 @@
 #ifndef LOG_DET_H_
 #define LOG_DET_H_
 
-#include <function/Function.h>
+#include <function/ArrayFunction.h>
 
 namespace bugs {
 
@@ -15,15 +15,16 @@ namespace bugs {
      * y <- log|x| for x an n x n symmetric positive definite matrix
      * </pre>
      */
-    class LogDet : public Function
+    class LogDet : public ArrayFunction
     {
     public:
 	LogDet ();
 	void evaluate(double *x, std::vector<double const *> const &args,
-		      std::vector<unsigned int> const &lengths,
 		      std::vector<std::vector<unsigned int> > const &dims) 
 	    const;
 	bool checkParameterDim(std::vector<std::vector<unsigned int> > const &dims) const;
+	std::vector<unsigned int>
+	    dim(std::vector<std::vector<unsigned int> > const &dims) const;
     };
 
 }

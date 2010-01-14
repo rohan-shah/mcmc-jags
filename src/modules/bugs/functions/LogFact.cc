@@ -8,11 +8,11 @@ using std::vector;
 namespace bugs {
 
     LogFact::LogFact ()
-	: ScalarFunc ("logfact", 1)
+	: ScalarFunction ("logfact", 1)
     {
     }
 
-    double LogFact::evaluateScalar(vector<double const *> const &args) const
+    double LogFact::evaluate(vector<double const *> const &args) const
     {
 	return lgammafn(*args[0] + 1);
     }

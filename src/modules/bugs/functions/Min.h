@@ -1,7 +1,7 @@
 #ifndef FUNC_MIN_H_
 #define FUNC_MIN_H_
 
-#include <function/Function.h>
+#include <function/VectorFunction.h>
 
 namespace bugs {
 
@@ -9,18 +9,15 @@ namespace bugs {
      * @short Minimum element of a vector
      * @see Max
      */
-    class Min: public Function
+    class Min: public VectorFunction
     {
     public:
 	Min ();
-	void evaluate(double *x, std::vector<double const *> const &args,
-		      std::vector<unsigned int> const &lengths,
-		      std::vector<std::vector<unsigned int> > const &dims) 
-	    const;
-	bool checkParameterDim(std::vector<std::vector<unsigned int> > const &dims)
-	    const;
+	void evaluate(double *x, std::vector <double const *> const &args,
+		      std::vector<unsigned int> const &lengths) const;
+	bool checkParameterLength (std::vector<unsigned int> const &len) const;
 	/** Returns true if all arguments are true */
-	bool isDiscreteValued(std::vector<bool> const &mask) const;  
+	bool isDiscreteValued(std::vector<bool> const &mask) const;
     };
 }
 

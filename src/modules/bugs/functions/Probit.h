@@ -1,7 +1,7 @@
 #ifndef FUNC_PROBIT_H_
 #define FUNC_PROBIT_H_
 
-#include <function/ScalarFunc.h>
+#include <function/ScalarFunction.h>
 
 namespace bugs {
 
@@ -13,11 +13,11 @@ namespace bugs {
      * Prob(Y < y) = p for Y ~ N(0,1); 0 < p < 1
      * </pre>
      */
-    class Probit : public ScalarFunc
+    class Probit : public ScalarFunction
     {
     public:
 	Probit ();
-	double evaluateScalar(std::vector<double const *> const &args) const;
+	double evaluate(std::vector<double const *> const &args) const;
 	bool checkScalarValue(std::vector<double const *> const &args) const;
     };
 

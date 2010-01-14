@@ -1,7 +1,7 @@
 #ifndef FUNC_LOGFACT_H_
 #define FUNC_LOGFACT_H_
 
-#include <function/ScalarFunc.h>
+#include <function/ScalarFunction.h>
 
 namespace bugs {
 
@@ -14,11 +14,11 @@ namespace bugs {
      *   = log(gamma(x + 1)) for x > -1
      * </pre>
      */
-    class LogFact : public ScalarFunc
+    class LogFact : public ScalarFunction
     {
     public:
 	LogFact ();
-	double evaluateScalar(std::vector<double const *> const &args) const;
+	double evaluate(std::vector<double const *> const &args) const;
 	bool checkScalarValue(std::vector<double const *> const &args) const;
     };
 

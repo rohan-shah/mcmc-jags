@@ -8,11 +8,11 @@ using std::log;
 
 namespace bugs {
 
-    Logit::Logit ():ScalarFunc ("logit", 1)
+    Logit::Logit ():ScalarFunction ("logit", 1)
     {
     }
 
-    double Logit::evaluateScalar(vector <double const *> const &args) const
+    double Logit::evaluate(vector <double const *> const &args) const
     {
 	double arg = *args[0];
 	return log(arg) - log(1 - arg);

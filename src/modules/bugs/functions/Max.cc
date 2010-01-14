@@ -11,13 +11,12 @@ using std::max;
 namespace bugs {
 
     Max::Max ()
-	: Function("max", 0)
+	: VectorFunction("max", 0)
     {
     }
 
     void Max::evaluate(double *value,  vector<double const *> const &args,
-		       vector<unsigned int> const &lengths,
-		       vector<vector<unsigned int> > const &dims) const
+		       vector<unsigned int> const &lengths) const
     {
 	double ans = *max_element(args[0], args[0] + lengths[0]);
 	for (unsigned int i = 1; i < args.size(); ++i) {
@@ -27,8 +26,7 @@ namespace bugs {
 	*value = ans;
     }
 
-    bool 
-    Max::checkParameterDim (vector<vector<unsigned int> > const &dims) const
+    bool Max::checkParameterLength (vector<unsigned int> const &lengths) const
     {
 	return true;
     }

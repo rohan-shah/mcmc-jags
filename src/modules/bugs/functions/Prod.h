@@ -1,7 +1,7 @@
 #ifndef FUNC_PROD_H_
 #define FUNC_PROD_H_
 
-#include <function/Function.h>
+#include <function/VectorFunction.h>
 
 namespace bugs {
 
@@ -13,16 +13,13 @@ namespace bugs {
      * y <- prod(x[])
      * </pre>
      */
-    class Prod : public Function
+    class Prod : public VectorFunction
     {
     public:
 	Prod ();
 	void evaluate(double *x, std::vector <double const *> const &args,
-		      std::vector<unsigned int> const &lengths,
-		      std::vector<std::vector<unsigned int> > const &dims)
-	    const;
-	bool checkParameterDim(std::vector<std::vector<unsigned int> > const &dims)
-	    const;
+		      std::vector<unsigned int> const &lengths) const;
+	bool checkParameterLength(std::vector<unsigned int> const &len) const;
 	bool isDiscreteValued(std::vector<bool> const &mask) const;
     };
 

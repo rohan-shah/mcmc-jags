@@ -1,7 +1,7 @@
 #ifndef FUNC_LOGIT_H_
 #define FUNC_LOGIT_H_
 
-#include <function/ScalarFunc.h>
+#include <function/ScalarFunction.h>
 
 namespace bugs {
 
@@ -13,11 +13,11 @@ namespace bugs {
      * y = log(p/(1-p)) for 0 < p < 1
      * </pre>
      */
-    class Logit:public ScalarFunc
+    class Logit:public ScalarFunction
     {
     public:
 	Logit();
-	double evaluateScalar(std::vector <double const *> const &args) const;
+	double evaluate(std::vector <double const *> const &args) const;
 	bool checkScalarValue(std::vector<double const *> const &args) const;
     };
 

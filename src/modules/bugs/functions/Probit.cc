@@ -8,11 +8,11 @@ using std::vector;
 namespace bugs {
 
     Probit::Probit ()
-	: ScalarFunc ("probit", 1)
+	: ScalarFunction ("probit", 1)
     {
     }
 
-    double Probit::evaluateScalar(vector<double const *> const &args) const
+    double Probit::evaluate(vector<double const *> const &args) const
     {
 	return qnorm (*args[0], 0, 1, 1, 0);
     }

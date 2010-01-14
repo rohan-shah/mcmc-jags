@@ -11,13 +11,12 @@ using std::vector;
 namespace bugs {
 
     Min::Min ()
-	: Function ("min", 0)
+	: VectorFunction ("min", 0)
     {
     }
 
     void Min::evaluate(double *value,  vector<double const *> const &args,
-		       vector<unsigned int> const &lengths,
-		       vector<vector<unsigned int> > const &dims) const
+		       vector<unsigned int> const &lengths) const
     {
 	double ans = *min_element(args[0], args[0] + lengths[0]);
 	for (unsigned int i = 1; i < args.size(); ++i) {
@@ -27,7 +26,7 @@ namespace bugs {
 	*value = ans;
     }
 
-    bool Min::checkParameterDim (vector<vector<unsigned int> > const &dims) const
+    bool Min::checkParameterLength (vector<unsigned int> const &args) const
     {
 	return true;
     }

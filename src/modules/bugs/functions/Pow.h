@@ -1,7 +1,7 @@
 #ifndef FUNC_POW_H_
 #define FUNC_POW_H_
 
-#include <function/ScalarFunc.h>
+#include <function/ScalarFunction.h>
 
 namespace bugs {
 
@@ -13,11 +13,11 @@ namespace bugs {
      * y = x^z
      * </pre>
      */
-    class Pow : public ScalarFunc
+    class Pow : public ScalarFunction
     {
     public:
 	Pow ();
-	double evaluateScalar(std::vector<double const *> const &args) const;
+	double evaluate(std::vector<double const *> const &args) const;
 	bool checkScalarValue(std::vector<double const*> const &args) const;
 	bool isPower(std::vector<bool> const &mask, 
 		     std::vector<bool> const &fix) const;
