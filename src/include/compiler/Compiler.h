@@ -5,6 +5,7 @@
 #include <compiler/ConstantFactory.h>
 #include <compiler/MixtureFactory.h>
 #include <compiler/CounterTab.h>
+#include <compiler/ObsFuncTab.h>
 #include <distribution/DistTab.h>
 #include <function/FuncTab.h>
 #include <model/BUGSModel.h>
@@ -111,6 +112,11 @@ public:
    * @see Module
    */
   static DistTab &distTab();
+  /**
+   * The table for observalbe functions used by the compiler to substitute
+   * a logical node for a stochastic node when required
+   */
+  static ObsFuncTab &obsFuncTab();
   MixtureFactory &mixtureFactory1();
   MixtureFactory &mixtureFactory2();
 };
