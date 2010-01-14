@@ -1,11 +1,10 @@
 #ifndef INVERSE_LINK_FUNC_H_
 #define INVERSE_LINK_FUNC_H_
 
-#include <string>
-#include <function/ScalarFunc.h>
+#include <function/Function.h>
 
 /**
- * @short Base class for inverse link functions.
+ * @short Inverse link functions.
  *
  * An inverse link function is a continuous differentiable scalar function
  * with range (-Inf,Inf).
@@ -16,30 +15,24 @@
  * In this case, the name of the inverse link function is "exp"
  * and its link name is "log".
  */
-class InverseLinkFunc : public ScalarFunc
+class InverseLinkFunc : public Function
 {
     const std::string _link;
 public:
     /**
      * Constructor
-     * 
      * @param name Function name
-     * 
      * @param link Name used by replacement-function notation.
      */
     InverseLinkFunc (std::string const &name, std::string const &link);
-    /**
-     * Returns the name of the link function
-     */
+    /** Returns the name of the link function */
     std::string const &linkName () const;
-    /**Inverse of link function */
+    /** Inverse of link function */
     virtual double inverseLink(double eta) const = 0;
     /** Link function */
     virtual double link(double mu) const = 0;
     /** Gradient of the inverse link function */
     virtual double grad(double eta) const = 0;
-    /** Calls inverseLink */
-    double evaluateScalar(std::vector <double const *> const &args) const;
 };
 
 #endif /* INVERSE_LINK_FUNC_H_ */

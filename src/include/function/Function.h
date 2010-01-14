@@ -37,68 +37,17 @@ public:
      */
     std::string const &name () const;
     /**
-     * Evaluates the function. 
-     *
-     * @param value array of doubles which contains the result of
-     * the evaluation 
-     * @param args Vector of arguments. 
-     * @param lengths Respective lengths hof each element of args.
-     * @param dims Respective dimensions of each element of args.
-     */
-    virtual void
-	evaluate(double *value, 
-		 std::vector<double const *> const &args,
-		 std::vector<unsigned int> const &lengths,
-		 std::vector<std::vector<unsigned int> > const &dims) const = 0;
-    /**
      * Checks that a vector of parameters of length npar is consistent
      * with the function.
      */
-    bool checkParameterLength(unsigned int npar) const;
+    bool checkNPar(unsigned int npar) const;
     /**
-     * Checks whether dimensions of the function parameters are correct.  
-     *
-     * @param dims Vector of length npar denoting the dimensions of
-     * the parameters, with any redundant dimensions dropped.
-     */
-    virtual bool
-	checkParameterDim(std::vector<std::vector<unsigned int> > const &dims) 
-	const = 0;
-    /**
-     * Checks whether the parameter values lie in the domain of the
-     * function.  
-     *
-     * Since many functions do not need to check their parameter
-     * values, a default method is provided which always returns
-     * true.
-     */
-    virtual bool
-	checkParameterValue(std::vector <double const *> const &args,
-			    std::vector <unsigned int> const &lengths,
-                            std::vector<std::vector<unsigned int> > const &dims) 
-        const;
-    /**
-     * Calculates what the dimension of the return value should be,
-     * based on the dimensions of the arguments. The dimension of the
-     * return value cannot depend on the value of any of the arguments,
-     * only their dimensions.
-     *
-     * This is a virtual function. The default implementation assumes
-     * that the function is scalar-valued.
-     *
-     * @param dims Vector of Indices denoting the dimensions of the 
-     * parameters. This vector must return true when passed to
-     * checkParameterDim.
-     */
-    virtual std::vector<unsigned int> 
-	dim(std::vector <std::vector<unsigned int> > const &dims) const;
-    /**
-     * Returns true if the function returns integer values. The default
-     * implementation returns false, so any function that can return
+     * Returns true if the function returns integer values. The
+     * default implementation returns false. A function that returns
      * integer values will need to overload this.
      *
      * @param mask Vector indicating whether parameters are discrete
-     * or not. 
+     * or not.
      *
      * @see SArray#isDiscreteValued
      */
