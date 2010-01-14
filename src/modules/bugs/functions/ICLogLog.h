@@ -1,7 +1,7 @@
 #ifndef FUNC_ICLOGLOG_H_
 #define FUNC_ICLOGLOG_H_
 
-#include <function/InverseLinkFunc.h>
+#include <function/LinkFunction.h>
 
 namespace bugs {
 
@@ -13,7 +13,7 @@ namespace bugs {
      * y <- icloglog(a + b*x)
      * </pre>
      */
-    class ICLogLog : public InverseLinkFunc
+    class ICLogLog : public LinkFunction
     {
     public:
 	ICLogLog ();

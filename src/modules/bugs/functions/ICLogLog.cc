@@ -9,7 +9,7 @@ using std::exp;
 
 namespace bugs {
 
-    ICLogLog::ICLogLog(): InverseLinkFunc("icloglog", "cloglog")
+    ICLogLog::ICLogLog(): LinkFunction("icloglog", "cloglog")
     {
     }
 

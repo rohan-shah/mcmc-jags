@@ -1,7 +1,7 @@
 #ifndef FUNC_PHI_H_
 #define FUNC_PHI_H_
 
-#include <function/InverseLinkFunc.h>
+#include <function/LinkFunction.h>
 
 namespace bugs {
 
@@ -14,7 +14,7 @@ namespace bugs {
      * p = Prob(X < x) where X ~ N(0,1)
      * </pre>
      */
-    class Phi : public InverseLinkFunc
+    class Phi : public LinkFunction
     {
     public:
 	Phi ();

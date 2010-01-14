@@ -1,7 +1,7 @@
 #ifndef FUNC_ILOGIT_H_
 #define FUNC_ILOGIT_H_
 
-#include <function/InverseLinkFunc.h>
+#include <function/LinkFunction.h>
 
 namespace bugs {
 
@@ -14,7 +14,7 @@ namespace bugs {
      * y = 1/(1 + exp(-a - b*x))
      * </pre>
      */
-    class ILogit:public InverseLinkFunc
+    class ILogit:public LinkFunction
     {
     public:
 	ILogit ();

@@ -7,7 +7,7 @@ using std::vector;
 
 namespace bugs {
 
-    Phi::Phi () : InverseLinkFunc ("phi", "probit")
+    Phi::Phi () : LinkFunction ("phi", "probit")
     {
     }
 

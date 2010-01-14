@@ -10,7 +10,7 @@ using std::log;
 namespace bugs {
 
     Exp::Exp ()
-	: InverseLinkFunc ("exp", "log")
+	: LinkFunction ("exp", "log")
     {
     }
 

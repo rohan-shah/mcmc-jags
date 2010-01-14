@@ -11,7 +11,7 @@ using std::log;
 namespace bugs {
 
     ILogit::ILogit ()
-	: InverseLinkFunc ("ilogit", "logit")
+	: LinkFunction ("ilogit", "logit")
     {
     }
 
