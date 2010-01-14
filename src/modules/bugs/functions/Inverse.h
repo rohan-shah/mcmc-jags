@@ -1,7 +1,7 @@
 #ifndef INVERSE_H_
 #define INVERSE_H_
 
-#include <function/Function.h>
+#include <function/ArrayFunction.h>
 
 namespace bugs {
 
@@ -11,12 +11,11 @@ namespace bugs {
      * y[,] <- inverse(x[,])
      * </pre>
      */
-    class Inverse:public Function
+    class Inverse: public ArrayFunction
     {
     public:
 	Inverse ();
 	void evaluate (double *value, std::vector <double const *> const &args,
-		       std::vector<unsigned int> const &lengths,
 		       std::vector<std::vector<unsigned int> > const &dims) 
 	    const;
 	std::vector<unsigned int> 

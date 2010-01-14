@@ -9,11 +9,11 @@ using std::log;
 namespace bugs {
 
     Log::Log ()
-	: ScalarFunc ("log", 1)
+	: ScalarFunction ("log", 1)
     {
     }
 
-    double Log::evaluateScalar(vector<double const *> const &args) const
+    double Log::evaluate(vector<double const *> const &args) const
     {
 	return log(*args[0]);
     }
