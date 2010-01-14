@@ -10,7 +10,6 @@
 #include <graph/StochasticNode.h>
 #include <graph/LinkNode.h>
 #include <distribution/Distribution.h>
-#include <function/InverseLinkFunc.h>
 
 using std::string;
 using std::vector;
@@ -26,7 +25,7 @@ namespace glm {
     {
 	string linkname;
 	if (lnode) {
-	    linkname = lnode->link()->linkName();
+	    linkname = lnode->linkName();
 	}
 
 	switch(GLMMethod::getFamily(snode)) {
