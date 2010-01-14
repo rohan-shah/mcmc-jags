@@ -8,7 +8,6 @@
 
 #include <graph/LinkNode.h>
 #include <graph/StochasticNode.h>
-#include <function/InverseLinkFunc.h>
 
 #include <stdexcept>
 
@@ -27,7 +26,7 @@ static bool checkOutcome(StochasticNode const *snode)
     LinkNode const *lnode = dynamic_cast<LinkNode const*>(snode->parents()[0]);
     string ln;
     if (lnode) {
-	ln = lnode->link()->linkName();
+	ln = lnode->linkName();
     }
 
 

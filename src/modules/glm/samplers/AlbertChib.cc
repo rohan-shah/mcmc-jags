@@ -5,7 +5,6 @@
 
 #include <graph/StochasticNode.h>
 #include <graph/LinkNode.h>
-#include <function/InverseLinkFunc.h>
 #include <sampler/GraphView.h>
 #include <rng/TruncatedNormal.h>
 #include <rng/RNG.h>
