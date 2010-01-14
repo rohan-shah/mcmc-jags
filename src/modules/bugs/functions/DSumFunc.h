@@ -1,17 +1,17 @@
 #ifndef DSUM_FUNC_H_
 #define DSUM_FUNC_H_
 
-#include <function/ScalarFunc.h>
+#include <function/ScalarFunction.h>
 
 namespace bugs {
     
     /**
      * @short Sum of two discrete random variables
      */
-    class DSumFunc : public ScalarFunc {
+    class DSumFunc : public ScalarFunction {
     public:
 	DSumFunc();
-	double evaluateScalar(std::vector <double const *> const &args) const;
+	double evaluate(std::vector <double const *> const &args) const;
     };
     
 }
