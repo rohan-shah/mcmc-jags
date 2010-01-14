@@ -8,11 +8,11 @@ using std::fabs;
 
 namespace bugs {
 
-    Abs::Abs ():ScalarFunc ("abs", 1)
+    Abs::Abs ():ScalarFunction ("abs", 1)
     {
     }
 
-    double Abs::evaluateScalar(vector<double const *> const &args) const
+    double Abs::evaluate(vector<double const *> const &args) const
     {
 	return fabs(*args[0]);
     }

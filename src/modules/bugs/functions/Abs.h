@@ -1,7 +1,7 @@
 #ifndef FUNC_ABS_H_
 #define FUNC_ABS_H_
 
-#include <function/ScalarFunc.h>
+#include <function/ScalarFunction.h>
 
 namespace bugs {
 
@@ -13,11 +13,11 @@ namespace bugs {
      * y = -1; x < 0
      * </pre>
      */
-    class Abs: public ScalarFunc
+    class Abs: public ScalarFunction
     {
     public:
 	Abs ();
-	double evaluateScalar(std::vector<double const *> const &args) const;
+	double evaluate(std::vector<double const *> const &args) const;
 	bool isDiscreteValued(std::vector<bool> const &mask) const;
     };
 

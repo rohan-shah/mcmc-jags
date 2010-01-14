@@ -1,7 +1,7 @@
 #ifndef FUNC_COS_H_
 #define FUNC_COS_H_
 
-#include <function/ScalarFunc.h>
+#include <function/ScalarFunction.h>
 
 namespace bugs {
 
@@ -12,11 +12,11 @@ namespace bugs {
      * y <- cos(x)
      * </pre>
      */
-    class Cos : public ScalarFunc
+    class Cos : public ScalarFunction
     {
     public:
 	Cos ();
-	double evaluateScalar(std::vector<double const *> const &args) const;
+	double evaluate(std::vector<double const *> const &args) const;
     };
 
 }

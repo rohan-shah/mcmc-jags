@@ -8,11 +8,11 @@ using std::log;
 
 namespace bugs {
 
-    CLogLog::CLogLog ():ScalarFunc ("cloglog", 1)
+    CLogLog::CLogLog ():ScalarFunction ("cloglog", 1)
     {
     }
 
-    double CLogLog::evaluateScalar(vector<double const *> const &args) const
+    double CLogLog::evaluate(vector<double const *> const &args) const
     {
 	return log(-log(1 - *args[0]));
     }

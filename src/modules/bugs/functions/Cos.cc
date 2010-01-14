@@ -9,11 +9,11 @@ using std::cos;
 namespace bugs {
 
     Cos::Cos ()
-	: ScalarFunc ("cos", 1)
+	: ScalarFunction ("cos", 1)
     {
     }
 
-    double Cos::evaluateScalar(vector<double const *> const &args) const
+    double Cos::evaluate(vector<double const *> const &args) const
     {
 	return cos(*args[0]);
     }

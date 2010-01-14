@@ -13,8 +13,8 @@ class Pow : public Infix
 {
 public:
     Pow ();
-    double evaluateScalar(std::vector<double const *> const &args) const;
-    bool checkScalarValue(std::vector<double const*> const &args) const;
+    double evaluate(std::vector<double const *> const &args) const;
+    bool checkParameterValue(std::vector<double const*> const &args) const;
     bool isPower(std::vector<bool> const &mask, 
 		 std::vector<bool> const &fix) const;
 };
