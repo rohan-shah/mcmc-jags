@@ -1,7 +1,7 @@
 #ifndef LINK__NODE_H_
 #define LINK__NODE_H_
 
-#include <graph/DeterministicNode.h>
+#include <graph/LogicalNode.h>
 #include <vector>
 
 class InverseLinkFunc;
@@ -9,16 +9,15 @@ class InverseLinkFunc;
 /**
  * @short Scalar Node representing link function from a GLM 
  */
-class LinkNode : public DeterministicNode {
+class LinkNode : public LogicalNode {
     InverseLinkFunc const * const _func;
-    double const * _parameters;
 public:
     /**
      * A link node is defined by an inverse link function and a single
      * parent node, which must be scalar
      */
-    LinkNode(InverseLinkFunc const *func,
-             std::vector<Node const *> const &parameters);
+    LinkNode(InverseLinkFunc const *func, 
+	     std::vector<Node const *> const &parents);
     /**
      * Returns the link function
      */
@@ -38,18 +37,10 @@ public:
     double eta(unsigned int chain) const;
     /**
      * Returns the gradient of the inverse link function
-     * @see InverseLinkFunc##grad
+     * @see InverseLinkFunc#grad
      */
     double grad(unsigned int chain) const;
-    /**
-     * Link nodes are not closed
-     */
-    bool isClosed(std::set<Node const *> const &ancestors, 
-		  ClosedFuncClass fc, bool fixed) const;
-    std::string deparse(std::vector<std::string> const &) const;
     Node *clone(std::vector<Node const *> const &parents) const;
-    /** Linknodes are never discrete valued */
-    bool isDiscreteValued() const;
 };
 
 #endif /* LINK_NODE_H_ */
