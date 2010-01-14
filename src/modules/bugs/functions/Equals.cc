@@ -9,11 +9,11 @@ using std::fabs;
 
 namespace bugs {
 
-    Equals::Equals () : ScalarFunc ("equals",2)
+    Equals::Equals () : ScalarFunction ("equals",2)
     {
     }
 
-    double Equals::evaluateScalar(vector<double const *> const &args) const
+    double Equals::evaluate(vector<double const *> const &args) const
     {
 	return fabs(*args[0] - *args[1]) < 16 *DBL_EPSILON;
     }
