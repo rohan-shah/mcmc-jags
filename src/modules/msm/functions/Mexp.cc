@@ -10,12 +10,11 @@ using std::vector;
 namespace msm {
 
 Mexp::Mexp()
-    : Function("mexp",1)
+    : ArrayFunction("mexp",1)
 {
 }
 
 void Mexp::evaluate (double *value, vector<double const *> const &args,
-		     vector<unsigned int> const &lengths,
                      vector<vector<unsigned int> > const &dims) const
 {
     MatrixExpPade(value, args[0], dims[0][0], 1);

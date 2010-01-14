@@ -1,16 +1,15 @@
 #ifndef MEXP_H_
 #define MEXP_H_
 
-#include <function/Function.h>
+#include <function/ArrayFunction.h>
 
 namespace msm {
 
-class Mexp : public Function
+class Mexp : public ArrayFunction
 {
 public:
     Mexp();
     void evaluate (double *value, std::vector<double const *> const &args,
-		   std::vector<unsigned int> const &lengths,
 		   std::vector<std::vector<unsigned int> > const &dims) const;
     std::vector<unsigned int> 
 	dim(std::vector<std::vector<unsigned int> > const &dims) const;

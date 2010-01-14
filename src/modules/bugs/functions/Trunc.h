@@ -1,7 +1,7 @@
 #ifndef FUNC_TRUNC_H_
 #define FUNC_TRUNC_H_
 
-#include <function/ScalarFunc.h>
+#include <function/ScalarFunction.h>
 
 namespace bugs {
 
@@ -11,11 +11,11 @@ namespace bugs {
  * y <- trunc(x)
  * </pre>
  */
-    class Trunc : public ScalarFunc
+    class Trunc : public ScalarFunction
     {
     public:
 	Trunc ();
-	double evaluateScalar(std::vector<double const *> const &args) const;
+	double evaluate(std::vector<double const *> const &args) const;
 	bool isDiscreteValued(std::vector<bool> const &mask) const;
     };
 
