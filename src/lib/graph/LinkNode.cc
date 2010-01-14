@@ -1,6 +1,6 @@
 #include <config.h>
 #include <graph/LinkNode.h>
-#include <function/InverseLinkFunc.h>
+#include <function/LinkFunction.h>
 #include <util/dim.h>
 
 #include <stdexcept>
@@ -16,7 +16,7 @@ using std::set;
 using std::logic_error;
 using std::runtime_error;
 
-LinkNode::LinkNode(InverseLinkFunc const *function, 
+LinkNode::LinkNode(LinkFunction const *function, 
 		   vector<Node const *> const &parents)
     : LogicalNode(vector<unsigned int>(1,1), parents, function), 
       _func(function)
@@ -42,11 +42,6 @@ bool LinkNode::checkParentValues(unsigned int chain) const
 {
     return true;
 }
-
-InverseLinkFunc const * LinkNode::link() const
-{
-    return _func;
-}
    
 Node *LinkNode::clone(vector<Node const *> const &parents) const
 {
@@ -61,4 +56,9 @@ double LinkNode::eta(unsigned int chain) const
 double LinkNode::grad(unsigned int chain) const
 {
     return _func->grad(*_parameters[chain][0]);
+}
+
+string const &LinkNode::linkName() const
+{
+    return _func->linkName();
 }
