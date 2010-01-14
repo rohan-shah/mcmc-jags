@@ -12,7 +12,7 @@ GreaterThan::GreaterThan () : Infix (">")
 {
 }
 
-double GreaterThan::evaluateScalar(vector<double const *> const &args) const
+double GreaterThan::evaluate(vector<double const *> const &args) const
 {
   return *args[0] > *args[1];
 }
