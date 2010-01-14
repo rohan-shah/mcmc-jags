@@ -11,7 +11,7 @@ namespace base {
     }
 
     double
-    Multiply::evaluateScalar(vector<double const *>const &args) const
+    Multiply::evaluate(vector<double const *>const &args) const
     {
 	double val = *args[0];
 	/* We adopt the convention that any argument multiplied by zero

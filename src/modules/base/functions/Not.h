@@ -1,7 +1,7 @@
 #ifndef FUNC_NOT_H_
 #define FUNC_NOT_H_
 
-#include <function/ScalarFunc.h>
+#include <function/ScalarFunction.h>
 
 namespace base {
 
@@ -10,11 +10,11 @@ namespace base {
  * UnaryMinus implements the prefix operator "-"
  * y <- -x
  */
-class Not : public ScalarFunc 
+class Not : public ScalarFunction
 {
 public:
     Not ();
-    double evaluateScalar(std::vector<double const *> const &args) const;
+    double evaluate(std::vector<double const *> const &args) const;
     bool isDiscreteValued(std::vector<bool> const &mask) const;
     std::string deparse(std::vector<std::string> const &par) const;
 };

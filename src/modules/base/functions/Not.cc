@@ -6,11 +6,11 @@ using std::string;
 
 namespace base {
 
-Not::Not () : ScalarFunc ("!", 1)
+Not::Not () : ScalarFunction ("!", 1)
 {
 }
 
-double Not::evaluateScalar(vector<double const*> const &args) const
+double Not::evaluate(vector<double const*> const &args) const
 {
     return *args[0] != 0;
 }

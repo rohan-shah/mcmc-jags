@@ -1,7 +1,7 @@
 #ifndef FUNC_NEG_H_
 #define FUNC_NEG_H_
 
-#include <function/ScalarFunc.h>
+#include <function/ScalarFunction.h>
 
 namespace base {
 
@@ -10,11 +10,11 @@ namespace base {
  * UnaryMinus implements the prefix operator "-"
  * y <- -x
  */
-class Neg : public ScalarFunc 
+class Neg : public ScalarFunction
 {
 public:
     Neg ();
-    double evaluateScalar(std::vector<double const *> const &args) const;
+    double evaluate(std::vector<double const *> const &args) const;
     bool isDiscreteValued(std::vector<bool> const &mask) const;
     bool isScale(std::vector<bool> const &mask, 
 		 std::vector<bool> const &fix) const;

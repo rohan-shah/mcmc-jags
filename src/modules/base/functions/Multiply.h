@@ -16,7 +16,7 @@ namespace base {
     {
     public:
 	Multiply ();
-	double evaluateScalar(std::vector<double const *> const &args) const;
+	double evaluate(std::vector<double const *> const &args) const;
 	bool isDiscreteValued(std::vector<bool> const &mask) const;
 	bool isScale(std::vector<bool> const &mask,
 		     std::vector<bool> const &fixmask) const;
