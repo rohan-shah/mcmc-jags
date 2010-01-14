@@ -6,6 +6,7 @@ libcompiler_la_CPPFLAGS = -I$(top_srcdir)/src/include
 
 libcompiler_la_SOURCES = parser.yy scanner.ll Compiler.cc		\
 LogicalFactory.cc ParseTree.cc Counter.cc CounterTab.cc			\
-ConstantFactory.cc MixtureFactory.cc MixCompiler.cc NodeFactory.cc
+ConstantFactory.cc MixtureFactory.cc MixCompiler.cc NodeFactory.cc	\
+ObsFuncTab.cc
 
 noinst_HEADERS = parser.h parser_extra.h remap.h MixCompiler.h
