@@ -17,7 +17,7 @@ class GreaterOrEqual:public Infix
 {
 public:
     GreaterOrEqual ();
-    double evaluateScalar(std::vector<double const *> const &args) const;
+    double evaluate(std::vector<double const *> const &args) const;
     /** Returns true */
     bool isDiscreteValued(std::vector<bool> const &mask) const;
 };
