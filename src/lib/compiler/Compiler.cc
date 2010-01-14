@@ -539,7 +539,7 @@ Node * Compiler::getParameter(ParseTree const *t)
 	break;
     case P_LINK:
 	if (getParameterVector(t, parents)) {
-	    InverseLinkFunc const *link = funcTab().findInverseLink(t->name());
+	    LinkFunction const *link = funcTab().findLink(t->name());
 	    if (!link) {
 		CompileError(t, "Unknown link function:", t->name());
 	    }

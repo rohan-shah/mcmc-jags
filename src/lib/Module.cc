@@ -1,12 +1,6 @@
 #include <config.h>
 #include <Module.h>
 #include <compiler/Compiler.h>
-/*
-#include <function/InverseLinkFunc.h>
-#include <function/ScalarFunc.h>
-#include <function/VectorFunc.h>
-#include <function/ArrayFunc.h>
-*/
 #include <model/Model.h>
 #include <algorithm>
 #include <Console.h>
@@ -37,7 +31,7 @@ void Module::insert(ScalarFunction *func)
     _fp_list.push_back(FunctionPtr(func));
 }
 
-void Module::insert(InverseLinkFunc *func)
+void Module::insert(LinkFunction *func)
 {
     _functions.push_back(func);
     _fp_list.push_back(FunctionPtr(func));
@@ -70,7 +64,7 @@ void Module::insert(Distribution *dist, ScalarFunction *func)
     insert(func);
 }
 
-void Module::insert(Distribution *dist, InverseLinkFunc *func)
+void Module::insert(Distribution *dist, LinkFunction *func)
 {
     _obs_functions.push_back(pair<Distribution*,FunctionPtr>(dist,func));
     insert(dist);
