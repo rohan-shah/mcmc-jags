@@ -9,7 +9,7 @@ And::And () : Infix ("&&")
 {
 }
 
-double And::evaluateScalar(vector <double const *> const &args) const
+double And::evaluate(vector <double const *> const &args) const
 {
   return *args[0] && *args[1];
 }
