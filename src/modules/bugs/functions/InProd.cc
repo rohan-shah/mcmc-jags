@@ -6,16 +6,15 @@ using std::vector;
 
 namespace bugs {
 
-    InProd::InProd () : Function ("inprod", 2)
+    InProd::InProd () : VectorFunction ("inprod", 2)
     {
     }
 
     void InProd::evaluate(double *x, vector<double const *> const &args,
-			  vector<unsigned int> const &lengths,
-			  vector<vector<unsigned int> > const &dims) const
+			  vector<unsigned int> const &lengths) const
     {
 	double svalue = 0;
-	for (long i = 0; i < lengths[0]; i++)
+	for (unsigned int i = 0; i < lengths[0]; i++)
 	{
 	    svalue += args[0][i] * args[1][i];
 	}
@@ -23,9 +22,9 @@ namespace bugs {
     }
 
     bool 
-    InProd::checkParameterDim (vector<vector<unsigned int> > const &dims) const
+    InProd::checkParameterLength (vector<unsigned int> const &lengths) const
     {
-	return (dims[0] == dims[1]);
+	return (lengths[0] == lengths[1]);
     }
 
     bool InProd::isDiscreteValued(std::vector<bool> const &mask) const
