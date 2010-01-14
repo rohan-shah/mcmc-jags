@@ -4,7 +4,6 @@
 
 #include <graph/StochasticNode.h>
 #include <graph/LinkNode.h>
-#include <function/InverseLinkFunc.h>
 #include <sampler/GraphView.h>
 #include <rng/TruncatedNormal.h>
 #include <rng/RNG.h>
@@ -34,10 +33,10 @@ static BGLMOutcome getOutcome(StochasticNode const *snode)
 	if (!lnode) {
 	    throw logic_error("No link in Holmesheld");
 	}
-	else if (lnode->link()->linkName() == "probit") {
+	else if (lnode->linkName() == "probit") {
 	    return BGLM_PROBIT;
 	}
-	else if (lnode->link()->linkName() == "logit") {
+	else if (lnode->linkName() == "logit") {
 	    return BGLM_LOGIT;
 	}
 	else {
