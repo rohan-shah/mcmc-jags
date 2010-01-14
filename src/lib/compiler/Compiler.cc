@@ -2,13 +2,17 @@
 
 #include <compiler/Compiler.h>
 #include <compiler/ParseTree.h>
-#include <graph/LogicalNode.h>
+#include <graph/ScalarLogicalNode.h>
+#include <graph/VectorLogicalNode.h>
+#include <graph/ArrayLogicalNode.h>
+#include <graph/LinkNode.h>
 #include <graph/ConstantNode.h>
 #include <graph/StochasticNode.h>
 #include <graph/DevianceNode.h>
 #include <graph/AggNode.h>
 #include <graph/NodeError.h>
 #include <sarray/RangeIterator.h>
+#include <function/FunctionPtr.h>
 #include <util/nainf.h>
 #include <util/dim.h>
 #include <util/integer.h>
@@ -62,6 +66,8 @@ void CompileError(ParseTree const *p, string const &msg1,
     }
     throw runtime_error(msg);
 }
+
+
 
 Node * Compiler::constFromTable(ParseTree const *p)
 {
@@ -392,13 +398,14 @@ Node *Compiler::getArraySubset(ParseTree const *p)
     return node;
 }
 
-static Function const *getFunction(ParseTree const *t, FuncTab const &functab)
+static FunctionPtr const &
+getFunction(ParseTree const *t, FuncTab const &functab)
 {
     if (t->treeClass() != P_FUNCTION) 
 	throw logic_error("Malformed parse tree: Expected function");
 
-    Function const *func = functab.find(t->name());
-    if (func == 0) {
+    FunctionPtr const &func = functab.find(t->name());
+    if (isNULL(func)) {
 	CompileError(t, "Unknown function:", t->name());
     }    
 
@@ -532,31 +539,22 @@ Node * Compiler::getParameter(ParseTree const *t)
 	break;
     case P_LINK:
 	if (getParameterVector(t, parents)) {
-	    InverseLinkFunc const *link = 
-		funcTab().findInverseLink(t->name(), true);
+	    InverseLinkFunc const *link = funcTab().findInverseLink(t->name());
 	    if (!link) {
 		CompileError(t, "Unknown link function:", t->name());
 	    }
-	    node = _logicalfactory.getLinkNode(link, parents, _model);
+	    node = _logicalfactory.getNode(FunctionPtr(link), parents, _model);
 	}
 	break;
     case P_FUNCTION:
 	if (getParameterVector(t, parents)) {
-	    Function const *func = getFunction(t, funcTab());
+	    FunctionPtr const &func = getFunction(t, funcTab());
 	    if (_index_expression) {
-		node = new LogicalNode(func, parents);
+		node = LogicalFactory::newNode(func, parents);
 		_index_nodes.push_back(node);
 	    }
 	    else {	    
-		/* Test first to see if it is a link function */
-		InverseLinkFunc const *link = 
-		    funcTab().findInverseLink(t->name(), false);
-		if (link) {
-		    node = _logicalfactory.getLinkNode(link, parents, _model);
-		}
-		else {
-		    node = _logicalfactory.getNode(func, parents, _model);
-		}
+		node = _logicalfactory.getNode(func, parents, _model);
 	    }
 	}
 	break;
@@ -704,14 +702,15 @@ Node * Compiler::allocateStochastic(ParseTree const *stoch_relation)
 	/* 
 	   Special rule for observable functions, which exist both as
 	   a Function and a Distribution.  If the node is unobserved,
-	   and we find a function matched to the distribution in the
-	   DistTab, then we create a Logical Node instead.
+	   and we find a function matched to the distribution in
+	   obsFuncTab, then we create a Logical Node instead.
 	*/
-	Function const *func = distTab().findFunction(dist);
-	if (func) {
-	    DeterministicNode *dnode = new LogicalNode(func, parameters);
-	    _model.addNode(dnode);
-            return dnode;
+	FunctionPtr const &func = obsFuncTab().find(dist);
+	if (!isNULL(func)) {
+	    //FIXME: Why are we not using a factory here?
+	    LogicalNode *lnode = LogicalFactory::newNode(func, parameters);
+	    _model.addNode(lnode);
+            return lnode;
 	}
     }	
 
@@ -1095,6 +1094,12 @@ FuncTab &Compiler::funcTab()
 {
     static FuncTab _functab;
     return _functab;
+}
+
+ObsFuncTab &Compiler::obsFuncTab()
+{
+    static ObsFuncTab _oftab;
+    return _oftab;
 }
 
 MixtureFactory& Compiler::mixtureFactory1()

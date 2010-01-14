@@ -1,8 +1,12 @@
 #include <config.h>
 #include <Module.h>
 #include <compiler/Compiler.h>
+/*
 #include <function/InverseLinkFunc.h>
-#include <function/Function.h>
+#include <function/ScalarFunc.h>
+#include <function/VectorFunc.h>
+#include <function/ArrayFunc.h>
+*/
 #include <model/Model.h>
 #include <algorithm>
 #include <Console.h>
@@ -27,16 +31,31 @@ Module::~Module()
     }
 }
 
-void Module::insert(InverseLinkFunc *lfunc)
+void Module::insert(ScalarFunction *func)
 {
-    _internal_link_functions.push_back(lfunc);
-    _functions.push_back(lfunc);
+    _functions.push_back(func);
+    _fp_list.push_back(FunctionPtr(func));
 }
 
-void Module::insert(Function *func)
+void Module::insert(InverseLinkFunc *func)
 {
-    _internal_functions.push_back(func);
     _functions.push_back(func);
+    _fp_list.push_back(FunctionPtr(func));
+
+}
+
+void Module::insert(VectorFunction *func)
+{
+    _functions.push_back(func);
+    _fp_list.push_back(FunctionPtr(func));
+
+}
+
+void Module::insert(ArrayFunction *func)
+{
+    _functions.push_back(func);
+    _fp_list.push_back(FunctionPtr(func));
+
 }
 
 void Module::insert(Distribution *dist)
@@ -44,11 +63,32 @@ void Module::insert(Distribution *dist)
     _distributions.push_back(dist);
 }
 
-void Module::insert(Distribution *dist, Function *func)
+void Module::insert(Distribution *dist, ScalarFunction *func)
 {
-    _obs_functions.push_back(pair<Distribution*,Function*>(dist,func));
-    _distributions.push_back(dist);
-    _functions.push_back(func);
+    _obs_functions.push_back(pair<Distribution*,FunctionPtr>(dist,func));
+    insert(dist);
+    insert(func);
+}
+
+void Module::insert(Distribution *dist, InverseLinkFunc *func)
+{
+    _obs_functions.push_back(pair<Distribution*,FunctionPtr>(dist,func));
+    insert(dist);
+    insert(func);
+}
+
+void Module::insert(Distribution *dist, VectorFunction *func)
+{
+    _obs_functions.push_back(pair<Distribution*,FunctionPtr>(dist,func));
+    insert(dist);
+    insert(func);
+}
+
+void Module::insert(Distribution *dist, ArrayFunction *func)
+{
+    _obs_functions.push_back(pair<Distribution*,FunctionPtr>(dist,func));
+    insert(dist);
+    insert(func);
 }
 
 void Module::insert(SamplerFactory *fac)
@@ -80,16 +120,12 @@ void Module::load()
     for (unsigned int i = 0; i < _distributions.size(); ++i) {
 	Compiler::distTab().insert(_distributions[i]);
     }
-    for (unsigned int i = 0; i < _internal_link_functions.size(); ++i) {
-	Compiler::funcTab().insert(_internal_link_functions[i]);
-    }
-    for (unsigned int i = 0; i < _internal_functions.size(); ++i) {
-	Compiler::funcTab().insert(_internal_functions[i]);
+    for (unsigned int i = 0; i < _fp_list.size(); ++i) {
+	Compiler::funcTab().insert(_fp_list[i]);
     }
     for (unsigned int i = 0; i < _obs_functions.size(); ++i) {
-	Compiler::distTab().insert(_obs_functions[i].first, 
-				   _obs_functions[i].second);
-	Compiler::funcTab().insert(_obs_functions[i].second);
+	Compiler::obsFuncTab().insert(_obs_functions[i].first,
+				      _obs_functions[i].second);
     }
 }
 
@@ -98,14 +134,11 @@ void Module::unload()
     unsigned int i;
     
     for (i = 0; i < _obs_functions.size(); ++i) {
-	Compiler::distTab().erase(_obs_functions[i].first);
-	Compiler::funcTab().erase(_obs_functions[i].second);
+	Compiler::obsFuncTab().erase(_obs_functions[i].first,
+				     _obs_functions[i].second);
     }
-    for (i = 0; i < _internal_functions.size(); ++i) {
-	Compiler::funcTab().erase(_internal_functions[i]);
-    }
-    for (i = 0; i < _internal_link_functions.size(); ++i) {
-	Compiler::funcTab().erase(_internal_link_functions[i]);
+    for (i = 0; i < _fp_list.size(); ++i) {
+	Compiler::funcTab().erase(_fp_list[i]);
     }
     for (i = 0; i < _distributions.size(); ++i) {
 	Compiler::distTab().erase(_distributions[i]);
@@ -139,17 +172,17 @@ void Module::unload()
     }
 }
 
-vector<Function*> const  &Module::functions() const
+vector<Function*> const &Module::functions() const
 {
     return _functions;
 }
 
-vector<Distribution*> const  &Module::distributions() const
+vector<Distribution*> const &Module::distributions() const
 {
     return _distributions;
 }
 
-vector<SamplerFactory*> const  &Module::samplerFactories() const
+vector<SamplerFactory*> const &Module::samplerFactories() const
 {
     return _sampler_factories;
 }

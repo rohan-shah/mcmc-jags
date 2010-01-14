@@ -1,5 +1,5 @@
-#ifndef SCALAR_LOGICAL_NODE_H_
-#define SCALAR_LOGICAL_NODE_H_
+#ifndef V_SCALAR_LOGICAL_NODE_H_
+#define V_SCALAR_LOGICAL_NODE_H_
 
 #include <graph/LogicalNode.h>
 #include <vector>
@@ -7,21 +7,22 @@
 class ScalarFunction;
 
 /**
- * @short Scalar Node defined by the BUGS-language operator <-
+ * @short Vectorized node using a scalar function
  *
- * A ScalarLogicalNode is a logical node that uses a ScalarFunction as
- * the defining function and is not vectorized.
+ * A VSLogicalNode is a logical node that uses a ScalarFunction as
+ * the defining function. The node is vectorized.
  */
-class ScalarLogicalNode : public LogicalNode {
+class VSLogicalNode : public LogicalNode {
     ScalarFunction const * const _func;
+    std::vector<bool> _isvector;
 public:
     /**
      * A scalar logical node is defined by a scalar function (which
      * may be an inline operator in the BUGS language) and its
      * parameters.
      */
-    ScalarLogicalNode(ScalarFunction const *func,
-		      std::vector<Node const*> const &parameters);
+    VSLogicalNode(ScalarFunction const *func,
+		  std::vector<Node const*> const &parameters);
     /**
      * Calculates the value of the node based on the parameters. 
      */
@@ -33,4 +34,4 @@ public:
     Node *clone(std::vector<Node const *> const &parents) const;
 };
 
-#endif /* SCALAR_LOGICAL_NODE_H_ */
+#endif /* V_SCALAR_LOGICAL_NODE_H_ */
