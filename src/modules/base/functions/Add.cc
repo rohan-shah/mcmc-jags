@@ -10,7 +10,7 @@ namespace base {
     {
     }
     
-    double Add::evaluateScalar(vector <double const *> const &args) const
+    double Add::evaluate(vector <double const *> const &args) const
     {
 	double out = *args[0];
 	for (unsigned int i = 1; i < args.size(); ++i) {
