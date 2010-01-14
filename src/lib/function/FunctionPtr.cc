@@ -19,7 +19,7 @@ FunctionPtr::FunctionPtr(ArrayFunction const *af)
     : lfunc(0), sfunc(0), vfunc(0), afunc(af)
 {}
 
-FunctionPtr::FunctionPtr(InverseLinkFunc const *lf)
+FunctionPtr::FunctionPtr(LinkFunction const *lf)
     : lfunc(lf), sfunc(0), vfunc(0), afunc(0)
 {}
 
@@ -38,7 +38,7 @@ string const &FunctionPtr::name() const
 	return nullstring;
 }
 
-InverseLinkFunc const * LINK(FunctionPtr const &p) { 
+LinkFunction const * LINK(FunctionPtr const &p) { 
     return p.lfunc; 
 }
 
