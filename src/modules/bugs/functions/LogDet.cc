@@ -10,12 +10,11 @@ using std::vector;
 namespace bugs {
 
     LogDet::LogDet ()
-	: Function ("logdet", 1)
+	: ArrayFunction ("logdet", 1)
     {
     }
 
     void LogDet::evaluate (double *x, vector<double const *> const &args,
-			   vector<unsigned int> const &lengths,
 			   vector<vector<unsigned int> > const &dims) const
     {
 	*x = logdet(args[0], dims[0][0]);
@@ -27,6 +26,11 @@ namespace bugs {
 	return isSquareMatrix(dims[0]);
     }
 
+    vector<unsigned int>
+    LogDet::dim(std::vector<std::vector<unsigned int> > const &dims) const
+    {
+	return vector<unsigned int>(1,1);
+    }
 }
 
 /* FIXME: we need a checkParameterValue function */
