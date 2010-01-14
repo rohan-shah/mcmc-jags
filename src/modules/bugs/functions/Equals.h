@@ -1,7 +1,7 @@
 #ifndef FUNC_EQUALS_H_
 #define FUNC_EQUALS_H_
 
-#include <function/ScalarFunc.h>
+#include <function/ScalarFunction.h>
 
 namespace bugs {
 
@@ -13,11 +13,11 @@ namespace bugs {
      *     0 if a!=b
      * </pre>
      */
-    class Equals : public ScalarFunc
+    class Equals : public ScalarFunction
     {
     public:
 	Equals ();
-	double evaluateScalar(std::vector<double const *> const &args) const;
+	double evaluate(std::vector<double const *> const &args) const;
 	/** Returns true */
 	bool isDiscreteValued(std::vector<bool> const &mask) const;
     };
