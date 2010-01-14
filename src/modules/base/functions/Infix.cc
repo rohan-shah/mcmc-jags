@@ -7,7 +7,7 @@ using std::string;
 namespace base {
 
 Infix::Infix(string const &name, unsigned int npar)
-    : ScalarFunc (name, npar)
+    : ScalarFunction (name, npar)
 {
 }
 
