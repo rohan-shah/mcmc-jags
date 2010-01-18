@@ -9,20 +9,22 @@
 using std::vector;
 using std::logic_error;
 
-static unsigned int mkLength(vector<Node const *> const &parameters)
+static vector<unsigned int> mkDim(vector<Node const *> const &parameters)
 {
-    unsigned int length = 1;
+    vector<unsigned int> dim(1,1);
+    bool scalar = true;
     for (unsigned int i = 0; i < parameters.size(); ++i) {
 	if (parameters[i]->length() > 1) {
-	    if (length == 1) {
-		length = parameters[i]->length();
+	    if (scalar) {
+		dim = parameters[i]->dim();
+		scalar = false;
 	    }
-	    else if (length != parameters[i]->length()) {
-		throw logic_error("Incompatible vector args in VSLogicalNode");
+	    else if (dim != parameters[i]->dim()) {
+		throw logic_error("Incompatible dimensions in VSLogicalNode");
 	    }
 	}
     }
-    return length;
+    return dim;
 }
 
 static vector<bool> mkIsVector(vector<Node const *> const &parameters)
@@ -36,8 +38,7 @@ static vector<bool> mkIsVector(vector<Node const *> const &parameters)
 
 VSLogicalNode::VSLogicalNode(ScalarFunction const *function, 
 			     vector<Node const *> const &parameters)
-    : LogicalNode(vector<unsigned int>(1,mkLength(parameters)), parameters, 
-		  function),
+    : LogicalNode(mkDim(parameters), parameters, function),
       _func(function), _isvector(mkIsVector(parameters))
 {
     if (isObserved()) {
