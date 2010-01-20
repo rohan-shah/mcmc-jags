@@ -18,25 +18,10 @@
 #include <fstream>
 #include <list>
 #include <iterator>
+#include <string>
 
 #include <Console.h>
 #include <Module.h>
-#include <compiler/ParseTree.h>
-#include <util/nainf.h>
-#include <cstring>
-#include <ltdl.h>
-
-#include <cstdio>
-#include <iostream>
-#include <fstream>
-#include <map>
-#include <algorithm>
-#include <cmath>
-#include <sstream>
-#include <fstream>
-#include <list>
-
-#include <Console.h>
 #include <compiler/ParseTree.h>
 #include <util/nainf.h>
 #include <cstring>
@@ -72,6 +57,7 @@
     void doDump (std::string const &file, DumpType type, unsigned int chain);
     void dumpMonitors(std::string const &file, std::string const &type);
     void doSystem(std::string const *command);
+    std::string ExpandFileName(char const *s);
 
     static bool getWorkingDirectory(std::string &name);
     static void errordump();
@@ -85,6 +71,7 @@
     static void dumpSamplers(std::string const &file);
     static void delete_pvec(std::vector<ParseTree*> *);
     static void print_unused_variables();
+
     %}
 
 %defines
@@ -204,7 +191,7 @@ command: model
 ;
 
 model: MODEL IN file_name {
-    std::FILE *file = std::fopen(($3)->c_str(), "r");
+    std::FILE *file = std::fopen(ExpandFileName(($3)->c_str()).c_str(), "r");
     if (!file) {
 	std::cerr << "Failed to open file " << *($3) << std::endl;
     }
@@ -1264,7 +1251,7 @@ int main (int argc, char **argv)
   }
   else if (argc == 2) {
     interactive = false;
-    cmdfile = std::fopen(argv[1],"r");
+    cmdfile = std::fopen(ExpandFileName(argv[1]).c_str(),"r");
     if (cmdfile) {
       zzin = cmdfile;
     }
@@ -1406,6 +1393,26 @@ static void print_unused_variables()
     }
 
 }
+
+std::string ExpandFileName(char const *s)
+{
+    if(s[0] != '~') return s;
+    std::string name = s;
+    if(name.size() > 1 && s[1] != '/') return s;
+
+    char const *p = getenv("HOME");
+    if (p) {
+	std::string UserHOME = p;
+	if (!UserHOME.empty()) {
+	    if (name.size() == 1) 
+		return UserHOME;
+	    else
+		return UserHOME + name.substr(1);
+	}
+    }
+    return name;
+}
+
 
 void doSystem(std::string const *command)
 {

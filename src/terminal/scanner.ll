@@ -1,6 +1,7 @@
 /* -*-C++-*- */
 %{
 #include <iostream>
+#include <string>
 #include <cstring>
 #include <compiler/ParseTree.h>
 #include "parser.h"
@@ -10,6 +11,7 @@
     int buffer_count = 0;
     void return_to_main_buffer();
     void close_buffer();
+    std::string ExpandFileName(char const *name);
 %}
 
 %option prefix="zz"
@@ -179,7 +181,7 @@ void pop_file() {
 
 
 bool open_data_buffer(std::string const *name) {
-    FILE *file = fopen(name->c_str(),"r");
+    FILE *file = fopen(ExpandFileName(name->c_str()).c_str(),"r");
     if (file) {
 	zzpush_buffer_state(zz_create_buffer(file, YY_BUF_SIZE));
 	push_file(file);
