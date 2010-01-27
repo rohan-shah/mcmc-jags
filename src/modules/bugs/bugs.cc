@@ -10,6 +10,7 @@
 #include <distributions/DDirch.h>
 #include <distributions/DExp.h>
 #include <distributions/DGamma.h>
+#include <distributions/DGenGamma.h>
 #include <distributions/DInterval.h>
 #include <distributions/DLnorm.h>
 #include <distributions/DLogis.h>
@@ -63,9 +64,12 @@
 #include <functions/Transpose.h>
 #include <functions/Trunc.h>
 
+#include <functions/DFunction.h>
+#include <functions/PFunction.h>
+#include <functions/QFunction.h>
+
 #include <samplers/ConjugateFactory.h>
 #include <samplers/DSumFactory.h>
-//#include <samplers/REFactory.h>
 #include <samplers/MNormalFactory.h>
 #include <samplers/DirichletFactory.h>
 
@@ -145,6 +149,64 @@ BUGSModule::BUGSModule()
     //Load observable functions
     insert(new DSum, new DSumFunc);
     insert(new DInterval, new DIntervalFunc);
+    
+    //Load d-p-q functions
+    insert(new DFunction(new DBern));
+    insert(new DFunction(new DBeta));
+    insert(new DFunction(new DBin));
+    insert(new DFunction(new DChisqr));
+    insert(new DFunction(new DDexp));
+    insert(new DFunction(new DExp));
+    insert(new DFunction(new DGamma));
+    insert(new DFunction(new DGenGamma));
+    insert(new DFunction(new DHyper));
+    insert(new DFunction(new DLnorm));
+    insert(new DFunction(new DLogis));
+    insert(new DFunction(new DNegBin));
+    insert(new DFunction(new DNorm));
+    insert(new DFunction(new DPar));
+    insert(new DFunction(new DPois));
+    insert(new DFunction(new DT));
+    insert(new DFunction(new DUnif));
+    insert(new DFunction(new DWeib));
+
+    insert(new PFunction(new DBern));
+    insert(new PFunction(new DBeta));
+    insert(new PFunction(new DBin));
+    insert(new PFunction(new DChisqr));
+    insert(new PFunction(new DDexp));
+    insert(new PFunction(new DExp));
+    insert(new PFunction(new DGamma));
+    insert(new PFunction(new DGenGamma));
+    insert(new PFunction(new DHyper));
+    insert(new PFunction(new DLnorm));
+    insert(new PFunction(new DLogis));
+    insert(new PFunction(new DNegBin));
+    insert(new PFunction(new DNorm));
+    insert(new PFunction(new DPar));
+    insert(new PFunction(new DPois));
+    insert(new PFunction(new DT));
+    insert(new PFunction(new DUnif));
+    insert(new PFunction(new DWeib));
+    
+    insert(new QFunction(new DBern));
+    insert(new QFunction(new DBeta));
+    insert(new QFunction(new DBin));
+    insert(new QFunction(new DChisqr));
+    insert(new QFunction(new DDexp));
+    insert(new QFunction(new DExp));
+    insert(new QFunction(new DGamma));
+    insert(new QFunction(new DGenGamma));
+    insert(new QFunction(new DHyper));
+    insert(new QFunction(new DLnorm));
+    insert(new QFunction(new DLogis));
+    insert(new QFunction(new DNegBin));
+    insert(new QFunction(new DNorm));
+    insert(new QFunction(new DPar));
+    insert(new QFunction(new DPois));
+    insert(new QFunction(new DT));
+    insert(new QFunction(new DUnif));
+    insert(new QFunction(new DWeib));
     
     //Load sampler factories
     insert(new MNormalFactory);
