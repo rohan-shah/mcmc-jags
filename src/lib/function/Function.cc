@@ -41,6 +41,12 @@ bool Function::isLinear(vector<bool> const &mask,
     return isScale(mask, isfixed);
 }
 
+bool Function::isPower(std::vector<bool> const &mask,
+		       std::vector<bool> const &isfixed) const
+{
+    return false;
+}
+
 string Function::deparse(vector<string> const &par) const
 {
     string name = this->name();
