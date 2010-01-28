@@ -91,6 +91,15 @@ public:
     virtual bool isLinear(std::vector<bool> const &mask,
 			  std::vector<bool> const &isfixed) const;
     /**
+     * Tests whether the function preserves power transformations,
+     * i.e.  can be expressed as f(x) = a*b^x for some value of a,b,
+     * where a,b, and x are all scalar.
+     *
+     * The default method returns false.
+     */
+    virtual bool isPower(std::vector<bool> const &mask,
+			 std::vector<bool> const &isfixed) const;
+    /**
      * Returns a BUGS-language expression representing the function call.
      * The default behaviour for a function named "foo" is to return
      * "foo(arg1,arg2)". Functions that are represented as prefix or infix
