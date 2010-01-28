@@ -29,18 +29,20 @@ static unsigned int sumLength(vector<StochasticNode *> const &nodes)
     return n;
 }
 
-GraphView::GraphView(vector<StochasticNode *> const &nodes, Graph const &graph)
+GraphView::GraphView(vector<StochasticNode *> const &nodes, Graph const &graph,
+		     bool multilevel)
     : _length(sumLength(nodes)), _nodes(nodes), _stoch_children(0),
       _determ_children(0)
 {
-    classifyChildren(nodes, graph, _stoch_children, _determ_children);
+    classifyChildren(nodes, graph, _stoch_children, _determ_children,
+		     multilevel);
 }
 
 GraphView::GraphView(StochasticNode * node, Graph const &graph)
     : _length(node->length()), _nodes(vector<StochasticNode*>(1,node)), 
       _stoch_children(0), _determ_children(0)
 {
-    classifyChildren(_nodes, graph, _stoch_children, _determ_children);
+    classifyChildren(_nodes, graph, _stoch_children, _determ_children, false);
 }
 
 vector<StochasticNode *> const &GraphView::nodes() const
@@ -104,7 +106,8 @@ static bool classifyNode(DeterministicNode *dnode, Graph const &sample_graph,
 void GraphView::classifyChildren(vector<StochasticNode *> const &nodes,
 				 Graph const &graph,
 				 vector<StochasticNode const*> &stoch_nodes,
-				 vector<DeterministicNode*> &dtrm_nodes)
+				 vector<DeterministicNode*> &dtrm_nodes,
+				 bool multilevel)
 {
     set<DeterministicNode const *> dset;
     set<StochasticNode const *> sset;
@@ -131,12 +134,21 @@ void GraphView::classifyChildren(vector<StochasticNode *> const &nodes,
 	}
     }
 
-    /* Strip nodes to be sampled out of the set of stochastic
-       children. Such nodes would contribute to both the prior
-       AND the likelihood, causing incorrect calculation of the
-       log full conditional */
-    for (p = nodes.begin(); p != nodes.end(); ++p) {
-	sset.erase(*p);
+    if (multilevel) {
+	/* Strip nodes to be sampled out of the set of stochastic
+	   children. Such nodes would contribute to both the prior
+	   AND the likelihood, causing incorrect calculation of the
+	   log full conditional */
+	for (p = nodes.begin(); p != nodes.end(); ++p) {
+	    sset.erase(*p);
+	}
+    }
+    else {
+	for (p = nodes.begin(); p != nodes.end(); ++p) {
+	    if (sset.count(*p)) {
+		throw logic_error("Invalid multilevel GraphView");
+	    }
+	}
     }
 
     stoch_nodes.clear();
