@@ -30,16 +30,16 @@ public:
      * where a,b, and x are all scalar.
      *
      * The default method returns true if the ScalarFunction preserves
-     * scalar transformations AND only one element of mask is true.
+     * scale transformations AND only one element of mask is true.
      * Such functions also preserve fixed power transformations.
      *
      * Note that if a > 0 then a power function is a linear function on
      * the log scale: log(f(x)) = log(a) + log(b) * x.
      *
-     * @see Function#isScale
+     * @see Function#isPower
      */
-    virtual bool isPower(std::vector<bool> const &mask,
-			 std::vector<bool> const &isfixed) const;
+    bool isPower(std::vector<bool> const &mask,
+		 std::vector<bool> const &isfixed) const;
 };
 
 #endif /* SCALAR_FUNCTION_H_ */
