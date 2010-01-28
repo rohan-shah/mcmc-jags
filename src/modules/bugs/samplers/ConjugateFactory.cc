@@ -9,6 +9,7 @@
 #include "ConjugateWishart.h"
 #include "ConjugateSampler.h"
 #include "Censored.h"
+#include "TruncatedGamma.h"
 
 #include <graph/StochasticNode.h>
 #include <distribution/Distribution.h>
@@ -21,6 +22,7 @@
 using std::string;
 using std::map;
 using std::invalid_argument;
+using std::logic_error;
 
 ConjugateFactory::ConjugateFactory()
     : _name("Conjugate")
@@ -52,6 +54,10 @@ bool ConjugateFactory::canSample(StochasticNode * snode,
 	break;
     case WISH:
 	ans = ConjugateWishart::canSample(snode, graph);
+	break;
+    case UNIF:
+	ans = TruncatedGamma::canSample(snode, graph) ||
+	      ConjugateBeta::canSample(snode, graph);
 	break;
     default:
 	break;
@@ -88,6 +94,17 @@ Sampler *ConjugateFactory::makeSampler(StochasticNode *snode,
 	    break;
 	case WISH:
 	    method = new ConjugateWishart(gv);
+	    break;
+	case UNIF:
+	    if (TruncatedGamma::canSample(snode, graph)) {
+		method = new TruncatedGamma(gv);
+	    }
+	    else if (ConjugateBeta::canSample(snode, graph)) {
+		method = new ConjugateBeta(gv);
+	    }
+	    else {
+		logic_error("Cannot find conjugate sampler for uniform");
+	    }
 	    break;
 	default:
 	    throw invalid_argument("Unable to create conjugate sampler");

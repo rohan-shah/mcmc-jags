@@ -90,7 +90,7 @@ bool LogicalNode::isClosed(set<Node const *> const &ancestors,
         return (nmask == 1) && _func->isScale(mask, fixed_mask);
 	break;
     case DNODE_POWER:
-	return false;
+	return _func->isPower(mask, fixed_mask);
         break;
     }
 
