@@ -41,10 +41,6 @@ BUGSModel::~BUGSModel()
 	 i != _bugs_monitors.end(); ++i)
     {
 	Monitor *monitor = *i;
-	/*
-	removeMonitor(monitor);
-	_bugs_monitors.erase(i);
-	*/
 	delete monitor;
     }
 
@@ -103,16 +99,18 @@ static void writeDouble(double x, std::ostream &out)
     }
 }
 
-static void CODA(vector<pair<NodeId, Monitor const*> > const &monitors,
+static void CODA(vector<pair<NodeId, MonitorControl> > const &monitors,
 		 ofstream &index,  vector<ofstream*> const &output)
 {
     //FIXME: Check streams are open and set pointer to beginning.
 
     unsigned int lineno = 0;
-    vector<pair<NodeId, Monitor const*> >::const_iterator p;
+    vector<pair<NodeId, MonitorControl> >::const_iterator p;
     for (p = monitors.begin(); p != monitors.end(); ++p) {
-	
-	Monitor const *monitor = p->second;
+
+	MonitorControl const &mc = p->second;
+	Monitor const *monitor = mc.monitor();
+
 	if (monitor->type() == "trace") {
 	    
 	    string const &name = p->first.first;
@@ -132,28 +130,28 @@ static void CODA(vector<pair<NodeId, Monitor const*> > const &monitors,
 		{
 		    index << name << print(multi_range.leftIndex(offset))
 			  << " "  << lineno + 1 << "  "  
-			  << lineno + monitor->niter() << '\n';
-		    lineno += monitor->niter();
+			  << lineno + mc.niter() << '\n';
+		    lineno += mc.niter();
 		}
 	    }
 	    else {
 		// Univariate node 
 		index << name << print(uni_range) << "  " 
 		      << lineno + 1 << "  " 
-		      << lineno + monitor->niter() << '\n';
-		lineno += monitor->niter();
+		      << lineno + mc.niter() << '\n';
+		lineno += mc.niter();
 	    }
 	    //Write output files
 	    for (unsigned int ch = 0; ch < output.size(); ++ch) {
 		ofstream &out = *output[ch];
 		vector<double> const &y = monitor->value(ch);
 		for (unsigned int offset = 0; offset < nvar; ++offset) {
-		    unsigned int iter = monitor->start();
-		    for (unsigned int k = 0; k < monitor->niter(); k++) {
+		    unsigned int iter = mc.start();
+		    for (unsigned int k = 0; k < mc.niter(); k++) {
 			out << iter << "  ";
 			writeDouble(y[k * nvar + offset], out);
 			out << '\n';
-			iter += monitor->thin();
+			iter += mc.thin();
 		    }
 		}
 	    }
@@ -171,7 +169,7 @@ void BUGSModel::coda(vector<NodeId> const &nodes, ofstream &index,
     warn.clear();
 
     // Create a new vector with only the selected nodes in it 
-    vector<pair<NodeId, Monitor const*> > dump_nodes;
+    vector<pair<NodeId, MonitorControl> > dump_nodes;
     for (unsigned int i = 0; i < nodes.size(); ++i) {
 	string msg;
 	string const &name = nodes[i].first;
@@ -181,17 +179,18 @@ void BUGSModel::coda(vector<NodeId> const &nodes, ofstream &index,
 	    warn.append(msg);
 	}
 	else {
-	    list<Monitor*>::const_iterator p = _bugs_monitors.begin();
-	    for (; p != _bugs_monitors.end(); ++p) {
-		if ((*p)->node() == node && (*p)->type() == "trace") {
-		    pair<NodeId, Monitor const*> newpair(nodes[i], *p);
+	    list<MonitorControl>::const_iterator p = monitors().begin();
+	    for (; p != monitors().end(); ++p) {
+		Monitor const *mon = p->monitor();
+		if (mon->node() == node && mon->type() == "trace") {
+		    pair<NodeId, MonitorControl> newpair(nodes[i], *p);
 		    dump_nodes.push_back(newpair);		    
 		    break;
 		}
 	    }
-	    if (p == _bugs_monitors.end()) {
+	    if (p == monitors().end()) {
 		string msg  = string("No trace monitor for node ") + name + 
-		    print(range);
+		    print(range) + "\n";
 		warn.append(msg);
 	    }
 	}
@@ -213,14 +212,14 @@ void BUGSModel::coda(ofstream &index, vector<ofstream*> const &output,
     
     warn.clear();
     
-    vector<pair<NodeId,Monitor const*> > dump_nodes;
-    for(list<Monitor*>::const_iterator p = _bugs_monitors.begin();
-	p != _bugs_monitors.end(); ++p)
+    vector<pair<NodeId, MonitorControl> > dump_nodes;
+    for(list<MonitorControl>::const_iterator p = monitors().begin();
+	p != monitors().end(); ++p)
     {
-	Monitor const *monitor = *p;
-	if (monitor->type() == "trace") {
-	    NodeId id = _node_map.find(monitor->node())->second;
-	    dump_nodes.push_back(pair<NodeId,Monitor const*>(id,monitor));
+	Monitor const *mon = p->monitor();
+	if (mon->type() == "trace") {
+	    NodeId id = _node_map.find(mon->node())->second;
+	    dump_nodes.push_back(pair<NodeId,MonitorControl>(id,*p));
 	}
     }
     
@@ -321,13 +320,13 @@ bool BUGSModel::setMonitor(string const &name, Range const &range,
     for(list<MonitorFactory*>::const_iterator j = faclist.begin();
 	j != faclist.end(); ++j)
     {
-	monitor = (*j)->getMonitor(node, this, iteration() + 1, thin, type);
+	monitor = (*j)->getMonitor(node, this, type);
 	if (monitor)
 	    break;
     }
 
     if (monitor) {
-	addMonitor(monitor);
+	addMonitor(monitor, thin);
 	_bugs_monitors.push_back(monitor);
 	_node_map.insert(pair<Node const*,NodeId>(node, NodeId(name,range)));
 	return true;

@@ -331,9 +331,9 @@ void Model::update(unsigned int niter)
 	throw logic_error("Attempt to update uninitialized model");
     }
 
-    list<Monitor*>::const_iterator p;
+    list<MonitorControl>::iterator p;
     for (p = _monitors.begin(); p != _monitors.end(); ++p) {
-	(*p)->reserve(niter);
+	p->reserve(niter);
     }
 
     for (unsigned int iter = 0; iter < niter; ++iter) {    
@@ -356,10 +356,10 @@ void Model::update(unsigned int niter)
 	}
 	_iteration++;
 
-	for (list<Monitor*>::iterator k = _monitors.begin(); 
+	for (list<MonitorControl>::iterator k = _monitors.begin(); 
 	     k != _monitors.end(); k++) 
 	{
-	    (*k)->update(_iteration);
+	    k->update(_iteration);
 	}
     }
 }
@@ -415,10 +415,10 @@ void Model::setSampledExtra()
     }
     //Mark the ancestors of all monitored nodes in this graph
     GraphMarks emarks(egraph);
-    for (list<Monitor*>::const_iterator p = _monitors.begin();
+    for (list<MonitorControl>::const_iterator p = _monitors.begin();
 	 p != _monitors.end(); ++p)
     {
-	Node const *node = (*p)->node();
+	Node const *node = p->monitor()->node();
 	if (egraph.contains(node)) {
 	    emarks.mark(node, 1);
 	    //FIXME: call once
@@ -437,21 +437,26 @@ void Model::setSampledExtra()
     egraph.getSortedNodes(_sampled_extra);
 }
 
-
-
-void Model::addMonitor(Monitor *monitor)
+void Model::addMonitor(Monitor *monitor, unsigned int thin)
 {
     if (_adapt) {
 	throw logic_error("Cannot add monitor to adapting model");
     }
     
-    _monitors.push_back(monitor);
+    _monitors.push_back(MonitorControl(monitor, _iteration+1, thin));
     setSampledExtra();
 }
 
 void Model::removeMonitor(Monitor *monitor)
 {
-    _monitors.remove(monitor);
+    for(list<MonitorControl>::iterator p = _monitors.begin();
+	p != _monitors.end(); ++p)
+    {
+	if (p->monitor() == monitor) {
+	    _monitors.erase(p);
+	    break;
+	}
+    }
     setSampledExtra();
 }
 
@@ -547,7 +552,7 @@ bool Model::setRNG(RNG *rng, unsigned int chain)
   return true;
 }
 
-list<Monitor*> const &Model::monitors() const
+list<MonitorControl> const &Model::monitors() const
 {
   return _monitors;
 }
@@ -564,11 +569,11 @@ bool Model::setDefaultMonitors(string const &type, unsigned int thin)
 	    unsigned int start = iteration() + 1;
 	    for (unsigned int i = 0; i < default_nodes.size(); ++i) {
 		Monitor *monitor = (*j)->getMonitor(default_nodes[i], this,
-						    start, thin, type);
+						    type);
 		if (!monitor) {
 		    throw logic_error("Invalid default monitor");
 		}
-		addMonitor(monitor);
+		addMonitor(monitor, thin);
 		/* Model takes ownership of default monitors */
 		_default_monitors.push_back(monitor);
 	    }
@@ -587,7 +592,7 @@ void Model::clearDefaultMonitors(string const &type)
 	Monitor *monitor = *p;
 	if (monitor->type() == type) {
 	    _default_monitors.remove(monitor);
-	    _monitors.remove(monitor);
+	    removeMonitor(monitor);
 	    delete monitor;
 	}
     }

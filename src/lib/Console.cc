@@ -527,12 +527,11 @@ bool Console::dumpMonitors(map<string,SArray> &data_table,
 	return true;
     }
     try {
-	list<Monitor*> const &monitors = _model->monitors();
-	list<Monitor*>::const_iterator p;
+	list<MonitorControl> const &monitors = _model->monitors();
+	list<MonitorControl>::const_iterator p;
 	for (p = monitors.begin(); p != monitors.end(); ++p) {
-	    Monitor const *monitor = *p;
-	    if (monitor->niter() > 0 && monitor->type() == type) {
-
+	    Monitor const *monitor = p->monitor();
+	    if (p->niter() > 0 && monitor->type() == type) {
 		string name = _model->symtab().getName(monitor->node());
 		if (!name.empty()) {
 		    data_table.insert(pair<string,SArray>(name, 
