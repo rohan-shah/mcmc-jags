@@ -19,8 +19,7 @@ public:
      * be constructed, a null pointer is returned
      */
     virtual Monitor *
-	getMonitor(Node const *node, Model *model, unsigned int start,
-		   unsigned int thin, std::string const &type) = 0;
+	getMonitor(Node const *node, Model *model, std::string const &type) = 0;
     /**
      * Returns a vector of default nodes. These are nodes for which
      * monitors are typically created manually by the user.
