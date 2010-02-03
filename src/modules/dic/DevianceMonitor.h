@@ -11,12 +11,11 @@ namespace dic {
 	std::vector<std::vector<double> >  _values; // sampled values
         StochasticNode const *_snode;
     public:
-	DevianceMonitor(StochasticNode const *node, unsigned int start, 
-			unsigned int thin); 
+	DevianceMonitor(StochasticNode const *node);
 	unsigned int nchain() const;
 	std::vector<unsigned int> dim() const;
 	std::vector<double> const &value(unsigned int chain) const;
-	void doUpdate();
+	void update();
 	void reserve(unsigned int niter);
 	SArray dump() const;
     };

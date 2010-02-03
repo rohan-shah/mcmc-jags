@@ -14,8 +14,6 @@ namespace dic {
 
     Monitor *DevianceMonitorFactory::getMonitor(Node const *node, 
 						Model *model,
-						unsigned int start,
-						unsigned int thin, 
 						string const &type)
     {
 	if (type != "deviance")
@@ -25,7 +23,7 @@ namespace dic {
 
 	StochasticNode const *snode = asStochastic(node);
 	if (snode)
-	    return new DevianceMonitor(snode, start, thin);
+	    return new DevianceMonitor(snode);
 	else 
 	    return 0;
     }

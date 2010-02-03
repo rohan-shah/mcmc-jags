@@ -13,8 +13,8 @@ namespace base {
     class TraceMonitor : public Monitor {
 	std::vector<std::vector<double> > _values; // sampled values
     public:
-	TraceMonitor(Node const *node, unsigned int start, unsigned int thin);
-	void doUpdate();
+	TraceMonitor(Node const *node);
+	void update();
 	std::vector<double> const &value(unsigned int chain) const;
 	std::vector<unsigned int> dim() const;
 	unsigned int nchain() const;

@@ -8,9 +8,8 @@ using std::vector;
 namespace dic {
 
     KLPDMonitor::KLPDMonitor(StochasticNode const *snode,
-			     unsigned int start, unsigned int thin,
 			     KL const *kl)
-	: PDMonitor(snode, start, thin), _kl(kl)
+	: PDMonitor(snode), _kl(kl)
     {
 	unsigned int nchain = snode->nchain();
 	_par.reserve(nchain);
@@ -24,7 +23,7 @@ namespace dic {
         delete _kl;
     }
 
-    void KLPDMonitor::doUpdate()
+    void KLPDMonitor::update()
     {
 	unsigned int nchain = _par.size();
 	

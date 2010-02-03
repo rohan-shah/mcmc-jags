@@ -14,8 +14,6 @@ namespace dic {
 
     Monitor *PoptMonitorFactory::getMonitor(Node const *node, 
 					  Model *model,
-					  unsigned int start,
-					  unsigned int thin, 
 					  string const &type)
     {
 	if (type != "popt" || node->nchain() < 2)
@@ -29,7 +27,7 @@ namespace dic {
 
 	StochasticNode const *snode = asStochastic(node);
 	if (snode)
-	    return new PoptMonitor(snode, start, thin, rngs, 10);
+	    return new PoptMonitor(snode, rngs, 10);
 	else 
 	    return 0;
     }

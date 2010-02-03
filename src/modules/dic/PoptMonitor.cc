@@ -14,9 +14,8 @@ using std::exp;
 namespace dic {
 
     PoptMonitor::PoptMonitor(StochasticNode const *snode,
-			     unsigned int start, unsigned int thin, 
 			     vector<RNG *> const &rngs, unsigned int nrep)
-	: Monitor("popt", snode, start, thin), _snode(snode),
+	: Monitor("popt", snode), _snode(snode),
 	  _repnode(snode->distribution(), snode->parents(), 
                    snode->lowerBound(), snode->upperBound()),
 	  _rngs(rngs), _nrep(nrep), _weights(snode->nchain(), 0)
@@ -34,7 +33,7 @@ namespace dic {
 
     vector<unsigned int> PoptMonitor::dim() const
     {
-	return vector<unsigned int> (1,niter());
+	return vector<unsigned int> (1,_values.size());
     }
  
     vector<double> const &PoptMonitor::value(unsigned int chain) const
@@ -42,7 +41,7 @@ namespace dic {
 	return _values;
     }
 
-    void PoptMonitor::doUpdate()
+    void PoptMonitor::update()
     {
 	unsigned int nchain = _repnode.nchain();
 	unsigned int len = _repnode.length();
@@ -77,8 +76,7 @@ namespace dic {
 
     void PoptMonitor::reserve(unsigned int niter)
     {
-	unsigned int N = 1 + niter / thin();
-	_values.reserve(_values.size() + N);
+	_values.reserve(_values.size() + niter);
     }
 
     SArray PoptMonitor::dump() const
@@ -96,7 +94,8 @@ namespace dic {
 	}
 
         //double scale = niter() / (wsum2 - wsum * wsum);
-        double scale = niter() * niter() / wsum;
+	double niter = _values.size();
+        double scale = niter * niter / wsum;
 	for (unsigned int i = 0; i < _values.size(); ++i) {
 	    scaled_values[i] *= scale;
 	}

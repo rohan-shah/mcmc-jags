@@ -13,14 +13,12 @@ namespace base {
 
     Monitor *TraceMonitorFactory::getMonitor(Node const *node, 
 					     Model *model,
-					     unsigned int start,
-					     unsigned int thin, 
 					     string const &type)
     {
 	if (type != "trace")
 	    return 0;
 
-	return new TraceMonitor(node, start, thin);
+	return new TraceMonitor(node);
     }
 
     vector<Node const*> 

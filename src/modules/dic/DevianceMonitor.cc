@@ -12,9 +12,8 @@ using std::copy;
 
 namespace dic {
 
-    DevianceMonitor::DevianceMonitor(StochasticNode const *snode, 
-				     unsigned int start, unsigned int thin)
-	: Monitor("deviance", snode, start, thin), _values(snode->nchain()), 
+    DevianceMonitor::DevianceMonitor(StochasticNode const *snode)
+	: Monitor("deviance", snode), _values(snode->nchain()), 
 	  _snode(snode)
     {
     }
@@ -27,7 +26,7 @@ namespace dic {
     vector<unsigned int> DevianceMonitor::dim() const
     {
 	vector<unsigned int> d(2);
-	d[0] = niter();
+	d[0] = _values[0].size();
 	d[1] = nchain();
 	return d;
     }
@@ -37,7 +36,7 @@ namespace dic {
 	return _values[chain];
     }
 
-    void DevianceMonitor::doUpdate()
+    void DevianceMonitor::update()
     {
 	unsigned int nchain = _snode->nchain();
 	for (unsigned int ch = 0; ch < nchain; ++ch) {
@@ -47,9 +46,8 @@ namespace dic {
 
     void DevianceMonitor::reserve(unsigned int niter)
     {
-	unsigned int N = 1 + niter / thin();
 	for (unsigned int ch = 0; ch < _values.size(); ++ch) {
-	    _values[ch].reserve(_values[ch].size() + N);
+	    _values[ch].reserve(_values[ch].size() + niter);
 	}
     }
     

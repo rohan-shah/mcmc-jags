@@ -8,9 +8,8 @@ using std::vector;
 namespace dic {
 
     DefaultPDMonitor::DefaultPDMonitor(StochasticNode const *snode,
-			 unsigned int start, unsigned int thin, 
 			 vector<RNG *> const &rngs, unsigned int nrep)
-	: PDMonitor(snode, start, thin), 
+	: PDMonitor(snode), 
 	  _repnode(snode->distribution(), snode->parents(), 
                    snode->lowerBound(), snode->upperBound()),
            _rngs(rngs), _nrep(nrep)
@@ -18,7 +17,7 @@ namespace dic {
     {
     }
 
-    void DefaultPDMonitor::doUpdate()
+    void DefaultPDMonitor::update()
     {
 	unsigned int nchain = _repnode.nchain();
 	unsigned int len = _repnode.length();

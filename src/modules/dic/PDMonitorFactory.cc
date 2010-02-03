@@ -22,8 +22,6 @@ namespace dic {
 
     Monitor *PDMonitorFactory::getMonitor(Node const *node, 
 					  Model *model,
-					  unsigned int start,
-					  unsigned int thin, 
 					  string const &type)
     {
 	if (type != "pD" || node->nchain() < 2)
@@ -37,7 +35,7 @@ namespace dic {
 	    
 	    KL const *kl = findKL(snode->distribution()->name());
 	    if (kl) {
-		return new KLPDMonitor(snode, start, thin, kl);
+		return new KLPDMonitor(snode, kl);
 	    }
 	}
 	
@@ -46,7 +44,7 @@ namespace dic {
 	for (unsigned int i = 0; i < nchain; ++i) {
 	    rngs.push_back(model->rng(i));
 	}
-	return new DefaultPDMonitor(snode, start, thin, rngs, 10);	
+	return new DefaultPDMonitor(snode, rngs, 10);	
     }
     
     vector<Node const*> 

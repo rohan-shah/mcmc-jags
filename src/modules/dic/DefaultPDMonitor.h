@@ -18,9 +18,8 @@ namespace dic {
 	unsigned int _nrep;
     public:
 	DefaultPDMonitor(StochasticNode const *snode,
-			 unsigned int start,  unsigned int thin, 
 			 std::vector<RNG *> const &rngs, unsigned int nrep); 
-	void doUpdate();
+	void update();
     };
 
 }

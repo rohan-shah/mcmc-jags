@@ -8,9 +8,8 @@ using std::string;
 
 namespace dic {
 
-    PDMonitor::PDMonitor(StochasticNode const *snode,
-			 unsigned int start, unsigned int thin) 
-	: Monitor("pD", snode, start, thin)
+    PDMonitor::PDMonitor(StochasticNode const *snode)
+	: Monitor("pD", snode)
     {
 	if (snode->nchain() < 2) {
 	    throw logic_error("PDMonitor needs at least 2 chains");
@@ -24,7 +23,7 @@ namespace dic {
 
     vector<unsigned int> PDMonitor::dim() const
     {
-	return vector<unsigned int> (1,niter());
+	return vector<unsigned int> (1,_values.size());
     }
  
     vector<double> const &PDMonitor::value(unsigned int chain) const
@@ -34,8 +33,7 @@ namespace dic {
 
     void PDMonitor::reserve(unsigned int niter)
     {
-	unsigned int N = 1 + niter / thin();
-	_values.reserve(_values.size() + N);
+	_values.reserve(_values.size() + niter);
     }
 
     SArray PDMonitor::dump() const

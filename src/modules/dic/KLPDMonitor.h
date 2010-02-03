@@ -15,10 +15,9 @@ namespace dic {
 	KL const *_kl;
 	std::vector<std::vector<double const *> > _par;
     public:
-	KLPDMonitor(StochasticNode const *snode,
-		    unsigned int start,  unsigned int thin, KL const *kl);
+	KLPDMonitor(StochasticNode const *snode, KL const *kl);
         ~KLPDMonitor();
-	void doUpdate();
+	void update();
     };
 
 }

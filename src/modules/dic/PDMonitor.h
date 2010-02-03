@@ -15,8 +15,7 @@ namespace dic {
     protected:
 	std::vector<double> _values;
     public:
-	PDMonitor(StochasticNode const *node, unsigned int start,
-		  unsigned int thin);
+	PDMonitor(StochasticNode const *node);
 	unsigned int nchain() const;
 	std::vector<unsigned int> dim() const;
 	std::vector<double> const &value(unsigned int chain) const;

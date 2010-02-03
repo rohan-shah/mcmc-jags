@@ -11,13 +11,12 @@ using std::string;
 
 namespace base {
 
-    TraceMonitor::TraceMonitor(Node const *node, unsigned int start, 
-			       unsigned int thin)
-	: Monitor("trace", node, start, thin), _values(node->nchain())
+    TraceMonitor::TraceMonitor(Node const *node)
+	: Monitor("trace", node), _values(node->nchain())
     {
     }
-
-    void TraceMonitor::doUpdate()
+    
+    void TraceMonitor::update()
     {
 	Node const *snode = node();
 	unsigned int nchain = snode->nchain();
@@ -38,7 +37,7 @@ namespace base {
     vector<unsigned int> TraceMonitor::dim() const
     {
 	vector<unsigned int> dim = node()->dim();
-	dim.push_back(niter());
+	dim.push_back(_values[0].size());
 	dim.push_back(nchain());
 	return dim;
     }
@@ -50,7 +49,7 @@ namespace base {
 
     void TraceMonitor::reserve(unsigned int niter)
     {
-	unsigned int N = (1 + niter / thin()) * node()->length();
+	unsigned int N = niter * node()->length();
 	for (unsigned int ch = 0; ch < _values.size(); ++ch) {
 	    _values[ch].reserve(_values[ch].size() + N);
 	}

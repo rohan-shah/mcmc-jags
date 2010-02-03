@@ -20,12 +20,11 @@ namespace dic {
 	std::vector<double> _values; // sampled values
     public:
 	PoptMonitor(StochasticNode const *snode,
-		    unsigned int start,  unsigned int thin, 
 		    std::vector<RNG *> const &rngs, unsigned int nrep); 
 	unsigned int nchain() const;
 	std::vector<unsigned int> dim() const;
 	std::vector<double> const &value(unsigned int chain) const;
-	void doUpdate();
+	void update();
 	void reserve(unsigned int niter);
 	SArray dump() const;
     };
