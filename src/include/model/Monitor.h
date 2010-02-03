@@ -17,40 +17,18 @@ class Node;
 class Monitor {
     std::string _type;
     Node const * _node;
-    unsigned int _start;
-    unsigned int _thin;
-    unsigned int _niter;
 public:
-    Monitor(std::string const &type, Node const *nodes, unsigned int start,
-            unsigned int thin);
+    Monitor(std::string const &type, Node const *nodes);
     virtual ~Monitor();
     /**
      * Updates the monitor. If the iteration number coincides with
      * the thinning interval, then the doUpdate function is called.
-     *
-     * @param iteration The current iteration number.
      */
-    void update(unsigned int iteration);
+    virtual void update() = 0;
     /**
      * Returns the sampled Node
      */
     Node const *node() const;
-    /**
-     * @returns the iteration number at which the node started monitoring.  
-     */
-    unsigned int start() const; 
-    /**
-     * @returns The last monitored iteration
-     */
-    unsigned int end() const;
-    /**
-     * @returns the thinning interval of the monitor
-     */
-    unsigned int thin() const;
-    /**
-     * The number of monitored iterations
-     */
-    unsigned int niter() const;      
     /**
      * The type of monitor. Each subclass must define have a unique
      * type, which is common to all Monitors of that class. The type
@@ -72,10 +50,6 @@ public:
      * The vector of monitored values for the given chain
      */
     virtual std::vector<double> const &value(unsigned int chain) const = 0;
-    /**
-     * Updates the Monitor with Node valus from the current iteration
-     */
-    virtual void doUpdate() = 0;
     /**
      * Reserves memory for future updates. Sufficient memory is
      * reserved for storage of future samples to avoid re-allocation

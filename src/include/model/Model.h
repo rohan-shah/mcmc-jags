@@ -2,13 +2,13 @@
 #define MODEL_H_
 
 #include <graph/Graph.h>
+#include <model/MonitorControl.h>
 
 #include <vector>
 #include <list>
 #include <string>
 
 class Sampler;
-class Monitor;
 class SamplerFactory;
 class RNG;
 class RNGFactory;
@@ -33,7 +33,7 @@ private:
   Graph _graph;
   std::set<Node*> _extra_nodes;
   std::vector<Node*> _sampled_extra;
-  std::list<Monitor*> _monitors;
+  std::list<MonitorControl> _monitors;
   std::list<Monitor*> _default_monitors;
   std::vector<StochasticNode*> _stochastic_nodes;
   bool _is_initialized;
@@ -93,7 +93,7 @@ public:
    * iteration.  This can only be done if Model#adaptOff has been
    * successfully called. Otherwise, a logic_error is thrown.
    */
-  void addMonitor(Monitor *monitor);
+  void addMonitor(Monitor *monitor, unsigned int thin);
   /**
    * Clears the monitor from the model, so that it will no longer
    * be updated. If the monitor has not previously been added to the
@@ -103,7 +103,7 @@ public:
   /**
    * Returns the list of Monitors 
    */
-  std::list<Monitor*> const &monitors() const;
+  std::list<MonitorControl> const &monitors() const;
   /**
    * Traverses the list of monitor factories requesting default
    * monitors of the given type. The function returns true after the
