@@ -140,23 +140,6 @@ public:
   bool clearMonitor(std::string const &name, Range const &range,
 		    std::string const &type);
   /**
-   * @short Creates default monitors
-   *
-   * This short-cut function allows the user to define multiple
-   * monitors with a single function call. Default nodes are selected
-   * by the MonitorFactory, and monitors are created for these nodes.
-   */
-  bool setDefaultMonitors(std::string const &type, unsigned int thin);
-  /**
-   * @short Clears default monitors 
-   *
-   * This function deletes all monitors created by a previous call to
-   * setDefault monitors.
-   *
-   * @param type The type of Monitor to clear
-   */
-  bool clearDefaultMonitors(std::string const &type);
-  /**
    * @short Dumps the state of the model.
    *
    * Writes the current values of the variables to the data table.
