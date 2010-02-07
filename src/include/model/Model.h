@@ -126,9 +126,8 @@ public:
   void addNode(ConstantNode *node);
   /**
    * After the model is initialized, extra uninformative nodes may be
-   * added to the graph (For example, a node may be added that
-   * calculates the deviance of the model).  The model takes
-   * responsibility for updating the extra node.
+   * added to the graph.  The model takes responsibility for updating
+   * the extra node.
    *
    * The extra node cannot be observed, it must not already be in the
    * model graph, it may not have any children, and all of its parents
@@ -187,6 +186,10 @@ public:
    * adaptOff function has been called).
    */
   bool isAdapting() const;
+  /**
+   * Returns a vector of all stochastic nodes in the model
+   */
+  std::vector<StochasticNode*> const &stochasticNodes() const;
 };
 
 #endif /* MODEL_H_ */

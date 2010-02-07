@@ -8,7 +8,6 @@
 #include <graph/LinkNode.h>
 #include <graph/ConstantNode.h>
 #include <graph/StochasticNode.h>
-#include <graph/DevianceNode.h>
 #include <graph/AggNode.h>
 #include <graph/NodeError.h>
 #include <sarray/RangeIterator.h>

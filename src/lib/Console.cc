@@ -307,7 +307,6 @@ bool Console::initialize()
     }
     try {
 	_model->initialize(false);
-	_model->addDevianceNode();
     }
     CATCH_ERRORS;
     

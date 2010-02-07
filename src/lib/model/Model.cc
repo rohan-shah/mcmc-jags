@@ -618,3 +618,8 @@ void Model::addNode(ConstantNode *node)
 {
     _graph.add(node);
 }
+
+vector<StochasticNode*> const &Model::stochasticNodes() const
+{
+    return _stochastic_nodes;
+}

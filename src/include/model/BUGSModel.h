@@ -30,15 +30,6 @@ public:
      */
     SymTab &symtab();
     /**
-     * Adds a DevianceNode to the model graph.  The parents of this node
-     * are all observed stochastic nodes in the graph.  A new NodeArray
-     * is added to the symbol table with name "deviance" and the new
-     * DevianceNode is inserted into it. However, if a NodeArray with
-     * name "deviance" already exists in the symbol table then this
-     * function does nothing.
-     */
-    void addDevianceNode();
-    /**
      * Returns a node given a variable name and a range of indices. The
      * name is used to look up a NodeArray in the symbol table, and 
      * a subset of the Nodearray corresponding to the given index range

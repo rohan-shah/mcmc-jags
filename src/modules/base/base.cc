@@ -23,6 +23,7 @@
 #include <rngs/BaseRNGFactory.h>
 //Monitors
 #include <monitors/TraceMonitorFactory.h>
+#include <monitors/DevianceFactory.h>
 
 using std::vector;
 
@@ -59,7 +60,8 @@ namespace base {
 	insert(new FiniteFactory);
 	
 	insert(new BaseRNGFactory);
-
+	
+	insert(new DevianceFactory);
 	insert(new TraceMonitorFactory);
 
     }

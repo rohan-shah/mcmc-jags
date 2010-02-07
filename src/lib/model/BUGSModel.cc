@@ -3,7 +3,6 @@
 #include <model/Monitor.h>
 #include <model/NodeArray.h>
 #include <model/MonitorFactory.h>
-#include <graph/DevianceNode.h>
 #include <graph/StochasticNode.h>
 #include <graph/GraphMarks.h>
 #include <graph/Node.h>
@@ -55,6 +54,9 @@ SymTab &BUGSModel::symtab()
 Node *BUGSModel::getNode(string const &name, Range const &target_range)
 {
     NodeArray *array = _symtab.getVariable(name);
+    if (!array) {
+	return 0;
+    }
     Range range = target_range;
     if (isNULL(range)) {
 	range = array->range();
@@ -191,33 +193,6 @@ void BUGSModel::coda(ofstream &index, vector<ofstream*> const &output,
     }
     
     CODA(monitors(), index, output);
-}
-
-void BUGSModel::addDevianceNode()
-{
-    NodeArray const *array = _symtab.getVariable("deviance");
-    if (array)
-	return; //Deviance already defined by user
-
-    _symtab.addVariable("deviance", vector<unsigned int>(1,1));
-    NodeArray *deviance = _symtab.getVariable("deviance");
-    vector<Node*> nodes;
-    graph().getNodes(nodes);
-    std::set<StochasticNode const *> parameters;
-    for (vector<Node*>::const_iterator p = nodes.begin(); p != nodes.end(); ++p)
-    {
-	if ((*p)->isObserved()) {
-	    StochasticNode *snode = dynamic_cast<StochasticNode*>(*p);
-	    if (snode)
-		parameters.insert(snode);
-	}
-    }
-    if (!parameters.empty()) {
-	//Can't construct a deviance node with no parameters
-	DevianceNode *dnode = new DevianceNode(parameters);
-	addExtraNode(dnode);
-	deviance->insert(dnode, vector<unsigned int>(1,1));
-    }
 }
 
 void BUGSModel::setParameters(std::map<std::string, SArray> const &param_table,
