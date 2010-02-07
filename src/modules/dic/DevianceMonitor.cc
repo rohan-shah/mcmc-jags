@@ -30,6 +30,11 @@ namespace dic {
 	d[1] = nchain();
 	return d;
     }
+
+    vector<unsigned int> DevianceMonitor::dim1() const
+    {
+	return vector<unsigned int>(1,1);
+    }
  
     vector<double> const &DevianceMonitor::value(unsigned int chain) const
     {

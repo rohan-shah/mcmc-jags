@@ -3,7 +3,7 @@
 #include "KLPDMonitor.h"
 #include "KLTab.h"
 
-#include <model/Model.h>
+#include <model/BUGSModel.h>
 #include <graph/StochasticNode.h>
 #include <distribution/Distribution.h>
 
@@ -20,31 +20,41 @@ namespace dic {
 	return _kltab.find(name);
     }
 
-    Monitor *PDMonitorFactory::getMonitor(Node const *node, 
-					  Model *model,
+    Monitor *PDMonitorFactory::getMonitor(string const &name,
+					  Range const &range,
+					  BUGSModel *model,
 					  string const &type)
     {
-	if (type != "pD" || node->nchain() < 2)
+	if (type != "pD" || model->nchain() < 2)
 	    return 0;
 	
+	Node const *node = model->getNode(name, range);
 	StochasticNode const *snode = asStochastic(node);
 	if (!snode)
 	    return 0;
 	
+	Monitor *m = 0;
 	if (isSupportFixed(snode)) {
 	    
 	    KL const *kl = findKL(snode->distribution()->name());
 	    if (kl) {
-		return new KLPDMonitor(snode, kl);
+		m = new KLPDMonitor(snode, kl);
 	    }
 	}
-	
-	unsigned int nchain = model->nchain();
-	vector<RNG*> rngs;
-	for (unsigned int i = 0; i < nchain; ++i) {
-	    rngs.push_back(model->rng(i));
+	else {
+
+	    unsigned int nchain = model->nchain();
+	    vector<RNG*> rngs;
+	    for (unsigned int i = 0; i < nchain; ++i) {
+		rngs.push_back(model->rng(i));
+	    }
+	    return new DefaultPDMonitor(snode, rngs, 10);
 	}
-	return new DefaultPDMonitor(snode, rngs, 10);	
+	if (m) {
+	    m->setName(name + print(range));
+	    m->setElementNames(vector<string>(1, name + print(range)));
+	}
+	return m;
     }
     
     vector<Node const*> 

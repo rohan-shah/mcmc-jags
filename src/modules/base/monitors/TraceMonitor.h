@@ -17,6 +17,7 @@ namespace base {
 	void update();
 	std::vector<double> const &value(unsigned int chain) const;
 	std::vector<unsigned int> dim() const;
+	std::vector<unsigned int> dim1() const;
 	unsigned int nchain() const;
 	void reserve(unsigned int niter);
 	SArray dump() const;

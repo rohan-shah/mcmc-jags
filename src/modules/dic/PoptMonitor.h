@@ -23,6 +23,7 @@ namespace dic {
 		    std::vector<RNG *> const &rngs, unsigned int nrep); 
 	unsigned int nchain() const;
 	std::vector<unsigned int> dim() const;
+	std::vector<unsigned int> dim1() const;
 	std::vector<double> const &value(unsigned int chain) const;
 	void update();
 	void reserve(unsigned int niter);

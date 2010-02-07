@@ -51,7 +51,6 @@
     void return_to_main_buffer();
     void setMonitor(ParseTree const *var, int thin, std::string const &type);
     void clearMonitor(ParseTree const *var, std::string const &type);
-    void setDefaultMonitors(std::string const &type, unsigned int thin);
     void doCoda (ParseTree const *var, std::string const &stem);
     void doAllCoda (std::string const &stem);
     void doDump (std::string const &file, DumpType type, unsigned int chain);
@@ -402,23 +401,6 @@ monitor_set: MONITOR SET var  {
     setMonitor($2, $6, *$10); 
     delete $10;
 }
-| MONITOR ',' THIN '(' INT ')' TYPE '(' NAME ')' {
-    setDefaultMonitors(*$9, $5);
-    delete $9;
-}
-| MONITOR ',' TYPE '(' NAME ')' THIN '(' INT ')' {
-    setDefaultMonitors(*$5, $9);
-}
-| MONITOR ',' TYPE '(' NAME ')' {
-    setDefaultMonitors(*$5, 1);
-    delete $5;
-}
-| MONITOR ',' THIN '(' INT ')' {
-    setDefaultMonitors("trace", $5);
-}
-| MONITOR {
-    setDefaultMonitors("trace", 1);
-}
 ;
 
 monitor_clear: MONITOR CLEAR var {
@@ -717,47 +699,6 @@ void clearMonitor(ParseTree const *var, std::string const &type)
 	console->clearMonitor(name, getRange(var), type);
     }
 }
-
-void setDefaultMonitors(std::string const &type, unsigned int thin)
-{
-    console->setDefaultMonitors(type, thin);
-}
-
-/*
-void doCoda (ParseTree const *var, std::string const &stem)
-{
-  unsigned int nchain = console->nchain();
-
-  for (unsigned int n = 0; n < nchain; ++n) {
-      std::ostringstream outstream;
-    outstream << stem << n << ".out";
-    std::string outname = outstream.str();
-    std::ofstream out(outname.c_str());
-    if (!out) {
-      std::cerr << "Failed to open file " << outname << std::endl;
-      return;
-    }
-    std::ostringstream indstream;
-    indstream << stem << n << ".ind";
-    std::string indname = indstream.str();
-    std::ofstream ind(indname.c_str());
-    if (!ind) {
-      std::cerr << "Failed to open file " << indname << std::endl;
-      out.close();
-      return;
-    }
-
-    if (var->parameters().empty()) {
-      console->coda(var->name(), Range(), out, ind, n);
-    }
-    else {
-      console->coda(var->name(), getRange(var), out, ind, n);
-    }
-    out.close();
-    ind.close();
-  }
-}
-*/
 
 void doAllCoda (std::string const &stem)
 {

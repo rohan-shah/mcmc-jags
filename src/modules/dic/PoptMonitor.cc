@@ -36,6 +36,11 @@ namespace dic {
 	return vector<unsigned int> (1,_values.size());
     }
  
+    vector<unsigned int> PoptMonitor::dim1() const
+    {
+	return vector<unsigned int> (1,1);
+    }
+
     vector<double> const &PoptMonitor::value(unsigned int chain) const
     {
 	return _values;

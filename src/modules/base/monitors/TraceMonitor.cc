@@ -18,7 +18,7 @@ namespace base {
     
     void TraceMonitor::update()
     {
-	Node const *snode = node();
+	Node const *snode = nodes()[0];
 	unsigned int nchain = snode->nchain();
 	unsigned int length = snode->length();
 	for (unsigned int ch = 0; ch < nchain; ++ch) {
@@ -36,20 +36,25 @@ namespace base {
 
     vector<unsigned int> TraceMonitor::dim() const
     {
-	vector<unsigned int> dim = node()->dim();
+	vector<unsigned int> dim = nodes()[0]->dim();
 	dim.push_back(_values[0].size());
 	dim.push_back(nchain());
 	return dim;
     }
 
+    vector<unsigned int> TraceMonitor::dim1() const
+    {
+	return nodes()[0]->dim();
+    }
+
     unsigned int TraceMonitor::nchain() const
     {
-	return node()->nchain();
+	return nodes()[0]->nchain();
     }
 
     void TraceMonitor::reserve(unsigned int niter)
     {
-	unsigned int N = niter * node()->length();
+	unsigned int N = niter * nodes()[0]->length();
 	for (unsigned int ch = 0; ch < _values.size(); ++ch) {
 	    _values[ch].reserve(_values[ch].size() + N);
 	}

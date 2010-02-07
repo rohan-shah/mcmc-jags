@@ -1,7 +1,7 @@
 #include "PoptMonitorFactory.h"
 #include "PoptMonitor.h"
 
-#include <model/Model.h>
+#include <model/BUGSModel.h>
 #include <graph/StochasticNode.h>
 
 #include <set>
@@ -12,11 +12,16 @@ using std::vector;
 
 namespace dic {
 
-    Monitor *PoptMonitorFactory::getMonitor(Node const *node, 
-					  Model *model,
-					  string const &type)
+    Monitor *PoptMonitorFactory::getMonitor(string const &name, 
+					    Range const &range,
+					    BUGSModel *model,
+					    string const &type)
     {
-	if (type != "popt" || node->nchain() < 2)
+	if (type != "popt" || model->nchain() < 2)
+	    return 0;
+
+	Node *node = model->getNode(name, range);
+	if (!node)
 	    return 0;
 
 	unsigned int nchain = model->nchain();
