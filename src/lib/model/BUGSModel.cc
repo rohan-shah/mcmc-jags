@@ -9,6 +9,7 @@
 #include <graph/Node.h>
 #include <rng/RNG.h>
 #include <sampler/Sampler.h>
+#include <util/dim.h>
 
 #include <list>
 #include <utility>
@@ -37,11 +38,11 @@ BUGSModel::BUGSModel(unsigned int nchain)
 
 BUGSModel::~BUGSModel()
 {
-    for (list<Monitor*>::iterator i = _bugs_monitors.begin();
+    for (list<MonitorInfo>::iterator i = _bugs_monitors.begin();
 	 i != _bugs_monitors.end(); ++i)
     {
-	Monitor *monitor = *i;
-	delete monitor;
+	Monitor const *monitor = i->monitor();
+	delete monitor; //FIXME: constant pointer
     }
 
 }
@@ -51,25 +52,17 @@ SymTab &BUGSModel::symtab()
     return _symtab;
 }
 
-Node *BUGSModel::getNode(string const &name, Range const &target_range,
-			 string &message)
+Node *BUGSModel::getNode(string const &name, Range const &target_range)
 {
     NodeArray *array = _symtab.getVariable(name);
-    if (!array) {
-	message = string("Unknown variable ") + name;
-	return 0;
-    }
-
     Range range = target_range;
     if (isNULL(range)) {
 	range = array->range();
     }
     else if (!array->range().contains(target_range)) {
 	//FIXME. What if target_range has wrong dimension?
-	message = string("Invalid range ") + name + print(target_range);
 	return 0;
     }
-    message.clear();
     unsigned int NNode = graph().size();
     Node *node = array->getSubset(range, *this);
     if (graph().size() != NNode) {
@@ -99,59 +92,38 @@ static void writeDouble(double x, std::ostream &out)
     }
 }
 
-static void CODA(vector<pair<NodeId, MonitorControl> > const &monitors,
+static void CODA(list<MonitorControl> const &mvec,
 		 ofstream &index,  vector<ofstream*> const &output)
 {
     //FIXME: Check streams are open and set pointer to beginning.
-
+    
     unsigned int lineno = 0;
-    vector<pair<NodeId, MonitorControl> >::const_iterator p;
-    for (p = monitors.begin(); p != monitors.end(); ++p) {
-
-	MonitorControl const &mc = p->second;
-	Monitor const *monitor = mc.monitor();
-
-	if (monitor->type() == "trace") {
+    list<MonitorControl>::const_iterator p;
+    for (p = mvec.begin(); p != mvec.end(); ++p) {
+	
+	Monitor const *monitor = p->monitor();
+	
+	if (monitor->type() == "trace") { //FIXME: generalize?
 	    
-	    string const &name = p->first.first;
-	    Range const &uni_range = p->first.second;
-	    Range multi_range = uni_range;
-	    if (isNULL(multi_range)) {
-		multi_range = Range(monitor->node()->dim());
-	    }
-	    else if (multi_range.dim(true) != monitor->node()->dim()) {
-		throw logic_error("Range does not match Node dimension in CODA");
-	    }
-
-	    unsigned int nvar = monitor->node()->length();
-	    if (nvar != 1) {
-		// Multivariate node
-		for (unsigned int offset = 0; offset < nvar; ++offset) 
-		{
-		    index << name << print(multi_range.leftIndex(offset))
-			  << " "  << lineno + 1 << "  "  
-			  << lineno + mc.niter() << '\n';
-		    lineno += mc.niter();
-		}
-	    }
-	    else {
-		// Univariate node 
-		index << name << print(uni_range) << "  " 
-		      << lineno + 1 << "  " 
-		      << lineno + mc.niter() << '\n';
-		lineno += mc.niter();
+	    unsigned int nvar = product(monitor->dim1());
+	    //Write index file
+	    vector<string> const &enames = monitor->elementNames();
+	    for (unsigned int i = 0; i < nvar; ++i) {
+		index << enames[i] << " " << lineno + 1 << " "
+		      << lineno + p->niter() << '\n';
+		lineno += p->niter();
 	    }
 	    //Write output files
 	    for (unsigned int ch = 0; ch < output.size(); ++ch) {
 		ofstream &out = *output[ch];
 		vector<double> const &y = monitor->value(ch);
 		for (unsigned int offset = 0; offset < nvar; ++offset) {
-		    unsigned int iter = mc.start();
-		    for (unsigned int k = 0; k < mc.niter(); k++) {
+		    unsigned int iter = p->start();
+		    for (unsigned int k = 0; k < p->niter(); ++k) {
 			out << iter << "  ";
 			writeDouble(y[k * nvar + offset], out);
 			out << '\n';
-			iter += mc.thin();
+			iter += p->thin();
 		    }
 		}
 	    }
@@ -159,7 +131,7 @@ static void CODA(vector<pair<NodeId, MonitorControl> > const &monitors,
     }
 }
 
-void BUGSModel::coda(vector<NodeId> const &nodes, ofstream &index, 
+void BUGSModel::coda(vector<NodeId> const &node_ids, ofstream &index, 
 		     vector<ofstream*> const &output, string &warn)
 {
     if (output.size() != nchain()) {
@@ -168,36 +140,38 @@ void BUGSModel::coda(vector<NodeId> const &nodes, ofstream &index,
 
     warn.clear();
 
-    // Create a new vector with only the selected nodes in it 
-    vector<pair<NodeId, MonitorControl> > dump_nodes;
-    for (unsigned int i = 0; i < nodes.size(); ++i) {
-	string msg;
-	string const &name = nodes[i].first;
-	Range const &range = nodes[i].second;
-	Node *node = getNode(name, range, msg);
-	if (!node) {
+    list<MonitorControl> dump_nodes;
+    for (unsigned int i = 0; i < node_ids.size(); ++i) {
+	string const &name = node_ids[i].first;
+	Range const &range = node_ids[i].second;
+	list<MonitorInfo>::const_iterator p;
+	for (p = _bugs_monitors.begin(); p != _bugs_monitors.end(); ++p) {
+	    if (p->name() == name && p->range() == range) {
+		break;
+	    }
+	}
+	if (p == _bugs_monitors.end()) {
+	    string msg = string("No Monitor ") + name + 
+		print(range) + " found.\n";
 	    warn.append(msg);
 	}
 	else {
-	    list<MonitorControl>::const_iterator p = monitors().begin();
-	    for (; p != monitors().end(); ++p) {
-		Monitor const *mon = p->monitor();
-		if (mon->node() == node && mon->type() == "trace") {
-		    pair<NodeId, MonitorControl> newpair(nodes[i], *p);
-		    dump_nodes.push_back(newpair);		    
+	    list<MonitorControl>::const_iterator q; 
+	    for (q = monitors().begin(); q != monitors().end(); ++q) {
+		if (q->monitor() == p->monitor()) {
+		    dump_nodes.push_back(*q);		    
 		    break;
 		}
 	    }
-	    if (p == monitors().end()) {
-		string msg  = string("No trace monitor for node ") + name + 
-		    print(range) + "\n";
-		warn.append(msg);
+	    if (q == monitors().end()) {
+		throw logic_error(string("Monitor ") + name + print(range) +
+				  "not found");
 	    }
 	}
     }
 
     if (dump_nodes.empty()) {
-	warn.append("There are no monitored nodes\n");
+	warn.append("There are no matching monitors\n");
     }
     
     CODA(dump_nodes, index, output);
@@ -212,22 +186,11 @@ void BUGSModel::coda(ofstream &index, vector<ofstream*> const &output,
     
     warn.clear();
     
-    vector<pair<NodeId, MonitorControl> > dump_nodes;
-    for(list<MonitorControl>::const_iterator p = monitors().begin();
-	p != monitors().end(); ++p)
-    {
-	Monitor const *mon = p->monitor();
-	if (mon->type() == "trace") {
-	    NodeId id = _node_map.find(mon->node())->second;
-	    dump_nodes.push_back(pair<NodeId,MonitorControl>(id,*p));
-	}
-    }
-    
-    if (dump_nodes.empty()) {
+    if (monitors().empty()) {
 	warn.append("There are no monitored nodes\n");
     }
- 
-    CODA(dump_nodes, index, output);
+    
+    CODA(monitors(), index, output);
 }
 
 void BUGSModel::addDevianceNode()
@@ -301,16 +264,10 @@ void BUGSModel::setParameters(std::map<std::string, SArray> const &param_table,
 bool BUGSModel::setMonitor(string const &name, Range const &range,
 			   unsigned int thin, string const &type)
 {
-    string msg;
-    Node *node = getNode(name, range, msg);
-    if (!node) {
-	return false;
-    }
-
-    for (list<Monitor*>::const_iterator i = _bugs_monitors.begin();
+    for (list<MonitorInfo>::const_iterator i = _bugs_monitors.begin();
 	 i != _bugs_monitors.end(); ++i)
     {
-	if ((*i)->node() == node && (*i)->type() == type)
+	if (i->name() == name && i->range() == range && i->type() == type)
 	    return false; //Node is already being monitored.
     }
 
@@ -320,15 +277,14 @@ bool BUGSModel::setMonitor(string const &name, Range const &range,
     for(list<MonitorFactory*>::const_iterator j = faclist.begin();
 	j != faclist.end(); ++j)
     {
-	monitor = (*j)->getMonitor(node, this, type);
+	monitor = (*j)->getMonitor(name, range, this, type);
 	if (monitor)
 	    break;
     }
 
     if (monitor) {
 	addMonitor(monitor, thin);
-	_bugs_monitors.push_back(monitor);
-	_node_map.insert(pair<Node const*,NodeId>(node, NodeId(name,range)));
+	_bugs_monitors.push_back(MonitorInfo(monitor, name, range, type));
 	return true;
     }
     else {
@@ -339,20 +295,14 @@ bool BUGSModel::setMonitor(string const &name, Range const &range,
 bool BUGSModel::deleteMonitor(string const &name, Range const &range,
 			      string const &type)
 {
-    string msg;
-    Node *node = getNode(name, range, msg);
-    if (!node) {
-	return false;
-    }
-
-    for (list<Monitor*>::iterator i = _bugs_monitors.begin();
+    for (list<MonitorInfo>::iterator i = _bugs_monitors.begin();
 	 i != _bugs_monitors.end(); ++i)
     {
-	if ((*i)->node() == node && (*i)->type() == type) {
-	    Monitor *monitor = *i;
+	if (i->name() == name && i->range() == range && i->type() == type) {
+	    Monitor *monitor = i->monitor();
 	    removeMonitor(monitor);
 	    _bugs_monitors.erase(i);
-	    delete monitor;
+	    delete monitor; 
 	    return true;
 	}
     }

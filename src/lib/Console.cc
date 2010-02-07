@@ -425,6 +425,7 @@ bool Console::clearMonitor(string const &name, Range const &range,
   return true;
 }
 
+/*
 bool Console::setDefaultMonitors(string const &type, unsigned int thin)
 {
     if (!_model) {
@@ -458,6 +459,7 @@ bool Console::clearDefaultMonitors(string const &type)
 
 	return true;
 }
+*/
 
 void Console::clearModel()
 {
@@ -532,11 +534,8 @@ bool Console::dumpMonitors(map<string,SArray> &data_table,
 	for (p = monitors.begin(); p != monitors.end(); ++p) {
 	    Monitor const *monitor = p->monitor();
 	    if (p->niter() > 0 && monitor->type() == type) {
-		string name = _model->symtab().getName(monitor->node());
-		if (!name.empty()) {
-		    data_table.insert(pair<string,SArray>(name, 
-							  monitor->dump()));
-		}
+		data_table.insert(pair<string,SArray>(monitor->name(), 
+						      monitor->dump()));
 	    }
 	}
     }

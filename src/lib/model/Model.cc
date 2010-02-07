@@ -418,11 +418,13 @@ void Model::setSampledExtra()
     for (list<MonitorControl>::const_iterator p = _monitors.begin();
 	 p != _monitors.end(); ++p)
     {
-	Node const *node = p->monitor()->node();
-	if (egraph.contains(node)) {
-	    emarks.mark(node, 1);
-	    //FIXME: call once
-	    emarks.markAncestors(vector<Node const *>(1, node), 1);
+	for (unsigned int i = 0; i < p->monitor()->nodes().size(); ++i) {
+	    Node const *node = p->monitor()->nodes()[i];
+	    if (egraph.contains(node)) {
+		emarks.mark(node, 1);
+		//FIXME: call once
+		emarks.markAncestors(vector<Node const *>(1, node), 1);
+	    }
 	}
     }
     //Remove unmarked nodes from graph
@@ -557,6 +559,7 @@ list<MonitorControl> const &Model::monitors() const
   return _monitors;
 }
 
+/*
 bool Model::setDefaultMonitors(string const &type, unsigned int thin)
 {
     list<MonitorFactory*> const &faclist = monitorFactories();
@@ -574,7 +577,7 @@ bool Model::setDefaultMonitors(string const &type, unsigned int thin)
 		    throw logic_error("Invalid default monitor");
 		}
 		addMonitor(monitor, thin);
-		/* Model takes ownership of default monitors */
+		// Model takes ownership of default monitors
 		_default_monitors.push_back(monitor);
 	    }
 	    return true;
@@ -598,6 +601,7 @@ void Model::clearDefaultMonitors(string const &type)
     }
     setSampledExtra();
 }
+*/
 
 void Model::addNode(StochasticNode *node)
 {
