@@ -105,24 +105,6 @@ public:
    */
   std::list<MonitorControl> const &monitors() const;
   /**
-   * Traverses the list of monitor factories requesting default
-   * monitors of the given type. The function returns true after the
-   * first monitor factory has added at least one node to the monitor
-   * list. If none of the available monitor factories can create
-   * default monitors of the given type, the return value is false.
-   *
-   * Monitors created by a call to setDefaultMonitors are owned by
-   * the Model.
-   *
-   * @see MonitorFactory#addDefaultMonitors
-   */
-  bool setDefaultMonitors(std::string const &type, unsigned int thin);
-  /**
-   * Removes all Monitors of the given type created by a previous call
-   * to setDefaultMonitors, and deletes them.
-   */
-  void clearDefaultMonitors(std::string const &type);
-  /**
    * Adds a stochastic node to the model.  The node must be
    * dynamically allocated.  The model is responsible for memory
    * management of the added node and will delete the node when it is

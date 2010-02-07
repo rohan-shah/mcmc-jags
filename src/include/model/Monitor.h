@@ -16,9 +16,12 @@ class Node;
  */
 class Monitor {
     std::string _type;
-    Node const * _node;
+    std::vector<Node const *> _nodes;
+    std::string _name;
+    std::vector<std::string> _elt_names;
 public:
-    Monitor(std::string const &type, Node const *nodes);
+    Monitor(std::string const &type, std::vector<Node const *> const &nodes);
+    Monitor(std::string const &type, Node const *node);
     virtual ~Monitor();
     /**
      * Updates the monitor. If the iteration number coincides with
@@ -26,9 +29,10 @@ public:
      */
     virtual void update() = 0;
     /**
-     * Returns the sampled Node
+     * Returns the vector of nodes from which the monitors value is
+     * derived.
      */
-    Node const *node() const;
+    std::vector<Node const *> const &nodes() const;
     /**
      * The type of monitor. Each subclass must define have a unique
      * type, which is common to all Monitors of that class. The type
@@ -46,6 +50,8 @@ public:
      * The dimension of the value vector for a single chain.
      */
     virtual std::vector<unsigned int> dim() const = 0;
+    //FIXME! Return a reference?
+    virtual std::vector<unsigned int> dim1() const = 0;
     /**
      * The vector of monitored values for the given chain
      */
@@ -66,6 +72,24 @@ public:
       * values for each iteration and each chain, respectively.
       */
      virtual SArray dump() const = 0;
+     /**
+      * Returns the name of the node
+      */
+     std::string const &name() const;
+     /**
+      * Sets the name of the node
+      */
+     void setName(std::string const &name);
+     /**
+      * Returns the names of individual elements
+      */
+     std::vector<std::string> const &elementNames() const;
+     /**
+      * Sets the element names. The length of the string must be
+      * conform to the dimensions of the monitor, as returned by the
+      * dim1 member function.
+      */
+     void setElementNames(std::vector<std::string> const &names);
 };
 
 #endif

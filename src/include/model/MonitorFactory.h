@@ -6,7 +6,9 @@
 
 class Monitor;
 class Node;
+class BUGSModel;
 class Model;
+class Range;
 
 /**
  * @short Factory for Monitor objects
@@ -15,11 +17,11 @@ class MonitorFactory {
 public:
     virtual ~MonitorFactory();
     /**
-     * Creates a monitor of the given type. If the monitor cannot
-     * be constructed, a null pointer is returned
+     * Creates a monitor of the given type by name and range. If a 
+     * monitor cannot be created, then a null pointer is returned.
      */
-    virtual Monitor *
-	getMonitor(Node const *node, Model *model, std::string const &type) = 0;
+    virtual Monitor *getMonitor(std::string const &name, Range const &range,
+				BUGSModel *model, std::string const &type) = 0;
     /**
      * Returns a vector of default nodes. These are nodes for which
      * monitors are typically created manually by the user.
