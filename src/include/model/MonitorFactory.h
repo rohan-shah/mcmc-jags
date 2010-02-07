@@ -22,13 +22,6 @@ public:
      */
     virtual Monitor *getMonitor(std::string const &name, Range const &range,
 				BUGSModel *model, std::string const &type) = 0;
-    /**
-     * Returns a vector of default nodes. These are nodes for which
-     * monitors are typically created manually by the user.
-     */
-    virtual std::vector<Node const*> defaultNodes(Model *model,
-						  std::string const &type) 
-	const = 0;
 };
 
 #endif /* MONITOR_FACTORY_H_ */

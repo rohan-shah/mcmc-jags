@@ -33,23 +33,5 @@ namespace dic {
 	m->setElementNames(vector<string>(1,name+print(range)));
 	return m;
     }
-
-    vector<Node const*> 
-    DevianceMonitorFactory::defaultNodes(Model *model, 
-					 string const &type) const
-    {
-	vector<Node const*> dnodes;
-
-        if (type == "deviance") {
-	    set<Node*> const &nodes = model->graph().nodes();
-	    set<Node*>::const_iterator p = nodes.begin(); 
-	    for ( ; p != nodes.end(); ++p) {
-		if ((*p)->isObserved() && asStochastic(*p)) {
-		    dnodes.push_back(*p);
-		}
-	    }
-	}
-	return dnodes;
-    }
 	
 }

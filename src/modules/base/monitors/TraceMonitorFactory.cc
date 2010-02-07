@@ -49,35 +49,5 @@ namespace base {
 	
 	return m;
     }
-
-    vector<Node const*> 
-    TraceMonitorFactory::defaultNodes(Model *model, 
-				      string const &type) const
-    {
-	vector<Node const*> dnodes;
-
-        if (type == "trace") {
-	    set<Node*> const &nodes = model->graph().nodes();
-	    set<Node*>::const_iterator p;
-	    for (p = nodes.begin() ; p != nodes.end(); ++p) {
-		//Find random variables with observed parents
-		if ((*p)->isRandomVariable() && !(*p)->isObserved()) {
-		    vector<Node const*> const &parents = (*p)->parents();
-		    bool istop = true;
-		    vector<Node const*>::const_iterator q;
-		    for (q = parents.begin(); q != parents.end(); ++q) {
-			if (!(*q)->isObserved()) {
-			    istop = false;
-			    break;
-			}
-		    }
-		    if (istop) {
-			dnodes.push_back(*p);
-		    }
-		}
-	    }
-	}
-	return dnodes;
-    }
 	
 }

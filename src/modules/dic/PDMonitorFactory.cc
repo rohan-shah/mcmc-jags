@@ -56,22 +56,5 @@ namespace dic {
 	}
 	return m;
     }
-    
-    vector<Node const*> 
-    PDMonitorFactory::defaultNodes(Model *model, string const &type) const
-    {
-	vector<Node const*> dnodes;
 
-        if (type == "pD" && model->nchain() >= 2) {
-	    set<Node*> const &nodes = model->graph().nodes();
-	    set<Node*>::const_iterator p = nodes.begin(); 
-	    for ( ; p != nodes.end(); ++p) {
-		if ((*p)->isObserved() && asStochastic(*p)) {
-		    dnodes.push_back(*p);
-		}
-	    }
-	}
-	return dnodes;
-    }
-	
 }

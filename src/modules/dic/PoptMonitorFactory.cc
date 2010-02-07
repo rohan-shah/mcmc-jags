@@ -36,22 +36,5 @@ namespace dic {
 	else 
 	    return 0;
     }
-
-    vector<Node const*> 
-    PoptMonitorFactory::defaultNodes(Model *model, string const &type) const
-    {
-	vector<Node const*> dnodes;
-
-        if (type == "popt" && model->nchain() >= 2) {
-	    set<Node*> const &nodes = model->graph().nodes();
-	    set<Node*>::const_iterator p = nodes.begin(); 
-	    for ( ; p != nodes.end(); ++p) {
-		if ((*p)->isObserved() && asStochastic(*p)) {
-		    dnodes.push_back(*p);
-		}
-	    }
-	}
-	return dnodes;
-    }
 	
 }
