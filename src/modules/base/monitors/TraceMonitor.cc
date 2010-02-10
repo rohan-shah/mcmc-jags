@@ -83,4 +83,14 @@ namespace base {
 	
 	return(ans);
     }
+
+    bool TraceMonitor::poolChains() const
+    {
+	return false;
+    }
+
+    bool TraceMonitor::poolIterations() const
+    {
+	return false;
+    }
 }

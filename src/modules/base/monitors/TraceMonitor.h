@@ -21,6 +21,8 @@ namespace base {
 	unsigned int nchain() const;
 	void reserve(unsigned int niter);
 	SArray dump() const;
+	bool poolChains() const;
+	bool poolIterations() const;
     };
 }
 
