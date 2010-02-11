@@ -27,7 +27,16 @@ bool checkLinear(GraphView const *gv, bool fixed, bool link)
 
     set<Node const*> ancestors;
     //Sampled nodes are trivial (fixed) linear functions of themselves
+#ifdef _RWSTD_NO_MEMBER_TEMPLATES
+    //Workaround for Solaris libCstd
+    for (vector<StochasticNode const *>::const_iterator p = gv->nodes().begin();
+         p != gv->nodes().end(); ++p)
+      {
+        ancestors.insert(*p);
+      }
+#else
     ancestors.insert(gv->nodes().begin(), gv->nodes().end());
+#endif
     
     set<Node const*> stoch_node_parents;
     if (link) {
@@ -64,7 +73,16 @@ bool checkScale(GraphView const *gv, bool fixed)
     
     set<Node const*> ancestors;
     //FIXME: valid for multiple nodes?
-    ancestors.insert(gv->nodes().begin(), gv->nodes().end()); 
+#ifdef _RWSTD_NO_MEMBER_TEMPLATES
+    //Workaround for Solaris libCstd
+    for (vector<StochasticNode const *>::const_iterator p = gv->nodes().begin();
+         p != gv->nodes().end(); ++p)
+      {
+        ancestors.insert(*p);
+      }
+#else
+    ancestors.insert(gv->nodes().begin(), gv->nodes().end());
+#endif 
 
     //Start off looking for scale transformations, then fall back on
     //scale mixture transformations if fixed is false.
@@ -100,7 +118,17 @@ bool checkScale(GraphView const *gv, bool fixed)
 bool checkPower(GraphView const *gv, bool fixed)
 {
     set<Node const*> ancestors;
+
+#ifdef _RWSTD_NO_MEMBER_TEMPLATES
+    //Workaround for Solaris libCstd
+    for (vector<StochasticNode const *>::const_iterator p = gv->nodes().begin();
+         p != gv->nodes().end(); ++p)
+      {
+        ancestors.insert(*p);
+      }
+#else
     ancestors.insert(gv->nodes().begin(), gv->nodes().end());
+#endif 
 
     vector<DeterministicNode *> const &dnodes = gv->deterministicChildren();    
     for (unsigned int j = 0; j < dnodes.size(); ++j) {

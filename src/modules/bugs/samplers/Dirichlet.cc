@@ -23,7 +23,7 @@ static vector<double> initValue(GraphView const *gv, unsigned int chain)
 
 DirchMetropolis::DirchMetropolis(GraphView const *gv, unsigned int chain)
     : RWMetropolis(initValue(gv, chain), 0.1),
-      _gv(gv), _chain(chain), _S(1)
+      _gv(gv), _chain(chain), _s(1)
 {
 }
 
@@ -39,33 +39,33 @@ void DirchMetropolis::getValue(vector<double> &value) const
 {
     _gv->getValue(value, _chain);
     for (unsigned int i = 0; i < value.size(); ++i) {
-	value[i] *= _S;
+	value[i] *= _s;
     }
 }
 
 void DirchMetropolis::setValue(vector<double> const &value)
 {
-    double S = 0;
+    double s = 0;
     for (unsigned int i = 0; i < value.size(); ++i) {
-	S += value[i];
+	s += value[i];
     }
     //Make a scaled down copy of the value
     vector<double> v = value;
     for (unsigned int i = 0; i < v.size(); ++i) {
-	v[i] /= S;
+	v[i] /= s;
     }
 
     _gv->setValue(v, _chain);
-    _S = S;
+    _s = s;
 }
 
 double DirchMetropolis::logDensity() const
 {
-    // We need to add a penalty based on _S to stop the random walk
+    // We need to add a penalty based on _s to stop the random walk
     // going off to infinity. This penalty is based on a normal 
-    // distribution for log(_S) with mean 0 and variance 0.1.
+    // distribution for log(_s) with mean 0 and variance 0.1.
     
-    double logS = log(_S);
+    double logS = log(_s);
     return _gv->logFullConditional(_chain) - 5 * logS * logS;
 }
 

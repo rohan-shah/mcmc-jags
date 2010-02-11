@@ -18,6 +18,7 @@ using std::runtime_error;
 using std::logic_error;
 using std::string;
 using std::reverse;
+using std::copy;
 
 static unsigned int sumLength(vector<StochasticNode *> const &nodes)
 {

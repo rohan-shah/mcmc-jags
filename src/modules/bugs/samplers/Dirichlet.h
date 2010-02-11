@@ -2,14 +2,15 @@
 #define DIRICHLET_METROPOLIS_H_
 
 #include <sampler/RWMetropolis.h>
+#include <sampler/GraphView.h>
 
-class GraphView;
+//class GraphView;
 
 class DirchMetropolis : public RWMetropolis
 {
     GraphView const *_gv;
     unsigned int _chain;
-    double _S;
+    double _s;
 public:
     DirchMetropolis(GraphView const *gv, unsigned int chain);
     void getValue(std::vector<double> &x) const;

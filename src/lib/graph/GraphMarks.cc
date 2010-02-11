@@ -234,10 +234,10 @@ void GraphMarks::markAncestors(vector<Node const *> const &nodes, int m)
     marked.sort();
     list<Node const*>::const_iterator p = marked.begin();
     map<Node const*,int>::iterator q = 
-	_marks.insert(pair<Node const*,int>(*p,m)).first;
+	_marks.insert(pair<Node const*const,int>(*p,m)).first;
     
     for(++p; p != marked.end(); ++p) {
-	q = _marks.insert(q, pair<Node const*,int>(*p,m));
+	q = _marks.insert(q, pair<Node const*const,int>(*p,m));
     }
 
 }
