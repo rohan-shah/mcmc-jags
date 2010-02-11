@@ -68,13 +68,13 @@ namespace glm {
 	vector<StochasticNode const *> const &schildren = 
 	    _view->stochasticChildren();
 
-	int *Xi = _X->i;
-	int *Xp = _X->p;
-	double *Xx = _X->x;
+	int *Xi = _x->i;
+	int *Xp = _x->p;
+	double *Xx = _x->x;
 	
 	int nrow = schildren.size();
 	int ncol = _view->length();
-	if (nrow != _X->m || ncol != _X->n) {
+	if (nrow != _x->m || ncol != _x->n) {
 	    throw logic_error("Dimension mismatch in GLMMethod::calDesign");
 	}
 
@@ -120,7 +120,7 @@ namespace glm {
 			 unsigned int chain, bool link)
 	: _lp(view->stochasticChildren().size()),
 	  _view(view), _chain(chain), _sub_views(sub_views),
-	  _X(0), _symbol(0), _fixed(sub_views.size(), false), 
+	  _x(0), _symbol(0), _fixed(sub_views.size(), false), 
 	  _length_max(0), _nz_prior(0), _init(true)
     {
 	vector<StochasticNode const*> const &schildren = 
@@ -165,9 +165,9 @@ namespace glm {
 	Xp[c] = r;
 
 	//Set up sparse representation of the design matrix
-	_X = cs_spalloc(nrow, ncol, r, 1, 0);
-	copy(Xp.begin(), Xp.end(), _X->p);
-	copy(Xi.begin(), Xi.end(), _X->i);
+	_x = cs_spalloc(nrow, ncol, r, 1, 0);
+	copy(Xp.begin(), Xp.end(), _x->p);
+	copy(Xi.begin(), Xi.end(), _x->i);
 
 	// Check for constant linear terms
 	for (unsigned int i = 0; i < sub_views.size(); ++i) {
@@ -179,7 +179,7 @@ namespace glm {
 
     GLMMethod::~GLMMethod()
     {
-	cs_spfree(_X);
+	cs_spfree(_x);
     }
     
     /* 
@@ -221,12 +221,12 @@ namespace glm {
 
 	// Likelihood contribution
     
-	cs *t_X = cs_transpose(_X, 0);
-	cs *Alik = cs_multiply(t_X, _X);
+	cs *t_x = cs_transpose(_x, 0);
+	cs *Alik = cs_multiply(t_x, _x);
 	cs *A = cs_add(Aprior, Alik, 0, 0);
     
 	//Free working matrices
-	cs_spfree(t_X);
+	cs_spfree(t_x);
 	cs_spfree(Aprior);
 	cs_spfree(Alik);
 
@@ -292,12 +292,12 @@ namespace glm {
 	//   - mu is the mean of the stochastic children
 	//   - Y is the value of the stochastic children
 
-	cs *t_X = cs_transpose(_X, 1);
-	int *Tp = t_X->p;
-	int *Ti = t_X->i;
-	double *Tx = t_X->x;
+	cs *t_x = cs_transpose(_x, 1);
+	int *Tp = t_x->p;
+	int *Ti = t_x->i;
+	double *Tx = t_x->x;
     
-	for (int c = 0; c < t_X->n; ++c) {
+	for (int c = 0; c < t_x->n; ++c) {
 	    double tau = getPrecision(c);
 	    double delta = getValue(c) - getMean(c);
 	    for (int r = Tp[c]; r < Tp[c+1]; ++r) {
@@ -307,8 +307,8 @@ namespace glm {
 	    }
 	}
 
-	cs *Alik = cs_multiply(t_X, _X);
-	cs_spfree(t_X);
+	cs *Alik = cs_multiply(t_x, _x);
+	cs_spfree(t_x);
 	A = cs_add(Aprior, Alik, 1, 1);
 	cs_spfree(Aprior);
 	cs_spfree(Alik);

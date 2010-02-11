@@ -29,7 +29,7 @@ namespace glm {
 	GraphView const *_view;
 	unsigned int _chain;
 	std::vector<GraphView const *> _sub_views;
-	cs *_X;
+	cs *_x;
 	css *_symbol;
     private:
 	std::vector<bool> _fixed;
