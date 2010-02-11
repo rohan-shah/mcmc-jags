@@ -77,7 +77,7 @@ static double calShape(GraphView const *gv, unsigned int chain)
     if (y1 <= 0 || y0 <= 0)
 	throw logic_error("Invalid scale function in TruncatedGamma");
 
-    return log(2)/(log(y1) - log(y0));
+    return log(2.0)/(log(y1) - log(y0));
 }
 
 TruncatedGamma::TruncatedGamma(GraphView const *gv)
