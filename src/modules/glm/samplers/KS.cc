@@ -32,7 +32,7 @@ static bool r_intvl(double u, double lambda)
 
 static bool l_intvl(double u, double lambda)
 {
-    double h = 0.5*log(2) + 2.5*log(PI) - 2.5*log(lambda) - 
+    double h = 0.5*log(2.0) + 2.5*log(PI) - 2.5*log(lambda) - 
 	PI_SQUARE/(2 * lambda) + 0.5*lambda;
     double logu = log(u);
     double z = 1;

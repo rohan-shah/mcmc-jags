@@ -42,9 +42,9 @@ namespace glm {
 	unsigned int ncol = _view->length();
 
 	//Transpose and permute the design matrix
-	cs *t_X = cs_transpose(_X, 1);
-	cs *Pt_X = cs_permute(t_X, _symbol->pinv, 0, 1);
-	cs_spfree(t_X);
+	cs *t_x = cs_transpose(_x, 1);
+	cs *Pt_x = cs_permute(t_x, _symbol->pinv, 0, 1);
+	cs_spfree(t_x);
 
 	double *ur = new double[ncol];
 	int *xi = new int[2*ncol]; //Stack
@@ -52,7 +52,7 @@ namespace glm {
 	    
 	    if (_outcome[r] != BGLM_NORMAL) {
 
-		int top = cs_spsolve(N->L, Pt_X, r, xi, ur, 0, 1);
+		int top = cs_spsolve(N->L, Pt_x, r, xi, ur, 0, 1);
 		//Subtract contribution of row r from b
 		double mu_r = getMean(r);
 		double delta = _z[r] - mu_r;
@@ -97,7 +97,7 @@ namespace glm {
 	delete [] ur;
 	//delete [] xr;
 	delete [] xi;
-	cs_spfree(Pt_X);
+	cs_spfree(Pt_x);
     }
     
     void HolmesHeld::update(RNG *rng)
