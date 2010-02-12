@@ -99,7 +99,7 @@ bool TruncatedGamma::canSample(StochasticNode *snode, Graph const &graph)
 	return false;
     if (!snode->parents()[0]->isObserved())
 	return false;
-    if (!snode->parents()[0]->value(0)[0] < 0)
+    if (snode->parents()[0]->value(0)[0] < 0)
 	return false;
 
     GraphView gv(vector<StochasticNode*>(1,snode), graph);

@@ -95,7 +95,6 @@ bool AggNode::isClosed(set<Node const *> const &ancestors,
 		return false;
 	    }
 	}
-	return true;
 	break;
     case DNODE_SCALE_MIX:
 	//The aggnode must be a subset so only one distinct parent
@@ -105,15 +104,14 @@ bool AggNode::isClosed(set<Node const *> const &ancestors,
 	    if (parents()[i] != parents()[0])
 		return false;
 	}
-	return true;
 	break;
     case DNODE_LINEAR:
-	return true;
 	break;
     case DNODE_POWER:
 	return false;
 	break;
     }
+    return true;
 }
 
 bool AggNode::checkParentValues(unsigned int) const
