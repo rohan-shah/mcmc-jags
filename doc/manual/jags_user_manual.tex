@@ -1907,19 +1907,34 @@ See also section~\ref{section:blas:lapack} for run-time instructions.
 \subsubsection{Intel Math Kernel Library}
 
 The Intel Math Kernel library (MKL) provides optimized BLAS and LAPACK
-routines for Intel processors. The structure of the MKL changes with
-each major release, but a configuration that works with both 
-MKL 9.x and MKL 10.0 is
+routines for Intel processors. The instructions below are for MKL
+version 10.0 and above which use a ``pure layered'' model for linking.
+The layered model gives the user fine-grained control over four
+different library layers: interface, threading, computation, and
+run-time library support. Some examples of linking to MKL using this
+layered model are given below. These examples are for GCC compilers on
+\verb+x86_64+. The choice of interface layer is important on
+\verb+x86_64+ since the Intel Fortran compiler returns complex values
+differently from the GNU Fortran compiler. You must therefore use the
+interface layer that matches your compiler (\verb+mkl_intel*+ or \verb+mkl_gf*+).  
+
+JAGS can be linked to a sequential version of MKL by
 \begin{verbatim}
-MKLPATH=/opt/intel/mkl/<version>/lib/<arch> \
-LDFLAGS="-L${MKLPATH}" \
-./configure --with-blas="-lmkl -lguide -lpthread" --with-lapack="-lmkl_lapack"
+MKL_HOME=/opt/intel/mkl/10.0.3.020/
+MKL_LIB_PATH=${MKL_HOME}/lib/em64t/
+./configure --with-blas="-L${MKL_LIB_PATH} -lmkl_gf_lp64 -lmkl_sequential -lmkl_core" \
+            --with-lapack="-lmkl_lapack"
 \end{verbatim}
 
-MKL 10.0 allows an alternative ``pure layered'' linking model, in which
-individual libraries are selected from each layer (interface, threading,
-computational, and RTL) of the MKL architecture.  Using the pure layered
-model, the configuration above can be re-expressed as
+Threaded MKL may be used with:
+\begin{verbatim}
+./configure \
+   --with-blas="-L${MKL_LIB_PATH} -lmkl_gf_lp64 -lmkl_gnu_thread -lmkl_core -liomp5 -lpthread" \
+   --with-lapack="-L${MKL_LIB_PATH} -lmkl_lapack"
+\end{verbatim}
+The default number of threads will be chosen by the OpenMP software,
+but can be controlled by setting \verb+OMP_NUM_THREADS+ or \verb+MKL_NUM_THREADS+.
+
 \begin{verbatim}
 ./configure \
 --with-blas="-lmkl_intel -lmkl_intel_thread -lmkl_core -lguide -lpthread"
@@ -1935,8 +1950,9 @@ See the MKL User's guide for details.
 
 \JAGS\ has been successfully built with the Intel C, C++ and Fortran
 compilers.  Naturally, if you are using the Intel compilers, you
-should also link \JAGS\ against MKL, as outlined above. The additional
-configure options required to use the Intel compilers are:
+should also link \JAGS\ against MKL, as outlined above (but using the
+Intel interface layer). The additional configure options required to
+use the Intel compilers are:
 \begin{verbatim}
 source /opt/intel/fc/10.0.023/bin/ifortvars.sh
 source /opt/intel/cc/10.0.023/bin/iccvars.sh
