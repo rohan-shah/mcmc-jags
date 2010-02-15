@@ -1765,14 +1765,11 @@ the location of libjags and libjrmath is hard-coded into the
 BLAS (Basic Linear Algebra System) and LAPACK (Linear Algebra Pack)
 are two libraries of routines for linear algebra. They are used by the
 multivariate functions and distributions in the \texttt{bugs} module.
-BLAS and LAPACK must be available as {\em shared} libraries. Although
-earlier versions of \JAGS\ could be statically linked, this is no
-longer possible.  Most unix-like operating system vendors supply
-shared libraries that provide the BLAS and LAPACK functions, although
-the libraries may not literally be called ``blas'' and ``lapack''.
-During configuration, a default list of these libraries will be
-checked. If \texttt{configure} cannot find a suitable library, it will
-stop with an error message.
+Most unix-like operating system vendors supply shared libraries that
+provide the BLAS and LAPACK functions, although the libraries may not
+literally be called ``blas'' and ``lapack''.  During configuration, a
+default list of these libraries will be checked. If \texttt{configure}
+cannot find a suitable library, it will stop with an error message.
 
 You may use alternative BLAS and LAPACK libraries using the configure
 options \texttt{--with-blas} and \texttt{--with-lapack}
@@ -1889,20 +1886,34 @@ routines for AMD processors. To link \JAGS\ with \texttt{acml}, you
 must supply the \texttt{acml} library, {\em and its dependencies}, as
 arguments to \texttt{--with-blas}.  It is not necessary to set the
 \texttt{--with-lapack} argument as \texttt{acml} provides both sets of
-functions.
+functions. See also section~\ref{section:blas:lapack} for run-time
+instructions.
 
 For example, to link to the 64-bit acml using gcc 4.0+:
 \begin{verbatim}
-LDFLAGS="-L/opt/acml4.0.0/gfortran64/lib" \
+LDFLAGS="-L/opt/acml4.3.0/gfortran64/lib" \
 ./configure --with-blas="-lacml -lacml_mv -lgfortran" 
 \end{verbatim}
-The last version that supports gcc 3.4 is \texttt{acml} 3.6.0. When
-using gcc 3.4, link against \texttt{libg2c}.
+The library \verb+acmv_mv+ library is a vectorized math library that
+exists only for the 64-bit version and is omitted when linking against
+32-bit acml.
+
+On multi-core systems, you may wish to use the threaded acml library.
+To do this, link to \verb+acml_mp+ and add the compiler flag
+\verb+-fopenmp+:
+\begin{verbatim}
+LDFLAGS="-L/opt/acml4.3.0/gfortran64_mp/lib" \
+CXXFLAGS="-O2 -g -fopenmp" ./configure --with-blas="-lacml_mp -lacml_mv -lgfortran" 
+\end{verbatim}
+The number of threads used by multi-threaded acml may be controlled
+with the environment variable \verb+OMP_NUM_THREADS+.
+
+For older Linux systems, the last version that supports gcc 3.4 is
+\texttt{acml} 3.6.0. When using gcc 3.4, link against \texttt{libg2c}.
 \begin{verbatim}
 LDFLAGS="-L/opt/acml3.6.0/gnu64/lib" \
 ./configure --with-blas="-lacml -lacml_mv -lg2c"
 \end{verbatim}
-See also section~\ref{section:blas:lapack} for run-time instructions.
 
 \subsubsection{Intel Math Kernel Library}
 
@@ -1918,44 +1929,35 @@ layered model are given below. These examples are for GCC compilers on
 differently from the GNU Fortran compiler. You must therefore use the
 interface layer that matches your compiler (\verb+mkl_intel*+ or \verb+mkl_gf*+).  
 
+The use of MKL is incompatible with building a shared library for
+\JAGS. It can be used if \JAGS\ is configured with the option
+\verb+--disable-shared+r., This builds an executable that is statically
+linked to the \JAGS\ library and modules.
+
 JAGS can be linked to a sequential version of MKL by
 \begin{verbatim}
 MKL_HOME=/opt/intel/mkl/10.0.3.020/
 MKL_LIB_PATH=${MKL_HOME}/lib/em64t/
-./configure --with-blas="-L${MKL_LIB_PATH} -lmkl_gf_lp64 -lmkl_sequential -lmkl_core" \
-            --with-lapack="-lmkl_lapack"
+./configure --disable-shared \
+            --with-blas="-L${MKL_LIB_PATH} -lmkl_gf_lp64 -lmkl_sequential -lmkl_core"
 \end{verbatim}
 
 Threaded MKL may be used with:
 \begin{verbatim}
-./configure \
-   --with-blas="-L${MKL_LIB_PATH} -lmkl_gf_lp64 -lmkl_gnu_thread -lmkl_core -liomp5 -lpthread" \
-   --with-lapack="-L${MKL_LIB_PATH} -lmkl_lapack"
+./configure --disable-shared\
+   --with-blas="-L${MKL_LIB_PATH} -lmkl_gf_lp64 -lmkl_gnu_thread -lmkl_core -liomp5 -lpthread"
 \end{verbatim}
 The default number of threads will be chosen by the OpenMP software,
 but can be controlled by setting \verb+OMP_NUM_THREADS+ or \verb+MKL_NUM_THREADS+.
 
-\begin{verbatim}
-./configure \
---with-blas="-lmkl_intel -lmkl_intel_thread -lmkl_core -lguide -lpthread"
-\end{verbatim}
-or, for 64-bit Linux,
-\begin{verbatim}
-./configure \
---with-blas="-lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -lguide -lpthread"
-\end{verbatim}
-See the MKL User's guide for details.
-
 \subsubsection{Using Intel Compilers}
 
 \JAGS\ has been successfully built with the Intel C, C++ and Fortran
-compilers.  Naturally, if you are using the Intel compilers, you
-should also link \JAGS\ against MKL, as outlined above (but using the
-Intel interface layer). The additional configure options required to
-use the Intel compilers are:
+compilers.  The additional configure options required to use the Intel
+compilers are:
 \begin{verbatim}
-source /opt/intel/fc/10.0.023/bin/ifortvars.sh
-source /opt/intel/cc/10.0.023/bin/iccvars.sh
+source /opt/intel/Compiler/11.1/bin/ifortvars.sh
+source /opt/intel/Compiler/11.1/bin/iccvars.sh
 CC=icc CXX=icpc F77=ifort ./configure 
 \end{verbatim}
 
@@ -2036,42 +2038,60 @@ not be optimized at all and will run slowly.
 \subsection{Mac OS X: instructions from Bill Northcott}
 
 If trying to build software on Mac OS X you really need to use Leopard
-(10.5.x). Unless otherwise stated these instruction assume Leopard
-(10.5.x). The open source support has improved greatly in recent
-releases. You also need the latest version of Apple's Xcode
-development tools. The current version is Xcode 3.1.  Earlier versions 
-have serious bugs which affect R and
-\JAGS.  Xcode is available as a free download from
+(10.5.x) or Snow Leopard (10.6.x). Unless otherwise stated these
+instruction assume Snow Leopard (10.6.x). The open source support has
+improved greatly in recent releases. You also need the latest version
+of Apple's Xcode development tools. The current version is Xcode 3.2.x
+(Leopard uses 3.1.x).  Early versions have serious bugs which affect R
+and \JAGS.  Xcode is available as a free download from
 \url{http://developer.apple.com}. You need to set up a free login to
 ADC. The Apple developer tools do not include a Fortran
 compiler. Without Fortran, you will not be able to build \JAGS.
 
-For instructions for building on Tiger or for older versions of \R\ see  
-previous versions of this manual.
+For instructions for building on Tiger or for older versions of
+\R\ see previous versions of this manual.
 
-The GNU gfortran Fortran compiler is included in the \R\ binary  
-distribution available on CRAN. Install the \R\ binary and select all  
-the optional components in the `Customize' step of the installer.  
-These instructions assume R-2.7.x.  
+The GNU gfortran Fortran compiler is included in the \R\ binary
+distribution available on CRAN. Install the \R\ binary and select all
+the optional components in the `Customize' step of the installer.
+These instructions assume R-2.7.x.
 
-The default C/C++ compiler for Leopard is gcc-4.x. Xcode 3.1 also
-includes gcc-4.2 and llvm-gcc4.2.  The code has been successfully
+The default C/C++ compiler for Snow Leopard is gcc-4.2.x. Xcode 3.2
+also includes gcc-4.2 and llvm-gcc4.2.  The code has been successfully
 built with these optional compilers but will only run on Leopard.
 llvm is being actively developed by Apple and may produce better code.
 
 MacOS X 10.2 and onwards include optimised versions of the BLAS and
-LAPACK libraries.  So nothing is needed for Leopard. Optimisation
-continues and Apple are working on using GPUs for this sort of math.
-Make sure your OS is up to date.
+LAPACK libraries.  So no extra libraries are is needed for Snow
+Leopard.  Optimisation continues andApple are working on using GPUs
+for this sort of math.  Make sure your OS is up to date.
 
 To ensure the \JAGS\ configure script can find the Fortran compiler
 for a bash shell
 \begin{verbatim}
 export F77=/usr/local/bin/gfortran
 \end{verbatim}
-or for tchsh
+
+On 64 bit hardware, which means most recent Macs, there may be a 
+problem with the Fortran compiler.  Apple's compilers default to 64 bit 
+builds on 64 bit hardware but the Fortran binaries available default to 
+32 bit builds. This means you need to add compile and link options.
+
+For instance on 64 bit Intel Macs type
 \begin{verbatim}
-setenv F77 /usr/local/bin/gfortran
+export CFLAGS='-arch x86_64'
+export CXXFLAGS='-arch x86_64'
+export FFLAGS='-arch x86_64'
+export LDFLAGS='-arch x86_64'
+\end{verbatim}
+
+Some Fortran compilers (not the ones from CRAN) do not understand 
+the -arch option. For these you will need something like:
+\begin{verbatim}
+export CFLAGS='-arch x86_64'
+export CXXFLAGS='-arch x86_64'
+export FFLAGS='-m64'
+export LDFLAGS='-arch x86_64'
 \end{verbatim}
 
 To build \JAGS\ unpack the source code and cd into the source  
@@ -2080,8 +2100,8 @@ directory. Type the following:
 ./configure
 make
 \end{verbatim}
-(if you have multiple CPUs try \verb+make -j 2+ or
-\verb+make -j 4+. It may need to be issued more than once)
+(if you have multiple CPUs try \verb+make -j 4+ or
+\verb+make -j 8+. It may need to be issued more than once)
 \begin{verbatim}
 sudo make install
 \end{verbatim}
@@ -2090,17 +2110,19 @@ You need to ensure \texttt{/usr/local/bin} is in your PATH in order
 for `jags' to work from a shell prompt.
 
 This will build the default architecture for you Mac: ppc on a G4 or
-G5 and i386 on an Intel Mac.  If you want to build 64bit versions or
+G5 and i386 or \verb+x86_64+ on an Intel Mac.  If you want to build
 multiple architecture fat binaries, you will need to ensure that
 libtool in the JAGS sources is version 1.5.24 or later.  Then you can
 use configure commands like
 \begin{verbatim}
-CXXFLAGS="-O3 -arch i386 -arch x86_64" ./configure
+CXXFLAGS="-arch i386 -arch x86_64" ./configure
 \end{verbatim}
 
 Make will then build fat binaries.  See the R Mac developers page 
 \url{http://r.research.att.com/} for instructions to build fat R packages.
 
+A final note on MacOS X builds: do NOT use \texttt{-O3}.  It is not optimal 
+and may find compiler bugs.  Apple recommends \texttt{-Os}.
 
 \subsection{Windows}
 \label{section:windows}
