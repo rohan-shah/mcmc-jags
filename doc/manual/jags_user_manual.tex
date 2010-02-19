@@ -1701,9 +1701,9 @@ National Institutes of Health, Bethesda, MD (\url{http://helix.nih.gov}).
 \appendix
 \chapter{Installation}
 
-\JAGS\ is currently distributed in source form only. If you want to
-use it, you have to compile it.  An exception is made for Microsoft
-Windows, for which a binary distribution is available.
+\JAGS\ is distributed in binary format for Microsoft Windows, Mac OS
+X, and most Linux distributions.  The following instructions are for
+those who wish to build \JAGS\ from source.
 
 \JAGS\ has been successfully built on GNU/Linux, FreeBSD, Windows XP,
 Mac OS X, IRIX and Solaris. If you manage to build \JAGS\ on any other
@@ -1725,7 +1725,12 @@ make install
 which is described in more detail in the file \texttt{INSTALL} in
 the top-level source directory. On some UNIX platforms, you may
 be required to use GNU make (gmake) instead of the native make
-command.
+command. On systems with multiple processors, you may use the option 
+\verb+-j+ to speed up compilaition, {\em e.g.} for a quad-core PC you
+may use:
+\begin{verbatim}
+make -j4
+\end{verbatim}
 
 At configure time you also have the option of defining options such
 as:
@@ -2017,6 +2022,7 @@ hard-codes the paths to these libraries into the JAGS modules that
 require them.
 
 \subsection{IRIX}
+
 
 \JAGS\ has been successfully built using the MIPSpro 7.4 compiler on
 IRIX 6.5. The following configure options were used:
