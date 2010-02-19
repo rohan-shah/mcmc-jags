@@ -38,7 +38,8 @@ namespace dic {
 	    
 	    KL const *kl = findKL(snode->distribution()->name());
 	    if (kl) {
-		m = new KLPDMonitor(snode, kl);
+		m = new KLPDMonitor(vector<StochasticNode const *>(1,snode), 
+				    kl);
 	    }
 	}
 	else {
@@ -48,7 +49,8 @@ namespace dic {
 	    for (unsigned int i = 0; i < nchain; ++i) {
 		rngs.push_back(model->rng(i));
 	    }
-	    return new DefaultPDMonitor(snode, rngs, 10);
+	    return new DefaultPDMonitor(vector<StochasticNode const *>(1,snode),
+					rngs, 10);
 	}
 	if (m) {
 	    m->setName(name + print(range));

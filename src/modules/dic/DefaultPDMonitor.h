@@ -13,12 +13,14 @@ class RNG;
 namespace dic {
 
     class DefaultPDMonitor : public PDMonitor {
-	StochasticNode _repnode;
+	std::vector<StochasticNode*> _repnodes;
 	const std::vector<RNG *> _rngs;
 	unsigned int _nrep;
+	unsigned int _n;
     public:
-	DefaultPDMonitor(StochasticNode const *snode,
+	DefaultPDMonitor(std::vector<StochasticNode const *> const &snodes,
 			 std::vector<RNG *> const &rngs, unsigned int nrep); 
+	~DefaultPDMonitor();
 	void update();
     };
 

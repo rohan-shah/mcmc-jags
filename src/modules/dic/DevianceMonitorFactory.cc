@@ -28,7 +28,8 @@ namespace dic {
 	if (!snode)
 	    return 0;
 
-	Monitor *m = new DevianceMonitor(snode);
+	Monitor *m = 
+	    new DevianceMonitor(vector<StochasticNode const *>(1,snode));
 	m->setName(name + print(range));
 	m->setElementNames(vector<string>(1,name+print(range)));
 	return m;

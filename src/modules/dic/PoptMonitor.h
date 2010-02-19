@@ -28,6 +28,8 @@ namespace dic {
 	void update();
 	void reserve(unsigned int niter);
 	SArray dump() const;
+	bool poolChains() const;
+	bool poolIterations() const;
     };
 
 }

@@ -10,70 +10,71 @@ using std::logic_error;
 using std::string;
 using std::copy;
 
+static vector<Node const *> toNodeVec(vector<StochasticNode const *> const &s)
+{
+    vector<Node const *> ans;
+    copy (s.begin(), s.end(), ans.begin());
+    return ans;
+}
+
 namespace dic {
 
-    DevianceMonitor::DevianceMonitor(StochasticNode const *snode)
-	: Monitor("deviance", snode), _values(snode->nchain()), 
-	  _snode(snode)
+    DevianceMonitor::DevianceMonitor(vector<StochasticNode const *> const &s)
+	: Monitor("mean", toNodeVec(s)), _values(s.size(),0), _snodes(s), _n(0)
     {
     }
 
     unsigned int DevianceMonitor::nchain() const
     {
-	return _snode->nchain();
+	return 1;
     }
-
+    
     vector<unsigned int> DevianceMonitor::dim() const
     {
-	vector<unsigned int> d(2);
-	d[0] = _values[0].size();
-	d[1] = nchain();
-	return d;
+	return vector<unsigned int>(1, _values.size());
     }
 
     vector<unsigned int> DevianceMonitor::dim1() const
     {
-	return vector<unsigned int>(1,1);
+	return vector<unsigned int>(1, _values.size());
     }
- 
+
+    bool DevianceMonitor::poolChains() const
+    {
+	return true;
+    }
+
+    bool DevianceMonitor::poolIterations() const
+    {
+	return true;
+    }
+
     vector<double> const &DevianceMonitor::value(unsigned int chain) const
     {
-	return _values[chain];
+	return _values;
     }
 
     void DevianceMonitor::update()
     {
-	unsigned int nchain = _snode->nchain();
-	for (unsigned int ch = 0; ch < nchain; ++ch) {
-	    _values[ch].push_back(-2 * _snode->logDensity(ch));
+	_n++;
+	for (unsigned int i = 0; i < _snodes.size(); ++i) {
+	    double loglik = 0;
+	    unsigned int nchain = _snodes[i]->nchain();
+	    for (unsigned int ch = 0; ch < nchain; ++ch) {
+		loglik += _snodes[i]->logDensity(ch) / nchain;
+	    }
+	    _values[i] += (-2*loglik - _values[i])/_n;
 	}
     }
 
     void DevianceMonitor::reserve(unsigned int niter)
     {
-	for (unsigned int ch = 0; ch < _values.size(); ++ch) {
-	    _values[ch].reserve(_values[ch].size() + niter);
-	}
     }
     
     SArray DevianceMonitor::dump() const
     {
-	unsigned int length = _values[0].size(); 
-	unsigned int nchain = _values.size();
-
-	vector<double> v(length * nchain);
-	vector<double>::iterator p = v.begin();
-	for (unsigned int ch = 0; ch < nchain; ++ch) {
-	    p = copy(_values[ch].begin(), _values[ch].end(), p);
-	}
-
 	SArray ans(dim());
-	ans.setValue(v);    
-	
-	vector<string> names(2);
-	names[0] = "iteration";
-	names[1] = "chain";
-	ans.setDimNames(names);
+	ans.setValue(_values);    
 	return(ans);
     }
 }

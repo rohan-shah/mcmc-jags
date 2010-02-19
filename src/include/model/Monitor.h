@@ -50,6 +50,9 @@ public:
      * The dimension of the value vector for a single chain.
      */
     virtual std::vector<unsigned int> dim() const = 0;
+
+    virtual bool poolChains() const = 0;
+    virtual bool poolIterations() const = 0;
     //FIXME! Return a reference?
     virtual std::vector<unsigned int> dim1() const = 0;
     /**

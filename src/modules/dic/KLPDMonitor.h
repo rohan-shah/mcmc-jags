@@ -12,10 +12,12 @@ class RNG;
 namespace dic {
 
     class KLPDMonitor : public PDMonitor {
+	std::vector<StochasticNode const *> _snodes;
 	KL const *_kl;
-	std::vector<std::vector<double const *> > _par;
+	unsigned int _n;
     public:
-	KLPDMonitor(StochasticNode const *snode, KL const *kl);
+	KLPDMonitor(std::vector<StochasticNode const *> const &snodes, 
+		    KL const *kl);
         ~KLPDMonitor();
 	void update();
     };

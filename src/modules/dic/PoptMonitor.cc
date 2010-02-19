@@ -111,4 +111,13 @@ namespace dic {
 	return ans;
     }
 
+    bool PoptMonitor::poolChains() const
+    {
+	return true;
+    }
+
+    bool PoptMonitor::poolIterations() const
+    {
+	return false;
+    }
 }

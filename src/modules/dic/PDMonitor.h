@@ -15,13 +15,15 @@ namespace dic {
     protected:
 	std::vector<double> _values;
     public:
-	PDMonitor(StochasticNode const *node);
+	PDMonitor(std::vector<StochasticNode const *> const &nodes);
 	unsigned int nchain() const;
 	std::vector<unsigned int> dim() const;
 	std::vector<unsigned int> dim1() const;
 	std::vector<double> const &value(unsigned int chain) const;
 	void reserve(unsigned int niter);
 	SArray dump() const;
+	bool poolChains() const;
+	bool poolIterations() const;
     };
 
 }

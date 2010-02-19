@@ -7,15 +7,10 @@ using std::vector;
 
 namespace dic {
 
-    KLPDMonitor::KLPDMonitor(StochasticNode const *snode,
+    KLPDMonitor::KLPDMonitor(vector<StochasticNode const *> const &snodes,
 			     KL const *kl)
-	: PDMonitor(snode), _kl(kl)
+	: PDMonitor(snodes), _snodes(snodes), _kl(kl), _n(0)
     {
-	unsigned int nchain = snode->nchain();
-	_par.reserve(nchain);
-	for (unsigned int i = 0; i < nchain; ++i) {
-	    _par.push_back(snode->parameters(i));
-	}
     }
 
     KLPDMonitor::~KLPDMonitor()
@@ -25,17 +20,23 @@ namespace dic {
 
     void KLPDMonitor::update()
     {
-	unsigned int nchain = _par.size();
-	
-	double pdsum = 0;
-	for (unsigned int i = 0; i < nchain; ++i) {
-	    for (unsigned int j = 0; j < nchain; ++j) {
-		if (j != i) {
-		    pdsum += _kl->divergence(_par[i], _par[j]);
+	_n++;
+	for (unsigned int k = 0; k < _values.size(); ++k) {
+	    
+	    unsigned int nchain = _snodes[k]->nchain();
+
+	    double pdsum = 0;
+	    for (unsigned int i = 0; i < nchain; ++i) {
+		for (unsigned int j = 0; j < nchain; ++j) {
+		    if (j != i) {
+			pdsum += _kl->divergence(_snodes[k]->parameters(i),
+						 _snodes[k]->parameters(j));
+		    }
 		}
 	    }
-	}
+	    pdsum /= (nchain * (nchain - 1));
 
-	_values.push_back(pdsum/(nchain * (nchain - 1)));
+	    _values[k] += (pdsum - _values[k])/_n;
+	}
     }
 }
