@@ -1,0 +1,203 @@
+\documentclass[11pt, a4paper, titlepage]{report}
+\usepackage{a4wide}
+\usepackage{url}
+\usepackage{multirow}
+\usepackage{amsfonts}
+%\usepackage{amssym}
+\newcommand{\JAGS}{\textsf{JAGS}}
+\newcommand{\BUGS}{\textsf{BUGS}}
+\newcommand{\WinBUGS}{\textsf{WinBUGS}}
+\newcommand{\R}{\textsf{R}}
+\newcommand{\CODA}{\textsf{coda}}
+\begin{document}
+
+\title{JAGS Developers Manual}
+\author{Martyn Plummer}
+\maketitle
+
+\tableofcontents
+
+\chapter{Introduction}
+
+This is currently a collection of notes on working with the JAGS
+source. It will eventually grow into an explanation of how to extend
+the capabilities of JAGS by writing new modules.
+
+\chapter{Working with the CVS repository}
+
+The \JAGS\ source code is held in a CVS repository.  Clear
+instructions on how to access the CVS source are given at the project
+web site \url{http://sourceforge.net/projects/mcmc-jags}. To access
+the instructions, click the link marked ``develop'' then the ``Code''
+tab and select ``CVS'' from the pull-down menu.
+
+You need a complete installation of GNU autotools (autoconf, automake,
+and libtool) to work with the CVS source, since all non-essential
+files have been stripped out of the repository. You must build local
+versions of these files by changing directory into the top-level
+source directory and typing
+\begin{verbatim}
+autoreconf -fi
+\end{verbatim}
+Your source tree is then ready to work with.  
+
+The CVS repository also excludes some \texttt{C++} source files that are
+included in the source tarball. These files are re-created in the
+build tree by the GNU tools \verb+flex+ and \verb+bison+. You must
+also have these tools installed if you are using the CVS
+repository. Note that the standard unix versions of these tools --
+\verb+lex+ and \verb+yacc+ -- are not sufficient, and you must have an
+up-to-date version of \verb+flex+.
+
+Once you have checked out a CVS tree, you can keep it up to date with
+\begin{verbatim}
+cvs update -Pd
+\end{verbatim}
+
+I recommend keeping one or more build directories that are separate
+from the source directory. I have several build directories for JAGS
+configured in different ways: one standard one for testing the BUGS
+examples, one with no optimization for debugging, another statically
+linked one for profiling, and so on.
+
+\chapter{Testing the Installation}
+
+The classic bugs are available in the CVS module ``examples''. They
+can also be downloaded in a tarball from the JAGS home page. There are
+two sub-directories: ``vol1'' and ``vol2''. Within each sub-directory
+you can test the installation with
+\begin{verbatim}
+make check
+\end{verbatim}
+To test a subset of examples, set the environment variable \verb+EXAMPLES+:
+\begin{verbatim}
+make check EXAMPLES="blocker bones"
+\end{verbatim}
+If you are not using a GNU system, you may need to use GNU make
+(\verb+gmake+).
+
+You need to have R installed in order to check the output of JAGS
+against the benchmarks.  If you have the \texttt{rjags} package
+installed, then you may also test the rjags package with
+\begin{verbatim}
+make Rcheck
+\end{verbatim}
+
+\chapter{Debugging and Profiling}
+\label{chapter:debugging}
+
+Debugging and profiling tools are essential for finding bugs and
+bottlenecks in the code.  The most important tools are \texttt{gdb},
+\texttt{valgrind}, \texttt{gprof} and \texttt{oprofile}.
+
+\section{Debugging with gdb}
+
+\JAGS\ can be run from within the GNU debugger \texttt{gdb} by typing
+\begin{verbatim}
+jags -d gdb
+\end{verbatim}
+To run a script, type
+\begin{verbatim}
+r <scriptname>
+\end{verbatim}
+at the gdb prompt. 
+
+Debugging of optimized C++ code is not easy, especially when using
+code from the Standard Template Library (STL).  Unless you speak
+fluent STL, you will need to work with a non-optimized build of
+\JAGS. Using \verb+gcc+ this is done with the following build flags.
+\begin{verbatim}
+CXXFLAGS="-g -O0"
+CFLAGS="-g -O0"
+\end{verbatim}
+It is helpful to keep a separate non-optimized build directory for
+occasions when you need to use a debugger.
+
+It is not possible to set a break point in a module before it has
+been dynamically loaded. To do so, run JAGS by typing ``r'' at the
+\verb+gdb+ prompt, then control-C to return to the gdb prompt after
+the modules have been loaded.
+
+\section{Debugging with valgrind}
+
+Valgrind (\url{www.valgrind.org}) is a memory profiler and
+debugger. To run \JAGS\ through valgrind, type
+\begin{verbatim}
+jags -d valgrind <script-file>
+\end{verbatim}
+If you need to pass options to valgrind, enclose these in quotes
+\begin{verbatim}
+jags -d 'valgrind --leak-check=full' <scriptfile>
+\end{verbatim}
+\JAGS\ will run very slowly inside valgrind, and will use more memory,
+so its use should be limited to small test programs.
+
+\section{Profiling with gprof}
+
+The GNU profiler \texttt{gprof} does not debug dynamic libraries. It
+is therefore not very useful for a standard installation of \JAGS,
+since almost all of the functionality is contained in the jags
+library, the jrmath library, and the modules.  However, you can build
+a statically linked version in which the libraries and modules are
+folded into the executable \texttt{jags-terminal}. To build this
+version of \JAGS, with profiling information for \texttt{gprof}, use
+the following configure options:
+\begin{verbatim}
+CXXFLAGS="-g -O2 -pg" \
+CFLAGS="-g -O2 -pg" \
+/path/to/JAGS/configure --disable-shared
+\end{verbatim}
+Whenever \JAGS\ is run, it will create a file \texttt{gmon.out} in
+the working directory that can be used for profiling with \texttt{gprof}.
+
+\section{Profiling with oprofile}
+
+Oprofile (\url{oprofile.sourceforge.net}) is a linux-based profiler
+that runs as a daemon. Unlike \texttt{gprof} it does not require any
+special configuration options, and can be used to debug dynamic libraries.
+
+You must be root to start the profiler
+\begin{verbatim}
+opcontrol --no-vmlinux
+opcontrol --start
+\end{verbatim}
+Then, as a normal user, you may run a model and dump the profiling
+information to file with
+\begin{verbatim}
+opcontrol --dump
+\end{verbatim}
+
+To see how much time \JAGS\ is spending in the functions in a module
+type
+\begin{verbatim}
+opreport -l /usr/local/lib/JAGS/modules/bugs.so | less
+\end{verbatim}
+The opreport command gives copious information, so you will need to
+redirect the output to a file or, as in this example, a pager.
+The same command works for the main \JAGS\ library
+\begin{verbatim}
+opreport -l /usr/local/lib/libjags.so
+\end{verbatim}
+
+More detailed profiling information can be obtained with the
+\verb+opannotate+ command, provided that \JAGS\ has been compiled
+with debugging symbols. The command
+\begin{verbatim}
+opannotate --source /usr/local/lib/JAGS/modules/bugs.so | less
+\end{verbatim}
+reconstructs the source code and gives annotations in a column in
+the left hand side counting the number of samples in each function,
+block or line. This can be useful for finding bottlenecks in the code.
+
+Oprofile will continue to accumulate samples from multiple runs of JAGS,
+although the output of the \verb+opreport+ and \verb+opannotate+ commands
+will not change until you dump the data again with \verb+opcontrol --dump+.
+If you do not wish to see the cumulative samples from multiple runs --
+for instance if you have modified the \JAGS\ code and want to check that
+a previous bottleneck has been removed -- then you can clear the existing
+data collection by typing, as root
+\begin{verbatim}
+opcontrol --reset
+\end{verbatim}
+
+\end{document}
