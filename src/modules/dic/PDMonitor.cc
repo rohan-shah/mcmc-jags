@@ -1,5 +1,9 @@
 #include <config.h>
+
 #include "PDMonitor.h"
+#include "CalKL.h"
+#include <graph/StochasticNode.h>
+
 #include <stdexcept>
 
 using std::vector;
@@ -15,9 +19,11 @@ static vector<Node const *> toNodeVec(vector<StochasticNode const *> const &s)
 
 namespace dic {
 
-    PDMonitor::PDMonitor(vector<StochasticNode const *> const &snodes)
-	: Monitor("pD", toNodeVec(snodes)), _values(snodes.size(), 0), 
-	  _nchain(snodes[0]->nchain()), _n(0)
+    PDMonitor::PDMonitor(vector<StochasticNode const *> const &snodes,
+			 vector<CalKL *> const &calkl)
+	: Monitor("pD", toNodeVec(snodes)), _calkl(calkl),
+	  _values(snodes.size(), 0),  _weights(snodes.size(), 0),
+	  _nchain(snodes[0]->nchain())
     {
 	if (snodes[0]->nchain() < 2) {
 	    throw logic_error("PDMonitor needs at least 2 chains");
@@ -67,19 +73,29 @@ namespace dic {
 
     void PDMonitor::update()
     {
-	_n++;
+	vector<double> w(_nchain);
 	for (unsigned int k = 0; k < _values.size(); ++k) {
 	    
 	    double pdsum = 0;
+	    double wsum = 0;
 	    for (unsigned int i = 0; i < _nchain; ++i) {
+		w[i] = weight(k, i);
 		for (unsigned int j = 0; j < i; ++j) {
-		    pdsum += divergence(k, i, j);
+		    pdsum += w[i] * w[j] * _calkl[k]->divergence(i, j);
+		    wsum += w[i] * w[j];
 		}
 	    }
-	    pdsum /= (_nchain * (_nchain - 1));
+	    pdsum /= wsum;
 
-	    _values[k] += (pdsum - _values[k])/_n;
+	    _weights[k] += wsum;
+	    _values[k] += wsum * (pdsum - _values[k])/_weights[k];
 	}
+    }
+
+
+    double PDMonitor::weight(unsigned int k, unsigned int ch) const
+    {
+	return 1;
     }
 
 }

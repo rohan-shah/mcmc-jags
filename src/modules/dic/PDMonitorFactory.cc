@@ -1,7 +1,9 @@
 #include "PDMonitorFactory.h"
-#include "DefaultPDMonitor.h"
-#include "KLPDMonitor.h"
+#include "PDMonitor.h"
+#include "PoptMonitor.h"
 #include "KLTab.h"
+#include "CalKLExact.h"
+#include "CalKLApprox.h"
 
 #include <model/BUGSModel.h>
 #include <graph/StochasticNode.h>
@@ -25,36 +27,58 @@ namespace dic {
 					  BUGSModel *model,
 					  string const &type)
     {
-	if (type != "pD" || model->nchain() < 2)
+	if (model->nchain() < 2)
 	    return 0;
-	
-	Node const *node = model->getNode(name, range);
-	StochasticNode const *snode = asStochastic(node);
-	if (!snode)
+
+	vector<StochasticNode const *> observed_nodes;
+	vector<StochasticNode *> const &snodes = model->stochasticNodes();
+	if ((name == "pD" || name != "popt") && isNULL(range) && type == "mean")
+	{
+	    for (unsigned int i = 0; i < snodes.size(); ++i) {
+		if (snodes[i]->isObserved()) {
+		    observed_nodes.push_back(snodes[i]);
+		}
+		if (!isSupportFixed(snodes[i])) {
+		    return 0;
+		}
+	    }
+	}
+	if (observed_nodes.empty())
 	    return 0;
-	
+
+
+	vector<CalKL*> calkl(observed_nodes.size());
+	unsigned int nchain = model->nchain();
+	vector<RNG*> rngs;
+	for (unsigned int i = 0; i < nchain; ++i) {
+	    rngs.push_back(model->rng(i));
+	}
+
 	Monitor *m = 0;
-	if (isSupportFixed(snode)) {
+	for (unsigned int i = 0; i < calkl.size(); ++i) {
 	    
+	    StochasticNode const *snode = observed_nodes[i];
 	    KL const *kl = findKL(snode->distribution()->name());
 	    if (kl) {
-		m = new KLPDMonitor(vector<StochasticNode const *>(1,snode), 
-				    kl);
+		calkl.push_back(new CalKLExact(snode, kl));
+	    }
+	    else {
+		calkl.push_back(new CalKLApprox(snode, rngs, 10));
 	    }
 	}
-	else {
-
-	    unsigned int nchain = model->nchain();
-	    vector<RNG*> rngs;
-	    for (unsigned int i = 0; i < nchain; ++i) {
-		rngs.push_back(model->rng(i));
-	    }
-	    return new DefaultPDMonitor(vector<StochasticNode const *>(1,snode),
-					rngs, 10);
+	if (name =="pD") {
+	    m = new PDMonitor(observed_nodes, calkl);
+	}
+	else if (name == "popt") {
+	    m = new PoptMonitor(observed_nodes, calkl);
 	}
 	if (m) {
-	    m->setName(name + print(range));
-	    m->setElementNames(vector<string>(1, name + print(range)));
+	    m->setName(name);
+	    vector<string> onames(observed_nodes.size());
+	    for (unsigned int i = 0; i < observed_nodes.size(); ++i) {
+		onames[i] = model->symtab().getName(observed_nodes[i]);
+	    }
+	    m->setElementNames(onames);
 	}
 	return m;
     }
