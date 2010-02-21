@@ -8,22 +8,18 @@ using std::vector;
 namespace dic {
 
     KLPDMonitor::KLPDMonitor(vector<StochasticNode const *> const &snodes,
-			     KL const *kl)
+			     vector<KL const *> const &kl)
 	: PDMonitor(snodes), _snodes(snodes), _kl(kl)
     {
     }
 
-    KLPDMonitor::~KLPDMonitor()
+    double KLPDMonitor::divergence(unsigned int k, unsigned int ch1, 
+				   unsigned int ch2) const
     {
-        delete _kl;
+	vector<double const*> const &v1 = _snodes[k]->parameters(ch1);
+	vector<double const*> const &v2 = _snodes[k]->parameters(ch2);
+	return _kl[k]->divergence(v1, v2) + _kl[k]->divergence(v2, v1);
     }
 
-    double KLPDMonitor::divergence(unsigned int k, unsigned int i, 
-				   unsigned int j) const
-    {
-	vector<double const*> const &vi = _snodes[k]->parameters(i);
-	vector<double const*> const &vj = _snodes[k]->parameters(j);
-	return _kl->divergence(vi, vj) + _kl->divergence(vj, vi);
-    }
 
 }

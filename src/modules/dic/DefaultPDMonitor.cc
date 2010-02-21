@@ -52,7 +52,12 @@ namespace dic {
 	    rnode->swapValue(i,j);
 	    div -= rnode->logDensity(i) + rnode->logDensity(j);
 	}
-	return div / (2 *_nrep);
+	return div / _nrep;
+    }
+
+    double DefaultPDMonitor::weight(unsigned int k, unsigned int ch) const
+    {
+	return 1;
     }
 
 }

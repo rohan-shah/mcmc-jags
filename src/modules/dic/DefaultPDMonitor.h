@@ -21,6 +21,7 @@ namespace dic {
 			 std::vector<RNG *> const &rngs, unsigned int nrep); 
 	~DefaultPDMonitor();
 	double divergence(unsigned int k, unsigned int ch1, unsigned int ch2) const;
+	double weight(unsigned int k, unsigned int ch) const;
     };
 
 }

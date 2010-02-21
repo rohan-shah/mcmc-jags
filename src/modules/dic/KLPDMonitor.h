@@ -13,13 +13,13 @@ namespace dic {
 
     class KLPDMonitor : public PDMonitor {
 	std::vector<StochasticNode const *> _snodes;
-	KL const *_kl;
+	std::vector<KL const *> _kl;
     public:
 	KLPDMonitor(std::vector<StochasticNode const *> const &snodes, 
-		    KL const *kl);
-        ~KLPDMonitor();
+		    std::vector<KL const *> const &kl);
 	double divergence(unsigned int k, unsigned int ch1, unsigned int ch2) 
 	    const;
+	double weight(unsigned int k, unsigned int ch) const;
     };
 
 }
