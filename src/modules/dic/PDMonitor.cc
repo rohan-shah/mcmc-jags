@@ -16,7 +16,8 @@ static vector<Node const *> toNodeVec(vector<StochasticNode const *> const &s)
 namespace dic {
 
     PDMonitor::PDMonitor(vector<StochasticNode const *> const &snodes)
-	: Monitor("pD", toNodeVec(snodes)), _values(snodes.size(), 0)
+	: Monitor("pD", toNodeVec(snodes)), _values(snodes.size(), 0), 
+	  _nchain(snodes[0]->nchain()), _n(0)
     {
 	if (snodes[0]->nchain() < 2) {
 	    throw logic_error("PDMonitor needs at least 2 chains");
@@ -63,4 +64,22 @@ namespace dic {
     {
 	return true;
     }
+
+    void PDMonitor::update()
+    {
+	_n++;
+	for (unsigned int k = 0; k < _values.size(); ++k) {
+	    
+	    double pdsum = 0;
+	    for (unsigned int i = 0; i < _nchain; ++i) {
+		for (unsigned int j = 0; j < i; ++j) {
+		    pdsum += divergence(k, i, j);
+		}
+	    }
+	    pdsum /= (_nchain * (_nchain - 1));
+
+	    _values[k] += (pdsum - _values[k])/_n;
+	}
+    }
+
 }

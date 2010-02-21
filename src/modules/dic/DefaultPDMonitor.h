@@ -16,12 +16,11 @@ namespace dic {
 	std::vector<StochasticNode*> _repnodes;
 	const std::vector<RNG *> _rngs;
 	unsigned int _nrep;
-	unsigned int _n;
     public:
 	DefaultPDMonitor(std::vector<StochasticNode const *> const &snodes,
 			 std::vector<RNG *> const &rngs, unsigned int nrep); 
 	~DefaultPDMonitor();
-	void update();
+	double divergence(unsigned int k, unsigned int ch1, unsigned int ch2) const;
     };
 
 }

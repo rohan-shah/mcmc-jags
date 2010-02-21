@@ -12,8 +12,10 @@ class RNG;
 namespace dic {
 
     class PDMonitor : public Monitor {
-    protected:
 	std::vector<double> _values;
+	std::vector<double> _weights;
+	unsigned int _nchain;
+	unsigned int _n;
     public:
 	PDMonitor(std::vector<StochasticNode const *> const &nodes);
 	unsigned int nchain() const;
@@ -24,6 +26,8 @@ namespace dic {
 	SArray dump() const;
 	bool poolChains() const;
 	bool poolIterations() const;
+	void update();
+	virtual double divergence(unsigned int k, unsigned int ch1, unsigned int ch2) const;
     };
 
 }
