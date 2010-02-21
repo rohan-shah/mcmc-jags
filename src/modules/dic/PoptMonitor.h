@@ -1,37 +1,23 @@
-#ifndef PD_MONITOR_H_
-#define PD_MONITOR_H_
+#ifndef POPT_MONITOR_H_
+#define POPT_MONITOR_H_
 
-#include <model/Monitor.h>
-#include <graph/StochasticNode.h>
+#include "PDMonitor.h"
 
 #include <vector>
 
 class StochasticNode;
-class RNG;
+class CalKL;
 
 namespace dic {
 
-    class PoptMonitor : public Monitor {
-	StochasticNode const *_snode;
-	StochasticNode _repnode;
-	const std::vector<RNG *> _rngs;
-	unsigned int _nrep;
-	std::vector<double> _weights; // weights for each chain
-	std::vector<double> _values; // sampled values
+    class PoptMonitor : public PDMonitor {
+	std::vector<StochasticNode const*> _snodes;
     public:
-	PoptMonitor(StochasticNode const *snode,
-		    std::vector<RNG *> const &rngs, unsigned int nrep); 
-	unsigned int nchain() const;
-	std::vector<unsigned int> dim() const;
-	std::vector<unsigned int> dim1() const;
-	std::vector<double> const &value(unsigned int chain) const;
-	void update();
-	void reserve(unsigned int niter);
-	SArray dump() const;
-	bool poolChains() const;
-	bool poolIterations() const;
+	PoptMonitor(std::vector<StochasticNode const *> const &snodes,
+		    std::vector<CalKL*> const &calkl);
+	double weight(unsigned int k, unsigned int ch) const;
     };
 
 }
 
-#endif /* PD_MONITOR_H_ */
+#endif /* POPT_MONITOR_H_ */
