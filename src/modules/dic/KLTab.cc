@@ -17,14 +17,14 @@ namespace dic {
     }
 
     KLTab::~KLTab() {
-	map<string, KL const *>::const_iterator p = _klmap.begin();
+	map<string, KL *>::const_iterator p = _klmap.begin();
 	for (; p != _klmap.end(); ++p) {
 	    delete p->second;
 	}
     }
     
     KL const *KLTab::find(string const &name) const {
-	map<string, KL const *>::const_iterator p = _klmap.find(name);
+	map<string, KL *>::const_iterator p = _klmap.find(name);
 	if (p == _klmap.end()) {
 	    return 0;
 	}

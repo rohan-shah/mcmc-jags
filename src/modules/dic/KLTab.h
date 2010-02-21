@@ -10,7 +10,7 @@ namespace dic {
     class KL;
     
     class KLTab {
-	std::map<std::string, KL const *> _klmap;
+	std::map<std::string, KL*> _klmap;
     public:
 	KLTab();
 	~KLTab();
