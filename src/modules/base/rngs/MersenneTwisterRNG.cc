@@ -143,6 +143,7 @@ namespace base {
 
 	for (unsigned int j = 1; j <= 624; j++) {
 	    if(I[j] != 0) {
+		return true;
 	    }
 	}
 	return false;
