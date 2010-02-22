@@ -155,6 +155,10 @@ public:
      * @param parents Parents of the cloned node. 
      */
     virtual Node * clone(std::vector<Node const *> const &parents) const = 0;
+    /**
+     * Swaps the values in the given chains
+     */
+    void swapValue(unsigned int chain1, unsigned int chain2);
     void addChild(StochasticNode *node) const;
     void removeChild(StochasticNode *node) const;
     void addChild(DeterministicNode *node) const;

@@ -153,6 +153,17 @@ void Node::setValue(double const *value, unsigned int length, unsigned int chain
    copy(value, value + _length, _data + chain * _length);
 }
 
+void Node::swapValue(unsigned int chain1, unsigned int chain2)
+{
+    double *value1 = _data + chain1 * _length;
+    double *value2 = _data + chain2 * _length;
+    for (unsigned int i = 0; i < _length; ++i) {
+	double v = value1[i];
+	value1[i] = value2[i];
+	value2[i] = v;
+    }
+}
+
 /*
 bool Node::isDiscreteValued() const
 {
