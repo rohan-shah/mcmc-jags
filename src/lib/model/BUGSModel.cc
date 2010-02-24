@@ -107,7 +107,7 @@ static void CODA(list<MonitorControl> const &mvec,
 	
 	if (monitor->type() == "trace") { //FIXME: generalize?
 	    
-	    unsigned int nvar = product(monitor->dim1());
+	    unsigned int nvar = product(monitor->dim());
 	    //Write index file
 	    vector<string> const &enames = monitor->elementNames();
 	    for (unsigned int i = 0; i < nvar; ++i) {

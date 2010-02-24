@@ -40,21 +40,18 @@ public:
      */
     std::string const &type() const;
     /**
-     * The number of parallel chains of the Monitor.  This does not
-     * have to coincide with the number of chains of the Model: a
-     * Monitor may summarize data from multiple parallel chains in a
-     * single vector.
+     * Returns true if the monitor has a single value for multiple chains
      */
-    virtual unsigned int nchain() const  = 0;
+    virtual bool poolChains() const = 0;
     /**
-     * The dimension of the value vector for a single chain.
+     * Returns true if the monitor has a single value for multiple iterations
+     */
+    virtual bool poolIterations() const = 0;
+    /**
+     * Returns the dimension of a single monitored value, which may
+     * be replicated over chains and over iterations
      */
     virtual std::vector<unsigned int> dim() const = 0;
-
-    virtual bool poolChains() const = 0;
-    virtual bool poolIterations() const = 0;
-    //FIXME! Return a reference?
-    virtual std::vector<unsigned int> dim1() const = 0;
     /**
      * The vector of monitored values for the given chain
      */
@@ -70,17 +67,18 @@ public:
      /**
       * Dumps the monitored values to an SArray. 
       *
-      * The SArray should have informative dimnames. In particular, the
-      * dimnames "iteration" and "chain" should be used if there are
-      * values for each iteration and each chain, respectively.
+      * The SArray will have informative dimnames. In particular, the
+      * dimnames "iteration" and "chain" are used if there are
+      * distinct values for each iteration and each chain,
+      * respectively.
       */
-     virtual SArray dump() const = 0;
+     SArray dump() const;
      /**
-      * Returns the name of the node
+      * Returns the name of the monitor
       */
      std::string const &name() const;
      /**
-      * Sets the name of the node
+      * Sets the name of the monitor
       */
      void setName(std::string const &name);
      /**
