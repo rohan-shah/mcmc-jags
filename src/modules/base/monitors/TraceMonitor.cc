@@ -36,20 +36,7 @@ namespace base {
 
     vector<unsigned int> TraceMonitor::dim() const
     {
-	vector<unsigned int> dim = nodes()[0]->dim();
-	dim.push_back(_values[0].size());
-	dim.push_back(nchain());
-	return dim;
-    }
-
-    vector<unsigned int> TraceMonitor::dim1() const
-    {
 	return nodes()[0]->dim();
-    }
-
-    unsigned int TraceMonitor::nchain() const
-    {
-	return nodes()[0]->nchain();
     }
 
     void TraceMonitor::reserve(unsigned int niter)
@@ -58,30 +45,6 @@ namespace base {
 	for (unsigned int ch = 0; ch < _values.size(); ++ch) {
 	    _values[ch].reserve(_values[ch].size() + N);
 	}
-    }
-
-    SArray TraceMonitor::dump() const
-    {
-	vector<unsigned int> d = dim();
-	SArray ans(d);
-	unsigned int length = _values[0].size(); 
-	unsigned int nch = _values.size();
-
-	vector<double> v(length * nch);
-	for (unsigned int ch = 0; ch < nch; ++ch) {
-	    for (unsigned int i = 0; i < length; ++i) {
-		v[i + ch * length] = _values[ch][i];
-	    }
-	}
-	ans.setValue(v);    
-	
-	int ndim = d.size();
-	vector<string> names(ndim);
-	names[ndim-2] = "iteration";
-	names[ndim-1] = "chain";
-	ans.setDimNames(names);
-	
-	return(ans);
     }
 
     bool TraceMonitor::poolChains() const
