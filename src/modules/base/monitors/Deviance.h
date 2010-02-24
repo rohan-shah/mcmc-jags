@@ -12,9 +12,7 @@ namespace base {
 	std::vector<StochasticNode const *> _snodes;
     public:
 	Deviance(std::vector<StochasticNode const *> const &nodes);
-	unsigned int nchain() const;
 	std::vector<unsigned int> dim() const;
-	std::vector<unsigned int> dim1() const;
 	std::vector<double> const &value(unsigned int chain) const;
 	void update();
 	void reserve(unsigned int niter);

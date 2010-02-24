@@ -28,20 +28,7 @@ namespace base {
     {
     }
 
-    unsigned int Deviance::nchain() const
-    {
-	return _snodes[0]->nchain();
-    }
-
     vector<unsigned int> Deviance::dim() const
-    {
-	vector<unsigned int> d(2);
-	d[0] = _values[0].size();
-	d[1] = nchain();
-	return d;
-    }
-
-    vector<unsigned int> Deviance::dim1() const
     {
 	return vector<unsigned int>(1,1);
     }
@@ -68,27 +55,6 @@ namespace base {
 	for (unsigned int ch = 0; ch < _values.size(); ++ch) {
 	    _values[ch].reserve(_values[ch].size() + niter);
 	}
-    }
-    
-    SArray Deviance::dump() const
-    {
-	unsigned int length = _values[0].size(); 
-	unsigned int nchain = _values.size();
-
-	vector<double> v(length * nchain);
-	vector<double>::iterator p = v.begin();
-	for (unsigned int ch = 0; ch < nchain; ++ch) {
-	    p = copy(_values[ch].begin(), _values[ch].end(), p);
-	}
-
-	SArray ans(dim());
-	ans.setValue(v);    
-	
-	vector<string> names(2);
-	names[0] = "iteration";
-	names[1] = "chain";
-	ans.setDimNames(names);
-	return(ans);
     }
 
     bool Deviance::poolChains() const
