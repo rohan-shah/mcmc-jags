@@ -30,17 +30,14 @@ namespace dic {
 	}
     }
 
-    unsigned int PDMonitor::nchain() const
+    PDMonitor::~PDMonitor() 
     {
-	return 1;
+	for (unsigned int i = 0; i < _calkl.size(); ++i) {
+	    delete _calkl[i];
+	}
     }
 
     vector<unsigned int> PDMonitor::dim() const
-    {
-	return vector<unsigned int> (1,_values.size());
-    }
-
-    vector<unsigned int> PDMonitor::dim1() const
     {
 	return vector<unsigned int> (1,_values.size());
     }
@@ -52,13 +49,6 @@ namespace dic {
 
     void PDMonitor::reserve(unsigned int niter)
     {
-    }
-
-    SArray PDMonitor::dump() const
-    {
-	SArray ans(dim());
-	ans.setValue(_values);
-	return ans;
     }
 
     bool PDMonitor::poolChains() const

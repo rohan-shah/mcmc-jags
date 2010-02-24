@@ -24,17 +24,7 @@ namespace dic {
     {
     }
 
-    unsigned int DevianceMonitor::nchain() const
-    {
-	return 1;
-    }
-    
     vector<unsigned int> DevianceMonitor::dim() const
-    {
-	return vector<unsigned int>(1, _values.size());
-    }
-
-    vector<unsigned int> DevianceMonitor::dim1() const
     {
 	return vector<unsigned int>(1, _values.size());
     }
@@ -71,10 +61,4 @@ namespace dic {
     {
     }
     
-    SArray DevianceMonitor::dump() const
-    {
-	SArray ans(dim());
-	ans.setValue(_values);    
-	return(ans);
-    }
 }

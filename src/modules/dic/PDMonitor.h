@@ -21,9 +21,7 @@ namespace dic {
 	PDMonitor(std::vector<StochasticNode const *> const &snodes,
 		  std::vector<CalKL *> const &calkl);
 	~PDMonitor();
-	unsigned int nchain() const;
 	std::vector<unsigned int> dim() const;
-	std::vector<unsigned int> dim1() const;
 	std::vector<double> const &value(unsigned int chain) const;
 	void reserve(unsigned int niter);
 	SArray dump() const;
