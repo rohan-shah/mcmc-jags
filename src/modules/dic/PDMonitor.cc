@@ -12,7 +12,7 @@ using std::string;
 
 static vector<Node const *> toNodeVec(vector<StochasticNode const *> const &s)
 {
-    vector<Node const *> ans;
+    vector<Node const *> ans(s.size());
     copy (s.begin(), s.end(), ans.begin());
     return ans;
 }
@@ -21,7 +21,7 @@ namespace dic {
 
     PDMonitor::PDMonitor(vector<StochasticNode const *> const &snodes,
 			 vector<CalKL *> const &calkl)
-	: Monitor("pD", toNodeVec(snodes)), _calkl(calkl),
+	: Monitor("mean", toNodeVec(snodes)), _calkl(calkl),
 	  _values(snodes.size(), 0),  _weights(snodes.size(), 0),
 	  _nchain(snodes[0]->nchain())
     {

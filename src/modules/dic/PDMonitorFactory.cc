@@ -30,32 +30,33 @@ namespace dic {
 	if (model->nchain() < 2)
 	    return 0;
 
+	if ((name != "pD" && name != "popt") || !isNULL(range))
+	    return 0;
+	
+	if (type != "mean")
+	    return 0;
+
 	vector<StochasticNode const *> observed_nodes;
 	vector<StochasticNode *> const &snodes = model->stochasticNodes();
-	if ((name == "pD" || name != "popt") && isNULL(range) && type == "mean")
-	{
-	    for (unsigned int i = 0; i < snodes.size(); ++i) {
-		if (snodes[i]->isObserved()) {
-		    observed_nodes.push_back(snodes[i]);
-		}
-		if (!isSupportFixed(snodes[i])) {
-		    return 0;
-		}
+	for (unsigned int i = 0; i < snodes.size(); ++i) {
+	    if (snodes[i]->isObserved()) {
+		observed_nodes.push_back(snodes[i]);
+	    }
+	    if (!isSupportFixed(snodes[i])) {
+		return 0;
 	    }
 	}
 	if (observed_nodes.empty())
 	    return 0;
 
-
-	vector<CalKL*> calkl(observed_nodes.size());
 	unsigned int nchain = model->nchain();
 	vector<RNG*> rngs;
 	for (unsigned int i = 0; i < nchain; ++i) {
 	    rngs.push_back(model->rng(i));
 	}
 
-	Monitor *m = 0;
-	for (unsigned int i = 0; i < calkl.size(); ++i) {
+	vector<CalKL*> calkl;
+	for (unsigned int i = 0; i < observed_nodes.size(); ++i) {
 	    
 	    StochasticNode const *snode = observed_nodes[i];
 	    KL const *kl = findKL(snode->distribution()->name());
@@ -66,6 +67,8 @@ namespace dic {
 		calkl.push_back(new CalKLApprox(snode, rngs, 10));
 	    }
 	}
+
+	Monitor *m = 0;
 	if (name =="pD") {
 	    m = new PDMonitor(observed_nodes, calkl);
 	}

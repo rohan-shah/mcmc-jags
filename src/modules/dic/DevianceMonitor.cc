@@ -12,7 +12,7 @@ using std::copy;
 
 static vector<Node const *> toNodeVec(vector<StochasticNode const *> const &s)
 {
-    vector<Node const *> ans;
+    vector<Node const *> ans(s.size());
     copy (s.begin(), s.end(), ans.begin());
     return ans;
 }

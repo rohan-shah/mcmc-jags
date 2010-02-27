@@ -17,21 +17,31 @@ namespace dic {
 						BUGSModel *model,
 						string const &type)
     {
-	if (type != "deviance")
+
+	if (type != "mean")
+	    return 0;
+	if (name != "deviance")
+	    return 0;
+	if (!isNULL(range))
 	    return 0;
 
-	Node const *node = model->getNode(name, range);
-	if (!node || !node->isObserved()) 
+	vector<StochasticNode *> const &snodes = model->stochasticNodes();
+	vector<StochasticNode const *> observed_snodes;
+	for (unsigned int i = 0; i < snodes.size(); ++i) {
+	    if (snodes[i]->isObserved()) {
+		observed_snodes.push_back(snodes[i]);
+	    }
+	}
+	if (observed_snodes.empty())
 	    return 0;
 
-	StochasticNode const *snode = asStochastic(node);
-	if (!snode)
-	    return 0;
-
-	Monitor *m = 
-	    new DevianceMonitor(vector<StochasticNode const *>(1,snode));
-	m->setName(name + print(range));
-	m->setElementNames(vector<string>(1,name+print(range)));
+	Monitor *m = new DevianceMonitor(observed_snodes);
+	m->setName(name);
+	vector<string> onames(observed_snodes.size());
+	for (unsigned int i = 0; i < observed_snodes.size(); ++i) {
+	    onames[i] = model->symtab().getName(observed_snodes[i]);
+	}
+	m->setElementNames(onames);
 	return m;
     }
 	
