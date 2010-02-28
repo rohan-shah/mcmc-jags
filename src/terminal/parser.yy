@@ -894,7 +894,7 @@ void dumpMonitors(std::string const &file, std::string const &type)
 {
     std::map<std::string,SArray> data_table;
 
-    if (!console->dumpMonitors(data_table, type)) {
+    if (!console->dumpMonitors(data_table, type, false)) {
 	return;
     }
 
