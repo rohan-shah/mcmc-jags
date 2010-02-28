@@ -59,7 +59,7 @@ void Monitor::setElementNames(vector<string> const &names)
     _elt_names = names;
 }
 
-SArray Monitor::dump() const
+SArray Monitor::dump(bool flat) const
 {
     unsigned int nchain = poolChains() ? 1 : nodes()[0]->nchain();
     unsigned int nvalue = value(0).size();
@@ -80,6 +80,10 @@ SArray Monitor::dump() const
 	throw logic_error("Invalid number of iterations in Monitor");
     }
 
+    if (flat) {
+	vdim = vector<unsigned int>(1, vlen);
+    }
+	
     vector<string> names(vdim.size(), "");
 
     if (!poolIterations()) {
@@ -94,5 +98,8 @@ SArray Monitor::dump() const
     SArray ans(vdim);
     ans.setValue(v);    
     ans.setDimNames(names);
+    if (flat) {
+	ans.setSDimNames(_elt_names, 0);
+    }
     return(ans);
 }

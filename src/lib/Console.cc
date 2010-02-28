@@ -521,7 +521,7 @@ bool Console::dumpState(map<string,SArray> &data_table,
 
 
 bool Console::dumpMonitors(map<string,SArray> &data_table,
-			   string const &type) 
+			   string const &type, bool flat) 
 {
     if (_model == 0) {
 	_err << "Cannot dump monitors.  No model!" << endl;
@@ -534,7 +534,7 @@ bool Console::dumpMonitors(map<string,SArray> &data_table,
 	    Monitor const *monitor = p->monitor();
 	    if (p->niter() > 0 && monitor->type() == type) {
 		data_table.insert(pair<string,SArray>(monitor->name(), 
-						      monitor->dump()));
+						      monitor->dump(flat)));
 	    }
 	}
     }
