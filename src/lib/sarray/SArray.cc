@@ -12,13 +12,14 @@ using std::copy;
 using std::string;
 
 SArray::SArray(vector<unsigned int> const &dim)
-    : _range(dim), _value(_range.length(), JAGS_NA), _discrete(false)
+    : _range(dim), _value(_range.length(), JAGS_NA), _discrete(false),
+      _s_dimnames(dim.size())
 {
 }
 
 SArray::SArray(SArray const &orig)
     : _range(orig._range), _value(orig._value), _discrete(orig._discrete),
-      _dimnames(orig._dimnames)
+      _s_dimnames(orig._s_dimnames), _dimnames(orig._dimnames)
 {
 }
 
@@ -81,5 +82,26 @@ void SArray::setDimNames(vector<string> const &names)
     }
     else {
 	throw length_error("Invalid length in SArray::setDimNames");
+    }
+}
+
+vector<string> const &SArray::getSDimNames(unsigned int i) const
+{
+    if (i >= _range.ndim(false))
+	throw logic_error("Dimension out of range in setSDimNames");
+
+    return _s_dimnames[i];
+}
+
+void SArray::setSDimNames(vector<string> const &names, unsigned int i)
+{
+    if (i >= _range.ndim(false))
+	throw logic_error("Dimension out of range in setSDimNames");
+
+    if (names.empty() || names.size() == _range.dim(false)[i]) {
+	_s_dimnames[i] = names;
+    }
+    else {
+	throw length_error("Invalid length in SArray::setSDimNames");
     }
 }
