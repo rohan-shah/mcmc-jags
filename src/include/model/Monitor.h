@@ -71,8 +71,12 @@ public:
       * dimnames "iteration" and "chain" are used if there are
       * distinct values for each iteration and each chain,
       * respectively.
+      *
+      * @param flat Indicates whether value should be flattened, so
+      * that the value for a single iteration and single chain is a
+      * vector.
       */
-     SArray dump() const;
+     SArray dump(bool flat = false) const;
      /**
       * Returns the name of the monitor
       */
