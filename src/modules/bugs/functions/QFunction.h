@@ -8,7 +8,7 @@ namespace bugs {
     class QFunction : public DPQFunction
     {
     public:
-	QFunction(DistScalarRmath *dist);
+	QFunction(RScalarDist const *dist);
 	bool checkParameterValue(std::vector<double const *> const &args) const;
 	double evaluate(std::vector <double const *> const &args) const;
     };

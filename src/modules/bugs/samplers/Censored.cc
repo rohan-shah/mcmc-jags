@@ -7,7 +7,6 @@
 #include <graph/NodeError.h>
 #include <graph/StochasticNode.h>
 
-
 #include <stdexcept>
 #include <vector>
 #include <cmath>
@@ -29,14 +28,14 @@ static Node const *breaks(GraphView const *gv)
 
 
 Censored::Censored(GraphView const *gv)
-    : ConjugateMethod(gv)
+    : ConjugateMethod(gv), 
+      _snode(dynamic_cast<StochasticNode*>(gv->nodes()[0]))
 {
     int nbreaks = breaks(gv)->length();
-    StochasticNode const *snode = gv->nodes()[0];
-    for (unsigned int ch = 0; ch < snode->nchain(); ++ch) {
+    for (unsigned int ch = 0; ch < _snode->nchain(); ++ch) {
 	int y = indicator(gv, ch);
 	if (y < 0 || y > nbreaks) {
-	    throw NodeError(snode, "Bad interval-censored node");
+	    throw NodeError(_snode, "Bad interval-censored node");
 	}
     }
 }
@@ -87,12 +86,7 @@ void Censored::update(unsigned int chain, RNG * rng) const
     double const *lower = (y == 0) ? 0 : b + y - 1;
     double const *upper = (y == ymax) ? 0 : b + y;
 	
-    double x;
-    StochasticNode const *snode = _gv->nodes()[0];
-    snode->distribution()->randomSample(&x, 1U, snode->parameters(chain),
-					snode->parameterDims(), 
-					lower, upper, rng);
-    _gv->setValue(&x, 1U, chain);
+    _snode->truncatedSample(rng, chain, lower, upper);
 }
 
 string Censored::name() const

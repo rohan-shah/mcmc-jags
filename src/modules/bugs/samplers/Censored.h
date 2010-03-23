@@ -3,10 +3,13 @@
 
 #include "ConjugateMethod.h"
 
+class StochasticNode;
+
 /**
  * Update Method for censored real-valued distributions.
  */
 class Censored : public ConjugateMethod {
+    StochasticNode *_snode;
 public:
     Censored(GraphView const *gv);
     static bool canSample(StochasticNode *snode, Graph const &graph);
