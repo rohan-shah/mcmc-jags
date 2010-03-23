@@ -12,14 +12,7 @@ using std::logic_error;
 static StochasticNode* mkRep(StochasticNode const *snode)
 {
     vector<Node const *> par = snode->parents();
-    if (snode->upperBound()) {
-	par.pop_back();
-    }
-    if (snode->lowerBound()) {
-	par.pop_back();
-    }
-    return new StochasticNode(snode->distribution(), par,
-			      snode->lowerBound(), snode->upperBound());
+    return snode->clone(par);
 }
 
 namespace dic {
