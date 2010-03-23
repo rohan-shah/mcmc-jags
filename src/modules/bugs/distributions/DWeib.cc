@@ -17,13 +17,11 @@ using std::vector;
 #define LAMBDA(par) *par[1]
 
 DWeib::DWeib()
-    : DistScalarRmath("dweib", 2, DIST_POSITIVE, true, false)
+    : RScalarDist("dweib", 2, DIST_POSITIVE)
 {}
 
-
 bool 
-DWeib::checkParameterValue (vector<double const *> const &par,
-			    vector<vector<unsigned int> > const &dims) const
+DWeib::checkParameterValue (vector<double const *> const &par) const
 {
     return (*par[0] > 0 && *par[1] > 0);
 }
