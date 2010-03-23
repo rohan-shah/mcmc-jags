@@ -6,12 +6,11 @@
 using std::vector;
 
 DBeta::DBeta()
-    : DistScalarRmath("dbeta", 2, DIST_PROPORTION, true, false)
+    : RScalarDist("dbeta", 2, DIST_PROPORTION)
 {}
 
 bool 
-DBeta::checkParameterValue (vector<double const *> const &par,
-			    vector<vector<unsigned int> > const &dims) const
+DBeta::checkParameterValue (vector<double const *> const &par) const
 {
     return (*par[0] > 0.0 && *par[1] > 0.0);
 }
