@@ -1,7 +1,7 @@
 #ifndef DNORM_H_
 #define DNORM_H_
 
-#include <distribution/DistScalarRmath.h>
+#include <distribution/RScalarDist.h>
 
 /**
  * <pre>
@@ -10,11 +10,12 @@
  * </pre>
  * @short Normal distribution
  */
-class DNorm : public DistScalarRmath {
+class DNorm : public RScalarDist {
  public:
   DNorm();
 
-  double d(double x, std::vector<double const *> const &parameters, bool give_log) const;
+  double d(double x, std::vector<double const *> const &parameters, 
+	   bool give_log) const;
   double p(double q, std::vector<double const *> const &parameters, bool lower,
 	   bool give_log) const;
   double q(double p, std::vector<double const *> const &parameters, bool lower,
@@ -23,17 +24,15 @@ class DNorm : public DistScalarRmath {
   /**
    * Checks that tau > 0
    */
-  bool checkParameterValue(std::vector<double const *> const &parameters,
-			   std::vector<std::vector<unsigned int> > const &dims)
-    const;
+  bool checkParameterValue(std::vector<double const *> const &parameters) const;
   /**
-   * Exploits the capacity to sample truncted normal distributions that
-   * is built into the JAGS library, overloading the generic functionality
-   * of DistScalarRmath.
+   * Exploits the capacity to sample truncted normal distributions
+   * that is built into the JAGS library, overloading the generic
+   * functionality of RScalarDist.
    */
-  double scalarRandomSample(std::vector<double const *> const &par,
-			    double const *lower, double const *upper,
-			    RNG *rng) const;
+  double randomSample(std::vector<double const *> const &par,
+		      double const *lower, double const *upper,
+		      RNG *rng) const;
 };
 
 #endif /* DNORM_H_ */
