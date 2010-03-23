@@ -27,12 +27,10 @@ static inline double UNtransform(double x, vector<double const*> const &par)
 }
 
 DGenGamma::DGenGamma()
-    : DistScalarRmath("dgamma", 3, DIST_POSITIVE, true, false)
+    : RScalarDist("dgamma", 3, DIST_POSITIVE)
 {}
 
-bool 
-DGenGamma::checkParameterValue (vector<double const *> const &par,
-				vector<vector<unsigned int> > const &dims) const
+bool DGenGamma::checkParameterValue (vector<double const *> const &par) const
 {
     return (SHAPE(par) > 0 && URATE(par) > 0 && POW(par) > 0);
 }
