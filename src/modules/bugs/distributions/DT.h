@@ -1,7 +1,7 @@
 #ifndef DT_H_
 #define DT_H_
 
-#include <distribution/DistScalarRmath.h>
+#include <distribution/RScalarDist.h>
 
 /**
  * t-distribution on k degrees of freedom, with median mu and
@@ -12,7 +12,7 @@
  * </pre>
  * @short t distribution
  */
-class DT : public DistScalarRmath {
+class DT : public RScalarDist {
  public:
   DT();
 
@@ -26,9 +26,8 @@ class DT : public DistScalarRmath {
   /**
    * Check that tau > 0 and k > 0
    */
-  bool checkParameterValue (std::vector<double const *> const &parameters,
-			    std::vector<std::vector<unsigned int> > const &dims)
-    const;
+  bool checkParameterValue(std::vector<double const *> const &parameters) const;
+
 };
 
 #endif /* DT_H_ */
