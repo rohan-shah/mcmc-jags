@@ -1,7 +1,7 @@
 #ifndef DWISH_H_
 #define DWISH_H_
 
-#include <distribution/Distribution.h>
+#include <distribution/ArrayDist.h>
 
 /**
  * <pre>
@@ -9,7 +9,7 @@
  * </pre>
  * @short Wishart distribution
  */
-class DWish : public Distribution {
+class DWish : public ArrayDist {
 public:
   DWish();
 
