@@ -148,14 +148,6 @@ public:
      */
     std::vector<unsigned int> const &dim() const;
     /**
-     * Creates a copy of the node. The clone will have the same class
-     * as the original. Supplying the parents of this node as the
-     * argument creates an identical copy.
-     *
-     * @param parents Parents of the cloned node. 
-     */
-    virtual Node * clone(std::vector<Node const *> const &parents) const = 0;
-    /**
      * Swaps the values in the given chains
      */
     void swapValue(unsigned int chain1, unsigned int chain2);
