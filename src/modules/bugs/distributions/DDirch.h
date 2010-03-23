@@ -1,7 +1,7 @@
 #ifndef DDIRCH_H_
 #define DDIRCH_H_
 
-#include <distribution/Distribution.h>
+#include <distribution/VectorDist.h>
 
 struct RNG;
 
@@ -19,28 +19,27 @@ struct RNG;
  * f(p | alpha) = C * prod(p^(alpha-1))
  * </pre>
  */
-class DDirch : public Distribution {
+class DDirch : public VectorDist {
 public:
     DDirch();
 
     double logLikelihood(double const *x, unsigned int length,
 			 std::vector<double const *> const &parameters,
-			 std::vector<std::vector<unsigned int> > const &dims,
+			 std::vector<unsigned int> const &lengths,
 			 double const *lower, double const *upper) const;
     void randomSample(double *x, unsigned int length,
 		      std::vector<double const *> const &parameters,
-		      std::vector<std::vector<unsigned int> > const &dims,
+		      std::vector<unsigned int> const &lengths,
 		      double const *lower, double const *upper, RNG *rng) const;
     void typicalValue(double *x, unsigned int length,
 		      std::vector<double const *> const &parameter,
-		      std::vector<std::vector<unsigned int> > const &dims,
+		      std::vector<unsigned int> const &lengths,
 		      double const *lower, double const *upper) const;
-    std::vector<unsigned int> 
-	dim(std::vector<std::vector<unsigned int> > const &dims) const;
+    unsigned int length(std::vector<unsigned int> const &lengths) const;
     /**
      * Checks that alpha is a vector of length at least 2
      */
-    bool checkParameterDim(std::vector<std::vector<unsigned int> > const &dims) const;
+    bool checkParameterLength(std::vector<unsigned int> const &lengths) const;
     /**
      * Checks that each element of alpha is >= 0.
      *
@@ -50,13 +49,13 @@ public:
      * least one non-zero element of alpha.
      */
     bool checkParameterValue(std::vector<double const *> const &parameters,
-			     std::vector<std::vector<unsigned int> > const &dims)
+			     std::vector<unsigned int> const &lengths)
 	const;
     void support(double *lower, double *upper, unsigned int length,
 		 std::vector<double const *> const &parameters,
-		 std::vector<std::vector<unsigned int> > const &dims) const;
+		 std::vector<unsigned int> const &lengths) const;
     bool isSupportFixed(std::vector<bool> const &fixmask) const;
-    unsigned int df(std::vector<std::vector<unsigned int> > const &dims) const;
+    unsigned int df(std::vector<unsigned int> const &lengths) const;
 };
 
 #endif /* DDIRCH_H_ */

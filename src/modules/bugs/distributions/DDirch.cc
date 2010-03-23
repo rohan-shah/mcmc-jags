@@ -14,7 +14,7 @@ using std::length_error;
 using std::logic_error;
 
 #define ALPHA(par) (par[0])
-#define LENGTH(dims) (dims[0][0])
+#define LENGTH(len) (len[0])
 
 
 /* The Dirichlet distribution is extended to allow zero shape parameters.
@@ -25,25 +25,25 @@ using std::logic_error;
 */
 
 DDirch::DDirch()
-  : Distribution("ddirch", 1, false, false) 
+  : VectorDist("ddirch", 1) 
 {}
 
-vector<unsigned int> DDirch::dim(vector<vector<unsigned int> > const &dims) const
+unsigned int DDirch::length(vector<unsigned int> const &len) const
 {
-    return dims[0];
+    return LENGTH(len);
 }
 
-bool DDirch::checkParameterDim(vector<vector<unsigned int> > const &dims) const
+bool DDirch::checkParameterLength(vector<unsigned int> const &len) const
 {
-    return isVector(dims[0]);
+    return LENGTH(len) > 1;
 }
 
 bool
 DDirch::checkParameterValue(vector<double const *> const &par,
-                            vector<vector<unsigned int> > const &dims) const
+                            vector<unsigned int> const &len) const
 {
     double const *alpha = ALPHA(par);
-    unsigned int length = LENGTH(dims);
+    unsigned int length = LENGTH(len);
 
     bool has_nonzero_alpha = false;
     for (unsigned int i = 0; i < length; i++) {
@@ -59,7 +59,7 @@ DDirch::checkParameterValue(vector<double const *> const &par,
 
 double DDirch::logLikelihood(double const *x, unsigned int length,
 			     vector<double const *> const &par,
-                             vector<vector<unsigned int> > const &dims,
+                             vector<unsigned int> const &len,
 			     double const *lower, double const *upper) const
 {
     double const *alpha = ALPHA(par);
@@ -83,7 +83,7 @@ double DDirch::logLikelihood(double const *x, unsigned int length,
 
 void DDirch::randomSample(double *x, unsigned int length,
                           vector<double const *> const &par,
-                          vector<vector<unsigned int> > const &dims,
+                          vector<unsigned int> const &len,
 			  double const *lower, double const *upper,
 			  RNG *rng) const
 {
@@ -104,7 +104,7 @@ void DDirch::randomSample(double *x, unsigned int length,
 
 void DDirch::support(double *lower, double *upper, unsigned int length,
 		vector<double const *> const &par,
-		vector<vector<unsigned int> > const &dims) const
+		vector<unsigned int> const &len) const
 {
     for (unsigned int i = 0; i < length; ++i) {
 	lower[i] = 0;
@@ -117,7 +117,7 @@ void DDirch::support(double *lower, double *upper, unsigned int length,
 
 void DDirch::typicalValue(double *x, unsigned int length,
                           vector<double const *> const &par,
-                          vector<vector<unsigned int> > const &dims,
+                          vector<unsigned int> const &len,
 			  double const *lower, double const *upper) const
 {
     double alphasum = 0.0;
@@ -134,7 +134,7 @@ bool DDirch::isSupportFixed(vector<bool> const &fixmask) const
     return fixmask[0];
 }
 
-unsigned int DDirch::df(vector<vector<unsigned int> > const &dims) const
+unsigned int DDirch::df(vector<unsigned int> const &len) const
 {
-    return dims[0][0] - 1;
+    return LENGTH(len) - 1;
 }

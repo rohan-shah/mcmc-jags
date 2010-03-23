@@ -10,7 +10,7 @@ using std::max;
 using std::vector;
 
 DExp::DExp()
-    : DistScalarRmath("dexp", 1, DIST_POSITIVE, true, false)
+    : RScalarDist("dexp", 1, DIST_POSITIVE)
 {}
 
 /* R functions are parameterized in terms of scale = 1/rate */
@@ -19,10 +19,9 @@ static inline double SCALE(vector<double const *> const &par)
     return 1 /(*par[0]);
 }
 
-bool DExp::checkParameterValue (vector<double const *> const &par,
-				vector<vector<unsigned int> > const &dims) const
+bool DExp::checkParameterValue (vector<double const *> const &par) const
 {
-  return (*par[0] > 0);
+    return (*par[0] > 0);
 }
 
 double
