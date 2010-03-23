@@ -7,8 +7,8 @@
 #include <utility>
 
 #include <function/FunctionPtr.h>
+#include <distribution/DistPtr.h>
 
-class Distribution;
 class SamplerFactory;
 class RNGFactory;
 class MonitorFactory;
@@ -16,6 +16,9 @@ class LinkFunctiontion;
 class ScalarFunction;
 class VectorFunction;
 class ArrayFunction;
+class ScalarDist;
+class VectorDist;
+class ArrayDist;
 
 /**
  * @short Memory management for dynamically loadable modules
@@ -33,7 +36,8 @@ class Module {
     std::string _name;
     std::vector<FunctionPtr> _fp_list;
     std::vector<Function*> _functions;
-    std::vector<std::pair<Distribution*, FunctionPtr> > _obs_functions;
+    std::vector<std::pair<DistPtr, FunctionPtr> > _obs_functions;
+    std::vector<DistPtr> _dp_list;
     std::vector<Distribution*> _distributions;
     std::vector<SamplerFactory*> _sampler_factories;
     std::vector<RNGFactory*> _rng_factories;
@@ -41,15 +45,37 @@ class Module {
 public:
     Module(std::string const &name);
     virtual ~Module();
+
     void insert(ScalarFunction*);
     void insert(LinkFunction*);
     void insert(VectorFunction*);
     void insert(ArrayFunction*);
     void insert(Distribution*);
-    void insert(Distribution*, ScalarFunction*);
-    void insert(Distribution*, LinkFunction*);
-    void insert(Distribution*, VectorFunction*);
-    void insert(Distribution*, ArrayFunction*);
+
+    void insert(ScalarDist*);
+    void insert(VectorDist*);
+    void insert(ArrayDist*);
+
+/*
+    void insert(DistPtr const&);
+    void insert(FunctionPtr const&);
+    void insert(DistPtr const&, FunctionPtr const &);
+*/
+    void insert(ScalarDist*, ScalarFunction*);
+    void insert(ScalarDist*, LinkFunction*);
+    void insert(ScalarDist*, VectorFunction*);
+    void insert(ScalarDist*, ArrayFunction*);
+
+    void insert(VectorDist*, ScalarFunction*);
+    void insert(VectorDist*, LinkFunction*);
+    void insert(VectorDist*, VectorFunction*);
+    void insert(VectorDist*, ArrayFunction*);
+
+    void insert(ArrayDist*, ScalarFunction*);
+    void insert(ArrayDist*, LinkFunction*);
+    void insert(ArrayDist*, VectorFunction*);
+    void insert(ArrayDist*, ArrayFunction*);
+
     void insert(SamplerFactory*);
     void insert(RNGFactory*);
     void insert(MonitorFactory*);
