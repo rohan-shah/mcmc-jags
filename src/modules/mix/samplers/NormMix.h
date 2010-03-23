@@ -46,8 +46,7 @@ namespace mix {
 	double logJacobian(std::vector<double> const &value) const;
 	void step(std::vector<double> &value, double step, RNG *rng) const;
 	std::string name() const;
-	static bool canSample(std::vector<StochasticNode *> const &snodes, 
-			      Graph const &graph);
+	static bool canSample(std::vector<StochasticNode *> const &snodes);
     };
 
 }

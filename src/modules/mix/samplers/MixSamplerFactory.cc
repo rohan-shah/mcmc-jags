@@ -14,29 +14,45 @@ using std::set;
 using std::vector;
 using std::string;
 
-static bool isStoch(Node const *node)
+/* 
+ * Returns a pointer to a newly allocated GraphView if snode has a
+ * stochastic child with distribution "dnormmix", otherwise a null
+ * pointer.
+ */
+static GraphView * isCandidate(StochasticNode *snode, Graph const &graph)
 {
-    return asStochastic(node);
-}
-
-//FIXME: This could be more generally useful - in library?
-static 
-vector<StochasticNode*> stochasticParents(Node const *node, 
-					  set<StochasticNode*> const &nodes,
-					  Graph const &graph)
-{
-    GraphMarks marks(graph);
-    marks.markParents(node, isStoch, 2);
-    
-    vector<StochasticNode*> parents;
-    for (set<StochasticNode*>::const_iterator q = nodes.begin();
-	 q != nodes.end(); ++q)
-    {
-	if (marks.mark(*q) == 2) {
-	    parents.push_back(*q);
+    GraphView *gv = new GraphView(snode, graph);
+    vector<StochasticNode const*> const &schildren = gv->stochasticChildren();
+    for (unsigned int i = 0; i < schildren.size(); ++i) {
+	if (schildren[i]->distribution()->name() == "dnormmix") {
+	    return gv;
 	}
     }
-    return parents;
+    delete gv;
+    return 0;
+}
+
+/*
+ * Used to aggregate nodes with common stochastic children.
+ */
+static void aggregate(GraphView const *gv, vector<StochasticNode *> &nodes,
+		      set<StochasticNode const*> &common_children)
+{
+    bool agg = nodes.empty();
+    vector<StochasticNode const *> const &schildren = gv->stochasticChildren();
+    for (unsigned int i = 0; i < schildren.size(); ++i) {
+	if (common_children.count(schildren[i])) {
+	    agg = true;
+	    break;
+	}
+    }
+    if (agg) {
+	for (unsigned int i = 0; i < schildren.size(); ++i) {
+	    common_children.insert(schildren[i]);
+	}
+	nodes.push_back(gv->nodes()[0]);
+    }
+    
 }
 
 namespace mix {
@@ -48,37 +64,38 @@ namespace mix {
     Sampler * MixSamplerFactory::makeSampler(set<StochasticNode*> const &nodes, 
 					     Graph const &graph) const
     {
-	set<Node*> const &gnodes = graph.nodes();
-	vector<Node const*> normmix_nodes;
-        for (set<Node*>::const_iterator p = gnodes.begin(); 
-	     p != gnodes.end(); ++p) 
+	vector<GraphView*> gvec;
+	for (set<StochasticNode*>::const_iterator p = nodes.begin();
+	     p != nodes.end(); ++p)
 	{
-	    StochasticNode const *snode = asStochastic(*p);
-	    if (snode && snode->distribution()->name() == "dnormmix") {
-		normmix_nodes.push_back(*p);
+	    GraphView *gv = isCandidate(*p, graph);
+	    if (gv) {
+		gvec.push_back(gv);
 	    }
 	}
-	
-	for (unsigned int i = 0; i < normmix_nodes.size(); ++i) {
+	if (gvec.empty())
+	    return 0;
 
-	    vector<StochasticNode*> sparents = 
-		stochasticParents(normmix_nodes[i], nodes, graph);
+	vector<StochasticNode *> sample_nodes;
+	set<StochasticNode const *> common_children;
 
-	    if (NormMix::canSample(sparents, graph)) {
-		
-		GraphView *gv = new GraphView(sparents, graph);
-		unsigned int nchain = sparents[0]->nchain();
-		vector<SampleMethod*> methods(nchain,0);	    
-		for (unsigned int ch = 0; ch < nchain; ++ch) {
-		    methods[ch] = new NormMix(gv, ch);
-		}
-		return new ParallelSampler(gv, methods);		
-	    }
+	for (unsigned int i = 0; i < gvec.size(); ++i) {
+	    aggregate(gvec[i], sample_nodes, common_children);
+	    delete gvec[i];
 	}
-
-	return 0;
+	if (NormMix::canSample(sample_nodes)) {
+	    GraphView *gv = new GraphView(sample_nodes, graph);
+	    unsigned int nchain = sample_nodes[0]->nchain();
+	    vector<SampleMethod*> methods(nchain,0);	    
+	    for (unsigned int ch = 0; ch < nchain; ++ch) {
+		methods[ch] = new NormMix(gv, ch);
+	    }
+	    return new ParallelSampler(gv, methods);		
+	}
+	else {
+	    return 0;
+	}
     }
-
 
     string const &MixSamplerFactory::name() const
     {

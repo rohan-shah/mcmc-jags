@@ -30,7 +30,7 @@ static void read_bounds(vector<StochasticNode*> const &snodes,
 	    throw logic_error("Invalid length in read_bounds (NormMix)");
 	}
 	else {
-	    support(lp, up, length_j, snodes[j], chain);
+	    snodes[j]->support(lp, up, length_j, chain);
 	    lp += length_j;
 	    up += length_j;
 	}
@@ -109,8 +109,7 @@ namespace mix {
 	return lj;
     }
 
-    bool NormMix::canSample(vector<StochasticNode *> const &snodes,
-			    Graph const &graph)
+    bool NormMix::canSample(vector<StochasticNode *> const &snodes)
     {
 	if (snodes.empty())
 	    return false;
@@ -128,7 +127,7 @@ namespace mix {
 		return false;
 	    }
 	    //Check that all nodes are of full rank
-	    if (snodes[i]->length() != df(snodes[i]))
+	    if (snodes[i]->length() != snodes[i]->df())
 		return false;
 	}
 	return true;
@@ -153,5 +152,4 @@ namespace mix {
     {
         return _gv->logFullConditional(_chain);
     }
-
 }
