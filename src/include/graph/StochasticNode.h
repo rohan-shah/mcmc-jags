@@ -40,11 +40,13 @@ class RNG;
  */
 class StochasticNode : public Node {
     Distribution const * const _dist;
-    std::vector<std::vector<double const *> > _parameters;
-    std::vector<std::vector<unsigned int> > const &_dims;
     Node const *_lower;
     Node const *_upper;
     bool _observed;
+    virtual void sp(double *lower, double *upper, unsigned int length,
+		    unsigned int chain) const = 0;
+protected:
+    std::vector<std::vector<double const*> > _parameters;
 public:
     /**
      * Constructs a new StochasticNode given a distribution, a vector
@@ -53,67 +55,41 @@ public:
      * then the distribution of the constructed StochasticNode is
      * truncated at the value of the bounds. 
      */
-    StochasticNode(Distribution const *dist, 
+    StochasticNode(std::vector<unsigned int> const &dim,
+		   Distribution const *dist,
                    std::vector<Node const *> const &parameters,
-                   Node const *lower=0, Node const *upper=0);
+		   Node const *lower, Node const *upper);
     ~StochasticNode();
     /**
-     * Returns a pointer to the Node that defines the lower bound, if
-     * the distribution is truncated, or a NULL pointer otherwise.
-     */
-    Node const *lowerBound() const;
-    /**
-     * Returns a pointer to the Node that defines the upper bound, if
-     * the distribution is truncated, or a NULL pointer otherwise.
-     */
-    Node const *upperBound() const;
-    /**
-     * Returns a pointer to the value of the lower bound for the given
-     * chain, if the distribution is truncated, or a NULL pointer
-     * otherwise.
-     */
-    double const *lowerLimit(unsigned int chain) const;
-    /**
-     * Returns a pointer to the value of the upper bound for the given
-     * chain, if the distribution is truncated, or a NULL pointer
-     * otherwise.
-     */
-    double const *upperLimit(unsigned int chain) const;
-    /**
-     * Returns a pointer to the Distribution of the StochasticNode.
+     * Returns a pointer to the Distribution.
      */
     Distribution const *distribution() const;
-    /**
-     * Returns a vector of parameter values for the Distribution of
-     * the stochastic node. Each element of the vector is a pointer
-     * to the start of an array of doubles. It is assumed that these
-     * arrays are of the correct size.
-     *
-     * @param chain Index number of the chain for which parameters are
-     * requested.  
-     */
-    std::vector<double const *> const &parameters(unsigned int chain) const;
-    /**
-     * Returns a vector of dimensions for the parameters for the
-     * distribution. These are the parameters of the parent Nodes
-     * supplied to the constructor.
-     */
-    std::vector<std::vector<unsigned int> > const &parameterDims() const;
     /**
      * Returns the log of the prior density of the StochasticNode
      * given the current parameter values.
      */
-    double logDensity(unsigned int chain) const;
+    virtual double logDensity(unsigned int chain) const = 0;
     /**
      * Draws a random sample from the prior distribution of the node
      * given the current values of it's parents, and sets the Node
      * to that value.
      *
      * @param rng Random Number Generator object
-     *
      * @param chain Index umber of chain to modify
      */
-    void randomSample(RNG *rng, unsigned int chain);
+    virtual void randomSample(RNG *rng, unsigned int chain) = 0;
+    /**
+     * Draws a truncated random sample from the prior distribution of
+     * the node. The lower and upper parameters are pointers to arrays
+     * that are assumed to be of the correct size, or NULL pointers if
+     * there is no bound
+     *
+     * @param lower Optional lower bound
+     * @param upper Optional upper bound
+     */
+    virtual void truncatedSample(RNG *rng, unsigned int chain,
+				 double const *lower=0, 
+				 double const *upper=0) = 0;
     /**
      * A deterministic sample for a stochastic node sets it to a
      * "typical" value of the prior distribution, given the current
@@ -121,42 +97,60 @@ public:
      * Distribution used to define the StochasticNode, but it will
      * usually be the prior mean, median, or mode.
      */
-    void deterministicSample(unsigned int chain);
+    virtual void deterministicSample(unsigned int chain) = 0;
     /**
-     * Ensures that the values of the stochastic node parents are valid
-     * 
-     * @see Distribution#checkParameterValue
-     */
-    bool checkParentValues(unsigned int chain) const;
-    /**
-     * Stochastic nodes are normally considered to represent random
-     * variables in the model. Hence, this function usually returns
-     * true. However, there is an important exception.
-     * 
-     * If the number of degrees of freedom of the node's Distribution
-     * is zero, then the value of the node is a deterministic function
-     * of it's parents. In this case, if the node is unobserved, it is 
-     * not considered to be a random variable.
+     * Stochastic nodes always represent random variables in the model.
      */
     bool isRandomVariable() const;
     /**
-     * Orders stochastic nodes. If A < B for nodes A and B then there
-     * is no path from A to B
+     * Writes the lower and upper limits of the support of a given
+     * stochastic node to the supplied arrays. If the node has upper and
+     * lower bounds then their values are taken into account in the
+     * calculation.
+     *
+     * @param lower pointer to start of an array that will hold the lower 
+     * limit of the support
+     *
+     * @param lower pointer to start of an array that will hold the upper 
+     * limit of the support
+     *
+     * @param length size of the lower and upper arrays.
+     *
+     * @param chain Index number of chain to query
      */
-    bool operator<(StochasticNode const &rhs) const;
+    void support(double *lower, double *upper, unsigned int length,
+		 unsigned int chain) const;
+    double const *lowerLimit(unsigned int chain) const;
+    double const *upperLimit(unsigned int chain) const;
     std::string deparse(std::vector<std::string> const &parameters) const;
-    Node * clone(std::vector<Node const *> const &parents) const;
     bool isDiscreteValued() const;
     bool isObserved() const;
     void setObserved();
+    Node const *lowerBound() const;
+    Node const *upperBound() const;
+    /**
+     * Creates a copy of the stochastic node.  Supplying the parents
+     * of this node as the argument creates an identical copy.
+     *
+     * @param parents Parents of the cloned node. 
+     */
+    StochasticNode * clone(std::vector<Node const *> const &parents) const;
+    virtual StochasticNode * 
+	clone(std::vector<Node const *> const &parameters,
+	      Node const *lower, Node const *upper) const = 0;
+    virtual unsigned int df() const = 0;
+    //Required for KL in dic
+    std::vector<double const*> const &parameters(unsigned int chain) const;
 };
 
+
+
 /**
- * Number of degrees of freedom of a node
- *
- * @see Distribution#df
+ * Returns true if the upper and lower limits of the support of
+ * the stochastic node are fixed. Upper and lower bounds are taken
+ * into account.
  */
-unsigned int df(StochasticNode const *snode);
+bool isSupportFixed(StochasticNode const *snode);
 
 /**
  * Indicates whether the distribution of the node is bounded
@@ -164,42 +158,6 @@ unsigned int df(StochasticNode const *snode);
  */
 bool isBounded(StochasticNode const *node);
 
-/**
- * Writes the lower and upper limits of the support of a given
- * stochastic node to the supplied arrays. If the node has upper and
- * lower bounds then their values are taken into account in the
- * calculation.
- *
- * @param lower pointer to start of an array that will hold the lower 
- * limit of the support
- *
- * @param lower pointer to start of an array that will hold the upper 
- * limit of the support
- *
- * @param length size of the lower and upper arrays.
- *
- * @param node Stochastic node to query
- *
- * @param chain Index number of chain to query
- *
- * @see Distribution#support
- */
-void support(double *lower, double *upper, unsigned int length,
-             StochasticNode const *node, unsigned int chain);
-
-/**
- * Returns true if the upper and lower limits of the support of the
- * stochastic node are fixed. Upper and lower bounds are taken into account
- *
- * @see Distributin#isSupportFixed
- */
-bool isSupportFixed(StochasticNode const *node);
-
-/**
- * Wrapper function that dynamically casts a Node pointer to a
- * StochasticNode pointer.
- */
-StochasticNode const *asStochastic(Node const *node);
 
 #endif /* STOCHASTIC_NODE_H_ */
 
