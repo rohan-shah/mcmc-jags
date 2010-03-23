@@ -211,7 +211,7 @@ bool MixtureNode::checkParentValues(unsigned int chain) const
     return true;
 }
 
-Node *MixtureNode::clone(vector<Node const *> const &parents) const
+DeterministicNode *MixtureNode::clone(vector<Node const *> const &parents) const
 {
     vector<Node const *> index(_Nindex);
     vector<Node const *>::const_iterator p = parents.begin();
