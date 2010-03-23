@@ -25,7 +25,7 @@ using std::log;
 #define NROW(dims)  (dims[0][0])
 
 DWish::DWish()
-  : Distribution("dwish", 2, false, false) 
+  : ArrayDist("dwish", 2) 
 {}
 
 static double log_multigamma(double n, unsigned int p)

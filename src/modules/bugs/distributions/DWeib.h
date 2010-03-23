@@ -1,7 +1,7 @@
 #ifndef DWEIB_H_
 #define DWEIB_H_
 
-#include <distribution/DistScalarRmath.h>
+#include <distribution/RScalarDist.h>
 
 /**
  * <pre>
@@ -10,7 +10,7 @@
  * </pre>
  * @short Weibull distribution
  */
-class DWeib : public DistScalarRmath {
+class DWeib : public RScalarDist {
 public:
   DWeib();
 
@@ -24,9 +24,7 @@ public:
   /** 
    * Checks that a > 0, b > 0
    */
-  bool checkParameterValue (std::vector<double const *> const &parameters,
-			    std::vector<std::vector<unsigned int> > const &dims)
-    const;
+  bool checkParameterValue(std::vector<double const *> const &parameters) const;
 
 };
 
