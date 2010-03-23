@@ -3,22 +3,20 @@
 
 #include <function/ScalarFunction.h>
 
-class DistScalarRmath;
+class RScalarDist;
 
 namespace bugs {
 
     class DPQFunction : public ScalarFunction
     {
-	DistScalarRmath *_dist;
-	std::vector<std::vector<unsigned int> > _dims;
+	RScalarDist const *_dist;
     public:
-	DPQFunction(std::string const &name, DistScalarRmath *dist);
-	~DPQFunction();
+	DPQFunction(std::string const &name, RScalarDist const *dist);
 	/**
          * Returns the distribution from which the function derives its
          * value
          */
-	DistScalarRmath const *dist() const;
+	RScalarDist const *dist() const;
 	/**
          * Strips off the first argument and then checks that the remaining
          * arguments are valid parameters for the distribution
