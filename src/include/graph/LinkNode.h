@@ -40,7 +40,7 @@ public:
      * Returns the name of the link function
      */
     std::string const &linkName() const;
-    Node *clone(std::vector<Node const *> const &parents) const;
+    DeterministicNode *clone(std::vector<Node const *> const &parents) const;
 };
 
 #endif /* LINK_NODE_H_ */
