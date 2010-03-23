@@ -1,7 +1,7 @@
 #ifndef DMSTATE_H_
 #define DMSTATE_H_
 
-#include <distribution/Distribution.h>
+#include <distribution/ArrayDist.h>
 
 namespace msm {
 
@@ -14,7 +14,7 @@ namespace msm {
  * </pre>
  * @short Interval censored transitions in a multistate Markov model
  */
-class DMState : public Distribution {
+class DMState : public ArrayDist {
 public:
     DMState();
   
@@ -40,6 +40,8 @@ public:
     bool checkParameterDiscrete(std::vector<bool> const &mask) const;
     bool checkParameterValue(std::vector<double const *> const &par,
 			     std::vector<std::vector<unsigned int> > const &dims) const;
+    std::vector<unsigned int> dim(std::vector<std::vector<unsigned int> >
+				  const &dims) const;
 };
 
 }
