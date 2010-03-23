@@ -1,7 +1,7 @@
 #ifndef DNEGBIN_H_
 #define DNEGBIN_H_
 
-#include <distribution/DistScalarRmath.h>
+#include <distribution/RScalarDist.h>
 
 /**
  * <pre>
@@ -10,11 +10,12 @@
  * </pre>
  * @short Negative Binomial distribution
  */
-class DNegBin : public DistScalarRmath {
+class DNegBin : public RScalarDist {
  public:
   DNegBin();
 
-  double d(double x, std::vector<double const *> const &parameters, bool give_log) const;
+  double d(double x, std::vector<double const *> const &parameters, 
+	   bool give_log) const;
   double p(double q, std::vector<double const *> const &parameters, bool lower,
 	   bool give_log) const;
   double q(double p, std::vector<double const *> const &parameters, bool lower,
@@ -25,10 +26,8 @@ class DNegBin : public DistScalarRmath {
   /**
    * Checks that p lies in the interval (0,1) and r > 0
    */
-  bool checkParameterValue(std::vector<double const *> const &parameters,
-			   std::vector<std::vector<unsigned int> > const &dims)
-    const;
-
+  bool checkParameterValue(std::vector<double const *> const &parameters) const;
+  bool isDiscreteValued() const;
 };
 
 #endif /* DNEGBIN_H_ */

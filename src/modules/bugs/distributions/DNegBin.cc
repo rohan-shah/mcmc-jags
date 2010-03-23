@@ -14,8 +14,13 @@ using std::max;
 #define SIZE(par) (*par[1])
 
 DNegBin::DNegBin()
-    : DistScalarRmath("dnegbin", 2, DIST_POSITIVE, true, true)
+    : RScalarDist("dnegbin", 2, DIST_POSITIVE)
 {}
+
+bool DNegBin::isDiscreteValued() const
+{
+    return true;
+}
 
 bool DNegBin::checkParameterDiscrete (vector<bool> const &mask) const
 {
@@ -23,8 +28,7 @@ bool DNegBin::checkParameterDiscrete (vector<bool> const &mask) const
 }
 
 bool 
-DNegBin::checkParameterValue (vector<double const *> const &par,
-			      vector<vector<unsigned int> > const &dims) const
+DNegBin::checkParameterValue (vector<double const *> const &par) const
 {
     double p = PROB(par);
     return (SIZE(par) > 0 && p > 0 && p < 1);
