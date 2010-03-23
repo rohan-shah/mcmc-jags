@@ -45,7 +45,8 @@ bool ScalarLogicalNode::checkParentValues(unsigned int chain) const
     return _func->checkParameterValue(_parameters[chain]);
 }
 
-Node *ScalarLogicalNode::clone(vector<Node const*> const &parents) const
+DeterministicNode *
+ScalarLogicalNode::clone(vector<Node const*> const &parents) const
 {
     return new ScalarLogicalNode(_func, parents);
 }
