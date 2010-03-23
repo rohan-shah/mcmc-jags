@@ -17,7 +17,7 @@ using std::vector;
 using std::logic_error;
 
 DMT::DMT()
-  : Distribution("dmt", 3, false, false) 
+  : ArrayDist("dmt", 3) 
 {}
 
 double DMT::logLikelihood(double const *x, unsigned int m,

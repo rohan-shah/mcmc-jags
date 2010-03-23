@@ -1,7 +1,7 @@
 #ifndef DMT_H_
 #define DMT_H_
 
-#include <distribution/Distribution.h>
+#include <distribution/ArrayDist.h>
 
 /**
  * @short Multivariate t distribution
@@ -9,7 +9,7 @@
  * x[] ~ dmt(mu[], T[,], k)
  * </pre>
  */
-class DMT: public Distribution {
+class DMT: public ArrayDist {
 public:
   DMT();
 
@@ -21,7 +21,7 @@ public:
 		    std::vector<double const *> const &parameters,
 		    std::vector<std::vector<unsigned int> > const &dims,
 		    double const *lower, double const *upper, RNG *rng) const;
-  void typicalValue(double *x, unsigned int length, 
+  void typicalValue(double *x, unsigned int length,
 		    std::vector<double const *> const &parameters,
 		    std::vector<std::vector<unsigned int> > const &dims,
 		    double const *lower, double const *upper) const;

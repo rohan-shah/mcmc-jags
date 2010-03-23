@@ -1,7 +1,7 @@
 #ifndef DMNORM_H_
 #define DMNORM_H_
 
-#include <distribution/Distribution.h>
+#include <distribution/ArrayDist.h>
 
 /**
  * @short Multivariate normal distribution
@@ -10,7 +10,7 @@
  * f(x | mu, T) = sqrt(det(T)) * exp(-1/2 * (x-mu) %*% T %*% t(x-mu))
  * </pre>
  */
-class DMNorm : public Distribution {
+class DMNorm : public ArrayDist {
 public:
   DMNorm();
 
@@ -22,7 +22,7 @@ public:
 		    std::vector<double const *> const &parameters,
 		    std::vector<std::vector<unsigned int> > const &dims,
 		    double const *lower, double const *upper, RNG *rng) const;
-  void typicalValue(double *x, unsigned int length, 
+  void typicalValue(double *x, unsigned int length,
 		    std::vector<double const *> const &parameters,
 		    std::vector<std::vector<unsigned int> > const &dims,
 		    double const *lower, double const *upper) const;
