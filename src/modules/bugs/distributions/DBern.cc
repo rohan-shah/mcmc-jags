@@ -15,47 +15,46 @@ using std::max;
 #define PROB(par) (*par[0])
 
 DBern::DBern()
-    : DistScalarRmath("dbern", 1, DIST_PROPORTION, false, true)
+    : ScalarDist("dbern", 1, DIST_PROPORTION)
 {}
 
+bool DBern::isDiscreteValued() const
+{
+    return true;
+}
+
 bool 
-DBern::checkParameterValue (vector<double const *> const &parameters,
-			    vector<vector<unsigned int> > const &dims) const
+DBern::checkParameterValue (vector<double const *> const &parameters) const
 {
     return  (PROB(parameters) >= 0.0 && PROB(parameters) <= 1.0);
 }
 
-double DBern::d(double x, vector<double const *> const &parameters,
-		bool give_log) const
+double DBern::logLikelihood(double x, vector<double const *> const &parameters,
+			    double const *lbound, double const *ubound) const 
 {
     double d = 0;
     if (x == 1)
 	d = PROB(parameters);
     else if (x == 0)
 	d = 1 - PROB(parameters);
-  
-    if (give_log) {
-	return d == 0 ? JAGS_NEGINF : log(d);
-    }
-    else {
-	return d;
-    }
+    
+    return d == 0 ? JAGS_NEGINF : log(d);
 }
 
-double DBern::p(double x, vector<double const *> const &parameters, bool lower,
-		bool give_log) const
+double DBern::randomSample(vector<double const *> const &parameters, 
+			   double const *lbound, double const *ubound,
+			   RNG *rng) const
 {
-    return pbinom(x, 1, PROB(parameters), lower, give_log);
+    return rng->uniform() < PROB(parameters) ? 1 : 0;
 }
 
-double DBern::q(double p, std::vector<double const *> const &parameters, 
-		bool lower, bool log_p) const
+double DBern::typicalValue(vector<double const *> const &parameters,
+			   double const *lbound, double const *ubound) const
 {
-    return qbinom(p, 1, PROB(parameters), lower, log_p);
+    return PROB(parameters) > 0.5 ? 1 : 0;
 }
 
-double DBern::r(std::vector<double const *> const &parameters, RNG *rng) const
+bool DBern::canBound() const
 {
-  return rng->uniform() < PROB(parameters) ? 1 : 0;
+    return false;
 }
-
