@@ -46,12 +46,11 @@ class DistScalar : public Distribution
    * is discrete-valued.
    */
   DistScalar(std::string const &name, unsigned int npar,
-	     Support support, bool canbound, bool discrete);
+	     Support support, bool canbound);
   double logLikelihood(double const *x, unsigned int length,
 		       std::vector<double const *> const &parameters,
 		       std::vector<std::vector<unsigned int> > const  &dims,
-                       double const *lower, double const *upper)
-      const;
+                       double const *lower, double const *upper) const;
   void randomSample(double *x, unsigned int length,
 		    std::vector<double const *> const &parameters,
 		    std::vector<std::vector<unsigned int> > const  &dims,

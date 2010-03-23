@@ -40,18 +40,18 @@ public:
      */
     DistScalarRmath(std::string const &name, unsigned int npar,
 		    Support support, bool canbound, bool discrete);
-    double scalarLogLikelihood(double x,
-			       std::vector<double const *> const &parameters,
-			       double const *lower, double const *upper) const;
-    double scalarRandomSample(std::vector<double const *> const &parameters,
-			      double const *lower, double const *upper,
-			      RNG *rng) const;
+    double logLikelihood(double x,
+			 std::vector<double const *> const &parameters,
+			 double const *lower, double const *upper) const;
+    double randomSample(std::vector<double const *> const &parameters,
+			double const *lower, double const *upper,
+			RNG *rng) const;
     /**
      * Returns the median. Note that this function can be overloaded
      * by a subclass if necessary.
      */
-    double typicalScalar(std::vector<double const *> const &parameters,
-			 double const *lower, double const *upper) const;
+    double typicalValue(std::vector<double const *> const &parameters,
+			double const *lower, double const *upper) const;
     /**
      * Density function, ignoring bounds
      * @param x value at which to evaluate the density
@@ -86,4 +86,4 @@ public:
 	r(std::vector<double const *> const &parameters, RNG *rng) const = 0;
 };
 
-#endif /* DIST_SCALAR_RMATH_H_ */
+#endif /* SCALAR_DIST_RMATH_H_ */
