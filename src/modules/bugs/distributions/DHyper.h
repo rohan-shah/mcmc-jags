@@ -1,7 +1,7 @@
 #ifndef DHYPER_H_
 #define DHYPER_H_
 
-#include <distribution/DistScalarRmath.h>
+#include <distribution/RScalarDist.h>
 
 /**
  * @short Hypergeometric distribution
@@ -9,7 +9,7 @@
  * R ~ dhyper(n1,n2,m1,psi)
  * </pre>
  */
-class DHyper : public DistScalarRmath {
+class DHyper : public RScalarDist {
  public:
   DHyper();
 
@@ -26,10 +26,10 @@ class DHyper : public DistScalarRmath {
    * Checks that n1, n2, m1 are discrete
    */
   bool checkParameterDiscrete (std::vector<bool> const &mask) const;
-  bool checkParameterValue(std::vector<double const*> const &parameters,
-			   std::vector<std::vector<unsigned int> > const &dims)
-    const;
+  bool checkParameterValue(std::vector<double const*> const &parameters) const;
   bool isSupportFixed(std::vector<bool> const &fixmask) const;
+  bool canBound() const;
+  bool isDiscreteValued() const;
 };
 
 #endif /* DHYPER_H_ */

@@ -22,8 +22,18 @@ using std::min;
 using std::logic_error;
 
 DHyper::DHyper()
-    : DistScalarRmath("dhyper", 4, DIST_SPECIAL, false, true)
+    : RScalarDist("dhyper", 4, DIST_SPECIAL)
 {}
+
+bool DHyper::canBound() const
+{
+    return false;
+}
+
+bool DHyper::isDiscreteValued() const
+{
+    return true;
+}
 
 static void
 getParameters(int &n1, int &n2, int &m1, double &psi,
@@ -47,13 +57,11 @@ DHyper::checkParameterDiscrete (vector<bool> const &mask) const
   return true;
 }
 
-bool DHyper::checkParameterValue (vector<double const *> const &parameters,
-				  vector<vector<unsigned int> > const &dims) 
-  const
+bool DHyper::checkParameterValue (vector<double const *> const &params) const
 {
   int n1,n2,m1;
   double psi;
-  getParameters(n1, n2, m1, psi, parameters);
+  getParameters(n1, n2, m1, psi, params);
 
   if (n1 < 0 || n2 < 0)
     return false;

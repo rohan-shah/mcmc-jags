@@ -14,7 +14,7 @@ using std::vector;
 
 #define T(par) (*par[0])
 #define CUTPOINTS(par) (par[1])
-#define NCUT(dims) (dims[1][0])
+#define NCUT(lengths) (lengths[1])
 
 static unsigned int value(vector<double const *> const &par, unsigned int ncut)
 {
@@ -27,21 +27,25 @@ static unsigned int value(vector<double const *> const &par, unsigned int ncut)
 }
 
 DInterval::DInterval()
-    : Distribution("dinterval", 2, false, true)
+    : VectorDist("dinterval", 2)
 {
 }
 
-bool 
-DInterval::checkParameterDim(vector<vector<unsigned int> > const &dims) const
+bool DInterval::isDiscreteValued() const
 {
-    return isScalar(dims[0]) && dims[1].size() == 1;
+    return true;
+}
+
+bool DInterval::checkParameterLength(vector<unsigned int> const &lengths) const
+{
+    return lengths[0] == 1;
 }
 
 bool DInterval::checkParameterValue(vector<double const *> const &par,
-				    vector<vector<unsigned int> > const &dims) 
+				    vector<unsigned int> const &lengths) 
     const
 {
-    for (unsigned int i = 1; i < NCUT(dims); ++i) {
+    for (unsigned int i = 1; i < NCUT(lengths); ++i) {
 	if (CUTPOINTS(par)[i] <= CUTPOINTS(par)[i-1])
 	    return false;
     }
@@ -51,21 +55,21 @@ bool DInterval::checkParameterValue(vector<double const *> const &par,
 double 
 DInterval::logLikelihood(double const *y, unsigned int length, 
 			 vector<double const *> const &par,
-			 vector<vector<unsigned int> > const &dims,
+			 vector<unsigned int> const &lengths,
 			 double const *lower, double const *upper) const
 {
     if (*y < 0)
 	return JAGS_NEGINF;
     
     unsigned int x = static_cast<unsigned int>(*y);
-    if (x > NCUT(dims)) {
+    if (x > NCUT(lengths)) {
 	return JAGS_NEGINF;
     }
     else {
 	double t = T(par);
 	if (x > 0 && t <= CUTPOINTS(par)[x-1])
 	    return JAGS_NEGINF;
-	else if (x < NCUT(dims) && t > CUTPOINTS(par)[x])
+	else if (x < NCUT(lengths) && t > CUTPOINTS(par)[x])
 	    return JAGS_NEGINF;
 	else
 	    return 0;
@@ -74,7 +78,7 @@ DInterval::logLikelihood(double const *y, unsigned int length,
 
 void DInterval::randomSample(double  *x, unsigned int length,
 			     vector<double const *> const &par,
-			     vector<vector<unsigned int> > const &dims,
+			     vector<unsigned int> const &lengths,
 			     double const *lower, double const *upper,
 			     RNG *rng) const
 {
@@ -82,27 +86,27 @@ void DInterval::randomSample(double  *x, unsigned int length,
        The random sample from DInterval is not random at all,
        but deterministic.
     */
-    *x = static_cast<double>(value(par, NCUT(dims)));
+    *x = static_cast<double>(value(par, NCUT(lengths)));
 }
 
 void DInterval::typicalValue(double *x, unsigned int length,
 			     vector<double const *> const &par,
-			     vector<vector<unsigned int> > const &dims,
+			     vector<unsigned int> const &lengths,
 			     double const *lower, double const *upper) const
 {
-    *x = static_cast<double>(value(par, NCUT(dims)));
+    *x = static_cast<double>(value(par, NCUT(lengths)));
 }
 
-unsigned int DInterval::df(vector<vector<unsigned int> > const &dims) const
+unsigned int DInterval::df(vector<unsigned int> const &lengths) const
 {
     return 0;
 }
 
 void DInterval::support(double *lower, double *upper, unsigned int length,
-			std::vector<double const *> const &par,
-			vector<vector<unsigned int> > const &dims) const
+			vector<double const *> const &par,
+			vector<unsigned int> const &lengths) const
 {
-    unsigned int y = value(par, NCUT(dims));    
+    unsigned int y = value(par, NCUT(lengths));    
     *lower = y;
     *upper = y;
 }
@@ -111,4 +115,9 @@ void DInterval::support(double *lower, double *upper, unsigned int length,
 bool DInterval::isSupportFixed(vector<bool> const &fixmask) const
 {
     return fixmask[0] && fixmask[1];
+}
+
+unsigned int DInterval::length(std::vector<unsigned int> const &params) const
+{
+    return 1;
 }
