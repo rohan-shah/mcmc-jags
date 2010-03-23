@@ -10,12 +10,10 @@ using std::vector;
 #define TAU(par) (*par[1])
 
 DLogis::DLogis()
-    : DistScalarRmath("dlogis", 2, DIST_UNBOUNDED, true, false)
+    : RScalarDist("dlogis", 2, DIST_UNBOUNDED)
 {}
 
-bool DLogis::checkParameterValue (vector<double const *> const &par,
-				  vector<vector<unsigned int> > const &dims) 
-  const
+bool DLogis::checkParameterValue (vector<double const *> const &par) const
 {
     return (TAU(par) > 0);
 }
