@@ -1,57 +1,48 @@
 #include <config.h>
 #include <distribution/DistTab.h>
-#include <distribution/Distribution.h>
+
 #include <functional>
 #include <algorithm>
 
 using std::string;
 using std::binary_function;
 using std::find_if;
-using std::pair;
 
-typedef std::list<Distribution const*> DistList;
+typedef std::list<DistPtr> DistList;
 
-/* 
-   Adaptable binary predicate for find_if algorithm to allow functions
-   to be found by name
-*/
-struct isName: 
-    public binary_function<Distribution const *, string, bool> 
+// Adaptable binary predicate for find_if algorithm 
+struct isDistName: public binary_function<DistPtr, string, bool> 
 {
-    bool operator()(Distribution const *dist, string const &name) const
+    bool operator()(DistPtr const &dist, string const &name) const
     {
-	return dist->name() == name;
+	if (SCALAR(dist))
+	    return SCALAR(dist)->name() == name;
+	if (VECTOR(dist))
+	    return VECTOR(dist)->name() == name;
+	if (ARRAY(dist))
+	    return ARRAY(dist)->name() == name;
+	return false;
     }
 };
 
-void DistTab::insert(Distribution const *dist)
+void DistTab::insert (DistPtr const &dist)
 {
-    DistList::const_iterator p = std::find(_dist_list.begin(), _dist_list.end(),				      dist);
-
-    if (p == _dist_list.end()) {
-	_dist_list.push_front(dist);
-    }
+    DistList::const_iterator p = std::find(_flist.begin(), _flist.end(), dist);
+    if (p == _flist.end())
+	_flist.push_front(dist);
 }
 
-Distribution const *DistTab::find(string const &name) const
+DistPtr const &DistTab::find(string const &name) const
 {
-    DistList::const_iterator p = find_if(_dist_list.begin(), _dist_list.end(),
-					 bind2nd(isName(), name));
-    
-    return (p == _dist_list.end()) ? 0 : *p;
+    DistList::const_iterator p = 
+	find_if(_flist.begin(), _flist.end(), bind2nd(isDistName(), name));
+
+    return (p == _flist.end()) ? _nullfun : *p;
 }
 
-void DistTab::erase(Distribution *dist)
+void DistTab::erase(DistPtr const &dist)
 {
-    DistList::iterator p = std::find(_dist_list.begin(), _dist_list.end(), 
-				     dist);
-    if (p != _dist_list.end()) {
-	_dist_list.erase(p);
-    }
+    DistList::iterator p = std::find(_flist.begin(), _flist.end(), dist);
+    if (p != _flist.end())
+	_flist.erase(p);
 }
-
-DistList const &DistTab::distributions() const
-{
-    return _dist_list;
-}
-
