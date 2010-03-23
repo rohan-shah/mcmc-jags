@@ -24,7 +24,7 @@ using std::vector;
 namespace msm {
 
 DMState::DMState()
-    : Distribution ("dmstate", 3, false, true) 
+    : ArrayDist ("dmstate", 3) 
 {}
 
 bool 
@@ -180,5 +180,11 @@ void DMState::typicalValue(double *x, unsigned int length,
 {
     *x = q(0.5, INITIAL(par), TIME(par), NSTATE(dims), INTENSITY(par));
 }
+
+    vector<unsigned int> 
+    DMState::dim(vector<vector<unsigned int> > const &dims) const
+    {
+	return vector<unsigned int>(1, 1);
+    }
 
 }
