@@ -5,8 +5,7 @@
 #include <string>
 
 #include <function/FunctionPtr.h>
-
-class Distribution;
+#include <distribution/DistPtr.h>
 
 /**
  * @short Look-up table for observable functions 
@@ -23,7 +22,7 @@ class Distribution;
  */
 class ObsFuncTab
 {
-    std::list<std::pair<Distribution const *,FunctionPtr> >  _flist;
+    std::list<std::pair<DistPtr,FunctionPtr> >  _flist;
     FunctionPtr const _nullfun;
 public:
     /**
@@ -31,10 +30,10 @@ public:
      * and function must have the same name in the BUGS language.  A
      * given pair can only be inserted into the table once
      *
-     * @param dist Pointer to the distribution
+     * @param dist Polymorphic distribution pointer
      * @param func Polymorphic function pointer
      */
-    void insert(Distribution const *dist, FunctionPtr const &func);
+    void insert(DistPtr const &dist, FunctionPtr const &func);
     /**
      * Finds a Function from its matching Distribution.  If a
      * Distribution matches more than one Function, then the Function
@@ -44,14 +43,14 @@ public:
      * @return a polymorphic function pointer. If the function cannot
      * be found, then the pointer is a null FunctionPtr object.
      */
-    FunctionPtr const &find(Distribution const *dist) const;
+    FunctionPtr const &find(DistPtr const &dist) const;
     /**
      * Removes a distribution/function pair from the table. 
      *
-     * @param dist Pointer to the distribution
+     * @param dist Polymorphic distribution pointer
      * @param func Polymorphic function pointer
      */
-    void erase(Distribution const *, FunctionPtr const &func);
+    void erase(DistPtr const &dist, FunctionPtr const &func);
 };
 
 #endif /* OBS_FUNC_TAB_H_ */
