@@ -1,7 +1,7 @@
 #ifndef DEXP_H_
 #define DEXP_H_
 
-#include <distribution/DistScalarRmath.h>
+#include <distribution/RScalarDist.h>
 
 /**
  * @short Exponential distribution
@@ -10,7 +10,7 @@
  *  f(x | lambda) = lambda * exp(-lambda * x) ; x >= 0
  * </pre>
  */
-class DExp : public DistScalarRmath {
+class DExp : public RScalarDist {
  public:
   DExp();
 
@@ -23,9 +23,7 @@ class DExp : public DistScalarRmath {
   /**
    * Checks that lambda > 0
    */
-  bool checkParameterValue(std::vector<double const *> const &parameters,
-			   std::vector<std::vector<unsigned int> > const &dims)
-    const;
+  bool checkParameterValue(std::vector<double const *> const &parameters) const;
 };
 
 #endif /* DEXP_H_ */
