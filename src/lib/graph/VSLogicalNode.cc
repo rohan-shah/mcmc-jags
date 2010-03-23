@@ -77,7 +77,8 @@ bool VSLogicalNode::checkParentValues(unsigned int chain) const
     return true;
 }
 
-Node *VSLogicalNode::clone(vector<Node const*> const &parents) const
+DeterministicNode *
+VSLogicalNode::clone(vector<Node const*> const &parents) const
 {
     return new VSLogicalNode(_func, parents);
 }
