@@ -52,38 +52,150 @@ void Module::insert(ArrayFunction *func)
 
 }
 
+void Module::insert(ScalarDist *dist)
+{
+    _distributions.push_back(dist);
+    _dp_list.push_back(DistPtr(dist));
+}
+
+void Module::insert(VectorDist *dist)
+{
+    _distributions.push_back(dist);
+    _dp_list.push_back(DistPtr(dist));
+
+}
+
+void Module::insert(ArrayDist *dist)
+{
+    _distributions.push_back(dist);
+    _dp_list.push_back(DistPtr(dist));
+
+}
+
+/*
 void Module::insert(Distribution *dist)
 {
     _distributions.push_back(dist);
 }
+*/
 
-void Module::insert(Distribution *dist, ScalarFunction *func)
+/*
+void Module::insert(DistPtr const &dp)
 {
-    _obs_functions.push_back(pair<Distribution*,FunctionPtr>(dist,func));
+    if (!isNULL(dp)) {
+	_distributions.push_back(DIST(dp));
+	_dp_list.push_back(dp);
+    }
+}
+
+
+
+void Module::insert(FunctionPtr const &fp)
+{
+    if (!isNULL(fp)) {
+	_functions.push_back(FUNC(fp));
+	_fp_list.push_back(fp);
+    }
+}
+
+void Module::insert(DistPtr const &dp, FunctionPtr const &fp)
+{
+    _obs_functions.push_back(pair<DistPtr,FunctionPtr>(dp, fp));
+    insert(dp);
+    insert(fp);
+}
+*/
+
+void Module::insert(ScalarDist *dist, ScalarFunction *func)
+{
+    _obs_functions.push_back(pair<DistPtr,FunctionPtr>(dist,func));
     insert(dist);
     insert(func);
 }
 
-void Module::insert(Distribution *dist, LinkFunction *func)
+void Module::insert(ScalarDist *dist, LinkFunction *func)
 {
-    _obs_functions.push_back(pair<Distribution*,FunctionPtr>(dist,func));
+    _obs_functions.push_back(pair<DistPtr,FunctionPtr>(dist,func));
     insert(dist);
     insert(func);
 }
 
-void Module::insert(Distribution *dist, VectorFunction *func)
+void Module::insert(ScalarDist *dist, VectorFunction *func)
 {
-    _obs_functions.push_back(pair<Distribution*,FunctionPtr>(dist,func));
+    _obs_functions.push_back(pair<DistPtr,FunctionPtr>(dist,func));
     insert(dist);
     insert(func);
 }
 
-void Module::insert(Distribution *dist, ArrayFunction *func)
+void Module::insert(ScalarDist *dist, ArrayFunction *func)
 {
-    _obs_functions.push_back(pair<Distribution*,FunctionPtr>(dist,func));
+    _obs_functions.push_back(pair<DistPtr,FunctionPtr>(dist,func));
     insert(dist);
     insert(func);
 }
+
+//
+
+void Module::insert(VectorDist *dist, ScalarFunction *func)
+{
+    _obs_functions.push_back(pair<DistPtr,FunctionPtr>(dist,func));
+    insert(dist);
+    insert(func);
+}
+
+void Module::insert(VectorDist *dist, LinkFunction *func)
+{
+    _obs_functions.push_back(pair<DistPtr,FunctionPtr>(dist,func));
+    insert(dist);
+    insert(func);
+}
+
+void Module::insert(VectorDist *dist, VectorFunction *func)
+{
+    _obs_functions.push_back(pair<DistPtr,FunctionPtr>(dist,func));
+    insert(dist);
+    insert(func);
+}
+
+void Module::insert(VectorDist *dist, ArrayFunction *func)
+{
+    _obs_functions.push_back(pair<DistPtr,FunctionPtr>(dist,func));
+    insert(dist);
+    insert(func);
+}
+
+//
+
+void Module::insert(ArrayDist *dist, ScalarFunction *func)
+{
+    _obs_functions.push_back(pair<DistPtr,FunctionPtr>(dist,func));
+    insert(dist);
+    insert(func);
+}
+
+void Module::insert(ArrayDist *dist, LinkFunction *func)
+{
+    _obs_functions.push_back(pair<DistPtr,FunctionPtr>(dist,func));
+    insert(dist);
+    insert(func);
+}
+
+void Module::insert(ArrayDist *dist, VectorFunction *func)
+{
+    _obs_functions.push_back(pair<DistPtr,FunctionPtr>(dist,func));
+    insert(dist);
+    insert(func);
+}
+
+void Module::insert(ArrayDist *dist, ArrayFunction *func)
+{
+    _obs_functions.push_back(pair<DistPtr,FunctionPtr>(dist,func));
+    insert(dist);
+    insert(func);
+}
+
+//
+
 
 void Module::insert(SamplerFactory *fac)
 {
@@ -112,7 +224,7 @@ void Module::load()
 	Model::samplerFactories().push_front(_sampler_factories[i]);
     }
     for (unsigned int i = 0; i < _distributions.size(); ++i) {
-	Compiler::distTab().insert(_distributions[i]);
+	Compiler::distTab().insert(_dp_list[i]);
     }
     for (unsigned int i = 0; i < _fp_list.size(); ++i) {
 	Compiler::funcTab().insert(_fp_list[i]);
@@ -135,7 +247,7 @@ void Module::unload()
 	Compiler::funcTab().erase(_fp_list[i]);
     }
     for (i = 0; i < _distributions.size(); ++i) {
-	Compiler::distTab().erase(_distributions[i]);
+	Compiler::distTab().erase(_dp_list[i]);
     }
 
     list<RNGFactory *> &rngf = Model::rngFactories();
