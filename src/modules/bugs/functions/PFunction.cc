@@ -2,14 +2,14 @@
 
 #include "PFunction.h"
 
-#include <distribution/DistScalarRmath.h>
+#include <distribution/RScalarDist.h>
 
 using std::vector;
 using std::string;
 
 namespace bugs {
 
-    PFunction::PFunction(DistScalarRmath *dist)
+    PFunction::PFunction(RScalarDist const *dist)
 	: DPQFunction(string("p") + dist->name().substr(1), dist)
     {}
     
