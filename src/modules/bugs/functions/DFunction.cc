@@ -1,7 +1,7 @@
 
 #include <config.h>
 
-#include <distribution/DistScalarRmath.h>
+#include <distribution/RScalarDist.h>
 
 #include "DFunction.h"
 
@@ -10,7 +10,7 @@ using std::string;
 
 namespace bugs {
 
-    DFunction::DFunction(DistScalarRmath *dist)
+    DFunction::DFunction(RScalarDist const *dist)
 	: DPQFunction(dist->name(), dist)
     {}
     
