@@ -14,12 +14,10 @@ using std::vector;
 #define TAU(par) (*par[1])
 
 DNorm::DNorm()
-    : DistScalarRmath("dnorm", 2, DIST_UNBOUNDED, true, false)
+    : RScalarDist("dnorm", 2, DIST_UNBOUNDED)
 {}
 
-bool DNorm::checkParameterValue (vector<double const *> const &par,
-				 vector<vector<unsigned int> > const &dims) 
-  const
+bool DNorm::checkParameterValue (vector<double const *> const &par) const
 {
     return (TAU(par) > 0);
 }
@@ -50,9 +48,9 @@ DNorm::r(vector<double const *> const &par, RNG *rng) const
     return rnorm(MU(par), SIGMA(par), rng);
 }
 
-double DNorm::scalarRandomSample(vector<double const *> const &par,
-				 double const *lower, double const *upper,
-				 RNG *rng) const
+double DNorm::randomSample(vector<double const *> const &par,
+			   double const *lower, double const *upper,
+			   RNG *rng) const
 {
     double mu = MU(par);
     double sigma = SIGMA(par);
