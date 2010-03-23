@@ -16,7 +16,7 @@ using std::vector;
 using std::logic_error;
 
 DMNorm::DMNorm()
-  : Distribution("dmnorm", 2, false, false) 
+  : ArrayDist("dmnorm", 2) 
 {}
 
 double DMNorm::logLikelihood(double const *x, unsigned int m,
@@ -41,7 +41,7 @@ double DMNorm::logLikelihood(double const *x, unsigned int m,
     return loglik;
 }
 
-void DMNorm::randomSample(double *x, unsigned int length,
+void DMNorm::randomSample(double *x, unsigned int m,
 			  vector<double const *> const &parameters,
 			  vector<vector<unsigned int> > const &dims,
 			  double const *lower, double const *upper,
@@ -50,7 +50,7 @@ void DMNorm::randomSample(double *x, unsigned int length,
     double const * mu = parameters[0];
     double const * T = parameters[1];
     
-    randomsample(x, mu, T, true, length, rng);
+    randomsample(x, mu, T, true, m, rng);
 }
 
 void DMNorm::randomsample(double *x, double const *mu, double const *T,
@@ -148,12 +148,12 @@ void DMNorm::support(double *lower, double *upper, unsigned int length,
     }
 }
 
-void DMNorm::typicalValue(double *x, unsigned int length,
+void DMNorm::typicalValue(double *x, unsigned int m,
 			  vector<double const *> const &parameters,
 			  vector<vector<unsigned int> > const &dims,
 			  double const *lower, double const *upper) const
 {
-    for (unsigned int i = 0; i < length; ++i) {
+    for (unsigned int i = 0; i < m; ++i) {
 	x[i] = parameters[0][i];
     }
 }
