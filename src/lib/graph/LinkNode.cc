@@ -43,7 +43,8 @@ bool LinkNode::checkParentValues(unsigned int chain) const
     return true;
 }
    
-Node *LinkNode::clone(vector<Node const *> const &parents) const
+DeterministicNode *
+LinkNode::clone(vector<Node const *> const &parents) const
 {
     return new LinkNode(_func, parents);
 }
