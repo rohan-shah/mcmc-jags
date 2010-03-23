@@ -7,11 +7,14 @@
 #include <graph/ArrayLogicalNode.h>
 #include <graph/LinkNode.h>
 #include <graph/ConstantNode.h>
-#include <graph/StochasticNode.h>
+#include <graph/ScalarStochasticNode.h>
+#include <graph/VectorStochasticNode.h>
+#include <graph/ArrayStochasticNode.h>
 #include <graph/AggNode.h>
 #include <graph/NodeError.h>
 #include <sarray/RangeIterator.h>
 #include <function/FunctionPtr.h>
+#include <distribution/DistPtr.h>
 #include <util/nainf.h>
 #include <util/dim.h>
 #include <util/integer.h>
@@ -692,8 +695,8 @@ Node * Compiler::allocateStochastic(ParseTree const *stoch_relation)
 
     // Check that distribution exists
     string const &distname = distribution->name();
-    Distribution const *dist = distTab().find(distname);
-    if (!dist) {
+    DistPtr const &dist = distTab().find(distname);
+    if (isNULL(dist)) {
 	CompileError(distribution, "Unknown distribution:", distname);
     }
 
@@ -713,8 +716,22 @@ Node * Compiler::allocateStochastic(ParseTree const *stoch_relation)
 	}
     }	
 
-    StochasticNode *snode =  new StochasticNode(dist, parameters, 
-						lBound, uBound);
+    StochasticNode *snode = 0;
+    if (SCALAR(dist)) {
+	snode =  new ScalarStochasticNode(SCALAR(dist), parameters, 
+					  lBound, uBound);
+    }
+    else if (VECTOR(dist)) {
+	snode = new VectorStochasticNode(VECTOR(dist), parameters,
+					 lBound, uBound);
+    }
+    else if (ARRAY(dist)) {
+	snode = new ArrayStochasticNode(ARRAY(dist), parameters,
+					lBound, uBound);
+    }
+    else {
+	throw logic_error("Unable to classify distribution");
+    }
     _model.addNode(snode);
     
     // If Node is observed, set the data
