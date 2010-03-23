@@ -1,7 +1,7 @@
 #ifndef DDEXP_H_
 #define DDEXP_H_
 
-#include <distribution/DistScalarRmath.h>
+#include <distribution/RScalarDist.h>
 
 /**
  * @short Double exponential distribution
@@ -10,7 +10,7 @@
  * f(x|mu,tau) = (tau/2) * exp(-tau * abs(x-mu))
  * </pre>
  */
-class DDexp : public DistScalarRmath {
+class DDexp : public RScalarDist {
 public:
   DDexp();
   
@@ -24,9 +24,8 @@ public:
   /**
    * Checks that tau > 0
    */
-  bool checkParameterValue(std::vector<double const *> const &parameters,
-			   std::vector<std::vector<unsigned int> > const &dims)
-    const;
+  bool checkParameterValue(std::vector<double const *> const &parameters) const;
+
 };
 
 #endif /* DDEXP_H_ */
