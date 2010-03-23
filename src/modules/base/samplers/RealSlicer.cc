@@ -31,7 +31,7 @@ namespace base {
 	if (node->distribution()->isDiscreteValued() || node->length() != 1)
 	    return false;
 
-	if (df(node) == 0)
+	if (node->df() == 0)
 	    return false; 
 
 	return true;
@@ -49,7 +49,7 @@ namespace base {
 
     void RealSlicer::getLimits(double *lower, double *upper) const
     {
-	support(lower, upper, 1, _gv->nodes().front(), _chain);
+	_gv->nodes().front()->support(lower, upper, 1, _chain);
     }
 
     void RealSlicer::update(RNG *rng)

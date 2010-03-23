@@ -32,9 +32,6 @@ namespace base {
 	if (!node->distribution()->isDiscreteValued() || node->length() != 1)
 	    return false;
 	
-	if (df(node) == 0)
-	    return false;
-	
 	return true;
     }
 
@@ -53,10 +50,10 @@ namespace base {
     void DiscreteSlicer::getLimits(double *lower, double *upper) const
     {
 	StochasticNode const *snode = _gv->nodes()[0];
-        support(lower, upper, 1, snode, _chain);
+        snode->support(lower, upper, 1, _chain);
 	*upper += 1;
     }
-
+    
     void DiscreteSlicer::update(RNG *rng)
     {
 	updateDouble(rng);

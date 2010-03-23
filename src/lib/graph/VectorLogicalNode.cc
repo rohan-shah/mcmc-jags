@@ -77,7 +77,8 @@ bool VectorLogicalNode::checkParentValues(unsigned int chain) const
     return _func->checkParameterValue(_parameters[chain], _lengths);
 }
 
-Node *VectorLogicalNode::clone(vector<Node const*> const &parents) const
+DeterministicNode *
+VectorLogicalNode::clone(vector<Node const*> const &parents) const
 {
     return new VectorLogicalNode(_func, parents);
 }

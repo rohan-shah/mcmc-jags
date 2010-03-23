@@ -36,7 +36,7 @@ namespace base {
 	}
 
 	double lower = 0, upper = 0;
-	support(&lower, &upper, 1, snode, 0);
+	snode->support(&lower, &upper, 1, 0);
 
 	_lower = static_cast<int>(lower);
 	_upper = static_cast<int>(upper);
@@ -102,7 +102,7 @@ namespace base {
 	if (node->length() != 1)
 	    return false;
 
-	if (df(node) == 0)
+	if (node->df() == 0)
 	    return false;
 
 	//Support must be fixed
@@ -114,7 +114,7 @@ namespace base {
 	for (unsigned int ch = 0; ch < node->nchain(); ++ch) {
 	    //Distribution cannot be unbounded
 	    double ulimit = JAGS_NEGINF, llimit = JAGS_POSINF;
-	    support(&llimit, &ulimit, 1, node, ch);
+	    node->support(&llimit, &ulimit, 1, ch);
 	    if (!jags_finite(ulimit) || !jags_finite(llimit))
 		return false;
 
