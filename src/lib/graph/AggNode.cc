@@ -125,7 +125,8 @@ string AggNode::deparse(vector<string> const &parents) const
 	parents.back() + ")";
 }
 
-Node *AggNode::clone(vector<Node const *> const &parents) const
+DeterministicNode *
+AggNode::clone(vector<Node const *> const &parents) const
 {
     return new AggNode(this->dim(), parents, _offsets);
 }

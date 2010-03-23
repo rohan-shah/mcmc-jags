@@ -54,6 +54,22 @@ ArrayFunction const * ARRAY(FunctionPtr const &p) {
     return p.afunc; 
 }
 
+/*
+Function const * FUNC(FunctionPtr const &p) 
+{
+    if (p.lfunc)
+	return p.lfunc;
+    else if (p.sfunc)
+	return p.sfunc;
+    else if (p.vfunc)
+	return p.vfunc;
+    else if (p.afunc)
+	return p.afunc;
+    else
+	return 0;
+}
+*/
+
 bool FunctionPtr::operator==(FunctionPtr const &rhs) const
 {
     return (lfunc == rhs.lfunc && sfunc==rhs.sfunc && vfunc==rhs.vfunc &&
