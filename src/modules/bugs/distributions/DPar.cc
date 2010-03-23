@@ -14,11 +14,10 @@ using std::log;
 #define C(par) (*par[1])
 
 DPar::DPar()
-    : DistScalarRmath("dpar", 2, DIST_SPECIAL, true, false)
+    : RScalarDist("dpar", 2, DIST_SPECIAL)
 {}
 
-bool DPar::checkParameterValue (vector<double const *> const &par,
-				vector<vector<unsigned int> > const &dims) const
+bool DPar::checkParameterValue (vector<double const *> const &par) const
 {
   return (ALPHA(par) > 0 && C(par) > 0);
 }
