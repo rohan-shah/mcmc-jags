@@ -31,7 +31,7 @@ public:
      * @see ScalarFunction#checkParameterValue.
      */
     bool checkParentValues(unsigned int chain) const;
-    Node *clone(std::vector<Node const *> const &parents) const;
+    DeterministicNode *clone(std::vector<Node const *> const &parents) const;
 };
 
 #endif /* V_SCALAR_LOGICAL_NODE_H_ */

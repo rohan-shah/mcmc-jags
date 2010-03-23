@@ -32,7 +32,7 @@ public:
      * @see VectorFunction#checkParameterValue.
      */
     bool checkParentValues(unsigned int chain) const;
-    Node *clone(std::vector<Node const *> const &parents) const;
+    DeterministicNode *clone(std::vector<Node const *> const &parents) const;
 };
 
 #endif /* VECTOR_LOGICAL_NODE_H_ */
