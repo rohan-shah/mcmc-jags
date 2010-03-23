@@ -1,48 +1,41 @@
 #include <config.h>
 #include "DUnif.h"
 
-#include <JRmath.h>
+#include <cmath>
+#include <rng/RNG.h>
 
 using std::vector;
+using std::log;
 
 #define LOWER(par) (*par[0])
 #define UPPER(par) (*par[1])
 
 DUnif::DUnif()
-    : DistScalarRmath("dunif", 2, DIST_SPECIAL, false, false)
+    : ScalarDist("dunif", 2, DIST_SPECIAL)
 {}
 
-bool 
-DUnif::
-checkParameterValue (vector<double const *> const &par,
-		     vector<vector<unsigned int> > const &dims) const
+bool  DUnif::checkParameterValue (vector<double const *> const &par) const
 {
     return (LOWER(par) < UPPER(par));
 }
 
-double
-DUnif::d(double x, vector<double const *> const &par, bool give_log) const
+double DUnif::logLikelihood(double x, vector<double const *> const &par,
+			    double const *lower, double const *upper) const
 {
-    return dunif(x, LOWER(par), UPPER(par), give_log);
+    return log(UPPER(par) - LOWER(par));
 }
 
-double
-DUnif::p(double q, vector<double const *> const &par, bool lower, bool log_p)
-  const
+double DUnif::randomSample(vector<double const *> const &par, 
+			   double const *lower, double const *upper,
+			   RNG *rng) const
 {
-    return punif(q, LOWER(par), UPPER(par), lower, log_p);
+    return LOWER(par) + rng->uniform() * (UPPER(par) - LOWER(par));
 }
 
-double
-DUnif::q(double p, vector<double const *> const &par, bool lower, bool log_p)
-  const
+double DUnif::typicalValue(vector<double const *> const &par,
+			   double const *lower, double const *upper) const
 {
-    return qunif(p, LOWER(par), UPPER(par), lower, log_p);
-}
-
-double DUnif::r(vector<double const *> const &par, RNG *rng) const
-{
-    return runif(LOWER(par), UPPER(par), rng);
+    return (LOWER(par) + UPPER(par))/2;
 }
 
 double DUnif::l(vector<double const*> const &par) const
