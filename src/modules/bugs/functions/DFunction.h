@@ -8,7 +8,7 @@ namespace bugs {
     class DFunction : public DPQFunction
     {
     public:
-	DFunction(DistScalarRmath *dist);
+	DFunction(RScalarDist const *dist);
 	bool checkParameterValue(std::vector<double const *> const &args) const;
 	double evaluate(std::vector <double const *> const &args) const;
     };
