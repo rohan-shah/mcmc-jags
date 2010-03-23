@@ -12,12 +12,10 @@ using std::vector;
 #define SDLOG(par) (1/sqrt(*par[1]))
 
 DLnorm::DLnorm()
-    : DistScalarRmath("dlnorm", 2, DIST_POSITIVE, true, false)
+    : RScalarDist("dlnorm", 2, DIST_POSITIVE)
 {}
 
-bool DLnorm::checkParameterValue (vector<double const *> const &par,
-				  vector<vector<unsigned int> > const &dims) 
-  const
+bool DLnorm::checkParameterValue (vector<double const *> const &par) const
 {
     return TAU(par) > 0;
 }
