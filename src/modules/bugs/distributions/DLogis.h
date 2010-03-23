@@ -1,7 +1,7 @@
 #ifndef DLOGIS_H_
 #define DLOGIS_H_
 
-#include <distribution/DistScalarRmath.h>
+#include <distribution/RScalarDist.h>
 
 /** 
  * Logistic distribution
@@ -10,7 +10,7 @@
  * P(X <= x | mu, tau) = 1/(1 + exp(-(x - mu) * tau))
  * </pre>
  */
-class DLogis : public DistScalarRmath {
+class DLogis : public RScalarDist {
  public:
   DLogis();
 
@@ -23,9 +23,7 @@ class DLogis : public DistScalarRmath {
   /**
    * Checks that tau > 0
    */
-  bool checkParameterValue(std::vector<double const *> const &parameters,
-			   std::vector<std::vector<unsigned int> > const &dims)
-    const;
+  bool checkParameterValue(std::vector<double const *> const &parameters) const;
 };
 
 #endif /* DLOGIS_H_ */
