@@ -19,14 +19,12 @@ static inline double SCALE(vector<double const *> const &par)
 }
 
 DDexp::DDexp()
-    : DistScalarRmath("ddexp", 2, DIST_UNBOUNDED, true, false)
+    : RScalarDist("ddexp", 2, DIST_UNBOUNDED)
 {}
 
-bool 
-DDexp::checkParameterValue (vector<double const *> const &par,
-			    vector<vector<unsigned int> > const &dims) const
+bool DDexp::checkParameterValue (vector<double const *> const &par) const
 {
-  return (*par[1] > 0);
+    return (*par[1] > 0);
 }
 
 double 
