@@ -10,12 +10,11 @@ using std::vector;
 #define RATE(par) (*par[1])
 
 DGamma::DGamma()
-    : DistScalarRmath("dgamma", 2, DIST_POSITIVE, true, false)
+    : RScalarDist("dgamma", 2, DIST_POSITIVE)
 {}
 
 bool 
-DGamma::checkParameterValue (vector<double const *> const &par,
-			     vector<vector<unsigned int> > const &dims) const
+DGamma::checkParameterValue (vector<double const *> const &par) const
 {
     return (SHAPE(par) > 0 && RATE(par) > 0);
 }
@@ -46,14 +45,14 @@ double DGamma::r(vector<double const *> const &par, RNG *rng) const
     return rgamma(SHAPE(par), SCALE(par), rng);
 }
 
-double DGamma::typicalScalar(vector<double const *> const &par,
-			     double const *lower, double const *upper) const
+double DGamma::typicalValue(vector<double const *> const &par,
+			    double const *lower, double const *upper) const
 {
-  if (lower == 0 && upper == 0) {
-    return SHAPE(par) * SCALE(par);
-  }
-  else {
-    return DistScalarRmath::typicalScalar(par, lower, upper);
-  }
+    if (lower == 0 && upper == 0) {
+	return SHAPE(par) * SCALE(par);
+    }
+    else {
+	return RScalarDist::typicalValue(par, lower, upper);
+    }
 }
 
