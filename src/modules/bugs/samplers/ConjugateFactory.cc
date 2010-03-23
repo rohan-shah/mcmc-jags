@@ -8,7 +8,7 @@
 #include "ConjugateMNormal.h"
 #include "ConjugateWishart.h"
 #include "ConjugateSampler.h"
-#include "Censored.h"
+//#include "Censored.h"
 #include "TruncatedGamma.h"
 
 #include <graph/StochasticNode.h>
@@ -32,9 +32,10 @@ ConjugateFactory::ConjugateFactory()
 bool ConjugateFactory::canSample(StochasticNode * snode,
 				 Graph const &graph) const
 {
+/*
     if (Censored::canSample(snode, graph))
       return true;
-
+*/
     bool ans = false;
     switch(getDist(snode)) {
     case NORM:
@@ -72,10 +73,12 @@ Sampler *ConjugateFactory::makeSampler(StochasticNode *snode,
     GraphView *gv = new GraphView(snode, graph);
     ConjugateMethod* method = 0;
     
+/*
     if (Censored::canSample(snode, graph)) {
 	method = new Censored(gv);
     }
     else {
+*/
 	switch (getDist(snode)) {
 	case NORM:
 	    method = new ConjugateNormal(gv);
@@ -109,8 +112,9 @@ Sampler *ConjugateFactory::makeSampler(StochasticNode *snode,
 	default:
 	    throw invalid_argument("Unable to create conjugate sampler");
 	}
-    }
-    
+/* 
+   }
+*/  
     
     return new ConjugateSampler(gv, method);
 }

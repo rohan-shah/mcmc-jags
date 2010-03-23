@@ -94,8 +94,8 @@ void DSumMethod::getLimits(double *lower, double *upper) const
 {
     vector<StochasticNode *> const &n = _gv->nodes();
     double l0, u0, l1, u1;
-    support(&l0, &u0, 1U, n[0], _chain);
-    support(&l1, &u1, 1U, n[1], _chain);
+    n[0]->support(&l0, &u0, 1U, _chain);
+    n[1]->support(&l1, &u1, 1U, _chain);
     *lower = max(l0, _sum - u1);
     *upper = min(u0, _sum - l1);
 }
