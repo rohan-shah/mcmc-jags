@@ -12,30 +12,29 @@ using std::vector;
 #define MU(par) (par[0])
 #define TAU(par) (par[1])
 #define PROB(par) (par[2])
+#define NCAT(lengths) (lengths[0])
 
 namespace mix {
 
     DNormMix::DNormMix()
-	: Distribution("dnormmix", 3, false, false)
+	: VectorDist("dnormmix", 3)
     {}
 
     bool 
-    DNormMix::checkParameterDim(vector<vector<unsigned int> > const &dims) const
+    DNormMix::checkParameterLength(vector<unsigned int> const &lengths) const
     {
-	if (dims[0][0] == 1)
+	if (lengths[0] == 1)
 	    return false; // Must be a mixture
    
-	// Parameter dimensions must match (but they need not be vectors)
-	return (dims[1] == dims[0]) && (dims[2] == dims[0]);
+	// Parameter lengths must match 
+	return (lengths[0] == lengths[1]) && (lengths[0] == lengths[2]);
     }
 
     bool 
     DNormMix::checkParameterValue(vector<double const *> const &par,
-				  vector<vector<unsigned int> > const &dims) 
-	const
+				  vector<unsigned int> const &lengths) const
     {
-	unsigned int Ncat = product(dims[0]);
-	for (unsigned int i = 0; i < Ncat; ++i) {
+	for (unsigned int i = 0; i < NCAT(lengths); ++i) {
 	    if (TAU(par)[i] <= 0)
 		return false;
 	    if (PROB(par)[i] <= 0) 
@@ -46,14 +45,13 @@ namespace mix {
 
     double DNormMix::logLikelihood(double const *x, unsigned int length,
 				   vector<double const *> const &par,
-				   vector<vector<unsigned int> > const &dims,
+				   vector<unsigned int> const &lengths,
 				   double const *lower, double const *upper) 
 	const
     {
-	unsigned int Ncat = product(dims[0]);
 	double density = 0.0;
 	double psum = 0.0;
-	for (unsigned int i = 0; i < Ncat; ++i) {
+	for (unsigned int i = 0; i < NCAT(lengths); ++i) {
 	    density += PROB(par)[i] * dnorm(*x, MU(par)[i], 
 					    1/sqrt(TAU(par)[i]), 0);
 	    psum += PROB(par)[i];
@@ -64,11 +62,11 @@ namespace mix {
     void 
     DNormMix::randomSample(double *x, unsigned int length,
 			   vector<double const *> const &par, 
-			   vector<vector<unsigned int> > const &dims, 
+			   vector<unsigned int> const &lengths, 
 			   double const *lower, double const *upper, RNG *rng) 
 	const
     {
-	unsigned long Ncat = product(dims[0]);
+	unsigned long Ncat = NCAT(lengths);
 
 	// Rescale probability parameter
 	double sump = 0;
@@ -95,11 +93,11 @@ namespace mix {
 
     void DNormMix::typicalValue(double *x, unsigned int length,
 				vector<double const *> const &par,
-				vector<std::vector<unsigned int> > const &dims,
+				vector<unsigned int> const &lengths,
 				double const *lower, double const *upper) const
     {
 	double const *mu = MU(par);
-	unsigned int Ncat = product(dims[0]);
+	unsigned int Ncat = lengths[0];
 
 	unsigned int j = 0;
 	for (unsigned int i = 1; i < Ncat; ++i) {
@@ -119,10 +117,15 @@ namespace mix {
     void 
     DNormMix::support(double *lower, double *upper, unsigned int length,
 		      vector<double const *> const &parameters,
-		      vector<vector<unsigned int> > const &dims) const
+		      vector<unsigned int> const &lengths) const
     {
 	*lower = JAGS_NEGINF;
 	*upper = JAGS_POSINF;
+    }
+
+    unsigned int DNormMix::length(vector<unsigned int> const &parlengths) const
+    {
+	return 1;
     }
 
 }
