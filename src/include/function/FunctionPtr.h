@@ -32,6 +32,7 @@ public:
     friend ScalarFunction const *SCALAR(FunctionPtr const &p);
     friend VectorFunction const *VECTOR(FunctionPtr const &p);
     friend ArrayFunction const *ARRAY(FunctionPtr const &p);
+    friend Function const *FUNC(FunctionPtr const &p);
     friend bool isNULL(FunctionPtr const &p);
 };
 
