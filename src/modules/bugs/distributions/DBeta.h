@@ -1,7 +1,7 @@
 #ifndef DBETA_H_
 #define DBETA_H_
 
-#include <distribution/DistScalarRmath.h>
+#include <distribution/RScalarDist.h>
 
 /**
  * @short Beta distribution
@@ -10,11 +10,12 @@
  * f(p|a,b) = C(a,b) * p^(a -1) * (1 - p)^(b - 1) ; 0 < p < 1
  * </pre>
  */
-class DBeta : public DistScalarRmath {
+class DBeta : public RScalarDist {
  public:
   DBeta();
 
-  double d(double x, std::vector<double const *> const &parameters, bool give_log) const;
+  double d(double x, std::vector<double const *> const &parameters, 
+	   bool give_log) const;
   double p(double q, std::vector<double const *> const &parameters, bool lower,
 	   bool give_log) const;
   double q(double p, std::vector<double const *> const &parameters, bool lower,
@@ -23,9 +24,8 @@ class DBeta : public DistScalarRmath {
   /**
    * Checks that a > 0, b > 0
    */
-  bool checkParameterValue(std::vector<double const *> const &parameters,
-			   std::vector<std::vector<unsigned int> > const &dims)
-    const;
+  bool checkParameterValue(std::vector<double const *> const &parameters) const;
+
 };
 
 #endif /* DBETA_H_ */

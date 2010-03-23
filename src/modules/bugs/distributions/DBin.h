@@ -1,7 +1,7 @@
 #ifndef DBIN_H_
 #define DBIN_H_
 
-#include <distribution/DistScalarRmath.h>
+#include <distribution/RScalarDist.h>
 
 /**
  * @short Binomial distribution
@@ -10,7 +10,7 @@
  * f(r|p,n) = n!/r!.(n - r)! p^r * (1 - p)^(n - r) ; r in 0:n
  * </pre>
  */
-class DBin : public DistScalarRmath {
+class DBin : public RScalarDist {
  public:
   DBin();
 
@@ -30,10 +30,9 @@ class DBin : public DistScalarRmath {
   /**
    * Checks that p lies in (0,1) and n > 1
    */
-  bool checkParameterValue(std::vector<double const *> const &parameters,
-			   std::vector<std::vector<unsigned int> > const &dims)
-    const;
+  bool checkParameterValue(std::vector<double const *> const &parameters) const;
   bool isSupportFixed(std::vector<bool> const &fixmask) const;
+  bool isDiscreteValued() const;
 };
 
 #endif /* DBIN_H_ */

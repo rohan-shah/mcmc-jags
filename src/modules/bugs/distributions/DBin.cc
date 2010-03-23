@@ -14,9 +14,13 @@ using std::min;
 #define PROB(par) (*par[0])
 
 DBin::DBin()
-    : DistScalarRmath("dbin", 2, DIST_SPECIAL, false, true)
+    : RScalarDist("dbin", 2, DIST_SPECIAL)
 {}
 
+bool DBin::isDiscreteValued() const
+{
+    return true;
+}
 
 bool 
 DBin::checkParameterDiscrete (vector<bool> const &mask) const
@@ -24,8 +28,7 @@ DBin::checkParameterDiscrete (vector<bool> const &mask) const
     return mask[1] == true;
 }
 
-bool DBin::checkParameterValue (vector<double const *> const &par,
-				vector<vector<unsigned int> > const &dims) const
+bool DBin::checkParameterValue (vector<double const *> const &par) const
 {
     return (SIZE(par) >= 1 && PROB(par) >= 0.0 && PROB(par) <= 1.0);
 }
