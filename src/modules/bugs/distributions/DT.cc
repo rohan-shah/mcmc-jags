@@ -12,11 +12,10 @@ using std::vector;
 #define DF(par) (*par[2])
 
 DT::DT()
-    : DistScalarRmath("dt", 3, DIST_UNBOUNDED, true, false)
+    : RScalarDist("dt", 3, DIST_UNBOUNDED)
 {}
 
-bool DT::checkParameterValue (vector<double const *> const &par,
-			      vector<vector<unsigned int> > const &dims) const
+bool DT::checkParameterValue (vector<double const *> const &par) const
 {
     return (TAU(par) > 0 && DF(par) > 0);
 }
