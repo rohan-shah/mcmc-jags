@@ -1,7 +1,7 @@
 #ifndef DNORM_MIX_H_
 #define DNORM_MIX_H_
 
-#include <distribution/Distribution.h>
+#include <distribution/VectorDist.h>
 
 namespace mix {
 
@@ -18,34 +18,35 @@ namespace mix {
  * Note that the parameter pi is redundant: the likelihood depends
  * only on pi/sum(pi).
  */
-    class DNormMix : public Distribution {
+    class DNormMix : public VectorDist {
     public:
 	DNormMix();
 	
 	double logLikelihood(double const *x, unsigned int length,
 			     std::vector<double const *> const &parameters,
-			     std::vector<std::vector<unsigned int> > const &dims,
+			     std::vector<unsigned int> const &lengths,
 			     double const *lower, double const *upper) const;
 	void randomSample(double *x, unsigned int length,
 			  std::vector<double const *> const &parameters,
-			  std::vector<std::vector<unsigned int> > const &dims,
-			  double const *lower, double const *upper, RNG *rng) const;
+			  std::vector<unsigned int> const &lengths,
+			  double const *lower, double const *upper, RNG *rng) 
+	    const;
 	void typicalValue(double *x, unsigned int length,
 			  std::vector<double const *> const &parameters,
-			  std::vector<std::vector<unsigned int> > const &dims,
+			  std::vector<unsigned int> const &lengths,
 			  double const *lower, double const *upper) const;
 	void support(double *lower, double *upper, unsigned int length,
 		     std::vector<double const *> const &parameters,
-		     std::vector<std::vector<unsigned int> > const &dims) const;
+		     std::vector<unsigned int> const &lengths) const;
 	bool isSupportFixed(std::vector<bool> const &fixmask) const;
-	bool checkParameterDim(std::vector<std::vector<unsigned int> > const &dims)
+	bool checkParameterLength(std::vector<unsigned int> const &lengths)
 	    const;
 	bool checkParameterValue(std::vector<double const *> const &parameters,
-				 std::vector<std::vector<unsigned int> > 
-				 const &dims) const;
-	void typicalValue(double *x, std::vector<double const *> const &par,
-			  std::vector<std::vector<unsigned int> > const &dims) 
+				 std::vector<unsigned int> const &lengths) 
 	    const;
+	void typicalValue(double *x, std::vector<double const *> const &par,
+			  std::vector<unsigned int> const &lengths)  const;
+	unsigned int length(std::vector<unsigned int> const &parlengths) const;
     };
 }
 
