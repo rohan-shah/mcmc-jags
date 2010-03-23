@@ -2,14 +2,14 @@
 
 #include "QFunction.h"
 
-#include <distribution/DistScalarRmath.h>
+#include <distribution/RScalarDist.h>
 
 using std::vector;
 using std::string;
 
 namespace bugs {
 
-    QFunction::QFunction(DistScalarRmath *dist)
+    QFunction::QFunction(RScalarDist const *dist)
 	: DPQFunction(string("q") + dist->name().substr(1), dist)
     {}
     
