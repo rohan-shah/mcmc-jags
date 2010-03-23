@@ -12,12 +12,15 @@ using std::max;
 #define LAMBDA(par) (*par[0])
 
 DPois::DPois()
-    : DistScalarRmath("dpois", 1, DIST_POSITIVE, true, true)
+    : RScalarDist("dpois", 1, DIST_POSITIVE)
 {}
 
-bool DPois::checkParameterValue (vector<double const *> const &par,
-				 vector<vector<unsigned int> > const &dims) 
-  const
+bool DPois::isDiscreteValued() const
+{
+    return true;
+}
+
+bool DPois::checkParameterValue (vector<double const *> const &par) const
 {
     return (LAMBDA(par) >= 0);
 }

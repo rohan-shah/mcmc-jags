@@ -17,8 +17,13 @@ static inline double SUM(vector<double const *> const &par)
 }
 
 DSum::DSum()
-    : DistScalar("dsum", 2, DIST_SPECIAL, false, true)
+    : ScalarDist("dsum", 2, DIST_SPECIAL)
 {
+}
+
+bool DSum::isDiscreteValued() const
+{
+    return true;
 }
 
 bool DSum::checkParameterDiscrete(vector<bool> const &mask) const
@@ -26,9 +31,8 @@ bool DSum::checkParameterDiscrete(vector<bool> const &mask) const
     return allTrue(mask);
 }
 
-double DSum::scalarLogLikelihood(double x, vector<double const *> const &par,
-				 double const *lower, double const *upper) 
-  const
+double DSum::logLikelihood(double x, vector<double const *> const &par,
+			   double const *lower, double const *upper) const
 {
     if (fabs(x - SUM(par)) > 16 * DBL_EPSILON) {
 	// If this happens by accident, you have no chance of getting it right
@@ -38,9 +42,9 @@ double DSum::scalarLogLikelihood(double x, vector<double const *> const &par,
     return 0;
 }
 
-double DSum::scalarRandomSample(vector<double const *> const &par, 
-				double const *lower, double const *upper,
-				RNG *rng) const
+double DSum::randomSample(vector<double const *> const &par, 
+			  double const *lower, double const *upper,
+			  RNG *rng) const
 {
     /* The random sample from DSum is not random at all, but
        deterministic. */
@@ -57,8 +61,8 @@ double DSum::u(std::vector<double const *> const &par) const
     return SUM(par);
 }
 
-double DSum::typicalScalar(vector<double const *> const &par,
-			   double const *lower, double const *upper) const
+double DSum::typicalValue(vector<double const *> const &par,
+			  double const *lower, double const *upper) const
 {
     return SUM(par);
 }
@@ -68,7 +72,12 @@ bool DSum::isSupportFixed(vector<bool> const &fixmask) const
     return fixmask[0] && fixmask[1];
 }
 
-unsigned int DSum::df(vector<vector<unsigned int> > const &dims) const
+unsigned int DSum::df() const
 {
     return 0;
+}
+
+bool DSum::checkParameterValue(vector<double const *> const &params) const
+{
+    return true;
 }

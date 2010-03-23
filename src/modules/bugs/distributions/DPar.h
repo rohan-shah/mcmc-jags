@@ -1,7 +1,7 @@
 #ifndef DPAR_H_
 #define DPAR_H_
 
-#include <distribution/DistScalarRmath.h>
+#include <distribution/RScalarDist.h>
 
 /**
  * <pre>
@@ -10,7 +10,7 @@
  * </pre>
  * @short Pareto distribution
  */
-class DPar : public DistScalarRmath {
+class DPar : public RScalarDist {
  public:
   DPar();
 
@@ -25,9 +25,7 @@ class DPar : public DistScalarRmath {
   /** 
    * Checks that alpha > 0, c > 0
    */
-  bool checkParameterValue(std::vector<double const *> const &parameters,
-			   std::vector<std::vector<unsigned int> > const &dims) 
-    const;
+  bool checkParameterValue(std::vector<double const *> const &parameters) const;
   bool isSupportFixed(std::vector<bool> const &fixmask) const;
 };
 
