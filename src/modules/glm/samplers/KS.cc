@@ -2,6 +2,7 @@
 #include "KS.h"
 #include <rng/RNG.h>
 #include <cmath>
+#include <stdexcept>
 
 #define PI            3.141592653589793238462643383280 
 #define PI_SQUARE     9.86960440108936
@@ -10,6 +11,7 @@ using std::log;
 using std::exp;
 using std::pow;
 using std::sqrt;
+using std::logic_error;
 
 static bool r_intvl(double u, double lambda)
 {
@@ -25,13 +27,16 @@ static bool r_intvl(double u, double lambda)
 	j++;
 	j2 = (j+1)*(j+1);
 	z += j2 * pow(x, j2 - 1);
-	if (z < u)
+	if (z <= u)
 	    return false;
     }
 }
 
 static bool l_intvl(double u, double lambda)
 {
+    if (u==0) {
+	return false;
+    }
     double h = 0.5*log(2.0) + 2.5*log(PI) - 2.5*log(lambda) - 
 	PI_SQUARE/(2 * lambda) + 0.5*lambda;
     double logu = log(u);
@@ -47,7 +52,7 @@ static bool l_intvl(double u, double lambda)
 	j++;
 	int j2 = (j+1)*(j+1);
 	z += j2*pow(x,j2-1);
-	if (h + log(z) < logu)
+	if (h + log(z) <= logu)
 	    return false;
     }
 }
@@ -56,6 +61,9 @@ namespace glm {
 
     double sample_lambda(double delta, RNG *rng)
     {
+	if (delta <= 0) {
+	    throw logic_error("Invalid delta in sample_lambda");
+	}
 	while (true) {
 	    double y = rng->normal();
 	    y = y * y;
