@@ -37,9 +37,16 @@ static double lnorm(double left, RNG *rng)
 	//Rejection sampling with exponential envelope
 	double alpha = Alpha(left);
 	while (true) {
+	    double y = rng->exponential();
+	    double C = (1 - y)/alpha;
+	    if (rng->uniform() <= exp(-C*C/2))
+		return left + y/alpha;
+	    /*
+            //Original version, less stable for large mu
 	    double z = left + rng->exponential() / alpha;
 	    if (rng->uniform() <= exp(-(alpha - z)*(alpha - z)/2))
 		return z;
+	    */
 	}
     }
 }
