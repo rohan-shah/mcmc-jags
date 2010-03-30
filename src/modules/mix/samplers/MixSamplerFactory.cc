@@ -14,6 +14,10 @@ using std::set;
 using std::vector;
 using std::string;
 
+#define NLEVEL 50
+#define MAX_TEMP 100
+#define NREP 5
+
 /* 
  * Returns a pointer to a newly allocated GraphView if snode has a
  * stochastic child with distribution "dnormmix", otherwise a null
@@ -88,7 +92,7 @@ namespace mix {
 	    unsigned int nchain = sample_nodes[0]->nchain();
 	    vector<SampleMethod*> methods(nchain,0);	    
 	    for (unsigned int ch = 0; ch < nchain; ++ch) {
-		methods[ch] = new NormMix(gv, ch);
+		methods[ch] = new NormMix(gv, ch, NLEVEL, MAX_TEMP, NREP);
 	    }
 	    return new ParallelSampler(gv, methods);		
 	}

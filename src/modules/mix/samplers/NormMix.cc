@@ -46,14 +46,15 @@ static vector<double> initialValue(GraphView const *gv, unsigned int chain)
 
 namespace mix {
 
-    NormMix::NormMix(GraphView const *gv, unsigned int chain)
-	: TemperedMetropolis(initialValue(gv, chain)),
+    NormMix::NormMix(GraphView const *gv, unsigned int chain,
+		     unsigned int nlevel, double max_temp, unsigned int nrep)
+	: TemperedMetropolis(initialValue(gv, chain), nlevel, max_temp, nrep),
 	  _gv(gv), _chain(chain)
     {
 	unsigned int N = gv->length();
 	_lower = new double[N];
 	_upper = new double[N];
-	read_bounds(_gv->nodes(), 0, _lower, _upper, N);
+	read_bounds(_gv->nodes(), chain, _lower, _upper, N);
     }
 
     NormMix::~NormMix()
@@ -148,8 +149,13 @@ namespace mix {
 	_gv->setValue(x, _chain);
     }
 
-    double NormMix::logDensity() const
+    double NormMix::logPrior() const
     {
-        return _gv->logFullConditional(_chain);
+	return _gv->logPrior(_chain);
+    }
+    
+    double NormMix::logLikelihood() const
+    {
+        return _gv->logLikelihood(_chain);
     }
 }

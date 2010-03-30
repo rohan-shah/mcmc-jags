@@ -32,17 +32,18 @@ namespace mix {
 	 *
 	 * @param max_level Maximum number of levels 
 	 *
-	 * @param delta Increment in the log temperature at each
-	 * level. The maximum temperature reached is thus exp(nlevel *
-	 * delta).
+	 * @param max_temp Maximum temperature
 	 *
-	 * @param nrep Number of Metropolis-Hastings updates to do at each level
+	 * @param nrep Number of Metropolis-Hastings updates to do at
+	 * each level
 	 */
-	NormMix(GraphView const *gv, unsigned int chain);
+	NormMix(GraphView const *gv, unsigned int chain,
+		unsigned int max_level, double max_temp, unsigned int nrep);
 	~NormMix();
 	void getValue(std::vector<double> &value) const;
 	void setValue(std::vector<double> const &value);
-	double logDensity() const;
+	double logPrior() const;
+	double logLikelihood() const;
 	double logJacobian(std::vector<double> const &value) const;
 	void step(std::vector<double> &value, double step, RNG *rng) const;
 	std::string name() const;

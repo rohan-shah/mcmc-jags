@@ -52,16 +52,21 @@ TemperedMetropolis::~TemperedMetropolis()
     }
 }
 
-void TemperedMetropolis::temperedUpdate(RNG *rng, double &log_density0, vector<double> &value0)
+void TemperedMetropolis::temperedUpdate(RNG *rng, 
+					double &lprior0,
+					double &llik0, 
+					vector<double> &value0)
 {
     vector<double> x = value0;
     for (unsigned int r = 0; r < _nrep; ++r) {
 	step(x, _step_adapter[_t]->stepSize(), rng);
 	setValue(x);
-	double log_density1 = logDensity() + logJacobian(x);
-	double lprob = _pwr[_t] * (log_density1 - log_density0);
+	double lprior1 = logPrior() + logJacobian(x);
+	double llik1 = logLikelihood();
+	double lprob = (lprior1 - lprior0) +  _pwr[_t] * (llik1 - llik0);
 	if (accept(rng, exp(lprob))) {
-	    log_density0 = log_density1;
+	    lprior0 = lprior1;
+	    llik0 = llik1;
 	    value0 = x;
 	}
 	else {
@@ -78,17 +83,18 @@ void TemperedMetropolis::update(RNG *rng)
 
     //Make copies of the current state and log density
     //These are modified in place by temperedUpdate
-    double log_density = logDensity() + logJacobian(last_value);
+    double log_prior = logPrior() + logJacobian(last_value);
+    double log_lik = logLikelihood();
     vector<double> current_value = last_value;
 
     double log_global_prob = 0;
     for (_t = 1; _t <= _tmax; _t++) {
-	log_global_prob += (_pwr[_t] - _pwr[_t-1]) * log_density;
-	temperedUpdate(rng, log_density, current_value);
+	log_global_prob += log_prior + (_pwr[_t] - _pwr[_t-1]) * log_lik;
+	temperedUpdate(rng, log_prior, log_lik, current_value);
     }
     for (_t = _tmax; _t >= 1; _t--) {
-	temperedUpdate(rng, log_density, current_value);
-	log_global_prob -= (_pwr[_t] - _pwr[_t-1])  * log_density;
+	temperedUpdate(rng, log_prior, log_lik, current_value);
+	log_global_prob -= log_prior + (_pwr[_t] - _pwr[_t-1])  * log_lik;
     }
 
     //Global Metropolis-Hastings acceptance step

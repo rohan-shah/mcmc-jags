@@ -41,7 +41,7 @@ class StepAdapter;
  * updates are therefore required to guarantee that a M-H jump takes
  * place. Without this, the proposal risks getting stuck in a region
  * of low probability. These elements are controlled by the parameters
- * max_level, delta, and nrep respectively.
+ * max_level, max_temp, and nrep respectively.
  */
 class TemperedMetropolis : public Metropolis
 {
@@ -53,7 +53,7 @@ class TemperedMetropolis : public Metropolis
     std::vector<StepAdapter*> _step_adapter;
     double _pmean;
     unsigned int _niter;
-    void temperedUpdate(RNG *rng, double &log_density0, 
+    void temperedUpdate(RNG *rng, double &log_prior0, double &log_likelihood0, 
                         std::vector<double> &value0);
 public:
     /**
@@ -61,9 +61,7 @@ public:
      *
      * @param max_level Maximum number of levels 
      *
-     * @param delta Increment in the log temperature at each
-     * level. The maximum temperature reached is thus exp(nlevel *
-     * delta).
+     * @param max_temp  Maximum temperature
      *
      * @param nrep Number of Metropolis-Hastings updates to do at each
      * level
@@ -80,8 +78,8 @@ public:
      * Modifies the step size at each temperature level to achieve the
      * target acceptance probability using a noisy gradient algorithm
      *
-     * When the mean acceptance probability is within the target range, the
-     * maximum temperature is increased up to max_temp.
+     * When the mean acceptance probability is within the target
+     * range, the temperature is increased up to max_temp.
      *
      * @param prob acceptance probability at current update
      */
@@ -91,10 +89,18 @@ public:
      */
     bool checkAdaptation() const;
     /**
-     * Returns the log of the probability density function of the target
-     * distribution at the current value.
+     * The target density is assumed to be the product of a prior density
+     * and a likelihood. Only the likelihood part of the density is 
+     * tempered. This may be necessary in order to ensure that the 
+     * tempered distribution can be normalized.
+     *
+     * This function returns the log of the prior density function. 
      */    
-    virtual double logDensity() const = 0;
+    virtual double logPrior() const = 0;
+    /**
+     * Returns the log of the likelihood.
+     */
+    virtual double logLikelihood() const = 0;
     /**
      * Modifies the given value vector in place by adding an
      * independent normal increment to each element.  It can be
