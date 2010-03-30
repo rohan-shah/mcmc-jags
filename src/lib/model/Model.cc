@@ -93,21 +93,22 @@ void Model::chooseRNGs()
     }
 
     vector<RNG*> new_rngs;
-    for (list<RNGFactory*>::const_iterator p = rngFactories().begin();
-	 p != rngFactories().end(); ++p) 
-    {
-	vector<RNG*> rngs = (*p)->makeRNGs(n);
-        if (rngs.size() > n) {
-            throw logic_error("Too many rngs produced by RNG factory");
-        }
-        else {
-            n -= rngs.size();
-        }
-	for (unsigned int j = 0; j < rngs.size(); ++j) {
-	    new_rngs.push_back(rngs[j]);
+    list<pair<RNGFactory*, bool> >::const_iterator p;
+    for (p = rngFactories().begin(); p != rngFactories().end(); ++p) {
+	if (p->second) {
+	    vector<RNG*> rngs = p->first->makeRNGs(n);
+	    if (rngs.size() > n) {
+		throw logic_error("Too many rngs produced by RNG factory");
+	    }
+	    else {
+		n -= rngs.size();
+	    }
+	    for (unsigned int j = 0; j < rngs.size(); ++j) {
+		new_rngs.push_back(rngs[j]);
+	    }
+	    if (n == 0)
+		break;
 	}
-	if (n == 0)
-	    break;
     }
     
     if (n > 0) {
@@ -267,26 +268,27 @@ void Model::chooseSamplers()
     }
 
     // Traverse the list of samplers, selecting nodes that can be sampled
-    list<SamplerFactory const *> const &sfactories = samplerFactories();
-    for (list<SamplerFactory const *>::const_iterator p = sfactories.begin();
-	 p != sfactories.end(); ++p)
+    list<pair<SamplerFactory *, bool> > const &sf = samplerFactories();
+    for(list<pair<SamplerFactory *, bool> >::const_iterator q = sf.begin();
+	q != sf.end(); ++q) 
     {
-	vector<Sampler*> samplers = (*p)->makeSamplers(sset, sample_graph);
-	while (!samplers.empty()) {
-	    for (unsigned int i = 0; i < samplers.size(); ++i) {
-		vector<StochasticNode*> const &nodes = samplers[i]->nodes();
-		for (unsigned int j = 0; j < nodes.size(); ++j) {
-		    sset.erase(nodes[j]);
+	if (q->second) {
+	    vector<Sampler*> svec = q->first->makeSamplers(sset, sample_graph);
+	    while (!svec.empty()) {
+		for (unsigned int i = 0; i < svec.size(); ++i) {
+		    vector<StochasticNode*> const &nodes = svec[i]->nodes();
+		    for (unsigned int j = 0; j < nodes.size(); ++j) {
+			sset.erase(nodes[j]);
+		    }
+		    _samplers.push_back(svec[i]);
 		}
-		_samplers.push_back(samplers[i]);
+		svec = q->first->makeSamplers(sset, sample_graph);
 	    }
-	    samplers = (*p)->makeSamplers(sset, sample_graph);
 	}
     }
   
     // Make sure we found a sampler for all the nodes
     if (!sset.empty()) {
-      
 	throw NodeError(*sset.begin(),
 			"Unable to find appropriate sampler");
     }
@@ -500,21 +502,21 @@ void Model::addExtraNode(Node *node)
     }
 }
 
-list<SamplerFactory const *> &Model::samplerFactories()
+list<pair<SamplerFactory *, bool> > &Model::samplerFactories()
 {
-  static list<SamplerFactory const *> _samplers;
-  return _samplers;
+    static list<pair<SamplerFactory *, bool> > _samplers;
+    return _samplers;
 }
 
-list<RNGFactory *> &Model::rngFactories()
+list<pair<RNGFactory *, bool> > &Model::rngFactories()
 {
-  static list<RNGFactory *> _rngfac;
-  return _rngfac;
+    static list<pair<RNGFactory *, bool> > _rngfac;
+    return _rngfac;
 }
 
-list<MonitorFactory *> &Model::monitorFactories()
+list<pair<MonitorFactory *, bool> > &Model::monitorFactories()
 {
-    static list<MonitorFactory *> _monitorfac;
+    static list<pair<MonitorFactory *, bool> > _monitorfac;
     return _monitorfac;
 }
 
@@ -533,13 +535,13 @@ bool Model::setRNG(string const &name, unsigned int chain)
   if (chain >= _nchain)
      throw logic_error("Invalid chain number in Model::setRNG");
 
-  list<RNGFactory*>::const_iterator p;
+  list<pair<RNGFactory*, bool> >::const_iterator p;
   for (p = rngFactories().begin(); p != rngFactories().end(); ++p) {
-    RNG *rng = (*p)->makeRNG(name);
-    if (rng) {
-      _rng[chain] = rng;
-      return true;
-    }
+      RNG *rng = p->first->makeRNG(name);
+      if (rng) {
+	  _rng[chain] = rng;
+	  return true;
+      }
   }
 
   return false;

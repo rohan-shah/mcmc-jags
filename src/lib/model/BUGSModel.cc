@@ -248,13 +248,15 @@ bool BUGSModel::setMonitor(string const &name, Range const &range,
 
     Monitor *monitor = 0;
 
-    list<MonitorFactory*> const &faclist = monitorFactories();
-    for(list<MonitorFactory*>::const_iterator j = faclist.begin();
+    list<pair<MonitorFactory*, bool> > const &faclist = monitorFactories();
+    for(list<pair<MonitorFactory*, bool> >::const_iterator j = faclist.begin();
 	j != faclist.end(); ++j)
     {
-	monitor = (*j)->getMonitor(name, range, this, type);
-	if (monitor)
-	    break;
+	if (j->second) {
+	    monitor = j->first->getMonitor(name, range, this, type);
+	    if (monitor)
+		break;
+	}
     }
 
     if (monitor) {

@@ -194,9 +194,6 @@ void Module::insert(ArrayDist *dist, ArrayFunction *func)
     insert(func);
 }
 
-//
-
-
 void Module::insert(SamplerFactory *fac)
 {
     _sampler_factories.push_back(fac);
@@ -215,13 +212,16 @@ void Module::insert(MonitorFactory *fac)
 void Module::load()
 {
     for (unsigned int i = 0; i < _monitor_factories.size(); ++i) {
-	Model::monitorFactories().push_front(_monitor_factories[i]);
+	pair<MonitorFactory*,bool> p(_monitor_factories[i], true);
+	Model::monitorFactories().push_front(p);
     }
     for (unsigned int i = 0; i < _rng_factories.size(); ++i) {
-	Model::rngFactories().push_front(_rng_factories[i]);
+	pair<RNGFactory*, bool> p(_rng_factories[i], true);
+	Model::rngFactories().push_front(p);
     }
     for (unsigned int i = 0; i < _sampler_factories.size(); ++i) {
-	Model::samplerFactories().push_front(_sampler_factories[i]);
+	pair<SamplerFactory*, bool> p(_sampler_factories[i], true);
+	Model::samplerFactories().push_front(p);
     }
     for (unsigned int i = 0; i < _distributions.size(); ++i) {
 	Compiler::distTab().insert(_dp_list[i]);
@@ -250,30 +250,31 @@ void Module::unload()
 	Compiler::distTab().erase(_dp_list[i]);
     }
 
-    list<RNGFactory *> &rngf = Model::rngFactories();
+    list<pair<RNGFactory *, bool> > &rngf = Model::rngFactories();
     for (i = 0; i < _rng_factories.size(); ++i) {
 	RNGFactory *f = _rng_factories[i];
-	for (;;) {
-	    /* A little paranoiac, in case someone inserted the
-	       same sampler factory more than once */
-	    list<RNGFactory *>::iterator p = find(rngf.begin(), rngf.end(), f);
-	    if (p == rngf.end())
-		break;
-	    rngf.erase(p);
+	list<pair<RNGFactory *, bool> >::iterator p = rngf.begin(); 
+	while (p != rngf.end()) {
+	    if (p->first == f) {
+		rngf.erase(p++);
+	    }
+	    else {
+		++p;
+	    }
 	}
     }
 
-    list<SamplerFactory const*> &sf = Model::samplerFactories();
+    list<pair<SamplerFactory *, bool> > &sf = Model::samplerFactories();
     for (i = 0; i < _sampler_factories.size(); ++i) {
 	SamplerFactory *f = _sampler_factories[i];
-	for (;;) {
-	    /* A little paranoiac, in case someone inserted the
-	       same sampler factory more than once */
-	    list<SamplerFactory const*>::iterator p
-		= find(sf.begin(), sf.end(), f);
-	    if (p == sf.end())
-		break;
-	    sf.erase(p);
+	list<pair<SamplerFactory *, bool> >::iterator p = sf.begin(); 
+	while (p != sf.end()) {
+	    if (p->first == f) {
+		sf.erase(p++);
+	    }
+	    else {
+		++p;
+	    }
 	}
     }
 }
