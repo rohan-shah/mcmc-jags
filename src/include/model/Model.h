@@ -137,18 +137,24 @@ public:
   /**
    * Access the list of sampler factories, which is common to all
    * models. This is used during initialization to choose samplers.
+   * Each sampler factory is paired with a boolean flag which is used
+   * to determine whether the factory is active or not
    *
    * @seealso Model#chooseSamplers
    */
-  static std::list<SamplerFactory const *> &samplerFactories();
+  static std::list<std::pair<SamplerFactory *, bool> > &samplerFactories();
   /**
-   * Access the list of RNG factories, which is common to all models
+   * Access the list of RNG factories, which is common to all models.
+   * Each factory is paired with a boolean flag which is used to determine
+   * whether the factory is active or not.
    */
-  static std::list<RNGFactory *> &rngFactories();
+  static std::list<std::pair<RNGFactory *, bool> > &rngFactories();
   /**
    * Access the list of monitor factories, which is commmon to all models
+   * Each factory is paired with a boolean flag which is used to determine
+   * whether the factory is active or not.
    */
-  static std::list<MonitorFactory *> &monitorFactories();
+  static std::list<std::pair<MonitorFactory *, bool> > &monitorFactories();
   /**
    * Returns the number of chains in the model
    */
