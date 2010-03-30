@@ -89,12 +89,12 @@ void TemperedMetropolis::update(RNG *rng)
 
     double log_global_prob = 0;
     for (_t = 1; _t <= _tmax; _t++) {
-	log_global_prob += log_prior + (_pwr[_t] - _pwr[_t-1]) * log_lik;
+	log_global_prob += (_pwr[_t] - _pwr[_t-1]) * log_lik;
 	temperedUpdate(rng, log_prior, log_lik, current_value);
     }
     for (_t = _tmax; _t >= 1; _t--) {
 	temperedUpdate(rng, log_prior, log_lik, current_value);
-	log_global_prob -= log_prior + (_pwr[_t] - _pwr[_t-1])  * log_lik;
+	log_global_prob -= (_pwr[_t] - _pwr[_t-1])  * log_lik;
     }
 
     //Global Metropolis-Hastings acceptance step
