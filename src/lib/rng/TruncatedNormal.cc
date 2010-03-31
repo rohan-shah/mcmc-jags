@@ -25,6 +25,9 @@ static double Alpha(double mu)
 
 static double lnorm(double left, RNG *rng)
 {
+    if (!jags_finite(left)) {
+	throw logic_error("Non-finite boundary in truncated normal");
+    }
     if (left < 0) {
 	//Repeated sampling until truncation satisfied
 	while(true) {
@@ -53,7 +56,7 @@ static double lnorm(double left, RNG *rng)
 
 static double rnorm(double right, RNG *rng)
 {
-    return -lnormal(-right, rng);
+    return -lnorm(-right, rng);
 }
 
 /* 
@@ -115,9 +118,9 @@ static double inorm_right_tail(double left, double right, RNG *rng)
     else {
 	//Interval too wide for rejection sampling. Do repeat sampling
 	//from left-truncated normal
-	double y = lnormal(left, rng);
+	double y = lnorm(left, rng);
 	while (y >= right) {
-	    y = lnormal(left, rng);
+	    y = lnorm(left, rng);
 	}
 	return y;
     }
@@ -126,6 +129,9 @@ static double inorm_right_tail(double left, double right, RNG *rng)
 
 static double inorm(double left, double right, RNG *rng)
 {
+    if (!jags_finite(left) || !jags_finite(right)) {
+	throw logic_error("Non-finite boundary in truncated normal");
+    }
     if (right < left) {
 	throw logic_error("Invalid limits in inorm");
     }
@@ -144,6 +150,7 @@ static double inorm(double left, double right, RNG *rng)
     }
 }
 
+/* Public interface */
 
 double lnormal(double left, RNG *rng, double mu, double sigma) {
     return mu + sigma * lnorm((left - mu)/sigma, rng);
