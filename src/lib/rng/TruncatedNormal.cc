@@ -6,6 +6,7 @@
 
 #include <rng/TruncatedNormal.h>
 #include <rng/RNG.h>
+#include <util/nainf.h>
 
 #include <cmath>
 #include <stdexcept>
