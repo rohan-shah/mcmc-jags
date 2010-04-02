@@ -690,3 +690,57 @@ list<Module *> &Console::loadedModules()
     static list<Module*> _modules;
     return _modules;
 }
+
+static bool setSamplerActive(string const &name, bool flag)
+{
+    bool ans = false;
+    list<pair<SamplerFactory*, bool> > &faclist = Model::samplerFactories();
+    list<pair<SamplerFactory*, bool> >::iterator p;
+    for (p = faclist.begin(); p != faclist.end(); ++p) {
+	if (p->first->name() == name) {
+	    p->second = flag;
+	    ans = true;
+	}
+    }
+    return ans;
+}
+
+static bool setMonitorActive(string const &name, bool flag)
+{
+    bool ans = false;
+    list<pair<MonitorFactory*, bool> > &faclist = Model::monitorFactories();
+    list<pair<MonitorFactory*, bool> >::iterator p;
+    for (p = faclist.begin(); p != faclist.end(); ++p) {
+	if (p->first->name() == name) {
+	    p->second = flag;
+	    ans = true;
+	}
+    }
+    return ans;
+}
+
+static bool setRNGActive(string const &name, bool flag)
+{
+    bool ans = false;
+    list<pair<RngFactory*, bool> > &faclist = Model::rngFactories();
+    list<pair<RngFactory*, bool> >::iterator p;
+    for (p = faclist.begin(); p != faclist.end(); ++p) {
+	if (p->first->name() == name) {
+	    p->second = flag;
+	    ans = true;
+	}
+    }
+    return ans;
+}
+
+bool setFactoryActive(string const &name, FactoryType type, bool flag)
+{
+    switch(type) {
+    case SAMPLER_FACTORY:
+	return setSamplerActive(type, flag);
+    case MONITOR_FACTORY:
+	return setMonitorActive(type, flag);
+    case RNG_FACTORY:
+	return setRNGActive(type, flag);
+    }
+}
