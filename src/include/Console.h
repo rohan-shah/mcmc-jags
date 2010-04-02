@@ -16,9 +16,14 @@ class RNG;
 class Module;
 
 /**
- * Flags for the function Console#dumpState
+ * @short Flags for the function Console#dumpState
  */
 enum DumpType {DUMP_DATA, DUMP_PARAMETERS, DUMP_ALL};
+/**
+ * @short Enumerates factory types in a model
+ */
+enum FactoryType {SAMPLER_FACTORY, MONITOR_FACTORY, RNG_FACTORY};
+
 
 /**
  * @short Interface to the JAGS library
@@ -199,17 +204,23 @@ public:
   /** Clears the model */
   void clearModel();
   /**
-   * Access the list of loaded modules
+   * Returns a list of loaded modules
    */
   static std::list<Module *> &loadedModules();
   /**
-   * Load a module by name
+   * Loads a module by name
    */
   static bool loadModule(std::string const &name);
   /**
-   * Unload a module by name
+   * Unloads a module by name
    */ 
   static bool unloadModule(std::string const &name);
+  /**
+   * Sets a factory to be active or inactive
+   */
+  static bool setFactoryActive(std::string const &name, FactoryType type, 
+			       bool active);
+
 };
 
 #endif /* CONSOLE_H_ */
