@@ -69,6 +69,7 @@ namespace mix {
 	    bool bb = jags_finite(_lower[i]); //bounded below
 	    bool ba = jags_finite(_upper[i]); //bounded above
 	    double eps = rng->normal() * step;
+
 	    if (bb && ba) {
 		x[i] = log(x[i] - _lower[i]) - log(_upper[i] - x[i]);
 		x[i] += eps;

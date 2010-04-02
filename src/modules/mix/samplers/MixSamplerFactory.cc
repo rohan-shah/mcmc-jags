@@ -14,7 +14,7 @@ using std::set;
 using std::vector;
 using std::string;
 
-#define NLEVEL 50
+#define NLEVEL 200
 #define MAX_TEMP 100
 #define NREP 5
 
