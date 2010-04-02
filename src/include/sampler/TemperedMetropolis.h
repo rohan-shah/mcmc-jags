@@ -59,7 +59,7 @@ public:
     /**
      * Constructor.
      *
-     * @param max_level Maximum number of levels 
+     * @param nlevel Number of levels between minimum and maximum temperature
      *
      * @param max_temp  Maximum temperature
      *
@@ -67,8 +67,7 @@ public:
      * level
      */
     TemperedMetropolis(std::vector<double> const &value, 
-                       int max_level=50, double max_temp = 10,
-		       unsigned int nrep = 5);
+                       int nlevel, double max_temp, unsigned int nrep);
     ~TemperedMetropolis();
     /**
      * Updates the current value using tempered transitions.
