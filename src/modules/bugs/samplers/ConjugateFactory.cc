@@ -24,11 +24,6 @@ using std::map;
 using std::invalid_argument;
 using std::logic_error;
 
-ConjugateFactory::ConjugateFactory()
-    : _name("Conjugate")
-{
-}
-
 bool ConjugateFactory::canSample(StochasticNode * snode,
 				 Graph const &graph) const
 {
@@ -119,7 +114,7 @@ Sampler *ConjugateFactory::makeSampler(StochasticNode *snode,
     return new ConjugateSampler(gv, method);
 }
 
-string const &ConjugateFactory::name() const
+string ConjugateFactory::name() const
 {
-    return _name;
+    return "bugs::conjugatefactory";
 }
