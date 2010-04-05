@@ -61,10 +61,6 @@ static void aggregate(GraphView const *gv, vector<StochasticNode *> &nodes,
 
 namespace mix {
 
-    MixSamplerFactory::MixSamplerFactory()
-	: _name("MixSampler")
-    {}
-
     Sampler * MixSamplerFactory::makeSampler(set<StochasticNode*> const &nodes, 
 					     Graph const &graph) const
     {
@@ -101,9 +97,9 @@ namespace mix {
 	}
     }
 
-    string const &MixSamplerFactory::name() const
+    string MixSamplerFactory::name() const
     {
-	return _name;
+	return "mix::mixfactory";
     }
 
     vector<Sampler*>  
