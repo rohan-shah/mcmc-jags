@@ -9,6 +9,7 @@
 
 using std::vector;
 using std::time;
+using std::string;
 
 #define DEFAULT_NORM_KIND KINDERMAN_RAMAGE
 
@@ -87,4 +88,8 @@ namespace base {
 	return rng;
     }
 
+    string BaseRNGFactory::name() const
+    {
+	return "base::rngfactory";
+    }
 }
