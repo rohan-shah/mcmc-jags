@@ -10,6 +10,7 @@ namespace dic {
       public:
 	Monitor *getMonitor(std::string const &name, Range const &range,
 			    BUGSModel *model, std::string const &type);
+	std::string name() const;
     };
     
 }
