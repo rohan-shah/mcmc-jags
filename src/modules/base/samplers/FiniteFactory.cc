@@ -13,10 +13,6 @@ using std::string;
 
 namespace base {
 
-    FiniteFactory::FiniteFactory()
-	: _name("Finite")
-    {}
-    
     bool 
     FiniteFactory::canSample(StochasticNode *snode, Graph const &graph) const
     {
@@ -35,8 +31,8 @@ namespace base {
 	return new ParallelSampler(gv, methods);
     }
 
-    string const &FiniteFactory::name() const
+    string FiniteFactory::name() const
     {
-	return _name;
+	return "base::finitefactory";
     }
 }
