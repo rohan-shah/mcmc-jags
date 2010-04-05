@@ -37,7 +37,7 @@ namespace glm {
 		      std::vector<GraphView const *> const &sub_views, 
 		      unsigned int chain) const = 0;
 	virtual bool canSample(StochasticNode const *snode) const = 0;
-	std::string const &name() const;
+	std::string name() const;
 	
     };
 

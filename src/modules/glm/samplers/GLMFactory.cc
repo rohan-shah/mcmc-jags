@@ -262,7 +262,7 @@ namespace glm {
 	}
     }
 
-    string const &GLMFactory::name() const
+    string GLMFactory::name() const
     {
 	return _name;
     }
