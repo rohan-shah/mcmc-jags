@@ -19,6 +19,7 @@
 #include <list>
 #include <iterator>
 #include <string>
+#include <utility>
 
 #include <Console.h>
 #include <Module.h>
@@ -70,6 +71,7 @@
     static void dumpSamplers(std::string const &file);
     static void delete_pvec(std::vector<ParseTree*> *);
     static void print_unused_variables();
+    static void list_factories(FactoryType type);
 
     %}
 
@@ -118,7 +120,11 @@
 %token <intval> CHAIN
 %token <intval> LOAD
 %token <intval> UNLOAD
+%token <intval> SAMPLER
 %token <intval> SAMPLERS
+%token <intval> RNG
+%token <intval> FACTORY;
+%token <intval> FACTORIES;
 
 %token <intval> LIST 
 %token <intval> STRUCTURE
@@ -187,6 +193,7 @@ command: model
 | get_working_dir
 | set_working_dir
 | samplers_to
+| console_list
 ;
 
 model: MODEL IN file_name {
@@ -458,6 +465,22 @@ samplers_to: SAMPLERS TO file_name
 {
     dumpSamplers(*$3);
     delete $3;
+}
+;
+
+console_list: LIST FACTORIES ',' TYPE '(' SAMPLER ')'
+{
+    list_factories(SAMPLER_FACTORY);
+}
+|
+LIST FACTORIES ',' TYPE '(' RNG ')'
+{
+    list_factories(RNG_FACTORY);
+}
+|
+LIST FACTORIES ',' TYPE '(' MONITOR ')'
+{
+    list_factories(MONITOR_FACTORY);
 }
 ;
 
@@ -1359,3 +1382,31 @@ void doSystem(std::string const *command)
 {
     std::system(command->c_str());
 }
+
+void list_factories(FactoryType type)
+{
+    std::list<std::pair<std::string, bool> > faclist = 
+	Console::listFactories(type);
+
+    std::list<std::pair<std::string, bool> >::const_iterator p;
+    int max_strlen = 0;
+    for (p = faclist.begin(); p != faclist.end(); ++p) {
+	if (p->first.length() > max_strlen)
+	    max_strlen = p->first.length();
+    }
+    for (p = faclist.begin(); p != faclist.end(); ++p) {
+	std::cout << p->first << " ";
+	for (int i = max_strlen - p->first.length(); i >= 0; --i) {
+	    std::cout << " ";
+	}
+	if (p->second) {
+	    std::cout << "yes";
+	}
+	else {
+	    std::cout << "no";
+	}
+	std::cout << "\n";
+    }
+}
+
+	    
