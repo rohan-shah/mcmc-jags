@@ -20,6 +20,7 @@ namespace lecuyer {
 	void nextSubstream();
 	std::vector<RNG *> makeRNGs(unsigned int n);
 	RNG * makeRNG(std::string const &name);
+	std::string name() const;
     };
 
 }
