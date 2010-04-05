@@ -42,5 +42,9 @@ namespace base {
 	
 	return devmon;
     }
-	
+
+    string DevianceFactory::name() const
+    {
+	return "base::deviancefactory";
+    }	
 }

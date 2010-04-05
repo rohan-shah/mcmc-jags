@@ -6,7 +6,9 @@
 #include <model/BUGSModel.h>
 #include <model/Monitor.h>
 #include <graph/NodeError.h>
-//#include <sampler/SamplerFactory.h>
+#include <sampler/SamplerFactory.h>
+#include <model/MonitorFactory.h>
+#include <rng/RNGFactory.h>
 #include <graph/Node.h>
 #include <sarray/Range.h>
 #include <sarray/SArray.h>
@@ -722,8 +724,8 @@ static bool setMonitorActive(string const &name, bool flag)
 static bool setRNGActive(string const &name, bool flag)
 {
     bool ans = false;
-    list<pair<RngFactory*, bool> > &faclist = Model::rngFactories();
-    list<pair<RngFactory*, bool> >::iterator p;
+    list<pair<RNGFactory*, bool> > &faclist = Model::rngFactories();
+    list<pair<RNGFactory*, bool> >::iterator p;
     for (p = faclist.begin(); p != faclist.end(); ++p) {
 	if (p->first->name() == name) {
 	    p->second = flag;
@@ -733,14 +735,62 @@ static bool setRNGActive(string const &name, bool flag)
     return ans;
 }
 
-bool setFactoryActive(string const &name, FactoryType type, bool flag)
+bool Console::setFactoryActive(string const &name, FactoryType type, bool flag)
 {
     switch(type) {
     case SAMPLER_FACTORY:
-	return setSamplerActive(type, flag);
+	return setSamplerActive(name, flag);
     case MONITOR_FACTORY:
-	return setMonitorActive(type, flag);
+	return setMonitorActive(name, flag);
     case RNG_FACTORY:
-	return setRNGActive(type, flag);
+	return setRNGActive(name, flag);
+    }
+}
+
+static list<pair<string, bool> > listSamplerFactories()
+{
+    list<pair<string, bool> > ans;
+    list<pair<SamplerFactory*, bool> > const &flist = Model::samplerFactories();
+    for (list<pair<SamplerFactory*, bool> >::const_iterator p = flist.begin();
+	 p != flist.end(); ++p) 
+    {
+	ans.push_back(pair<string,bool>(p->first->name(), p->second));
+    }
+    return ans;
+}
+
+static list<pair<string, bool> > listMonitorFactories()
+{
+    list<pair<string, bool> > ans;
+    list<pair<MonitorFactory*, bool> > const &flist = Model::monitorFactories();
+    for (list<pair<MonitorFactory*, bool> >::const_iterator p = flist.begin();
+	 p != flist.end(); ++p) 
+    {
+	ans.push_back(pair<string,bool>(p->first->name(), p->second));
+    }
+    return ans;
+}
+
+static list<pair<string, bool> > listRNGFactories()
+{
+    list<pair<string, bool> > ans;
+    list<pair<RNGFactory*, bool> > const &flist = Model::rngFactories();
+    for (list<pair<RNGFactory*, bool> >::const_iterator p = flist.begin();
+	 p != flist.end(); ++p) 
+    {
+	ans.push_back(pair<string,bool>(p->first->name(), p->second));
+    }
+    return ans;
+}
+
+list<pair<string, bool> >  Console::listFactories(FactoryType type)
+{
+    switch(type) {
+    case SAMPLER_FACTORY:
+	return listSamplerFactories();
+    case MONITOR_FACTORY:
+	return listMonitorFactories();
+    case RNG_FACTORY:
+	return listRNGFactories();
     }
 }

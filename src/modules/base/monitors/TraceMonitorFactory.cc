@@ -49,5 +49,9 @@ namespace base {
 	
 	return m;
     }
-	
+
+    string TraceMonitorFactory::name() const
+    {
+	return "base::tracefactory";
+    }
 }
