@@ -24,7 +24,6 @@ enum DumpType {DUMP_DATA, DUMP_PARAMETERS, DUMP_ALL};
  */
 enum FactoryType {SAMPLER_FACTORY, MONITOR_FACTORY, RNG_FACTORY};
 
-
 /**
  * @short Interface to the JAGS library
  */
@@ -215,6 +214,12 @@ public:
    * Unloads a module by name
    */ 
   static bool unloadModule(std::string const &name);
+  /**
+   * Returns a list containing the names of currently loaded factories
+   * and whether or not they are active.
+   */
+  static std::list<std::pair<std::string, bool> >  
+      listFactories(FactoryType type);
   /**
    * Sets a factory to be active or inactive
    */
