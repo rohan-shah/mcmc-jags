@@ -22,6 +22,10 @@ public:
      */
     virtual Monitor *getMonitor(std::string const &name, Range const &range,
 				BUGSModel *model, std::string const &type) = 0;
+    /**
+     * Returns the name of the RNG factory
+     */
+    virtual std::string name() const = 0;
 };
 
 #endif /* MONITOR_FACTORY_H_ */

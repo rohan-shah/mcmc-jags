@@ -28,7 +28,7 @@ public:
     /**
       * Returns the name of the sampler factory
       */
-    virtual std::string const &name() const = 0;
+    virtual std::string name() const = 0;
 
 };
 
