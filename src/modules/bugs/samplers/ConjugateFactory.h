@@ -12,9 +12,7 @@
  */
 class ConjugateFactory : public SingletonFactory
 {
-    std::string _name;
 public:
-    ConjugateFactory();
     /**
      * Provides a simple interface to the canSample member functions of
      * the various conjugate samplers.  The distribution of snode is found
@@ -26,7 +24,7 @@ public:
      * Creates a ConjugateSampler for a stochastic node. 
      */
     Sampler *makeSampler(StochasticNode *snode, Graph const &graph) const;
-    std::string const &name() const;
+    std::string name() const;
 };
 
 #endif /* CONJUGATE_FACTORY_H_ */
