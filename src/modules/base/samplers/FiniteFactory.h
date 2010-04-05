@@ -9,13 +9,11 @@ namespace base {
  * @short Factory object for finite samplers
  */
     class FiniteFactory : public SingletonFactory {
-	std::string _name;
     public:
-	FiniteFactory();
 	bool canSample(StochasticNode *snode, Graph const &graph) const;
 	Sampler *makeSampler(StochasticNode *snode, 
 			     Graph const &graph) const;
-	std::string const &name() const;
+	std::string name() const;
     };
 
 }
