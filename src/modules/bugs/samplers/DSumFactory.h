@@ -8,14 +8,12 @@
  */
 class DSumFactory : public SamplerFactory
 {
-    std::string _name;
 public:
-    DSumFactory();
     std::vector<Sampler*> makeSamplers(std::set<StochasticNode*> const &nodes, 
 				       Graph const &graph) const;
     Sampler * makeSampler(std::set<StochasticNode*> const &nodes, 
 			  Graph const &graph) const;
-    std::string const &name() const;
+    std::string name() const;
 };
 
 #endif /* DSUM_FACTORY_H_ */
