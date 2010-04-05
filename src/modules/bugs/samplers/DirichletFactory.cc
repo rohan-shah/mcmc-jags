@@ -19,11 +19,6 @@ DirichletFactory::canSample(StochasticNode * snode, Graph const &graph) const
     return snode->distribution()->name() == "ddirch";
 }
 
-DirichletFactory::DirichletFactory()
-    : _name("Dirichlet")
-{
-}
-
 Sampler *
 DirichletFactory::makeSampler(StochasticNode *snode, Graph const &graph) const
 {
@@ -37,7 +32,7 @@ DirichletFactory::makeSampler(StochasticNode *snode, Graph const &graph) const
     return new ParallelSampler(gv, methods);
 }
 
-string const &DirichletFactory::name() const
+string DirichletFactory::name() const
 {
-    return _name;
+    return "bugs::dirichlefactory";
 }
