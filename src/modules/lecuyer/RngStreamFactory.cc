@@ -28,6 +28,7 @@
 
 using std::vector;
 using std::time;
+using std::string;
 
 #define two17   131072.0               /* 2^17 */
 #define two53   9007199254740992.0     /* 2^53 */
@@ -165,5 +166,9 @@ namespace lecuyer {
 	}
 	
     }
-    
+
+    string RngStreamFactory::name() const
+    {
+	return "lecuyer::rngstreamfactory";
+    }
 }
