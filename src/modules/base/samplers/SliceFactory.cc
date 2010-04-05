@@ -15,10 +15,6 @@ using std::string;
 
 namespace base {
 
-    SliceFactory::SliceFactory()
-	: _name("Slice")
-    {}
-
     bool 
     SliceFactory::canSample(StochasticNode * node, Graph const &graph) const
     {
@@ -51,8 +47,8 @@ namespace base {
 	return new ParallelSampler(gv, methods);
     }
 
-    string const &SliceFactory::name() const
+    string SliceFactory::name() const
     {
-	return _name;
+	return "base::slicefactory";
     }
 }
