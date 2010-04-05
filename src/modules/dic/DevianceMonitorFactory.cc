@@ -44,5 +44,9 @@ namespace dic {
 	m->setElementNames(onames);
 	return m;
     }
-	
+
+    string DevianceMonitorFactory::name() const
+    {
+	return "dic::deviancefactory";
+    }
 }
