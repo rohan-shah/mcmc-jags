@@ -36,11 +36,6 @@ static StochasticNode const *getDSumChild(StochasticNode *node)
     return 0;
 }
 
-DSumFactory::DSumFactory()
-    : _name("DSum")
-{}
-
-
 Sampler * DSumFactory::makeSampler(set<StochasticNode*> const &nodes,
 				   Graph const &graph) const
 {
@@ -88,9 +83,9 @@ Sampler * DSumFactory::makeSampler(set<StochasticNode*> const &nodes,
 
 }
 
-string const &DSumFactory::name() const
+string DSumFactory::name() const
 {
-    return _name;
+    return "bugs::dsumfactory";
 }
 
 vector<Sampler*>  DSumFactory::makeSamplers(set<StochasticNode*> const &nodes, 
