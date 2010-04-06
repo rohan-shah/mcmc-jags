@@ -39,7 +39,7 @@ public:
 		 std::vector<unsigned int> const &lengths) const;
     bool isSupportFixed(std::vector<bool> const &fixmask) const;
     unsigned int df(std::vector<unsigned int> const &lengths) const;
-    bool isDiscreteValued() const;
+    bool isDiscreteValued(std::vector<bool> const &mask) const;
     unsigned int length(std::vector<unsigned int> const &params) const;
 };
 
