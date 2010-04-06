@@ -11,13 +11,17 @@ using std::fabs;
 using std::runtime_error;
 using std::logic_error;
 
-static inline double SUM(vector<double const *> const &par)
+static double SUM(vector<double const *> const &par)
 {
-    return *par[0] + *par[1];
+    double ans = 0;
+    for (unsigned int i = 0; i < par.size(); ++i) {
+	ans += *par[i];
+    }
+    return ans;
 }
 
 DSum::DSum()
-    : ScalarDist("dsum", 2, DIST_SPECIAL)
+    : ScalarDist("dsum", 0, DIST_SPECIAL)
 {
 }
 
@@ -63,7 +67,7 @@ double DSum::typicalValue(vector<double const *> const &par,
 
 bool DSum::isSupportFixed(vector<bool> const &fixmask) const
 {
-    return fixmask[0] && fixmask[1];
+    return allTrue(fixmask);
 }
 
 unsigned int DSum::df() const
@@ -73,5 +77,14 @@ unsigned int DSum::df() const
 
 bool DSum::checkParameterValue(vector<double const *> const &params) const
 {
+    return true;
+}
+
+bool DSum::checkParameterDiscrete(vector<double const *> const &mask) const
+{
+    for (unsigned int i = 1; i < mask.size(); ++i) {
+	if (mask[i] != mask[0])
+	    return false;
+    }
     return true;
 }

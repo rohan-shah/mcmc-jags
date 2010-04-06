@@ -26,11 +26,6 @@ static vector<unsigned int> mkDim(ArrayDist const *dist,
        parents
     */
 
-    if (parents.size() != dist->npar()) {
-	throw runtime_error(string("Incorrect number of parameters for ") +
-			    "distribution " + dist->name());
-    }
-
     vector<vector<unsigned int> > parameter_dims(parents.size());
     for (unsigned long j = 0; j < parents.size(); ++j) {
 	parameter_dims[j] = parents[j]->dim();
@@ -71,9 +66,6 @@ ArrayStochasticNode::ArrayStochasticNode(ArrayDist const *dist,
     : StochasticNode(mkDim(dist, params), dist, params, lower, upper),
       _dist(dist), _dims(mkParameterDims(params))
 {
-    if (params.size() != _dist->npar()) {
-	throw NodeError(this, "Incorrect number of parameters");    
-    }
     if (!dist->checkParameterDim(_dims)) {
 	throw NodeError(this, "Invalid parameter lengths");
     }

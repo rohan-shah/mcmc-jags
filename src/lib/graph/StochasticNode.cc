@@ -40,7 +40,7 @@ StochasticNode::StochasticNode(vector<unsigned int> const &dim,
       _dist(dist), _lower(lower), _upper(upper), _observed(false), 
       _parameters(nchain())
 {
-    if (parameters.size() != _dist->npar()) {
+    if (!_dist->checkNPar(parameters.size())) {
 	throw NodeError(this, "Incorrect number of parameters for distribution");
     }
 
@@ -53,6 +53,15 @@ StochasticNode::StochasticNode(vector<unsigned int> const &dim,
     if (!_dist->canBound() && (lower || upper)) {
 	throw runtime_error(string("distribution " + dist->name() +
 				   " cannot be bounded: "));
+    }
+
+    //check discreteness of parents
+    vector<bool> mask(parameters.size());
+    for (unsigned int i = 0; i < parameters.size(); ++i) {
+	mask[i] = parameters[i]->isDiscreteValued();
+    }
+    if (!_dist->checkParameterDiscrete(mask)) {
+	throw NodeError(this, "Failed check for discrete-valued parameters");
     }
 
     //Set up parameter vectors 
@@ -108,13 +117,21 @@ void StochasticNode::setObserved()
     _observed = true;
 } 
 
-
 string StochasticNode::deparse(vector<string> const &parnames) const
 {
+    unsigned int npar = parnames.size();
+    if (_upper) --npar;
+    if (_lower) --npar;
+    if (!_dist->checkNPar(npar)) {
+	//We might be deparsing after throwing a NodeError, so we 
+	//don't want to throw another exception.
+	return _dist->name() + "(deparse error)";
+    }
+
     string name = _dist->name();
     name.append("(");
     unsigned int i = 0; 
-    for ( ; i < _dist->npar(); ++i) {
+    for ( ; i < npar; ++i) {
 	if (i != 0) {
 	    name.append(",");
 	}

@@ -26,11 +26,6 @@ static unsigned int mkLength(VectorDist const *dist,
        parents
     */
 
-    if (parents.size() != dist->npar()) {
-	throw runtime_error(string("Incorrect number of parameters for ") +
-			    "distribution " + dist->name());
-    }
-
     vector<unsigned int> parameter_lengths(parents.size());
     for (unsigned long j = 0; j < parents.size(); ++j) {
 	parameter_lengths[j] = parents[j]->length();
@@ -58,9 +53,6 @@ VectorStochasticNode::VectorStochasticNode(VectorDist const *dist,
 		     dist, params, lower, upper),
       _dist(dist), _lengths(mkParameterLengths(params))
 {
-    if (params.size() != _dist->npar()) {
-	throw NodeError(this, "Incorrect number of parameters");    
-    }
     if (!dist->checkParameterLength(_lengths)) {
 	throw NodeError(this, "Invalid parameter lengths");
     }
