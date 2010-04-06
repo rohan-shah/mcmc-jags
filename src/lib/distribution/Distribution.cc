@@ -19,9 +19,9 @@ string const &Distribution::name() const
   return _name;
 }
 
-unsigned int Distribution::npar() const
+bool Distribution::checkNPar (unsigned int npar) const
 {
-  return _npar;
+  return _npar == 0 ||  npar == _npar;
 }
 
 bool Distribution::isLocationParameter(unsigned int i) const
@@ -42,4 +42,9 @@ bool Distribution::isDiscreteValued(vector<bool> const &mask) const
 bool Distribution::canBound() const
 {
     return false;
+}
+
+bool Distribution::checkParameterDiscrete(vector<bool> const &mask) const
+{
+    return true;
 }
