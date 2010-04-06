@@ -29,8 +29,7 @@ bool DSum::isDiscreteValued(vector<bool> const &mask) const
 double DSum::logLikelihood(double x, vector<double const *> const &par,
 			   double const *lower, double const *upper) const
 {
-    if (fabs(x - SUM(par)) > 16 * DBL_EPSILON) {
-	// If this happens by accident, you have no chance of getting it right
+    if (fabs(x - SUM(par)) > sqrt(DBL_EPSILON)) {
 	throw runtime_error("Inconsistent arguments for dsum");
     }
     
