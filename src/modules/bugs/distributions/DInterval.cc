@@ -31,7 +31,7 @@ DInterval::DInterval()
 {
 }
 
-bool DInterval::isDiscreteValued() const
+bool DInterval::isDiscreteValued(vector<bool> const &mask) const
 {
     return true;
 }
