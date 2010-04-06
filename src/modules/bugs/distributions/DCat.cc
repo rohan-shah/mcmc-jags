@@ -24,7 +24,7 @@ DCat::DCat()
     : VectorDist("dcat", 1) 
 {}
 
-bool DCat::isDiscreteValued() const
+bool DCat::isDiscreteValued(vector<bool> const &mask) const
 {
     return true;
 }
