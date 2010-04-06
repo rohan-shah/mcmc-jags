@@ -32,7 +32,6 @@ class DBin : public RScalarDist {
    */
   bool checkParameterValue(std::vector<double const *> const &parameters) const;
   bool isSupportFixed(std::vector<bool> const &fixmask) const;
-  bool isDiscreteValued() const;
 };
 
 #endif /* DBIN_H_ */
