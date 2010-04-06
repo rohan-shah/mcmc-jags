@@ -28,7 +28,7 @@ namespace base {
     bool 
     RealSlicer::canSample(StochasticNode const *node)
     {
-	if (node->distribution()->isDiscreteValued() || node->length() != 1)
+	if (node->isDiscreteValued() || node->length() != 1)
 	    return false;
 
 	if (node->df() == 0)

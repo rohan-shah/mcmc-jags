@@ -95,8 +95,7 @@ namespace base {
     bool FiniteMethod::canSample(StochasticNode const * node)
     {
 	//Node must be scalar with discrete-valued distribution of full rank
-	Distribution const *dist = node->distribution();
-	if (!dist->isDiscreteValued())
+	if (!node->isDiscreteValued())
 	    return false;
 
 	if (node->length() != 1)

@@ -29,7 +29,7 @@ namespace base {
 
     bool DiscreteSlicer::canSample(StochasticNode const *node)
     {
-	if (!node->distribution()->isDiscreteValued() || node->length() != 1)
+	if (!node->isDiscreteValued() || node->length() != 1)
 	    return false;
 	
 	return true;
