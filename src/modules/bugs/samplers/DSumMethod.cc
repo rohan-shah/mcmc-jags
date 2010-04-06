@@ -22,6 +22,7 @@ using std::max;
 using std::min;
 using std::exp;
 using std::string;
+using std::floor;
 
 DSumMethod::DSumMethod(GraphView const *gv, unsigned int chain)
     : Slicer(2, 10), _gv(gv), _chain(chain),
@@ -79,7 +80,7 @@ void DSumMethod::setValue(double x)
 {
     _x = x;
     double value[2];
-    value[0] = _discrete ? static_cast<long>(x) : x;
+    value[0] = _discrete ? floor(x) : x;
     value[1] = _sum - value[0];
     _gv->setValue(value, 2, _chain);
 }
