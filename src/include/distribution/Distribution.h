@@ -37,14 +37,24 @@ public:
     /**
      * Indicates whether the support of the distribution is fixed.
      *
-     * @param fixmask Boolean vector of length npar() indicating which
-     * parameters have fixed values.
+     * @param fixmask Boolean vector indicating which parameters have
+     * fixed values.
      */
     virtual bool isSupportFixed(std::vector<bool> const &fixmask) const = 0;
-     /**
-     * The number of parameters of the distribution
+    /**
+     * Checks that a vector of parameters of length npar is consistent
+     * with the distribution.
      */
-    unsigned int npar() const;
+    bool checkNPar(unsigned int npar) const;
+    /**
+     * Some distributions require some of the parameters to be discrete
+     * valued. As most distributions do not require discrete valued paremeters,
+     * a default implementation is provided which always returns true.
+     *
+     * @param mask Boolean vector indicating which parameters are
+     * discrete valued.
+     */
+    virtual bool checkParameterDiscrete(std::vector<bool> const &mask) const;
     /**
      * Returns true if the distribution has support on the integers.The
      * default implementation returns false, so this must be overridden
