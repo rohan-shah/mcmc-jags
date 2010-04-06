@@ -88,7 +88,14 @@ bool StochasticNode::isRandomVariable() const
 
 bool StochasticNode::isDiscreteValued() const
 {
-    return _dist->isDiscreteValued();
+    vector<bool> mask(parents().size());
+    for (unsigned long j = 0; j < parents().size(); ++j) {
+        mask[j] = parents()[j]->isDiscreteValued();
+    }
+    if (_upper)	mask.pop_back();
+    if (_lower)	mask.pop_back();
+
+    return _dist->isDiscreteValued(mask);
 }
 
 bool StochasticNode::isObserved() const

@@ -20,7 +20,7 @@ double RScalarDist::calPlower(double lower,
 			      vector<double const*> const &parameters) const
 {
     //P(X < lower)
-    if (isDiscreteValued()) {
+    if (_discrete) {
 	return p(lower - 1, parameters, true, false);
     }
     else {
@@ -37,9 +37,9 @@ double RScalarDist::calPupper(double upper,
 
 
 RScalarDist::RScalarDist(string const &name, unsigned int npar, 
-			 Support support)
+			 Support support, bool discrete)
   
-    : ScalarDist(name, npar, support),  _support(support)
+    : ScalarDist(name, npar, support),  _support(support), _discrete(discrete)
 {
 }
 
@@ -99,7 +99,7 @@ RScalarDist::logLikelihood(double x, vector<double const *> const &parameters,
 	//Make adjustment for discrete-valued distributions
 	double ll = 0;
 	if (lower) {
-	    ll = isDiscreteValued() ? *lower - 1 : *lower;
+	    ll = _discrete ? *lower - 1 : *lower;
 	}
 
 	/* In theory, we just have to subtract log[P(lower <= X <=
@@ -160,4 +160,14 @@ RScalarDist::randomSample(vector<double const *> const &parameters,
 bool RScalarDist::canBound() const
 {
     return true;
+}
+
+bool RScalarDist::isDiscreteValued(vector<bool> const &mask) const
+{
+    return _discrete;
+}
+
+bool RScalarDist::discrete() const
+{
+    return _discrete;
 }

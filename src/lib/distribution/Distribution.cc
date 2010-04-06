@@ -34,7 +34,7 @@ bool Distribution::isScaleParameter(unsigned int i) const
     return false;
 }
 
-bool Distribution::isDiscreteValued() const
+bool Distribution::isDiscreteValued(vector<bool> const &mask) const
 {
     return false;
 }
