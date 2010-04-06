@@ -39,7 +39,8 @@ double RScalarDist::calPupper(double upper,
 RScalarDist::RScalarDist(string const &name, unsigned int npar, 
 			 Support support, bool discrete)
   
-    : ScalarDist(name, npar, support),  _support(support), _discrete(discrete)
+    : ScalarDist(name, npar, support),  _support(support), _discrete(discrete),
+      _npar(npar)
 {
 }
 
@@ -170,4 +171,9 @@ bool RScalarDist::isDiscreteValued(vector<bool> const &mask) const
 bool RScalarDist::discrete() const
 {
     return _discrete;
+}
+
+unsigned int RScalarDist::npar() const
+{
+    return _npar;
 }
