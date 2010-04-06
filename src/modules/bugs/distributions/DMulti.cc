@@ -20,7 +20,7 @@ DMulti::DMulti()
   : VectorDist("dmulti", 2) 
 {}
 
-bool DMulti::isDiscreteValued() const
+bool DMulti::isDiscreteValued(vector<bool> const &mask) const
 {
     return true;
 }
