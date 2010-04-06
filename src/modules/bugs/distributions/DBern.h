@@ -27,7 +27,7 @@ public:
     /** Bernoulli distribution cannot be bounded */
     bool canBound() const;
     /** Bernoulli distribution is discrete valued */
-    bool isDiscreteValued() const;
+    bool isDiscreteValued(std::vector<bool> const &mask) const;
 };
 
 #endif /* DBERN_H_ */
