@@ -48,8 +48,6 @@ public:
      *
      * @param mask Vector indicating whether parameters are discrete
      * or not.
-     *
-     * @see SArray#isDiscreteValued
      */
     virtual bool isDiscreteValued(std::vector<bool> const &mask) const;
     /**
