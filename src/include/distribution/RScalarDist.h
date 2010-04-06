@@ -19,6 +19,7 @@ struct RNG;
 class RScalarDist : public ScalarDist
 {
     const Support _support;
+    const bool _discrete;
     double calPlower(double, std::vector<double const *> const &) const;
     double calPupper(double, std::vector<double const *> const &) const;
 public:
@@ -31,13 +32,11 @@ public:
      *
      * @param support Support of distribution
      *
-     * @param boundable Logical flag indicating whether the distribution
-     * can be bounded using the T(,) construct.
-     *
-     * @param discrete Logical flag indicating whether the distribution
-     * is discrete-valued.
+     * @param discrete Boolean flag indicating whether the distribution is
+     *        discrete valued.
      */
-    RScalarDist(std::string const &name, unsigned int npar, Support support);
+    RScalarDist(std::string const &name, unsigned int npar, Support support,
+		bool discrete=false);
     double logLikelihood(double x,
 			 std::vector<double const *> const &parameters,
 			 double const *lower, double const *upper) const;
@@ -86,6 +85,17 @@ public:
      * All RScalarDist distributions can be bounded
      */
     bool canBound() const;
+    /**
+     * RScalarDist distributions are defined to have support on the integers
+     * or on the real line by the constructor
+     */
+    bool isDiscreteValued(std::vector<bool> const &mask) const;
+    /**
+     * Alternative function for determining whether the distribution is
+     * discrete-valued.
+     */
+    bool discrete() const;
+      
 };
 
 #endif /* SCALAR_DIST_RMATH_H_ */

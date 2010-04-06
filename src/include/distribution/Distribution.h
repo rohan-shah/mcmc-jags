@@ -49,8 +49,17 @@ public:
      * Returns true if the distribution has support on the integers.The
      * default implementation returns false, so this must be overridden
      * for discrete-valued distributions.
+     *
+     * @param mask Vector indicating whether parameters are discrete
+     * or not. Most implementations will ignore this argument, as a
+     * distribution normally has support either on the real line or on
+     * the integers. However, this argument is required in order to
+     * support observable functions, for which the support may depend
+     * on the arguments.
+     *
+     * @see Function#isDiscreteValued
      */
-    virtual bool isDiscreteValued() const;
+    virtual bool isDiscreteValued(std::vector<bool> const &mask) const;
     /**
      * Tests for a location parameter.  A parameter of a distribution
      * is considered to be a location parameter if, when it's value is
