@@ -12,6 +12,7 @@ namespace bugs {
     public:
 	DSumFunc();
 	double evaluate(std::vector <double const *> const &args) const;
+	bool isDiscreteValued(std::vector<bool> const &mask) const;
     };
     
 }
