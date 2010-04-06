@@ -25,12 +25,11 @@ using std::string;
 
 DSumMethod::DSumMethod(GraphView const *gv, unsigned int chain)
     : Slicer(2, 10), _gv(gv), _chain(chain),
-      _x(gv->nodes()[0]->value(chain)[0]),
-      _sum(static_cast<long>(gv->stochasticChildren()[0]->value(chain)[0]))
+      _sum(gv->stochasticChildren()[0]->value(chain)[0]),
+      _discrete(gv->stochasticChildren()[0]->isDiscreteValued())
 {
     //Make sure values are consistent at start
-    double x2 = _sum - static_cast<long>(_x);
-    gv->nodes()[1]->setValue(&x2, 1, chain);
+    setValue(gv->nodes()[0]->value(chain)[0]);
 }
 
 DSumMethod::~DSumMethod()
@@ -38,7 +37,7 @@ DSumMethod::~DSumMethod()
 }
 
 bool DSumMethod::canSample(vector<StochasticNode *> const &nodes,
-			    Graph const &graph)
+			   Graph const &graph)
 {
     if (nodes.size() != 2)
 	return false;
@@ -51,8 +50,8 @@ bool DSumMethod::canSample(vector<StochasticNode *> const &nodes,
 	if (nodes[i]->length() != 1)
 	    return false;
     
-	// discrete-valued ...
-	if (!nodes[i]->isDiscreteValued())
+	// Must be all discrete or none discrete
+	if (nodes[i]->isDiscreteValued() != nodes[0]->isDiscreteValued())
 	    return false;
     }
 
@@ -80,7 +79,7 @@ void DSumMethod::setValue(double x)
 {
     _x = x;
     double value[2];
-    value[0] = static_cast<long>(x);
+    value[0] = _discrete ? static_cast<long>(x) : x;
     value[1] = _sum - value[0];
     _gv->setValue(value, 2, _chain);
 }

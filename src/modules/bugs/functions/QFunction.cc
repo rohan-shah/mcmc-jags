@@ -26,10 +26,6 @@ namespace bugs {
 
     bool QFunction::checkParameterValue(vector<double const*> const &args) const
     {
-	double x = *args[0];
-	if (x <= 0 || x >= 1)
-	    return false;
-
 	return checkArgs(args);
     }
 

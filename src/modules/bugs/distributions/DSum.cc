@@ -21,12 +21,7 @@ DSum::DSum()
 {
 }
 
-bool DSum::isDiscreteValued() const
-{
-    return true;
-}
-
-bool DSum::checkParameterDiscrete(vector<bool> const &mask) const
+bool DSum::isDiscreteValued(vector<bool> const &mask) const
 {
     return allTrue(mask);
 }

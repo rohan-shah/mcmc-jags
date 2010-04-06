@@ -28,21 +28,10 @@ namespace bugs {
     bool 
     DFunction::checkParameterValue(vector<double const *> const &args) const
     {
-	double x = *args[0];
-	if (dist()->isDiscreteValued()) {
-	    //Work around printed warning by Rmath library
-	    int ix = static_cast<int>(x);
-	    if (x != ix)
-		return 0;
-	}
-
-	vector<double const *> param(args.size() - 1);
-	for (unsigned int i = 1; i < args.size(); ++i) {
-	    param[i-1] = args[i];
-	}
-	
-	if (x < dist()->l(param) || x > dist()->u(param)) {
-	    return false;
+	if (dist()->discrete()) {
+	    double x = *args[0];
+	    if (x != static_cast<int>(x))
+		return false;
 	}
 	
 	return checkArgs(args);

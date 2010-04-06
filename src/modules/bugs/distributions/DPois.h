@@ -25,7 +25,6 @@ class DPois : public RScalarDist {
    * Checks that lambda > 0
    */
   bool checkParameterValue(std::vector<double const *> const &parameters) const;
-  bool isDiscreteValued() const;
 };
 
 #endif /* DPOIS_H_ */

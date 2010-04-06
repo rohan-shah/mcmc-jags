@@ -16,13 +16,12 @@ public:
     double randomSample(std::vector<double const *> const &parameters,
 			double const *lower, double const *upper,
 			RNG *rng) const;
-    bool checkParameterDiscrete (std::vector<bool> const &mask) const;
     double l(std::vector<double const *> const &parameters) const;
     double u(std::vector<double const *> const &parameters) const;
     double typicalValue(std::vector<double const *> const &parameters,
 			 double const *lower, double const *upper) const;
     bool isSupportFixed(std::vector<bool> const &fixmask) const;
-    bool isDiscreteValued() const;
+    bool isDiscreteValued(std::vector<bool> const &mask) const;
     unsigned int df() const;
     bool checkParameterValue(std::vector<double const *> const &params) const;
 };

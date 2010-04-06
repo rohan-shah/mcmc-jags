@@ -27,6 +27,12 @@ namespace bugs {
     bool 
     PFunction::checkParameterValue(vector<double const *> const &args) const
     {
+	if (dist()->discrete()) {
+	    double x = *args[0];
+	    if (x != static_cast<int>(x))
+		return false;
+	}
+
 	return checkArgs(args);
     }
 }
