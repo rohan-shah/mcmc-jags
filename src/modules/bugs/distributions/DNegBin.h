@@ -27,7 +27,6 @@ class DNegBin : public RScalarDist {
    * Checks that p lies in the interval (0,1) and r > 0
    */
   bool checkParameterValue(std::vector<double const *> const &parameters) const;
-  bool isDiscreteValued() const;
 };
 
 #endif /* DNEGBIN_H_ */
