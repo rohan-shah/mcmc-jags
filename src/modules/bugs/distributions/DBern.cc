@@ -18,11 +18,6 @@ DBern::DBern()
     : ScalarDist("dbern", 1, DIST_PROPORTION)
 {}
 
-bool DBern::isDiscreteValued() const
-{
-    return true;
-}
-
 bool 
 DBern::checkParameterValue (vector<double const *> const &parameters) const
 {
@@ -57,4 +52,9 @@ double DBern::typicalValue(vector<double const *> const &parameters,
 bool DBern::canBound() const
 {
     return false;
+}
+
+bool DBern::isDiscreteValued(std::vector<bool> const &mask) const
+{
+    return true;
 }
