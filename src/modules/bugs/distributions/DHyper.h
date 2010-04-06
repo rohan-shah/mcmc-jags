@@ -29,7 +29,6 @@ class DHyper : public RScalarDist {
   bool checkParameterValue(std::vector<double const*> const &parameters) const;
   bool isSupportFixed(std::vector<bool> const &fixmask) const;
   bool canBound() const;
-  bool isDiscreteValued() const;
 };
 
 #endif /* DHYPER_H_ */
