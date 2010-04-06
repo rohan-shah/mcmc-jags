@@ -22,17 +22,12 @@ using std::min;
 using std::logic_error;
 
 DHyper::DHyper()
-    : RScalarDist("dhyper", 4, DIST_SPECIAL)
+    : RScalarDist("dhyper", 4, DIST_SPECIAL, true)
 {}
 
 bool DHyper::canBound() const
 {
     return false;
-}
-
-bool DHyper::isDiscreteValued() const
-{
-    return true;
 }
 
 static void
