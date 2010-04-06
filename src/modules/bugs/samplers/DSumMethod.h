@@ -17,8 +17,9 @@ class DSumMethod : public Slicer
 {
     GraphView const *_gv;
     unsigned int _chain;
+    double _sum;
+    bool _discrete;
     double _x;
-    long _sum;
 public:
     DSumMethod(GraphView const *gv, unsigned int chain);
     ~DSumMethod();
@@ -27,10 +28,9 @@ public:
     double value() const;
     void getLimits(double *lower, double *upper) const;
     std::string name() const;
-
+    double logDensity() const;
     static bool canSample(std::vector<StochasticNode *> const &nodes, 
 			  Graph const &graph);
-    double logDensity() const;
 };
 
 #endif /* DSUM_METHOD_H_ */
