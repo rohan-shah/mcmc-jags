@@ -20,11 +20,6 @@ using std::string;
 
 static StochasticNode const *getDSumChild(StochasticNode *node)
 {
-    //We can skip nodes that are not scalar discrete-valued
-    //as they cannot be sampled by a DSumSampler
-    if (node->length() != 1 || !node->isDiscreteValued())
-	return 0;
-    
     set<StochasticNode*>::const_iterator p;
     for (p = node->stochasticChildren()->begin(); 
 	 p != node->stochasticChildren()->end(); ++p) 
