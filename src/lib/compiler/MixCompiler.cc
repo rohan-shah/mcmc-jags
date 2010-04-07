@@ -53,6 +53,7 @@ using std::string;
 using std::set;
 using std::map;
 using std::copy;
+using std::reverse;
 
 //Structure to hold subset indices
 struct SSI {
