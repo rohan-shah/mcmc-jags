@@ -78,7 +78,11 @@ bool DiscreteDSum::canSample(vector<StochasticNode *> const &nodes,
 	// Nodes must be scalar ...
 	if (nodes[i]->length() != 1)
 	    return false;
-    
+
+	// Full rank
+	if (nodes[i]->df() != 1)
+	    return false;
+
 	// Must be discrete
 	if (!nodes[i]->isDiscreteValued())
 	    return false;
@@ -153,7 +157,5 @@ void DiscreteDSum::setValue(vector<double> const &value)
 
 void DiscreteDSum::getValue(vector<double> &value) const
 {
-    for (unsigned int i = 0; i < _ivalue.size(); ++i) {
-	value[i] = _ivalue[i];
-    }
+    _gv->getValue(value, _chain);
 }

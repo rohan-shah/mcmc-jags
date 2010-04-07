@@ -29,46 +29,49 @@ static vector<double> nodeValues(GraphView const *gv, unsigned int chain)
 {
     unsigned int n = gv->nodes().size();
     vector<double> ans(n);
+    gv->getValue(ans, chain);
+
+    //Correct initial value of sampled nodes to conform to the
+    //constraint that they sum to dsum
+
+    double delta = gv->stochasticChildren()[0]->value(chain)[0];
     for (unsigned int i = 0; i < n; ++i) {
-	ans[i] = gv->nodes()[i]->value(chain)[0];
+	delta -= ans[i];
     }
-    return ans;
+    delta /= n;
+    for (unsigned int i = 0; i < n; ++i) {
+	ans[i] += delta;
+    }
+    gv->setValue(ans, chain);
+
+    return(ans);
 }
 
 RealDSum::RealDSum(GraphView const *gv, unsigned int chain,
-			       unsigned int nrep)
+		   unsigned int nrep)
     : RWMetropolis(nodeValues(gv, chain), 0.1), 
       _gv(gv), _chain(chain), _nrep(nrep)
 {
-    //Ensure that values of sampled nodes are consistent with dsum parent
-
-    unsigned int n = gv->nodes().size();
-    double delta = gv->stochasticChildren()[0]->value(chain)[0];
-    for (unsigned int i = 0; i < n; ++i) {
-	delta -= gv->nodes()[i]->value(chain)[0];
-    }
-    delta /= n;
-    for (unsigned int i =0; i < n; ++i) {
-	double val = gv->nodes()[i]->value(chain)[0] + delta;
-	gv->nodes()[i]->setValue(&val, 1, chain);
-    }
-
 }
 
 bool RealDSum::canSample(vector<StochasticNode *> const &nodes,
-			       Graph const &graph)
+			 Graph const &graph)
 {
     if (nodes.size() < 2)
 	return false;
 
-    if (!(graph.contains(nodes[0]) && graph.contains(nodes[1])))
-	return false;
-    
     for (unsigned int i = 0; i < nodes.size(); ++i) {
+	if (!graph.contains(nodes[i]))
+	    return false;
+
 	// Nodes must be scalar ...
 	if (nodes[i]->length() != 1)
 	    return false;
     
+	// Full rank
+	if (nodes[i]->df() != 1)
+	    return false;
+
 	// Cannot be discrete
 	if (nodes[i]->isDiscreteValued())
 	    return false;
@@ -133,7 +136,5 @@ void RealDSum::setValue(vector<double> const &value)
 
 void RealDSum::getValue(vector<double> &value) const
 {
-    for (unsigned int i = 0; i < value.size(); ++i) {
-	value[i] = _gv->nodes()[i]->value(_chain)[0];
-    }
+    _gv->getValue(value, _chain);
 }

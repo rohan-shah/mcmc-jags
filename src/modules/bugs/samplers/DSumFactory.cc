@@ -80,10 +80,10 @@ Sampler * DSumFactory::makeSampler(set<StochasticNode*> const &nodes,
     vector<SampleMethod*> methods(nchain, 0);
     for (unsigned int ch = 0; ch < nchain; ++ch) {
 	if (discrete) {
-	    methods[ch] = new DiscreteDSum(gv, ch, 5);
+	    methods[ch] = new DiscreteDSum(gv, ch, 1);
 	}
 	else {
-	    methods[ch] = new RealDSum(gv, ch, 5);
+	    methods[ch] = new RealDSum(gv, ch, 1);
 	}
     }
     return new ParallelSampler(gv, methods);
