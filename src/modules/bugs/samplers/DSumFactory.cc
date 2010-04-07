@@ -1,14 +1,14 @@
 #include <config.h>
 #include <distribution/Distribution.h>
-//asStochastic
-#include <graph/StochasticNode.h>
 #include <graph/Graph.h>
+#include <graph/StochasticNode.h>
 #include <graph/NodeError.h>
 #include <sampler/ParallelSampler.h>
 #include <sampler/GraphView.h>
 
 #include "DSumFactory.h"
-#include "DSumMethod.h"
+#include "RealDSum.h"
+#include "DiscreteDSum.h"
 
 #include <stdexcept>
 #include <algorithm>
@@ -64,15 +64,27 @@ Sampler * DSumFactory::makeSampler(set<StochasticNode*> const &nodes,
 	}
     }
     
-    if (!DSumMethod::canSample(parameters, graph)) {
+    bool discrete;
+    if (RealDSum::canSample(parameters, graph)) {
+	discrete = false;
+    }
+    else if (DiscreteDSum::canSample(parameters, graph)) {
+	discrete = true;
+    }
+    else {
 	return 0;
     }
-
+    
     GraphView *gv = new GraphView(parameters, graph);
     unsigned int nchain = parameters[0]->nchain();
     vector<SampleMethod*> methods(nchain, 0);
     for (unsigned int ch = 0; ch < nchain; ++ch) {
-	methods[ch] = new DSumMethod(gv, ch);
+	if (discrete) {
+	    methods[ch] = new DiscreteDSum(gv, ch, 5);
+	}
+	else {
+	    methods[ch] = new RealDSum(gv, ch, 5);
+	}
     }
     return new ParallelSampler(gv, methods);
 
