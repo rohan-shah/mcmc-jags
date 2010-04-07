@@ -4,6 +4,7 @@
 #include <cmath>
 
 using std::vector;
+using std::log;
 
 namespace bugs {
 
