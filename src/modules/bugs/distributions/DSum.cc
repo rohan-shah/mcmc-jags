@@ -10,6 +10,7 @@ using std::vector;
 using std::fabs;
 using std::runtime_error;
 using std::logic_error;
+using std::sqrt;
 
 static double SUM(vector<double const *> const &par)
 {
