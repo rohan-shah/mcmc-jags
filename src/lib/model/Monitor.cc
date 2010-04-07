@@ -9,6 +9,7 @@
 using std::string;
 using std::vector;
 using std::logic_error;
+using std::copy;
 
 Monitor::Monitor(string const &type, vector<Node const *> const &nodes)
     : _type(type), _nodes(nodes)
