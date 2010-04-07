@@ -9,6 +9,7 @@ using std::vector;
 using std::invalid_argument;
 using std::log;
 using std::exp;
+using std::fabs;
 
 //Minimum number of iterations before we can go to the next level
 #define MIN_STEP 50
