@@ -37,7 +37,6 @@ static double log_multigamma(double n, unsigned int p)
     return y;
 }
     
-
 double DWish::logLikelihood(double const *x, unsigned int length,
 			    vector<double const *> const &par,
 			    vector<vector<unsigned int> > const &dims,
@@ -51,7 +50,8 @@ double DWish::logLikelihood(double const *x, unsigned int length,
 	loglik -= scale[i] * x[i];
     }
     loglik += DF(par) * logdet(scale, p) + (DF(par) - p - 1) * logdet(x, p);
-    loglik -= DF(par) * p * log(2.0) + 2 * log_multigamma(DF(par)/2, p);
+    loglik -= DF(par) * p * log(2.0) + 2 * log_multigamma(DF(par), p);
+
     return loglik/2;
 }
 
@@ -142,7 +142,7 @@ void DWish::randomSample(double *x, unsigned int length,
 			 double const *lower, double const *upper,
 			 RNG *rng) const
 {
-  randomSample(x, length, SCALE(par), DF(par), NROW(dims), rng);
+    randomSample(x, length, SCALE(par), DF(par), NROW(dims), rng);
 }
 
 bool DWish::checkParameterDim (vector<vector<unsigned int> > const &dims) const
