@@ -12,6 +12,7 @@
 #include <graph/ConstantNode.h>
 #include <graph/NodeError.h>
 #include <graph/Node.h>
+#include <util/nainf.h>
 
 #include <fstream>
 #include <sstream>
@@ -158,6 +159,45 @@ void Model::initialize(bool datagen)
 	if (_samplers[i]->isAdaptive()) {
 	    _adapt = true;
 	    break;
+	}
+    }
+    
+    // Check initial values of all stochastic nodes
+    if (!datagen) {
+	for (unsigned int ch = 0; ch < _nchain; ++ch) {
+	    for (unsigned int i = 0; i < _stochastic_nodes.size(); ++i) {
+		StochasticNode const *snode = _stochastic_nodes[i];
+		double ld = snode->logDensity(ch);
+		if (jags_isnan(ld)) {
+		    string msg = "Error calculating log density at initial values";
+		    throw NodeError(snode, msg);
+		}
+		else if (ld == JAGS_NEGINF || (!jags_finite(ld) && ld < 0)) {
+		    string msg;
+		    if (snode->isObserved()) {
+			msg = "Observed node";
+		    }
+		    else {
+			msg = "Unobserved node";
+		    }
+		    msg.append(" inconsistent with ");
+		    bool obs_par = true;
+		    for (unsigned int j = 0; j < snode->parents().size(); ++j) {
+			if (!snode->parents()[j]->isObserved()) {
+			    obs_par = false;
+			    break;
+			}
+		    }
+		    if (obs_par) {
+			msg.append("observed parents");
+		    }
+		    else {
+			msg.append("unobserved parents");
+		    }
+		    msg.append(" at initialization");
+		    throw NodeError(snode, msg);
+		}
+	    }
 	}
     }
     
