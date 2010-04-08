@@ -65,10 +65,10 @@ Sampler * DSumFactory::makeSampler(set<StochasticNode*> const &nodes,
     }
     
     bool discrete;
-    if (RealDSum::canSample(parameters, graph)) {
+    if (RWDSum::canSample(parameters, graph, false)) {
 	discrete = false;
     }
-    else if (DiscreteDSum::canSample(parameters, graph)) {
+    else if (RWDSum::canSample(parameters, graph, true)) {
 	discrete = true;
     }
     else {
@@ -80,10 +80,10 @@ Sampler * DSumFactory::makeSampler(set<StochasticNode*> const &nodes,
     vector<SampleMethod*> methods(nchain, 0);
     for (unsigned int ch = 0; ch < nchain; ++ch) {
 	if (discrete) {
-	    methods[ch] = new DiscreteDSum(gv, ch, 1);
+	    methods[ch] = new DiscreteDSum(gv, ch);
 	}
 	else {
-	    methods[ch] = new RealDSum(gv, ch, 1);
+	    methods[ch] = new RealDSum(gv, ch);
 	}
     }
     return new ParallelSampler(gv, methods);
