@@ -1,7 +1,7 @@
 #ifndef DT_H_
 #define DT_H_
 
-#include <distribution/RScalarDist.h>
+#include "RScalarDist.h"
 
 /**
  * t-distribution on k degrees of freedom, with median mu and

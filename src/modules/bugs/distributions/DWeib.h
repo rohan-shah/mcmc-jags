@@ -1,7 +1,7 @@
 #ifndef DWEIB_H_
 #define DWEIB_H_
 
-#include <distribution/RScalarDist.h>
+#include "RScalarDist.h"
 
 /**
  * <pre>

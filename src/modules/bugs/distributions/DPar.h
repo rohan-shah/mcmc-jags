@@ -1,7 +1,7 @@
 #ifndef DPAR_H_
 #define DPAR_H_
 
-#include <distribution/RScalarDist.h>
+#include "RScalarDist.h"
 
 /**
  * <pre>

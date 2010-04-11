@@ -1,7 +1,7 @@
 #ifndef DNORM_H_
 #define DNORM_H_
 
-#include <distribution/RScalarDist.h>
+#include "RScalarDist.h"
 
 /**
  * <pre>

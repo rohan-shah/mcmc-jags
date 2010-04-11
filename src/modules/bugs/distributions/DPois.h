@@ -1,7 +1,7 @@
 #ifndef DPOIS_H_
 #define DPOIS_H_
 
-#include <distribution/RScalarDist.h>
+#include "RScalarDist.h"
 
 /**
  * <pre>
