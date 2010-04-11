@@ -1,7 +1,7 @@
 #ifndef DBERN_H_
 #define DBERN_H_
 
-#include <distribution/RScalarDist.h>
+#include "RScalarDist.h"
 
 /**
  * @short Bernoulli distribution

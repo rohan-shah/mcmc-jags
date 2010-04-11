@@ -1,7 +1,7 @@
 #ifndef DHYPER_H_
 #define DHYPER_H_
 
-#include <distribution/RScalarDist.h>
+#include "RScalarDist.h"
 
 /**
  * @short Hypergeometric distribution

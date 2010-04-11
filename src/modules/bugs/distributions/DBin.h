@@ -1,7 +1,7 @@
 #ifndef DBIN_H_
 #define DBIN_H_
 
-#include <distribution/RScalarDist.h>
+#include "RScalarDist.h"
 
 /**
  * @short Binomial distribution

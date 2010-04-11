@@ -1,7 +1,7 @@
 #ifndef DLNORM_H_
 #define DLNORM_H_
 
-#include <distribution/RScalarDist.h>
+#include "RScalarDist.h"
 
 /** 
  * @short Lognormal distribution

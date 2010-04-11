@@ -1,7 +1,7 @@
 #ifndef DBETA_H_
 #define DBETA_H_
 
-#include <distribution/RScalarDist.h>
+#include "RScalarDist.h"
 
 /**
  * @short Beta distribution

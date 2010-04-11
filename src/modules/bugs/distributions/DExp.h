@@ -1,7 +1,7 @@
 #ifndef DEXP_H_
 #define DEXP_H_
 
-#include <distribution/RScalarDist.h>
+#include "RScalarDist.h"
 
 /**
  * @short Exponential distribution

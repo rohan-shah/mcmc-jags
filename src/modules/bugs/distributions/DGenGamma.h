@@ -1,7 +1,7 @@
 #ifndef DGEN_GAMMA_H_
 #define DGEN_GAMMA_H_
 
-#include <distribution/RScalarDist.h>
+#include "RScalarDist.h"
 
 /**
  * @short Generalizedgamma distribution

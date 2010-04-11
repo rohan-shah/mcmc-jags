@@ -1,7 +1,7 @@
 #ifndef DLOGIS_H_
 #define DLOGIS_H_
 
-#include <distribution/RScalarDist.h>
+#include "RScalarDist.h"
 
 /** 
  * Logistic distribution

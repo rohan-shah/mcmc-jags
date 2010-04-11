@@ -1,7 +1,7 @@
 #ifndef DCHISQ_H_
 #define DCHISQ_H_
 
-#include <distribution/RScalarDist.h>
+#include "RScalarDist.h"
 
 /**
  * @short Chi square distribution

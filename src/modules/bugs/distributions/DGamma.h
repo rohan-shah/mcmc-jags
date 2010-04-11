@@ -1,7 +1,7 @@
 #ifndef DGAMMA_H_
 #define DGAMMA_H_
 
-#include <distribution/RScalarDist.h>
+#include "RScalarDist.h"
 
 /**
  * @short gamma distribution
