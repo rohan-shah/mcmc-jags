@@ -1,7 +1,8 @@
 noinst_LTLIBRARIES = bugsfunc.la
 
 bugsfunc_la_CPPFLAGS = -I$(top_srcdir)/src/include	\
--I$(top_srcdir)/src/modules/bugs/matrix 
+-I$(top_srcdir)/src/modules/bugs/matrix \
+-I$(top_srcdir)/src/modules/bugs/distributions
 
 bugsfunc_la_LDFLAGS = -no-undefined -module -avoid-version
 

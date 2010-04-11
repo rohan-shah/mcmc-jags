@@ -1,8 +1,6 @@
 #include <config.h>
-
 #include "QFunction.h"
-
-#include <distribution/RScalarDist.h>
+#include "RScalarDist.h"
 
 using std::vector;
 using std::string;

@@ -1,8 +1,5 @@
-
 #include <config.h>
-
-#include <distribution/RScalarDist.h>
-
+#include "RScalarDist.h"
 #include "DFunction.h"
 
 using std::vector;

@@ -1,7 +1,6 @@
 #include <config.h>
 #include "DPQFunction.h"
-
-#include <distribution/RScalarDist.h>
+#include "RScalarDist.h"
 
 using std::vector;
 using std::string;
