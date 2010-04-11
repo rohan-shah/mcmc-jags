@@ -1,7 +1,7 @@
 #ifndef DNEGBIN_H_
 #define DNEGBIN_H_
 
-#include <distribution/RScalarDist.h>
+#include "RScalarDist.h"
 
 /**
  * <pre>
