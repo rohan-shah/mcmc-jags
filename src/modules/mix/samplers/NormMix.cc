@@ -1,8 +1,10 @@
 #include <config.h>
 #include "NormMix.h"
+#include "DirichletInfo.h"
 #include <rng/RNG.h>
 #include <util/nainf.h>
 #include <sampler/GraphView.h>
+#include <distribution/Distribution.h>
 
 #include <cmath>
 #include <stdexcept>
@@ -14,27 +16,12 @@ using std::logic_error;
 using std::log;
 using std::exp;
 using std::string;
+using std::pair;
+using std::set;
 
-static void read_bounds(vector<StochasticNode*> const &snodes, 
-			unsigned int chain,
-			double *lower, double *upper, unsigned int length)
+static bool isDirch(StochasticNode const *snode)
 {
-
-    double *lp = lower;
-    double *up = upper;
-    unsigned int node_length = 0;
-    for (unsigned int j = 0; j < snodes.size(); ++j) {
-	unsigned int length_j = snodes[j]->length();
-	node_length += length_j;
-	if (node_length > length) {
-	    throw logic_error("Invalid length in read_bounds (NormMix)");
-	}
-	else {
-	    snodes[j]->support(lp, up, length_j, chain);
-	    lp += length_j;
-	    up += length_j;
-	}
-    }
+    return snode->distribution()->name() == "ddirch";
 }
 
 static vector<double> initialValue(GraphView const *gv, unsigned int chain)
@@ -42,6 +29,21 @@ static vector<double> initialValue(GraphView const *gv, unsigned int chain)
     vector<double> ivalue(gv->length());
     gv->getValue(ivalue, chain);
     return ivalue;
+}
+
+static void reflect (double &x, double LLIM=-30, double ULIM=30)
+{
+    //boundary reflection on log scale to to prevent overflow/underflow
+    //when taking exponentials.
+
+    while (x < LLIM || x > ULIM) {
+	if (x < LLIM) {
+	    x = 2*LLIM - x;
+	}
+	if (x > ULIM) {
+	    x = 2*ULIM - x;
+	}
+    }
 }
 
 namespace mix {
@@ -54,13 +56,40 @@ namespace mix {
 	unsigned int N = gv->length();
 	_lower = new double[N];
 	_upper = new double[N];
-	read_bounds(_gv->nodes(), chain, _lower, _upper, N);
+
+	double *lp = _lower;
+	double *up = _upper;
+        vector<StochasticNode*> const &snodes = _gv->nodes();
+	for (unsigned int j = 0; j < snodes.size(); ++j) {
+	    unsigned int length_j = snodes[j]->length();
+	    if (isDirch(snodes[j])) {
+		//Special rule for Dirichlet distribution to enforce
+		//log transformation
+		for (unsigned int k = 0; k < length_j; ++k) {
+		    lp[k] = 0;
+		    up[k] = JAGS_POSINF;
+		}
+		_di.push_back(new DirichletInfo(snodes[j], lp - _lower, 
+						chain));
+	    }
+	    else {
+		snodes[j]->support(lp, up, length_j, chain);
+	    }
+	    lp += length_j;
+	    up += length_j;
+	    if (lp - _lower > N) {
+		throw logic_error("Invalid length in read_bounds (NormMix)");
+	    }
+	}
     }
 
     NormMix::~NormMix()
     {
 	delete [] _lower;
 	delete [] _upper;
+	for (unsigned int i = 0; i < _di.size(); ++i) {
+	    delete _di[i];
+	}
     }
 
     void NormMix::step(vector<double>  &x, double step, RNG *rng) const
@@ -69,21 +98,24 @@ namespace mix {
 	    bool bb = jags_finite(_lower[i]); //bounded below
 	    bool ba = jags_finite(_upper[i]); //bounded above
 	    double eps = rng->normal() * step;
-
+		
 	    if (bb && ba) {
 		x[i] = log(x[i] - _lower[i]) - log(_upper[i] - x[i]);
 		x[i] += eps;
+		reflect(x[i]);
 		double w = 1.0 / (1 + exp(-x[i]));
 		x[i] = (1 - w) * _lower[i] + w * _upper[i];
 	    }
 	    else if (bb) {
-		x[i] = log(x[i] - _lower[i]); 
+		x[i] = log(x[i] - _lower[i]);
 		x[i] += eps;
+		reflect(x[i]);
 		x[i] = _lower[i] + exp(x[i]);
 	    }
 	    else if (ba) {
 		x[i] = log(_upper[i] - x[i]);
 		x[i] += eps;
+		reflect(x[i]);
 		x[i] = _upper[i] - exp(x[i]);
 	    }
 	    else {
@@ -129,8 +161,25 @@ namespace mix {
 		return false;
 	    }
 	    //Check that all nodes are of full rank
-	    if (snodes[i]->length() != snodes[i]->df())
+	    if (isDirch(snodes[i])) {
+		/* We can't handle structural zeros in the Dirichlet
+		   distribution. This excludes Dirichlet nodes with
+		   unobserved parents
+		*/
+		if (!snodes[i]->parents()[0]->isObserved()) {
+		    return false;
+		}
+		double const *par = snodes[i]->parents()[0]->value(0);
+		unsigned int plen = snodes[i]->parents()[0]->length();
+		for (unsigned int j = 0; j < plen; ++j) {
+		    if (par[j] == 0) {
+			return false;
+		    }
+		}
+	    }
+	    else if (snodes[i]->length() != snodes[i]->df()) {
 		return false;
+	    }
 	}
 	return true;
     }
@@ -143,16 +192,49 @@ namespace mix {
     void NormMix::getValue(vector<double> &x) const 
     {
 	_gv->getValue(x, _chain);
+	for (unsigned int i = 0; i < _di.size(); ++i) {
+	    for (unsigned int j = _di[i]->start; j < _di[i]->end; ++j) {
+		x[j] *= _di[i]->sum;
+	    }
+	}
     }
 
     void NormMix::setValue(vector<double> const &x)
     {
-	_gv->setValue(x, _chain);
+	if (_di.empty()) {
+	    _gv->setValue(x, _chain);
+	}
+	else {
+	    //Rescale Dirichlet distributions
+	    for (unsigned int i = 0; i < _di.size(); ++i) {
+		_di[i]->sum = 0;
+		for (unsigned int j = _di[i]->start; j < _di[i]->end; ++j) {
+		    _di[i]->sum += x[j];
+		}
+	    }
+	    vector<double> v = x;
+	    for (unsigned int i = 0; i < _di.size(); ++i) {
+		for (unsigned int j = _di[i]->start; j < _di[i]->end; ++j) {
+		    v[j] /= _di[i]->sum;
+		}
+	    }
+	    _gv->setValue(v, _chain);
+	}
     }
 
     double NormMix::logPrior() const
     {
-	return _gv->logPrior(_chain);
+	double lp = _gv->logPrior(_chain);
+	for (unsigned int i = 0; i < _di.size(); ++i) {
+	    //Penalty on unscaled Dirichlet coordinates
+	    //Gamma penalty
+	    lp += _di[i]->gammaPenalty();
+	    /*
+	      double logS = log(_di[i]->sum);
+	      lp -= 5 * logS * logS;
+	    */
+	}
+	return lp;
     }
     
     double NormMix::logLikelihood() const

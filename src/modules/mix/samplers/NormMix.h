@@ -11,6 +11,8 @@ class GraphView;
 
 namespace mix {
 
+    class DirichletInfo;
+
 /**
  * @short Sample method for normal mixture models
  *
@@ -26,6 +28,8 @@ namespace mix {
 	unsigned int _chain;
 	double *_lower;
 	double *_upper;
+	std::vector<DirichletInfo*> _di;
+
     public:
 	/**
 	 * Constructor for Mix Method with tempered transitions
