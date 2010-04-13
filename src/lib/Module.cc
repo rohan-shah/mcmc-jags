@@ -19,6 +19,7 @@ Module::Module(string const &name)
 
 Module::~Module()
 {
+    unload();
     list<Module*>::iterator p = find(modules().begin(), modules().end(), this);
     if (p != modules().end()) {
 	modules().erase(p);
