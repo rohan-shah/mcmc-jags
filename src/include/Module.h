@@ -34,6 +34,7 @@ class ArrayDist;
  */
 class Module {
     std::string _name;
+    bool _loaded;
     std::vector<FunctionPtr> _fp_list;
     std::vector<Function*> _functions;
     std::vector<std::pair<DistPtr, FunctionPtr> > _obs_functions;
@@ -56,11 +57,6 @@ public:
     void insert(VectorDist*);
     void insert(ArrayDist*);
 
-/*
-    void insert(DistPtr const&);
-    void insert(FunctionPtr const&);
-    void insert(DistPtr const&, FunctionPtr const &);
-*/
     void insert(ScalarDist*, ScalarFunction*);
     void insert(ScalarDist*, LinkFunction*);
     void insert(ScalarDist*, VectorFunction*);
@@ -79,11 +75,13 @@ public:
     void insert(SamplerFactory*);
     void insert(RNGFactory*);
     void insert(MonitorFactory*);
+
     std::vector<Function*> const &functions() const;
     std::vector<Distribution*> const &distributions() const;
     std::vector<SamplerFactory*> const &samplerFactories() const;
     std::vector<RNGFactory*> const &rngFactories() const;
     std::vector<MonitorFactory*> const &monitorFactories() const;
+
     void load();
     void unload();
     std::string const &name() const;

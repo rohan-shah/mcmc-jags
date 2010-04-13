@@ -12,7 +12,7 @@ using std::find;
 using std::pair;
 
 Module::Module(string const &name)
-    : _name(name)
+    : _name(name), _loaded(false)
 {
     modules().push_back(this);
 }
@@ -71,40 +71,6 @@ void Module::insert(ArrayDist *dist)
     _dp_list.push_back(DistPtr(dist));
 
 }
-
-/*
-void Module::insert(Distribution *dist)
-{
-    _distributions.push_back(dist);
-}
-*/
-
-/*
-void Module::insert(DistPtr const &dp)
-{
-    if (!isNULL(dp)) {
-	_distributions.push_back(DIST(dp));
-	_dp_list.push_back(dp);
-    }
-}
-
-
-
-void Module::insert(FunctionPtr const &fp)
-{
-    if (!isNULL(fp)) {
-	_functions.push_back(FUNC(fp));
-	_fp_list.push_back(fp);
-    }
-}
-
-void Module::insert(DistPtr const &dp, FunctionPtr const &fp)
-{
-    _obs_functions.push_back(pair<DistPtr,FunctionPtr>(dp, fp));
-    insert(dp);
-    insert(fp);
-}
-*/
 
 void Module::insert(ScalarDist *dist, ScalarFunction *func)
 {
@@ -211,6 +177,9 @@ void Module::insert(MonitorFactory *fac)
 
 void Module::load()
 {
+    if (_loaded)
+	return;
+
     for (unsigned int i = 0; i < _monitor_factories.size(); ++i) {
 	pair<MonitorFactory*,bool> p(_monitor_factories[i], true);
 	Model::monitorFactories().push_front(p);
@@ -237,43 +206,38 @@ void Module::load()
 
 void Module::unload()
 {
-    unsigned int i;
-    
-    for (i = 0; i < _obs_functions.size(); ++i) {
+    if (!_loaded)
+	return;
+
+    for (unsigned int i = 0; i < _obs_functions.size(); ++i) {
 	Compiler::obsFuncTab().erase(_obs_functions[i].first,
 				     _obs_functions[i].second);
     }
-    for (i = 0; i < _fp_list.size(); ++i) {
+    for (unsigned int i = 0; i < _fp_list.size(); ++i) {
 	Compiler::funcTab().erase(_fp_list[i]);
     }
-    for (i = 0; i < _distributions.size(); ++i) {
+    for (unsigned int i = 0; i < _distributions.size(); ++i) {
 	Compiler::distTab().erase(_dp_list[i]);
     }
 
     list<pair<RNGFactory *, bool> > &rngf = Model::rngFactories();
-    for (i = 0; i < _rng_factories.size(); ++i) {
+    for (unsigned int i = 0; i < _rng_factories.size(); ++i) {
 	RNGFactory *f = _rng_factories[i];
-	list<pair<RNGFactory *, bool> >::iterator p = rngf.begin(); 
-	while (p != rngf.end()) {
+	list<pair<RNGFactory *, bool> >::iterator p;
+	for (p = rngf.begin(); p != rngf.end(); ++p) {
 	    if (p->first == f) {
-		rngf.erase(p++);
-	    }
-	    else {
-		++p;
+		rngf.erase(p);
 	    }
 	}
     }
 
     list<pair<SamplerFactory *, bool> > &sf = Model::samplerFactories();
-    for (i = 0; i < _sampler_factories.size(); ++i) {
+    for (int i = 0; i < _sampler_factories.size(); ++i) {
 	SamplerFactory *f = _sampler_factories[i];
-	list<pair<SamplerFactory *, bool> >::iterator p = sf.begin(); 
-	while (p != sf.end()) {
+	list<pair<SamplerFactory *, bool> >::iterator p;
+	for (p = sf.begin(); p != sf.end(); ++p) {
 	    if (p->first == f) {
-		sf.erase(p++);
-	    }
-	    else {
-		++p;
+		sf.erase(p);
 	    }
 	}
     }
