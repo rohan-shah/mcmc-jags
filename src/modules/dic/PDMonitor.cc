@@ -22,10 +22,10 @@ static vector<Node const *> toNodeVec(vector<StochasticNode const *> const &s)
 namespace dic {
 
     PDMonitor::PDMonitor(vector<StochasticNode const *> const &snodes,
-			 vector<CalKL *> const &calkl)
+			 vector<CalKL *> const &calkl, double scale)
 	: Monitor("mean", toNodeVec(snodes)), _calkl(calkl),
 	  _values(snodes.size(), 0),  _weights(snodes.size(), 0),
-	  _nchain(snodes[0]->nchain())
+	  _scale(scale), _nchain(snodes[0]->nchain())
     {
 	if (snodes[0]->nchain() < 2) {
 	    throw logic_error("PDMonitor needs at least 2 chains");
@@ -78,6 +78,7 @@ namespace dic {
 		}
 	    }
 	    pdsum /= wsum;
+	    pdsum *= _scale/2;
 
 	    _weights[k] += wsum;
 	    _values[k] += wsum * (pdsum - _values[k])/_weights[k];

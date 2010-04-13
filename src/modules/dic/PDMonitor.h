@@ -15,11 +15,12 @@ namespace dic {
 	std::vector<CalKL *> _calkl;
 	std::vector<double> _values;
 	std::vector<double> _weights;
+	double _scale;
 	unsigned int _nchain;
 	unsigned int _n;
     public:
 	PDMonitor(std::vector<StochasticNode const *> const &snodes,
-		  std::vector<CalKL *> const &calkl);
+		  std::vector<CalKL *> const &calkl, double scale=1);
 	~PDMonitor();
 	std::vector<unsigned int> dim() const;
 	std::vector<double> const &value(unsigned int chain) const;

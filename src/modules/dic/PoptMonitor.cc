@@ -12,7 +12,7 @@ namespace dic {
 
     PoptMonitor::PoptMonitor(vector<StochasticNode const *> const &snodes,
 			     vector<CalKL *> const &calkl)
-	: PDMonitor(snodes, calkl), _snodes(snodes)
+	: PDMonitor(snodes, calkl, 2.0), _snodes(snodes)
     {
     }
 
@@ -20,5 +20,4 @@ namespace dic {
     {
 	return exp(-_snodes[k]->logDensity(ch));
     }
-
 }
