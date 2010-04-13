@@ -577,10 +577,12 @@ bool Model::setRNG(string const &name, unsigned int chain)
 
   list<pair<RNGFactory*, bool> >::const_iterator p;
   for (p = rngFactories().begin(); p != rngFactories().end(); ++p) {
-      RNG *rng = p->first->makeRNG(name);
-      if (rng) {
-	  _rng[chain] = rng;
-	  return true;
+      if (p->second) {
+	  RNG *rng = p->first->makeRNG(name);
+	  if (rng) {
+	      _rng[chain] = rng;
+	      return true;
+	  }
       }
   }
 
