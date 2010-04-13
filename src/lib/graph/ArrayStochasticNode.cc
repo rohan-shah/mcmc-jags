@@ -37,20 +37,6 @@ static vector<unsigned int> mkDim(ArrayDist const *dist,
     return dist->dim(parameter_dims);
 }
 
-static vector<Node const *> mkParents(vector<Node const *> const &parameters, 
-				      Node const *lower, Node const *upper)
-{
-    //Add bounds to vector of parents, if they are non-zero
-    vector<Node const *> parents = parameters;
-    if (lower) {
-	parents.push_back(lower);
-    }
-    if (upper) {
-	parents.push_back(upper);
-    }
-    return parents;
-}
-
 static vector<vector<unsigned int> > const &
 mkParameterDims(vector<Node const *> const &parameters) {
     vector<vector<unsigned int> > dims(parameters.size());

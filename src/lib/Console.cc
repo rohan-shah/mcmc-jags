@@ -652,7 +652,19 @@ bool Console::dumpSamplers(vector<vector<string> > &sampler_names)
 bool Console::loadModule(string const &name)
 {
     list<Module*>::const_iterator p;
-    for ( p = Module::modules().begin(); p != Module::modules().end(); ++p)
+
+    // Check that module is not already loaded
+    for (p = loadedModules().begin(); p != loadedModules().end(); ++p) {
+	if ((*p)->name() == name) {
+	    break;
+	}
+    }
+    if (p != loadedModules().end()) {
+	return false; 
+    }
+
+    // Load module
+    for (p = Module::modules().begin(); p != Module::modules().end(); ++p)
     {
 	if ((*p)->name() == name) {
 	    break;
@@ -737,14 +749,19 @@ static bool setRNGActive(string const &name, bool flag)
 
 bool Console::setFactoryActive(string const &name, FactoryType type, bool flag)
 {
+    bool ok = false;
     switch(type) {
     case SAMPLER_FACTORY:
-	return setSamplerActive(name, flag);
+	ok = setSamplerActive(name, flag);
+	break;
     case MONITOR_FACTORY:
-	return setMonitorActive(name, flag);
+	ok = setMonitorActive(name, flag);
+	break;
     case RNG_FACTORY:
-	return setRNGActive(name, flag);
+	ok = setRNGActive(name, flag);
+	break;
     }
+    return ok;
 }
 
 static list<pair<string, bool> > listSamplerFactories()
@@ -785,12 +802,17 @@ static list<pair<string, bool> > listRNGFactories()
 
 list<pair<string, bool> >  Console::listFactories(FactoryType type)
 {
+    list<pair<string, bool> > ans;
     switch(type) {
     case SAMPLER_FACTORY:
-	return listSamplerFactories();
+	ans = listSamplerFactories();
+	break;
     case MONITOR_FACTORY:
-	return listMonitorFactories();
+	ans = listMonitorFactories();
+	break;
     case RNG_FACTORY:
-	return listRNGFactories();
+	ans = listRNGFactories();
+	break;
     }
+    return ans;
 }
