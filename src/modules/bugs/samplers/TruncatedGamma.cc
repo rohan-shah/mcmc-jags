@@ -164,6 +164,8 @@ bool TruncatedGamma::canSample(StochasticNode *snode, Graph const &graph)
 	case NORM: case LNORM:
 	    shape += 0.5;
 	    break;
+	default:
+	    return false;
 	}
     }
 

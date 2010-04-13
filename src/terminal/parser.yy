@@ -1389,7 +1389,7 @@ void list_factories(FactoryType type)
 	Console::listFactories(type);
 
     std::list<std::pair<std::string, bool> >::const_iterator p;
-    int max_strlen = 0;
+    unsigned int max_strlen = 0;
     for (p = faclist.begin(); p != faclist.end(); ++p) {
 	if (p->first.length() > max_strlen)
 	    max_strlen = p->first.length();
