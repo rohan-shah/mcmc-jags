@@ -189,7 +189,7 @@ void ConjugateMNormal::update(unsigned int chain, RNG *rng) const
 	    double alpha = 1;
 	
 	    F77_DAXPY (&N, &alpha, tau, &i1, A, &i1);
-	    for (unsigned int i = 0; i < nrow; ++i) {
+	    for (int i = 0; i < nrow; ++i) {
 		delta[i] = Y[i] - xold[i];
 	    }
 	    F77_DGEMV ("N", &nrow, &nrow, &alpha, tau, &nrow, delta, &i1,
@@ -212,7 +212,7 @@ void ConjugateMNormal::update(unsigned int chain, RNG *rng) const
         }
 
 	//Calculate largest possible size of working matrix C
-	int max_nrow_child = 0;
+	unsigned int max_nrow_child = 0;
 	for (unsigned int j = 0; j < nchildren; ++j) {
 	    if (snode->length() > max_nrow_child) {
 		max_nrow_child = snode->length();
@@ -260,7 +260,7 @@ void ConjugateMNormal::update(unsigned int chain, RNG *rng) const
 		F77_DSYMM("R", "L", &nrow, &nrow_child, &alpha, tau,
                           &nrow_child, beta_j, &nrow, &zero, C, &nrow);
 
-		for (unsigned int i = 0; i < nrow_child; ++i) {
+		for (int i = 0; i < nrow_child; ++i) {
 		    delta[i] = Y[i] - mu[i];
 		}
 		
