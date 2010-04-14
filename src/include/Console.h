@@ -203,10 +203,6 @@ public:
   /** Clears the model */
   void clearModel();
   /**
-   * Returns a list of loaded modules
-   */
-  static std::list<Module *> &loadedModules();
-  /**
    * Loads a module by name
    */
   static bool loadModule(std::string const &name);
@@ -215,10 +211,14 @@ public:
    */ 
   static bool unloadModule(std::string const &name);
   /**
-   * Returns a list containing the names of currently loaded factories
+   * Returns a vector containing the names of loaded modules
+   */
+  static std::vector<std::string> listModules();
+  /**
+   * Returns a vector containing the names of currently loaded factories
    * and whether or not they are active.
    */
-  static std::list<std::pair<std::string, bool> >  
+  static std::vector<std::pair<std::string, bool> >  
       listFactories(FactoryType type);
   /**
    * Sets a factory to be active or inactive
