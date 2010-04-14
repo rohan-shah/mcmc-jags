@@ -1266,9 +1266,9 @@ int main (int argc, char **argv)
   }
   
   //Unload modules
-  while (!Console::loadedModules().empty()) {
-      Module *mod = Console::loadedModules().back();
-      console->unloadModule(mod->name());
+  std::vector<std::string> mods = Console::listModules();
+  for (unsigned int i = 0; i < mods.size(); ++i) {
+      Console::unloadModule(mods[i]);
   }
   delete console;
   //Release dynamic libraries. 
@@ -1385,10 +1385,10 @@ void doSystem(std::string const *command)
 
 void list_factories(FactoryType type)
 {
-    std::list<std::pair<std::string, bool> > faclist = 
+    std::vector<std::pair<std::string, bool> > faclist = 
 	Console::listFactories(type);
 
-    std::list<std::pair<std::string, bool> >::const_iterator p;
+    std::vector<std::pair<std::string, bool> >::const_iterator p;
     unsigned int max_strlen = 0;
     for (p = faclist.begin(); p != faclist.end(); ++p) {
 	if (p->first.length() > max_strlen)
