@@ -1933,10 +1933,9 @@ layered model are given below. These examples are for GCC compilers on
 \verb+x86_64+ since the Intel Fortran compiler returns complex values
 differently from the GNU Fortran compiler. You must therefore use the
 interface layer that matches your compiler (\verb+mkl_intel*+ or \verb+mkl_gf*+).  
-
 The use of MKL is incompatible with building a shared library for
 \JAGS. It can be used if \JAGS\ is configured with the option
-\verb+--disable-shared+r., This builds an executable that is statically
+\verb+--disable-shared+., This builds an executable that is statically
 linked to the \JAGS\ library and modules.
 
 JAGS can be linked to a sequential version of MKL by
@@ -1988,7 +1987,7 @@ To compile a 64-bit version of JAGS, add the option \verb+-m64+ to
 all the compiler flags.
 
 Solaris provides two versions of the C++ standard library:
-\texttt{libCrun}, which is the default, and \texttt{libstlport4},
+\texttt{libCstd}, which is the default, and \texttt{libstlport4},
 which conforms more closely to the C++ standard. \JAGS\ may be linked
 to the stlport4 library by adding the options
 \verb+-library=stlport4 -lCrun+ to \verb+CXXFLAGS+.
