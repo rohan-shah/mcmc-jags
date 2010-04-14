@@ -81,11 +81,12 @@ public:
     std::vector<SamplerFactory*> const &samplerFactories() const;
     std::vector<RNGFactory*> const &rngFactories() const;
     std::vector<MonitorFactory*> const &monitorFactories() const;
-
+    
     void load();
     void unload();
     std::string const &name() const;
     static std::list<Module *> &modules();
+    static std::list<Module *> &loadedModules();
 };
 
 #endif /* _MODULE_H_ */
