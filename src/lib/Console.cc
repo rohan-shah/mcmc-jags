@@ -660,7 +660,7 @@ bool Console::loadModule(string const &name)
 	}
     }
     if (p != loadedModules().end()) {
-	return false; 
+	return true; 
     }
 
     // Load module
@@ -764,9 +764,9 @@ bool Console::setFactoryActive(string const &name, FactoryType type, bool flag)
     return ok;
 }
 
-static list<pair<string, bool> > listSamplerFactories()
+static vector<pair<string, bool> > listSamplerFactories()
 {
-    list<pair<string, bool> > ans;
+    vector<pair<string, bool> > ans;
     list<pair<SamplerFactory*, bool> > const &flist = Model::samplerFactories();
     for (list<pair<SamplerFactory*, bool> >::const_iterator p = flist.begin();
 	 p != flist.end(); ++p) 
@@ -776,9 +776,9 @@ static list<pair<string, bool> > listSamplerFactories()
     return ans;
 }
 
-static list<pair<string, bool> > listMonitorFactories()
+static vector<pair<string, bool> > listMonitorFactories()
 {
-    list<pair<string, bool> > ans;
+    vector<pair<string, bool> > ans;
     list<pair<MonitorFactory*, bool> > const &flist = Model::monitorFactories();
     for (list<pair<MonitorFactory*, bool> >::const_iterator p = flist.begin();
 	 p != flist.end(); ++p) 
@@ -788,9 +788,9 @@ static list<pair<string, bool> > listMonitorFactories()
     return ans;
 }
 
-static list<pair<string, bool> > listRNGFactories()
+static vector<pair<string, bool> > listRNGFactories()
 {
-    list<pair<string, bool> > ans;
+    vector<pair<string, bool> > ans;
     list<pair<RNGFactory*, bool> > const &flist = Model::rngFactories();
     for (list<pair<RNGFactory*, bool> >::const_iterator p = flist.begin();
 	 p != flist.end(); ++p) 
@@ -800,9 +800,9 @@ static list<pair<string, bool> > listRNGFactories()
     return ans;
 }
 
-list<pair<string, bool> >  Console::listFactories(FactoryType type)
+vector<pair<string, bool> >  Console::listFactories(FactoryType type)
 {
-    list<pair<string, bool> > ans;
+    vector<pair<string, bool> > ans;
     switch(type) {
     case SAMPLER_FACTORY:
 	ans = listSamplerFactories();
