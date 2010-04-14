@@ -81,7 +81,7 @@ bool DSum::checkParameterValue(vector<double const *> const &params) const
     return true;
 }
 
-bool DSum::checkParameterDiscrete(vector<double const *> const &mask) const
+bool DSum::checkParameterDiscrete(vector<bool> const &mask) const
 {
     for (unsigned int i = 1; i < mask.size(); ++i) {
 	if (mask[i] != mask[0])

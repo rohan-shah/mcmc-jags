@@ -24,7 +24,7 @@ public:
     bool isDiscreteValued(std::vector<bool> const &mask) const;
     unsigned int df() const;
     bool checkParameterValue(std::vector<double const *> const &params) const;
-    bool checkParameterDiscrete(std::vector<double const *> const &mask) const;
+    bool checkParameterDiscrete(std::vector<bool> const &mask) const;
 };
 
 #endif /* DSUM_H_ */
