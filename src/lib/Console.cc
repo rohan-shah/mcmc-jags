@@ -652,57 +652,40 @@ bool Console::dumpSamplers(vector<vector<string> > &sampler_names)
 bool Console::loadModule(string const &name)
 {
     list<Module*>::const_iterator p;
-
-    // Check that module is not already loaded
-    for (p = loadedModules().begin(); p != loadedModules().end(); ++p) {
-	if ((*p)->name() == name) {
-	    break;
-	}
-    }
-    if (p != loadedModules().end()) {
-	return true; 
-    }
-
-    // Load module
     for (p = Module::modules().begin(); p != Module::modules().end(); ++p)
     {
 	if ((*p)->name() == name) {
-	    break;
+	    (*p)->load();
+	    return true;
 	}
     }
-    if (p != Module::modules().end()) {
-	(*p)->load();
-	loadedModules().push_back(*p);
-	return true;
+    return false;
+}
+
+vector<string> Console::listModules()
+{
+    vector<string> ans;
+    list<Module*>::const_iterator p;
+    for (p = Module::loadedModules().begin(); 
+	 p != Module::loadedModules().end(); ++p)
+    {
+	ans.push_back((*p)->name());
     }
-    else {
-	return false;
-    }
+    return ans;
 }
 
 bool Console::unloadModule(string const &name)
 {
     list<Module*>::iterator p;
-    for (p = loadedModules().begin(); p != loadedModules().end(); ++p)
+    for (p = Module::loadedModules().begin(); 
+	 p !=  Module::loadedModules().end(); ++p)
     {
 	if ((*p)->name() == name) {
-	    break;
+	    (*p)->unload();
+	    return true;
 	}
     }
-    if (p != loadedModules().end()) {
-	(*p)->unload();
-	loadedModules().erase(p);
-	return true;
-    }
-    else {
-	return false;
-    }
-}
-
-list<Module *> &Console::loadedModules()
-{
-    static list<Module*> _modules;
-    return _modules;
+    return false;
 }
 
 static bool setSamplerActive(string const &name, bool flag)
