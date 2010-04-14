@@ -3,7 +3,6 @@
 #include <compiler/Compiler.h>
 #include <model/Model.h>
 #include <algorithm>
-#include <Console.h>
 
 using std::vector;
 using std::list;
@@ -203,6 +202,8 @@ void Module::load()
 	Compiler::obsFuncTab().insert(_obs_functions[i].first,
 				      _obs_functions[i].second);
     }
+
+    loadedModules().push_back(this);
 }
 
 void Module::unload()
@@ -242,6 +243,8 @@ void Module::unload()
 	    }
 	}
     }
+
+    loadedModules().remove(this);
 }
 
 vector<Function*> const &Module::functions() const
@@ -279,3 +282,10 @@ list<Module *> &Module::modules()
     static list<Module*> _modules;
     return _modules;
 }
+
+list<Module *> &Module::loadedModules()
+{
+    static list<Module*> _modules;
+    return _modules;
+}
+
