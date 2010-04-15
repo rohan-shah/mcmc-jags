@@ -99,7 +99,7 @@ namespace mix {
 
     string MixSamplerFactory::name() const
     {
-	return "mix::mixfactory";
+	return "mix::TemperedMix";
     }
 
     vector<Sampler*>  
