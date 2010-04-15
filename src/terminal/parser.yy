@@ -71,7 +71,9 @@
     static void dumpSamplers(std::string const &file);
     static void delete_pvec(std::vector<ParseTree*> *);
     static void print_unused_variables();
-    static void list_factories(FactoryType type);
+    static void listFactories(FactoryType type);
+    static void setFactory(std::string const &name, FactoryType type,
+                           std::string const &status);
 
     %}
 
@@ -193,7 +195,8 @@ command: model
 | get_working_dir
 | set_working_dir
 | samplers_to
-| console_list
+| list_factories
+| set_factory
 ;
 
 model: MODEL IN file_name {
@@ -468,19 +471,41 @@ samplers_to: SAMPLERS TO file_name
 }
 ;
 
-console_list: LIST FACTORIES ',' TYPE '(' SAMPLER ')'
+list_factories: LIST FACTORIES ',' TYPE '(' SAMPLER ')'
 {
-    list_factories(SAMPLER_FACTORY);
+    listFactories(SAMPLER_FACTORY);
 }
 |
 LIST FACTORIES ',' TYPE '(' RNG ')'
 {
-    list_factories(RNG_FACTORY);
+    listFactories(RNG_FACTORY);
 }
 |
 LIST FACTORIES ',' TYPE '(' MONITOR ')'
 {
-    list_factories(MONITOR_FACTORY);
+    listFactories(MONITOR_FACTORY);
+}
+;
+
+set_factory: SET FACTORY STRING NAME ',' TYPE '(' SAMPLER ')'
+{
+    setFactory(*$3, SAMPLER_FACTORY, *$4);
+    delete $3;
+    delete $4;
+}
+|
+SET FACTORY NAME NAME ',' TYPE '(' RNG ')'
+{
+    setFactory(*$3, RNG_FACTORY, *$4);
+    delete $3;
+    delete $4;
+}
+|
+SET FACTORY NAME NAME ',' TYPE '(' MONITOR ')'
+{
+    setFactory(*$3, MONITOR_FACTORY, *$4);
+    delete $3;
+    delete $4;
 }
 ;
 
@@ -1383,7 +1408,7 @@ void doSystem(std::string const *command)
     std::system(command->c_str());
 }
 
-void list_factories(FactoryType type)
+void listFactories(FactoryType type)
 {
     std::vector<std::pair<std::string, bool> > faclist = 
 	Console::listFactories(type);
@@ -1394,19 +1419,43 @@ void list_factories(FactoryType type)
 	if (p->first.length() > max_strlen)
 	    max_strlen = p->first.length();
     }
+    if (max_strlen < 4)
+	max_strlen = 4;
+
+    //Header
+    std::cout << "Name";
+    for (int i = max_strlen - 4; i >=0; --i) {
+	std::cout << " ";
+    }
+    std::cout << "Status\n";
+
+    //Body
     for (p = faclist.begin(); p != faclist.end(); ++p) {
 	std::cout << p->first << " ";
 	for (int i = max_strlen - p->first.length(); i >= 0; --i) {
 	    std::cout << " ";
 	}
 	if (p->second) {
-	    std::cout << "yes";
+	    std::cout << "on";
 	}
 	else {
-	    std::cout << "no";
+	    std::cout << "off";
 	}
 	std::cout << "\n";
     }
 }
 
+void setFactory(std::string const &name, FactoryType type, 
+		std::string const &status)
+{
+    if (status == "on") {
+	Console::setFactoryActive(name, type, true);
+    }
+    else if (status == "off") {
+	Console::setFactoryActive(name, type, false);
+    }
+    else {
+	std::cout << "status should be \"on\" or \"off\"";
+    }
+}
 	    
