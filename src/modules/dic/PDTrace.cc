@@ -23,7 +23,7 @@ namespace dic {
 
     PDTrace::PDTrace(vector<StochasticNode const *> const &snodes,
 		     vector<CalKL *> const &calkl)
-	: Monitor("mean", toNodeVec(snodes)), _calkl(calkl),
+	: Monitor("trace", toNodeVec(snodes)), _calkl(calkl),
 	  _values(0), _nchain(snodes[0]->nchain())
     {
 	if (snodes[0]->nchain() < 2) {
