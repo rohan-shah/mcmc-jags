@@ -176,21 +176,16 @@ public:
   std::vector<std::string> const &variableNames() const;
   /**
    * Dump the contants of monitored node in CODA format
-   * The parameters name and range must correspond to a previous
-   * call to setMonitor.
    *
    * @param node Vector of monitored nodes to be dumped, each node
    * is described by the variable name and index range. If the vector
    * is empty then ALL monitored nodes will be dumped.
    * 
-   * @param index Index file stream
-   *
-   * @param output Output file stream
-   *
+   * @param prefix Prefix to be prepended to the output file names
    */
   bool coda(std::vector<std::pair<std::string, Range> > const &nodes,
-	    std::ofstream &index, std::vector<std::ofstream*> const &output);
-  bool coda(std::ofstream &index, std::vector<std::ofstream*> const &output);
+	    std::string const &prefix);
+  bool coda(std::string const &prefix);
   BUGSModel const *model();
   unsigned int nchain() const;
   bool dumpMonitors(std::map<std::string,SArray> &data_table,

@@ -23,7 +23,6 @@
 #include <vector>
 
 using std::ostream;
-using std::ofstream;
 using std::endl;
 using std::flush;
 using std::vector;
@@ -546,7 +545,7 @@ bool Console::dumpMonitors(map<string,SArray> &data_table,
 }
 
 
-bool Console::coda(ofstream &index, vector<ofstream*> const &output)
+bool Console::coda(string const &prefix)
 {
     if (!_model) {
 	_err << "Can't dump CODA output. No model!" << endl;
@@ -555,7 +554,7 @@ bool Console::coda(ofstream &index, vector<ofstream*> const &output)
 
     try {
         string warn;
-	_model->coda(index, output, warn);
+	_model->coda(prefix, warn);
         if (!warn.empty()) {
             _err << "WARNING:\n" << warn;
         }
@@ -566,7 +565,7 @@ bool Console::coda(ofstream &index, vector<ofstream*> const &output)
 }
 
 bool Console::coda(vector<pair<string, Range> > const &nodes,
-		   ofstream &index, vector<ofstream*> const &output)
+		   string const &prefix)
 {
     if (!_model) {
 	_err << "Can't dump CODA output. No model!" << endl;
@@ -576,7 +575,7 @@ bool Console::coda(vector<pair<string, Range> > const &nodes,
 
     try {
         string warn;
-	_model->coda(nodes, index, output, warn);
+	_model->coda(nodes, prefix, warn);
         if (!warn.empty()) {
             _err << "WARNINGS:\n" << warn;
         }

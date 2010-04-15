@@ -49,30 +49,26 @@ public:
      */
     Node *getNode(std::string const &name, Range const &range);
     /**
-     * Writes out stored samples in CODA format.
+     * Writes out selected monitors in CODA format.
      *
-     * @param nodes Vector of nodes to write out. Each node is described
-     * by a pair consisting of a variable name and a range of indices.
-     * If a node is not being monitored, then it is ignored.
+     * @param nodes Vector of nodes to write out. Each node is
+     * described by a pair consisting of a name and a range of
+     * indices.  If a node is not being monitored, then it is ignored.
      *
-     * @param index ofstream for the index file. The index file consists
-     * of three entries per line: the node name, the start line number,
-     * and the end line number. Start and end line numbers refer to the
-     * lines of the output file(s). A multivariate node has separate
-     * entries for each element, e.g. A[1,1], A[2,1], etc.
-     * 
-     * @param output vector of ofstreams for the output files. There
-     * must be one output file for each chain in the model or a
-     * logic_error is thrown. An output file consists of two entries per
-     * line: the iteration number and the node value.
+     * @param prefix String giving prefix to be prepened to the output
+     * file names.
+     *
+     * @param warn String that will contain any warning messages on
+     * exit. It is cleared on entry.
      *
      * @exception logic_error
      */
     void coda(std::vector<std::pair<std::string,Range> > const &nodes, 
-	      std::ofstream &index, std::vector<std::ofstream*> const &output,
-              std::string &warn);
-    void coda(std::ofstream &index, std::vector<std::ofstream*> const &output,
-              std::string &warn);
+	      std::string const &prefix, std::string &warn);
+    /**
+     * Write out all monitors in CODA format
+     */
+    void coda(std::string const &prefix, std::string &warn);
     /**
      * Sets the state of the RNG, and the values of the unobserved
      * stochastic nodes in the model, for a given chain.
