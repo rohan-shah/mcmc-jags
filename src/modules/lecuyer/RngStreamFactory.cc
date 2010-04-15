@@ -169,6 +169,6 @@ namespace lecuyer {
 
     string RngStreamFactory::name() const
     {
-	return "lecuyer::rngstreamfactory";
+	return "lecuyer::RngStream";
     }
 }
