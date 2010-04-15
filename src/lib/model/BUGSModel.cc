@@ -1,4 +1,6 @@
 #include <config.h>
+
+#include "CODA.h"
 #include <model/BUGSModel.h>
 #include <model/Monitor.h>
 #include <model/NodeArray.h>
@@ -73,73 +75,9 @@ Node *BUGSModel::getNode(string const &name, Range const &target_range)
     return node;
 }
 
-//FIXME Should be a util
-#include <util/nainf.h>
-static void writeDouble(double x, std::ostream &out)
+void BUGSModel::coda(vector<NodeId> const &node_ids, string const &stem,
+		     string &warn)
 {
-    if (x == JAGS_NA) {
-	out << "NA";
-    }
-    else if (jags_isnan(x)) {
-	out << "NaN";
-    }
-    else if (!jags_finite(x)) {
-	if (x > 0) 
-	    out << "Inf";
-	else 
-	    out << "-Inf";
-    }
-    else {
-	out << x;
-    }
-}
-
-static void CODA(list<MonitorControl> const &mvec,
-		 ofstream &index,  vector<ofstream*> const &output)
-{
-    //FIXME: Check streams are open and set pointer to beginning.
-    
-    unsigned int lineno = 0;
-    list<MonitorControl>::const_iterator p;
-    for (p = mvec.begin(); p != mvec.end(); ++p) {
-	
-	Monitor const *monitor = p->monitor();
-	
-	if (monitor->type() == "trace") { //FIXME: generalize?
-	    
-	    unsigned int nvar = product(monitor->dim());
-	    //Write index file
-	    vector<string> const &enames = monitor->elementNames();
-	    for (unsigned int i = 0; i < nvar; ++i) {
-		index << enames[i] << " " << lineno + 1 << " "
-		      << lineno + p->niter() << '\n';
-		lineno += p->niter();
-	    }
-	    //Write output files
-	    for (unsigned int ch = 0; ch < output.size(); ++ch) {
-		ofstream &out = *output[ch];
-		vector<double> const &y = monitor->value(ch);
-		for (unsigned int offset = 0; offset < nvar; ++offset) {
-		    unsigned int iter = p->start();
-		    for (unsigned int k = 0; k < p->niter(); ++k) {
-			out << iter << "  ";
-			writeDouble(y[k * nvar + offset], out);
-			out << '\n';
-			iter += p->thin();
-		    }
-		}
-	    }
-	}
-    }
-}
-
-void BUGSModel::coda(vector<NodeId> const &node_ids, ofstream &index, 
-		     vector<ofstream*> const &output, string &warn)
-{
-    if (output.size() != nchain()) {
-        throw logic_error("Wrong number of output streams in BUGSModel::coda");
-    }
-
     warn.clear();
 
     list<MonitorControl> dump_nodes;
@@ -174,26 +112,26 @@ void BUGSModel::coda(vector<NodeId> const &node_ids, ofstream &index,
 
     if (dump_nodes.empty()) {
 	warn.append("There are no matching monitors\n");
+	return;
     }
-    
-    CODA(dump_nodes, index, output);
+
+    CODA0(dump_nodes, stem, warn);    
+    CODA(dump_nodes, stem, nchain(), warn);
 }
 
-void BUGSModel::coda(ofstream &index, vector<ofstream*> const &output,
-                     string &warn)
+void BUGSModel::coda(string const &stem, string &warn)
 {
-    if (output.size() != nchain()) {
-        throw logic_error("Wrong number of output streams in BUGSModel::coda");
-    }
-    
     warn.clear();
     
     if (monitors().empty()) {
-	warn.append("There are no monitored nodes\n");
+	warn.append("There are no monitors\n");
+	return;
     }
     
-    CODA(monitors(), index, output);
+    CODA0(monitors(), stem, warn);    
+    CODA(monitors(), stem, nchain(), warn);
 }
+
 
 void BUGSModel::setParameters(std::map<std::string, SArray> const &param_table,
 			      unsigned int chain)
