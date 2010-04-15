@@ -750,78 +750,11 @@ void clearMonitor(ParseTree const *var, std::string const &type)
 
 void doAllCoda (std::string const &stem)
 {
-
-    /* Open index file */
-    std::ostringstream indstream;
-    indstream << stem << "index.txt";
-    std::string indname = indstream.str();
-    std::ofstream ind(indname.c_str());
-    if (!ind) {
-      std::cerr << "Failed to open file " << indname << std::endl;
-      return;
-    }
-
-    std::vector<std::ofstream*> output;
-    for (unsigned int n = 0; n < console->nchain(); ++n) {
-	/* Open output file */
-	std::ostringstream outstream;
-	outstream << stem << "chain" << n + 1 << ".txt";
-	std::string outname = outstream.str();
-	std::ofstream *out = new std::ofstream(outname.c_str());
-        if (*out) {
-            output.push_back(out);
-        }
-	else {
-	    ind.close();
-	    for (unsigned int i = 0; i < output.size(); ++i) {
-		output[i]->close();
-	    }
-	    std::cerr << "Failed to open file " << outname << std::endl;
-	    return;
-	}
-    }
-    console->coda(ind, output);
-    ind.close();
-    for (unsigned int i = 0; i < output.size(); ++i) {
-	output[i]->close();
-        delete output[i];
-    }
+    console->coda(stem);
 }
 
 void doCoda (ParseTree const *var, std::string const &stem)
 {
-
-    /* Open index file */
-    std::ostringstream indstream;
-    indstream << stem << "index.txt";
-    std::string indname = indstream.str();
-    std::ofstream ind(indname.c_str());
-    if (!ind) {
-      std::cerr << "Failed to open file " << indname << std::endl;
-      return;
-    }
-
-    std::vector<std::ofstream*> output;
-    for (unsigned int n = 0; n < console->nchain(); ++n) {
-	/* Open output file */
-	std::ostringstream outstream;
-	outstream << stem << "chain" << n + 1 << ".txt";
-	std::string outname = outstream.str();
-	std::ofstream *out = new std::ofstream(outname.c_str());
-
-        if (*out) {
-            output.push_back(out);
-        }
-        else {
-            ind.close();
-            for (unsigned int i = 0; i < output.size(); ++i) {
-                output[i]->close();
-            }
-            std::cerr << "Failed to open file " << outname << std::endl;
-            return;
-        }
-    }
-
     //FIXME: Allow list of several nodes
 
     std::vector<std::pair<std::string, Range> > dmp;
@@ -833,13 +766,7 @@ void doCoda (ParseTree const *var, std::string const &stem)
 	/* Requesting subset of a multivariate node */
 	dmp.push_back(std::pair<std::string,Range>(var->name(), getRange(var)));
     }
-    console->coda(dmp, ind, output);
-
-    ind.close();
-    for (unsigned int i = 0; i < output.size(); ++i) {
-	output[i]->close();
-        delete output[i];
-    }
+    console->coda(dmp, stem);
 }
 
 /* Helper function for doDump that handles all the special cases
