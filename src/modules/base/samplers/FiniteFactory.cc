@@ -33,6 +33,6 @@ namespace base {
 
     string FiniteFactory::name() const
     {
-	return "base::finitefactory";
+	return "base::Finite";
     }
 }

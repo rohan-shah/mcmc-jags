@@ -49,6 +49,6 @@ namespace base {
 
     string SliceFactory::name() const
     {
-	return "base::slicefactory";
+	return "base::Slice";
     }
 }
