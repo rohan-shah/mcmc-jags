@@ -45,6 +45,6 @@ namespace base {
 
     string DevianceFactory::name() const
     {
-	return "base::deviancefactory";
+	return "base::Deviance";
     }	
 }
