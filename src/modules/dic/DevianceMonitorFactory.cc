@@ -47,6 +47,6 @@ namespace dic {
 
     string DevianceMonitorFactory::name() const
     {
-	return "dic::deviancefactory";
+	return "dic::Deviance";
     }
 }
