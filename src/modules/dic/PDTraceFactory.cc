@@ -28,11 +28,11 @@ namespace dic {
     {
 	if (model->nchain() < 2)
 	    return 0;
-
-	if (name != "pD" || !isNULL(range))
+	if (name != "pD") 
 	    return 0;
-	
 	if (type != "trace")
+	    return 0;
+	if (!isNULL(range))
 	    return 0;
 
 	vector<StochasticNode const *> observed_nodes;
@@ -69,11 +69,7 @@ namespace dic {
 
 	Monitor *m  = new PDTrace(observed_nodes, calkl);
 	m->setName("pD");
-	vector<string> onames(observed_nodes.size());
-	for (unsigned int i = 0; i < observed_nodes.size(); ++i) {
-	    onames[i] = model->symtab().getName(observed_nodes[i]);
-	}
-	m->setElementNames(onames);
+	m->setElementNames(vector<string>(1,"pD"));
 	return m;
     }
 
