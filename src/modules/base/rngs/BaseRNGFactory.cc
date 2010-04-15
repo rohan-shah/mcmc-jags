@@ -90,6 +90,6 @@ namespace base {
 
     string BaseRNGFactory::name() const
     {
-	return "base::rngfactory";
+	return "base::BaseRNG";
     }
 }
