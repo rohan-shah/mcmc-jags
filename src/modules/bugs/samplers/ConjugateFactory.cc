@@ -116,5 +116,5 @@ Sampler *ConjugateFactory::makeSampler(StochasticNode *snode,
 
 string ConjugateFactory::name() const
 {
-    return "bugs::conjugatefactory";
+    return "bugs::Conjugate";
 }

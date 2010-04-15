@@ -92,7 +92,7 @@ Sampler * DSumFactory::makeSampler(set<StochasticNode*> const &nodes,
 
 string DSumFactory::name() const
 {
-    return "bugs::dsumfactory";
+    return "bugs::DSum";
 }
 
 vector<Sampler*>  DSumFactory::makeSamplers(set<StochasticNode*> const &nodes, 
