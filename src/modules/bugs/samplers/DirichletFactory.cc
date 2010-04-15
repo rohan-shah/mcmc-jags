@@ -34,5 +34,5 @@ DirichletFactory::makeSampler(StochasticNode *snode, Graph const &graph) const
 
 string DirichletFactory::name() const
 {
-    return "bugs::dirichlefactory";
+    return "bugs::Dirichlet";
 }

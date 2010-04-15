@@ -34,5 +34,5 @@ MNormalFactory::makeSampler(StochasticNode *snode, Graph const &graph) const
 
 string MNormalFactory::name() const 
 {
-    return "bugs::mnormalfactory";
+    return "bugs::MNormal";
 }
