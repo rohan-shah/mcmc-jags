@@ -17,7 +17,7 @@ using std::vector;
 namespace glm {
 
     AMFactory::AMFactory()
-	: GLMFactory("Auxiliary-Mixture")
+	: GLMFactory("glm::Auxiliary-Mixture")
     {}
 
     bool AMFactory::checkOutcome(StochasticNode const *snode,

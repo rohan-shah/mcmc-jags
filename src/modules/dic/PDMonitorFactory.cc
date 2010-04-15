@@ -88,6 +88,6 @@ namespace dic {
 
     string PDMonitorFactory::name() const
     {
-	return "dic::pdfactory";
+	return "dic::PD";
     }
 }

@@ -8,7 +8,7 @@ using std::vector;
 namespace glm {
 
     HolmesHeldFactory::HolmesHeldFactory()
-	: BinaryFactory("Holmes-Held", false)
+	: BinaryFactory("glm::Holmes-Held", false)
     {}
 
     BinaryGLM *

@@ -9,7 +9,7 @@ using std::vector;
 namespace glm {
 
     AlbertChibFactory::AlbertChibFactory()
-	: BinaryFactory("Albert-Chib", false)
+	: BinaryFactory("glm::Albert-Chib", false)
     {}
 
     BinaryGLM *

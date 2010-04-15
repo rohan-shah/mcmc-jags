@@ -11,7 +11,7 @@ using std::vector;
 namespace glm {
 
     LinearGibbsFactory::LinearGibbsFactory()
-	: GLMFactory("LinearGibbs")
+	: GLMFactory("glm::LinearGibbs")
     {
     }
     

@@ -11,7 +11,7 @@ using std::vector;
 namespace glm {
 
     LinearFactory::LinearFactory()
-	: GLMFactory("Linear")
+	: GLMFactory("glm::Linear")
     {
     }
     

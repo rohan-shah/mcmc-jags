@@ -10,7 +10,7 @@ using std::vector;
 namespace glm {
 
     IWLSFactory::IWLSFactory()
-	: GLMFactory("IWLS")
+	: GLMFactory("glm::IWLS")
     {}
 
     bool IWLSFactory::checkOutcome(StochasticNode const *snode,
