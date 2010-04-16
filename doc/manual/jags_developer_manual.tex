@@ -53,6 +53,8 @@ Once you have checked out a CVS tree, you can keep it up to date with
 \begin{verbatim}
 cvs update -Pd
 \end{verbatim}
+You may occasionally need to rerun the autoreconf function when files
+are added, removed, or moved within the repository.
 
 I recommend keeping one or more build directories that are separate
 from the source directory. I have several build directories for JAGS
@@ -82,6 +84,52 @@ installed, then you may also test the rjags package with
 \begin{verbatim}
 make Rcheck
 \end{verbatim}
+
+\chapter{Directory structure}
+
+The \JAGS\ source is divided into three main directories:
+\texttt{lib}, \texttt{modules}, and \texttt{terminal}. The
+\texttt{lib} directory contains the \JAGS\ library, which contains all
+the facilities for defining a Bayesian graphical model in the \BUGS\
+language, running the Gibbs sampler and monitoring the sampled
+values. The \JAGS\ library is divided into several convenience
+libraries
+\begin{description}
+\item[sarray] which defines the basic SArray class, modelled on an
+\textsf{S} language array, and its associated classes.
+\item[function] which defines the interface for functions and
+the \texttt{FuncTab} class that allows you to reference them by name.
+\item[distribution] which defines the interface for distribution and
+the \texttt{DistTab} class that allows you to reference them by name.
+\item[graph] which defines the various Node classes used by \JAGS\
+when constructing a Bayesian graphical model, as well as the \texttt{Graph}
+class which is a container for nodes.
+\item[sampler] which defines the interface for Samplers, which update
+stochastic nodes in the graph.
+\item[model] which defines all the classes needed to create a model,
+including monitor classes.
+\item[compiler] which contains the Compiler class and a number of 
+supporting classes designed for an efficient translation of a BUGS-language
+description the model into a \texttt{Graph}.
+\item[rng] which defines the interface for random number generators (RNGs)
+and the factories that create them.
+\item[util] which contains some utility functions used in the rest of
+the \JAGS\ library.
+\end{description}
+The \texttt{Console} class provides a clean interface to the \JAGS\
+library.  The member functions of the \texttt{Console} class conduct
+all of the operations one may wish to do on a Bayesian graphical
+model.  They are designed to catch any exceptions thrown by the
+library and print an informative message to either an output stream or
+an error stream, depending on the result.
+
+The \texttt{modules} directory contains the source code for JAGS
+modules, which contain concrete classes corresponding to the abstract
+classes defined in the \JAGS\ library.
+
+The \texttt{terminal} directory contains the source code for a
+reference front end for the \JAGS\ library, which uses the
+\textsf{Stata}-like syntax described in the user manual
 
 \chapter{Debugging and Profiling}
 \label{chapter:debugging}
