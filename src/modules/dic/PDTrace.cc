@@ -26,6 +26,9 @@ namespace dic {
 	: Monitor("trace", toNodeVec(snodes)), _calkl(calkl),
 	  _values(0), _nchain(snodes[0]->nchain())
     {
+	if (calkl.size() != snodes.size()) {
+	    throw logic_error("Length mismatch in PDTrace constructor");
+	}
 	if (snodes[0]->nchain() < 2) {
 	    throw logic_error("PDTrace needs at least 2 chains");
 	}
@@ -66,7 +69,7 @@ namespace dic {
     void PDTrace::update()
     {
 	double pd = 0;
-	for (unsigned int k = 0; k < _values.size(); ++k) {
+	for (unsigned int k = 0; k < _calkl.size(); ++k) {
 	    for (unsigned int i = 0; i < _nchain; ++i) {
 		for (unsigned int j = 0; j < i; ++j) {
 		    pd += _calkl[k]->divergence(i, j);
