@@ -1,18 +1,20 @@
 \documentclass[11pt, a4paper, titlepage]{report}
 \usepackage{amsmath}
+\usepackage{natbib}
 \usepackage{a4wide}
 \usepackage{url}
 \usepackage{multirow}
 \usepackage{amsfonts}
 \newcommand{\release}{2.0.0}
 \newcommand{\JAGS}{\textsf{JAGS}}
+\newcommand{\rjags}{\textsf{rjags}}
 \newcommand{\BUGS}{\textsf{BUGS}}
 \newcommand{\WinBUGS}{\textsf{WinBUGS}}
 \newcommand{\R}{\textsf{R}}
 \newcommand{\CODA}{\textsf{coda}}
 \begin{document}
 
-\title{JAGS Version \release\ manual}
+\title{JAGS Version \release\ user manual}
 \author{Martyn Plummer}
 \maketitle
 
@@ -31,14 +33,76 @@ experimentation with ideas in Bayesian modelling.
 
 \JAGS\ is designed to work closely with the \R\ language and
 environment for statistical computation and graphics
-(\url{http://www.r-project.org}).  In particular, you will need \R\ to
-prepare the input data for \JAGS, and you will find it useful to
-install the \CODA\ package for \R\ to analyze the output.
+(\url{http://www.r-project.org}).  You will find it useful to install
+the \CODA\ package for \R\ to analyze the output. You can also use the
+\rjags\ package to work directly with \JAGS\ from within R.
 
 \JAGS\ is licensed under the GNU General Public License
 version 2. You may freely modify and redistribute it under certain
 conditions (see the file \texttt{COPYING} for details).
 
+\chapter{What is new in JAGS \release}
+
+\section{New features of JAGS}
+
+Modules can now be unloaded. You can inspect the list of currently
+loaded modules using the \verb+LIST MODULES+ command. You can inspect
+the factory objects that are currently loaded using the
+\verb+LIST FACTORIES+ command and optionally turn on or off factory
+objects using \verb+SET FACTORY+.
+
+The CODA format has been extended to allow more general monitors
+to be written out to file in a rectangular format.  This replaces
+the former S-style dump format which is no longer available.
+
+\section{New modules}
+
+The \textsf{lecuyer} model provides random number generators with with
+multiple independent streams developed by Lecyer {\em et al}
+\cite{lecuyer02}.
+
+The \textsf{glm} module provides samplers to do block updating of the
+parameters in generalized linear models
+\cite{AlbertChib93,Gamerman97,HolmesHeld06,Fruhwirth-Schnatter09}.
+
+\section{New features in existing modules}
+
+\begin{itemize}
+\item The \texttt{dsum} distribution in the \textsf{bugs} module is now more
+flexible. It may take a variable number of arguments, and the
+arguments may be either discrete-valued or real-valued (but you cannot
+mix discrete-valued and real-valued arguments).
+\item The \textsf{bugs} modules now includes density, distribution, and
+quantile functions for many of the univariate distributions. See
+table \ref{table:bugs:dpq}, section \ref{section:functions:bugs}.
+\item The \textsf{mix} module contains an improved sampler for normal mixture
+models defined with the \verb+dnormmix+ distribution using tempered
+transtions \cite{Neal94,Celeux99} that provides much better label
+switching. It also now works when the mixture probabilities are given
+a Dirichlet distribution.
+\end{itemize}
+
+\section{Old features that no longer work}
+
+\begin{itemize}
+\item The model no longer automatically creates a \verb+deviance+
+  node. You can still monitor the model deviance in the same way as
+  before with the command
+\begin{verbatim}
+monitor deviance
+\end{verbatim}
+and you can write the monitored values out to file using the CODA
+command.  However, you must now load the \verb+dic+ module first.
+\item There are no longer any ``default'' monitors. When you set a monitor
+you must explicitly state the node name or other summary statistic
+from your model that you wish to monitor.
+\item The \verb+inverse+ function only works on symmetric positive-definite
+matrices. The previous version, which worked on general square matrices,
+used a QR decomposition, but for medium to large matrices this would create
+a slight asymmetry in the inverse, which caused errors when the inverted
+matrix was used as a precision matrix in a distribution.
+\end{itemize}
+ 
 \chapter{Running a model in \JAGS}
 
 \JAGS\ is designed for inference on Bayesian models using Markov Chain
@@ -55,8 +119,8 @@ takes place in five steps:
 The next stages of analysis are done outside of \JAGS: convergence
 diagnostics, model criticism, and summarizing the samples must be done
 using other packages more suited to this task. There are several
-\R\ packages designed for analyzing MCMC output, and \JAGS\ is
-designed for easy transition of data to and from \R.
+\R\ packages designed for analyzing MCMC output, and \JAGS\ can be
+used from within \R\ using the \rjags\ package.
 
 \section{Definition}
 
@@ -138,7 +202,7 @@ The data may contain missing values, but you cannot supply partially
 missing values for a multivariate node. In \JAGS\ a node is either
 completely observed, or completely unobserved.  The unobserved nodes
 are referred to as the {\em parameters} of the model. The data file
-therefore defines, by omission, the parameters of the model.
+therefore defines the parameters of the model by omission.
 
 Here are the data for the \verb+LINE+ example:
 \begin{verbatim}
@@ -159,11 +223,11 @@ section \ref{section:obfun} on observable functions).
 \subsubsection*{Array declarations}
 
 \JAGS\ allows the option of declaring the dimensions of node arrays in
-the model file. The declarations are modelled on classic \BUGS, and
-consist of the keyword \texttt{var} (for variable) followed by a
-comma-separated list of array names, with their dimensions in
-square brackets. The dimensions may be given in terms of any
-expression of the data that returns a single integer value.
+the model file. The declarations consist of the keyword \texttt{var}
+(for variable) followed by a comma-separated list of array names, with
+their dimensions in square brackets. The dimensions may be given in
+terms of any expression of the data that returns a single integer
+value.
 
 In the linear regression example, the model block could be preceded by
 \begin{verbatim}
@@ -283,34 +347,18 @@ constant nodes. The format is the same as the data file (see section
 
 If initial values are not supplied by the user, then each parameter
 chooses its own initial value based on the values of its parents.  The
-method of choosing the initial value depends on whether the node is
-classified as a fixed effect or a random effect.\footnote{Jean
-  Baptiste Denis points out that this distinction between fixed and
-  random effects is a little artificial since it depends on the
-  parameterization of the model.  However, within the context of a
-  single parameterization, defined by a particular BUGS-language
-  representation of the model, the distinction is unambiguous.}
-\begin{description}
-\item[Fixed effects] are parameters for which all parents are
-  observed.  In this case, the initial value is chosen to be a
-  ``typical value'' from the prior distribution. The exact meaning of
-  ``typical value'' depends on the distribution of the stochastic
-  node, but is usually the mean, median, or mode.
-\item[Random effects] are parameters for which one or more parents are
-  unobserved.  The initial values of these nodes are chosen by taking
-  a random sample from the prior distribution
-\end{description}
-These heuristic rules are designed to create reasonable default starting
-values in a wide range of models.
+initial value is chosen to be a ``typical value'' from the prior
+distribution. The exact meaning of ``typical value'' depends on the
+distribution of the stochastic node, but is usually the mean, median,
+or mode.
 
 If you rely on automatic initial value generation and are running
-multiple parallel chains, then the values for the top-level model
-parameters will be the same in all chains.  You may not want this
-behaviour, especially if you are using the Gelman and Rubin convergence
-diagnostic, which assumes that the initial values are over-dispersed
-with respect to the posterior distribution. In this case, you are
-advised to set the starting values manually using the "parameters in"
-statement.
+multiple parallel chains, then the initial values will be the same in
+all chains.  You may not want this behaviour, especially if you are
+using the Gelman and Rubin convergence diagnostic, which assumes that
+the initial values are over-dispersed with respect to the posterior
+distribution. In this case, you are advised to set the starting values
+manually using the "parameters in" statement.
 
 \subsection{RNGs}
 \label{section:rngs}
@@ -356,11 +404,10 @@ to re-use a previously saved state.
 
 If no RNG names are supplied, then RNGs will be chosen automatically
 so that each chain has its own independent random number stream.  The
-exact behaviour depends on which modules are loaded. The
-\texttt{base} module uses the four generators listed above for the
-first four chains.  If you want to work with more than four parallel
-chains, then you need to explicitly supply the RNG name and the random
-seed for each chain.
+exact behaviour depends on which modules are loaded. The \texttt{base}
+module uses the four generators listed above for the first four
+chains, then recycles them with different seeds for the next four
+chains, and so on.  
 
 By default, \JAGS\ bases the initial state on the time stamp. This
 means that, when a model is re-run, it generates an independent set of
@@ -386,7 +433,9 @@ The user has no direct control over the process of choosing
 Samplers. However, you may indirectly control the process by loading a
 module that defines a new Sampler Factory. The module will insert the
 new Sampler Factory at the beginning of the list, where it will be
-queried before all of the other Sampler Factories.
+queried before all of the other Sampler Factories. You can also 
+optionally turn on and off sampler factories using the ``SET FACTORY''
+command. See \ref{set:factory}.
 
 A report on the samplers chosen by the model, and the stochastic nodes
 they act on, can be generated using the ``SAMPLERS TO'' command. See 
@@ -431,17 +480,56 @@ run again from scratch using a longer adaptation period.
 
 A {\em monitor} in \JAGS\ is an object that records sampled
 values. The simplest monitor is a {\em trace monitor}, which stores
-the sampled value of a node, and can dump the stored values to file
-in the format used by the CODA package for \R\ and S-PLUS.
+the sampled value of a node at each iteration.
 
-More complex monitors can be defined.  For example, the \verb+dic+
-module defines a {\em deviance monitor}, which records the deviance of
-observed stochastic nodes, and a {\em pD monitor}, which estimates the
-contribution of a stochastic node to the {\em effective number of
-parameters} ($p_D$) of a model.
+Monitors can be classified according to whether they pool values over
+iterations and whether they pool values over parallel chains (The
+standard trace monitor does neither). When monitor values are written
+out to file using the CODA command, the output files created depend
+on the pooling of the monitor, as shown in table \ref{table:coda}. By
+default, all of these files have the prefix CODA, but this may be changed
+to any other name using the ``stem'' option to the CODA command
+(See \ref{coda}).
 
-All monitors can be dumped to a file in \R\ \verb+dump()+ format in
-the form of a list.
+\begin{table}[h]
+\begin{tabular}{ccl}
+\hline
+Pool       & Pool   & Output files \\
+iterations & chains &              \\
+\hline
+no         & no     & CODAindex.txt, CODAchain1.txt, ... 
+                      CODAchainN.txt \\
+no         & yes    & CODAindex0.txt, CODAchain0.txt \\
+yes        & no     & CODAtable1.txt, ... CODAtableN.txt \\
+yes        & yes    & CODAtable0.txt \\
+\hline
+\end{tabular}
+\caption{Output files created by the CODA command depending on whether
+a monitor pools its values over chains or over iterations \label{table:coda}}
+\end{table}
+
+The standard CODA format for monitors that do not pool values over
+iterations is to create an index file and one or more output files.
+The index file is has three columns with, one each line,
+\begin{enumerate}
+\item A string giving the name of the (scalar) value being recorded
+\item The first line in the output file(s)
+\item The last line in the output file(s)
+\end{enumerate}
+The output file(s) contain two columns:
+\begin{enumerate}
+\item The iteration number
+\item The value at that iteration
+\end{enumerate}
+
+Some monitors pool values over iterations. For example a mean monitor
+may record only the sample mean of a node, without keeping the
+individual values from each iteration. Such monitors are written out
+to a table file with two columns:
+\begin{enumerate}
+\item A string giving the name of the (scalar) value being recorded
+\item The value (pooled over all iterations)
+\end{enumerate}
 
 \chapter{Running \JAGS}
 
@@ -556,9 +644,12 @@ values supplied for each chain.
 Updates the model by \texttt{n} iterations. 
 
 The first UPDATE statement turns off adaptive mode for all samplers in
-the model after \texttt{n/2} iterations. A warning is printed 
-if adaptation is incomplete. In this case the model must be run again
-with a longer adaptation phase, starting from the MODEL IN statement.
+the model after \texttt{n/2} iterations. A warning is printed if
+adaptation is incomplete. Incomplete adaptation means that the mixing
+of the Markov chain is not optimal. It is still possible to continue
+with a model that has not completely adapted, but it may be preferable
+to run the model again with a longer adaptation phase, starting from
+the MODEL IN statement.
 
 A progress bar is printed on the standard output consisting of 50
 asterisks. If the \texttt{by} option is supplied, a new asterisk is
@@ -580,62 +671,41 @@ control over the length of the adaptive sampling phase.
 \subsection{MONITOR}
 \label{section:monitor}
 
-In \JAGS, a monitor is an object that records a value based on the
-current state of a node.  The simplest monitor simply records the
-value of the node itself. This is called a ``trace'' monitor. More
-complex monitors can be defined that do additional calculations.  For
-example, the \verb+dic+ module defines a ``deviance'' monitor that
-records the deviance of an observed stochastic node, and a ``pD''
-monitor that estimates the contribution of a node to the effective
-number of parameters in the model.
-
-In order to distinguish between different classes of Monitor, all
-monitor statements in the \JAGS\ scripting language have a
-\texttt{type} option. If this is omitted, a trace monitor is assumed.
-
+In \JAGS, a monitor is an object that calculates summary statistics
+from a model.  The most commonly used monitor simply records the value
+of a single node at each iteration.  This is called a ``trace''
+monitor. 
 \begin{verbatim}
-. monitor <varname> [, thin(n), type(<name>)]
+. monitor <varname> [, thin(n)] [type(<montype>)]
 \end{verbatim}
-Sets a monitor for variable \texttt{<varname>}, The \texttt{thin}
-option sets the thinning interval of the monitor so that it will only
-record every nth value. 
+The \texttt{thin} option sets the thinning interval of the monitor so
+that it will only record every nth value. The \texttt{thin} option 
+selects the type of monitor to create. The default type is \texttt{trace}.
+
+More complex monitors can be defined that do additional calculations.
+For example, the \verb+dic+ module defines a ``deviance'' monitor that
+records the deviance of the model at each iteration, and a ``pD''
+monitor that calculates an estimate of the effective number of
+parameters on the model \cite{spiegelhalter:etal:2002}.  
 
 \begin{verbatim}
-. monitor [, type(<name>)]
-\end{verbatim}
-A monitor keyword on its own, with no variable name, will create a set
-of monitors for default nodes in the model.  The nodes chosen as
-``default'' nodes depend on the type of monitor.  For a trace monitor,
-the default nodes are all fixed effects ({\em i.e.} all model
-parameters with observed parents).
-
-\begin{verbatim}
-. monitor clear <varname> [, type(<name>)]
+. monitor clear <varname> [type(<montype>)]
 \end{verbatim}
 Clears the monitor of the given type associated with variable
 \texttt{<varname>}. 
 
-\begin{verbatim}
-. monitors to <filename> [, type(<name>)]
-\end{verbatim}
-Dumps the values of all monitors of the given type to the given file
-in a format that can be read into \R\ using the \verb+source()+
-function.  The \R\ structure is a list with one entry for each sampler.
-
-Note the plural (``monitors to'' not ``monitor to'').
-
 \subsection{CODA}
+\label{coda}
 
 \begin{verbatim}
-. coda <varname> [, stem(<filename>)] 
+. coda <varname> [, stem(<filename>)]
 \end{verbatim}
 If the named node has a trace monitor, this dumps the monitored values
 of to files \texttt{CODAindex.txt}, \texttt{CODAindex1.out},
 \texttt{CODAindex2.txt}, \ldots in a form that can be read by the
-\CODA\ package of \R.  The file name stem may be changed from
-\texttt{CODA} to another value by using the \texttt{stem()}
-option. The wild-card character ``*'' may be used to dump all
-monitored nodes
+\CODA\ package of \R.  The stem option may be used to modify the
+prefix from ``CODA'' to another string.  The wild-card character ``*''
+may be used to dump all monitored nodes
 
 \subsection{EXIT}
 
@@ -643,9 +713,6 @@ monitored nodes
 . exit
 \end{verbatim}
 Exits \JAGS. \JAGS\ will also exit when it reads an end-of-file character.
-Note that although \JAGS\ behaves in many ways like classic \BUGS, it 
-will not automatically dump the contents of the monitors on exit. You
-must use the CODA statement before exiting.
 
 \subsection{DATA TO}
 \label{data:to}
@@ -692,8 +759,43 @@ with the same index number.
 \begin{verbatim}
 . load <module>
 \end{verbatim}
-Loads a module into \JAGS\ (see chapter \ref{section:modules}). Once
-loaded, a module cannot be unloaded in the same \JAGS\ session.
+Loads a module into \JAGS\ (see chapter \ref{section:modules}). Loading
+a module does not affect any previously initialized models, but will
+affect the future behaviour of the compiler and model initialization.
+
+\subsection{UNLOAD}
+\label{unload}
+\begin{verbatim}
+. unload <module>
+\end{verbatim}
+Unloads a module. Currently initialized models are unaffected, but
+the functions, distribution, and factory objects in the model will not
+be accessible to future models.
+
+\subsection{LIST MODULES}
+\label{list:modules}
+\begin{verbatim}
+. list modules
+\end{verbatim}
+Prints a list of the currently loaded modules.
+
+\subsection{LIST FACTORIES}
+\label{list:factories}
+\begin{verbatim}
+. list factories, type(<factype>)
+\end{verbatim}
+List the currently loaded factory objects and whether or not they are
+active.  The \verb+type+ option must be given, and the three possible values
+of \verb+<factype>+ are \verb+sampler+, \verb+monitor+, and \verb+rng+.
+
+\subsection{SET FACTORY}
+\label{set:factory}
+\begin{verbatim}
+. set factory "<facname>" <status>, type(<factype>)
+\end{verbatim}
+Sets the status of a factor object. The possible values of \verb+<status>+
+are \verb+on+ and \verb+off+. Possible factory names are given from the
+LIST MODULES command.
 
 \subsection{MODEL CLEAR}
 \label{model:clear}
@@ -731,6 +833,7 @@ Opens the file \texttt{<cmdfile>} and reads further scripting commands
 until the end of the file.  Note that if the file contains an EXIT
 statement, then the \JAGS\ session will terminate. 
 
+
 \section{Errors}
 
 There are two kinds of errors in \JAGS: runtime errors, which are due to
@@ -748,7 +851,7 @@ report (see ``Feedback'' below) whenever you get a logic error.
 
 Error messages may also be generated when parsing files (model files,
 data files, command files).  The error messages generated in this case
-are created automatically by the program \texttt{yacc}. They
+are created automatically by the program \texttt{bison}. They
 generally take the form ``syntax error, unexpected FOO, expecting BAR''
 and are not always abundantly clear.
 
@@ -821,20 +924,15 @@ module which will supply these RNGs for chains 1 to 4 respectively, if
 generated by the base RNG factory are initialized using the current
 time stamp.
 
-The base RNG factory can only generate four independent RNGs from a
-single seed. Hence \JAGS\ is limited to four parallel chains, unless
-the user specifies the RNG name and seed in each initial value file.
+If you have more than four parallel chains, then the base module will
+recycle the same for RNGs, but using different seeds. If you want many
+parallel chains then you may wish to load the \verb+lecuyer+ module.
 
 \subsection{Base Monitors}
 
 The \verb+base+ module defines the TraceMonitor class (type
 ``trace''). This is the monitor class that simply records the current
 value of the node at each iteration.
-
-When default nodes for monitoring are requested, the factory object
-for TraceMonitors will select all fixed effects (Unobserved stochastic
-nodes with observed parents) in the model. In a typical model, these
-will be the highest-level model parameters.
 
 \section{The bugs module}
 
@@ -860,80 +958,80 @@ normal distribution.
 The \verb+mix+ module also defines a sampler that is designed to act
 on finite normal mixtures. It uses tempered transitions to jump
 between distant modes of the multi-modal posterior distribution
-generated by such models. This sampler is still experimental and has
-not been tested on a sufficiently wide range of problems.
+generated by such models \cite{Neal94,Celeux99}. The tempered
+transition method is computationally very expensive. If you want to
+use the \verb+dnormmix+ distribution but do not care about label
+switching, then you can disable the tempered transition sampler with
+\begin{verbatim}
+set factory "mix::TemperedMix" off, type(sampler)
+\end{verbatim}
 
 \section{The dic module}
 
 The \verb+dic+ module defines new monitor classes for Bayesian model
-criticism using deviance-based measures. The \texttt{deviance} monitor
-records the deviance of an observed stochastic node. The \texttt{pD}
-monitor can be used to estimate the contribution of a stochastic node
-to the {\em effective number of parameters} in the model. Finally, the
-\texttt{popt} monitor can be used to estimate the optimism of the
-expected deviance.
-
-The \texttt{rjags} package provides classes and functions for
-manipulating penalized deviances. See the rjags manual for details.
-The use of these monitors through the command-line interface is
-described below.
+criticism using deviance-based measures. 
 
 \subsection{The deviance monitor}
 
-The \JAGS\ library already has the facility to create a deviance node
-even without the \verb+dic+ module being loaded.  The deviance node
-gives the {\em total} deviance of the model. The deviance monitor
-defined in the \verb+dic+ module allows more a more detailed
-evaluation of the model deviance by recording the deviance of {\em
-  individual} nodes. The command
+The deviance monitor records the deviance of the model ({\em i.e.} the
+sum of the deviances of all the observed stochastic nodes) at each
+iteration. The command
 \begin{verbatim}
-monitor, type(deviance)
+monitor deviance
 \end{verbatim}
-will create a deviance monitor for all observed stochastic
-nodes. These monitors cannot be dumped to file in CODA format. Instead
-they are dumped using the command
-\begin{verbatim}
-monitors to "myfile.R", type(deviance)
-\end{verbatim}
-The file ``myfile.R'' can then be read into \R\ with the \texttt{source()}
-function. This creates a list named ``deviance'' which contains the
-sampled values.
+will create a deviance monitor {\em unless} you have defined a node
+called ``deviance'' in your model. In this case, you will get a trace
+monitor for your deviance node.
 
 \subsection{The \texttt{pD} monitor}
 
-The \verb+pD+ monitor estimates the contribution to the effective
-number of parameters ($p_D$) \cite{spiegelhalter:etal:2002} from an
-observed stochastic node by comparing the deviance deviance across
-multiple chains \cite{plummer:2002}. It is created by using the option
-\texttt{type(pD)}. If the model has only one chain then a \verb+pD+
-monitor cannot be defined.
-
-Like the deviance monitor, the \verb+pD+ monitor factory will create a
-monitor for every observed stochastic node using the command.
+The \verb+pD+ monitor is used to estimate the effective number of
+parameters ($p_D$) of the model \cite{spiegelhalter:etal:2002}. It
+requires at least two parallel chains in the model, but calculates
+a single estimate of $p_D$ across all chains \cite{plummer:2002}.
+A pD monitor can be created using the command:
 \begin{verbatim}
-monitor, type(pD)
+monitor pD
 \end{verbatim}
-The sum of the monitor values gives the effective number of parameters
-of the model, in the same way that the sum of the deviance monitor
-values gives the total deviance of the model. 
+Like the deviance monitor, however, if you have defined a node called
+``pD'' in your model then this will take precedence, and you will get
+a trace monitor for your \verb+pD+ node.
 
-Again, the values of the \verb+pD+ monitors are dumped to file using
+Since the $p_D$ monitor pools its value across all chains, its values
+will be written out to the index file ``CODAindex0.txt'' and
+output file ``CODAoutput0.txt'' when you use the CODA command.
+
+The effective number of parameters is the sum of separate contributions
+from all observed stochastic nodes: $p_D = \sum_i p_{D_i}$. There is
+also a monitor that stores the sample mean of $p_{D_i}$. These statistics
+may be used as influence diagnostics \cite{spiegelhalter:etal:2002}.
+The mean monitor for $p_{D_i}$ is created with:
 \begin{verbatim}
-monitors to "myfile.R", type(pD)
+monitor pD, type(mean)
 \end{verbatim}
-When read into \R\ using the \verb+source()+ function, this creates
-a list object named ``pD'' containing the sampled values.
+Its values can be written out to a file ``PDtable0.txt'' with
+\begin{verbatim}
+coda pD, type(mean) stem(PD)
+\end{verbatim}
 
 \subsection{The \texttt{popt} monitor}
 
-The \verb+popt+ monitor works exactly like the \verb+pD+ monitor, but
-is created using the option \verb+type(popt)+.  It gives an estimate
-of the optimism of the expected deviance ($p_{opt}$), which can be
+The \verb+popt+ monitor works exactly like the mean monitor for $p_D$,
+but records contributions to the optimism of the expected deviance
+($p_{opt_i}$). The total optimism $p_{opt} = \sum_i p_{opt_i}$  can be
 added to the mean deviance to give the penalized expected deviance
 \cite{plummer:2008}.
 
-Under asymptotically favourable conditions in which $p_D \ll n$, where
-$n$ is the sample size
+The mean monitor for $p_{opt_i}$ is created with
+\begin{verbatim}
+monitor popt, type(mean)
+\end{verbatim}
+Its values can be written out to a file ``POPTtable0.txt'' with
+\begin{verbatim}
+coda popt, type(mean) step(POPT)
+\end{verbatim}
+Under asymptotically favourable conditions in which $p_{D_i} \ll 1
+\forall i$,
 \[
 p_{opt} \approx 2 p_D
 \]
@@ -941,13 +1039,12 @@ For generalized linear models, a better approximation is
 \[
 p_{opt} \approx \sum_{i=1}^n \frac {p_{D_i}}{1 - p_{D_i}}
 \]
-where $p_D = \sum_i p_{D_i}$.
 
 The \verb+popt+ monitor uses importance weights to estimate
 $p_{opt}$. The resulting estimates may be numerically unstable when
 $p_{D_i}$ is not small.  This typically occurs in random-effects
-models, so it is recommended to check the output of the \verb+popt+
-monitor with MCMC diagnostics.
+models, so it is recommended to use caution with the \verb+popt+
+until I can find a better way of estimating $p_{opt_i}$.
 
 \section{The msm module}
 
@@ -955,6 +1052,44 @@ The \verb+msm+ module defines the matrix exponential function
 \verb+mexp+ and the multi-state distribution \verb+dmstate+ which
 describes the transitions between observed states in continuous-time
 multi-state Markov transition models. 
+
+\section{The glm module}
+
+The \verb+glm+ module implements samplers for efficient updating of
+generalized linear mixed models.  The fundamental idea is to do block
+updating of the parameters in the linear predictor.  The \verb+glm+
+module is built on top of the \textsf{Csparse} sparse matrix library
+\cite{Davis2006} which allows updating of both fixed and random
+effects in the same block. Currently, the methods only work on
+parameters that have a normal prior distribution.
+
+Some of the samplers are based in the idea of introducing latent
+normal variables that reduce the GLM to a linear model. This idea was
+introduced by Albert and Chib \cite{AlbertChib93} for probit
+regression with a binary outcome, and was later refined and extended
+to logistic regression with binary outcomes by Holmes and Held
+\cite{HolmesHeld06}. Another approach, auxiliary mixture sampling,
+was developed by Fr{\"u}hwirth-Schnatter {\em et al}
+\cite{Fruhwirth-Schnatter09} and is used for more general Poisson
+regression and logistic regression models with binomial outcomes.
+Gamerman \cite{Gamerman97} proposed a stochastic version of the iteratively
+weighted least squares algorithm for GLMs, which is also implemented
+in the \verb+glm+ module. However the IWLS sampler tends to break down
+when there are many random effects in the model. It uses
+Metropolis-Hastings updates, and the acceptance probability may be
+very small under these circumstances.
+
+Block updating in GLMMs frees the user from the need to center
+predictor variables, like this:
+\begin{verbatim}
+y[i] ~ dnorm(mu[i], tau)
+mu[i] <- alpha + beta * (x[i] - mean(x))
+\end{verbatim}
+The second line can simply be written
+\begin{verbatim}
+mu[i] <- alpha + beta * x[i]
+\end{verbatim}
+without affecting the mixing of the Markov chain.  
 
 \chapter{Functions}
 \label{section:functions}
@@ -987,6 +1122,7 @@ for (i in 1:D[1])
 \end{verbatim}
 
 \section{Base functions}
+\label{section:functions:base}
 
 The functions defined by the \verb+base+ module all appear as infix or
 prefix operators. The syntax of these operators is built into the
@@ -1041,6 +1177,7 @@ functions are automatically recognized as infix operators by the
 \ref{table:base:functions}.
 
 \section{Functions in the bugs module}
+\label{section:functions:bugs}
 
 \subsection{Scalar functions}
 
@@ -1063,6 +1200,26 @@ y <- exp(x)
 \end{verbatim}
 This usage comes from the use of link functions in generalized linear
 models.
+
+Table \ref{table:bugs:dpq} shows functions to calculate the
+probability density, probability function, and quantiles of some of
+the distributions provided by the \texttt{bugs} module. These
+functions are parameterized in the same way as the corresponding
+distribution.  For example, if $x$ has a normal distribution with mean
+$\mu$ and precision $\tau$
+\begin{verbatim}
+x ~ dnorm(mu, tau)
+\end{verbatim}
+Then the usage of the corresponding density, probability, and quantile
+functions is: 
+\begin{verbatim}
+density.x  <- dnorm(x, mu, tau)     # Density of normal distribution at x
+prob.x     <- pnorm(x, mu, tau)     # P(X <= x)
+quantile90.x <- qnorm(0.9, mu, tau) # 90th percentile
+\end{verbatim}
+For details of the parameterization of the other distributions, see
+tables \ref{table:bugs:distributions:real} and
+\ref{table:bugs:distributions:discrete}.
 
 \begin{table}
 \begin{center}
@@ -1095,6 +1252,35 @@ Usage  & Description & Value & Restrictions on arguments \\
 \hline
 \end{tabular}
 \caption{Scalar functions in the \texttt{bugs} module \label{table:bugs:scalar}}
+\end{center}
+\end{table}
+
+\begin{table}
+\begin{center}
+\begin{tabular}{llll}
+\hline
+Distribution & Density & Distribution & Quantile \\
+\hline
+Bernoulli          & dbern     & pbern     & qbern \\
+Beta               & dbeta     & pbeta     & qbeta \\
+Binomial           & dbin      & pbin      & qbin \\
+Chi-square         & dchisqr   & pchisqr   & qchisqr \\
+Double exponential & ddexp     & pdexp     & qdexp \\
+Exponential        & dexp      & pexp      & qexp \\
+Gamma              & dgamma    & pgamma    & qgamma \\
+Generalized gamma  & dgengamma & pgengamma & qgengamma \\
+Hypergeometric     & dhyper    & phyper    & qhyper \\
+Log-normal         & dlnorm    & plnorm    & qlnorm \\
+Negative binomial  & dnegbin   & pnegbin   & qnegbin \\
+Normal             & dnorm     & pnorm     & qnorm \\
+Pareto             & dpar      & ppar      & qpar \\
+Poisson            & dpois     & ppois     & qpois \\
+Student t          & dt        & pt        & qt \\
+Weibull            & dweib     & pweib     & qweib \\
+\hline
+\end{tabular}
+\caption{Wrappers for the d-p-q functions from the \texttt{Rmath} library
+  \label{table:bugs:dpq}}
 \end{center}
 \end{table}
 
@@ -1164,7 +1350,7 @@ This is distinct from \WinBUGS, which has two scalar-valued functions
 \hline
 Usage & Description & Restrictions \\
 \hline
-\verb+inverse(a)+ & Matrix inverse & $a$ is a square matrix  \\
+\verb+inverse(a)+ & Matrix inverse & $a$ is a symmetric positive definite matrix  \\
 \verb+mexp(a)+ & Matrix exponential & $a$ is a square matrix \\
 \verb+rank(v)+ & Ranks of elements of $v$ & $v$ is a vector   \\
 \verb+sort(v)+ & Elements of $v$ in order & $v$ is a vector  \\
@@ -1189,7 +1375,7 @@ distributions), and \ref{table:bugs:distributions:multi}
 (multivariate distributions).
 
 Some distributions have restrictions on the valid parameter values,
-and these are indicated in the tables. If a Distribution object is
+and these are indicated in the tables. If a Distribution is
 given invalid parameter values when evaluating the log-likelihood, it
 returns $-\infty$. When a model is initialized, all stochastic nodes
 are checked to ensure that the initial parameter values are valid for
@@ -1353,12 +1539,6 @@ If you have an \textsf{S}-style data file for \WinBUGS\ and you wish
 to convert it for \JAGS, then use the command \texttt{bugs2jags},
 which is supplied with the \CODA\ package.
 
-
-\subsection{Samplers}
-
-\JAGS\ has a more limited set of samplers than \WinBUGS, which leads
-to relatively poor performance. 
-
 \subsection{Distributions}
 
 Structural zeros are allowed in the Dirichlet distribution. If
@@ -1407,9 +1587,9 @@ $X=m$   & if & $c[m] \leq t < c[m+1]$ for $1 \leq m < M$\\
 $X = M$ & if & $c[M] \leq t$.
 \end{tabular}
 
-\item The \texttt{dsum} distribution represents the sum of two
-variables.  It has two parameters, $x1$ and $x2$. If \texttt{Y $\sim$
-dsum(x1,x2)} then $Y=x1+x2$.
+\item The \texttt{dsum} distribution represents the sum of two or more
+variables.  It takes a variable number of parameters. If \texttt{Y $\sim$
+dsum(x1,x2,x3)} then $Y=x1+x2+x3$.
 \end{enumerate}
 These distributions exist to give a likelihood to data that is, in fact,
 a deterministic function of the parameters.  The relation
@@ -1424,8 +1604,9 @@ But the latter form does not create a contribution to the likelihood,
 and does not allow you to define $Y$ as data.  The likelihood function
 is trivial: it is 1 if the parameters are consistent with the data and
 0 otherwise.  The \texttt{dsum} distribution also requires a special
-sampler, which can currently only handle the case where both $x1$ and
-$x2$ are discrete-valued.
+sampler, which can currently only handle the case where the parameters
+of \texttt{dsum} are unobserved stochastic nodes, and where the
+parameters are either all discrete-valued or all continuous-valued.
 
 \subsection{Data transformations}
 \label{section:data:tranformations}
@@ -1607,59 +1788,6 @@ for (i in 1:3) {
 alpha[1:3] <- sort(alpha0)
 \end{verbatim}
 
-\chapter{Development}
-
-At some point there will be a separate manual for \JAGS\ developers.
-At the moment, if you want to start hacking \JAGS\ then you must rely
-on the source file documentation.  This is written in JavaDoc style
-and can be processed using \texttt{doxygen} to generate a reference
-manual in the \texttt{doc} directory.
-
-The \JAGS\ source is divided into three main directories:
-\texttt{lib}, \texttt{modules}, and \texttt{terminal}. The
-\texttt{lib} directory contains the \JAGS\ library, which contains all
-the facilities for defining a Bayesian graphical model in the \BUGS\
-language, running the Gibbs sampler and monitoring the sampled
-values. The \JAGS\ library is divided into several convenience
-libraries
-\begin{description}
-\item[sarray] which defines the basic SArray class, modelled on an
-\textsf{S} language array, and its associated classes.
-\item[function] which defines the interface for functions and
-the \texttt{FuncTab} class that allows you to reference them by name.
-\item[distribution] which defines the interface for distribution and
-the \texttt{DistTab} class that allows you to reference them by name.
-\item[graph] which defines the various Node classes used by \JAGS\
-when constructing a Bayesian graphical model, as well as the \texttt{Graph}
-class which is a container for nodes.
-\item[sampler] which defines the interface for Samplers, which update
-stochastic nodes in the graph.
-\item[model] which defines all the classes needed to create a model,
-including monitor classes.
-\item[compiler] which contains the Compiler class and a number of 
-supporting classes designed for an efficient translation of a BUGS-language
-description the model into a \texttt{Graph}.
-\item[rng] which defines the interface for random number generators (RNGs)
-and the factories that create them.
-\item[util] which contains some utility functions used in the rest of
-the \JAGS\ library.
-\end{description}
-The \texttt{Console} class provides a clean interface to the \JAGS\
-library.  The member functions of the \texttt{Console} class conduct
-all of the operations one may wish to do on a Bayesian graphical
-model.  They are designed to catch any exceptions thrown by the
-library and print an informative message to either an output stream or
-an error stream, depending on the result.
-
-The \texttt{modules} directory contains the source code for JAGS
-modules, which contain concrete classes corresponding to the abstract
-classes defined in the \JAGS\ library.
-
-The \texttt{terminal} directory contains the source code for a
-reference front end for the \JAGS\ library, which uses the
-\textsf{Stata}-like syntax described in section
-\ref{section:scripting}.
-
 \chapter{Feedback}
 
 Please send feedback to \url{martyn_plummer@users.sourceforge.net}.
@@ -1695,593 +1823,6 @@ National Institutes of Health, Bethesda, MD (\url{http://helix.nih.gov}).
 
 \bibliographystyle{plain}
 \bibliography{jags_user_manual}
-
-\clearpage
-
-\appendix
-\chapter{Installation}
-
-\JAGS\ is distributed in binary format for Microsoft Windows, Mac OS
-X, and most Linux distributions.  The following instructions are for
-those who wish to build \JAGS\ from source.
-
-\JAGS\ has been successfully built on GNU/Linux, FreeBSD, Windows XP,
-Mac OS X, IRIX and Solaris. If you manage to build \JAGS\ on any other
-platform, then please let me know at
-\url{martyn_plummer@users.sourceforge.net}.
-
-These instructions assume that you in a unix environment. If you
-are working on Windows, then you should skip straight to section
-\ref{section:windows}
-
-\section{Configuration}
-
-\JAGS\ follows the usual GNU convention of 
-\begin{verbatim}
-./configure
-make
-make install
-\end{verbatim}
-which is described in more detail in the file \texttt{INSTALL} in
-the top-level source directory. On some UNIX platforms, you may
-be required to use GNU make (gmake) instead of the native make
-command. On systems with multiple processors, you may use the option 
-\verb+-j+ to speed up compilaition, {\em e.g.} for a quad-core PC you
-may use:
-\begin{verbatim}
-make -j4
-\end{verbatim}
-
-At configure time you also have the option of defining options such
-as:
-\begin{itemize}
-\item The names of the C, C++, and Fortran compilers.  Although
-  \JAGS\ contains no Fortran code, you are required to define a
-  Fortran compiler so that \JAGS\ modules can be linked against
-  libraries written in Fortran (such as BLAS and LAPACK)
-\item Optimization flags for the C and C++ compilers.  \JAGS\ is
-  optimized by default if the GNU compiler (gcc) is used. Otherwise
-  you must explicitly supply optimization flags.
-\item Installation directories. \JAGS\ conforms to the GNU standards
-  for where files are installed. You can control the installation
-  directories in more detail using the flags that are listed when
-  you type \verb+./configure --help+.
-\end{itemize}
-
-\subsection{Configuration for a private installation}
-
-If you do not have administrative privileges, you may wish to install
-\JAGS\ in your home directory. This can be done with the following
-configuration options
-\begin{verbatim}
-export JAGS_HOME=$HOME/jags #or wherever you want it
-./configure --bindir=$JAGS_HOME/bin --libdir=$JAGS_HOME/lib \
- --libexecdir=$JAGS_HOME/bin --includedir=$JAGS_HOME/include
-\end{verbatim}
-You then need to modify your PATH environment variable to include
-\verb+$JAGS_HOME/bin+. You may also need to set \verb+LD_LIBRARY_PATH+
-to include \verb+$JAGS_HOME/lib+ (On Linux this is not necessary as
-the location of libjags and libjrmath is hard-coded into the
-\JAGS\ binary).
-
-\section{BLAS and LAPACK}
-\label{section:blas:lapack}
-
-BLAS (Basic Linear Algebra System) and LAPACK (Linear Algebra Pack)
-are two libraries of routines for linear algebra. They are used by the
-multivariate functions and distributions in the \texttt{bugs} module.
-Most unix-like operating system vendors supply shared libraries that
-provide the BLAS and LAPACK functions, although the libraries may not
-literally be called ``blas'' and ``lapack''.  During configuration, a
-default list of these libraries will be checked. If \texttt{configure}
-cannot find a suitable library, it will stop with an error message.
-
-You may use alternative BLAS and LAPACK libraries using the configure
-options \texttt{--with-blas} and \texttt{--with-lapack}
-\begin{verbatim}
-./configure --with-blas="-lmyblas" --with-lapack="-lmylapack"
-\end{verbatim}
-
-If the BLAS and LAPACK libraries are in a directory that is not on the
-default linker path, you must set the \verb+LDFLAGS+ environment variable
-to point to this directory at configure time:
-\begin{verbatim}
-LDFLAGS="-L/path/to/my/libs" ./configure ...
-\end{verbatim}
-If your BLAS and LAPACK libraries depend on other libraries that are
-not on the linker path, you must supply these dependency libraries as
-additional arguments to \texttt{--with-blas} and
-\texttt{--with-lapack} (See section \ref{section:gnulinux} for some
-examples of this).
-
-At runtime, if you have linked \JAGS\ against BLAS or LAPACK in
-a non-standard location, you must supply this location with the
-environment variable \verb+LD_LIBRARY_PATH+, {\em e.g.}
-\begin{verbatim}
-LD_LIBRARY_PATH="/path/to/my/libs:${LD_LIBRARY_PATH}"
-\end{verbatim} %$
-Alternatively, you may hard-code the paths to the blas and lapack
-libraries at compile time. This is compiler and platform-specific,
-but is typically achieved with
-\begin{verbatim}
-LDFLAGS="-L/path/to/my/libs -R/path/to/my/libs
-\end{verbatim}
-
-Note: You should not link to BLAS and LAPACK libraries by giving
-the shared object files as arguments to \texttt{--with-blas} and
-\texttt{--with-lapack}:
-\begin{verbatim}
-#DON'T DO THIS!
-./configure --with-blas=/path/to/my/libblas.so \
---with-lapack=/path/to/my/liblapack.so 
-\end{verbatim}
-Although \JAGS\ will compile correctly, the resulting \texttt{bugs}
-module will not be linked to your BLAS or LAPACK libraries.  Although
-this can be rectified using the \verb+LD_PRELOAD+ environment variable
-it is not recommended.
-
-\section{Platform-specific notes}
-
-\subsection{GNU/Linux}
-\label{section:gnulinux}
-
-\subsubsection{Fortran compiler}
-
-The GNU FORTRAN compiler changed between gcc 3.x and gcc 4.x from
-\verb+g77+ to \verb+gfortran+. Code produced by the two compilers is
-binary incompatible. If your BLAS and LAPACK libraries are linked
-against \verb+libgfortran+, then they were built with \verb+gfortran+
-and you must also use this to compile \JAGS. 
-
-Most recent GNU/Linux distributions have moved completely to gcc 4.x.
-However, some older systems may have both compilers installed.
-Unfortunately, if \verb+g77+ is on your path then the configure script
-will find it first, and will attempt to use it to build \JAGS. This
-results in a failure to recognize the installed BLAS and LAPACK
-libraries. In this event, set the \verb+F77+ variable at configure time.
-\begin{verbatim}
-F77=gfortran ./configure
-\end{verbatim}
-
-\subsubsection{BLAS and LAPACK}
-
-The {\bf BLAS} and {\bf LAPACK} libraries from Netlib
-(\url{http://www.netlib.org}) should be provided as part of your Linux
-distribution. If your Linux distribution splits packages into ``user''
-and ``developer'' versions, then you must install the developer
-package ({\em e.g.}  \texttt{blas-devel} and \texttt{lapack-devel}).
-
-{\bf Suse Linux Enterprise Server (SLES)} does not include BLAS and
-LAPACK in the main distribution. They are included in the SLES SDK, on
-a set of CD/DVD images which can be downloaded from the Novell web
-site.  See \url{http://developer.novell.com/wiki/index.php/SLES_SDK}
-for more information.
-
-It is quite common for the Netlib implementations of BLAS and LAPACK
-to break when they are compiled with the latest GNU compilers.  Linux
-distributions that use ``bleeding edge'' development tools -- such as
-{\bf Fedora} -- may ship with a broken version of BLAS and
-LAPACK. Normally, this problem is quickly identified and
-fixed. However, you need to take care to use the online updates of the
-BLAS and LAPACK packages from your Linux Distributor, and not rely on
-the version that came on the installation disk.
-
-\subsubsection{ATLAS}
-
-On Fedora Linux, pre-compiled atlas libraries are available via the
-\texttt{atlas} and \texttt{atlas-devel} RPMs.  These RPMs install the
-atlas libraries in the non-standard directory \texttt{/usr/lib/atlas}
-(or \texttt{/usr/lib64/atlas} for 64-bit builds) to avoid conflicts
-with the standard \texttt{blas} and \texttt{lapack} RPMs. To use the
-atlas libraries, you must supply their location using the
-\verb+LDFLAGS+ variable (see section \ref{section:blas:lapack})
-\begin{verbatim}
-./configure LDFLAGS="-L/usr/lib/atlas"
-\end{verbatim}
-Runtime linking to the correct libraries is ensured by the automatic
-addition of \texttt{/usr/lib/atlas} to the linker path (see the file
-\texttt{/etc/ld.so.conf}), so you do not need to set the
-environment variable \verb+LD_LIBRARY_PATH+ at run time.
-
-\subsubsection{AMD Core Math Library}
-\label{section:acml:linux}
-
-The AMD Core Math Library (acml) provides optimized BLAS and LAPACK
-routines for AMD processors. To link \JAGS\ with \texttt{acml}, you
-must supply the \texttt{acml} library, {\em and its dependencies}, as
-arguments to \texttt{--with-blas}.  It is not necessary to set the
-\texttt{--with-lapack} argument as \texttt{acml} provides both sets of
-functions. See also section~\ref{section:blas:lapack} for run-time
-instructions.
-
-For example, to link to the 64-bit acml using gcc 4.0+:
-\begin{verbatim}
-LDFLAGS="-L/opt/acml4.3.0/gfortran64/lib" \
-./configure --with-blas="-lacml -lacml_mv -lgfortran" 
-\end{verbatim}
-The library \verb+acmv_mv+ library is a vectorized math library that
-exists only for the 64-bit version and is omitted when linking against
-32-bit acml.
-
-On multi-core systems, you may wish to use the threaded acml library.
-To do this, link to \verb+acml_mp+ and add the compiler flag
-\verb+-fopenmp+:
-\begin{verbatim}
-LDFLAGS="-L/opt/acml4.3.0/gfortran64_mp/lib" \
-CXXFLAGS="-O2 -g -fopenmp" ./configure --with-blas="-lacml_mp -lacml_mv -lgfortran" 
-\end{verbatim}
-The number of threads used by multi-threaded acml may be controlled
-with the environment variable \verb+OMP_NUM_THREADS+.
-
-For older Linux systems, the last version that supports gcc 3.4 is
-\texttt{acml} 3.6.0. When using gcc 3.4, link against \texttt{libg2c}.
-\begin{verbatim}
-LDFLAGS="-L/opt/acml3.6.0/gnu64/lib" \
-./configure --with-blas="-lacml -lacml_mv -lg2c"
-\end{verbatim}
-
-\subsubsection{Intel Math Kernel Library}
-
-The Intel Math Kernel library (MKL) provides optimized BLAS and LAPACK
-routines for Intel processors. The instructions below are for MKL
-version 10.0 and above which use a ``pure layered'' model for linking.
-The layered model gives the user fine-grained control over four
-different library layers: interface, threading, computation, and
-run-time library support. Some examples of linking to MKL using this
-layered model are given below. These examples are for GCC compilers on
-\verb+x86_64+. The choice of interface layer is important on
-\verb+x86_64+ since the Intel Fortran compiler returns complex values
-differently from the GNU Fortran compiler. You must therefore use the
-interface layer that matches your compiler (\verb+mkl_intel*+ or \verb+mkl_gf*+).  
-The use of MKL is incompatible with building a shared library for
-\JAGS. It can be used if \JAGS\ is configured with the option
-\verb+--disable-shared+., This builds an executable that is statically
-linked to the \JAGS\ library and modules.
-
-JAGS can be linked to a sequential version of MKL by
-\begin{verbatim}
-MKL_HOME=/opt/intel/mkl/10.0.3.020/
-MKL_LIB_PATH=${MKL_HOME}/lib/em64t/
-./configure --disable-shared \
-            --with-blas="-L${MKL_LIB_PATH} -lmkl_gf_lp64 -lmkl_sequential -lmkl_core"
-\end{verbatim}
-
-Threaded MKL may be used with:
-\begin{verbatim}
-./configure --disable-shared\
-   --with-blas="-L${MKL_LIB_PATH} -lmkl_gf_lp64 -lmkl_gnu_thread -lmkl_core -liomp5 -lpthread"
-\end{verbatim}
-The default number of threads will be chosen by the OpenMP software,
-but can be controlled by setting \verb+OMP_NUM_THREADS+ or \verb+MKL_NUM_THREADS+.
-
-\subsubsection{Using Intel Compilers}
-
-\JAGS\ has been successfully built with the Intel C, C++ and Fortran
-compilers.  The additional configure options required to use the Intel
-compilers are:
-\begin{verbatim}
-source /opt/intel/Compiler/11.1/bin/ifortvars.sh
-source /opt/intel/Compiler/11.1/bin/iccvars.sh
-CC=icc CXX=icpc F77=ifort ./configure 
-\end{verbatim}
-
-\subsection{OpenSolaris}
-
-\JAGS\ has been successfully built and tested on the Intel x86
-platform under OpenSolaris 2008.05 using the Sun Studio Express 5/08
-compilers.
-\begin{verbatim}
-./configure CC=cc CXX=CC F77=f95 \
-CFLAGS="-xO3 -xarch=sse2" \
-FFLAGS="-xO3 -xarch=sse2" \
-CXXFLAGS="-xO3 -xarch=sse2"
-\end{verbatim}
-The Sun Studio compiler is not optimized by default. Use the option
-\verb+-xO3+ for optimization (NB This is the letter ``O'' not the
-number ``0'') In order to use the optimization flag \verb+-xO3+ you
-must specify the architecture with the \verb+-xarch+ flag. The options
-above are for an Intel processor with SSE2 instructions. This must be
-adapted to your own platform.
-
-To compile a 64-bit version of JAGS, add the option \verb+-m64+ to
-all the compiler flags.
-
-Solaris provides two versions of the C++ standard library:
-\texttt{libCstd}, which is the default, and \texttt{libstlport4},
-which conforms more closely to the C++ standard. \JAGS\ may be linked
-to the stlport4 library by adding the options
-\verb+-library=stlport4 -lCrun+ to \verb+CXXFLAGS+.
-
-The configure script automatically detects the Sun Performance library,
-which implements the BLAS/LAPACK functions.  Automatic detection may
-not work on older versions of Sun Studio, which used a different syntax
-for specifying this library.  In this case, you may need to use the
-configure option
-\begin{verbatim}
---with-blas="-xlic_lib=sunperf -lsunmath"
-\end{verbatim}
-
-\subsubsection{Using acml}
-
-AMD provides a version of their Core Math Library (acml) for
-Solaris. To use this library instead of the Sun Performance library
-add the following configure options (changing paths as appropriate):
-\begin{verbatim}
---with-blas="-lacml -lacml_mv -lfsu" \
-LDFLAGS="-L/opt/acml4.1.0/sun64/lib \
--R/opt/acml4.1.0/sun64/lib:/opt/SunStudioExpress/lib"
-\end{verbatim}
-The acml library is only available in 64-bit mode, so the option
-\verb+-m64+ must also be added to all the compiler flags.
-
-As with using acml on Linux (section \ref{section:acml:linux}), the
-configure option \verb+--with-blas+ must include not only the acml
-library, but also its dependencies. The \verb+LDFLAGS+ option \verb+-R+
-hard-codes the paths to these libraries into the JAGS modules that
-require them.
-
-\subsection{IRIX}
-
-
-\JAGS\ has been successfully built using the MIPSpro 7.4 compiler on
-IRIX 6.5. The following configure options were used:
-\begin{verbatim}
-./configure CC=cc CXX=CC F77=f77 \
-CFLAGS="-O2 -g2 -OPT:IEEE_NaN_inf=ON" \
-CXXFLAGS="-O2 -g2 -OPT:IEEE_NaN_inf=ON" 
-\end{verbatim}
-and \JAGS\ was built with \verb+gmake+ (GNU make).
-
-BLAS and LAPACK functions on IRIX are provided by the Scientific
-Computing Software library (\verb+scs+). The presence of this library
-is detected automatically by the configure script.
-
-When using the MIPSpro compiler, optimization flags must be given
-explicitly at configure time. If this is not done, then \JAGS\ will
-not be optimized at all and will run slowly.
-
-\subsection{Mac OS X: instructions from Bill Northcott}
-
-If trying to build software on Mac OS X you really need to use Leopard
-(10.5.x) or Snow Leopard (10.6.x). Unless otherwise stated these
-instruction assume Snow Leopard (10.6.x). The open source support has
-improved greatly in recent releases. You also need the latest version
-of Apple's Xcode development tools. The current version is Xcode 3.2.x
-(Leopard uses 3.1.x).  Early versions have serious bugs which affect R
-and \JAGS.  Xcode is available as a free download from
-\url{http://developer.apple.com}. You need to set up a free login to
-ADC. The Apple developer tools do not include a Fortran
-compiler. Without Fortran, you will not be able to build \JAGS.
-
-For instructions for building on Tiger or for older versions of
-\R\ see previous versions of this manual.
-
-The GNU gfortran Fortran compiler is included in the \R\ binary
-distribution available on CRAN. Install the \R\ binary and select all
-the optional components in the `Customize' step of the installer.
-These instructions assume R-2.7.x.
-
-The default C/C++ compiler for Snow Leopard is gcc-4.2.x. Xcode 3.2
-also includes gcc-4.2 and llvm-gcc4.2.  The code has been successfully
-built with these optional compilers but will only run on Leopard.
-llvm is being actively developed by Apple and may produce better code.
-
-MacOS X 10.2 and onwards include optimised versions of the BLAS and
-LAPACK libraries.  So no extra libraries are is needed for Snow
-Leopard.  Optimisation continues andApple are working on using GPUs
-for this sort of math.  Make sure your OS is up to date.
-
-To ensure the \JAGS\ configure script can find the Fortran compiler
-for a bash shell
-\begin{verbatim}
-export F77=/usr/local/bin/gfortran
-\end{verbatim}
-
-On 64 bit hardware, which means most recent Macs, there may be a 
-problem with the Fortran compiler.  Apple's compilers default to 64 bit 
-builds on 64 bit hardware but the Fortran binaries available default to 
-32 bit builds. This means you need to add compile and link options.
-
-For instance on 64 bit Intel Macs type
-\begin{verbatim}
-export CFLAGS='-arch x86_64'
-export CXXFLAGS='-arch x86_64'
-export FFLAGS='-arch x86_64'
-export LDFLAGS='-arch x86_64'
-\end{verbatim}
-
-Some Fortran compilers (not the ones from CRAN) do not understand 
-the -arch option. For these you will need something like:
-\begin{verbatim}
-export CFLAGS='-arch x86_64'
-export CXXFLAGS='-arch x86_64'
-export FFLAGS='-m64'
-export LDFLAGS='-arch x86_64'
-\end{verbatim}
-
-To build \JAGS\ unpack the source code and cd into the source  
-directory. Type the following:
-\begin{verbatim}
-./configure
-make
-\end{verbatim}
-(if you have multiple CPUs try \verb+make -j 4+ or
-\verb+make -j 8+. It may need to be issued more than once)
-\begin{verbatim}
-sudo make install
-\end{verbatim}
-
-You need to ensure \texttt{/usr/local/bin} is in your PATH in order
-for `jags' to work from a shell prompt.
-
-This will build the default architecture for you Mac: ppc on a G4 or
-G5 and i386 or \verb+x86_64+ on an Intel Mac.  If you want to build
-multiple architecture fat binaries, you will need to ensure that
-libtool in the JAGS sources is version 1.5.24 or later.  Then you can
-use configure commands like
-\begin{verbatim}
-CXXFLAGS="-arch i386 -arch x86_64" ./configure
-\end{verbatim}
-
-Make will then build fat binaries.  See the R Mac developers page 
-\url{http://r.research.att.com/} for instructions to build fat R packages.
-
-A final note on MacOS X builds: do NOT use \texttt{-O3}.  It is not optimal 
-and may find compiler bugs.  Apple recommends \texttt{-Os}.
-
-\subsection{Windows}
-\label{section:windows}
-
-These instructions use MinGW, The Minimalist GNU system for Windows.
-You need some familiarity with Unix in order to follow the build
-instructions but, once built, \JAGS\ can be installed on any PC
-running windows, where it can be run from the Windows command prompt.
-
-\subsubsection*{Preparing the build environment}
-
-You need to install the following packages
-\begin{itemize}
-\item MinGW 
-\item MSYS  
-\item NSIS  
-\end{itemize}
-
-MinGW (Minimalist GNU for Windows) is a build environment for Windows.
-There is an official release from \url{http://www.mingw.org}.
-However, we used the MinGW distribution that comes as part of the R
-tools for windows (\url{http://www.murdoch-sutherland.com/Rtools}),
-since the compilers in this distribution match the compilers used to
-build the binary distribution of R for windows, as well as the R
-packages distributed via CRAN (\url{http://cran.r-project.org}).
-
-We used version 2.7 of \verb+Rtools+.  You only need to install the
-``MingGW components and tools'', not the other components of
-\verb+Rtools+. The installer will also ask if you wish to modify the
-Windows PATH. You do not need this.
-
-MSYS (the Minimal SYStem) provides a bash shell for you to build Unix
-software. These instructions were tested with MSYS 1.0.10.  It can be
-downloaded, as a self-extracting executable, from the MinGW web site
-\url{http://www.mingw.org}. At the end of the installation process, it
-will launch a post-install script that will allow you to use MSYS in
-conjunction with MinGW. Note that you do {\em not} need the MSYS
-developer toolkit (DTK) to compile \JAGS.
-
-MSYS creates a home directory for you in
-\verb+c:\msys\<version>\home\<username>+, where \texttt{<version>} is
-the version of MSYS and \texttt{<username>} is your user name under
-Windows. You will need to copy and paste the source files for LAPACK
-and JAGS into this directory.
-
-The Nullsoft Scriptable Install System
-(\url{http:\\nsis.sourceforge.net}) allows you to create a
-self-extracting executable that installs \JAGS\ on the target PC.
-These instructions were tested with NSIS 2.33.
-
-\subsubsection*{LAPACK}
-
-Download the LAPACK source file \verb+lapack-lite-3.1.1.tgz+ from
-\url{http://www.netlib.org/lapack} and unpack it in your home
-directory.
-\begin{verbatim}
-tar xfvz lapack-lite-3.1.1.tgz
-cd lapack-lite-3.1.1
-\end{verbatim}
-Replace the file \texttt{make.inc} with
-\texttt{INSTALL/make.inc.LINUX}.  Then edit \texttt{make.inc},
-replacing the line
-\begin{verbatim}
-PLAT = _LINUX
-\end{verbatim}
-with something more sensible, like
-\begin{verbatim}
-PLAT = _MinGW
-\end{verbatim} 
-If using gcc 4.2 (the version that comes with Rtools 2.7), you need
-to set the \verb+FORTRAN+ and \verb+LOADER+ variables so that they use
-gfortran.
-\begin{verbatim}
-FORTRAN = gfortran
-LOADER = gfortran
-\end{verbatim}
-and uncomment the line
-\begin{verbatim}
-TIME = INT_ETIME
-\end{verbatim}
-
-Edit the file \texttt{Makefile} so that it builds the BLAS library. The
-line that starts \texttt{lib:} should read
-\begin{verbatim}
-lib: blaslib lapacklib tmglib
-\end{verbatim}
-Type
-\begin{verbatim}
-make 
-\end{verbatim}
-The compilation process is slow. Eventually, it will create two static
-libraries \verb+blas_MinGW.a+ and \verb+lapack_MingGW.a+. These are
-insufficient for building \JAGS: you need to create dynamic link
-library (DLL) for each one.
-
-First create a definition file \verb+blas.def+ that exports all the
-symbols from the BLAS library
-\begin{verbatim}
-dlltool -z blas.def --export-all-symbols blas_MinGW.a
-\end{verbatim}
-Then link this with the static library to create a DLL
-(\verb+blas.dll+) and an import library (\verb+libblas.dll.a+)
-\begin{verbatim}
-gcc -shared -o blas.dll -Wl,--out-implib=libblas.dll.a \
-blas.def blas_MinGW.a -lgfortran
-\end{verbatim}
-(If using gcc 3.4, the library should be linked with \verb+-lg2c+ 
-instead of \verb+-lgfortran+)
- 
-Repeat the same steps for the LAPACK library, creating an import library
-(\verb+liblapack.dll.a+) and DLL (\verb+lapack.dll+)
-\begin{verbatim}
-dlltool -z lapack.def --export-all-symbols lapack_MinGW.a
-gcc -shared -o lapack.dll -Wl,--out-implib=liblapack.dll.a \
-lapack.def lapack_MinGW.a  -L./ -lblas -lgfortran
-\end{verbatim}
-
-\subsubsection{Compiling \JAGS}
-
-Unpack the JAGS source
-\begin{verbatim}
-tar xfvz JAGS-1.0.3.tar.gz
-cd JAGS-1.0.3
-\end{verbatim}
-and configure JAGS
-\begin{verbatim}
-./configure LDFLAGS="-L/path/to/import/libs/" 
-\end{verbatim}
-where \verb+/path/to/import/libs+ is a directory that contains the
-import libraries (\verb+libblas.dll.a+ and \verb+liblapack.dll.a+).
-This must be an {\em absolute} path name, and not relative to
-the JAGS build directory.
-
-Normally you will want to distribute the blas and lapack libraries
-with JAGS.  In this case, put the DLLs and import libraries in the
-sub-directory \verb+win32/lapack+. They will be detected and included
-with the distribution.
-
-Make sure that the file \verb+makensis.exe+, provided by NSIS, is in
-your PATH. For a typical installation of NSIS:
-\begin{verbatim}
-PATH=$PATH:/c/Program\ files/NSIS
-\end{verbatim}
-Then type
-\begin{verbatim}
-make win32-installer
-\end{verbatim}
-The self extracting archive will be in the subdirectory \verb+win32+.
-
-Note that you must go straight from the configure step to \texttt{make
-  win32-installer} without the usual step of typing \texttt{make} on
-its own.  The \texttt{win32-installer} make target resets the
-installation prefix, and this will cause an error if the source is
-already compiled.
 
 \end{document}
 
