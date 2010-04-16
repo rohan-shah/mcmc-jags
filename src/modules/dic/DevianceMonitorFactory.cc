@@ -1,5 +1,6 @@
 #include "DevianceMonitorFactory.h"
-#include "DevianceMonitor.h"
+#include "DevianceMean.h"
+#include "DevianceTrace.h"
 
 #include <model/BUGSModel.h>
 #include <graph/StochasticNode.h>
@@ -18,7 +19,7 @@ namespace dic {
 						string const &type)
     {
 
-	if (type != "mean")
+	if (type != "mean" && type != "trace")
 	    return 0;
 	if (name != "deviance")
 	    return 0;
@@ -35,13 +36,21 @@ namespace dic {
 	if (observed_snodes.empty())
 	    return 0;
 
-	Monitor *m = new DevianceMonitor(observed_snodes);
-	m->setName(name);
-	vector<string> onames(observed_snodes.size());
-	for (unsigned int i = 0; i < observed_snodes.size(); ++i) {
-	    onames[i] = model->symtab().getName(observed_snodes[i]);
+	Monitor *m;
+	if (type == "mean") {
+	    m = new DevianceMean(observed_snodes);
+	    m->setName(name);
+	    vector<string> onames(observed_snodes.size());
+	    for (unsigned int i = 0; i < observed_snodes.size(); ++i) {
+		onames[i] = model->symtab().getName(observed_snodes[i]);
+	    }
+	    m->setElementNames(onames);
 	}
-	m->setElementNames(onames);
+	else if (type == "trace") {
+	    m = new DevianceTrace(observed_snodes);
+	    m->setName("deviance");
+	    m->setElementNames(vector<string>(1,"deviance"));
+	}
 	return m;
     }
 
