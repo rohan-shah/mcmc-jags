@@ -117,6 +117,8 @@ void BUGSModel::coda(vector<NodeId> const &node_ids, string const &stem,
 
     CODA0(dump_nodes, stem, warn);    
     CODA(dump_nodes, stem, nchain(), warn);
+    TABLE0(dump_nodes, stem, warn);    
+    TABLE(dump_nodes, stem, nchain(), warn);
 }
 
 void BUGSModel::coda(string const &stem, string &warn)
@@ -130,6 +132,8 @@ void BUGSModel::coda(string const &stem, string &warn)
     
     CODA0(monitors(), stem, warn);    
     CODA(monitors(), stem, nchain(), warn);
+    TABLE0(monitors(), stem, warn);    
+    TABLE(monitors(), stem, nchain(), warn);
 }
 
 

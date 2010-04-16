@@ -77,6 +77,23 @@ static void WriteOutput(MonitorControl const &control, int chain,
     }
 }
 
+static void WriteTable(MonitorControl const &control, int chain,
+		       ofstream &index)
+{
+    Monitor const *monitor = control.monitor();
+    if (!monitor->poolIterations()) {
+	return;
+    }
+
+    vector<double> const &y = monitor->value(chain);
+    vector<string> const &enames = monitor->elementNames();
+    
+    unsigned int nvar = product(monitor->dim());
+    for (unsigned int i = 0; i < nvar; ++i) {
+	index << enames[i] << " " << y[i] << '\n';
+    }
+}
+
 static bool AnyMonitors(list<MonitorControl> const &mvec,
 			bool pooliter, bool poolchains)
 {
@@ -191,5 +208,81 @@ void CODA0(list<MonitorControl> const &mvec, string const &stem, string &warn)
     }
     
     index.close();
+    output.close();
+}
+
+/* TABLE output for monitors that pool over iterations but not over chains
+ */
+void TABLE(list<MonitorControl> const &mvec, std::string const &stem,
+	  unsigned int nchain, std::string &warn)
+{
+    /* Check for eligible monitors */
+    if (!AnyMonitors(mvec, true, false))
+	return;
+
+    /* Open output files */
+    vector<ofstream*> output;
+    for (unsigned int n = 0; n < nchain; ++n) {
+	ostringstream outstream;
+	outstream << stem << "table" << n + 1 << ".txt";
+	string oname = outstream.str();
+	ofstream *out = new ofstream(oname.c_str());
+        if (out) {
+            output.push_back(out);
+        }
+	else {
+	    //In case of error, close opened files and return
+	    while(!output.empty()) {
+		output.back()->close();
+		delete output.back();
+		output.pop_back();
+	    }
+	    string msg = string("Failed to open file ") + oname + "\n";
+	    warn.append(msg);
+	    return;
+	}
+    }
+    
+    unsigned int lineno = 0;
+    list<MonitorControl>::const_iterator p;
+    for (p = mvec.begin(); p != mvec.end(); ++p) {
+	Monitor const *monitor = p->monitor();
+	if (!monitor->poolChains() && monitor->poolIterations()) {
+	    for (unsigned int ch = 0; ch < nchain; ++ch) {
+		WriteTable(*p, ch, *output[ch]);
+	    }
+	}
+    }
+
+    for (unsigned int i = 0; i < nchain; ++i) {
+	output[i]->close();
+	delete output[i];
+    }
+}
+
+/* TABLE output for monitors that pool over chains and iterations */
+void TABLE0(list<MonitorControl> const &mvec, string const &stem, string &warn)
+{
+    /* Check for eligible monitors */
+    if (!AnyMonitors(mvec, true, true))
+	return;
+
+    /* Open output file */
+    string iname = stem + "table0.txt";
+    ofstream output(iname.c_str());
+    if (!output) {
+	string msg = string("Failed to open file ") + iname + "\n";
+	warn.append(msg);
+	return;
+    }
+    
+    list<MonitorControl>::const_iterator p;
+    for (p = mvec.begin(); p != mvec.end(); ++p) {
+	Monitor const *monitor = p->monitor();
+	if (monitor->poolChains() && monitor->poolIterations()) {
+	    WriteTable(*p, 0, output);
+	}
+    }
+    
     output.close();
 }
