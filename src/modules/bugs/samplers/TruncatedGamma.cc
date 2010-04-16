@@ -169,11 +169,10 @@ bool TruncatedGamma::canSample(StochasticNode *snode, Graph const &graph)
 	}
     }
 
-    if (shape <= 0) {
-	return false;
-    }
-
-    return true; //We made it!
+    /* We could allow any shape > 0, but we add a fudge factor to 
+     * guarantee stability
+     */
+    return (shape >= 0.1);
 }
 
 
