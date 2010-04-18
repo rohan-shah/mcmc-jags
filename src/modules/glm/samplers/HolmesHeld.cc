@@ -14,6 +14,7 @@
 using std::vector;
 using std::string;
 using std::logic_error;
+using std::runtime_error;
 
 namespace glm {
 
@@ -74,6 +75,10 @@ namespace glm {
 		zr_mean /= (1 - Hr);
 		double zr_prec = (1 - Hr) * tau_r;
 		
+		if (zr_prec < 0) {
+		    throw runtime_error("Negative precision in Holmes-Held update method.\nThis is a known bug and we are working on it.\nPlease bear with us");
+		}
+
 		double yr = schildren[r]->value(_chain)[0];
 		if (yr == 1) {
 		    _z[r] = lnormal(0, rng, mu_r + zr_mean, 1/sqrt(zr_prec));
