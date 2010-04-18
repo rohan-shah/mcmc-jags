@@ -481,19 +481,21 @@ since the compilers in this distribution match the compilers used to
 build the binary distribution of R for windows, as well as the R
 packages distributed via CRAN (\url{http://cran.r-project.org}).
 
-We used version 2.7 of \verb+Rtools+.  You only need to install the
+We used version 2.11 of \verb+Rtools+.  You only need to install the
 ``MingGW components and tools'', not the other components of
 \verb+Rtools+. The installer will also ask if you wish to modify the
 Windows PATH. You do not need this.
 
-MSYS (the Minimal SYStem) provides a bash shell for you to build Unix
-software. These instructions were tested with MSYS 1.0.10.  It can be
-downloaded, as a self-extracting executable, from the MinGW web site
-\url{http://www.mingw.org}. At the end of the installation process, it
-will launch a post-install script that will allow you to use MSYS in
-conjunction with MinGW. Note that you do {\em not} need the MSYS
-developer toolkit (DTK) to compile \JAGS.
+MSYS (the Minimal SYStem) is part of the MinGW project. It provides a
+bash shell for you to build Unix software. These instructions were
+tested with MSYS 1.0.10, the last version of MSYS to be bundled with a
+Windows installer.  The installer can be downloaded from
+\url{http://sourceforge.net/projects/mingw/files}.  At the end of the
+installation process, it will launch a post-install script that will
+allow you to use MSYS in conjunction with MinGW.
 
+On Windows Vista or Windows 7, your MSYS home directory will be your
+Windows home directory. On earlier versions of Windows, 
 MSYS creates a home directory for you in
 \verb+c:\msys\<version>\home\<username>+, where \texttt{<version>} is
 the version of MSYS and \texttt{<username>} is your user name under
@@ -507,15 +509,15 @@ These instructions were tested with NSIS 2.33.
 
 \subsubsection*{LAPACK}
 
-Download the LAPACK source file \verb+lapack-lite-3.1.1.tgz+ from
-\url{http://www.netlib.org/lapack} and unpack it in your home
-directory.
+Download the LAPACK source file from
+\url{http://www.netlib.org/lapack}. We used version 3.2.1, which is
+packaged as \verb+lapack.tgz+. Unpack the file in your home directory.
 \begin{verbatim}
-tar xfvz lapack-lite-3.1.1.tgz
-cd lapack-lite-3.1.1
+tar xfvz lapack.tgz
+cd lapack-3.2.1
 \end{verbatim}
-Replace the file \texttt{make.inc} with
-\texttt{INSTALL/make.inc.LINUX}.  Then edit \texttt{make.inc},
+Copy the file \texttt{INSTALL/make.inc.gfortran} to \texttt{make.inc} in
+the top level source directory.  Then edit \texttt{make.inc},
 replacing the line
 \begin{verbatim}
 PLAT = _LINUX
@@ -524,17 +526,6 @@ with something more sensible, like
 \begin{verbatim}
 PLAT = _MinGW
 \end{verbatim} 
-If using gcc 4.2 (the version that comes with Rtools 2.7), you need
-to set the \verb+FORTRAN+ and \verb+LOADER+ variables so that they use
-gfortran.
-\begin{verbatim}
-FORTRAN = gfortran
-LOADER = gfortran
-\end{verbatim}
-and uncomment the line
-\begin{verbatim}
-TIME = INT_ETIME
-\end{verbatim}
 
 Edit the file \texttt{Makefile} so that it builds the BLAS library. The
 line that starts \texttt{lib:} should read
@@ -576,8 +567,8 @@ lapack.def lapack_MinGW.a  -L./ -lblas -lgfortran
 
 Unpack the JAGS source
 \begin{verbatim}
-tar xfvz JAGS-1.0.3.tar.gz
-cd JAGS-1.0.3
+tar xfvz JAGS-2.0.0.tar.gz
+cd JAGS-2.0.0
 \end{verbatim}
 and configure JAGS
 \begin{verbatim}
