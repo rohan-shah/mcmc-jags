@@ -45,11 +45,13 @@ Node::Node(vector<unsigned int> const &dim,
 	throw logic_error("chain number mismatch in Node constructor");
     }
 
+    /*
     for (unsigned int i = 0; i < parents.size(); ++i) {
 	if (parents[i] == this) {
-	    throw NodeError(this, "Node cannot be its own parent");
+	    throw runtime_error("Node cannot be its own parent");
 	}
     }
+    */
   
     unsigned int N = _length * _nchain;
     _data = new double[N];
