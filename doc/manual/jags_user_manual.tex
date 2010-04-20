@@ -539,6 +539,23 @@ command prompt on Windows. To invoke JAGS with a script file, type
 \begin{verbatim}
 jags <script file>
 \end{verbatim}
+A typical script file has the following commands: 
+\begin{verbatim}
+model in "line.bug"      # Read model file
+data in "line-data.R"    # Read data in from file
+compile, nchains(2)      # Compile a model with two parallel chains
+inits in "line-inits.R"  # Read initial values from file
+initialize               # Initialize the model
+update 1000              # Adaptation (if necessary) and burnin for 1000 iterations
+monitor alpha            # Set trace monitor for node alpha ...
+monitor beta             # ... and beta
+monitor sigma            # ... and sigma
+update 10000             # Update model for 10000 iterations
+coda *                   # All monitored values are written out to file
+\end{verbatim}
+More examples can be found in the file \verb+classic-bugs.tar.gz+ which is
+available from the \JAGS\ web page.
+
 Output from \JAGS\ is printed to the standard output, even when a
 script file is being used.  The \JAGS\ interface is designed to be
 forgiving. It will print a warning message if you make a mistake, but
@@ -1815,8 +1832,7 @@ work. Kostas Oikonomou found many bugs while getting \JAGS\ to work on
 Solaris using Sun development tools and libraries.  Bettina Gruen,
 Chris Jackson, Greg Ridgeway and Geoff Evans also provided useful
 feedback.  Special thanks to Jean-Baptiste Denis who has been very
-diligent in providing feedback on JAGS and who kindly proof-read this
-manual.
+diligent in providing feedback on JAGS.
 
 Testing of \JAGS\ on IRIX 6.5 was carried out on Helix Systems at the
 National Institutes of Health, Bethesda, MD (\url{http://helix.nih.gov}).
