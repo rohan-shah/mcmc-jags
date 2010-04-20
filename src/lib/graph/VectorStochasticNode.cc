@@ -54,7 +54,9 @@ VectorStochasticNode::VectorStochasticNode(VectorDist const *dist,
       _dist(dist), _lengths(mkParameterLengths(params))
 {
     if (!dist->checkParameterLength(_lengths)) {
-	throw NodeError(this, "Invalid parameter lengths");
+	string msg = string("Invalid parameter lengths in distribution ") +
+	    dist->name();
+	throw runtime_error(msg);
     }
 }
 

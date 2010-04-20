@@ -1,7 +1,6 @@
 #include <config.h>
 #include <graph/VectorLogicalNode.h>
 #include <function/VectorFunction.h>
-#include <graph/NodeError.h>
 #include <graph/GraphMarks.h>
 #include <graph/Graph.h>
 #include <util/dim.h>
