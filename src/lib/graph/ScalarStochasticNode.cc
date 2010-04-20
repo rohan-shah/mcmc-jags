@@ -1,6 +1,5 @@
 #include <config.h>
 #include <graph/ScalarStochasticNode.h>
-#include <graph/NodeError.h>
 #include <distribution/ScalarDist.h>
 #include <util/nainf.h>
 
@@ -20,8 +19,11 @@ ScalarStochasticNode::ScalarStochasticNode(ScalarDist const *dist,
       _dist(dist)
 {
     for (unsigned int i = 0; i < params.size(); ++i) {
-	if (params[i]->length() != 1)
-	    throw NodeError(this, "Invalid non-scalar parameter");
+	if (params[i]->length() != 1) {
+	    string msg = string("Invalid non-scalar parameter in distribution ")
+		+ dist->name();
+	    throw runtime_error(msg);
+	}
     }
 }
 
