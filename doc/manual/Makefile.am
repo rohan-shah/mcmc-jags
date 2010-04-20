@@ -1,8 +1,6 @@
 EXTRA_DIST = jags_user_manual.tex jags_user_manual.bib	\
 jags_installation_manual.tex jags_developer_manual.tex
 
-all: docs
-
 docs: jags_user_manual.pdf jags_installation_manual.pdf jags_developer_manual.pdf
 
 jags_user_manual.pdf: jags_user_manual.bbl jags_user_manual.tex
