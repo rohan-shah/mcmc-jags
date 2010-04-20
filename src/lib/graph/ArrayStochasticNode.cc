@@ -1,6 +1,5 @@
 #include <config.h>
 #include <graph/ArrayStochasticNode.h>
-#include <graph/NodeError.h>
 #include <distribution/ArrayDist.h>
 #include <util/nainf.h>
 #include <util/dim.h>
@@ -53,7 +52,9 @@ ArrayStochasticNode::ArrayStochasticNode(ArrayDist const *dist,
       _dist(dist), _dims(mkParameterDims(params))
 {
     if (!dist->checkParameterDim(_dims)) {
-	throw NodeError(this, "Invalid parameter lengths");
+	string msg = string("Invalid parameter dimensions for distribution ")
+	    + dist->name();
+	throw runtime_error(msg);
     }
 }
 
