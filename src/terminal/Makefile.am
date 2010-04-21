@@ -4,6 +4,11 @@ AM_YFLAGS = -d
 libexec_PROGRAMS = jags-terminal
 
 jags_terminal_SOURCES = parser.yy scanner.ll ReadData.cc 
+if WINDOWS
+## 64-bit Windows build fails if we try pre-linking modules (although
+## 32-bit Windows allows it).  
+jags_terminal_LDADD = $(LIBLTDL) ${top_builddir}/src/lib/libjags.la
+else
 ## We list the modules here so that ltdl can emulate dynamic loading
 ## on platforms that do not support it, or where the user has chosen
 ## static linking
@@ -15,6 +20,7 @@ jags_terminal_LDADD = $(LIBLTDL) ${top_builddir}/src/lib/libjags.la	\
 -dlopen ${top_builddir}/src/modules/lecuyer/lecuyer.la \
 -dlopen ${top_builddir}/src/modules/mix/mix.la \
 -dlopen ${top_builddir}/src/modules/msm/msm.la 
+endif
 jags_terminal_CPPFLAGS= -I$(top_srcdir)/src/include $(LTDLINCL)
 
 LEX_OUTPUT_ROOT=lex.zz
