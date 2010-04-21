@@ -1,0 +1,13 @@
+JAGS uses the nullsoft scriptable installer (http://nsis.sourceforge.net)
+to create a binary package for Windows.
+
+To make the installer, type "make win-installer" in the top-level
+build directory after configuration. Full details are given in the JAGS
+user manual.
+
+The File jags.nsi is an NSIS script file for building the installer
+(and uninstaller). This script uses the header AdvUninstLog.nsh which
+is not distributed with NSIS itself. Therefore, a copy is included in
+the JAGS distribution.
+
+See also runtime/README.RUNTIME
