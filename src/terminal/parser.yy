@@ -1183,9 +1183,15 @@ int main (int argc, char **argv)
     interactive = true;
   }
 
-  /* Allows emulation of dynamic loading on platforms that do not
-     support it by preloading modules */
+#ifndef WIN32
+  /* 
+     - Allows emulation of dynamic loading on platforms that do not
+     support it by preloading modules. 
+     - Causes build failures on mingw-w64 (as at 21 April 2010) so
+     not used on Windows platform.
+  */
   LTDL_SET_PRELOADED_SYMBOLS();
+#endif
 
   if(lt_dlinit()) {
       std::cerr << lt_dlerror() << std::endl;
