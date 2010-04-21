@@ -137,8 +137,8 @@ AC_CONFIG_FILES([
   src/modules/glm/CSparse/Makefile
   src/modules/glm/samplers/Makefile
   src/terminal/Makefile
-  win32/Makefile
-  win32/lapack/Makefile
+  win/Makefile
+  win/runtime/Makefile
   doc/Makefile
   doc/manual/Makefile
 ])
