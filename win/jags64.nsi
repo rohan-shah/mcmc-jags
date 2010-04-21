@@ -13,11 +13,11 @@
 !define MULTIUSER_INSTDIR_REGISTRY_VALUENAME "InstallDir"
 
 !include AdvUninstLog.nsh
-!include MultiUser.nsh
+!include MultiUser64.nsh
 !include "MUI2.nsh"
 
 Name "${APP_NAME} ${VERSION}"
-OutFile "${APP_NAME}-${VERSION}-win32.exe"
+OutFile "${APP_NAME}-${VERSION}-win64.exe"
 
 Var SM_FOLDER
 
@@ -104,6 +104,7 @@ Section # Default section
 SectionEnd #End of default section
 
 Function .onInit
+   SetRegView 64
    !insertmacro MULTIUSER_INIT
    !insertmacro UNINSTALL.LOG_PREPARE_INSTALL
 FunctionEnd
