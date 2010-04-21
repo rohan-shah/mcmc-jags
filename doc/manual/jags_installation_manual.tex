@@ -18,18 +18,10 @@
 
 \JAGS\ is distributed in binary format for Microsoft Windows, Mac OS
 X, and most Linux distributions.  The following instructions are for
-those who wish to build \JAGS\ from source.
+those who wish to build \JAGS\ from source. The manual is divided
+into three sections with instructions for Linux/Unix, Mac OS X, and Windows.
 
-\JAGS\ has been successfully built on GNU/Linux, FreeBSD, Windows XP,
-Mac OS X, IRIX and Solaris. If you manage to build \JAGS\ on any other
-platform, then please let me know at
-\url{martyn_plummer@users.sourceforge.net}.
-
-These instructions assume that you in a unix environment. If you
-are working on Windows, then you should skip straight to section
-\ref{section:windows}
-
-\section{Configuration}
+\section{Linux and UNIX}
 
 \JAGS\ follows the usual GNU convention of 
 \begin{verbatim}
@@ -41,11 +33,13 @@ which is described in more detail in the file \texttt{INSTALL} in
 the top-level source directory. On some UNIX platforms, you may
 be required to use GNU make (gmake) instead of the native make
 command. On systems with multiple processors, you may use the option 
-\verb+-j+ to speed up compilaition, {\em e.g.} for a quad-core PC you
+\verb+-j+ to speed up compilation, {\em e.g.} for a quad-core PC you
 may use:
 \begin{verbatim}
 make -j4
 \end{verbatim}
+
+\subsection{Configure options}
 
 At configure time you also have the option of defining options such
 as:
@@ -63,7 +57,7 @@ as:
   you type \verb+./configure --help+.
 \end{itemize}
 
-\subsection{Configuration for a 64-bit build}
+\subsubsection{Configuration for a 64-bit build}
 
 By default, JAGS will install all libraries into
 \verb+/usr/local/lib+.  If you are building a 64-bit version of \JAGS,
@@ -86,7 +80,7 @@ It is important to get the installation directory right when using the
 \texttt{rjags} interface between R and \JAGS, otherwise the
 \texttt{rjags} package will not be able to find the \JAGS\ library.
 
-\subsection{Configuration for a private installation}
+\subsubsection{Configuration for a private installation}
 
 If you do not have administrative privileges, you may wish to install
 \JAGS\ in your home directory. This can be done with the following
@@ -102,7 +96,7 @@ to include \verb+$JAGS_HOME/lib+ (On Linux this is not necessary as
 the location of libjags and libjrmath is hard-coded into the
 \JAGS\ binary).
 
-\section{BLAS and LAPACK}
+\subsection{BLAS and LAPACK}
 \label{section:blas:lapack}
 
 BLAS (Basic Linear Algebra System) and LAPACK (Linear Algebra Pack)
@@ -129,8 +123,7 @@ LDFLAGS="-L/path/to/my/libs" ./configure ...
 If your BLAS and LAPACK libraries depend on other libraries that are
 not on the linker path, you must supply these dependency libraries as
 additional arguments to \texttt{--with-blas} and
-\texttt{--with-lapack} (See section \ref{section:gnulinux} for some
-examples of this).
+\texttt{--with-lapack} 
 
 At runtime, if you have linked \JAGS\ against BLAS or LAPACK in
 a non-standard location, you must supply this location with the
@@ -145,10 +138,12 @@ but is typically achieved with
 LDFLAGS="-L/path/to/my/libs -R/path/to/my/libs
 \end{verbatim}
 
-\section{Platform-specific notes}
-
 \subsection{GNU/Linux}
 \label{section:gnulinux}
+
+GNU/Linux is the development platform for \JAGS, and a variety of
+different build options have been explored, including the use of
+third-party compilers and linear algebra libraries.
 
 \subsubsection{Fortran compiler}
 
@@ -257,13 +252,13 @@ layered model are given below. These examples are for GCC compilers on
 \verb+x86_64+. The choice of interface layer is important on
 \verb+x86_64+ since the Intel Fortran compiler returns complex values
 differently from the GNU Fortran compiler. You must therefore use the
-interface layer that matches your compiler (\verb+mkl_intel*+ or \verb+mkl_gf*+).  
+interface layer that matches your compiler (\verb+mkl_intel*+ or
+\verb+mkl_gf*+).
 
-The use of MKL is incompatible with building a shared library for
-\JAGS, if you are using GNU compiler. MKL can be used if \JAGS\ is
-configured with the option \verb+--disable-shared+., This builds an
-executable that is statically linked to the \JAGS\ library and
-modules.
+I have not been able to link \JAGS\ with MKL using GNU compilers, except
+which building a static version. To build a static version of \JAGS,
+use the configure option \verb+--disable-shared+. The \JAGS\ library and
+modules will be linked into the main executable.
 
 JAGS can be linked to a sequential version of MKL by
 \begin{verbatim}
@@ -349,9 +344,9 @@ require them.
 
 \subsection{IRIX}
 
-
-\JAGS\ has been successfully built using the MIPSpro 7.4 compiler on
-IRIX 6.5. The following configure options were used:
+\JAGS\ has not been tested on IRIX for some time.  Version 1.0.0 was
+successfully built using the MIPSpro 7.4 compiler on IRIX 6.5. The
+following configure options were used:
 \begin{verbatim}
 ./configure CC=cc CXX=CC F77=f77 \
 CFLAGS="-O2 -g2 -OPT:IEEE_NaN_inf=ON" \
@@ -367,7 +362,8 @@ When using the MIPSpro compiler, optimization flags must be given
 explicitly at configure time. If this is not done, then \JAGS\ will
 not be optimized at all and will run slowly.
 
-\subsection{Mac OS X}
+\clearpage
+\section{Mac OS X}
 
 If trying to build software on Mac OS X you really need to use Leopard
 (10.5.x) or Snow Leopard (10.6.x). Unless otherwise stated these
@@ -456,7 +452,8 @@ Make will then build fat binaries.  See the R Mac developers page
 A final note on MacOS X builds: do NOT use \texttt{-O3}.  It is not optimal 
 and may find compiler bugs.  Apple recommends \texttt{-Os}.
 
-\subsection{Windows}
+\clearpage
+\section{Windows}
 \label{section:windows}
 
 These instructions use MinGW, The Minimalist GNU system for Windows.
@@ -464,7 +461,7 @@ You need some familiarity with Unix in order to follow the build
 instructions but, once built, \JAGS\ can be installed on any PC
 running windows, where it can be run from the Windows command prompt.
 
-\subsubsection*{Preparing the build environment}
+\subsection{Preparing the build environment}
 
 You need to install the following packages
 \begin{itemize}
@@ -494,8 +491,6 @@ Windows installer.  The installer can be downloaded from
 installation process, it will launch a post-install script that will
 allow you to use MSYS in conjunction with MinGW.
 
-On Windows Vista or Windows 7, your MSYS home directory will be your
-Windows home directory. On earlier versions of Windows, 
 MSYS creates a home directory for you in
 \verb+c:\msys\<version>\home\<username>+, where \texttt{<version>} is
 the version of MSYS and \texttt{<username>} is your user name under
@@ -507,7 +502,7 @@ The Nullsoft Scriptable Install System
 self-extracting executable that installs \JAGS\ on the target PC.
 These instructions were tested with NSIS 2.33.
 
-\subsubsection*{LAPACK}
+\subsubsection{Building LAPACK}
 
 Download the LAPACK source file from
 \url{http://www.netlib.org/lapack}. We used version 3.2.1, which is
@@ -541,29 +536,29 @@ libraries \verb+blas_MinGW.a+ and \verb+lapack_MingGW.a+. These are
 insufficient for building \JAGS: you need to create dynamic link
 library (DLL) for each one.
 
-First create a definition file \verb+blas.def+ that exports all the
+First create a definition file \verb+libblas.def+ that exports all the
 symbols from the BLAS library
 \begin{verbatim}
-dlltool -z blas.def --export-all-symbols blas_MinGW.a
+dlltool -z libblas.def --export-all-symbols blas_MinGW.a
 \end{verbatim}
 Then link this with the static library to create a DLL
-(\verb+blas.dll+) and an import library (\verb+libblas.dll.a+)
+(\verb+libblas.dll+) and an import library (\verb+libblas.dll.a+)
 \begin{verbatim}
-gcc -shared -o blas.dll -Wl,--out-implib=libblas.dll.a \
-blas.def blas_MinGW.a -lgfortran
+gcc -shared -o libblas.dll -Wl,--out-implib=libblas.dll.a \
+libblas.def blas_MinGW.a -lgfortran
 \end{verbatim}
 (If using gcc 3.4, the library should be linked with \verb+-lg2c+ 
 instead of \verb+-lgfortran+)
  
 Repeat the same steps for the LAPACK library, creating an import library
-(\verb+liblapack.dll.a+) and DLL (\verb+lapack.dll+)
+(\verb+liblapack.dll.a+) and DLL (\verb+liblapack.dll+)
 \begin{verbatim}
-dlltool -z lapack.def --export-all-symbols lapack_MinGW.a
-gcc -shared -o lapack.dll -Wl,--out-implib=liblapack.dll.a \
-lapack.def lapack_MinGW.a  -L./ -lblas -lgfortran
+dlltool -z liblapack.def --export-all-symbols lapack_MinGW.a
+gcc -shared -o liblapack.dll -Wl,--out-implib=liblapack.dll.a \
+liblapack.def lapack_MinGW.a  -L./ -lblas -lgfortran
 \end{verbatim}
 
-\subsubsection{Compiling \JAGS}
+\subsection{Compiling \JAGS}
 
 Unpack the JAGS source
 \begin{verbatim}
@@ -593,13 +588,13 @@ Then type
 \begin{verbatim}
 make win32-installer
 \end{verbatim}
-The self extracting archive will be in the subdirectory \verb+win32+.
+The self extracting archive will be in the subdirectory \verb+win+.
 
 Note that you must go straight from the configure step to \texttt{make
   win32-installer} without the usual step of typing \texttt{make} on
-its own.  The \texttt{win32-installer} make target resets the
-installation prefix, and this will cause an error if the source is
-already compiled.
+its own.  The \texttt{win32-installer} target resets the installation
+prefix, and this will cause an error if the source is already
+compiled.
 
 \end{document}
 
