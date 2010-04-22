@@ -2,7 +2,7 @@ ACLOCAL_AMFLAGS = -I m4
 SUBDIRS = m4 libltdl src etc win doc
 EXTRA_DIST = Doxyfile
 
-win:
+win-install:
 	make prefix=`pwd`/win/inst
 	make install prefix=`pwd`/win/inst
 	(cd win; for f in `ls runtime/*.dll`; do \
@@ -12,11 +12,11 @@ win:
 	    ${INSTALL} $${f} inst/lib; \
 	  done;) 
 
-win32-installer: win
-	makensis -DVERSION=${PACKAGE_VERSION} win/jags.nsi
+win32-installer: win-install
+	(cd win && $(MAKE) $@)
 
-win64-installer: win
-	makensis -DVERSION=${PACKAGE_VERSION} win/jags64.nsi
+win64-installer: win-install
+	(cd win && $(MAKE) $@)
 
 docs: FORCE
 	-@(cd doc && $(MAKE) $@)
