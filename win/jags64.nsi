@@ -12,6 +12,7 @@
 !define MULTIUSER_INSTALLMODE_INSTDIR_REGISTRY_KEY "SOFTWARE\${PUBLISHER}\${APP_NAME}-${VERSION}"
 !define MULTIUSER_INSTDIR_REGISTRY_VALUENAME "InstallDir"
 
+!addincludedir ${JAGSINC}
 !include AdvUninstLog.nsh
 !include MultiUser64.nsh
 !include "MUI2.nsh"
@@ -35,7 +36,7 @@ Var SM_FOLDER
 !insertmacro UNATTENDED_UNINSTALL
 
 !insertmacro MUI_PAGE_WELCOME
-!insertmacro MUI_PAGE_LICENSE "../COPYING"
+!insertmacro MUI_PAGE_LICENSE ${LICENSE}
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_STARTMENU Application $SM_FOLDER
 !insertmacro MUI_PAGE_INSTFILES

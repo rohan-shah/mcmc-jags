@@ -1,6 +1,14 @@
 SUBDIRS = runtime
 
-EXTRA_DIST=jags.nsi AdvUninstLog.nsh README.WIN
+EXTRA_DIST=jags.nsi jags64.nsi AdvUninstLog.nsh MultiUser64.nsh README.WIN
 
 clean-local:
 	rm -rf inst 
+
+win32-installer: 
+	makensis -nocd -DVERSION=${PACKAGE_VERSION} -DJAGSINC=$(srcdir) \
+	-DLICENSE=$(top_srcdir)/COPYING $(srcdir)/win/jags.nsi
+
+win64-installer: win-install
+	makensis -nocd -DVERSION=${PACKAGE_VERSION} -DJAGSINC=$(srcdir) \
+	-DLICENSE=$(top_srcdir)/COPYING $(srcdir)/win/jags64.nsi
