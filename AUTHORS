@@ -13,7 +13,7 @@ The random number generators in the base module:
 - src/modules/base/rngs/SuperDuperRNG.cc
 - src/modules/base/rngs/WichmannHillRNG.cc
 contain random number generators from the main R library which are 
-Copyright (C) 1998 Ross Ihaka 2000-2009 The R Core Development Team.
+Copyright (C) 1998 Ross Ihaka 2000-2009 and The R Core Development Team.
 The implementation of the Mersenne Twister generator is Copyright (C)
 1997, 1999 Makoto Matsumo and Takuji Nishimura.
 
@@ -22,3 +22,7 @@ The lecuyer module is adapted from code Copyright (C) Pierre L'Ecuyer 2001.
 The glm module contains a complete copy of the CSparse library,
 Copyright (C) Timothy A. Davis, 2006-2009.
 
+The file LGMix.cc in the glm module contains code to approximate the
+negative log-gamma distribution by a mixture of normals, originally
+written by Rudolf Fruewirth and taken from the GMRFLib library by
+Havard Rue.
