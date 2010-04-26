@@ -9,6 +9,6 @@ win32-installer:
 	makensis -nocd -DVERSION=${PACKAGE_VERSION} -DJAGSINC=$(srcdir) \
 	-DLICENSE=$(top_srcdir)/COPYING $(srcdir)/jags.nsi
 
-win64-installer: win-install
+win64-installer:
 	makensis -nocd -DVERSION=${PACKAGE_VERSION} -DJAGSINC=$(srcdir) \
 	-DLICENSE=$(top_srcdir)/COPYING $(srcdir)/jags64.nsi
