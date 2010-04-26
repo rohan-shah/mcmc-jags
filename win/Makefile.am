@@ -7,8 +7,8 @@ clean-local:
 
 win32-installer: 
 	makensis -nocd -DVERSION=${PACKAGE_VERSION} -DJAGSINC=$(srcdir) \
-	-DLICENSE=$(top_srcdir)/COPYING $(srcdir)/win/jags.nsi
+	-DLICENSE=$(top_srcdir)/COPYING $(srcdir)/jags.nsi
 
 win64-installer: win-install
 	makensis -nocd -DVERSION=${PACKAGE_VERSION} -DJAGSINC=$(srcdir) \
-	-DLICENSE=$(top_srcdir)/COPYING $(srcdir)/win/jags64.nsi
+	-DLICENSE=$(top_srcdir)/COPYING $(srcdir)/jags64.nsi
