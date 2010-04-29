@@ -49,7 +49,7 @@ clear			zzlval.intval=CLEAR; return CLEAR;
 thin			zzlval.intval=THIN; return THIN;
 sampler                 zzlval.intval=SAMPLER; return SAMPLER;
 samplers                zzlval.intval=SAMPLERS; return SAMPLERS;
-rng                     zzlval.intval=RNG; return RNG;
+rng                     zzlval.intval=RNGTOK; return RNGTOK;
 factory                 zzlval.intval=FACTORY; return FACTORY;
 factories               zzlval.intval=FACTORIES; return FACTORIES;
 
