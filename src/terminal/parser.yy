@@ -2,9 +2,14 @@
 %{
 #include <config.h>
 
+#ifdef Win32
+#include <windows.h>   /* For getCurrentDirectory */
+#include <io.h>        /* For chdir */
+#else
+#include <unistd.h>    /* For getcwd, chdir */
+#endif
 
 //#include <limits.h>
-//#include <unistd.h>
 
 #include <cstdlib>
 #include <cstdio>
@@ -1241,8 +1246,18 @@ int main (int argc, char **argv)
 
 static bool getWorkingDirectory(std::string &name)
 {
-    char buf[PATH_MAX];
-    if (getcwd(buf, PATH_MAX)) {
+    char buf[FILENAME_MAX];
+#ifdef Win32
+    if (getCurrentDirectory(FILENAME_MAX, buf)) {
+	name = buf;
+	return true;
+    }
+    else {
+	name = "Error in getCurrentDirectory";
+	return false;
+    }
+#else
+    if (getcwd(buf, FILENAME_MAX)) {
 	name = buf;
 	return true;
     }
@@ -1263,6 +1278,7 @@ static bool getWorkingDirectory(std::string &name)
 	}
 	return false;
     }
+#endif
 }
 
 static void dumpSamplers(std::string const &file)
