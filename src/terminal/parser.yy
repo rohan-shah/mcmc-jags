@@ -127,7 +127,7 @@
 %token <intval> UNLOAD
 %token <intval> SAMPLER
 %token <intval> SAMPLERS
-%token <intval> RNG
+%token <intval> RNGTOK
 %token <intval> FACTORY;
 %token <intval> FACTORIES;
 
@@ -479,7 +479,7 @@ list_factories: LIST FACTORIES ',' TYPE '(' SAMPLER ')'
     listFactories(SAMPLER_FACTORY);
 }
 |
-LIST FACTORIES ',' TYPE '(' RNG ')'
+LIST FACTORIES ',' TYPE '(' RNGTOK ')'
 {
     listFactories(RNG_FACTORY);
 }
@@ -497,7 +497,7 @@ set_factory: SET FACTORY STRING NAME ',' TYPE '(' SAMPLER ')'
     delete $4;
 }
 |
-SET FACTORY NAME NAME ',' TYPE '(' RNG ')'
+SET FACTORY NAME NAME ',' TYPE '(' RNGTOK ')'
 {
     setFactory(*$3, RNG_FACTORY, *$4);
     delete $3;
