@@ -599,14 +599,24 @@ compiled.
 \subsection{Building on 64-bit windows}
 
 The build instructions for 64-bit windows are similar to the
-instructions for 32-bit windows. Instead of the
-MinGW tools that come with R, we use a 64-bit compiler from the
-MinGW-w64 project
+instructions for 32-bit windows. Instead of the MinGW tools that come
+with R, we use a 64-bit compiler from the MinGW-w64 project
 (\url{http://www.sourceforge.net/projects/mingw-w64}).  The
-distribution we used was
-\verb+mingw-w64-1.9-bin_i686-mingw_20100308.zip+. This is actually a
-cross-compiler. It will run under MSYS --which is still 32-bit --
-but will produce 64-bit code.
+distribution used to build JAGS-2.0.0 was
+\verb+mingw-w64-1.0-bin_i686-mingw_20100322.zip+, which is also the
+compiler used to build the 64-bit Windows binary distribution of
+R-2.11.0. This is actually a cross-compiler. It will run under MSYS
+--which is still 32-bit -- but will produce 64-bit code.
+
+Most binary distributions of MinGW-w64 use dynamic linking to runtime
+libraries. This is inconvenient, as it means that the required runtime
+libraries must be distributed with JAGS. Failure to do so will either
+result in an installation that is either completely non-functional or
+will crash.  To force the compiler to use static linking, delete any
+import libraries (files ending in \verb+.dll.a+). In the case of the
+\verb+mingw-w64-1.0-bin_i686-mingw_20100322.zip+ distribution, we had
+to remove \verb+libssp.dll.a+. Note that there is currently no way to
+avoid dynamic linking to the gcc runtime library (see below).
 
 In order to build the BLAS and LAPACK libraries, you need to append the
 prefix \verb+x86_64-w64-mingw32-+ to all the tools. This means you need
@@ -629,11 +639,12 @@ LDFLAGS=-Wl,--enable-auto-import
 in order to suppress some warnings from the linker, although these
 seem to be harmless.
 
-The version of \JAGS\ will be dynamically linked to the C runtime
-library \verb+libgcc_s_sjlj-1.dll+, which is part of the MinGW-w64
-distribution. You will find it in the \texttt{bin} directory. You
-should put a copy of this DLL in the \texttt{win/runtime} directory so
-that it is included in the installer.
+The \JAGS\ binary built in this way will be dynamically linked to the
+C runtime library \verb+libgcc_s_sjlj-1.dll+, which is part of the
+MinGW-w64 distribution. You will find it in the \texttt{bin}
+directory. You should put a copy of this DLL in the
+\texttt{win/runtime} directory so that it is included in the
+installer.
 
 Finally, in order to build the NSIS installer, you should use the make
 target \verb+win64-installer+ instead of \verb+win32-installer+.
