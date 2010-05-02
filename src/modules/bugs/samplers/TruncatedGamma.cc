@@ -111,6 +111,10 @@ bool TruncatedGamma::canSample(StochasticNode *snode, Graph const &graph)
 
     /* Power function must be increasing */
     double shape = calShape(&gv, 0);
+    if (shape == 0) {
+	//Trivial power function
+	return false;
+    }
 
     // Check stochastic children
     vector<StochasticNode const*> const &stoch_nodes = gv.stochasticChildren();
@@ -237,6 +241,11 @@ void TruncatedGamma::update(unsigned int chain, RNG *rng) const
 	throw logic_error("Inconsistent prior in TruncatedGamma method");
     }
 
+    if (mu == 0) {
+	double xnew = (_shape > 0) ? lx : ux;
+	_gv->setValue(&xnew, 1, chain);
+	return;
+    }
 
     // Find boundaries on the scale of y
     // We need to take care that they may be inverted
@@ -245,16 +254,12 @@ void TruncatedGamma::update(unsigned int chain, RNG *rng) const
     double uy = JAGS_POSINF;
 
     if (_shape > 0) {
-
 	if (lx > 0) {
-
 	    ly = yold * exp((log(lx) - log(xold))/_shape);
 	}
 	uy = yold * exp((log(ux) - log(xold))/_shape);
-
     }
     else {
-
 	if (lx > 0) {
 	    uy = yold * exp((log(lx) - log(xold))/_shape);
 	}
