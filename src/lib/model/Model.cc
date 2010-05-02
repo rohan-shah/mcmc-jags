@@ -39,6 +39,7 @@ using std::stable_sort;
 using std::copy;
 using std::min;
 using std::max;
+using std::reverse;
 
 Model::Model(unsigned int nchain)
     : _samplers(0), _nchain(nchain), _rng(nchain, 0), _iteration(0),
@@ -365,6 +366,7 @@ void Model::chooseSamplers()
     }
 
     stable_sort(_samplers.begin(), _samplers.end(), less_sampler(sampler_map));
+    reverse(_samplers.begin(), _samplers.end());
 }
 
 void Model::update(unsigned int niter)
