@@ -40,7 +40,7 @@ StochasticNode::StochasticNode(vector<unsigned int> const &dim,
       _parameters(nchain())
 {
     if (!_dist->checkNPar(parameters.size())) {
-	string msg = "Incorrect number of parameters for distribution" +
+	string msg = "Incorrect number of parameters for distribution " +
 	    dist->name();
 	throw runtime_error(msg);
     }

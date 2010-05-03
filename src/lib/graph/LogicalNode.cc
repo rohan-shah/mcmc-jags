@@ -36,15 +36,11 @@ LogicalNode::LogicalNode(vector<unsigned int> const &dim,
     : DeterministicNode(dim, parameters), _func(function), 
       _parameters(mkParams(parameters, nchain()))
 {
-    /*
-    for (unsigned int n = 0; n < nchain(); ++n) {
-	_parameters[n].reserve(parameters.size());
-	for (unsigned long j = 0; j < parameters.size(); ++j) {
-	    _parameters[n].push_back(parameters[j]->value(n));
-	}
-	
+    if (!function->checkNPar(parameters.size())) {
+	string msg = "Incorrect number of parameters for function " +
+	    function->name();
+	throw runtime_error(msg);
     }
-    */
 }
 
 string LogicalNode::deparse(vector<string> const &parents) const
