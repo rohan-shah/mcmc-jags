@@ -43,6 +43,7 @@ class StochasticNode : public Node {
     Node const *_lower;
     Node const *_upper;
     bool _observed;
+    bool _discrete;
     virtual void sp(double *lower, double *upper, unsigned int length,
 		    unsigned int chain) const = 0;
 protected:

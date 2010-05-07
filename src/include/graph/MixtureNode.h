@@ -32,6 +32,7 @@ typedef std::map<std::vector<int> , Node const *>  MixMap;
 class MixtureNode : public DeterministicNode {
     MixMap _map;
     unsigned int _Nindex;
+    bool _discrete;
 public:
     /**
      * Constructs a MixtureNode. 

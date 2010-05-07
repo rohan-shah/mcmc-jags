@@ -15,6 +15,7 @@ class Function;
  */
 class LogicalNode : public DeterministicNode {
     Function const * const _func;
+    bool _discrete;
 protected:
     const std::vector<std::vector<double const*> > _parameters;
 public:
