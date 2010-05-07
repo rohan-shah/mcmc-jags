@@ -17,7 +17,7 @@ AggNode::AggNode(vector<unsigned int> const &dim,
 		 vector<Node const *> const &parents,
                  vector<unsigned int> const &offsets)
     : DeterministicNode(dim, parents), _offsets(offsets),
-      _parent_values(_length * _nchain)
+      _parent_values(_length * _nchain), _discrete(true)
 {
   /* Check argument lengths */
   if (_length != parents.size() || _length != offsets.size()) {
@@ -35,6 +35,14 @@ AggNode::AggNode(vector<unsigned int> const &dim,
       for (unsigned int i = 0; i < _length; ++i) {
 	  _parent_values[i + ch * _length] = parents[i]->value(ch) + offsets[i];
       }
+  }
+
+  /* Check discreteness */
+  for (unsigned int i = 0; i < parents.size(); ++i) {
+    if (!parents[i]->isDiscreteValued()) {
+      _discrete = false;
+      break;
+    }
   }
 
   /* Initialize if fully observed */
@@ -133,8 +141,5 @@ AggNode::clone(vector<Node const *> const &parents) const
 
 bool AggNode::isDiscreteValued() const
 {
-    for (unsigned int i = 0; i < parents().size(); ++i) {
-        if (!parents()[i]->isDiscreteValued()) return false;
-    }
-    return true;
+  return _discrete;
 }
