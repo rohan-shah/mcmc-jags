@@ -14,6 +14,7 @@
 class AggNode : public DeterministicNode {
     std::vector<unsigned int> _offsets;
     std::vector<double const *>  _parent_values;
+    bool _discrete;
     /* Forbid copying */
     AggNode(AggNode const &orig);
     AggNode &operator=(AggNode const &rhs);
