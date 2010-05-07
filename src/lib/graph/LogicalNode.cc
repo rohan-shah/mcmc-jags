@@ -33,7 +33,7 @@ mkParams(vector<Node const*> const &parents, unsigned int nchain)
 LogicalNode::LogicalNode(vector<unsigned int> const &dim, 
 			 vector<Node const *> const &parameters,
 			 Function const *function)
-    : DeterministicNode(dim, parameters), _func(function), 
+    : DeterministicNode(dim, parameters), _func(function), _discrete(false), 
       _parameters(mkParams(parameters, nchain()))
 {
     if (!function->checkNPar(parameters.size())) {
@@ -41,6 +41,11 @@ LogicalNode::LogicalNode(vector<unsigned int> const &dim,
 	    function->name();
 	throw runtime_error(msg);
     }
+    vector<bool> mask(parents().size());
+    for (unsigned long j = 0; j < parents().size(); ++j) {
+        mask[j] = parents()[j]->isDiscreteValued();
+    }
+    _discrete = _func->isDiscreteValued(mask);
 }
 
 string LogicalNode::deparse(vector<string> const &parents) const
@@ -94,9 +99,5 @@ bool LogicalNode::isClosed(set<Node const *> const &ancestors,
 
 bool LogicalNode::isDiscreteValued() const
 {
-    vector<bool> mask(parents().size());
-    for (unsigned long j = 0; j < parents().size(); ++j) {
-        mask[j] = parents()[j]->isDiscreteValued();
-    }
-    return _func->isDiscreteValued(mask);
+    return _discrete;
 }

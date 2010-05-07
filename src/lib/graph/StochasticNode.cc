@@ -37,7 +37,7 @@ StochasticNode::StochasticNode(vector<unsigned int> const &dim,
 			       Node const *lower=0, Node const *upper=0)
     : Node(dim, mkParents(parameters, lower, upper)), 
       _dist(dist), _lower(lower), _upper(upper), _observed(false), 
-      _parameters(nchain())
+      _discrete(false), _parameters(nchain())
 {
     if (!_dist->checkNPar(parameters.size())) {
 	string msg = "Incorrect number of parameters for distribution " +
@@ -66,6 +66,7 @@ StochasticNode::StochasticNode(vector<unsigned int> const &dim,
 	throw runtime_error(string("Distribution ") + _dist->name() +
 			    " failed check for discrete-valued parameters");
     }
+    _discrete = _dist->isDiscreteValued(mask);
 
     //Set up parameter vectors 
     for (unsigned int n = 0; n < nchain(); ++n) {
@@ -100,14 +101,7 @@ bool StochasticNode::isRandomVariable() const
 
 bool StochasticNode::isDiscreteValued() const
 {
-    vector<bool> mask(parents().size());
-    for (unsigned long j = 0; j < parents().size(); ++j) {
-        mask[j] = parents()[j]->isDiscreteValued();
-    }
-    if (_upper)	mask.pop_back();
-    if (_lower)	mask.pop_back();
-
-    return _dist->isDiscreteValued(mask);
+    return _discrete;
 }
 
 bool StochasticNode::isObserved() const

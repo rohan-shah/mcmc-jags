@@ -62,7 +62,7 @@ mkParents(vector<Node const *> const &index,
 MixtureNode::MixtureNode (vector<Node const *> const &index,
 			  map<vector<int>, Node const *> const &mixmap)
     : DeterministicNode(mkDim(mixmap), mkParents(index, mixmap)),
-      _map(mixmap), _Nindex(index.size())
+      _map(mixmap), _Nindex(index.size()), _discrete(true)
 {
     // Check validity of index argument
 
@@ -91,7 +91,13 @@ MixtureNode::MixtureNode (vector<Node const *> const &index,
 	if (p->first.size() != _Nindex) {
 	    throw invalid_argument("Invalid index in MixtureNode");
 	}
-    }    
+	//Check discreteness of outcome
+	if (!p->second->isDiscreteValued()) {
+	  _discrete = false;
+	}
+    }
+
+
 }
 
 
@@ -233,9 +239,5 @@ DeterministicNode *MixtureNode::clone(vector<Node const *> const &parents) const
 
 bool MixtureNode::isDiscreteValued() const
 {
-    for(unsigned int i = _Nindex; i < parents().size(); ++i) {
-	if (!parents()[i]->isDiscreteValued())
-	    return false;
-    }
-    return true;
+    return _discrete;
 }
