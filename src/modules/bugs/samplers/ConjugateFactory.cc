@@ -9,7 +9,7 @@
 #include "ConjugateWishart.h"
 #include "ConjugateSampler.h"
 //#include "Censored.h"
-#include "TruncatedGamma.h"
+//#include "TruncatedGamma.h"
 
 #include <graph/StochasticNode.h>
 #include <distribution/Distribution.h>
@@ -52,8 +52,11 @@ bool ConjugateFactory::canSample(StochasticNode * snode,
 	ans = ConjugateWishart::canSample(snode, graph);
 	break;
     case UNIF:
+        /*
 	ans = TruncatedGamma::canSample(snode, graph) ||
 	      ConjugateBeta::canSample(snode, graph);
+        */
+	ans = ConjugateBeta::canSample(snode, graph);
 	break;
     default:
 	break;
@@ -94,10 +97,13 @@ Sampler *ConjugateFactory::makeSampler(StochasticNode *snode,
 	    method = new ConjugateWishart(gv);
 	    break;
 	case UNIF:
+	  /*
 	    if (TruncatedGamma::canSample(snode, graph)) {
 		method = new TruncatedGamma(gv);
 	    }
-	    else if (ConjugateBeta::canSample(snode, graph)) {
+	    else 
+	  */
+	    if (ConjugateBeta::canSample(snode, graph)) {
 		method = new ConjugateBeta(gv);
 	    }
 	    else {
