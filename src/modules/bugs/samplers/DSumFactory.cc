@@ -9,6 +9,7 @@
 #include "DSumFactory.h"
 #include "RealDSum.h"
 #include "DiscreteDSum.h"
+#include "DMultiDSum.h"
 
 #include <stdexcept>
 #include <algorithm>
@@ -65,11 +66,16 @@ Sampler * DSumFactory::makeSampler(set<StochasticNode*> const &nodes,
     }
     
     bool discrete;
-    if (RWDSum::canSample(parameters, graph, false)) {
+    bool multinom = false;
+    if (RWDSum::canSample(parameters, graph, false, false)) {
 	discrete = false;
     }
-    else if (RWDSum::canSample(parameters, graph, true)) {
+    else if (RWDSum::canSample(parameters, graph, true, false)) {
 	discrete = true;
+    }
+    else if (RWDSum::canSample(parameters, graph, true, true)) {
+	discrete = true;
+	multinom = true;
     }
     else {
 	return 0;
@@ -80,7 +86,10 @@ Sampler * DSumFactory::makeSampler(set<StochasticNode*> const &nodes,
     vector<SampleMethod*> methods(nchain, 0);
     for (unsigned int ch = 0; ch < nchain; ++ch) {
 	if (discrete) {
-	    methods[ch] = new DiscreteDSum(gv, ch);
+	    if (multinom)
+		methods[ch] = new DMultiDSum(gv, ch);
+	    else
+		methods[ch] = new DiscreteDSum(gv, ch);
 	}
 	else {
 	    methods[ch] = new RealDSum(gv, ch);
