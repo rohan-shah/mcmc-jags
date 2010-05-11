@@ -12,17 +12,8 @@ using std::runtime_error;
 using std::logic_error;
 using std::sqrt;
 
-static double SUM(vector<double const *> const &par)
-{
-    double ans = 0;
-    for (unsigned int i = 0; i < par.size(); ++i) {
-	ans += *par[i];
-    }
-    return ans;
-}
-
 DSum::DSum()
-    : ScalarDist("dsum", 0, DIST_SPECIAL)
+    : ArrayDist("dsum", 0)
 {
 }
 
@@ -31,39 +22,49 @@ bool DSum::isDiscreteValued(vector<bool> const &mask) const
     return allTrue(mask);
 }
 
-double DSum::logLikelihood(double x, vector<double const *> const &par,
+double DSum::logLikelihood(double const *x, unsigned int length,
+			   vector<double const *> const &par,
+			   vector<std::vector<unsigned int> > const &dims,
 			   double const *lower, double const *upper) const
 {
-    if (fabs(x - SUM(par)) > sqrt(DBL_EPSILON)) {
-	throw runtime_error("Inconsistent arguments for dsum");
+    const double tol = sqrt(DBL_EPSILON);
+    for (unsigned int i = 0; i < length; ++i) {
+	double s = x[i];
+	for (unsigned int j = 0; j < par.size(); ++j) {
+	    s -= par[j][i];
+	}
+	if (fabs(s) > tol) {
+	    throw runtime_error("Inconsistent arguments for dsum");
+	}
     }
-    
     return 0;
 }
 
-double DSum::randomSample(vector<double const *> const &par, 
+void DSum::randomSample(double *x, unsigned int length,
+			  vector<double const *> const &par, 
+			  vector<std::vector<unsigned int> > const &dims,
 			  double const *lower, double const *upper,
 			  RNG *rng) const
 {
-    /* The random sample from DSum is not random at all, but
-       deterministic. */
-    return SUM(par);
+    for (unsigned int i = 0; i < length; ++i) {
+	x[i] = 0;
+	for (unsigned int j = 0; j < par.size(); ++j) {
+	    x[i] += par[j][i];
+	}
+    }
 }
 
-double DSum::l(std::vector<double const *> const &par) const
-{
-    return SUM(par);
-}
-
-double DSum::u(std::vector<double const *> const &par) const
-{
-    return SUM(par);
-}
-
-double DSum::typicalValue(vector<double const *> const &par,
+void DSum::typicalValue(double *x, unsigned int length,
+			  vector<double const *> const &par,
+			  vector<vector<unsigned int> > const &dims,
 			  double const *lower, double const *upper) const
 {
-    return SUM(par);
+    for (unsigned int i = 0; i < length; ++i) {
+	x[i] = 0;
+	for (unsigned int j = 0; j < par.size(); ++j) {
+	    x[i] += par[j][i];
+	}
+    }
 }
 
 bool DSum::isSupportFixed(vector<bool> const &fixmask) const
@@ -71,13 +72,23 @@ bool DSum::isSupportFixed(vector<bool> const &fixmask) const
     return allTrue(fixmask);
 }
 
-unsigned int DSum::df() const
+unsigned int DSum::df(vector<vector<unsigned int> > const &dims) const
 {
     return 0;
 }
 
-bool DSum::checkParameterValue(vector<double const *> const &params) const
+bool DSum::checkParameterValue(vector<double const *> const &params,
+			       vector<vector<unsigned int> > const &dims) const
 {
+    return true;
+}
+
+bool DSum::checkParameterDim (vector<vector<unsigned int> > const &dims) const
+{
+    for (unsigned int i = 1; i < dims.size(); ++i) {
+	if (dims[i] != dims[0])
+	    return false;
+    }
     return true;
 }
 
@@ -88,4 +99,22 @@ bool DSum::checkParameterDiscrete(vector<bool> const &mask) const
 	    return false;
     }
     return true;
+}
+
+void DSum::support(double *lower, double *upper, unsigned int length,
+		   vector<double const *> const &par,
+		   vector<vector<unsigned int> > const &dims) const
+{
+    for (unsigned int i = 0; i < length; ++i) {
+	lower[i] = 0;
+	for (unsigned int j = 0; j < par.size(); ++j) {
+	    lower[i] += par[j][i];
+	}
+	upper[i] = lower[i];
+    }
+}
+
+vector<unsigned int> DSum::dim(vector<vector<unsigned int> > const &dims) const
+{
+    return dims[0];
 }
