@@ -13,30 +13,8 @@
 using std::vector;
 using std::string;
 
-static vector<double> nodeValues(GraphView const *gv, unsigned int chain)
-{
-    unsigned int n = gv->nodes().size();
-    vector<double> ans(n);
-    gv->getValue(ans, chain);
-
-    //Correct initial value of sampled nodes to conform to the
-    //constraint that they sum to dsum
-
-    double delta = gv->stochasticChildren()[0]->value(chain)[0];
-    for (unsigned int i = 0; i < n; ++i) {
-	delta -= ans[i];
-    }
-    delta /= n;
-    for (unsigned int i = 0; i < n; ++i) {
-	ans[i] += delta;
-    }
-    gv->setValue(ans, chain);
-
-    return(ans);
-}
-
 RealDSum::RealDSum(GraphView const *gv, unsigned int chain)
-    : RWDSum(nodeValues(gv, chain), STEP, gv, chain)
+    : RWDSum(gv, chain, STEP)
 {
 }
 
@@ -49,18 +27,21 @@ static int pick(int n, RNG *rng)
     return i - 1;
 }
 
-void RealDSum::step(vector<double> &value, double s, RNG *rng) const
+void RealDSum::step(vector<double> &value, unsigned int nrow,
+		    unsigned int ncol, double s, RNG *rng) const
 {
-    //Randomly draw two components of the vector
-    int n = value.size();
-    int i = pick(n, rng);
-    int j = pick(n - 1, rng);
-    if (j >= i) ++j;
-	
+    //Randomly pick a row
+    int r = pick(nrow, rng);
+
+    //Randomly draw two columns 
+    int c1 = pick(ncol, rng);
+    int c2 = pick(ncol - 1, rng);
+    if (c2 >= c1) ++c2;
+    
     //Modify the chosen components while keeping the sum constant
     double eps = rng->normal() * s;
-    value[i] += eps;
-    value[j] -= eps;
+    value[c1 * nrow + r] += eps;
+    value[c2 * nrow + r] -= eps;
 }
 
 string RealDSum::name() const

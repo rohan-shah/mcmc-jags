@@ -7,20 +7,115 @@
 
 #include "RWDSum.h"
 #include <cmath>
+#include <set>
+#include <stdexcept>
 
 using std::vector;
 using std::log;
 using std::exp;
 using std::fabs;
+using std::set;
+using std::logic_error;
 
 //Target acceptance probability for Metropolis-Hastings algorithm
 #define PROB  0.5
 
-RWDSum::RWDSum(vector<double> const &value, double step, 
-	       GraphView const *gv, unsigned int chain)
-    : Metropolis(value), _step_adapter(step, PROB), _gv(gv), 
-      _chain(chain), _pmean(0), _niter(2)
+/*
+ * Returns the stochastic child with a DSum distribution, if it
+ * exists, otherwise a null pointer. If there is more than one DSum
+ * child, a null pointer is also returned
+ */
+static StochasticNode const *getDSumNode(GraphView const *gv)
 {
+    StochasticNode const *dsnode = 0;
+    for (unsigned int i = 0; i < gv->stochasticChildren().size(); ++i) {
+	if (gv->stochasticChildren()[i]->distribution()->name() == "dsum") {
+	    if (dsnode == 0) {
+		dsnode = gv->stochasticChildren()[i];
+	    }
+	    else {
+		//There should be a single dsum child
+		return 0;
+	    }
+	}
+    }
+    return dsnode;
+}
+
+static vector<double> nodeValues(GraphView const *gv, unsigned int chain)
+{
+    vector<double> ans(gv->length());
+    gv->getValue(ans, chain);
+
+    StochasticNode const *dchild = getDSumNode(gv);
+    if (!dchild) {
+	throw logic_error("DSum Child not found in RWDSum method");
+    }
+
+    //Check discreteness
+    bool discrete = dchild->isDiscreteValued();
+    for (unsigned int i = 0; i < gv->nodes().size(); ++i) {
+	if (gv->nodes()[i]->isDiscreteValued() != discrete) {
+	    throw logic_error("Discrete value inconsistency in RWDSum method");
+	}
+    }
+
+    //Enforce discreteness of value vector, if necessary
+    if (discrete) {
+	for (unsigned int i = 0; i < ans.size(); ++i) {
+	    ans[i] = static_cast<int>(ans[i]);
+	}
+    }
+    
+    //Ensure that values of sampled nodes are consistent with dsum child
+    unsigned int nrow = dchild->length();
+    unsigned int ncol = gv->nodes().size();
+
+    if (ans.size() != nrow * ncol) {
+	throw logic_error("Inconsistent lengths in RWDSum method");
+    }
+    
+    for (unsigned int r = 0; r < nrow; ++r) {
+	
+	double delta = dchild->value(chain)[r];
+	for (unsigned int c = 0; c < ncol; ++c) {
+	    delta -= ans[c * nrow + r];
+	}
+	
+	if (delta != 0) {
+	    if (discrete) {
+		int idelta = static_cast<int>(delta);
+		if (delta != idelta) {
+		    throw logic_error("Unable to satisfy dsum constraint");
+		}
+		int eps = idelta / ncol;
+		int resid = idelta % ncol;
+		
+		for (unsigned int c = 0; c < ncol; ++c) {
+		    ans[c * nrow + r] += eps;
+		}
+		ans[r] += resid;
+	    }
+	    else {
+		double eps = delta / ncol;
+		for (unsigned int c = 0; c < ncol; ++c) {
+		    ans[c * nrow + r] += eps;
+		}
+	    }
+	}
+    }
+
+    gv->setValue(ans, chain);
+    return(ans);
+}
+
+RWDSum::RWDSum(GraphView const *gv, unsigned int chain, double step)
+    : Metropolis(nodeValues(gv, chain)), _gv(gv), _chain(chain), 
+    _step_adapter(step, PROB), _pmean(0), _niter(2), _dsnode(getDSumNode(gv))
+{
+    if (!_dsnode) {
+	throw logic_error("No DSum node found in RWDSum method");
+    }
 }
 
 void RWDSum::rescale(double p)
@@ -35,18 +130,19 @@ void RWDSum::rescale(double p)
 
 void RWDSum::update(RNG *rng)
 {
-    unsigned int n = length();
-    vector<double> value(n);
-    getValue(value);
+    vector<double> value(length());
+    unsigned int nrow = _dsnode->length();
+    unsigned int ncol = _gv->nodes().size();
+    unsigned int nrep = nrow * (ncol - 1);
 
-    for (unsigned int i = 0; i < n - 1; ++i) {
+    for (unsigned int j = 0; j < nrep; ++j) {
 	double log_p = -_gv->logFullConditional(_chain);
-	step(value, _step_adapter.stepSize(), rng);
+	getValue(value);
+	step(value, nrow, ncol, _step_adapter.stepSize(), rng);
 	setValue(value);
 	log_p += _gv->logFullConditional(_chain);
 	accept(rng, exp(log_p));
     }
-
 }
 
 bool RWDSum::checkAdaptation() const
@@ -54,59 +150,68 @@ bool RWDSum::checkAdaptation() const
     if (_pmean == 0 || _pmean == 1) {
 	return false;
     }
-
-    return fabs(_step_adapter.logitDeviation(_pmean)) < 0.5;
+    if (fabs(_step_adapter.logitDeviation(_pmean)) > 0.5) {
+	return false;
+    }
+    return true;
 }
 
 bool RWDSum::canSample(vector<StochasticNode *> const &nodes,
-		       Graph const &graph, bool discrete)
+		       Graph const &graph, bool discrete, bool multinom)
 {
     if (nodes.size() < 2)
 	return false;
 
     for (unsigned int i = 0; i < nodes.size(); ++i) {
-	if (!graph.contains(nodes[i]))
-	    return false;
 
-	// Nodes must be scalar ...
-	if (nodes[i]->length() != 1)
-	    return false;
-    
-	// Full rank
-	if (nodes[i]->df() != 1)
-	    return false;
+	// Nodes must be of full rank
+	if (multinom) {
+	    if (!discrete)
+		return false;
+	    if (nodes[i]->distribution()->name() != "dmulti")
+		return false;
+	}
+	else {
+	    if (nodes[i]->df() != nodes[i]->length())
+		return false;
+	}
 
 	// Check discreteness
 	if (nodes[i]->isDiscreteValued() != discrete)
 	    return false;
     }
 
-    /* Nodes must be direct parents of a single observed stochastic
-       node with distribution DSum  */
-
     GraphView gv(nodes, graph);
-    vector<DeterministicNode*> const &dchild = gv.deterministicChildren();
-    vector<StochasticNode const*> const &schild = gv.stochasticChildren();
 
-    if (!dchild.empty())
-	return false;
-    if (schild.size() != 1)
-	return false;
-    if (!schild[0]->isObserved())
-	return false;
-    if (schild[0]->distribution()->name() != "dsum")
-	return false;
+    set<Node const *> nodeset;
+    for (unsigned int i = 0; i < nodes.size(); ++i) {
+	nodeset.insert(nodes[i]);
+    }
 
-    //Check that we have all the parent nodes
-    if (schild[0]->parents().size() != nodes.size())
+    StochasticNode const *dschild = getDSumNode(&gv);
+    if (!dschild) {
 	return false;
+    }
+    else {
+	//It must be an observed direct descendent of sampled nodes
+	//and have no other parents
+	if (!dschild->isObserved())
+	    return false;
+	if (dschild->parents().size() != nodes.size())
+	    return false;
+	for (unsigned int j = 0; j < dschild->parents().size(); ++j) {
+	    if (nodeset.count(dschild->parents()[j]) == 0) {
+		return false;
+	    }
+	}
+    }
 
     if (discrete) {
 	//Check discreteness of child node
-	if (!schild[0]->isDiscreteValued())
+	if (!dschild->isDiscreteValued())
 	    return false;
 	//Check that value is really integer
-	double val = schild[0]->value(0)[0];
+	double val = dschild->value(0)[0];
 	if (val != static_cast<int>(val)) {
 	    return false;
 	}

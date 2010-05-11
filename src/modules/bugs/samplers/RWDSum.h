@@ -12,20 +12,20 @@ class GraphView;
  */
 class RWDSum : public Metropolis
 {
-    StepAdapter _step_adapter;
     GraphView const *_gv;
     unsigned int _chain;
+    StepAdapter _step_adapter;
     double _pmean;
     unsigned int _niter;
+protected:
+    StochasticNode const *_dsnode;
 public:
     /**
      * Constructor. 
      *
-     * @param value Initial value vector.
      * @param step Initial step size for the random walk updates.
      */
-    RWDSum(std::vector<double> const &value, double step, GraphView const *gv,
-	   unsigned int chain); 
+    RWDSum(GraphView const *gv, unsigned int chain, double step);
     /**
      * Updates the current value by adding a random increment.
      */
@@ -47,8 +47,16 @@ public:
     /**
      * Does a random walk step.  Note that this function does not
      * modify the value of the RWDSum object.
+     *
+     * @param value Value vector. It represents an nrow by ncol matrix
+     *        of values stored in column order.
+     * @param nrow Number of rows of the value matrix
+     * @param ncol Number of columns of the value matrix
+     * @param s Step size
+     * @param rng Random number generator
      */
-    virtual void step(std::vector<double> &value, double s, RNG *rng) const = 0;
+    virtual void step(std::vector<double> &value, unsigned int nrow,
+		      unsigned int ncol, double s, RNG *rng) const = 0;
     /**
      * Tests whether nodes can be sampled
      *
@@ -58,9 +66,11 @@ public:
      *        or not
      */
     static bool canSample(std::vector<StochasticNode *> const &nodes,
-			  Graph const &graph, bool discrete);
+			  Graph const &graph, bool discrete, bool multinom);
     void setValue(std::vector<double> const &value);
     void getValue(std::vector<double> &value) const;
+
 };
+
 
 #endif /* RW_DSUM_H_ */
