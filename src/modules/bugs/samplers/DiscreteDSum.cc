@@ -18,39 +18,8 @@ using std::string;
 //Initial step size
 #define STEP 1
 
-static vector<double> nodeValues(GraphView const *gv, unsigned int chain)
-{
-    unsigned int n = gv->nodes().size();
-    vector<double> ans(n);
-    gv->getValue(ans, chain);
-
-   //Ensure that values of sampled nodes are consistent with dsum parent
-
-    double delta = gv->stochasticChildren()[0]->value(chain)[0];
-    for (unsigned int i = 0; i < n; ++i) {
-	delta -= ans[i];
-    }
-
-    if (delta != 0) {
-	int idelta = static_cast<int>(delta);
-	if (delta != idelta) {
-	    throw logic_error("Unable to satisfy dsum constraint");
-	}
-	int eps = idelta / n;
-	int resid = idelta % n;
-	
-	for (unsigned int i = 0; i < n; ++i) {
-	    ans[i] += eps;
-	}
-	ans[0] += resid;
-	gv->setValue(ans, chain);
-    }
-
-    return ans;
-}
-
 DiscreteDSum::DiscreteDSum(GraphView const *gv, unsigned int chain)
-    : RWDSum(nodeValues(gv, chain), STEP, gv, chain)
+    : RWDSum(gv, chain, STEP)
 {
 }
 
@@ -62,23 +31,24 @@ static int pick(int n, RNG *rng)
     while (i < u) ++i;
     return i - 1;
 }
-void DiscreteDSum::step(vector<double> &value, double s, RNG *rng) const
+
+void DiscreteDSum::step(vector<double> &value, 
+			unsigned int nrow, unsigned int ncol,
+			double s, RNG *rng) const
 {
-    int n = value.size();
+    //Randomly pick a row
+    int r = pick(nrow, rng);
 
-    //Randomly pick two elements of the value vector
-    int i = pick(n, rng);
-    int j = pick(n - 1, rng);
-    if (j >= i) ++j;
-
+    //Randomly pick two columns
+    int c1 = pick(ncol, rng);
+    int c2 = pick(ncol - 1, rng);
+    if (c2 >= c1) ++c2;
+    
     //Modify the chosen elements while keeping the sum constant
     double eps = rng->normal() * s;
     int inteps = static_cast<int>(fabs(eps)) + 1;
-    if (eps < 0) {
-	inteps = -inteps;
-    }
-    value[i] += inteps;
-    value[j] -= inteps;
+    value[c1 * nrow + r] += inteps;
+    value[c2 * nrow + r] -= inteps;
 }
 
 string DiscreteDSum::name() const
