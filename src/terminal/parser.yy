@@ -1091,7 +1091,7 @@ static void updatestar(long niter, long refresh, int width)
 static void adaptstar(long niter, long refresh, int width)
 {
     if (!console->isAdapting()) {
-	std::cerr << "ERROR: Model is not in adaptive mode\n";
+	std::cerr << "NOTE: Model is not in adaptive mode\n";
     }
 	
     bool status = true;
