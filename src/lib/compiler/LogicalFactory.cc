@@ -39,10 +39,10 @@ static bool lt(FunctionPtr const &arg1, FunctionPtr const &arg2)
 bool lt(LogicalPair const &arg1, LogicalPair const &arg2)
 {
     // Order first by function
-    if (lt(arg1.first,arg2.first)) {
+    if (lt(arg1.first, arg2.first)) {
 	return true;
     }
-    else if (lt(arg1.first,arg2.first)) {
+    else if (lt(arg2.first, arg1.first)) {
 	return false;
     }
     else {
