@@ -29,8 +29,15 @@
 #include <distributions/DSum.h>
 
 #include <functions/Abs.h>
+#include <functions/ArcCos.h>
+#include <functions/ArcCosh.h>
+#include <functions/ArcSin.h>
+#include <functions/ArcSinh.h>
+#include <functions/ArcTan.h>
+#include <functions/ArcTanh.h>
 #include <functions/CLogLog.h>
 #include <functions/Cos.h>
+#include <functions/Cosh.h>
 #include <functions/DIntervalFunc.h>
 #include <functions/DSumFunc.h>
 #include <functions/Exp.h>
@@ -57,10 +64,13 @@
 #include <functions/Round.h>
 #include <functions/SD.h>
 #include <functions/Sin.h>
+#include <functions/Sinh.h>
 #include <functions/Sort.h>
 #include <functions/Sqrt.h>
 #include <functions/Step.h>
 #include <functions/Sum.h>
+#include <functions/Tan.h>
+#include <functions/Tanh.h>
 #include <functions/Transpose.h>
 #include <functions/Trunc.h>
 
@@ -114,7 +124,14 @@ BUGSModule::BUGSModule()
 
     //Load functions
     insert(new Abs);
+    insert(new ArcCos);
+    insert(new ArcCosh);
+    insert(new ArcSin);
+    insert(new ArcSinh);
+    insert(new ArcTan);
+    insert(new ArcTanh);
     insert(new Cos);
+    insert(new Cosh);
     insert(new CLogLog);
     insert(new Exp);
     insert(new Equals);
@@ -140,10 +157,13 @@ BUGSModule::BUGSModule()
     insert(new Round);
     insert(new SD);
     insert(new Sin);
+    insert(new Sinh);
     insert(new Sort);
     insert(new Sqrt);
     insert(new Step);
     insert(new Sum);
+    insert(new Tan);
+    insert(new Tanh);
     insert(new Transpose);
     insert(new Trunc);
 
