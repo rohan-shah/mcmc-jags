@@ -1244,10 +1244,17 @@ tables \ref{table:bugs:distributions:real} and
 \hline
 Usage  & Description & Value & Restrictions on arguments \\ 
 \hline
-\verb+abs(x)+       & Absolute value      & Real & \\
+\verb+abs(x)+       & Absolute value        & Real & \\
+\verb+acos(x)+      & Arc-cosine            & Real & $-1 < x < 1$\\
+\verb+acosh(x)+     & Hyperbolic arc-cosine & Real & $1 < x$ \\
+\verb+asin(x)+      & Arc-sine              & Real & $-1 < x < 1$\\
+\verb+asinh(x)+     & Hyperbolic arc-sine   & Real &\\
+\verb+atan(x)+      & Arc-tangent           & Real &\\
+\verb+atanh(x)+     & Hyperbolic arc-tangent & Real & $-1 < x < 1$\\
 \verb+cos(x)+       & Cosine              & Real & \\
-\verb+cloglog(x)+   & Complementary log log & Real & $0 < x < 1$ \\
-\verb+equals(x,y)+  & Test for equality   & Logical & \\
+\verb+cosh(x)+      & Hyperbolic Cosine   & Real & \\
+\verb+cloglog(x)+    & Complementary log log & Real & $0 < x < 1$ \\
+\verb+equals(x,y)+   & Test for equality   & Logical & \\
 \verb+exp(x)+       & Exponential         & Real & \\
 \verb+icloglog(x)+  & Inverse complementary & Real & \\
                     & log log function    & \\
@@ -1262,8 +1269,11 @@ Usage  & Description & Value & Restrictions on arguments \\
 \verb+round(x)+     & Round to integer    & Integer & \\
                     & away from zero      &      & \\
 \verb+sin(x)+       & Sine                & Real & \\
+\verb+sinh(x)+      & Hyperbolic Sine     & Real & \\
 \verb+sqrt(x)+      & Square-root         & Real & $x >= 0$ \\
 \verb+step(x)+      & Test for $x \geq 0$ & Logical & \\
+\verb+tan(x)+       & Tangent             & Real & \\
+\verb+tanh(x)+      & Hyperbolic Tangent  & Real & \\
 \verb+trunc(x)+     & Round to integer    & Integer & \\
                     & towards zero        & \\
 \hline
