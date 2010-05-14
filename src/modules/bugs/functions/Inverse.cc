@@ -14,7 +14,7 @@ namespace bugs {
     void Inverse::evaluate (double *value, vector<double const *> const &args,
 			    vector<vector<unsigned int> > const &dims) const
     {
-	inverse (value, args[0], dims[0][0], false);
+	inverse (value, args[0], dims[0][0], true);
     }
 
     bool 
