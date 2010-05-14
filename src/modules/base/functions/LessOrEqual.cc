@@ -17,7 +17,7 @@ double LessOrEqual::evaluate(vector<double const *> const &args) const
   return *args[0] <= *args[1];
 }
 
-bool LessOrEqual::isDiscreteValued(std::vector<bool> const &mask) const
+bool LessOrEqual::isDiscreteValued(vector<bool> const &mask) const
 {
   return true;
 }

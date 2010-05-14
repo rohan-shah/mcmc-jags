@@ -17,7 +17,7 @@ double LessThan::evaluate(vector<double const *> const &args) const
   return *args[0] < *args[1];
 }
 
-bool LessThan::isDiscreteValued(std::vector<bool> const &mask) const
+bool LessThan::isDiscreteValued(vector<bool> const &mask) const
 {
   return true;
 }

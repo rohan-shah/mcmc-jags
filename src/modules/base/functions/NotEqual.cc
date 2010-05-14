@@ -17,7 +17,7 @@ double NotEqual::evaluate(vector<double const *> const &args) const
   return *args[0] != *args[1];
 }
 
-bool NotEqual::isDiscreteValued(std::vector<bool> const &mask) const
+bool NotEqual::isDiscreteValued(vector<bool> const &mask) const
 {
   return true;
 }
