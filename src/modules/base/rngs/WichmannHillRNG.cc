@@ -1,5 +1,7 @@
 #include "WichmannHillRNG.h"
 
+using std::vector;
+
 namespace base {
 
     void WichmannHillRNG::fixupSeeds()
@@ -41,7 +43,7 @@ namespace base {
 	fixupSeeds();
     }
 
-    bool WichmannHillRNG::setState(std::vector<int> const &state)
+    bool WichmannHillRNG::setState(vector<int> const &state)
     {
 	if (state.size() != 3)
 	    return false;
@@ -53,7 +55,7 @@ namespace base {
 	return true;
     }
 
-    void WichmannHillRNG::getState(std::vector<int> &state) const
+    void WichmannHillRNG::getState(vector<int> &state) const
     {
 	state.clear();
 	for (unsigned int i = 0; i < 3; ++i) {

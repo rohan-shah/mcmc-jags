@@ -5,6 +5,8 @@
 
 #define i2_32m1 2.328306437080797e-10/* = 1/(2^32 - 1) */
 
+using std::vector;
+
 namespace base {
 
     SuperDuperRNG::SuperDuperRNG(unsigned int seed, NormKind norm_kind)
@@ -45,7 +47,7 @@ namespace base {
 	fixupSeeds();
     }
 
-    bool SuperDuperRNG::setState(std::vector<int> const &state)
+    bool SuperDuperRNG::setState(vector<int> const &state)
     {
 	if (state.size() != 2) 
 	    return false;
@@ -58,7 +60,7 @@ namespace base {
     }
 
 
-    void SuperDuperRNG::getState(std::vector<int> &state) const
+    void SuperDuperRNG::getState(vector<int> &state) const
     {
 	state.clear();
 	for (unsigned int j = 0; j < 2; j++) {

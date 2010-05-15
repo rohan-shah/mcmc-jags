@@ -68,7 +68,7 @@ namespace base {
 	return ans;
     }
 
-    RNG * BaseRNGFactory::makeRNG(std::string const &name)
+    RNG * BaseRNGFactory::makeRNG(string const &name)
     {
 	unsigned int seed = static_cast<unsigned int>(time(NULL));
 

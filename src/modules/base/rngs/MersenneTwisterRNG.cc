@@ -42,6 +42,8 @@
 #define TEMPERING_SHIFT_T(y)  (y << 15)
 #define TEMPERING_SHIFT_L(y)  (y >> 18)
 
+using std::vector;
+
 namespace base {
 
     MersenneTwisterRNG::MersenneTwisterRNG(unsigned int seed, 
@@ -149,7 +151,7 @@ namespace base {
 	return false;
     }
 
-    bool MersenneTwisterRNG::setState(std::vector<int> const &state)
+    bool MersenneTwisterRNG::setState(vector<int> const &state)
     {
 	if (state.size() != 625)
 	    return false;
@@ -162,7 +164,7 @@ namespace base {
 	return notAllZero(dummy);
     }
 
-    void MersenneTwisterRNG::getState(std::vector<int> &state) const
+    void MersenneTwisterRNG::getState(vector<int> &state) const
     {
 	state.clear();
 	state.reserve(625);

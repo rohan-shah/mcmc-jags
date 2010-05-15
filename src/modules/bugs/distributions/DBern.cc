@@ -54,7 +54,7 @@ bool DBern::canBound() const
     return false;
 }
 
-bool DBern::isDiscreteValued(std::vector<bool> const &mask) const
+bool DBern::isDiscreteValued(vector<bool> const &mask) const
 {
     return true;
 }
