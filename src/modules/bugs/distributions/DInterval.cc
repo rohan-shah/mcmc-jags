@@ -117,7 +117,7 @@ bool DInterval::isSupportFixed(vector<bool> const &fixmask) const
     return fixmask[0] && fixmask[1];
 }
 
-unsigned int DInterval::length(std::vector<unsigned int> const &params) const
+unsigned int DInterval::length(vector<unsigned int> const &params) const
 {
     return 1;
 }

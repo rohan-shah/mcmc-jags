@@ -151,8 +151,8 @@ static double q(double p, int initial, double time, unsigned int nstate,
 }
 
 void DMState::randomSample(double *x, unsigned int length,
-			   std::vector<double const *> const &par,
-			   std::vector<std::vector<unsigned int> > const &dims,
+			   vector<double const *> const &par,
+			   vector<vector<unsigned int> > const &dims,
 			   double const *lower, double const *upper,
 			   RNG *rng) const
 {

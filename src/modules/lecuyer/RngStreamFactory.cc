@@ -147,7 +147,7 @@ namespace lecuyer {
 	return ans;
     }
 
-    RNG * RngStreamFactory::makeRNG(std::string const &name)
+    RNG * RngStreamFactory::makeRNG(string const &name)
     {
 	if (name == "lecuyer::RngStream") {
 

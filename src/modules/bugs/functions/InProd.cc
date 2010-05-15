@@ -27,7 +27,7 @@ namespace bugs {
 	return (lengths[0] == lengths[1]);
     }
 
-    bool InProd::isDiscreteValued(std::vector<bool> const &mask) const
+    bool InProd::isDiscreteValued(vector<bool> const &mask) const
     {
 	return allTrue(mask);
     }

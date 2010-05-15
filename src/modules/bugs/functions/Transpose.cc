@@ -39,8 +39,8 @@ namespace bugs {
 	return dims[0].size() == 1 || dims[0].size() == 2;
     }
 
-    bool Transpose::isScale(std::vector<bool> const &mask,
-		            std::vector<bool> const &isfixed) const
+    bool Transpose::isScale(vector<bool> const &mask,
+		            vector<bool> const &isfixed) const
     {
 	return true;
     }

@@ -109,7 +109,7 @@ namespace mix {
 	*x = mu[j];
     }
 
-    bool DNormMix::isSupportFixed(std::vector<bool> const &fixmask) const
+    bool DNormMix::isSupportFixed(vector<bool> const &fixmask) const
     {
 	return true;
     }

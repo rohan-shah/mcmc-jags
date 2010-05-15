@@ -23,6 +23,7 @@
 #include <stdexcept>
 #include "RngStream.h"
 
+using std::vector;
 using std::logic_error;
 
 #define norm  2.328306549295727688e-10 /* 2^-32 */
@@ -83,7 +84,7 @@ namespace lecuyer {
 	}
     }
 
-    bool RngStream::setState(std::vector<int> const &state)
+    bool RngStream::setState(vector<int> const &state)
     {
 	/* Pass from int to double via unsigned int */
 
@@ -104,7 +105,7 @@ namespace lecuyer {
 	return true;
     }
 
-    void RngStream::getState(std::vector<int> &state) const
+    void RngStream::getState(vector<int> &state) const
     {
 	/* We pass from double to integer via unsigned integer
 	   so as not to lose any information */

@@ -152,7 +152,7 @@ void DMulti::typicalValue(double *x, unsigned int length,
     x[length - 1] = N;
 }
 
-bool DMulti::isSupportFixed(std::vector<bool> const &fixmask) const
+bool DMulti::isSupportFixed(vector<bool> const &fixmask) const
 {
     return fixmask[1];
 }

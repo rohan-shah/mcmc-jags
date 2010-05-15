@@ -308,7 +308,7 @@ double DHyper::r(vector<double const *> const &parameters, RNG *rng) const
   return y;
 }
 
-double DHyper::l(std::vector<double const *> const &parameters) const
+double DHyper::l(vector<double const *> const &parameters) const
 {
     int n1,n2,m1;
     double psi;
@@ -317,7 +317,7 @@ double DHyper::l(std::vector<double const *> const &parameters) const
     return max((int) 0, m1 - n2);
 }
 
-double DHyper::u(std::vector<double const *> const &parameters) const
+double DHyper::u(vector<double const *> const &parameters) const
 {
   int n1,n2,m1;
   double psi;

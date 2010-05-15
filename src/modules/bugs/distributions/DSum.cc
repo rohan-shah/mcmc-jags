@@ -24,7 +24,7 @@ bool DSum::isDiscreteValued(vector<bool> const &mask) const
 
 double DSum::logLikelihood(double const *x, unsigned int length,
 			   vector<double const *> const &par,
-			   vector<std::vector<unsigned int> > const &dims,
+			   vector<vector<unsigned int> > const &dims,
 			   double const *lower, double const *upper) const
 {
     const double tol = sqrt(DBL_EPSILON);
@@ -42,7 +42,7 @@ double DSum::logLikelihood(double const *x, unsigned int length,
 
 void DSum::randomSample(double *x, unsigned int length,
 			  vector<double const *> const &par, 
-			  vector<std::vector<unsigned int> > const &dims,
+			  vector<vector<unsigned int> > const &dims,
 			  double const *lower, double const *upper,
 			  RNG *rng) const
 {

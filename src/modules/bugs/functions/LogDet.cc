@@ -27,7 +27,7 @@ namespace bugs {
     }
 
     vector<unsigned int>
-    LogDet::dim(std::vector<std::vector<unsigned int> > const &dims) const
+    LogDet::dim(vector<vector<unsigned int> > const &dims) const
     {
 	return vector<unsigned int>(1,1);
     }
