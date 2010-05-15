@@ -41,8 +41,8 @@ bool Function::isLinear(vector<bool> const &mask,
     return isScale(mask, isfixed);
 }
 
-bool Function::isPower(std::vector<bool> const &mask,
-		       std::vector<bool> const &isfixed) const
+bool 
+Function::isPower(vector<bool> const &mask, vector<bool> const &isfixed) const
 {
     return false;
 }

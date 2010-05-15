@@ -19,8 +19,8 @@ ScalarFunction::checkParameterValue(vector<double const *> const &args) const
     return true;
 }
 
-bool ScalarFunction::isPower(std::vector<bool> const &mask,
-			     std::vector<bool> const &isfixed) const
+bool ScalarFunction::isPower(vector<bool> const &mask,
+			     vector<bool> const &isfixed) const
 {
     unsigned int nmask = 0;
     for (unsigned int i = 0; i < mask.size(); ++i) {
