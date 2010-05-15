@@ -10,6 +10,8 @@
 using std::vector;
 using std::set;
 using std::logic_error;
+using std::length_error;
+using std::out_of_range;
 using std::string;
 
 
@@ -21,13 +23,13 @@ AggNode::AggNode(vector<unsigned int> const &dim,
 {
   /* Check argument lengths */
   if (_length != parents.size() || _length != offsets.size()) {
-    throw std::length_error ("Length mismatch in Aggregate Node constructor");
+    throw length_error ("Length mismatch in Aggregate Node constructor");
   }
 
   /* Check that offsets are valid */
   for (unsigned int i = 0; i < _length; i++) {
     if (offsets[i] >= parents[i]->length())
-      throw std::out_of_range("Invalid offset in Aggregate Node constructor");
+      throw out_of_range("Invalid offset in Aggregate Node constructor");
   }
   
   /* Setup parent values */

@@ -131,7 +131,7 @@ unsigned int Node::nchain() const
   return _nchain;
 }
 
-unsigned int countChains(std::vector<Node const *> const &parameters)
+unsigned int countChains(vector<Node const *> const &parameters)
 {
   unsigned int nchain = parameters[0]->nchain();
 
