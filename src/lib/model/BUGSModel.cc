@@ -25,6 +25,7 @@ using std::pair;
 using std::string;
 using std::logic_error;
 using std::runtime_error;
+using std::map;
 
 /* 
    Nodes accessible to the user in a BUGSModel are identified
@@ -137,7 +138,7 @@ void BUGSModel::coda(string const &stem, string &warn)
 }
 
 
-void BUGSModel::setParameters(std::map<std::string, SArray> const &param_table,
+void BUGSModel::setParameters(map<string, SArray> const &param_table,
 			      unsigned int chain)
 {
     _symtab.writeValues(param_table, chain);

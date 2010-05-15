@@ -1,7 +1,9 @@
 #include <config.h>
 #include <graph/NodeError.h>
 
-NodeError::NodeError(Node const *enode, std::string const &emsg)
+using std::string;
+
+NodeError::NodeError(Node const *enode, string const &emsg)
   : runtime_error(emsg), node(enode)
 {
 }
