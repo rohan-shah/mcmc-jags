@@ -14,8 +14,9 @@ using std::vector;
 using std::string;
 using std::ostringstream;
 using std::ofstream;
+using std::ostream;
 
-static void writeDouble(double x, std::ostream &out)
+static void writeDouble(double x, ostream &out)
 {
     if (x == JAGS_NA) {
 	out << "NA";
@@ -112,8 +113,8 @@ static bool AnyMonitors(list<MonitorControl> const &mvec,
 }
 
 /* CODA output for monitors that do not pool over chains */
-void CODA(list<MonitorControl> const &mvec, std::string const &stem,
-	 unsigned int nchain, std::string &warn)
+void CODA(list<MonitorControl> const &mvec, string const &stem,
+	 unsigned int nchain, string &warn)
 {
     /* Check for eligible monitors */
     if (!AnyMonitors(mvec, false, false))
@@ -213,8 +214,8 @@ void CODA0(list<MonitorControl> const &mvec, string const &stem, string &warn)
 
 /* TABLE output for monitors that pool over iterations but not over chains
  */
-void TABLE(list<MonitorControl> const &mvec, std::string const &stem,
-	  unsigned int nchain, std::string &warn)
+void TABLE(list<MonitorControl> const &mvec, string const &stem,
+	  unsigned int nchain, string &warn)
 {
     /* Check for eligible monitors */
     if (!AnyMonitors(mvec, true, false))

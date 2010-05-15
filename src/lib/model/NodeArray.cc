@@ -13,6 +13,7 @@
 #include <stdexcept>
 #include <limits>
 
+using std::pair;
 using std::vector;
 using std::map;
 using std::string;
@@ -140,7 +141,7 @@ Node *NodeArray::getSubset(Range const &target_range, Model &model)
     offsets.push_back(_offsets[offset]);
   }
   AggNode *anode = new AggNode(target_range.dim(true), nodes, offsets);
-  _generated_nodes.insert(std::pair<Range,Node*>(target_range, anode));
+  _generated_nodes.insert(pair<Range,Node*>(target_range, anode));
   model.addNode(anode);
   _member_graph.add(anode);
   return anode;

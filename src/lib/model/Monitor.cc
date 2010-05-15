@@ -39,7 +39,7 @@ string const &Monitor::name() const
     return _name;
 }
 
-void Monitor::setName(std::string const &name)
+void Monitor::setName(string const &name)
 {
     _name = name;
 }
