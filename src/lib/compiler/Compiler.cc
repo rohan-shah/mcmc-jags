@@ -45,8 +45,8 @@ using std::set;
 using std::fabs;
 
 #include <sstream>
-template<class T>
-std::string ToString(const T& val)
+template<class T> 
+string ToString(const T& val)
 {
     ostringstream strm;
     strm << val;
@@ -127,8 +127,6 @@ Node * Compiler::constFromTable(ParseTree const *p)
     }
 }
 
-//debuggin
-#include <iostream>
 bool Compiler::indexExpression(ParseTree const *p, int &value)
 {
     /* 
@@ -166,7 +164,6 @@ bool Compiler::indexExpression(ParseTree const *p, int &value)
 	throw NodeError(node, "Vector value in index expression"); 
     }
     if (!checkInteger(node->value(0)[0])) {
-	std::cout << node->value(0)[0] << std::endl;
 	throw NodeError(node, 
 			"Index expression evaluates to non-integer value");
     }
@@ -609,9 +606,6 @@ bool Compiler::getParameterVector(ParseTree const *t,
     return true;
 }
 
-
-//debuggin
-#include <iostream>
 Node * Compiler::allocateStochastic(ParseTree const *stoch_relation)
 {
     ParseTree const *distribution = stoch_relation->parameters()[1];  
