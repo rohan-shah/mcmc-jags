@@ -55,7 +55,7 @@ NodeArray* SymTab::getVariable(string const &name) const
   }
 }
 
-void SymTab::writeData(std::map<std::string, SArray> const &data_table)
+void SymTab::writeData(map<string, SArray> const &data_table)
 {
   for(map<string, SArray>::const_iterator p(data_table.begin()); 
       p != data_table.end(); ++p) {
@@ -72,7 +72,7 @@ void SymTab::writeData(std::map<std::string, SArray> const &data_table)
 }
 
 
-void SymTab::writeValues(std::map<std::string, SArray> const &data_table,
+void SymTab::writeValues(map<string, SArray> const &data_table,
 		         unsigned int chain)
 {
     for(map<string, SArray>::const_iterator p(data_table.begin()); 
