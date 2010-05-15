@@ -55,7 +55,7 @@ TreeClass ParseTree::treeClass() const
   return _tclass;
 }
 
-std::string const &ParseTree::name() const
+string const &ParseTree::name() const
 {
   switch(_tclass) {
   case P_VAR: case P_COUNTER: case P_FUNCTION: case P_DENSITY: case P_LINK:
@@ -80,7 +80,7 @@ int ParseTree::line() const
     return _line;
 }
 
-void ParseTree::setParameters(std::vector<ParseTree *> const &parameters)
+void ParseTree::setParameters(vector<ParseTree *> const &parameters)
 {
   if (!_parameters.empty()) {
     throw logic_error("Parameters already set in ParseTree");
