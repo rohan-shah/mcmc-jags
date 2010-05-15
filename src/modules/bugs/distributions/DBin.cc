@@ -28,25 +28,25 @@ bool DBin::checkParameterValue (vector<double const *> const &par) const
     return (SIZE(par) >= 1 && PROB(par) >= 0.0 && PROB(par) <= 1.0);
 }
 
-double DBin::d(double x, std::vector<double const *> const &par, 
+double DBin::d(double x, vector<double const *> const &par, 
 	       bool give_log) const
 {
     return dbinom(x, SIZE(par), PROB(par), give_log);
 }
 
-double DBin::p(double x, std::vector<double const *> const &par, 
+double DBin::p(double x, vector<double const *> const &par, 
 	       bool lower, bool give_log) const
 {
     return pbinom(x, SIZE(par), PROB(par), lower, give_log);
 }
 
-double DBin::q(double p, std::vector<double const *> const &par, 
+double DBin::q(double p, vector<double const *> const &par, 
 	       bool lower, bool log_p) const
 {
     return qbinom(p, SIZE(par), PROB(par), lower, log_p);
 }
 
-double DBin::r(std::vector<double const *> const &par, RNG *rng) const
+double DBin::r(vector<double const *> const &par, RNG *rng) const
 {
     return rbinom(SIZE(par), PROB(par), rng);
 }
