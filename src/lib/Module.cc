@@ -203,6 +203,7 @@ void Module::load()
 				      _obs_functions[i].second);
     }
 
+    _loaded = true;
     loadedModules().push_back(this);
 }
 
@@ -244,6 +245,7 @@ void Module::unload()
 	}
     }
 
+    _loaded = false;
     loadedModules().remove(this);
 }
 
