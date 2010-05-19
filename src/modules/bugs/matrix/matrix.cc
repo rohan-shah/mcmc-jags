@@ -9,6 +9,7 @@
 
 using std::log;
 using std::runtime_error;
+using std::logic_error;
 
 double logdet(double const *a, int n)
 {
@@ -105,32 +106,63 @@ double det(double const *a, int n)
 */
 
 
-void inverse (double *X, double const *A, int n, bool spd)
+void inverse_spd (double *X, double const *A, int n)
 {
-  /* invert n x n smatrix A. Put result in X*/
+    /* invert n x n symmetric positive definite matrix A. Put result in X*/
 
-  int N = n*n;
-  double *Acopy = new double[N];
-  for (int i = 0; i < N; i++) {
-    Acopy[i] = A[i];
-    X[i] = 0;
-  }
-  for (int i = 0; i < n; i++) {
-    X[i*n + i] = 1;
-  }
+    int N = n*n;
+    double *Acopy = new double[N];
+    for (int i = 0; i < N; i++) {
+	Acopy[i] = A[i];
+    }
 
-  int info = 0;
-  if (spd) {
-    //Symmetric, positive definite
-    F77_DPOSV ("L", &n, &n, Acopy, &n, X, &n, &info); 
-  }
-  else {
+    int info = 0;
+    F77_DPOTRF ("L", &n, Acopy, &n, &info);
+    if (info < 0) {
+	throw logic_error("Illegal argument in inverse_spd");
+    }
+    else if (info > 0) {
+	delete [] Acopy;
+	throw runtime_error("Cannot invert matrix: not positivie definite");
+    }
+    F77_DPOTRI ("L", &n, Acopy, &n, &info); 
+
+    for (unsigned int i = 0; i < n; ++i) {
+	X[i*n + i] = Acopy[i*n + i];
+	for (unsigned int j = 0; j < i; ++j) {
+	    X[i*n + j] = X[j*n + i] = Acopy[j*n + i];
+	}
+    }
+    delete [] Acopy;
+
+    if (info != 0) {
+	throw runtime_error("Unable to invert symmetric positive definite matrix");
+    }
+}
+
+
+void inverse (double *X, double const *A, int n)
+{
+    /* invert n x n matrix A. Put result in X */
+
+    int N = n*n;
+    double *Acopy = new double[N];
+    for (int i = 0; i < N; i++) {
+	Acopy[i] = A[i];
+	X[i] = 0;
+    }
+    for (int i = 0; i < n; i++) {
+	X[i*n + i] = 1;
+    }
+
+    int info = 0;
     int *ipiv = new int[n];
     F77_DGESV (&n, &n, Acopy, &n, ipiv, X, &n, &info);
+
     delete [] ipiv;    
-  }
-  delete [] Acopy;
-  if (info != 0) {
-    throw runtime_error("Unable to invert matrix");
-  }
+    delete [] Acopy;
+
+    if (info != 0) {
+	throw runtime_error("Unable to invert matrix");
+    }
 }
