@@ -16,6 +16,7 @@
 #define F77_DAXPY  F77_FUNC(daxpy,DAXPY)
 #define F77_DSYR   F77_FUNC(dsyr,DSYR)
 #define F77_DSYMM  F77_FUNC(dsymm, DSYMM)
+#define F77_DPOTRI F77_FUNC(dpotri, DPOTRI)
 
 extern "C" {
 /*
@@ -45,6 +46,9 @@ extern "C" {
 		    int* info);
 
     void F77_DPOTRF (const char *uplo, const int *n, double *a,
+		     const int *lda, const int *info);
+
+    void F77_DPOTRI (const char *uplo, const int *n, double *a,
 		     const int *lda, const int *info);
 
     double F77_DLANGE (const char *norm, const int *m, const int *n,

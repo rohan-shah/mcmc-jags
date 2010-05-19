@@ -73,7 +73,7 @@ void DWish::randomSample(double *x, int length,
        to preserve conjugacy.
     */
     double * C = new double[length];
-    inverse(C, R, nrow, true);
+    inverse_spd(C, R, nrow);
 
     /* Get Choleskly decomposition of C */
     int info = 0;
@@ -201,7 +201,7 @@ void DWish::typicalValue(double *x, unsigned int length,
     /* Returns the mean as a typical value. We need to invert the
        scale matrix */
 
-    inverse(x, SCALE(par), NROW(dims), true);
+    inverse_spd(x, SCALE(par), NROW(dims));
     for (unsigned int i = 0; i < length; ++i) {
 	x[i] *= DF(par);
     }
