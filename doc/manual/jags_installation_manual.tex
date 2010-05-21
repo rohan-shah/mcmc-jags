@@ -467,7 +467,7 @@ You need to install the following packages
 \begin{itemize}
 \item MinGW 
 \item MSYS  
-\item NSIS  
+\item NSIS, including the AccessControl plug-in  
 \end{itemize}
 
 MinGW (Minimalist GNU for Windows) is a build environment for Windows.
@@ -498,9 +498,11 @@ Windows. You will need to copy and paste the source files for LAPACK
 and JAGS into this directory.
 
 The Nullsoft Scriptable Install System
-(\url{http:\\nsis.sourceforge.net}) allows you to create a
+(\url{http://nsis.sourceforge.net}) allows you to create a
 self-extracting executable that installs \JAGS\ on the target PC.
-These instructions were tested with NSIS 2.33.
+These instructions were tested with NSIS 2.33.  You must also install
+the AccessControl plug-in for NSIS, which is available from
+\url{http://nsis.sourceforge.net/AccessControl_plug-in}.
 
 \subsubsection{Building LAPACK}
 
