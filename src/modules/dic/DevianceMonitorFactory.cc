@@ -36,7 +36,7 @@ namespace dic {
 	if (observed_snodes.empty())
 	    return 0;
 
-	Monitor *m;
+	Monitor *m = 0;
 	if (type == "mean") {
 	    m = new DevianceMean(observed_snodes);
 	    m->setName(name);
