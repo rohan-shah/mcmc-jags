@@ -90,6 +90,7 @@ Section # Default section
    Push all                       #replace all occurrences
    Push $INSTDIR\bin\jags.bat     #file to replace in
    Call AdvReplaceInFile
+   AccessControl::GrantOnFile "$INSTDIR\bin\jags.bat" "BUILTIN\USERS" "GenericRead + GenericExecute"
 
    WriteRegStr ${INSTDIR_REG_ROOT} "${INSTDIR_REG_KEY}" "InstallDir" "$INSTDIR"
    WriteRegStr ${INSTDIR_REG_ROOT} "${INSTDIR_REG_KEY}" "DisplayName" "${JAGS_VISIBLE_NAME}"
