@@ -544,22 +544,41 @@ void Model::addExtraNode(Node *node)
     }
 }
 
+
+/* 
+   We use construct-on-first-use for the factory lists used by model
+   objects. By dynamically allocating a list, we ensure that its
+   destructor is never called - the memory is simply returned to the
+   OS on exit.
+
+   This fixes a nasty exit bug.  We cannot guarantee the order that
+   static destructors are called in.  Therefore, a segfault can occur
+   if a module tries to remove entries from a list that has already
+   been destroyed.
+
+   See also Compiler.cc, where the same technique is used for 
+   lookup tables used by the compiler.
+*/
+
 list<pair<SamplerFactory *, bool> > &Model::samplerFactories()
 {
-    static list<pair<SamplerFactory *, bool> > _samplers;
-    return _samplers;
+    static list<pair<SamplerFactory *, bool> > *_samplerfac =
+	new list<pair<SamplerFactory *, bool> >();
+    return *_samplerfac;
 }
 
 list<pair<RNGFactory *, bool> > &Model::rngFactories()
 {
-    static list<pair<RNGFactory *, bool> > _rngfac;
-    return _rngfac;
+    static list<pair<RNGFactory *, bool> > *_rngfac =
+	new list<pair<RNGFactory *, bool> >();
+    return *_rngfac;
 }
 
 list<pair<MonitorFactory *, bool> > &Model::monitorFactories()
 {
-    static list<pair<MonitorFactory *, bool> > _monitorfac;
-    return _monitorfac;
+    static list<pair<MonitorFactory *, bool> > *_monitorfac =
+	new list<pair<MonitorFactory*,bool> >();
+    return *_monitorfac;
 }
 
 unsigned int Model::nchain() const

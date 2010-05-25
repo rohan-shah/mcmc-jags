@@ -27,22 +27,21 @@ struct isDistName: public binary_function<DistPtr, string, bool>
 
 void DistTab::insert (DistPtr const &dist)
 {
-    DistList::const_iterator p = std::find(_flist.begin(), _flist.end(), dist);
-    if (p == _flist.end())
-	_flist.push_front(dist);
+    DistList::const_iterator p = std::find(_dlist.begin(), _dlist.end(), dist);
+    if (p == _dlist.end())
+	_dlist.push_front(dist);
 }
 
 DistPtr const &DistTab::find(string const &name) const
 {
     DistList::const_iterator p = 
-	find_if(_flist.begin(), _flist.end(), bind2nd(isDistName(), name));
+	find_if(_dlist.begin(), _dlist.end(), bind2nd(isDistName(), name));
 
-    return (p == _flist.end()) ? _nullfun : *p;
+    return (p == _dlist.end()) ? _nulldist : *p;
 }
 
 void DistTab::erase(DistPtr const &dist)
 {
-    DistList::iterator p = std::find(_flist.begin(), _flist.end(), dist);
-    if (p != _flist.end())
-	_flist.erase(p);
+    _dlist.remove(dist);
 }
+

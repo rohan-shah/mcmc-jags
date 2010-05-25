@@ -62,7 +62,7 @@ LinkFunction const * FuncTab::findLink (string const &name) const
 
 void FuncTab::erase(FunctionPtr const &func)
 {
-    FuncList::iterator p = std::find(_flist.begin(), _flist.end(), func);
-    if (p != _flist.end())
-	_flist.erase(p);
+    _flist.remove(func);
+
 }
+

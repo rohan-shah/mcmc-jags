@@ -39,8 +39,5 @@ FunctionPtr const &ObsFuncTab::find(DistPtr const &dist) const
 
 void ObsFuncTab::erase(DistPtr const &dist, FunctionPtr const &func)
 {
-    ObsFunc f(dist, func);
-    OFList::iterator p = std::find(_flist.begin(), _flist.end(), f);
-    if (p != _flist.end())
-	_flist.erase(p);
+    _flist.remove(ObsFunc(dist, func));
 }
