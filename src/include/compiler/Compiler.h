@@ -113,14 +113,13 @@ public:
    */
   static DistTab &distTab();
   /**
-   * The table for observalbe functions used by the compiler to substitute
+   * The table for observable functions used by the compiler to substitute
    * a logical node for a stochastic node when required
    */
   static ObsFuncTab &obsFuncTab();
   MixtureFactory &mixtureFactory1();
   MixtureFactory &mixtureFactory2();
 };
-
 
 #endif /* COMPILER_H_ */
 

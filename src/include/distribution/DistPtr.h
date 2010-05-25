@@ -28,7 +28,6 @@ public:
     friend ScalarDist const *SCALAR(DistPtr const &p);
     friend VectorDist const *VECTOR(DistPtr const &p);
     friend ArrayDist const *ARRAY(DistPtr const &p);
-    friend Distribution const *DIST(DistPtr const &p);
     friend bool isNULL(DistPtr const &p);
 };
 

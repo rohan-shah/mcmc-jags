@@ -16,8 +16,8 @@
  */
 class DistTab
 {
-    std::list<DistPtr> _flist;
-    DistPtr const _nullfun;
+    std::list<DistPtr> _dlist;
+    DistPtr const _nulldist;
 public:
     /**
      * Inserts a dist into the table. 
