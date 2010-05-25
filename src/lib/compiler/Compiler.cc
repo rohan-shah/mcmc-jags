@@ -1094,22 +1094,37 @@ void Compiler::undeclaredVariables(ParseTree const *prelations)
     }
 }
 
+/* 
+   We use construct-on-first-use for the lookup tables used by the
+   compiler.  By dynamically allocating a table, we ensure that its
+   destructor is never called - the memory is simply returned to the
+   OS on exit.
+
+   This fixes a nasty exit bug.  We cannot guarantee the order that
+   static destructors are called in.  Therefore, a segfault can occur
+   if a module tries to unload itself from a table that has already
+   been destroyed.
+
+   See also Model.cc, where the same technique is used for factory
+   lists.
+*/
+
 DistTab &Compiler::distTab()
 {
-    static DistTab _disttab;
-    return _disttab;
+    static DistTab *_disttab = new DistTab();
+    return *_disttab;
 }
 
 FuncTab &Compiler::funcTab()
 {
-    static FuncTab _functab;
-    return _functab;
+    static FuncTab *_functab = new FuncTab();
+    return *_functab;
 }
 
 ObsFuncTab &Compiler::obsFuncTab()
 {
-    static ObsFuncTab _oftab;
-    return _oftab;
+    static ObsFuncTab *_oftab = new ObsFuncTab();
+    return *_oftab;
 }
 
 MixtureFactory& Compiler::mixtureFactory1()
@@ -1126,3 +1141,4 @@ BUGSModel &Compiler::model() const
 {
     return _model;
 }
+

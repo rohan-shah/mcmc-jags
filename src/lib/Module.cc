@@ -192,7 +192,7 @@ void Module::load()
 	pair<SamplerFactory*, bool> p(_sampler_factories[i], true);
 	Model::samplerFactories().push_front(p);
     }
-    for (unsigned int i = 0; i < _distributions.size(); ++i) {
+    for (unsigned int i = 0; i < _dp_list.size(); ++i) {
 	Compiler::distTab().insert(_dp_list[i]);
     }
     for (unsigned int i = 0; i < _fp_list.size(); ++i) {
@@ -212,12 +212,15 @@ void Module::unload()
     if (!_loaded)
 	return;
 
+    loadedModules().remove(this);
+    _loaded = false;
+
+    for (unsigned int i = 0; i < _fp_list.size(); ++i) {
+	Compiler::funcTab().erase(_fp_list[i]);
+    }
     for (unsigned int i = 0; i < _obs_functions.size(); ++i) {
 	Compiler::obsFuncTab().erase(_obs_functions[i].first,
 				     _obs_functions[i].second);
-    }
-    for (unsigned int i = 0; i < _fp_list.size(); ++i) {
-	Compiler::funcTab().erase(_fp_list[i]);
     }
     for (unsigned int i = 0; i < _distributions.size(); ++i) {
 	Compiler::distTab().erase(_dp_list[i]);
@@ -226,27 +229,24 @@ void Module::unload()
     list<pair<RNGFactory *, bool> > &rngf = Model::rngFactories();
     for (unsigned int i = 0; i < _rng_factories.size(); ++i) {
 	RNGFactory *f = _rng_factories[i];
-	list<pair<RNGFactory *, bool> >::iterator p;
-	for (p = rngf.begin(); p != rngf.end(); ++p) {
-	    if (p->first == f) {
-		rngf.erase(p);
-	    }
-	}
+	rngf.remove(pair<RNGFactory *, bool>(f, true));
+	rngf.remove(pair<RNGFactory *, bool>(f, false));
     }
 
     list<pair<SamplerFactory *, bool> > &sf = Model::samplerFactories();
-    for (int i = 0; i < _sampler_factories.size(); ++i) {
+    for (unsigned int i = 0; i < _sampler_factories.size(); ++i) {
 	SamplerFactory *f = _sampler_factories[i];
-	list<pair<SamplerFactory *, bool> >::iterator p;
-	for (p = sf.begin(); p != sf.end(); ++p) {
-	    if (p->first == f) {
-		sf.erase(p);
-	    }
-	}
+	sf.remove(pair<SamplerFactory *, bool>(f, true));
+	sf.remove(pair<SamplerFactory *, bool>(f, false));
     }
 
-    _loaded = false;
-    loadedModules().remove(this);
+    list<pair<MonitorFactory *, bool> > &mf = Model::monitorFactories();
+    for (unsigned int i = 0; i < _monitor_factories.size(); ++i) {
+	MonitorFactory *f = _monitor_factories[i];
+	mf.remove(pair<MonitorFactory *, bool>(f, true));
+	mf.remove(pair<MonitorFactory *, bool>(f, false));
+    }
+
 }
 
 vector<Function*> const &Module::functions() const
