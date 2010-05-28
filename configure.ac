@@ -15,9 +15,9 @@ LT_CONFIG_LTDL_DIR([libltdl])
 LT_INIT([dlopen disable-static win32-dll])
 LTDL_INIT([recursive])
 
-
 AC_PROG_CC
 AC_PROG_CXX
+AC_PROG_F77
 AM_PROG_LEX
 AC_PROG_YACC
 
