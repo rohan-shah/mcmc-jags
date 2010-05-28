@@ -244,7 +244,6 @@ void TABLE(list<MonitorControl> const &mvec, string const &stem,
 	}
     }
     
-    unsigned int lineno = 0;
     list<MonitorControl>::const_iterator p;
     for (p = mvec.begin(); p != mvec.end(); ++p) {
 	Monitor const *monitor = p->monitor();
