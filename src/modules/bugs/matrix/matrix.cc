@@ -127,9 +127,9 @@ void inverse_spd (double *X, double const *A, int n)
     }
     F77_DPOTRI ("L", &n, Acopy, &n, &info); 
 
-    for (unsigned int i = 0; i < n; ++i) {
+    for (int i = 0; i < n; ++i) {
 	X[i*n + i] = Acopy[i*n + i];
-	for (unsigned int j = 0; j < i; ++j) {
+	for (int j = 0; j < i; ++j) {
 	    X[i*n + j] = X[j*n + i] = Acopy[j*n + i];
 	}
     }
