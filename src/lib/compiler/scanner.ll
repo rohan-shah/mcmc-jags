@@ -9,6 +9,11 @@
 #include "remap.h"
 #include "parser.h"
 
+#include <stdexcept>
+
+void jags_scanner_error(const char *msg);
+#define YY_FATAL_ERROR(msg) jags_scanner_error (msg)
+
 %}
 
 EXPONENT	[eE][+-][0-9]+
@@ -108,4 +113,9 @@ BRACKET		[ \t]*\(
 int yywrap()
 {
   return 1;
+}
+
+void jags_scanner_error (char const *msg)
+{
+    throw std::runtime_error(msg);
 }
