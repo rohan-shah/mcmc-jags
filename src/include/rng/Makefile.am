@@ -1,3 +1,3 @@
-distribincludedir = $(pkgincludedir)/distribution
+rngincludedir = $(pkgincludedir)/rng
 
-distribinclude_HEADERS = RNG.h RmathRNG.h RNGFactory.h TruncatedNormal.h
+rnginclude_HEADERS = RNG.h RmathRNG.h RNGFactory.h TruncatedNormal.h
