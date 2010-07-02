@@ -1609,9 +1609,9 @@ $c[]$, a vector of cut points of length $M$, say. If \texttt{X $\sim$
 dinterval(t, c)} then 
 
 \begin{tabular}{lll}
-$X=0$   & if & $t < c[1]$\\
-$X=m$   & if & $c[m] \leq t < c[m+1]$ for $1 \leq m < M$\\
-$X = M$ & if & $c[M] \leq t$.
+$X=0$   & if & $t \leq c[1]$\\
+$X=m$   & if & $c[m] < t \leq c[m+1]$ for $1 \leq m < M$\\
+$X = M$ & if & $c[M] < t$.
 \end{tabular}
 
 \item The \texttt{dsum} distribution represents the sum of two or more
