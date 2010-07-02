@@ -21,8 +21,6 @@ class DNegBin : public RScalarDist {
   double q(double p, std::vector<double const *> const &parameters, bool lower,
 	   bool log_p) const;
   double r(std::vector<double const *> const &parameters, RNG *rng) const;
-  /** Checks that r is discrete-valued */
-  bool checkParameterDiscrete (std::vector<bool> const &mask) const;
   /**
    * Checks that p lies in the interval (0,1) and r > 0
    */

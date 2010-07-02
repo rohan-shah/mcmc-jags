@@ -17,11 +17,6 @@ DNegBin::DNegBin()
     : RScalarDist("dnegbin", 2, DIST_POSITIVE, true)
 {}
 
-bool DNegBin::checkParameterDiscrete (vector<bool> const &mask) const
-{
-    return mask[1]; // r is discrete-valued
-}
-
 bool 
 DNegBin::checkParameterValue (vector<double const *> const &par) const
 {
