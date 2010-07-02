@@ -88,7 +88,7 @@ BRACKET		[ \t]*\(
   yylval.val = atof(yytext); return DOUBLE;
 }
 
-([a-zA-Z]+)/{BRACKET} {
+([a-zA-Z]+[a-zA-Z0-0\._]*)/{BRACKET} {
   yylval.stringptr = new std::string(yytext);
   return FUNC;
 }
