@@ -281,13 +281,13 @@ string const &Module::name() const
 
 list<Module *> &Module::modules()
 {
-    static list<Module*> _modules;
-    return _modules;
+    static list<Module*> *_modules = new list<Module*>;
+    return *_modules;
 }
 
 list<Module *> &Module::loadedModules()
 {
-    static list<Module*> _modules;
-    return _modules;
+    static list<Module*> *_modules = new list<Module*>;
+    return *_modules;
 }
 
