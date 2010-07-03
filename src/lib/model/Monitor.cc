@@ -51,12 +51,6 @@ vector<string> const &Monitor::elementNames() const
 
 void Monitor::setElementNames(vector<string> const &names)
 {
-/*
-  //debuggin
-    if (names.size() != product(dim1())) {
-	throw logic_error("Invalid length is Monitor::setElementNames");
-    }
-*/
     _elt_names = names;
 }
 
