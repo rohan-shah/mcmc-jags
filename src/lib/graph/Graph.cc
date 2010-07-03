@@ -67,7 +67,6 @@ bool Graph::isClosed() const
 	     j != parents.end(); j++) 
 	{
 	    if (!this->contains(*j)) {
-	        throw NodeError(*i, "Bad parent"); //debuggin
 		return false;
 	    }
 	}
@@ -77,7 +76,6 @@ bool Graph::isClosed() const
 	for (set<StochasticNode*>::iterator k = sch->begin(); k != sch->end(); k++)
 	{
 	    if (!this->contains(*k)) {
-	        throw NodeError(*k, "is bad stochastic child"); //debuggin
 		return false;
 	    }
 	}
@@ -86,7 +84,6 @@ bool Graph::isClosed() const
 	for (set<DeterministicNode*>::iterator k = dch->begin(); k != dch->end(); k++)
 	{
 	    if (!this->contains(*k)) {
-	        throw NodeError(*k, "is bad deterministic child"); //debuggin
 		return false;
 	    }
 	}
