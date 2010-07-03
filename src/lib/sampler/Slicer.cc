@@ -25,7 +25,7 @@ void Slicer::updateStep(RNG *rng)
     double g0 = logDensity();
     if (!jags_finite(g0)) {
 	if (g0 > 0) {
-	    return;
+	    throw runtime_error("Error in Slicer: infinite likelihood at current value");
 	}
 	else {
 	    //FIXME: Not very informative
@@ -120,11 +120,11 @@ void Slicer::updateDouble(RNG *rng)
   // Test current value
   double g0 = logDensity();
   if (!jags_finite(g0)) {
-    if (g0 < 0) {
-	throw runtime_error("Error in Slicer: Current value is inconsistent with data");
-    }
-    else {
-      return;
+      if (g0 < 0) {
+	  throw runtime_error("Error in Slicer: Current value is inconsistent with data");
+      }
+      else {
+	  throw runtime_error("Error in Slicer: infinite likelihood at current value");
     }
   }
 
@@ -185,7 +185,8 @@ void Slicer::updateDouble(RNG *rng)
     if (xnew >= lower && xnew <= upper) {
 	setValue(xnew);
 	double g = logDensity();
-	if (g >= z && accept(xold, xnew, z, L, R, lower, upper)) {
+	if (g >= z && accept(xold, xnew, z, L, R, lower, upper)) 
+	{
 	    // The accept function will alter the current value. So we
 	    // must reset it.
 	    setValue(xnew);
