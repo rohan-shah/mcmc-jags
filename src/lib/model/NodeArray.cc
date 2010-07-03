@@ -234,7 +234,6 @@ void NodeArray::getValue(SArray &value, unsigned int chain,
 
 //FIXME: A lot of code overlap with setValue here.
 
-#include <iostream>
 void NodeArray::setData(SArray const &value, Model *model)
 {
     if (!(_range == value.range())) {
