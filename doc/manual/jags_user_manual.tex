@@ -5,7 +5,7 @@
 \usepackage{url}
 \usepackage{multirow}
 \usepackage{amsfonts}
-\newcommand{\release}{2.0.0}
+\newcommand{\release}{2.1.0}
 \newcommand{\JAGS}{\textsf{JAGS}}
 \newcommand{\rjags}{\textsf{rjags}}
 \newcommand{\BUGS}{\textsf{BUGS}}
@@ -1294,6 +1294,7 @@ Binomial           & dbin      & pbin      & qbin \\
 Chi-square         & dchisqr   & pchisqr   & qchisqr \\
 Double exponential & ddexp     & pdexp     & qdexp \\
 Exponential        & dexp      & pexp      & qexp \\
+F                  & df        & pf        & qf \\
 Gamma              & dgamma    & pgamma    & qgamma \\
 Generalized gamma  & dgengamma & pgengamma & qgengamma \\
 Hypergeometric     & dhyper    & phyper    & qhyper \\
@@ -1432,6 +1433,13 @@ their distribution.
       Exponential & \verb+dexp(lambda)+ & 
       \multirow{2}{*}{$\lambda \exp(-\lambda x)$} & 0 & \\ 
       & $\lambda > 0$ \\
+      F   & \verb+df(n,m)+ & 
+      \multirow{2}{*}{
+        $\textstyle \frac{\Gamma(\frac{n + m}{2})}
+                         {\Gamma(\frac{n}{2}) \Gamma(\frac{m}{2})}
+        \left(\frac{n}{m} \right)^{\frac{n}{2}} x^{\frac{n}{2} - 1} 
+        \left\{1 + \frac{nx}{m} \right\}^{-\frac{(n + m)}{2}}$} & 0 & \\
+      & $n > 0$, $m > 0$ \\
       Gamma       & \verb+dgamma(r, mu)+ & 
       \multirow{2}{*}{
         $\frac{\textstyle \mu^r x^{r - 1} \exp(-\mu x)}
