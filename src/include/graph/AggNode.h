@@ -69,6 +69,10 @@ public:
      * An aggregate node is named after its first and last parents
      */
     std::string deparse(std::vector<std::string> const &parents) const;
+    /**
+     * Returns the vector of offsets
+     */
+    std::vector<unsigned int> const &offsets() const;
     DeterministicNode *clone(std::vector<Node const *> const &parents) const;
 };
 
