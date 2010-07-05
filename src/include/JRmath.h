@@ -206,7 +206,7 @@ double  Rlog1p(double);
 #define dcauchy		jags_dcauchy
 #define dchisq		jags_dchisq
 #define dexp		jags_dexp
-#define df		jags_df
+#define dF		jags_dF
 #define dgamma		jags_dgamma
 #define dgeom		jags_dgeom
 #define dhyper		jags_dhyper
@@ -250,7 +250,7 @@ double  Rlog1p(double);
 #define pchisq		jags_pchisq
 #define pentagamma	jags_pentagamma
 #define pexp		jags_pexp
-#define pf		jags_pf
+#define pF		jags_pF
 #define pgamma		jags_pgamma
 #define pgeom		jags_pgeom
 #define phyper		jags_phyper
@@ -278,7 +278,7 @@ double  Rlog1p(double);
 #define qchisq		jags_qchisq
 #define qchisq_appr	jags_qchisq_appr
 #define qexp		jags_qexp
-#define qf		jags_qf
+#define qF		jags_qF
 #define qgamma		jags_qgamma
 #define qgeom		jags_qgeom
 #define qhyper		jags_qhyper
@@ -302,7 +302,7 @@ double  Rlog1p(double);
 #define rcauchy		jags_rcauchy
 #define rchisq		jags_rchisq
 #define rexp		jags_rexp
-#define rf		jags_rf
+#define rF		jags_rF
 #define rgamma		jags_rgamma
 #define rgeom		jags_rgeom
 #define rhyper		jags_rhyper
@@ -413,10 +413,10 @@ double	rnchisq(double, double, RNG*);
 
 	/* F Distibution */
 
-double	df(double, double, double, int);
-double	pf(double, double, double, int, int);
-double	qf(double, double, double, int, int);
-double	rf(double, double, RNG*); 
+double	dF(double, double, double, int);
+double	pF(double, double, double, int, int);
+double	qF(double, double, double, int, int);
+double	rF(double, double, RNG*); 
 
 	/* Student t Distibution */
 
