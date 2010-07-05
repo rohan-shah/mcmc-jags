@@ -143,6 +143,7 @@ void ConjugateBeta::update(unsigned int chain, RNG *rng)
 		n = *stoch_children[i]->parents()[1]->value(chain);
 		aplus = n;
 		bplus = y;
+		break;
 	    case BERN:
 		aplus = y;
 		bplus = 1 - y;
