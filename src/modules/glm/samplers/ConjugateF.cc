@@ -115,24 +115,26 @@ bool ConjugateF::canSample(StochasticNode *snode, Graph const &graph)
 	return false;
     if (!snode->parents()[1]->isObserved())
 	return false;
-    if (!snode->parents()[1]->value(0)[0] != 1)
+    if (*snode->parents()[1]->value(0) != 1)
 	return false;
     if (snode->isBounded())
-	return false;
+	return false; //FIXME. We could include this case
 
     GraphView gv(vector<StochasticNode*>(1,snode), graph);
 
     // Check stochastic children
-    vector<StochasticNode const*> const &stoch_nodes = 
-	gv.stochasticChildren();
-    for (unsigned int i = 0; i < stoch_nodes.size(); ++i) {
-	if (stoch_nodes[i]->distribution()->name() != "dnorm") {
+    vector<StochasticNode const*> const &snodes = gv.stochasticChildren();
+    for (unsigned int i = 0; i < snodes.size(); ++i) {
+	if (snodes[i]->distribution()->name() != "dnorm") {
 	    return false;
 	}
-	if (gv.isDependent(stoch_nodes[i]->parents()[0])) {
+	if (gv.isDependent(snodes[i]->parents()[0])) {
 	    return false; //mean parameter depends on snode
 	}
-	if (stoch_nodes[i]->isBounded()) {
+	if (snodes[i]->isBounded()) {
+	    return false;
+	}
+	if (snodes[i]->isObserved()) {
 	    return false;
 	}
     }
@@ -142,25 +144,27 @@ bool ConjugateF::canSample(StochasticNode *snode, Graph const &graph)
 	return false;
     }
 
-    // Need to get non const pointers to stochastic children
+    // Need to get non-const pointers to stochastic children
     vector<StochasticNode*> schildren;
-    convertStochasticChildren(snode, stoch_nodes, schildren);
+    convertStochasticChildren(snode, snodes, schildren);
     
     // Now check stochastic children to see if they form a linear
     // model
 
     GraphView gv2(schildren, graph);
-    if (!checkLinear(&gv2, true, false))
+    if (!checkLinear(&gv2, false, false))
 	return false;
 
-    vector<StochasticNode const *> const &stoch_nodes2 = 
-	gv2.stochasticChildren();
-    for (unsigned int i = 0; i < stoch_nodes2.size(); ++i) {
-	if (stoch_nodes2[i]->distribution()->name() != "dnorm") {
+    vector<StochasticNode const *> const &snodes2 = gv2.stochasticChildren();
+    for (unsigned int i = 0; i < snodes2.size(); ++i) {
+	if (snodes2[i]->distribution()->name() != "dnorm") {
 	    return false;
 	}
-	if (gv.isDependent(stoch_nodes[i]->parents()[1])) {
-	    return false; //variance parameter is dependent
+	if (snodes2[i]->isBounded()) {
+	    return false;
+	}
+	if (gv.isDependent(snodes2[i]->parents()[1])) {
+	    return false; //Precision parameter is dependent
 	}
     }
 
