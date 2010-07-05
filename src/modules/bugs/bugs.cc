@@ -9,6 +9,7 @@
 #include <distributions/DDexp.h>
 #include <distributions/DDirch.h>
 #include <distributions/DExp.h>
+#include <distributions/DF.h>
 #include <distributions/DGamma.h>
 #include <distributions/DGenGamma.h>
 #include <distributions/DInterval.h>
@@ -106,6 +107,7 @@ BUGSModule::BUGSModule()
     Rinsert(new DDexp);
     insert(new DDirch);
     Rinsert(new DExp);
+    Rinsert(new DF);
     Rinsert(new DGamma);
     Rinsert(new DLnorm);
     Rinsert(new DLogis);
