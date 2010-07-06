@@ -33,6 +33,11 @@ static double getScale(StochasticNode const *snode, unsigned int chain)
     return *snode->parents()[1]->value(chain);
 }
 
+static double getMean(StochasticNode const *sndoe, unsigned int chain)
+{
+    return *snode->parents()[0]->value(chain);
+}
+
 static void calCoef(double *coef, GraphView const *gv, unsigned int chain)
 {   
     const double xold = gv->nodes()[0]->value(chain)[0];
@@ -184,75 +189,74 @@ ConjugateF::~ConjugateF()
 
 void ConjugateF::update(RNG *rng) const
 {
-    unsigned int N = _gv2.length();
+    /* Reparametrize */
 
-    /* Re-parameterize */
-    vector<double> phi(N);
+    unsigned int J = _gv2.length();
+    vector<double> phi(J);
     _gv2.getValue(phi, _chain);
 
-    vector<StochasticNode*> const &schildren = _gv2->nodes();
-    for (unsigned int i = 0; i < N; ++i) {
-	phi[i] -= schildren[i]->parents()[0]->value(chain)[0];
-	phi[i] /= _scale0;
+    vector<StochasticNode*> const &nodes2 = _gv2->nodes();
+    if (nodes2.size() != J) {
+	throw logic_error("Length mismatch in Conjugate F sampler");
+    }
+    for (unsigned int j = 0; j < J; ++j) {
+	phi[j] -= getMean(nodes2[j], chain);
+	phi[j] /= _scale; //fixme: what if _scale == 0?
     }
 
     /* Update tau, which has a conjugate gamma distribution */
 
     //Prior
     vector<Node const *> const &param = _gv->nodes()[0]->parents();
-    double r = 0.5; //shape
-    double mu = *param[0]->value(chain)/2;
+    double mu = 0.5; //rate
+    double r = *param[0]->value(chain)/2; //shape
     
     // likelihood 
     double *coef = 0;
-    bool empty = _gv->deterministicChildren().empty();
-    bool temp_coef = false;
+    bool empty = _gv1->deterministicChildren().empty();
     if (!empty && _coef == 0) {
-	    temp_coef = true;
-	    coef = new double[nchildren];
-	    calCoef(coef, _gv, chain);
+	    coef = new double[J];
+	    calCoef(coef, _gv1, chain);
     }
     else {
 	coef = _coef;
     }
 
-    for (unsigned int i = 0; i < nchildren; ++i) {
-
-	double coef_i = empty ? 1 : coef[i];
-	if (coef_i > 0) {
-
-	    StochasticNode const *schild = stoch_children[i];
-	    vector<Node const*> const &cparam = schild->parents();
-	    double Y = *schild->value(chain);
-	    double m = *cparam[0]->value(chain); //location parameter 
+    for (unsigned int j = 0; j < J; ++j) {
+	double coef_j = empty ? 1 : coef[j];
+	if (coef_j > 0) {
 	    r += 0.5;
-	    mu += coef_i;
-
+	    mu += coef_j * phi[j] * phi[j] / 2;
 	}
     }
-    if (temp_coef) {
+    if (coef != _coef) {
 	delete [] coef;
     }
 
     // Sample from the posterior
-    double xnew;
-    if (isBounded(_gv->nodes()[0])) {
-	// Use inversion to get random sample
-	double lower = 0;
-	Node const *lb = _gv->nodes()[0]->lowerBound();
-	if (lb) {
-	    lower = max(lower, *lb->value(chain));
-	}
-	Node const *ub = _gv->nodes()[0]->upperBound();
-	double plower = lb ? pgamma(lower,             r, 1/mu, 1, 0) : 0;
-	double pupper = ub ? pgamma(*ub->value(chain), r, 1/mu, 1, 0) : 1;
-	double p = runif(plower, pupper, rng);
-	xnew = qgamma(p, r, 1/mu, 1, 0);    
+    double tau_new = rgamma(r, 1/mu, rng);
+
+    /* Update scale, which has a conjugate normal distribution */
+    vector<double> old(J), m(J);
+    for (unsigned int j = 0; j < J; ++j) {
+	old[j] = *nodes2[j]->value(chain); //Current value
+	m[j] = getMean(nodes2[j], chain);  //prior mean
     }
-    else {
-	xnew = rgamma(r, 1/mu, rng);
+
+    vector<StochasticNode const *> const &schild2 = _gv2->stochasticChildren();
+    unsigned int I = schild2.size();
+
+    vector<double> Z(I), R(I);
+    for (unsigned int i = 0; i < I; ++i) {
+	R[i] = *schild2[i]->value(chain);
+	Z[i] = getMean(schild2[i], chain);
     }
-    _gv->setValue(&xnew, 1, chain);  
+    _gv2.setValue(m, chain);
+    for (unsigned int i = 0; i < I; ++i) {
+	Z[i] -= getMean(schild2[i], chain);
+	R[i] -= getMean(schild2[i], chain);
+    }
+    
 }
 
 string ConjugateF::name() const
