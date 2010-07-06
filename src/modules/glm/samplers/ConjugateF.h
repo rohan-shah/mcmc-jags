@@ -4,6 +4,7 @@
 #include "SampleMethod.h"
 
 class ConjugateF : public SampleMethod {
+    GraphView _gv1, _gv2;
     unsigned int _chain;
     double scale, tau0;
     double *_coef;

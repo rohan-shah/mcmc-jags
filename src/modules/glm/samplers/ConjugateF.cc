@@ -33,8 +33,7 @@ static double getScale(StochasticNode const *snode, unsigned int chain)
     return *snode->parents()[1]->value(chain);
 }
 
-static void calCoef(double *coef, GraphView const *gv,
-		    vector<ConjugateDist> const &child_dist, unsigned int chain)
+static void calCoef(double *coef, GraphView const *gv, unsigned int chain)
 {   
     const double xold = gv->nodes()[0]->value(chain)[0];
     vector<StochasticNode const*> const &schildren = gv->stochasticChildren();
@@ -49,24 +48,6 @@ static void calCoef(double *coef, GraphView const *gv,
         coef[i] += getScale(snode);
     }
     gv->setValue(&xold, 1, chain);
-}
-
-ConjugateF::ConjugateF(GraphView const *gv, unsigned int chain)
-    : ConjugateMethod(gv), _chain(chain), _scale(1), 
-      tau0(gv->nodes()[0]->value(chain)[0]), _coef(0)
-{
-    if(!gv->deterministicChildren().empty() && checkScale(gv, true)) 
-    {
-	//One-off calculation of fixed scale transformation
-	_coef = new double[gv->stochasticChildren().size()];
-	calCoef(_coef, gv, _child_dist, 0);
-    }
-
-}
-
-ConjugateF::~ConjugateF()
-{
-    delete [] _coef;
 }
 
 static void getStochasticChildren(Node const *node, set<StochasticNode*> &sset)
@@ -171,13 +152,51 @@ bool ConjugateF::canSample(StochasticNode *snode, Graph const &graph)
     return true;
 }
 
-
-void 
-ConjugateF::update(unsigned int chain, RNG *rng) const
+static vector<StochasticNode*> getStochasticChildren(GraphView const &gv)
 {
-    vector<StochasticNode const*> const &stoch_children = 
-	_gv->stochasticChildren();
-    unsigned int nchildren = stoch_children.size();
+    StochasticNode *snode = gv->nodes()[0];
+    vector<StochasticNode*> ans;
+    convertStochasticChildren(snode, gv.stochasticChildren(), ans);
+    return ans;
+}
+
+ConjugateF::ConjugateF(StochasticNode *snode, Graph const &graph, 
+		       unsigned int chain)
+    : _gv1(GraphView(vector<StochasticNode*>(1,snode), graph)),
+      _gv2(GraphView(getStochasticChildren(_gv1), graph)),
+      _chain(chain),
+      _scale0(1), _tau0(node->value(chain)[0]),
+      _coef(0)
+{
+    if(!_gv1->deterministicChildren().empty() && checkScale(gv, true)) 
+    {
+	//One-off calculation of fixed scale transformation
+	_coef = new double[_gv1->stochasticChildren().size()];
+	calCoef(_coef, _gv1, chain);
+    }
+}
+
+ConjugateF::~ConjugateF()
+{
+    delete [] _coef;
+}
+
+
+void ConjugateF::update(RNG *rng) const
+{
+    unsigned int N = _gv2.length();
+
+    /* Re-parameterize */
+    vector<double> phi(N);
+    _gv2.getValue(phi, _chain);
+
+    vector<StochasticNode*> const &schildren = _gv2->nodes();
+    for (unsigned int i = 0; i < N; ++i) {
+	phi[i] -= schildren[i]->parents()[0]->value(chain)[0];
+	phi[i] /= _scale0;
+    }
+
+    /* Update tau, which has a conjugate gamma distribution */
 
     //Prior
     vector<Node const *> const &param = _gv->nodes()[0]->parents();
@@ -191,7 +210,7 @@ ConjugateF::update(unsigned int chain, RNG *rng) const
     if (!empty && _coef == 0) {
 	    temp_coef = true;
 	    coef = new double[nchildren];
-	    calCoef(coef, _gv, _child_dist, chain);
+	    calCoef(coef, _gv, chain);
     }
     else {
 	coef = _coef;
@@ -207,7 +226,7 @@ ConjugateF::update(unsigned int chain, RNG *rng) const
 	    double Y = *schild->value(chain);
 	    double m = *cparam[0]->value(chain); //location parameter 
 	    r += 0.5;
-	    mu += coef_i * (Y - m) * (Y - m) / 2;
+	    mu += coef_i;
 
 	}
     }
