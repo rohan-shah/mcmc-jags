@@ -7,6 +7,7 @@
 #include <graph/StochasticNode.h>
 #include <sampler/Linear.h>
 #include <sampler/GraphView.h>
+#include <rng/TruncatedNormal.h>
 
 #include <set>
 #include <stdexcept>
@@ -22,6 +23,7 @@ using std::set;
 using std::sqrt;
 using std::invalid_argument;
 using std::string;
+using std::logic_error;
 
 static void calBeta(double *beta, GraphView const *gv, unsigned int chain)
 {
@@ -89,12 +91,17 @@ bool ConjugateNormal::canSample(StochasticNode *snode, Graph const &graph)
 {
     /*
       1) Stochastic children of sampled node must be normal, must not
-      be truncated, and must depend on snode only via the mean parameter
-      2) The mean parameter must be a linear function of snode. 
+      be truncated, and must depend on snode only via the mean
+      parameter 
+      2) The mean parameter must be a linear function of snode.
     */
 
-    if (getDist(snode) != NORM)
+    switch(getDist(snode)) {
+    case NORM: case EXP:
+	break;
+    default:
 	return false;
+    }
 
     GraphView gv(snode, graph);
     vector<StochasticNode const*> const &schild = gv.stochasticChildren();
@@ -116,10 +123,7 @@ bool ConjugateNormal::canSample(StochasticNode *snode, Graph const &graph)
     }
 
     // Check linearity of deterministic descendants
-    if (!checkLinear(&gv, false))
-	return false;
-
-    return true; //We made it!
+    return checkLinear(&gv, false);
 }
 
 void ConjugateNormal::update(unsigned int chain, RNG *rng) const
@@ -133,11 +137,20 @@ void ConjugateNormal::update(unsigned int chain, RNG *rng) const
        origin to xold, the previous value of the node */
 
     const double xold = *snode->value(chain);
-    const double priormean = *snode->parents()[0]->value(chain) - xold; 
-    const double priorprec = *snode->parents()[1]->value(chain); 
-
-    double A = priormean * priorprec; //Weighted sum of means
-    double B = priorprec; //Sum of weights
+    double A, B;
+    if (_target_dist == NORM) {
+	const double priormean = *snode->parents()[0]->value(chain) - xold; 
+	const double priorprec = *snode->parents()[1]->value(chain); 
+	A = priormean * priorprec; //Weighted sum of means
+	B = priorprec; //Sum of weights
+    }
+    else if (_target_dist == EXP) {
+	A = *snode->parents()[0]->value(chain) - xold;
+	B = 0;
+    }
+    else {
+	throw logic_error("Invalid distribution in conjugate normal method");
+    }
 
     if (_gv->deterministicChildren().empty()) {
 
@@ -196,16 +209,54 @@ void ConjugateNormal::update(unsigned int chain, RNG *rng) const
     double postsd = sqrt(1/B);
     double xnew;
 
-    if (isBounded(snode)) {
-	Node const *lb = snode->lowerBound();
-	Node const *ub = snode->upperBound();
-	double plower = lb ? pnorm(*lb->value(chain), postmean, postsd, 1, 0) : 0;
-	double pupper = ub ? pnorm(*ub->value(chain), postmean, postsd, 1, 0) : 1;
-	double p = runif(plower, pupper, rng);
-	xnew = qnorm(p, postmean, postsd, 1, 0);
-    }
-    else {
-	xnew = rnorm(postmean, postsd, rng);  
+    Node const *lb = snode->lowerBound();
+    Node const *ub = snode->upperBound();
+    switch(_target_dist) {
+    case NORM:
+	if (lb && ub) {
+	    xnew = inormal(*lb->value(chain), *ub->value(chain), rng,
+			   postmean, postsd);
+	}
+	else if (lb) {
+	    xnew = lnormal(*lb->value(chain), rng, postmean, postsd);
+	}
+	else if (ub) {
+	    xnew = rnormal(*ub->value(chain), rng, postmean, postsd);
+	}
+	else {
+	    xnew = rnorm(postmean, postsd, rng);  
+	}
+	break;
+    case EXP:
+	if (B > 0) {
+	    double lower = lb ? fmax2(0, *lb->value(chain)) : 0;
+	    if (ub) {
+		xnew = inormal(lower, *ub->value(chain), rng,
+			       postmean, postsd);
+	    }
+	    else {
+		xnew = lnormal(0, rng, postmean, postsd);
+	    }
+	}
+	else {
+	    // Sample from prior
+	    // FIXME: This should be easier - try adding forwardSample
+	    // method to GraphView
+	    double rate = 1/snode->parents()[0]->value(chain)[0];
+	    if (lb || ub) {
+		double lower = lb ? *lb->value(chain) : 0;
+		double pupper = fmin2(exp(-lower * rate), 1);
+		double plower = ub ? exp(-ub->value(chain)[0] * rate) : 0;
+		double p = runif(plower, pupper, rng);
+		xnew = -log(p)/rate;
+	    }
+	    else {
+		xnew = rexp(rate, rng);
+	    }
+	}
+	break;
+    default:
+	throw logic_error("Invalid distribution in conjugate normal method");
     }
     _gv->setValue(&xnew, 1, chain);
 

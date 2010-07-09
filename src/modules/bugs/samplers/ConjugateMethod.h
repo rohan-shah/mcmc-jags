@@ -36,3 +36,4 @@ public:
 };
 
 #endif /* CONJUGATE_METHOD_H_ */
+
