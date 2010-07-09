@@ -7,7 +7,7 @@
 using std::vector;
 using std::stable_sort;
 
-bool lt_doubleptr (double const *arg1, double const *arg2) {
+static bool lt_doubleptr (double const *arg1, double const *arg2) {
   return *arg1 < *arg2;
 }
 
