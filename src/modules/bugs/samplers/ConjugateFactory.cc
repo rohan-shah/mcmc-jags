@@ -36,8 +36,12 @@ bool ConjugateFactory::canSample(StochasticNode * snode,
     case NORM:
 	ans = ConjugateNormal::canSample(snode, graph);
 	break;
-    case GAMMA: case EXP: case CHISQ:
+    case GAMMA: case CHISQ:
 	ans = ConjugateGamma::canSample(snode, graph);
+	break;
+    case EXP:
+	ans = ConjugateGamma::canSample(snode, graph) ||
+	    ConjugateNormal::canSample(snode, graph);
 	break;
     case BETA:
 	ans = ConjugateBeta::canSample(snode, graph);
@@ -81,8 +85,19 @@ Sampler *ConjugateFactory::makeSampler(StochasticNode *snode,
 	case NORM:
 	    method = new ConjugateNormal(gv);
 	    break;
-	case GAMMA: case EXP: case CHISQ:
+	case GAMMA: case CHISQ:
 	    method = new ConjugateGamma(gv);
+	    break;
+	case EXP:
+	    if (ConjugateGamma::canSample(snode, graph)) {
+		method = new ConjugateGamma(gv);
+	    }
+	    else if (ConjugateNormal::canSample(snode, graph)) {
+		method = new ConjugateNormal(gv);
+	    }
+	    else {
+		throw logic_error("Cannot find conjugate sampler for exponential");
+	    }
 	    break;
 	case BETA:
 	    method = new ConjugateBeta(gv);
