@@ -1641,7 +1641,8 @@ is trivial: it is 1 if the parameters are consistent with the data and
 0 otherwise.  The \texttt{dsum} distribution also requires a special
 sampler, which can currently only handle the case where the parameters
 of \texttt{dsum} are unobserved stochastic nodes, and where the
-parameters are either all discrete-valued or all continuous-valued.
+parameters are either all discrete-valued or all continuous-valued. A node
+cannot be subject to more than one \texttt{dsum} constraint.
 
 \subsection{Data transformations}
 \label{section:data:tranformations}
