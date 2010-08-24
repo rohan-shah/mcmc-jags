@@ -243,7 +243,28 @@ Range Compiler::getRange(ParseTree const *p, Range const &default_range)
     }
   }
   
-  //FIXME: Give informative error message if we request invalid range
+  for (unsigned int i = 0; i < size; ++i) {
+      if (lower[i] > upper[i]) {
+	  //Invalid range. We can't use the print method for Range
+	  //objects to print it as we can't construct a Range object.
+	  //So do it by hand
+	  ostringstream ostr;
+	  ostr << "[";
+	  for (unsigned int j = 0; j < size; ++j) {
+	      if (j > 0)
+		  ostr << ",";
+	      if (lower[j] == upper[j]) {
+		  ostr << lower[j];
+	      }
+	      else {
+		  ostr << lower[j] << ":" << upper[j];
+	      }
+	  }
+	  ostr << "]";
+	  CompileError(p, "Invalid range:", ostr.str());
+      }
+  }
+  
   return Range(lower, upper);
 }
 
@@ -364,17 +385,16 @@ Node *Compiler::getArraySubset(ParseTree const *p)
 	    if (!isNULL(subset_range)) {
 		//A fixed subset
 		if (!array->range().contains(subset_range)) {
-		    string msg = string("Subset ") + array->name() 
-			+ print(subset_range) + " out of range";
-		    CompileError(p, msg);
+		    CompileError(p, "Subset out of range:", array->name() +
+				 print(subset_range));
 		}
 		node = array->getSubset(subset_range, _model);
 		if (node == 0 && _strict_resolution) {
-		    string msg = string("Unable to resolve parameter ")
-			+ array->name() + print(subset_range);
-		    CompileError(p, msg,
-				 "(one of its ancestors may be undefined)");
-		
+ 		    string msg = string("Unable to resolve node ")
+ 			+ array->name() + print(subset_range) 
+			+ "\nThis may be due to an undefined ancestor node or"
+                        + " a directed cycle in the graph";
+ 		    CompileError(p, msg);
 		}
 	    }
 	    else if (!_index_expression) {
