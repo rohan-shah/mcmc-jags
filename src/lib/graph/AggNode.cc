@@ -69,33 +69,39 @@ AggNode::AggNode(vector<unsigned int> const &dim,
       _offsets(sub_offsets(parents, offsets)),
       _parent_values(_length * _nchain), _discrete(true)
 {
-    /* Check argument lengths */
+    // Check argument lengths
     if (_length != parents.size() || _length != offsets.size()) {
 	throw length_error ("Length mismatch in Aggregate Node constructor");
     }
 
-    /* Check that offsets are valid */
+    /* 
+       Note that we cannot use the original arguments "parents" and "offsets"
+       due to possible substitution. Use this->parents() and _offsets instead.
+    */
+    vector<Node const *> const &par = this->parents();
+
+    // Check that offsets are valid
     for (unsigned int i = 0; i < _length; i++) {
-	if (offsets[i] >= parents[i]->length())
+	if (_offsets[i] >= par[i]->length())
 	    throw out_of_range("Invalid offset in Aggregate Node constructor");
     }
   
-    /* Setup parent values */
+    // Setup parent values
     for (unsigned int ch = 0; ch < _nchain; ++ch) {
 	for (unsigned int i = 0; i < _length; ++i) {
-	    _parent_values[i + ch * _length] = parents[i]->value(ch) + offsets[i];
+	    _parent_values[i + ch * _length] = par[i]->value(ch) + _offsets[i];
 	}
     }
 
-    /* Check discreteness */
-    for (unsigned int i = 0; i < parents.size(); ++i) {
-	if (!parents[i]->isDiscreteValued()) {
+    // Check discreteness
+    for (unsigned int i = 0; i < par.size(); ++i) {
+	if (!par[i]->isDiscreteValued()) {
 	    _discrete = false;
 	    break;
 	}
     }
 
-    /* Initialize if fully observed */
+    // Initialize if fully observed. See DeterministicNode constructor
     if (isObserved()) {
 	for (unsigned int ch = 0; ch < _nchain; ++ch) {
 	    deterministicSample(ch);
