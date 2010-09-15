@@ -544,7 +544,7 @@ A typical script file has the following commands:
 model in "line.bug"      # Read model file
 data in "line-data.R"    # Read data in from file
 compile, nchains(2)      # Compile a model with two parallel chains
-inits in "line-inits.R"  # Read initial values from file
+parameters in "line-inits.R"  # Read initial values from file
 initialize               # Initialize the model
 update 1000              # Adaptation (if necessary) and burnin for 1000 iterations
 monitor alpha            # Set trace monitor for node alpha ...
