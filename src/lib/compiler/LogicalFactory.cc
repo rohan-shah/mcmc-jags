@@ -22,32 +22,15 @@ using std::invalid_argument;
 using std::runtime_error;
 using std::string;
 
-static bool lt(FunctionPtr const &arg1, FunctionPtr const &arg2)
-{
-    if (SCALAR(arg1) < SCALAR(arg2))
-	return true;
-    else if (LINK(arg1) < LINK(arg2))
-	return true;
-    else if (VECTOR(arg1) < VECTOR(arg2))
-	return true;
-    else if (ARRAY(arg1) < ARRAY(arg2))
-	return true;
-    else
-	return false;
-}
-
 bool lt(LogicalPair const &arg1, LogicalPair const &arg2)
 {
-    // Order first by function
-    if (lt(arg1.first, arg2.first)) {
-	return true;
-    }
-    else if (lt(arg2.first, arg1.first)) {
-	return false;
+    if (arg1.first == arg2.first) {
+	//Same function: check parameters
+	return lt(arg1.second, arg2.second);
     }
     else {
-	//Same function. Check parameters
-	return lt(arg1.second, arg2.second);
+	//Diferent functions: sort by address (arbitrary)
+	return FUNC(arg1.first) < FUNC(arg2.first);
     }
 }
 

@@ -55,16 +55,11 @@ bool lt(Node const *node1, Node const *node2)
     }
     else if (ob1 && ob2) {
 	//Observed nodes are sorted by dimension, then value
-	if (node1->dim() < node2->dim()) {
-	    return true;
-	}
-	else if (node1->dim() > node2->dim()) {
-	    return false;
+	if (node1->dim() == node2->dim()) {
+	    return lt(node1->value(0), node2->value(0), node1->length());
 	}
 	else {
-	    //Equal length observed nodes are sorted by value, with
-	    //some numerical tolerance
-	    return lt(node1->value(0), node2->value(0), node1->length());
+	    return (node1->dim() < node2->dim());
 	}
     }
     else {
@@ -77,14 +72,7 @@ bool lt(Node const *node1, Node const *node2)
 /* Comparison operator for vectors of parameters */
 bool lt(vector<Node const *> const &par1, vector<Node const *> const &par2)
 {
-    //Order by size
-    if (par1.size() < par2.size()) {
-	return true;
-    }
-    else if (par1.size() > par2.size()) {
-	return false;
-    }
-    else {
+    if (par1.size() == par2.size()) {
         //Equal sized vectors: Sort by ordering of elements 
 	for (unsigned int i = 0; i < par1.size(); ++i) {
 	    if (lt(par1[i], par2[i])) {
@@ -95,5 +83,8 @@ bool lt(vector<Node const *> const &par1, vector<Node const *> const &par2)
 	    }
 	}
 	return false;
+    }
+    else {
+	return par1.size() < par2.size();
     }
 }

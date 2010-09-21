@@ -54,7 +54,6 @@ ArrayFunction const * ARRAY(FunctionPtr const &p) {
     return p.afunc; 
 }
 
-/*
 Function const * FUNC(FunctionPtr const &p) 
 {
     if (p.lfunc)
@@ -68,7 +67,6 @@ Function const * FUNC(FunctionPtr const &p)
     else
 	return 0;
 }
-*/
 
 bool FunctionPtr::operator==(FunctionPtr const &rhs) const
 {
