@@ -702,6 +702,7 @@ Node * Compiler::allocateStochastic(ParseTree const *stoch_relation)
 	    data_length = 0;
 	}
 	else if (nmissing != 0) {
+	    delete [] this_data;
 	    CompileError(var, var->name() + print(target_range),
 			 "has missing values");
 	}
