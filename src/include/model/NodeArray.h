@@ -99,9 +99,9 @@ public:
   void getValue(SArray &value, unsigned int chain,
 		bool (*condition)(Node const *)) const;
   /**
-   * Set data. All chains are set to the same value. If a value is
-   * given for an index with no node, then a new ConstantNode is created
-   * with that value.
+   * Set data, creating a constant node for any non-missing value.  An
+   * exception is thrown if any of the non-missing values corresponds
+   * to an existing node in the array.
    */
   void setData(SArray const &value, Model *model);
   /**

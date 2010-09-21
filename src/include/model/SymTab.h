@@ -47,9 +47,8 @@ public:
    */
   void insertNode(Node *node, std::string const &name, Range const &range);
   /**
-   * Writes values from the given data table to the NodeArrays in the
-   * symbol table. All nodes whose values are set are considered as
-   * observed nodes and have the same value in all chains.
+   * Creates constant nodes in all the NodeArrays in symbol table
+   * with values from the given data table.
    *
    * @param data_table Data table from which values will be read.
    *
