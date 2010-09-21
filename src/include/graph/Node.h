@@ -109,14 +109,6 @@ public:
      */
     virtual bool isRandomVariable() const = 0;
     /**
-     * Sets the value of the node, in all chains, and marks the node
-     * as observed. This function can only be called once for a given
-     * Node.
-     * 
-     * @param value vector of values
-     */
-    void setObserved(std::vector<double> const &value);
-    /**
      * Indicates whether the node is observed. 
      */
     virtual bool isObserved() const = 0;

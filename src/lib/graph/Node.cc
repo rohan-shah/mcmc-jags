@@ -113,19 +113,6 @@ bool Node::initialize(unsigned int n)
     return true; 
 }
     
-void Node::setObserved(vector<double> const &value)
-{
-    if (value.size() != _length) {
-	throw logic_error("Length mismatch in Node::setObserved");
-    }
-
-    for (unsigned int n = 0; n < _nchain; ++n) {
-        for (unsigned int i = 0; i < _length; ++i) {
-	    _data[n * _length + i] = value[i];
-        }
-    }
-}
-
 unsigned int Node::nchain() const
 {
   return _nchain;
