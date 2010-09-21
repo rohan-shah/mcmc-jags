@@ -232,8 +232,6 @@ void NodeArray::getValue(SArray &value, unsigned int chain,
     value.setValue(array_value);
 }
 
-//FIXME: A lot of code overlap with setValue here.
-
 void NodeArray::setData(SArray const &value, Model *model)
 {
     if (!(_range == value.range())) {
@@ -244,7 +242,6 @@ void NodeArray::setData(SArray const &value, Model *model)
     vector<double> const &x = value.value();
   
     //Gather all the nodes for which a data value is supplied
-    set<Node*> setnodes;
     for (unsigned int i = 0; i < _range.length(); ++i) {
 	if (x[i] != JAGS_NA) {
 	    if (_node_pointers[i] == 0) {
@@ -254,41 +251,12 @@ void NodeArray::setData(SArray const &value, Model *model)
 		insert(cnode, _range.leftIndex(i));
 	    }
 	    else {
-		//Existing node for which we must set value
-		setnodes.insert(_node_pointers[i]);
+		throw logic_error("Error in NodeArray::setData");
 	    }
-	}
-    }
-  
-    set<Node*>::const_iterator p;
-    for (p = setnodes.begin(); p != setnodes.end(); ++p) {
-	//Step through each node
-	Node *node = *p;
-	vector<double> node_value(node->length());
-
-	//Get vector of values for this node
-	for (unsigned int i = 0; i < N; ++i) {
-	    if (_node_pointers[i] == node) {
-		if (_offsets[i] > node->length()) {
-		    throw logic_error("Invalid offset in NodeArray::setValue");
-		}
-		else {
-		    node_value[_offsets[i]] = x[i];
-		}
-	    }
-	}
-	// If there are any missing values, they must all be missing
-	bool missing = (node_value[0] == JAGS_NA);
-	for (unsigned int j = 1; j < node->length(); ++j) {
-	    if ((node_value[j] == JAGS_NA) != missing) {
-		throw NodeError(node,"Values supplied for node are partially missing");
-	    }
-	}
-	if (!missing) {
-	    node->setObserved(node_value);
 	}
     }
 }
+
 
 string const &NodeArray::name() const
 {
