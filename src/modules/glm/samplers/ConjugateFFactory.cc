@@ -12,12 +12,14 @@
 
 #include <stdexcept>
 #include <string>
-#include <map>
+#include <algorithm>
 
 using std::vector;
 using std::string;
 using std::set;
 using std::logic_error;
+using std::copy;
+using std::stable_sort;
 
 static void getStochasticChildren(Node *node, set<StochasticNode*> &sset)
 {
@@ -34,36 +36,61 @@ static void getStochasticChildren(Node *node, set<StochasticNode*> &sset)
     }
 }
 
+static bool lt_snodeptr (StochasticNode const **arg1, 
+			 StochasticNode const **arg2) 
+{
+    return *arg1 < *arg2;
+}
+
 static void convertStochasticChildren(StochasticNode *snode,
 				      vector<StochasticNode const*> const &in,
 				      vector<StochasticNode *> &out)
 {
     /* 
        We need this function to convert the stochastic children from
-       const pointers to non-const pointers.
+       const pointers to non-const pointers in the same order.
 
        FIXME: This might prompt a review of the GraphView class
     */
     set<StochasticNode*> sset;
     getStochasticChildren(snode, sset);
 
-    out.clear();
-    for (unsigned int i = 0; i < in.size(); ++i) {
-	Node const *cnode = in[i];
-	set<StochasticNode*>::const_iterator p = sset.begin();
-	while (p != sset.end())
-	{
-	    if (cnode == *p) {
-		out.push_back(*p);
-		break;
-	    }
-	    else {
-		++p;
-	    }
+    /* 
+       It is much more efficient to work with a sorted vector. But we
+       need to keep track of the original ordering so we can assign
+       the elements of the out vector in the same order as the in
+       vector.
+    */
+    unsigned int N = in.size();
+    StochasticNode const **inarray = new StochasticNode const *[N];
+    copy(in.begin(), in.end(), inarray);
+    StochasticNode const ***inptrs = new StochasticNode const **[N];
+    for (int i = 0; i < N; ++i) {
+	inptrs[i] = inarray + i;
+    }
+    stable_sort(inptrs, inptrs + N, lt_snodeptr);
+
+    out.resize(N);
+    bool ok = true;
+    set<StochasticNode*>::const_iterator p = sset.begin();
+    for (unsigned int i = 0; i < N; ++i) {
+	Node const *cnode = *inptrs[i];
+	while (cnode > *p) {
+	    ++p;
 	}
-	if (p == sset.end()) {
-	    throw logic_error("Conversion failure in Conjugate F method");
+	if (cnode == *p) {
+	    out[inptrs[i] - inarray] = *p;
 	}
+	else {
+	    ok = false;
+	    break;
+	}
+    }
+    
+    delete [] inarray;
+    delete [] inptrs;
+    if (!ok) {
+	throw logic_error("Conversion mismatch in Conjugate F Factory");
     }
 }
 
