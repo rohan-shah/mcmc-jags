@@ -25,7 +25,7 @@ void Slicer::updateStep(RNG *rng)
     double g0 = logDensity();
     if (!jags_finite(g0)) {
 	if (g0 > 0) {
-	    return;
+	    throw runtime_error("Singularity in likelihood found by Slicer");
 	}
 	else {
 	    //FIXME: Not very informative
@@ -124,7 +124,7 @@ void Slicer::updateDouble(RNG *rng)
 	throw runtime_error("Error in Slicer: Current value is inconsistent with data");
     }
     else {
-      return;
+	throw runtime_error("Singularity in likelihood found by Slicer");
     }
   }
 
