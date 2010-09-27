@@ -53,25 +53,20 @@ namespace glm {
 	    
 	    if (_outcome[r] != BGLM_NORMAL) {
 
-		int top = cs_spsolve(N->L, Pt_x, r, xi, ur, 0, 1);
-		//Subtract contribution of row r from b
 		double mu_r = getMean(r);
-		double delta = _z[r] - mu_r;
 		double tau_r = getPrecision(r);
-		for (unsigned int j = top; j < ncol; ++j) {
-		    w[xi[j]] -= ur[xi[j]] * delta * tau_r;
-		}
 		
 		//Calculate mean and precision of z[r] conditional
 		//on z[s] for s != r
 		double zr_mean = 0;
 		double Hr = 0; // 
+		int top = cs_spsolve(N->L, Pt_x, r, xi, ur, 0, 1);
 		for (unsigned int j = top; j < ncol; ++j) {
 		    zr_mean  += ur[xi[j]] * w[xi[j]];
 		    Hr  += ur[xi[j]] * ur[xi[j]];
 		}
 		Hr *= tau_r;
-		
+		zr_mean -= Hr * (_z[r] - mu_r);
 		zr_mean /= (1 - Hr);
 		double zr_prec = (1 - Hr) * tau_r;
 		
@@ -80,6 +75,7 @@ namespace glm {
 		}
 
 		double yr = schildren[r]->value(_chain)[0];
+		double zold = _z[r];
 		if (yr == 1) {
 		    _z[r] = lnormal(0, rng, mu_r + zr_mean, 1/sqrt(zr_prec));
 		}
@@ -91,9 +87,9 @@ namespace glm {
 		}
 
 		//Add new contribution of row r back to b
-		delta = _z[r] - mu_r;
+		double zdelta = _z[r] - zold;
 		for (unsigned int j = top; j < ncol; ++j) {
-		    w[xi[j]] += ur[xi[j]] * delta * tau_r; 
+		    w[xi[j]] += ur[xi[j]] * zdelta * tau_r; 
 		}
 	    }
 	}
