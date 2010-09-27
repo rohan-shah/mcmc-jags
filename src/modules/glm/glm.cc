@@ -4,6 +4,7 @@
 #include "samplers/LinearGibbsFactory.h"
 #include "samplers/IWLSFactory.h"
 #include "samplers/HolmesHeldFactory.h"
+#include "samplers/HolmesHeldBFactory.h"
 #include "samplers/AlbertChibFactory.h"
 #include "samplers/AlbertChibGibbsFactory.h"
 #include "samplers/AMFactory.h"
@@ -28,6 +29,7 @@ namespace glm {
  	insert(new AMFactory);
 	insert(new AlbertChibGibbsFactory);
 	insert(new AlbertChibFactory);
+	insert(new HolmesHeldBFactory);
 	insert(new HolmesHeldFactory);
 	insert(new ConjugateFFactory);
     }
