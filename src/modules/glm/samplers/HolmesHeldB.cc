@@ -99,12 +99,54 @@ namespace glm {
 	int *xi2 = new int[2*ncol]; //Stack
 
 	for (unsigned int r = 0; r < nrow; ++r) {
-	    
-	    if (_outcome[r] != BGLM_NORMAL) {
+
+	    if (_outcome[r] == BGLM_PROBIT) {
+
+		//Since the variance does not change, there is no
+		//need for down-dating and up-dating of A, w. This
+		//is the same as the HolmesHeld method.
+
+		double mu_r = getMean(r);
+		
+		//Calculate mean and precision of z[r] conditional
+		//on z[s] for s != r
+		double zr_mean = 0;
+		double Hr = 0; // 
+		int top = cs_spsolve(N->L, Pt_x, r, xi, ur, 0, 1);
+		for (unsigned int j = top; j < ncol; ++j) {
+		    zr_mean  += ur[xi[j]] * w[xi[j]];
+		    Hr  += ur[xi[j]] * ur[xi[j]];
+		}
+		zr_mean -= Hr * (_z[r] - mu_r);
+		zr_mean /= (1 - Hr);
+		double zr_prec = (1 - Hr);
+		
+		if (zr_prec <= 0) {
+		    throw runtime_error("Invalid precision in Holmes-Held-B");
+		}
+
+		double yr = schildren[r]->value(_chain)[0];
+		double zold = _z[r];
+		if (yr == 1) {
+		    _z[r] = lnormal(0, rng, mu_r + zr_mean, 1/sqrt(zr_prec));
+		}
+		else if (yr == 0) {
+		    _z[r] = rnormal(0, rng, mu_r + zr_mean, 1/sqrt(zr_prec));
+		}
+		else {
+		    throw logic_error("Invalid child value in HolmesHeld");
+		}
+
+		//Add new contribution of row r back to b
+		double zdelta = _z[r] - zold;
+		for (unsigned int j = top; j < ncol; ++j) {
+		    w[xi[j]] += ur[xi[j]] * zdelta; 
+		}
+	    }	    
+	    else if (_outcome[r] == BGLM_LOGIT) {
 
 		double mu_r = getMean(r);
 		double delta = _z[r] - mu_r;
-		double tau_r = getPrecision(r);
 		
 		double *Px = Pt_x->x;
 		int *Pi = Pt_x->i;
@@ -119,7 +161,7 @@ namespace glm {
 		}
 	
 		//Downdate contribution from observation r
-		if(!jags_updown(N->L, -tau_r, Pt_x, r, _symbol->parent)) {
+		if(!jags_updown(N->L, -_tau[r], Pt_x, r, _symbol->parent)) {
 		    throw runtime_error("Downdate error in HolmesHeldB");
 		}
 
@@ -129,8 +171,8 @@ namespace glm {
 		for (unsigned int j = top2; j < ncol; ++j) {
 		    v2 += ur2[xi2[j]] * ur2[xi2[j]]; 
 		}
-		double zr_var = 1/tau_r + v2;
-		double Kr = tau_r * v2;
+		double zr_var = 1/_tau[r] + v2;
+		double Kr = _tau[r] * v2;
 		zr_mean = mu_r + (1 + Kr) * zr_mean - Kr * delta;
 		
 		double yr = schildren[r]->value(_chain)[0];
@@ -147,9 +189,11 @@ namespace glm {
 		
 		//Update contribution from observation r
 		double zdelta = _z[r] - zold;
-		jags_updown(N->L, tau_r, Pt_x, r, _symbol->parent);
+		if(!jags_updown(N->L, _tau[r], Pt_x, r, _symbol->parent)) {
+		    throw runtime_error("Downdate error in HolmesHeldB");
+		}
 		for (unsigned int j = top; j < ncol; ++j) {
-		    w[xi[j]] += ur[xi[j]] * zdelta * tau_r; 
+		    w[xi[j]] += ur[xi[j]] * zdelta * _tau[r]; 
 		}
 		
 	    }
