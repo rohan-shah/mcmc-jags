@@ -66,7 +66,8 @@ namespace glm {
     HolmesHeldB::HolmesHeldB(GraphView const *view,
 			   vector<GraphView const *> const &sub_views,
 			   unsigned int chain)
-	: BinaryGLM(view, sub_views, chain)
+	: BinaryGLM(view, sub_views, chain), 
+	  _z1(view->stochasticChildren().size(), 0)
     {
     }
 
@@ -148,10 +149,6 @@ namespace glm {
 		double mu_r = getMean(r);
 		double delta = _z[r] - mu_r;
 		
-		double *Px = Pt_x->x;
-		int *Pi = Pt_x->i;
-		int *Pp = Pt_x->p;
-
 		//Calculate mean and precision of z[r] conditional
 		//on z[s] for s != r
 		double zr_mean = 0;
@@ -176,26 +173,37 @@ namespace glm {
 		zr_mean = mu_r + (1 + Kr) * zr_mean - Kr * delta;
 		
 		double yr = schildren[r]->value(_chain)[0];
-		double zold = _z[r];
+		double zr_old = _z[r];
+
+		double sd1 = sqrt(1/_tau[r]);
+		double sd2 = sqrt(v2);
+
+		_z1[r] -= zr_mean;
+		double z2 = _z[r] - _z1[r];		
 		if (yr == 1) {
-		    _z[r] = lnormal(0, rng, zr_mean, sqrt(zr_var));
+		    _z1[r] = lnormal(-z2, rng, 0, sd1);
+		    z2 = lnormal(-_z1[r], rng, zr_mean, sd2);
+		    _z1[r] = lnormal(-z2, rng, 0, sd1);
+
 		}
 		else if (yr == 0) {
-		    _z[r] = rnormal(0, rng, zr_mean, sqrt(zr_var));
+		    _z1[r] = rnormal(-z2, rng, 0, sd1);
+		    z2 = rnormal(-_z1[r], rng, zr_mean, sd2);
+		    _z1[r] = rnormal(-z2, rng, 0, sd1);
 		}
 		else {
 		    throw logic_error("Invalid child value in HolmesHeldB");
 		}
+		_z[r] = _z1[r] + z2;
+		_z1[r] += zr_mean;
 		
 		//Update contribution from observation r
-		double zdelta = _z[r] - zold;
 		if(!jags_updown(N->L, _tau[r], Pt_x, r, _symbol->parent)) {
-		    throw runtime_error("Downdate error in HolmesHeldB");
+		    throw runtime_error("Update error in HolmesHeldB");
 		}
 		for (unsigned int j = top; j < ncol; ++j) {
-		    w[xi[j]] += ur[xi[j]] * zdelta * _tau[r]; 
+		    w[xi[j]] += ur[xi[j]] * _tau[r] * (_z[r] - zr_old);
 		}
-		
 	    }
 	}
 
@@ -210,7 +218,6 @@ namespace glm {
     void HolmesHeldB::update(RNG *rng)
     {
 	updateLM(rng, true);
-	
 	for (unsigned int r = 0; r < _tau.size(); ++r)
 	{
 	    if (_outcome[r] == BGLM_LOGIT) {
