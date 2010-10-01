@@ -783,6 +783,26 @@ Node * Compiler::allocateLogical(ParseTree const *rel)
 	throw logic_error("Malformed parse tree in Compiler::allocateLogical");
     }
 
+    /*
+      Check that there are no values in the data table corresponding to
+      this node.
+    */
+    ParseTree *var = rel->parameters()[0];
+    map<string,SArray>::const_iterator q = _data_table.find(var->name());
+    if (q != _data_table.end()) {
+	vector<double> const &data_value = q->second.value();
+	Range const &data_range = q->second.range();
+	Range target_range = VariableSubsetRange(var);
+
+	for (RangeIterator p(target_range); !p.atEnd(); p.nextLeft()) {
+	    unsigned int j = data_range.leftOffset(p);
+	    if (data_value[j] != JAGS_NA) {
+		CompileError(var, var->name() + print(target_range),
+			     "is a logical node and cannot be observed");
+	    }
+	}
+    }
+
     return node;
 }
 
