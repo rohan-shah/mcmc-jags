@@ -9,6 +9,8 @@ namespace glm {
      * Conjugate sampler for normal linear models.
      */
     class HolmesHeldB : public BinaryGLM {
+	std::vector<double> _z1;
+	bool _init;
     public:
 	HolmesHeldB(GraphView const *view, 
 		    std::vector<GraphView const *> const &sub_views,

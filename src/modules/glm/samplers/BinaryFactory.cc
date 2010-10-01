@@ -53,7 +53,7 @@ namespace glm {
 			     unsigned int chain) const
     {
 	/* 
-	   If we have a pure guassian linear model then make a
+	   If we have a pure gaussian linear model then make a
 	   conjugate linear sampler instead. There is no need, in this
 	   case, for the extra machinery.
 	*/
