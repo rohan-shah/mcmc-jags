@@ -134,28 +134,39 @@ namespace glm {
 		double yr = schildren[r]->value(_chain)[0];
 		double zr_old = _z[r];
 
-		double sd1 = sqrt(1/_tau[r]);
-		double sd2 = sqrt(v2);
-
-		_z1[r] -= zr_mean;
-		double z2 = _z[r] - _z1[r];		
-		if (yr == 1) {
-		    _z1[r] = lnormal(-z2, rng, 0, sd1);
-		    z2 = lnormal(-_z1[r], rng, zr_mean, sd2);
-		    _z1[r] = lnormal(-z2, rng, 0, sd1);
-
-		}
-		else if (yr == 0) {
-		    _z1[r] = rnormal(-z2, rng, 0, sd1);
-		    z2 = rnormal(-_z1[r], rng, zr_mean, sd2);
-		    _z1[r] = rnormal(-z2, rng, 0, sd1);
+		if (_outcome[r] == BGLM_LOGIT) {
+		    _z1[r] -= zr_mean;
+		    double z2 = _z[r] - _z1[r];
+		    _tau[r] = 1/sample_lambda(fabs(_z1[r]), rng);
+		    if (yr == 1) {
+			_z1[r] = lnormal(-z2, rng, 0, sqrt(1/_tau[r]));
+			z2 = lnormal(-_z1[r], rng, zr_mean, sqrt(v2));
+			_z1[r] = lnormal(-z2, rng, 0, sqrt(1/_tau[r]));
+			
+		    }
+		    else if (yr == 0) {
+			_z1[r] = rnormal(-z2, rng, 0, sqrt(1/_tau[r]));
+			z2 = rnormal(-_z1[r], rng, zr_mean, sqrt(v2));
+			_z1[r] = rnormal(-z2, rng, 0, sqrt(1/_tau[r]));
+		    }
+		    else {
+			throw logic_error("Invalid child value in HolmesHeldB");
+		    }
+		    _tau[r] = 1/sample_lambda(fabs(_z1[r]), rng);
+		    _z[r] = _z1[r] + z2;
+		    _z1[r] += zr_mean;
 		}
 		else {
-		    throw logic_error("Invalid child value in HolmesHeldB");
+		    if (yr == 1) {
+			_z[r] = lnormal(0, rng, zr_mean, sqrt(1 + v2));
+		    }
+		    else if (yr == 0) {
+			_z[r] = rnormal(0, rng, zr_mean, sqrt(1 + v2));
+		    }
+		    else {
+			throw logic_error("Invalid child value in HolmesHeldB");
+		    }
 		}
-		_z[r] = _z1[r] + z2;
-		_z1[r] += zr_mean;
-		
 		//Update contribution from observation r
 		if(!jags_updown(N->L, _tau[r], Pt_x, r, _symbol->parent)) {
 		    throw runtime_error("Update error in HolmesHeldB");
@@ -176,13 +187,6 @@ namespace glm {
     void HolmesHeldB::update(RNG *rng)
     {
 	updateLM(rng, true, false);
-	for (unsigned int r = 0; r < _tau.size(); ++r)
-	{
-	    if (_outcome[r] == BGLM_LOGIT) {
-		double delta = fabs(getValue(r) - getMean(r));
-		_tau[r] = 1/sample_lambda(delta, rng);
-	    }
-	}
     }
 
     string HolmesHeldB::name() const
