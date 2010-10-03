@@ -10,11 +10,13 @@
 #include <rng/RNG.h>
 
 #include <stdexcept>
+#include <algorithm>
 
 using std::vector;
 using std::string;
 using std::logic_error;
 using std::runtime_error;
+using std::copy;
 
 /* Modified version of cs_updown:
    - Sigma can be an arbitrary value instead of just (-1,+1)
@@ -71,15 +73,12 @@ namespace glm {
     {
     }
 
-    void HolmesHeldB::updateAuxiliary(double *w, csn *N, RNG *rng)
+    void HolmesHeldB::updateAuxiliary(double *b, csn *N, RNG *rng)
     {
 	/* 
 	   In the parent GLMMethod class, the posterior precision is
 	   represented by the matrix "A"; the posterior mean "mu"
-	   solves A %*% mu = w.
-	   
-	   In this call, "w" solves A %*% w = P %*% b and "N" holds
-	   the Cholesky decomposition of P %*% A %*% t(P). 
+	   solves A %*% mu = b.
 	*/
 
 	vector<StochasticNode const *> const &schildren = 
@@ -96,82 +95,42 @@ namespace glm {
 	//Workspace
 	double *ur = new double[ncol];
 	int *xi = new int[2*ncol]; //Stack
-	double *ur2 = new double[ncol];
-	int *xi2 = new int[2*ncol]; //Stack
+	double *vr = new double[ncol];
+
+	int *pp = Pt_x->p;
+	int *pi = Pt_x->i;
+	double *px = Pt_x->x;
 
 	for (unsigned int r = 0; r < nrow; ++r) {
 
-	    if (_outcome[r] == BGLM_PROBIT) {
-
-		//Since the variance does not change, there is no
-		//need for down-dating and up-dating of A, w. This
-		//is the same as the HolmesHeld method.
-
+	    if (_outcome[r] == BGLM_LOGIT || _outcome[r] == BGLM_PROBIT)
+	    {
 		double mu_r = getMean(r);
 		
-		//Calculate mean and precision of z[r] conditional
-		//on z[s] for s != r
-		double zr_mean = 0;
-		double Hr = 0; // 
-		int top = cs_spsolve(N->L, Pt_x, r, xi, ur, 0, 1);
-		for (unsigned int j = top; j < ncol; ++j) {
-		    zr_mean  += ur[xi[j]] * w[xi[j]];
-		    Hr  += ur[xi[j]] * ur[xi[j]];
-		}
-		zr_mean -= Hr * (_z[r] - mu_r);
-		zr_mean /= (1 - Hr);
-		double zr_prec = (1 - Hr);
-		
-		if (zr_prec <= 0) {
-		    throw runtime_error("Invalid precision in Holmes-Held-B");
-		}
-
-		double yr = schildren[r]->value(_chain)[0];
-		double zold = _z[r];
-		if (yr == 1) {
-		    _z[r] = lnormal(0, rng, mu_r + zr_mean, 1/sqrt(zr_prec));
-		}
-		else if (yr == 0) {
-		    _z[r] = rnormal(0, rng, mu_r + zr_mean, 1/sqrt(zr_prec));
-		}
-		else {
-		    throw logic_error("Invalid child value in HolmesHeld");
-		}
-
-		//Add new contribution of row r back to b
-		double zdelta = _z[r] - zold;
-		for (unsigned int j = top; j < ncol; ++j) {
-		    w[xi[j]] += ur[xi[j]] * zdelta; 
-		}
-	    }	    
-	    else if (_outcome[r] == BGLM_LOGIT) {
-
-		double mu_r = getMean(r);
-		double delta = _z[r] - mu_r;
-		
-		//Calculate mean and precision of z[r] conditional
-		//on z[s] for s != r
-		double zr_mean = 0;
-		int top = cs_spsolve(N->L, Pt_x, r, xi, ur, 0, 1);
-		for (unsigned int j = top; j < ncol; ++j) {
-		    zr_mean  += ur[xi[j]] * w[xi[j]];
-		}
-	
 		//Downdate contribution from observation r
 		if(!jags_updown(N->L, -_tau[r], Pt_x, r, _symbol->parent)) {
 		    throw runtime_error("Downdate error in HolmesHeldB");
 		}
-
-		//Hat matrix
-		int top2 = cs_spsolve(N->L, Pt_x, r, xi2, ur2, 0, 1);
-		double v2 = 0;
-		for (unsigned int j = top2; j < ncol; ++j) {
-		    v2 += ur2[xi2[j]] * ur2[xi2[j]]; 
+		for (unsigned int j = pp[r]; j < pp[r+1]; ++j) {
+		    b[pi[j]] -=  _tau[r] * (_z[r] - mu_r) * px[j];
 		}
-		double zr_var = 1/_tau[r] + v2;
-		double Kr = _tau[r] * v2;
-		zr_mean = mu_r + (1 + Kr) * zr_mean - Kr * delta;
-		
+
+		//Calculate mean and precision of z[r] conditional
+		//on z[s] for s != r
+		double v2 = 0;
+		int top = cs_spsolve(N->L, Pt_x, r, xi, ur, 0, 1);
+		for (unsigned int j = top; j < ncol; ++j) {
+		    v2  += ur[xi[j]] * ur[xi[j]];
+		}
+
+		copy (b, b + ncol, vr);
+		cs_lsolve(N->L, vr); //Too slow!
+
+		double zr_mean = mu_r;
+		for (unsigned int j = top; j < ncol; ++j) {
+		    zr_mean += vr[xi[j]] * ur[xi[j]];
+		}
+
 		double yr = schildren[r]->value(_chain)[0];
 		double zr_old = _z[r];
 
@@ -201,23 +160,22 @@ namespace glm {
 		if(!jags_updown(N->L, _tau[r], Pt_x, r, _symbol->parent)) {
 		    throw runtime_error("Update error in HolmesHeldB");
 		}
-		for (unsigned int j = top; j < ncol; ++j) {
-		    w[xi[j]] += ur[xi[j]] * _tau[r] * (_z[r] - zr_old);
+		for (unsigned int j = pp[r]; j < pp[r+1]; ++j) {
+		    b[pi[j]] +=  _tau[r] * (_z[r] - mu_r) * px[j];
 		}
 	    }
 	}
 
 	//Free workspace
 	delete [] ur;
-	delete [] ur2;
+	delete [] vr;
 	delete [] xi;
-	delete [] xi2;
 	cs_spfree(Pt_x);
     }
     
     void HolmesHeldB::update(RNG *rng)
     {
-	updateLM(rng, true);
+	updateLM(rng, true, false);
 	for (unsigned int r = 0; r < _tau.size(); ++r)
 	{
 	    if (_outcome[r] == BGLM_LOGIT) {

@@ -43,7 +43,7 @@ namespace glm {
 		  std::vector<GraphView const *> const &sub_views,
 		  unsigned int chain, bool link);
 	virtual ~GLMMethod();
-	void updateLM(RNG *rng, bool stochastic = true);
+	void updateLM(RNG *rng, bool stochastic = true, bool chol=true);
 	void updateLMGibbs(RNG *rng);
 	bool isAdaptive() const;
 	bool adaptOff();

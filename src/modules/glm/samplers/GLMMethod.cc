@@ -314,7 +314,7 @@ namespace glm {
 	cs_spfree(Alik);
     }
 
-    void GLMMethod::updateLM(RNG *rng, bool stochastic) 
+    void GLMMethod::updateLM(RNG *rng, bool stochastic, bool chol) 
     {
 	//   The log of the full conditional density takes the form
 	//   -(t(x) %*% A %*% x - 2 * b %*% x)/2
@@ -350,8 +350,14 @@ namespace glm {
 	unsigned int nrow = _view->length();
 	double *w = new double[nrow];
 	cs_ipvec(_symbol->pinv, b, w, nrow);
-	cs_lsolve(N->L, w);
-	updateAuxiliary(w, N, rng);
+	if (chol) {
+	    cs_lsolve(N->L, w);
+	    updateAuxiliary(w, N, rng);
+	}
+	else {
+	    updateAuxiliary(w, N, rng);
+	    cs_lsolve(N->L, w);
+	}
 	if (stochastic) {
 	    for (unsigned int r = 0; r < nrow; ++r) {
 		w[r] += rng->normal();
