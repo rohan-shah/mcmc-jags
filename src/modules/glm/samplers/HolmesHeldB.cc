@@ -63,6 +63,23 @@ static int jags_updown (cs *L, double sigma, const cs *C, int r,
     return (beta2 > 0) ;
 }
 
+
+//Left truncated logit
+static double llogit(double left, RNG *rng)
+{
+    double qleft = 1/(1 + exp(-left));
+    double x = qleft + (1 - qleft) * rng->uniform();
+    return log(x) - log(1 - x);
+}
+
+//Right truncated logit
+static double rlogit(double right, RNG *rng)
+{
+    double qright = 1/(1 + exp(-right));
+    double x = qright * rng->uniform();
+    return log(x) - log(1 - x);
+}
+
 namespace glm {
 
     HolmesHeldB::HolmesHeldB(GraphView const *view,
@@ -137,22 +154,22 @@ namespace glm {
 		if (_outcome[r] == BGLM_LOGIT) {
 		    _z1[r] -= zr_mean;
 		    double z2 = _z[r] - _z1[r];
-		    _tau[r] = 1/sample_lambda(fabs(_z1[r]), rng);
 		    if (yr == 1) {
-			_z1[r] = lnormal(-z2, rng, 0, sqrt(1/_tau[r]));
 			z2 = lnormal(-_z1[r], rng, zr_mean, sqrt(v2));
-			_z1[r] = lnormal(-z2, rng, 0, sqrt(1/_tau[r]));
+			_z1[r] = llogit(-z2, rng);
+			_tau[r] = 1/sample_lambda(fabs(_z1[r]), rng);
+			z2 = lnormal(-_z1[r], rng, zr_mean, sqrt(v2));
 			
 		    }
 		    else if (yr == 0) {
-			_z1[r] = rnormal(-z2, rng, 0, sqrt(1/_tau[r]));
 			z2 = rnormal(-_z1[r], rng, zr_mean, sqrt(v2));
-			_z1[r] = rnormal(-z2, rng, 0, sqrt(1/_tau[r]));
+			_z1[r] = rlogit(-z2, rng);
+			_tau[r] = 1/sample_lambda(fabs(_z1[r]), rng);
+			z2 = rnormal(-_z1[r], rng, zr_mean, sqrt(v2));
 		    }
 		    else {
 			throw logic_error("Invalid child value in HolmesHeldB");
 		    }
-		    _tau[r] = 1/sample_lambda(fabs(_z1[r]), rng);
 		    _z[r] = _z1[r] + z2;
 		    _z1[r] += zr_mean;
 		}
