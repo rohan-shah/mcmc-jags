@@ -3,6 +3,7 @@
 
 #include <cmath>
 #include <rng/RNG.h>
+#include <util/nainf.h>
 
 using std::vector;
 using std::log;
@@ -22,7 +23,10 @@ bool  DUnif::checkParameterValue (vector<double const *> const &par) const
 double DUnif::logLikelihood(double x, vector<double const *> const &par,
 			    double const *lower, double const *upper) const
 {
-    return log(UPPER(par) - LOWER(par));
+    if (x < LOWER(par) || x > UPPER(par))
+	return JAGS_NEGINF;
+    else
+	return log(UPPER(par) - LOWER(par));
 }
 
 double DUnif::randomSample(vector<double const *> const &par, 
