@@ -45,8 +45,8 @@ void DiscreteDSum::step(vector<double> &value,
     if (c2 >= c1) ++c2;
     
     //Modify the chosen elements while keeping the sum constant
-    double eps = rng->normal() * s;
-    int inteps = static_cast<int>(fabs(eps)) + 1;
+    double eps = rng->exponential() * s;
+    int inteps = static_cast<int>(eps);
     value[c1 * nrow + r] += inteps;
     value[c2 * nrow + r] -= inteps;
 }
