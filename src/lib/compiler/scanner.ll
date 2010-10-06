@@ -63,6 +63,7 @@ BRACKET		[ \t]*\(
 "/"			return '/';
 
 "T"/{BRACKET}           return 'T';
+"I"/{BRACKET}           return 'I';
 
 "%"+[^% \t\r\n]*"%" {
     /* Special operators, e.g. %*% for matrix multiplication */
@@ -88,7 +89,7 @@ BRACKET		[ \t]*\(
   yylval.val = atof(yytext); return DOUBLE;
 }
 
-([a-zA-Z]+[a-zA-Z0-0\._]*)/{BRACKET} {
+([a-zA-Z]+[a-zA-Z0-9\._]*)/{BRACKET} {
   yylval.stringptr = new std::string(yytext);
   return FUNC;
 }

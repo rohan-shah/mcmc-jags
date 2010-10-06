@@ -30,6 +30,7 @@
   static void setParameters(ParseTree *p, ParseTree *param1, ParseTree *param2,
 			    ParseTree *param3);
   static ParseTree *Truncated (ParseTree *left, ParseTree *right);
+  static ParseTree *Interval(ParseTree *left, ParseTree *right);
   %}
 
 %defines
@@ -86,7 +87,7 @@
 %type <ptree> relation for_loop counter
 %type <ptree> determ_relation stoch_relation  
 %type <ptree> range_element
-%type <ptree> distribution truncated relations
+%type <ptree> distribution truncated interval relations
 %type <pvec> dec_list relation_list expression_list dim_list 
 %type <pvec> range_list 
 %type <pvec> product sum
@@ -192,7 +193,11 @@ stoch_relation:	var '~' distribution {
 | var '~' distribution truncated {
     $$ = new ParseTree(P_STOCHREL, yylineno); 
     setParameters($$, $1, $3, $4);
-  }
+}
+| var '~' distribution interval {
+    $$ = new ParseTree(P_STOCHREL, yylineno);
+    setParameters($$, $1, $3, $4);
+}
 ;
 
 product: expression '*' expression {
@@ -321,12 +326,23 @@ distribution: FUNC '(' expression_list ')'
   $$ = new ParseTree(P_DENSITY, yylineno); setName($$, $1);
   setParameters($$, $3);
 }
+| FUNC '(' ')'
+{
+    //BUGS has a dflat() distribution with no parameters
+    $$ = new ParseTree(P_DENSITY, yylineno); setName($$, $1);
+}
 ;
 
 truncated: 'T' '(' expression ','  expression ')' {$$ = Truncated($3,$5);}
 | 'T' '(' ',' expression ')' {$$ = Truncated(0,$4);}
 | 'T' '(' expression ',' ')' {$$ = Truncated($3,0);}
 | 'T' '(' ',' ')' {$$ = Truncated(0,0);}
+;
+
+interval: 'I' '(' expression ','  expression ')' {$$ = Interval($3,$5);}
+| 'I' '(' ',' expression ')' {$$ = Interval(0,$4);}
+| 'I' '(' expression ',' ')' {$$ = Interval($3,0);}
+| 'I' '(' ',' ')' {$$ = Interval(0,0);}
 ;
 
 var: NAME {
@@ -355,7 +371,16 @@ void yyerror (const char *s)
 
 static ParseTree *Truncated (ParseTree *left, ParseTree *right)
 {
+    //JAGS-Style truncation notation
     ParseTree *p = new ParseTree(P_BOUNDS, yylineno);
+    setParameters(p, left, right);
+    return p;
+}
+
+static ParseTree *Interval (ParseTree *left, ParseTree *right)
+{
+    //BUGS-Style interval censoring notation
+    ParseTree *p = new ParseTree(P_INTERVAL, yylineno);
     setParameters(p, left, right);
     return p;
 }
