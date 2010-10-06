@@ -1,4 +1,4 @@
-SUBDIRS = CSparse samplers 
+SUBDIRS = CSparse SSparse samplers 
 
 jagsmod_LTLIBRARIES = glm.la
 
@@ -9,6 +9,7 @@ glm_la_CPPFLAGS = -I$(top_srcdir)/src/include \
 
 glm_la_LIBADD = samplers/glmsampler.la 	\
 	CSparse/csparse.la \
+	SSparse/ssparse.la \
 	$(top_builddir)/src/lib/libjags.la \
 	$(top_builddir)/src/jrmath/libjrmath.la
 
