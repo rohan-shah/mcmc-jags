@@ -135,6 +135,17 @@ AC_CONFIG_FILES([
   src/modules/lecuyer/Makefile
   src/modules/glm/Makefile
   src/modules/glm/CSparse/Makefile
+  src/modules/glm/SSparse/Makefile
+  src/modules/glm/SSparse/UFconfig/Makefile
+  src/modules/glm/SSparse/AMD/Makefile
+  src/modules/glm/SSparse/COLAMD/Makefile
+  src/modules/glm/SSparse/CHOLMOD/Makefile
+  src/modules/glm/SSparse/CHOLMOD/Cholesky/Makefile
+  src/modules/glm/SSparse/CHOLMOD/Core/Makefile
+  src/modules/glm/SSparse/CHOLMOD/Include/Makefile
+  src/modules/glm/SSparse/CHOLMOD/MatrixOps/Makefile
+  src/modules/glm/SSparse/CHOLMOD/Modify/Makefile
+  src/modules/glm/SSparse/CHOLMOD/Supernodal/Makefile
   src/modules/glm/samplers/Makefile
   src/terminal/Makefile
   win/Makefile
