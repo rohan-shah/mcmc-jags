@@ -13,8 +13,8 @@ using std::vector;
 #define SHAPE(par) (*par[0])
 #define SCALE(par) (pow(*par[1], -1/(*par[0])))
 
-#define V(par) *par[0]
-#define LAMBDA(par) *par[1]
+#define V(par) (*par[0])
+#define LAMBDA(par) (*par[1])
 
 DWeib::DWeib()
     : RScalarDist("dweib", 2, DIST_POSITIVE)

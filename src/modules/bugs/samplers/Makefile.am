@@ -1,3 +1,5 @@
+# SUBDIRS = cj
+
 noinst_LTLIBRARIES = bugssampler.la
 
 bugssampler_la_CPPFLAGS = -I$(top_srcdir)/src/include	\
@@ -5,6 +7,8 @@ bugssampler_la_CPPFLAGS = -I$(top_srcdir)/src/include	\
 -I$(top_srcdir)/src/modules/bugs/matrix
 
 bugssampler_la_LDFLAGS = -no-undefined -module -avoid-version
+
+# bugssampler_la_LIBADD = cj/bugscj.la
 
 bugssampler_la_SOURCES = Censored.cc ConjugateGamma.cc		\
 ConjugateWishart.cc ConjugateBeta.cc ConjugateMNormal.cc	\
