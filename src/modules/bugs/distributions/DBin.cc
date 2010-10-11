@@ -25,7 +25,7 @@ DBin::checkParameterDiscrete (vector<bool> const &mask) const
 
 bool DBin::checkParameterValue (vector<double const *> const &par) const
 {
-    return (SIZE(par) >= 1 && PROB(par) >= 0.0 && PROB(par) <= 1.0);
+    return (SIZE(par) >= 0 && PROB(par) >= 0.0 && PROB(par) <= 1.0);
 }
 
 double DBin::d(double x, vector<double const *> const &par, 
