@@ -482,6 +482,24 @@ A {\em monitor} in \JAGS\ is an object that records sampled
 values. The simplest monitor is a {\em trace monitor}, which stores
 the sampled value of a node at each iteration.
 
+\JAGS\ cannot monitor a node unless it has been defined in the model
+file.  For vector- or array-valued nodes, this means that every
+element must be defined. Here is an example of a simple for loop that
+only defines elements $2$ to $N$ of \verb+theta+
+
+\begin{verbatim}
+for (i in 2:N) {
+   theta[i] ~ dnorm(0,1);
+}
+\end{verbatim}
+
+Unless \verb+theta[1]+ is defined somewhere else in the model file,
+the multivariate node \verb+theta+ is undefined and therefore it
+will not be possible to monitor \verb+theta+ as a whole.  In such
+cases you can request each element separately , e.g. \verb+theta[2]+,
+\verb+theta[3]+, {\em etc.}, or request a subset that is fully defined,
+e.g. \verb+theta[2:6]+.
+
 Monitors can be classified according to whether they pool values over
 iterations and whether they pool values over parallel chains (The
 standard trace monitor does neither). When monitor values are written
