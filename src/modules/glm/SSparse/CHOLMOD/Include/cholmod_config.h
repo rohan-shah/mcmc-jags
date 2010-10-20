@@ -53,7 +53,6 @@
 /* Use the compiler flag, or uncomment the definition(s), if you want to use
  * one or more non-default installation options: */
 
-#define NCHECK
 #define NPARTITION
 
 /*
