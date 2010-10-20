@@ -5,6 +5,7 @@
 #include <vector>
 #include <stdexcept>
 #include <algorithm>
+#include <cmath>
 
 #include "GLMMethod.h"
 
@@ -23,6 +24,9 @@ using std::set;
 using std::runtime_error;
 using std::logic_error;
 using std::copy;
+using std::sqrt;
+
+extern cholmod_common *glm_wk;
 
 static void getIndices(set<StochasticNode const *> const &schildren,
 		       vector<StochasticNode const*> const &rows,
@@ -68,13 +72,13 @@ namespace glm {
 	vector<StochasticNode const *> const &schildren = 
 	    _view->stochasticChildren();
 
-	int *Xi = _x->i;
-	int *Xp = _x->p;
-	double *Xx = _x->x;
+	int *Xi = static_cast<int*>(_x->i);
+	int *Xp = static_cast<int*>(_x->p);
+	double *Xx = static_cast<double*>(_x->x);
 	
-	int nrow = schildren.size();
-	int ncol = _view->length();
-	if (nrow != _x->m || ncol != _x->n) {
+	unsigned int nrow = schildren.size();
+	unsigned int ncol = _view->length();
+	if (nrow != _x->nrow || ncol != _x->ncol) {
 	    throw logic_error("Dimension mismatch in GLMMethod::calDesign");
 	}
 
@@ -120,7 +124,7 @@ namespace glm {
 			 unsigned int chain, bool link)
 	: _lp(view->stochasticChildren().size()),
 	  _view(view), _chain(chain), _sub_views(sub_views),
-	  _x(0), _symbol(0), _fixed(sub_views.size(), false), 
+	  _x(0), _factor(0), _fixed(sub_views.size(), false), 
 	  _length_max(0), _nz_prior(0), _init(true)
     {
 	vector<StochasticNode const*> const &schildren = 
@@ -165,9 +169,12 @@ namespace glm {
 	Xp[c] = r;
 
 	//Set up sparse representation of the design matrix
-	_x = cs_spalloc(nrow, ncol, r, 1, 0);
-	copy(Xp.begin(), Xp.end(), _x->p);
-	copy(Xi.begin(), Xi.end(), _x->i);
+	_x = cholmod_allocate_sparse(nrow, ncol, r, 1, 1, 0, CHOLMOD_REAL, glm_wk);
+	int *_xp = static_cast<int*>(_x->p);
+	int *_xi = static_cast<int*>(_x->i);
+
+	copy(Xp.begin(), Xp.end(), _xp);
+	copy(Xi.begin(), Xi.end(), _xi);
 
 	// Check for constant linear terms
 	for (unsigned int i = 0; i < sub_views.size(); ++i) {
@@ -179,7 +186,7 @@ namespace glm {
 
     GLMMethod::~GLMMethod()
     {
-	cs_spfree(_x);
+	cholmod_free_sparse(&_x, glm_wk);
     }
     
     /* 
@@ -194,11 +201,12 @@ namespace glm {
     void GLMMethod::symbolic()  
     {
 	unsigned int nrow = _view->length();
-	cs *Aprior = cs_spalloc(nrow, nrow, _nz_prior, 0, 0); 
-    
-	// Prior contribution
-	int *Ap = Aprior->p;
-	int *Ai = Aprior->i;
+
+	// Prior contribution 
+	cholmod_sparse *Aprior =  
+	    cholmod_allocate_sparse(nrow, nrow, _nz_prior, 1, 1, 0, CHOLMOD_PATTERN, glm_wk); 
+	int *Ap = static_cast<int*>(Aprior->p);
+	int *Ai = static_cast<int*>(Aprior->i);
 
 	int c = 0;
 	int r = 0;
@@ -209,32 +217,37 @@ namespace glm {
 	    StochasticNode *snode = *p;
 	    unsigned int length = snode->length();
 
+	    /* 
+	       Fixme: we're assuming the prior precision of each node
+	       is dense, whereas it may be sparse.
+	    */
 	    int cbase = c; //first column in this diagonal block
-	    for (unsigned int i = 0; i < length; ++i, ++c) {
+	    for (unsigned int j = 0; j < length; ++j, ++c) {
 		Ap[c] = r;
-		for (unsigned int j = 0; j < length; ++j, ++r) {
-		    Ai[r] = cbase + j;
+		for (unsigned int i = 0; i < length; ++i, ++r) {
+		    Ai[r] = cbase + i;
 		}
 	    }
 	}
 	Ap[c] = r;
-
+	
 	// Likelihood contribution
     
-	cs *t_x = cs_transpose(_x, 0);
-	cs *Alik = cs_multiply(t_x, _x);
-	cs *A = cs_add(Aprior, Alik, 0, 0);
-    
-	//Free working matrices
-	cs_spfree(t_x);
-	cs_spfree(Aprior);
-	cs_spfree(Alik);
+	cholmod_sparse *t_x = cholmod_transpose(_x, 0, glm_wk);
+	cholmod_sparse *Alik = cholmod_aat(t_x, 0, 0, 0, glm_wk);
+	cholmod_sparse *A = cholmod_add(Aprior, Alik, 0, 0, 0, 0, glm_wk);
 
-	_symbol = cs_schol(1, A); 
-	cs_spfree(A);
+	//Free working matrices
+	cholmod_free_sparse(&t_x, glm_wk);
+	cholmod_free_sparse(&Aprior, glm_wk);
+	cholmod_free_sparse(&Alik, glm_wk);
+
+	A->stype = -1;
+	_factor = cholmod_analyze(A, glm_wk); 
+	cholmod_free_sparse(&A, glm_wk);
     }
 
-    void GLMMethod::calCoef(double *&b, cs *&A) 
+    void GLMMethod::calCoef(double *&b, cholmod_sparse *&A) 
     {
 	//   The log of the full conditional density takes the form
 	//   -(t(x) %*% A %*% x - 2 * b %*% x)/2
@@ -246,13 +259,17 @@ namespace glm {
 
 	unsigned int nrow = _view->length();
 	b = new double[nrow];
-	cs *Aprior = cs_spalloc(nrow, nrow, _nz_prior, 1, 0); 
+
+	cholmod_sparse *Aprior =  
+	    cholmod_allocate_sparse(nrow, nrow, _nz_prior, 1, 1, 0, 
+				    CHOLMOD_REAL, glm_wk); 
     
 	// Set up prior contributions to A, b
-	int *Ap = Aprior->p;
-	int *Ai = Aprior->i;
-	double *Ax = Aprior->x;
+	int *Ap = static_cast<int*>(Aprior->p);
+	int *Ai = static_cast<int*>(Aprior->i);
+	double *Ax = static_cast<double*>(Aprior->x);
 
+	//FIXME. We are assuming contributions to prior are dense
 	int c = 0;
 	int r = 0;
 	vector<StochasticNode*> const &snodes = _view->nodes();
@@ -292,26 +309,27 @@ namespace glm {
 	//   - mu is the mean of the stochastic children
 	//   - Y is the value of the stochastic children
 
-	cs *t_x = cs_transpose(_x, 1);
-	int *Tp = t_x->p;
-	int *Ti = t_x->i;
-	double *Tx = t_x->x;
-    
-	for (int c = 0; c < t_x->n; ++c) {
+	cholmod_sparse *t_x = cholmod_transpose(_x, 1, glm_wk);
+	int *Tp = static_cast<int*>(t_x->p);
+	int *Ti = static_cast<int*>(t_x->i);
+	double *Tx = static_cast<double*>(t_x->x);
+
+	for (unsigned int c = 0; c < t_x->ncol; ++c) {
 	    double tau = getPrecision(c);
-	    double delta = getValue(c) - getMean(c);
+	    double delta = tau * (getValue(c) - getMean(c));
+	    double sigma = sqrt(tau);
 	    for (int r = Tp[c]; r < Tp[c+1]; ++r) {
-		Tx[r] *= tau;
 		b[Ti[r]] += Tx[r] * delta;
-	    
+		Tx[r] *= sigma;
 	    }
 	}
 
-	cs *Alik = cs_multiply(t_x, _x);
-	cs_spfree(t_x);
-	A = cs_add(Aprior, Alik, 1, 1);
-	cs_spfree(Aprior);
-	cs_spfree(Alik);
+	cholmod_sparse *Alik = cholmod_aat(t_x, 0, 0, 1, glm_wk);
+	cholmod_free_sparse(&t_x, glm_wk);
+	double one[2] = {1, 0};
+	A = cholmod_add(Aprior, Alik, one, one, 1, 0, glm_wk);
+	cholmod_free_sparse(&Aprior, glm_wk);
+	cholmod_free_sparse(&Alik, glm_wk);
     }
 
     void GLMMethod::updateLM(RNG *rng, bool stochastic, bool chol) 
@@ -332,42 +350,73 @@ namespace glm {
 	}
 
 	double *b = 0;
-	cs *A = 0;
+	cholmod_sparse *A = 0;
 	calCoef(b, A);
-
-	// Get Cholesky decomposition of posterior precision
-	csn *N = cs_chol(A, _symbol);
-	cs_spfree(A);
-	if (!N) {
+	
+	// Get LDL' decomposition of posterior precision
+	A->stype = -1;
+	int ok = cholmod_factorize(A, _factor, glm_wk);
+	cholmod_free_sparse(&A, glm_wk);
+	if (!ok) {
 	    delete [] b;
 	    throw runtime_error("Cholesky decomposition failure in GLMMethod");
 	}
 
-	// Use the Cholesky decomposition to generate a new sample
+	// Use the LDL' decomposition to generate a new sample
 	// with mean mu such that A %*% mu = b and precision A. The
 	// vector b is overwritten with the result
 	
 	unsigned int nrow = _view->length();
-	double *w = new double[nrow];
-	cs_ipvec(_symbol->pinv, b, w, nrow);
+	cholmod_dense *w = cholmod_allocate_dense(nrow, 1, nrow, CHOLMOD_REAL, 
+						  glm_wk);
+
+	// Permute RHS
+	double *wx = static_cast<double*>(w->x);
+	int *perm = static_cast<int*>(_factor->Perm);
+	for (unsigned int i = 0; i < nrow; ++i) {
+	    wx[i] = b[perm[i]];
+	}
+
+	cholmod_dense *u1 = 0;
 	if (chol) {
-	    cs_lsolve(N->L, w);
-	    updateAuxiliary(w, N, rng);
+	    u1 = cholmod_solve(CHOLMOD_L, _factor, w, glm_wk);
+	    updateAuxiliary(u1, _factor, rng);
 	}
 	else {
-	    updateAuxiliary(w, N, rng);
-	    cs_lsolve(N->L, w);
+	    updateAuxiliary(w, _factor, rng);
+	    u1 = cholmod_solve(CHOLMOD_L, _factor, w, glm_wk);
 	}
 	if (stochastic) {
-	    for (unsigned int r = 0; r < nrow; ++r) {
-		w[r] += rng->normal();
+	    double *u1x = static_cast<double*>(u1->x);
+	    if (_factor->is_ll) {
+		// LL' decomposition
+		for (unsigned int r = 0; r < nrow; ++r) {
+		    u1x[r] += rng->normal();
+		}
+	    }
+	    else {
+		// LDL' decomposition. The diagonal D matrix is stored
+		// as the diagonal of _factor
+		int *fp = static_cast<int*>(_factor->p);
+		double *fx = static_cast<double*>(_factor->x);
+		for (unsigned int r = 0; r < nrow; ++r) {
+		    u1x[r] += rng->normal() * sqrt(fx[fp[r]]);
+		}
 	    }
 	}
-	cs_ltsolve(N->L, w);
-	cs_nfree(N);
-	cs_pvec(_symbol->pinv, w, b, nrow);
-	delete [] w;
-    
+
+	cholmod_dense *u2 = cholmod_solve(CHOLMOD_DLt, _factor, u1, glm_wk);
+
+	// Permute solution
+	double *u2x = static_cast<double*>(u2->x);
+	for (unsigned int i = 0; i < nrow; ++i) {
+	    b[perm[i]] = u2x[i];
+	}
+
+	cholmod_free_dense(&w, glm_wk);
+	cholmod_free_dense(&u1, glm_wk);
+	cholmod_free_dense(&u2, glm_wk);
+
 	//Shift origin back to original scale
 	int r = 0;
 	for (vector<StochasticNode*>::const_iterator p = 
@@ -400,19 +449,23 @@ namespace glm {
 	}
 
 	double *b = 0;
-	cs *A = 0;
+	cholmod_sparse *A = 0;
 	calCoef(b, A);
 
 	int nrow = _view->length();
 	vector<double> theta(nrow);
 	_view->getValue(theta, _chain);
 
+	int *Ap = static_cast<int*>(A->p);
+	int *Ai = static_cast<int*>(A->i);
+	double *Ax = static_cast<double*>(A->x);
+
 	//Extract diagonal from A
 	vector<double> diagA(nrow);
 	for (int c = 0; c < nrow; ++c) {
-	    for (int j = A->p[c]; j < A->p[c+1]; ++j) {
-		if (A->i[j] == c) {
-		    diagA[c] = A->x[j];
+	    for (int j = Ap[c]; j < Ap[c+1]; ++j) {
+		if (Ai[j] == c) {
+		    diagA[c] = Ax[j];
 		    break;
 		}
 	    }
@@ -443,8 +496,8 @@ namespace glm {
 	    }
 		
 	    double delta = theta[i] - theta_old;
-	    for (int j = A->p[i]; j < A->p[i+1]; ++j) {
-		b[A->i[j]] -= delta * A->x[j];
+	    for (int j = Ap[i]; j < Ap[i+1]; ++j) {
+		b[Ai[j]] -= delta * Ax[j];
 	    }
 	}
 
@@ -492,7 +545,7 @@ namespace glm {
     {
     }
     
-    void GLMMethod::updateAuxiliary(double *b, csn *N, RNG *rng)
+    void GLMMethod::updateAuxiliary(cholmod_dense *b, cholmod_factor *N, RNG *rng)
     {
     }
 

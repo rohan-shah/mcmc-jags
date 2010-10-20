@@ -1,15 +1,15 @@
 #ifndef GLM_METHOD_H_
 #define GLM_METHOD_H_
 
-extern "C" {
-#include <cs.h>
-}
-
 #include <sampler/SampleMethod.h>
 #include <sampler/GraphView.h>
 
 #include <string>
 #include <vector>
+
+extern "C" {
+#include <cholmod.h>
+}
 
 class Graph;
 class RNG;
@@ -29,8 +29,8 @@ namespace glm {
 	GraphView const *_view;
 	unsigned int _chain;
 	std::vector<GraphView const *> _sub_views;
-	cs *_x;
-	css *_symbol;
+	cholmod_sparse *_x;
+	cholmod_factor *_factor;
     private:
 	std::vector<bool> _fixed;
 	unsigned int _length_max;
@@ -47,13 +47,13 @@ namespace glm {
 	void updateLMGibbs(RNG *rng);
 	bool isAdaptive() const;
 	bool adaptOff();
-	void calCoef(double *&, cs *&);
+	void calCoef(double *&, cholmod_sparse *&);
 	virtual	double getMean(unsigned int i) const;
 	virtual std::string name() const = 0;
 	virtual double getPrecision(unsigned int i) const = 0;
 	virtual double getValue(unsigned int i) const = 0;
 	virtual void initAuxiliary(RNG *rng);
-	virtual void updateAuxiliary(double *b, csn *N, RNG *rng);
+	virtual void updateAuxiliary(cholmod_dense *b, cholmod_factor *N, RNG *rng);
 	static GLMFamily getFamily(StochasticNode const *snode);
     };
 

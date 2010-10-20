@@ -9,12 +9,36 @@
 #include <rng/TruncatedNormal.h>
 #include <rng/RNG.h>
 
+extern "C" {
+#include <cs.h>
+}
+
 #include <stdexcept>
+#include <cmath>
 
 using std::vector;
 using std::string;
 using std::logic_error;
 using std::runtime_error;
+using std::sqrt;
+
+extern cholmod_common *glm_wk;
+
+static cs shallow_copy(cholmod_sparse *s)
+{
+    //Copy a cholmod_sparse struct to a cs struct without allocating
+    //any memory
+
+    cs c;
+    c.nzmax = s->nzmax;
+    c.n = s->nrow;
+    c.m = s->ncol;
+    c.p = static_cast<int*>(s->p);
+    c.i = static_cast<int*>(s->i);
+    c.x = static_cast<double*>(s->x);
+    c.nz = -1;
+    return c;
+}
 
 namespace glm {
 
@@ -25,7 +49,8 @@ namespace glm {
     {
     }
 
-    void HolmesHeld::updateAuxiliary(double *w, csn *N, RNG *rng)
+    void HolmesHeld::updateAuxiliary(cholmod_dense *w, 
+				     cholmod_factor *N, RNG *rng)
     {
 	/* 
 	   In the parent GLMMethod class, the posterior precision is
@@ -40,30 +65,71 @@ namespace glm {
 	    _view->stochasticChildren();
 
 	unsigned int nrow = schildren.size();
-	unsigned int ncol = _view->length();
 
 	//Transpose and permute the design matrix
-	cs *t_x = cs_transpose(_x, 1);
-	cs *Pt_x = cs_permute(t_x, _symbol->pinv, 0, 1);
-	cs_spfree(t_x);
+	cholmod_sparse *t_x = cholmod_transpose(_x, 1, glm_wk);
+	int *fperm = static_cast<int *>(_factor->Perm);
+	cholmod_sparse *Pt_x = cholmod_submatrix(t_x, fperm, t_x->nrow,
+						 0, -1, 1, 1, glm_wk);
+	cholmod_free_sparse(&t_x, glm_wk);
 
-	double *ur = new double[ncol];
-	int *xi = new int[2*ncol]; //Stack
+	//Turn the factor into a matrix. Since this modifies the factor
+	//we need to take a copy first
+	cholmod_factor *f = cholmod_copy_factor(_factor, glm_wk);
+	cholmod_sparse *L = cholmod_factor_to_sparse(f, glm_wk);
+	if (!L->packed || !L->sorted) {
+	    throw logic_error("Cholesky factor is not packed or not sorted");
+	}
+	cholmod_free_factor(&f, glm_wk);
+
+	unsigned int ncol = L->ncol;
+	vector<double> d(ncol, 1);
+	if (!_factor->is_ll) {
+	    //Extract D from the diagonal of L and set the diagonal to 1
+	    int *Lp = static_cast<int*>(L->p);
+	    double *Lx = static_cast<double*>(L->x);
+	    for (unsigned int r = 0; r < ncol; ++r) {
+		d[r] = Lx[Lp[r]];
+		Lx[Lp[r]] = 1;
+	    }
+	}
+
+	// Now make shallow copies of L and Pt_x so we can pass them
+	// to cs_sparse from the CSparse library
+
+	cs cs_L = shallow_copy(L);
+	cs cs_Ptx = shallow_copy(Pt_x);
+
+        double *ur = new double[ncol];
+        int *xi = new int[2*ncol]; //Stack
+	
+	double *wx = static_cast<double *>(w->x);
+	
 	for (unsigned int r = 0; r < nrow; ++r) {
 	    
 	    if (_outcome[r] != BGLM_NORMAL) {
-
+		
+		int top = cs_spsolve(&cs_L, &cs_Ptx, r, xi, ur, 0, 1);
+		
 		double mu_r = getMean(r);
 		double tau_r = getPrecision(r);
-		
+
 		//Calculate mean and precision of z[r] conditional
 		//on z[s] for s != r
 		double zr_mean = 0;
 		double Hr = 0; // 
-		int top = cs_spsolve(N->L, Pt_x, r, xi, ur, 0, 1);
-		for (unsigned int j = top; j < ncol; ++j) {
-		    zr_mean  += ur[xi[j]] * w[xi[j]];
-		    Hr  += ur[xi[j]] * ur[xi[j]];
+
+		if (_factor->is_ll) {
+		    for (unsigned int j = top; j < ncol; ++j) {
+			zr_mean  += ur[xi[j]] * wx[xi[j]]; 
+			Hr  += ur[xi[j]] * ur[xi[j]];
+		    }
+		}
+		else {
+		    for (unsigned int j = top; j < ncol; ++j) {
+			zr_mean  += ur[xi[j]] * wx[xi[j]] / d[xi[j]]; 
+			Hr  += ur[xi[j]] * ur[xi[j]] / d[xi[j]];
+		    }
 		}
 		Hr *= tau_r;
 		zr_mean -= Hr * (_z[r] - mu_r);
@@ -87,18 +153,20 @@ namespace glm {
 		}
 
 		//Add new contribution of row r back to b
-		double zdelta = _z[r] - zold;
+		double zdelta = (_z[r] - zold) * tau_r;
 		for (unsigned int j = top; j < ncol; ++j) {
-		    w[xi[j]] += ur[xi[j]] * zdelta * tau_r; 
+		    wx[xi[j]] += ur[xi[j]] * zdelta; 
 		}
 	    }
 	}
-
+	    
 	//Free workspace
 	delete [] ur;
-	//delete [] xr;
 	delete [] xi;
-	cs_spfree(Pt_x);
+	
+	//cholmod_free_sparse(&u, glm_wk);
+	cholmod_free_sparse(&Pt_x, glm_wk);
+	cholmod_free_sparse(&L, glm_wk);
     }
     
     void HolmesHeld::update(RNG *rng)
