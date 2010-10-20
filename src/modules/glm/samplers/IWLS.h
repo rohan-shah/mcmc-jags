@@ -1,13 +1,7 @@
 #ifndef IWLS_H_
 #define IWLS_H_
 
-extern "C" {
-#include <cs.h>
-}
-
 #include "GLMMethod.h"
-
-
 
 class LinkNode;
 
@@ -24,7 +18,7 @@ namespace glm {
         double var(unsigned int i) const;
         double logPTransition(std::vector<double> const &xorig,
                               std::vector<double> const &x,
-                              double const *b, cs const *A);
+                              double *b, cholmod_sparse *A);
     public:
 	IWLS(GraphView const *view, 
 	     std::vector<GraphView const *> const &sub_views,
@@ -36,4 +30,5 @@ namespace glm {
     };
 
 }
-#endif /* GLM_METHOD_H_ */
+
+#endif /* IWLS_H_ */
