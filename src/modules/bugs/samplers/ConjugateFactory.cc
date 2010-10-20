@@ -17,10 +17,8 @@
 
 #include <stdexcept>
 #include <string>
-#include <map>
 
 using std::string;
-using std::map;
 using std::invalid_argument;
 using std::logic_error;
 

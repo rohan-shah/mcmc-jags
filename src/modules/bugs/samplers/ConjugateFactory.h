@@ -1,11 +1,7 @@
 #ifndef CONJUGATE_FACTORY_H_
 #define CONJUGATE_FACTORY_H_
 
-#include "ConjugateSampler.h"
-
 #include <sampler/SingletonFactory.h>
-#include <map>
-#include <string>
 
 /**
  * @short Factory object for conjugate samplers
