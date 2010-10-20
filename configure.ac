@@ -140,6 +140,7 @@ AC_CONFIG_FILES([
   src/modules/glm/SSparse/AMD/Makefile
   src/modules/glm/SSparse/COLAMD/Makefile
   src/modules/glm/SSparse/CHOLMOD/Makefile
+  src/modules/glm/SSparse/CHOLMOD/Check/Makefile
   src/modules/glm/SSparse/CHOLMOD/Cholesky/Makefile
   src/modules/glm/SSparse/CHOLMOD/Core/Makefile
   src/modules/glm/SSparse/CHOLMOD/Include/Makefile
