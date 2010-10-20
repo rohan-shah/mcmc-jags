@@ -11,7 +11,8 @@ glm_la_LIBADD = samplers/glmsampler.la 	\
 	CSparse/csparse.la \
 	SSparse/ssparse.la \
 	$(top_builddir)/src/lib/libjags.la \
-	$(top_builddir)/src/jrmath/libjrmath.la
+	$(top_builddir)/src/jrmath/libjrmath.la \
+	@LAPACK_LIBS@ @BLAS_LIBS@
 
 glm_la_LDFLAGS = -no-undefined -module -avoid-version
 
