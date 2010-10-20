@@ -2,14 +2,16 @@
 #define CONJUGATE_F_FACTORY_H_
 
 #include <sampler/SingletonFactory.h>
-#include <string>
 
-/**
- * @short Factory object for conjugate samplers
- */
-class ConjugateFFactory : public SingletonFactory
-{
-public:
+namespace glm {
+
+  /**
+   * @short Factory object for conjugate samplers
+   */
+  class ConjugateFFactory : public SingletonFactory
+  {
+  public:
+    ~ConjugateFFactory();
     /**
      * Provides a simple interface to the canSample member functions of
      * the various conjugate samplers.  The distribution of snode is found
@@ -22,6 +24,8 @@ public:
      */
     Sampler *makeSampler(StochasticNode *snode, Graph const &graph) const;
     std::string name() const;
-};
+  };
+
+}
 
 #endif /* CONJUGATE_F_FACTORY_H_ */
