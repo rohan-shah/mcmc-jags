@@ -79,6 +79,7 @@ BRACKET		[ \t]*\(
 [ \t\r\n]+              /* Eat whitespace */
 "#".*\n                 /* Eat comments */
 
+
 ([0-9]+){EXPONENT}? {
   yylval.val = atof(yytext); return DOUBLE;
 }
@@ -100,6 +101,10 @@ BRACKET		[ \t]*\(
 }
 
 <<EOF>>	yyterminate();
+
+\357\277\275 {
+    return UREPCHAR;
+}
 
 . {
   /* Default rule for unmatched input.

@@ -79,7 +79,6 @@
 %left NEG
 %right '^'
 
-
 %token ENDL
 
 %type <ptree> node_dec
@@ -91,6 +90,8 @@
 %type <pvec> dec_list relation_list expression_list dim_list 
 %type <pvec> range_list 
 %type <pvec> product sum
+
+%token UREPCHAR
 
 %expect 2
 
@@ -351,6 +352,15 @@ var: NAME {
 | NAME '[' range_list ']' {
   $$ = new ParseTree(P_VAR, yylineno); setName($$, $1);
   setParameters($$, $3);
+}
+;
+
+replacement_char: UREPCHAR {
+    std::ostringstream msg;
+    msg << "Unicode replacement character U+FFFD found on line " << yylineno
+	<< ".\nThis indicates a coding error in the file";
+    error_buf = msg.str();
+    YYERROR;
 }
 ;
 
