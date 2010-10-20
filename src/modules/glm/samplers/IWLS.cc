@@ -9,6 +9,12 @@
 #include <stdexcept>
 #include <cmath>
 
+extern "C" {
+#include <cholmod.h>
+}
+
+extern cholmod_common *glm_wk;
+
 using std::string;
 using std::vector;
 using std::logic_error;
@@ -18,6 +24,22 @@ using std::fabs;
 static unsigned int nchildren(GraphView const *view)
 {
     return view->stochasticChildren().size();
+}
+
+double logDet(cholmod_factor *F)
+{
+    if (!F->is_ll && !F->is_monotonic) {
+	throw logic_error("Non-monotonic simplicial factor in logDet");
+    }
+
+    int *Fp = static_cast<int*>(F->p);
+    double *Fx = static_cast<double*>(F->x);
+
+    double y = 0;
+    for (unsigned int r = 0; r < F->n; ++r) {
+	y += log(Fx[Fp[r]]);
+    }
+    return F->is_ll ? 2*y : y;
 }
 
 #define MAX_ITER 100
@@ -97,45 +119,46 @@ namespace glm {
 
     double IWLS::logPTransition(vector<double> const &xorig, 
 				vector<double> const &x,
-				double const *b, cs const *A)
+				double *b, cholmod_sparse *A)
     {
 	unsigned int n = _view->length();
 	
-	csn *N = cs_chol(A, _symbol);
-	if (!N) {
+	//Difference between new and old values
+	cholmod_dense *delta = cholmod_allocate_dense(n, 1, n, CHOLMOD_REAL, 
+						      glm_wk);
+	double *dx = static_cast<double*>(delta->x);
+	for (unsigned int i = 0; i < n; ++i) {
+	    dx[i] = x[i] - xorig[i];
+	}
+	
+	int ok = cholmod_factorize(A, _factor, glm_wk);
+	if (!ok) {
 	    throw logic_error("Cholesky decomposition failure in IWLS");
 	}
 
-	double *w = new double[n];
-	double *mu = new double[n];
+	//Posterior mean
+	cholmod_dense *mu = cholmod_solve(CHOLMOD_A, _factor, delta, glm_wk);
+	double *mux = static_cast<double*>(mu->x);
 
-	cs const *L = N->L;
-	cs_ipvec(_symbol->pinv, b, w, n);
-	cs_lsolve(L, w);
-	cs_ltsolve(L, w);
-	cs_pvec(_symbol->pinv, w, mu, n);
+	//Setup pointers to sparse matrix A
+	int *Ap = static_cast<int*>(A->p);
+	int *Ai = static_cast<int*>(A->i);
+	double *Ax = static_cast<double*>(A->x);
 
-	for (unsigned int i = 0; i < n; ++i) {
-	    w[i] = x[i] - xorig[i] - mu[i];
-	}
-	cs_ipvec(_symbol->pinv, w, mu, n);
-	delete [] w;
-
-	double logp = 0;
-	int const *Li = L->i;
-	int const *Lp = L->p;
-	double const *Lx = L->x;
-	for (unsigned int i = 0; i < n; ++i) {
-	    double y = 0;
-	    for (int j = Lp[i]; j < Lp[i+1]; ++j) {
-		y += mu[Li[j]] * Lx[j];
+	double deviance = 0;
+	for (unsigned int r = 0; r < n; ++r) {
+	    double Adr = 0;
+	    for (unsigned int j = Ap[r]; j < Ap[r+1]; ++j) {
+		Adr += Ax[j] * dx[Ai[j]];
 	    }
-	    logp += log(Lx[Lp[i]]) - y * y/2;
+	    deviance += dx[r] * (Adr - 2 * b[r])  + b[r] * mux[r];
 	}
-	delete [] mu;
-	cs_nfree(N);
+	deviance -= logDet(_factor);
 
-	return logp;
+	cholmod_free_dense(&delta, glm_wk);
+	cholmod_free_dense(&mu, glm_wk);
+
+	return -deviance/2;
     }
 		
     void IWLS::update(RNG *rng)
@@ -148,9 +171,9 @@ namespace glm {
             }
 	    _init = false;
 	}
-
+	
 	double *b1, *b2;
-	cs *A1, *A2;
+	cholmod_sparse *A1, *A2;
 	double logp = 0;
 	
 	vector<double> xold(_view->length());
@@ -168,7 +191,8 @@ namespace glm {
 	logp -= logPTransition(xold, xnew, b1, A1);
 	logp += logPTransition(xnew, xold, b2, A2);
 	
-	cs_spfree(A1); cs_spfree(A2);
+	cholmod_free_sparse(&A1, glm_wk);
+	cholmod_free_sparse(&A2, glm_wk);
 	delete [] b1; delete [] b2;
 	
 	//Acceptance step
