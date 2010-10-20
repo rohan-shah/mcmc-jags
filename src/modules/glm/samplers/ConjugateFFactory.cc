@@ -94,102 +94,110 @@ static void convertStochasticChildren(StochasticNode *snode,
     }
 }
 
+namespace glm {
 
-bool 
-ConjugateFFactory::canSample(StochasticNode *snode, Graph const &graph) const
-{
+  ConjugateFFactory::~ConjugateFFactory()
+  {
+    //Nothing to do here; only for vtable. BUT WHY???
+  }
+
+  bool 
+  ConjugateFFactory::canSample(StochasticNode *snode, Graph const &graph) const
+  {
     /* 
        The target node has an F(m,1) prior, where m is fixed. It cannot
        be bounded
     */
     if (snode->distribution()->name() != "df") 
-	return false;
+      return false;
     if (!snode->parents()[0]->isObserved())
-	return false; //FIXME. Is this necessary?
+      return false; //FIXME. Is this necessary?
     if (!snode->parents()[1]->isObserved())
-	return false;
+      return false;
     if (*snode->parents()[1]->value(0) != 1)
-	return false;
+      return false;
     if (isBounded(snode))
 	return false; //FIXME. We could include this case
-
+    
     /* 
        The stochastic children of the sampled node must be unobserved,
        normally distributed random variables, such that the precision
        is a scale function of the sampled node and the mean is independent
        of the sampled node
     */
-
+    
     GraphView gv1(vector<StochasticNode*>(1,snode), graph);
-
+    
     // Check stochastic children
     vector<StochasticNode const*> const &schildren1 = gv1.stochasticChildren();
     for (unsigned int i = 0; i < schildren1.size(); ++i) {
-	if (schildren1[i]->distribution()->name() != "dnorm") {
-	    return false;
-	}
-	if (gv1.isDependent(schildren1[i]->parents()[0])) {
-	    return false; //mean parameter depends on snode
-	}
-	if (isBounded(schildren1[i])) {
-	    return false;
-	}
-	if (schildren1[i]->isObserved()) {
-	    return false;
-	}
+      if (schildren1[i]->distribution()->name() != "dnorm") {
+	return false;
+      }
+      if (gv1.isDependent(schildren1[i]->parents()[0])) {
+	return false; //mean parameter depends on snode
+      }
+      if (isBounded(schildren1[i])) {
+	return false;
+      }
+      if (schildren1[i]->isObserved()) {
+	return false;
+      }
     }
-
+    
     // Check that deterministic descendants are scale transformations 
     if (!checkScale(&gv1, false)) {
-	return false;
+      return false;
     }
-
+    
     // Need to get non-const pointers to stochastic children
     vector<StochasticNode*> snodes;
     convertStochasticChildren(snode, schildren1, snodes);
     
     /* The stochastic children themselves must form a linear model */
-
+    
     GraphView gv2(snodes, graph);
     if (!checkLinear(&gv2, false, false))
-	return false;
-
+      return false;
+    
     vector<StochasticNode const *> const &schildren2 = gv2.stochasticChildren();
     for (unsigned int i = 0; i < schildren2.size(); ++i) {
-	if (schildren2[i]->distribution()->name() != "dnorm") {
-	    return false;
-	}
-	if (isBounded(schildren2[i])) {
-	    return false;
-	}
-	if (gv2.isDependent(schildren2[i]->parents()[1])) {
-	    return false; //Precision parameter is dependent
-	}
+      if (schildren2[i]->distribution()->name() != "dnorm") {
+	return false;
+      }
+      if (isBounded(schildren2[i])) {
+	return false;
+      }
+      if (gv2.isDependent(schildren2[i]->parents()[1])) {
+	return false; //Precision parameter is dependent
+      }
     }
-
+    
     return true;
-}
-
-Sampler *ConjugateFFactory::makeSampler(StochasticNode *snode1, 
-					Graph const &graph) const
-{
+  }
+  
+  Sampler *ConjugateFFactory::makeSampler(StochasticNode *snode1, 
+					  Graph const &graph) const
+  {
     unsigned int nchain = snode1->nchain();
     vector<ConjugateFMethod*> methods(nchain, 0);
-
+    
     GraphView *gv1 = new GraphView(snode1, graph);
-
+    
     vector<StochasticNode*> snodes2;
     convertStochasticChildren(snode1, gv1->stochasticChildren(), snodes2);
     GraphView *gv2 = new GraphView(snodes2, graph);
-
+    
     for (unsigned int ch = 0; ch < nchain; ++ch) {
-	methods[ch] = new ConjugateFMethod(gv1, gv2, ch);
+      methods[ch] = new ConjugateFMethod(gv1, gv2, ch);
     }
     
     return new ConjugateFSampler(gv1, gv2, methods);
-}
-
-string ConjugateFFactory::name() const
-{
+  }
+  
+  string ConjugateFFactory::name() const
+  {
     return "glm::ConjugateF";
+  }
+  
 }
