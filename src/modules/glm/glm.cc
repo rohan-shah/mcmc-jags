@@ -2,17 +2,15 @@
 
 #include "samplers/LinearFactory.h"
 #include "samplers/LinearGibbsFactory.h"
-/*
 #include "samplers/IWLSFactory.h"
+/*
 #include "samplers/HolmesHeldBFactory.h"
 */
 #include "samplers/HolmesHeldFactory.h"
 #include "samplers/AlbertChibFactory.h"
 #include "samplers/AlbertChibGibbsFactory.h"
 #include "samplers/AMFactory.h"
-/*
 #include "samplers/ConjugateFFactory.h"
-*/
 
 #include <cholmod.h>
 
@@ -44,7 +42,7 @@ namespace glm {
 	glm_wk->postorder = 0 ;
 */
 
-	//insert(new IWLSFactory);
+	insert(new IWLSFactory);
 	insert(new LinearGibbsFactory);
 	insert(new LinearFactory);
  	insert(new AMFactory);
@@ -52,7 +50,7 @@ namespace glm {
 	insert(new AlbertChibFactory);
 	//insert(new HolmesHeldBFactory);
 	insert(new HolmesHeldFactory);
-	//insert(new ConjugateFFactory);
+	insert(new ConjugateFFactory);
     }
     
     GLMModule::~GLMModule() {
