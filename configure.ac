@@ -2,7 +2,7 @@ dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.63)
 
-AC_INIT([JAGS],[2.1.0],[martyn_plummer@users.sourceforge.net],[JAGS])
+AC_INIT([JAGS],[2.2.0],[martyn_plummer@users.sourceforge.net],[JAGS])
 AC_CANONICAL_HOST
 AC_CONFIG_SRCDIR([src/lib/Console.cc])
 AC_CONFIG_MACRO_DIR([m4])
