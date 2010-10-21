@@ -103,7 +103,7 @@ BRACKET		[ \t]*\(
 <<EOF>>	yyterminate();
 
 \357\277\275 {
-    return UREPCHAR;
+  throw std::logic_error("Coding error in file (UTF-8 replacement char U+FFFD found by parser)");
 }
 
 . {

@@ -355,15 +355,6 @@ var: NAME {
 }
 ;
 
-replacement_char: UREPCHAR {
-    std::ostringstream msg;
-    msg << "Unicode replacement character U+FFFD found on line " << yylineno
-	<< ".\nThis indicates a coding error in the file";
-    error_buf = msg.str();
-    YYERROR;
-}
-;
-
 %%
 
 static std::string error_buf;
