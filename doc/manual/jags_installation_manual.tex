@@ -4,7 +4,7 @@
 \usepackage{url}
 \usepackage{multirow}
 \usepackage{amsfonts}
-\newcommand{\release}{2.0.0}
+\newcommand{\release}{2.2.0}
 \newcommand{\JAGS}{\textsf{JAGS}}
 \newcommand{\BUGS}{\textsf{BUGS}}
 \newcommand{\WinBUGS}{\textsf{WinBUGS}}
@@ -477,11 +477,7 @@ tools for windows (\url{http://www.murdoch-sutherland.com/Rtools}),
 since the compilers in this distribution match the compilers used to
 build the binary distribution of R for windows, as well as the R
 packages distributed via CRAN (\url{http://cran.r-project.org}).
-
-We used version 2.11 of \verb+Rtools+.  You only need to install the
-``MingGW components and tools'', not the other components of
-\verb+Rtools+. The installer will also ask if you wish to modify the
-Windows PATH. You do not need this.
+We used version 2.12 of \verb+Rtools+.  
 
 MSYS (the Minimal SYStem) is part of the MinGW project. It provides a
 bash shell for you to build Unix software. These instructions were
@@ -564,7 +560,7 @@ liblapack.def lapack_MinGW.a  -L./ -lblas -lgfortran
 
 Unpack the JAGS source
 \begin{verbatim}
-tar xfvz JAGS-2.0.0.tar.gz
+tar xfvz JAGS-2.2.0.tar.gz
 cd JAGS-2.0.0
 \end{verbatim}
 and configure JAGS
@@ -578,7 +574,7 @@ the JAGS build directory.
 
 Normally you will want to distribute the blas and lapack libraries
 with JAGS.  In this case, put the DLLs and import libraries in the
-sub-directory \verb+win32/include+. They will be detected and included
+sub-directory \verb+win/runtime+. They will be detected and included
 with the distribution.
 
 Make sure that the file \verb+makensis.exe+, provided by NSIS, is in
@@ -600,25 +596,22 @@ compiled.
 
 \subsection{Building on 64-bit windows}
 
-The build instructions for 64-bit windows are similar to the
-instructions for 32-bit windows. Instead of the MinGW tools that come
-with R, we use a 64-bit compiler from the MinGW-w64 project
-(\url{http://www.sourceforge.net/projects/mingw-w64}).  The
-distribution used to build JAGS-2.0.0 was
-\verb+mingw-w64-1.0-bin_i686-mingw_20100322.zip+, which is also the
-compiler used to build the 64-bit Windows binary distribution of
-R-2.11.0. This is actually a cross-compiler. It will run under MSYS
---which is still 32-bit -- but will produce 64-bit code.
+The build instructions for 64-bit windows are similar
+to the instructions for 32-bit windows. Release 212 of
+Rtools includes 64-bit compilers from the MinGW-w64 project
+(\url{http://www.sourceforge.net/projects/mingw-w64}).  These are actually
+cross-compilers. They will run under MSYS -- which is still 32-bit --
+but will produce 64-bit code.
 
-Most binary distributions of MinGW-w64 use dynamic linking to runtime
-libraries. This is inconvenient, as it means that the required runtime
-libraries must be distributed with JAGS. Failure to do so will either
-result in an installation that is either completely non-functional or
-will crash.  To force the compiler to use static linking, delete any
-import libraries (files ending in \verb+.dll.a+). In the case of the
-\verb+mingw-w64-1.0-bin_i686-mingw_20100322.zip+ distribution, we had
-to remove \verb+libssp.dll.a+. Note that there is currently no way to
-avoid dynamic linking to the gcc runtime library (see below).
+If you use another distribution of MinGW-w64 you need to be careful about
+dynamic linking.  Most binary distributions of MinGW-w64 use dynamic
+linking to runtime libraries. This is inconvenient, as it means that the
+required runtime libraries must be distributed with JAGS. Failure to
+do so will either result in an installation that is either completely
+non-functional or will crash.  To force the compiler to use static
+linking, delete any import libraries (files ending in \verb+.dll.a+).
+Note that there is currently no way to avoid dynamic linking to the gcc
+runtime library (see below).
 
 In order to build the BLAS and LAPACK libraries, you need to append the
 prefix \verb+x86_64-w64-mingw32-+ to all the tools. This means you need
