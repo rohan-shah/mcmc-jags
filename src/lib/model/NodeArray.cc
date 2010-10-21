@@ -238,7 +238,6 @@ void NodeArray::setData(SArray const &value, Model *model)
 	throw runtime_error(string("Dimension mismatch when setting value of node array ") + name());
     }
 
-    unsigned int N = value.length();  
     vector<double> const &x = value.value();
   
     //Gather all the nodes for which a data value is supplied

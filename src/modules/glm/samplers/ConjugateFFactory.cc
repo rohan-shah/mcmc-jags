@@ -65,7 +65,7 @@ static void convertStochasticChildren(StochasticNode *snode,
     StochasticNode const **inarray = new StochasticNode const *[N];
     copy(in.begin(), in.end(), inarray);
     StochasticNode const ***inptrs = new StochasticNode const **[N];
-    for (int i = 0; i < N; ++i) {
+    for (unsigned int i = 0; i < N; ++i) {
 	inptrs[i] = inarray + i;
     }
     stable_sort(inptrs, inptrs + N, lt_snodeptr);

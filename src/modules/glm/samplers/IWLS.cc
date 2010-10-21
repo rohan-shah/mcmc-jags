@@ -148,7 +148,7 @@ namespace glm {
 	double deviance = 0;
 	for (unsigned int r = 0; r < n; ++r) {
 	    double Adr = 0;
-	    for (unsigned int j = Ap[r]; j < Ap[r+1]; ++j) {
+	    for (int j = Ap[r]; j < Ap[r+1]; ++j) {
 		Adr += Ax[j] * dx[Ai[j]];
 	    }
 	    deviance += dx[r] * (Adr - 2 * b[r])  + b[r] * mux[r];
