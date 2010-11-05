@@ -17,12 +17,22 @@ namespace dic {
     double KLBin::divergence(vector<double const *> const &par0,
 			     vector<double const *> const &par1) const
     {
+	//Note: ignoring a term depending only on N, which is
+	//expensive to calculate and cancels out when we take the
+	//opposite divergence
+
 	if (N0 != N1) {
 	    return JAGS_POSINF;
 	}
+	else if (PROB0 == 0) {
+	    return - N0 * log(1 - PROB1);
+	}
+	else if (PROB0 == 1) {
+	    return - N0 * log(PROB1);
+	}
 	else {
-	    return (N0 * PROB0 * log (PROB0/PROB1) +
-		    N0 * (1 - PROB0) * log((1 - PROB0)/(1 - PROB1)));
+	    return (N0 * PROB0 * (log(PROB0) - log(PROB1)) +
+		    N0 * (1 - PROB0) * (log(1 - PROB0) - log(1 - PROB1)));
 	}
     }
 
