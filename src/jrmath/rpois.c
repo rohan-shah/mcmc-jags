@@ -34,6 +34,8 @@
  *    ACM Trans. Math. Software 8, 163-179.
  */
 
+#include "nmath.h"
+
 #define a0	-0.5
 #define a1	 0.3333333
 #define a2	-0.2500068
@@ -48,8 +50,6 @@
 #define one_24	0.0416666666666666667
 
 #define repeat for(;;)
-
-#include "nmath.h"
 
 double rpois(double mu, RNG *rng)
 {
