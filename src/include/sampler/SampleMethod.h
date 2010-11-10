@@ -14,8 +14,10 @@ public:
     virtual ~SampleMethod();
     /**
      * Draws another sample from the target distribution
+     *
+     * @return Success indicator
      */
-    virtual void update(RNG *rng) = 0;
+    virtual bool update(RNG *rng) = 0;
     /**
      * Indicates whether the sample method has an adaptive mode.
      */

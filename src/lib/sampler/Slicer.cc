@@ -19,7 +19,7 @@ Slicer::Slicer(double width, unsigned int max)
 {
 }
 
-void Slicer::updateStep(RNG *rng)
+bool Slicer::updateStep(RNG *rng)
 {
     // Test current value
     double g0 = logDensity();
@@ -28,8 +28,9 @@ void Slicer::updateStep(RNG *rng)
 	    throw runtime_error("Singularity in likelihood found by Slicer");
 	}
 	else {
+	    return false;
 	    //FIXME: Not very informative
-	    throw runtime_error("Error in Slicer: Current value is inconsistent with data");
+	    //throw runtime_error("Error in Slicer: Current value is inconsistent with data");
 	}
     }
 
@@ -111,9 +112,11 @@ void Slicer::updateStep(RNG *rng)
 	    _width = 2 * _sumdiff / _iter / (_iter - 1);  
 	}
     }
+
+    return true;
 }
 
-void Slicer::updateDouble(RNG *rng)
+bool Slicer::updateDouble(RNG *rng)
 {
   using namespace std;
 
@@ -121,10 +124,12 @@ void Slicer::updateDouble(RNG *rng)
   double g0 = logDensity();
   if (!jags_finite(g0)) {
     if (g0 < 0) {
-	throw runtime_error("Error in Slicer: Current value is inconsistent with data");
+	return false;
+	//throw runtime_error("Error in Slicer: Current value is inconsistent with data");
     }
     else {
-	throw runtime_error("Singularity in likelihood found by Slicer");
+	return false;
+	//throw runtime_error("Singularity in likelihood found by Slicer");
     }
   }
 
@@ -208,6 +213,7 @@ void Slicer::updateDouble(RNG *rng)
       _width = 2 * _sumdiff / _iter / (_iter - 1);  
     }
   }
+  return true;
 }
 
 bool Slicer::accept(double xold, double xnew, double z, double L, double R,

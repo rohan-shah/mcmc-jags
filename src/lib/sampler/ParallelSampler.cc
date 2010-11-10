@@ -27,11 +27,13 @@ ParallelSampler::~ParallelSampler()
     }
 }
 
-void ParallelSampler::update(vector<RNG*> const &rngs)
+bool ParallelSampler::update(vector<RNG*> const &rngs)
 {
     for (unsigned int ch = 0; ch < rngs.size(); ++ch) {
-	_methods[ch]->update(rngs[ch]);
+	if (!_methods[ch]->update(rngs[ch]))
+	    return false;
     }
+    return true;
 }
 
 bool ParallelSampler::adaptOff()

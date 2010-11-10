@@ -76,7 +76,7 @@ void TemperedMetropolis::temperedUpdate(RNG *rng,
     }
 }
 
-void TemperedMetropolis::update(RNG *rng)
+bool TemperedMetropolis::update(RNG *rng)
 {
     //Save the current state
     vector<double> last_value(length());
@@ -104,6 +104,7 @@ void TemperedMetropolis::update(RNG *rng)
 	setValue(last_value);
 	accept(rng, 1.0);
     }
+    return true;
 }
 
 void TemperedMetropolis::rescale(double p)

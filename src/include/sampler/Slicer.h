@@ -35,13 +35,13 @@ public:
      * that uses the Slicer DensityMethod can implement Sampler#update
      * by calling this function.
      */
-    void updateStep(RNG *rng);
+    bool updateStep(RNG *rng);
     /**
      * Update the current value using the "doubling" method. A Sampler
      * that uses the Slicer DensityMethod can implement Sampler#update
      * by calling this function.
      */
-    void updateDouble(RNG *rng);
+    bool updateDouble(RNG *rng);
     /**
      * Returns the current value of the Slicer. 
      */
