@@ -4,14 +4,11 @@
 #include <util/dim.h>
 #include <util/nainf.h>
 
-#include <stdexcept>
 #include <cmath>
 
 #include <JRmath.h>
 
 using std::vector;
-using std::length_error;
-using std::logic_error;
 
 #define ALPHA(par) (par[0])
 #define LENGTH(len) (len[0])

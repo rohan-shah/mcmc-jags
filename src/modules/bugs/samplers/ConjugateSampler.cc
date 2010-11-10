@@ -16,11 +16,13 @@ ConjugateSampler::~ConjugateSampler()
     delete _method;
 }
 
-void ConjugateSampler::update(vector<RNG*> const &rngs)
+bool ConjugateSampler::update(vector<RNG*> const &rngs)
 {
     for (unsigned int ch = 0; ch < _nchain; ++ch) {
-	_method->update(ch, rngs[ch]);
+	if (!_method->update(ch, rngs[ch]))
+	    return false;
     }
+    return true;
 }
 
 bool ConjugateSampler::isAdaptive() const

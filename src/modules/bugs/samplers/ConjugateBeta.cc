@@ -11,7 +11,6 @@
 #include <sampler/Linear.h>
 
 #include <set>
-#include <stdexcept>
 #include <vector>
 #include <cmath>
 #include <algorithm>
@@ -21,8 +20,6 @@
 using std::vector;
 using std::set;
 using std::sqrt;
-using std::invalid_argument;
-using std::logic_error;
 using std::max;
 using std::min;
 using std::string;
@@ -86,8 +83,7 @@ ConjugateBeta::ConjugateBeta(GraphView const *gv)
 {
 }
 
-void ConjugateBeta::update(unsigned int chain, RNG *rng)
-    const
+bool ConjugateBeta::update(unsigned int chain, RNG *rng) const
 {
     vector<StochasticNode const*> const &stoch_children = 
 	_gv->stochasticChildren();
@@ -104,7 +100,8 @@ void ConjugateBeta::update(unsigned int chain, RNG *rng)
 	b = 1;
 	break;
     default:
-        throw logic_error("invalid distribution in ConjugateBeta sampler");
+	return false;
+	//throw logic_error("invalid distribution in ConjugateBeta sampler");
     }
     unsigned int Nchild = stoch_children.size();
 
@@ -149,7 +146,8 @@ void ConjugateBeta::update(unsigned int chain, RNG *rng)
 		bplus = 1 - y;
 		break;
 	    default:
-		throw logic_error("Invalid distribution in Conjugate Beta sampler");
+		return false;
+		//throw logic_error("Invalid distribution in Conjugate Beta sampler");
 	    }
 	    a += aplus;
 	    b += bplus;
@@ -174,7 +172,7 @@ void ConjugateBeta::update(unsigned int chain, RNG *rng)
 	    if (xnew >= lower && xnew <= upper) {
 		_gv->setValue(&xnew, 1, chain);
                 if (is_mix) delete [] C;
-		return;
+		return true;
 	    }
 	    xnew = rbeta(a, b, rng);
 	}
@@ -190,6 +188,7 @@ void ConjugateBeta::update(unsigned int chain, RNG *rng)
 	delete [] C;
     }
 
+    return true;
 }
 
 string ConjugateBeta::name() const

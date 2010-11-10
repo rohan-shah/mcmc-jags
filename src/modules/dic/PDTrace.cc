@@ -4,11 +4,9 @@
 #include "CalKL.h"
 #include <graph/StochasticNode.h>
 
-#include <stdexcept>
 #include <algorithm>
 
 using std::vector;
-using std::logic_error;
 using std::string;
 using std::copy;
 
@@ -26,12 +24,15 @@ namespace dic {
 	: Monitor("trace", toNodeVec(snodes)), _calkl(calkl),
 	  _values(0), _nchain(snodes[0]->nchain())
     {
-	if (calkl.size() != snodes.size()) {
-	    throw logic_error("Length mismatch in PDTrace constructor");
-	}
-	if (snodes[0]->nchain() < 2) {
-	    throw logic_error("PDTrace needs at least 2 chains");
-	}
+	/*
+	  Not necessary as factory takes care of this
+	  if (calkl.size() != snodes.size()) {
+	  throw logic_error("Length mismatch in PDTrace constructor");
+	  }
+	  if (snodes[0]->nchain() < 2) {
+	  throw logic_error("PDTrace needs at least 2 chains");
+	  }
+	*/
     }
 
     PDTrace::~PDTrace() 

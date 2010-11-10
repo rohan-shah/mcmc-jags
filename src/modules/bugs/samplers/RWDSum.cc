@@ -8,14 +8,12 @@
 #include "RWDSum.h"
 #include <cmath>
 #include <set>
-#include <stdexcept>
 
 using std::vector;
 using std::log;
 using std::exp;
 using std::fabs;
 using std::set;
-using std::logic_error;
 
 //Target acceptance probability for Metropolis-Hastings algorithm
 #define PROB  0.5
@@ -48,17 +46,21 @@ static vector<double> nodeValues(GraphView const *gv, unsigned int chain)
     gv->getValue(ans, chain);
 
     StochasticNode const *dchild = getDSumNode(gv);
+    /*
     if (!dchild) {
 	throw logic_error("DSum Child not found in RWDSum method");
     }
+    */
 
     //Check discreteness
     bool discrete = dchild->isDiscreteValued();
+    /*
     for (unsigned int i = 0; i < gv->nodes().size(); ++i) {
 	if (gv->nodes()[i]->isDiscreteValued() != discrete) {
 	    throw logic_error("Discrete value inconsistency in RWDSum method");
 	}
     }
+    */
 
     //Enforce discreteness of value vector, if necessary
     if (discrete) {
@@ -71,9 +73,11 @@ static vector<double> nodeValues(GraphView const *gv, unsigned int chain)
     unsigned int nrow = dchild->length();
     unsigned int ncol = gv->nodes().size();
 
+    /*
     if (ans.size() != nrow * ncol) {
 	throw logic_error("Inconsistent lengths in RWDSum method");
     }
+    */
     
     for (unsigned int r = 0; r < nrow; ++r) {
 	
@@ -85,9 +89,11 @@ static vector<double> nodeValues(GraphView const *gv, unsigned int chain)
 	if (delta != 0) {
 	    if (discrete) {
 		int idelta = static_cast<int>(delta);
+		/*
 		if (delta != idelta) {
 		    throw logic_error("Unable to satisfy dsum constraint");
 		}
+		*/
 		int eps = idelta / ncol;
 		int resid = idelta % ncol;
 		
@@ -113,9 +119,11 @@ RWDSum::RWDSum(GraphView const *gv, unsigned int chain, double step)
     : Metropolis(nodeValues(gv, chain)), _gv(gv), _chain(chain), 
     _step_adapter(step, PROB), _pmean(0), _niter(2), _dsnode(getDSumNode(gv))
 {
+    /*
     if (!_dsnode) {
 	throw logic_error("No DSum node found in RWDSum method");
     }
+    */
 }
 
 void RWDSum::rescale(double p)
@@ -128,7 +136,7 @@ void RWDSum::rescale(double p)
     _niter++;
 }
 
-void RWDSum::update(RNG *rng)
+bool RWDSum::update(RNG *rng)
 {
     vector<double> value(length());
     unsigned int nrow = _dsnode->length();
@@ -143,6 +151,8 @@ void RWDSum::update(RNG *rng)
 	log_p += _gv->logFullConditional(_chain);
 	accept(rng, exp(log_p));
     }
+
+    return true;
 }
 
 bool RWDSum::checkAdaptation() const

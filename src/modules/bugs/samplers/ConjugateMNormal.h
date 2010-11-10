@@ -22,7 +22,7 @@ class ConjugateMNormal : public ConjugateMethod {
  public:
   ConjugateMNormal(GraphView const *gv);
   ~ConjugateMNormal();
-  void update(unsigned int chain, RNG *rng) const;
+  bool update(unsigned int chain, RNG *rng) const;
   static bool canSample(StochasticNode *snode, Graph const &graph);
   std::string name() const;
 };

@@ -4,14 +4,11 @@
 #include <util/dim.h>
 #include <util/nainf.h>
 
-#include <stdexcept>
 #include <cmath>
 
 #include <JRmath.h>
 
 using std::vector;
-using std::length_error;
-using std::logic_error;
 
 #define PROB(par) (par[0])
 #define SIZE(par) (*par[1])

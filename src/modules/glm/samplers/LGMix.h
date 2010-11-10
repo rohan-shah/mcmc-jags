@@ -22,7 +22,7 @@ namespace glm {
 	double _weights[10];
 	double _means[10];
 	double _variances[10];
-	void updateNExact(double n);
+	void updateNExact(int n);
 	void updateNApprox(double n);
 	void updateN(double n);
     public:

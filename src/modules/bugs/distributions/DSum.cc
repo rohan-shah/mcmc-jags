@@ -1,15 +1,13 @@
 #include <config.h>
 #include <util/logical.h>
+#include <util/nainf.h>
 #include "DSum.h"
 
 #include <cfloat>
 #include <cmath>
-#include <stdexcept>
 
 using std::vector;
 using std::fabs;
-using std::runtime_error;
-using std::logic_error;
 using std::sqrt;
 
 DSum::DSum()
@@ -34,7 +32,8 @@ double DSum::logLikelihood(double const *x, unsigned int length,
 	    s -= par[j][i];
 	}
 	if (fabs(s) > tol) {
-	    throw runtime_error("Inconsistent arguments for dsum");
+	    return JAGS_NEGINF;
+	    //throw runtime_error("Inconsistent arguments for dsum");
 	}
     }
     return 0;

@@ -6,11 +6,9 @@
 #include "RealSlicer.h"
 
 #include <cmath>
-#include <stdexcept>
 
 using std::vector;
 using std::string;
-using std::logic_error;
 
 namespace base {
 
@@ -18,11 +16,13 @@ namespace base {
 			   double width, long maxwidth)
 	: Slicer(width, maxwidth), _gv(gv), _chain(chain)
     {
+	/*
 	if (gv->nodes().size() != 1 || 
 	    !canSample(gv->nodes().front()))
 	{
 	    throw logic_error("Invalid RealSlicer");
 	}
+	*/
     }
 
     bool 
@@ -52,9 +52,9 @@ namespace base {
 	_gv->nodes().front()->support(lower, upper, 1, _chain);
     }
 
-    void RealSlicer::update(RNG *rng)
+    bool RealSlicer::update(RNG *rng)
     {
-	updateStep(rng);
+	return updateStep(rng);
     }
 
     string RealSlicer::name() const

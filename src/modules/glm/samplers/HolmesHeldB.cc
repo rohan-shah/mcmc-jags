@@ -9,13 +9,10 @@
 #include <rng/TruncatedNormal.h>
 #include <rng/RNG.h>
 
-#include <stdexcept>
 #include <algorithm>
 
 using std::vector;
 using std::string;
-using std::logic_error;
-using std::runtime_error;
 using std::copy;
 
 /* Modified version of cs_updown:
@@ -125,9 +122,11 @@ namespace glm {
 		double mu_r = getMean(r);
 		
 		//Downdate contribution from observation r
+		/*
 		if(!jags_updown(N->L, -_tau[r], Pt_x, r, _symbol->parent)) {
 		    throw runtime_error("Downdate error in HolmesHeldB");
 		}
+		*/
 		for (unsigned int j = pp[r]; j < pp[r+1]; ++j) {
 		    b[pi[j]] -=  _tau[r] * (_z[r] - mu_r) * px[j];
 		}
@@ -168,7 +167,8 @@ namespace glm {
 			z2 = rnormal(-_z1[r], rng, zr_mean, sqrt(v2));
 		    }
 		    else {
-			throw logic_error("Invalid child value in HolmesHeldB");
+			return;
+			//throw logic_error("Invalid child value in HolmesHeldB");
 		    }
 		    _z[r] = _z1[r] + z2;
 		    _z1[r] += zr_mean;
@@ -181,12 +181,14 @@ namespace glm {
 			_z[r] = rnormal(0, rng, zr_mean, sqrt(1 + v2));
 		    }
 		    else {
-			throw logic_error("Invalid child value in HolmesHeldB");
+			return;
+			//throw logic_error("Invalid child value in HolmesHeldB");
 		    }
 		}
 		//Update contribution from observation r
 		if(!jags_updown(N->L, _tau[r], Pt_x, r, _symbol->parent)) {
-		    throw runtime_error("Update error in HolmesHeldB");
+		    return;
+		    //throw runtime_error("Update error in HolmesHeldB");
 		}
 		for (unsigned int j = pp[r]; j < pp[r+1]; ++j) {
 		    b[pi[j]] +=  _tau[r] * (_z[r] - mu_r) * px[j];
@@ -201,9 +203,9 @@ namespace glm {
 	cs_spfree(Pt_x);
     }
     
-    void HolmesHeldB::update(RNG *rng)
+    bool HolmesHeldB::update(RNG *rng)
     {
-	updateLM(rng, true, false);
+	return updateLM(rng, true, false);
     }
 
     string HolmesHeldB::name() const

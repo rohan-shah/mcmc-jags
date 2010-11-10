@@ -11,7 +11,6 @@
 #include "lapack.h"
 
 #include <set>
-#include <stdexcept>
 #include <vector>
 #include <cmath>
 #include <string>
@@ -26,7 +25,6 @@ using std::string;
 using std::vector;
 using std::set;
 using std::sqrt;
-using std::invalid_argument;
 using std::string;
 
 static void calBeta(double *betas, GraphView const *gv,
@@ -138,7 +136,7 @@ bool ConjugateMNormal::canSample(StochasticNode *snode, Graph const &graph)
     return true; //We made it!
 }
 
-void ConjugateMNormal::update(unsigned int chain, RNG *rng) const
+bool ConjugateMNormal::update(unsigned int chain, RNG *rng) const
 {
     vector<StochasticNode const*> const &stoch_children = 
           _gv->stochasticChildren();
@@ -298,8 +296,11 @@ void ConjugateMNormal::update(unsigned int chain, RNG *rng) const
 	delete [] Acopy;
 	delete [] A;
 	delete [] b;
+	return false;
+	/*
 	throw NodeError(snode,
 			"unable to solve linear equations in conjugate multivariate normal method");
+	*/
     }
 
     //Shift origin back to original scale
@@ -315,6 +316,8 @@ void ConjugateMNormal::update(unsigned int chain, RNG *rng) const
     delete [] Acopy;
     delete [] b;
     delete [] xnew;
+
+    return true;
 }
 
 string ConjugateMNormal::name() const

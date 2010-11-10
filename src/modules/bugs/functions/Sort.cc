@@ -2,13 +2,11 @@
 #include "Sort.h"
 
 #include <algorithm>
-#include <stdexcept>
 
 #include <util/dim.h>
 
 using std::vector;
 using std::sort;
-using std::logic_error;
 
 namespace bugs {
 

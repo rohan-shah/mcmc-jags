@@ -8,7 +8,6 @@
 #include <sampler/Linear.h>
 
 #include <set>
-#include <stdexcept>
 #include <vector>
 #include <cmath>
 
@@ -17,8 +16,6 @@
 using std::vector;
 using std::set;
 using std::sqrt;
-using std::logic_error;
-using std::runtime_error;
 using std::string;
 using std::fabs;
 
@@ -96,7 +93,7 @@ ConjugateFMethod::~ConjugateFMethod()
 
 
 #include <iostream> //debuggin
-void ConjugateFMethod::update(RNG *rng)
+bool ConjugateFMethod::update(RNG *rng)
 {
     /* There are three levels 
 
@@ -204,7 +201,7 @@ void ConjugateFMethod::update(RNG *rng)
 
     for(unsigned int r = 0; r <= MAX_RNORM; r++) {
 	if (r == MAX_RNORM) {
-	    throw runtime_error("Degenerate scale in Conjugate F sampler");
+	    return false;
 	}
 	_scale = rnorm(mean_scale, 1/sqrt(precision_scale), rng);
 	if (fabs(_scale) > MIN_SCALE) {
@@ -215,4 +212,6 @@ void ConjugateFMethod::update(RNG *rng)
     double xnew = _tau/(_scale * _scale);
     //std::cout << _tau << " " << _scale << " " << xnew << std::endl;
     _gv1->setValue(&xnew, 1, _chain);
+
+    return true;
 }

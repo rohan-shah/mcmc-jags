@@ -4,10 +4,8 @@
 #include "JRmath.h"
 #include <rng/RNG.h>
 #include <cmath>
-#include <stdexcept>
 
 using std::exp;
-using std::logic_error;
 
 namespace glm {
 

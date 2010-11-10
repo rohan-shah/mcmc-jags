@@ -15,12 +15,9 @@
 #include <distribution/Distribution.h>
 #include <sampler/GraphView.h>
 
-#include <stdexcept>
 #include <string>
 
 using std::string;
-using std::invalid_argument;
-using std::logic_error;
 
 bool ConjugateFactory::canSample(StochasticNode * snode,
 				 Graph const &graph) const
@@ -94,7 +91,8 @@ Sampler *ConjugateFactory::makeSampler(StochasticNode *snode,
 		method = new ConjugateNormal(gv);
 	    }
 	    else {
-		throw logic_error("Cannot find conjugate sampler for exponential");
+		return 0;
+		//throw logic_error("Cannot find conjugate sampler for exponential");
 	    }
 	    break;
 	case BETA:
@@ -120,11 +118,13 @@ Sampler *ConjugateFactory::makeSampler(StochasticNode *snode,
 		method = new ConjugateBeta(gv);
 	    }
 	    else {
-		logic_error("Cannot find conjugate sampler for uniform");
+		return 0;
+		//logic_error("Cannot find conjugate sampler for uniform");
 	    }
 	    break;
 	default:
-	    throw invalid_argument("Unable to create conjugate sampler");
+	    return 0;
+	    //throw invalid_argument("Unable to create conjugate sampler");
 	}
 /* 
    }

@@ -29,7 +29,7 @@ public:
     /**
      * Updates the current value by adding a random increment.
      */
-    void update(RNG *rng);
+    bool update(RNG *rng);
     /**
      * Modifies the step size to achieve the target acceptance
      * probability using a noisy gradient algorithm

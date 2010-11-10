@@ -13,13 +13,10 @@ extern "C" {
 #include <cs.h>
 }
 
-#include <stdexcept>
 #include <cmath>
 
 using std::vector;
 using std::string;
-using std::logic_error;
-using std::runtime_error;
 using std::sqrt;
 
 extern cholmod_common *glm_wk;
@@ -49,7 +46,7 @@ namespace glm {
     {
     }
 
-    void HolmesHeld::updateAuxiliary(cholmod_dense *w, 
+    bool HolmesHeld::updateAuxiliary(cholmod_dense *w, 
 				     cholmod_factor *N, RNG *rng)
     {
 	/* 
@@ -78,7 +75,8 @@ namespace glm {
 	cholmod_factor *f = cholmod_copy_factor(_factor, glm_wk);
 	cholmod_sparse *L = cholmod_factor_to_sparse(f, glm_wk);
 	if (!L->packed || !L->sorted) {
-	    throw logic_error("Cholesky factor is not packed or not sorted");
+	    return false;
+	    //throw logic_error("Cholesky factor is not packed or not sorted");
 	}
 	cholmod_free_factor(&f, glm_wk);
 
@@ -137,7 +135,10 @@ namespace glm {
 		double zr_prec = (1 - Hr) * tau_r;
 		
 		if (zr_prec <= 0) {
+		    return false;
+		    /*
 		    throw runtime_error("Invalid precision in Holmes-Held update method.\nThis is a known bug and we are working on it.\nPlease bear with us");
+		    */
 		}
 
 		double yr = schildren[r]->value(_chain)[0];
@@ -149,7 +150,8 @@ namespace glm {
 		    _z[r] = rnormal(0, rng, mu_r + zr_mean, 1/sqrt(zr_prec));
 		}
 		else {
-		    throw logic_error("Invalid child value in HolmesHeld");
+		    return false;
+		    //throw logic_error("Invalid child value in HolmesHeld");
 		}
 
 		//Add new contribution of row r back to b
@@ -167,11 +169,14 @@ namespace glm {
 	//cholmod_free_sparse(&u, glm_wk);
 	cholmod_free_sparse(&Pt_x, glm_wk);
 	cholmod_free_sparse(&L, glm_wk);
+
+	return true;
     }
     
-    void HolmesHeld::update(RNG *rng)
+    bool HolmesHeld::update(RNG *rng)
     {
-	updateLM(rng);
+	if (!updateLM(rng))
+	    return false;
 	
 	for (unsigned int r = 0; r < _tau.size(); ++r)
 	{
@@ -180,6 +185,8 @@ namespace glm {
 		_tau[r] = 1/sample_lambda(delta, rng);
 	    }
 	}
+	
+	return true;
     }
 
     string HolmesHeld::name() const

@@ -8,7 +8,6 @@
 
 #include <cfloat>
 #include <climits>
-#include <stdexcept>
 #include <set>
 #include <algorithm>
 #include <cmath>
@@ -17,7 +16,6 @@
 
 using std::set;
 using std::vector;
-using std::invalid_argument;
 using std::max;
 using std::min;
 using std::exp;

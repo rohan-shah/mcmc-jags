@@ -17,7 +17,7 @@ namespace glm {
 		    unsigned int chain);
 	void updateAuxiliary(double *b, csn *N, RNG *rng);
 	std::string name() const;
-	void update(RNG *rng);
+	bool update(RNG *rng);
     };
     
 }

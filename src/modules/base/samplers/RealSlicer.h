@@ -30,7 +30,7 @@ namespace base {
 	double value() const;
 	void setValue(double value);
 	void getLimits(double *lower, double *upper) const;
-	void update(RNG *rng);
+	bool update(RNG *rng);
 	std::string name() const;
 	static bool canSample(StochasticNode const *node);
 	double logDensity() const;

@@ -11,7 +11,6 @@
 #include <sampler/GraphView.h>
 
 #include <set>
-#include <stdexcept>
 #include <vector>
 #include <cmath>
 
@@ -20,8 +19,6 @@
 using std::vector;
 using std::set;
 using std::sqrt;
-using std::invalid_argument;
-using std::logic_error;
 using std::string;
 
 bool ConjugateWishart::canSample(StochasticNode *snode, Graph const &graph)
@@ -72,7 +69,7 @@ ConjugateWishart::ConjugateWishart(GraphView const *gv)
     : ConjugateMethod(gv)
 {}
 
-void 
+bool 
 ConjugateWishart::update(unsigned int chain, RNG *rng) const
 {
     vector<StochasticNode const*> const &stoch_children = 
@@ -142,6 +139,8 @@ ConjugateWishart::update(unsigned int chain, RNG *rng) const
     delete [] R;
     _gv->setValue(xnew, N, chain);
     delete [] xnew;
+
+    return true;
 }
 
 string ConjugateWishart::name() const

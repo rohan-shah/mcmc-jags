@@ -5,11 +5,9 @@
 
 #include <cfloat>
 #include <algorithm>
-#include <stdexcept>
 
 using std::min;
 using std::max;
-using std::logic_error;
 using std::vector;
 
 #define T(par) (*par[0])

@@ -17,7 +17,7 @@ namespace glm {
 	std::string name() const;
 	double getPrecision(unsigned int i) const;
 	double getValue(unsigned int i) const;
-	void update(RNG *rng);
+	bool update(RNG *rng);
     };
     
 }

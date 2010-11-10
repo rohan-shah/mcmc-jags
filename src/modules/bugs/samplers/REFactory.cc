@@ -9,12 +9,10 @@
 #include "REFactory.h"
 #include "RESampler.h"
 
-#include <stdexcept>
 #include <cmath>
 
 using std::set;
 using std::vector;
-using std::runtime_error;
 using std::log;
 using std::string;
 

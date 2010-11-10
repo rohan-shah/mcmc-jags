@@ -10,14 +10,12 @@
 #include <sampler/GraphView.h>
 #include <sampler/Linear.h>
 
-#include <stdexcept>
 #include <string>
 #include <algorithm>
 
 using std::vector;
 using std::string;
 using std::set;
-using std::logic_error;
 using std::copy;
 using std::stable_sort;
 
@@ -89,9 +87,11 @@ static void convertStochasticChildren(StochasticNode *snode,
     
     delete [] inarray;
     delete [] inptrs;
+    /*
     if (!ok) {
 	throw logic_error("Conversion mismatch in Conjugate F Factory");
     }
+    */
 }
 
 namespace glm {

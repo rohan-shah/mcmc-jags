@@ -3,7 +3,6 @@
 
 #include <set>
 #include <vector>
-#include <stdexcept>
 #include <algorithm>
 #include <cmath>
 
@@ -21,8 +20,6 @@
 using std::string;
 using std::vector;
 using std::set;
-using std::runtime_error;
-using std::logic_error;
 using std::copy;
 using std::sqrt;
 
@@ -40,9 +37,11 @@ static void getIndices(set<StochasticNode const *> const &schildren,
 	}
     }
     
+    /*
     if (indices.size() != schildren.size()) {
 	throw logic_error("Size mismatch in getIndices");
     }
+    */
 }
 
 static Node const *getLinearPredictor(StochasticNode const *snode)
@@ -78,9 +77,11 @@ namespace glm {
 	
 	unsigned int nrow = schildren.size();
 	unsigned int ncol = _view->length();
+	/*
 	if (nrow != _x->nrow || ncol != _x->ncol) {
 	    throw logic_error("Dimension mismatch in GLMMethod::calDesign");
 	}
+	*/
 
 	int c = 0; //column counter
 	double *xnew = new double[_length_max];
@@ -332,7 +333,7 @@ namespace glm {
 	cholmod_free_sparse(&Alik, glm_wk);
     }
 
-    void GLMMethod::updateLM(RNG *rng, bool stochastic, bool chol) 
+    bool GLMMethod::updateLM(RNG *rng, bool stochastic, bool chol) 
     {
 	//   The log of the full conditional density takes the form
 	//   -(t(x) %*% A %*% x - 2 * b %*% x)/2
@@ -359,7 +360,8 @@ namespace glm {
 	cholmod_free_sparse(&A, glm_wk);
 	if (!ok) {
 	    delete [] b;
-	    throw runtime_error("Cholesky decomposition failure in GLMMethod");
+	    return false;
+	    //throw runtime_error("Cholesky decomposition failure in GLMMethod");
 	}
 
 	// Use the LDL' decomposition to generate a new sample
@@ -380,10 +382,10 @@ namespace glm {
 	cholmod_dense *u1 = 0;
 	if (chol) {
 	    u1 = cholmod_solve(CHOLMOD_L, _factor, w, glm_wk);
-	    updateAuxiliary(u1, _factor, rng);
+	    if (!updateAuxiliary(u1, _factor, rng)) return false;
 	}
 	else {
-	    updateAuxiliary(w, _factor, rng);
+	    if (!updateAuxiliary(w, _factor, rng)) return false;
 	    u1 = cholmod_solve(CHOLMOD_L, _factor, w, glm_wk);
 	}
 	if (stochastic) {
@@ -431,9 +433,11 @@ namespace glm {
 
 	_view->setValue(b, nrow, _chain);
 	delete [] b;
+
+	return true;
     }
 
-    void GLMMethod::updateLMGibbs(RNG *rng) 
+    bool GLMMethod::updateLMGibbs(RNG *rng) 
     {
 	// Update element-wise. Less efficient than updateLM but
 	// does not require a Cholesky decomposition, and is 
@@ -441,7 +445,8 @@ namespace glm {
 
 	if (_init) {
 	    if (_view->length() != _sub_views.size()) {
-		throw logic_error("updateLMGibbs can only act on scalar nodes");
+		return false;
+		//throw logic_error("updateLMGibbs can only act on scalar nodes");
 	    }
 	    initAuxiliary(rng);
 	    calDesign();
@@ -501,9 +506,9 @@ namespace glm {
 	    }
 	}
 
-
 	_view->setValue(theta,  _chain);
-
+	
+	return true;
     }
 
     bool GLMMethod::isAdaptive() const
@@ -545,8 +550,9 @@ namespace glm {
     {
     }
     
-    void GLMMethod::updateAuxiliary(cholmod_dense *b, cholmod_factor *N, RNG *rng)
+    bool GLMMethod::updateAuxiliary(cholmod_dense *b, cholmod_factor *N, RNG *rng)
     {
+	return true;
     }
 
 }

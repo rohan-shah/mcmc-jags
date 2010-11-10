@@ -4,11 +4,9 @@
 #include "CalKL.h"
 #include <graph/StochasticNode.h>
 
-#include <stdexcept>
 #include <algorithm>
 
 using std::vector;
-using std::logic_error;
 using std::string;
 using std::copy;
 
@@ -27,9 +25,12 @@ namespace dic {
 	  _values(snodes.size(), 0),  _weights(snodes.size(), 0),
 	  _scale(scale), _nchain(snodes[0]->nchain())
     {
+	/*
+	  //Taken care of by factory
 	if (snodes[0]->nchain() < 2) {
 	    throw logic_error("PDMonitor needs at least 2 chains");
 	}
+	*/
     }
 
     PDMonitor::~PDMonitor() 

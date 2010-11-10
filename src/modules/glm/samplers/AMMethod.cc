@@ -9,48 +9,13 @@
 #include <graph/LinkNode.h>
 #include <graph/StochasticNode.h>
 
-#include <stdexcept>
-
 using std::vector;
 using std::string;
-using std::logic_error;
 
 static double const & one() 
 {
     static const double x = 1;
     return x;
-}
-
-static bool checkOutcome(StochasticNode const *snode)
-{
-    LinkNode const *lnode = dynamic_cast<LinkNode const*>(snode->parents()[0]);
-    string ln;
-    if (lnode) {
-	ln = lnode->linkName();
-    }
-
-
-    switch(glm::GLMMethod::getFamily(snode)) {
-    case GLM_BINOMIAL: case GLM_BERNOULLI:
-	if (ln != "logit") {
-	    return false;
-	}
-	break;
-    case GLM_POISSON:
-	if (ln != "log") {
-	    return false;
-	}
-	break;
-    case GLM_NORMAL:
-	if (lnode) {
-	    return false;
-	}
-	break;
-    default:
-	return false;
-    }
-
-    return true;
 }
 
 namespace glm {
@@ -65,9 +30,6 @@ namespace glm {
 	    _view->stochasticChildren();
 
 	for (unsigned int i = 0; i < children.size(); ++i) {
-
-	    if (!checkOutcome(children[i])) 
-		throw logic_error("Invalid outcome in AMMethod");
 
 	    StochasticNode const *y = children[i];
 	    Node const *eta = y->parents()[0]->parents()[0];
@@ -94,7 +56,7 @@ namespace glm {
 					   y->value(chain)[0]);
 		break;
 	    default:
-		throw logic_error("Invalid family in AMMethod");
+		//throw logic_error("Invalid family in AMMethod");
 		break;
 	    }
 	}
@@ -117,13 +79,13 @@ namespace glm {
 	return _aux[i]->precision();
     }
 
-    void AMMethod::update(RNG *rng)
+    bool AMMethod::update(RNG *rng)
     {
 	for (unsigned int r = 0; r < _aux.size(); ++r)
 	{
 	    _aux[r]->update(rng);
 	}
-	updateLM(rng);
+	return updateLM(rng);
     }
 
     string AMMethod::name() const

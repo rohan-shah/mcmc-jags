@@ -7,13 +7,10 @@
 #include <graph/NodeError.h>
 #include <graph/StochasticNode.h>
 
-#include <stdexcept>
 #include <vector>
 #include <cmath>
 
 using std::vector;
-using std::invalid_argument;
-using std::logic_error;
 using std::string;
 
 int indicator(GraphView const *gv, unsigned int ch)
@@ -77,7 +74,7 @@ bool Censored::canSample(StochasticNode *snode, Graph const &graph)
     return true;
 }	
 
-void Censored::update(unsigned int chain, RNG * rng) const
+bool Censored::update(unsigned int chain, RNG * rng) const
 {
     int y = indicator(_gv, chain);
     double const *b = breaks(_gv)->value(chain);
@@ -87,6 +84,7 @@ void Censored::update(unsigned int chain, RNG * rng) const
     double const *upper = (y == ymax) ? 0 : b + y;
 	
     _snode->truncatedSample(rng, chain, lower, upper);
+    return true;
 }
 
 string Censored::name() const

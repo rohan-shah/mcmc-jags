@@ -14,6 +14,7 @@ namespace bugs {
     void Inverse::evaluate (double *value, vector<double const *> const &args,
 			    vector<vector<unsigned int> > const &dims) const
     {
+	//FIXME: RETURN VALUE IGNORED
 	inverse_spd (value, args[0], dims[0][0]);
     }
 

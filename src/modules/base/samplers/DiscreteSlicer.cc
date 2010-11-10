@@ -7,11 +7,9 @@
 #include "DiscreteSlicer.h"
 
 #include <cmath>
-#include <stdexcept>
 
 using std::floor;
 using std::vector;
-using std::logic_error;
 using std::string;
 
 namespace base {
@@ -20,9 +18,11 @@ namespace base {
 				   double width, long ndoubles)
 	: Slicer(width, ndoubles), _gv(gv), _chain(chain), _x(0)
     {
+	/*
 	if (gv->nodes().size() != 1 || !canSample(gv->nodes()[0])) {
 	    throw logic_error("Invalid DiscreteSlicer");
 	}
+	*/
 	
 	_x = _gv->nodes()[0]->value(chain)[0];
     }
@@ -54,9 +54,9 @@ namespace base {
 	*upper += 1;
     }
     
-    void DiscreteSlicer::update(RNG *rng)
+    bool DiscreteSlicer::update(RNG *rng)
     {
-	updateDouble(rng);
+	return updateDouble(rng);
     }
 
     string DiscreteSlicer::name() const

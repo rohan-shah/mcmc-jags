@@ -9,12 +9,10 @@
 
 #include <cmath>
 #include <vector>
-#include <stdexcept>
 
 #include <JRmath.h>
 
 using std::vector;
-using std::logic_error;
 
 DMT::DMT()
   : ArrayDist("dmt", 3) 

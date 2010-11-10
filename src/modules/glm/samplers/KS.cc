@@ -2,7 +2,6 @@
 #include "KS.h"
 #include <rng/RNG.h>
 #include <cmath>
-#include <stdexcept>
 
 #define PI            3.141592653589793238462643383280 
 #define PI_SQUARE     9.86960440108936
@@ -11,7 +10,6 @@ using std::log;
 using std::exp;
 using std::pow;
 using std::sqrt;
-using std::logic_error;
 
 static bool r_intvl(double u, double lambda)
 {
@@ -61,9 +59,7 @@ namespace glm {
 
     double sample_lambda(double delta, RNG *rng)
     {
-	if (delta <= 0) {
-	    throw logic_error("Invalid delta in sample_lambda");
-	}
+	delta = fabs(delta);
 	while (true) {
 	    double y = rng->normal();
 	    y = y * y;

@@ -34,11 +34,11 @@ namespace glm {
 	    return "Linear";
     }
 
-    void Linear::update(RNG *rng)
+    bool Linear::update(RNG *rng)
     {
 	if (_gibbs) 
-	    updateLMGibbs(rng);
+	    return updateLMGibbs(rng);
 	else
-	    updateLM(rng);
+	    return updateLM(rng);
     }
 }

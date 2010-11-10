@@ -8,12 +8,10 @@
 
 #include <cmath>
 #include <vector>
-#include <stdexcept>
 
 #include <JRmath.h>
 
 using std::vector;
-using std::logic_error;
 
 DMNorm::DMNorm()
   : ArrayDist("dmnorm", 2) 

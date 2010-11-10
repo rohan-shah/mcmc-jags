@@ -11,7 +11,6 @@
 #include <sampler/GraphView.h>
 
 #include <set>
-#include <stdexcept>
 #include <vector>
 #include <cmath>
 #include <algorithm>
@@ -21,8 +20,6 @@
 using std::vector;
 using std::set;
 using std::sqrt;
-using std::invalid_argument;
-using std::logic_error;
 using std::max;
 using std::sort;
 using std::string;
@@ -39,8 +36,12 @@ getScale(StochasticNode const *snode, ConjugateDist d, unsigned int chain)
 	return *snode->parents()[0]->value(chain);
 	break;
     default:
+	return 0; //-Wall
+	/*
+    default:
 	throw NodeError(snode, 
 			"Can't get scale parameter: invalid distribution");
+	*/
     } 
 }
 
@@ -123,8 +124,7 @@ bool ConjugateGamma::canSample(StochasticNode *snode, Graph const &graph)
 }
 
 
-void 
-ConjugateGamma::update(unsigned int chain, RNG *rng) const
+bool ConjugateGamma::update(unsigned int chain, RNG *rng) const
 {
     vector<StochasticNode const*> const &stoch_children = 
 	_gv->stochasticChildren();
@@ -149,7 +149,8 @@ ConjugateGamma::update(unsigned int chain, RNG *rng) const
 	mu = 1/2;
 	break;
     default:
-	throw logic_error("invalid distribution in ConjugateGamma method");
+	return false;
+	//throw logic_error("invalid distribution in ConjugateGamma method");
     }
 
     // likelihood 
@@ -204,7 +205,8 @@ ConjugateGamma::update(unsigned int chain, RNG *rng) const
 		mu += coef_i * (log(Y) - m) * (log(Y) - m) / 2;
 		break;
 	    default:
-		throw logic_error("Invalid distribution in Conjugate Gamma method");
+		return false;
+		//throw logic_error("Invalid distribution in Conjugate Gamma method");
 	    }
 	}
     }
@@ -231,6 +233,8 @@ ConjugateGamma::update(unsigned int chain, RNG *rng) const
 	xnew = rgamma(r, 1/mu, rng);
     }
     _gv->setValue(&xnew, 1, chain);  
+
+    return true;
 }
 
 string ConjugateGamma::name() const

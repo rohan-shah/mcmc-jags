@@ -10,14 +10,12 @@
 #include <rng/RNG.h>
 
 #include <cmath>
-#include <stdexcept>
 #include <algorithm>
 
 #define N_REFRESH 100
 
 using std::vector;
 using std::copy;
-using std::logic_error;
 using std::exp;
 using std::sqrt;
 using std::min;
@@ -64,7 +62,7 @@ MNormMetropolis::~MNormMetropolis()
     delete [] _prec;
 }
 
-void MNormMetropolis::update(RNG *rng)
+bool MNormMetropolis::update(RNG *rng)
 {
     double logdensity = -_gv->logFullConditional(_chain);
     double step = exp(_lstep);
@@ -83,6 +81,8 @@ void MNormMetropolis::update(RNG *rng)
     setValue(xnew);
     logdensity += _gv->logFullConditional(_chain);
     accept(rng, exp(logdensity));
+
+    return true;
 }
 
 void MNormMetropolis::rescale(double p)

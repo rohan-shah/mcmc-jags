@@ -18,7 +18,7 @@ namespace glm {
         double var(unsigned int i) const;
         double logPTransition(std::vector<double> const &xorig,
                               std::vector<double> const &x,
-                              double *b, cholmod_sparse *A);
+                              double *b, cholmod_sparse *A, bool &status);
     public:
 	IWLS(GraphView const *view, 
 	     std::vector<GraphView const *> const &sub_views,
@@ -26,7 +26,7 @@ namespace glm {
 	std::string name() const;
 	double getPrecision(unsigned int i) const;
 	double getValue(unsigned int i) const;
-	void update(RNG *rng);
+	bool update(RNG *rng);
     };
 
 }

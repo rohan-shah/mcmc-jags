@@ -2,11 +2,9 @@
 
 #include <graph/StochasticNode.h>
 
-#include <stdexcept>
 #include <algorithm>
 
 using std::vector;
-using std::logic_error;
 using std::string;
 using std::copy;
 

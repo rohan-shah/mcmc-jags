@@ -15,7 +15,7 @@ namespace glm {
 		   std::vector<GraphView const *> const &sub_views,
 		   unsigned int chain, bool gibbs);
 	std::string name() const;
-	void update(RNG *rng);
+	bool update(RNG *rng);
     };
     
 }

@@ -3,7 +3,7 @@
 
 #include "GLMMethod.h"
 
-enum BGLMOutcome {BGLM_NORMAL, BGLM_LOGIT, BGLM_PROBIT};
+enum BGLMOutcome {BGLM_NORMAL, BGLM_LOGIT, BGLM_PROBIT, BGLM_INVALID};
 
 namespace glm {
 

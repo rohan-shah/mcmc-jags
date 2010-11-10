@@ -12,7 +12,7 @@ public:
     TruncatedGamma(GraphView const *gv);
     ~TruncatedGamma();
     static bool canSample(StochasticNode *snode, Graph const &graph);
-    void update(unsigned int chain, RNG *rng) const;
+    bool update(unsigned int chain, RNG *rng) const;
     std::string name() const;
 };
 

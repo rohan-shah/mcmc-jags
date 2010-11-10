@@ -4,14 +4,11 @@
 #include <util/nainf.h>
 #include <util/dim.h>
 
-#include <stdexcept>
 #include <cmath>
 #include <algorithm>
 
 using std::string;
 using std::vector;
-using std::length_error;
-using std::logic_error;
 using std::log;
 using std::min;
 using std::max;

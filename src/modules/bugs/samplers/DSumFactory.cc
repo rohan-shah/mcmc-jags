@@ -11,12 +11,10 @@
 #include "DiscreteDSum.h"
 #include "DMultiDSum.h"
 
-#include <stdexcept>
 #include <algorithm>
 
 using std::set;
 using std::vector;
-using std::runtime_error;
 using std::string;
 
 static StochasticNode const *getDSumChild(StochasticNode *node)

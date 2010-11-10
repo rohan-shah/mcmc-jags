@@ -17,7 +17,7 @@ class ConjugateFMethod {
 public:
     ConjugateFMethod(GraphView *gv1, GraphView *gv2, unsigned int chain);
     ~ConjugateFMethod();
-    void update(RNG *rng);
+    bool update(RNG *rng);
     static bool canSample(StochasticNode *snode, Graph const &graph);
 };
 

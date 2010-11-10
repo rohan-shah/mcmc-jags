@@ -6,12 +6,10 @@
 
 #include <map>
 #include <string>
-#include <stdexcept>
 
 using std::vector;
 using std::map;
 using std::string;
-using std::logic_error;
 
 ConjugateDist getDist(StochasticNode const *snode)
 {
@@ -65,8 +63,10 @@ ConjugateMethod::ConjugateMethod(GraphView const *gv)
       _child_dist(getChildDist(gv)),
       _gv(gv)
 {
+    /*
     if (gv->nodes().size() > 1)
 	throw logic_error("Multiple sample nodes in ConjugateMethod");
+    */
 }
 
 ConjugateMethod::~ConjugateMethod()

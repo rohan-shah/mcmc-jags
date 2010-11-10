@@ -43,8 +43,8 @@ namespace glm {
 		  std::vector<GraphView const *> const &sub_views,
 		  unsigned int chain, bool link);
 	virtual ~GLMMethod();
-	void updateLM(RNG *rng, bool stochastic = true, bool chol=true);
-	void updateLMGibbs(RNG *rng);
+	bool updateLM(RNG *rng, bool stochastic = true, bool chol=true);
+	bool updateLMGibbs(RNG *rng);
 	bool isAdaptive() const;
 	bool adaptOff();
 	void calCoef(double *&, cholmod_sparse *&);
@@ -53,7 +53,7 @@ namespace glm {
 	virtual double getPrecision(unsigned int i) const = 0;
 	virtual double getValue(unsigned int i) const = 0;
 	virtual void initAuxiliary(RNG *rng);
-	virtual void updateAuxiliary(cholmod_dense *b, cholmod_factor *N, RNG *rng);
+	virtual bool updateAuxiliary(cholmod_dense *b, cholmod_factor *N, RNG *rng);
 	static GLMFamily getFamily(StochasticNode const *snode);
     };
 

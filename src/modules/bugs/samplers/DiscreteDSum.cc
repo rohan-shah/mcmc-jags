@@ -8,11 +8,9 @@
 #include "DiscreteDSum.h"
 
 #include <cmath>
-#include <stdexcept>
 
 using std::vector;
 using std::fabs;
-using std::logic_error;
 using std::string;
 
 //Initial step size

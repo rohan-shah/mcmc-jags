@@ -12,7 +12,6 @@
 #include <util/nainf.h>
 
 #include <set>
-#include <stdexcept>
 #include <vector>
 #include <cmath>
 #include <algorithm>
@@ -22,8 +21,6 @@
 using std::vector;
 using std::set;
 using std::sqrt;
-using std::invalid_argument;
-using std::logic_error;
 using std::max;
 using std::sort;
 using std::string;
@@ -46,7 +43,7 @@ static Node const * getParent(StochasticNode const *snode)
 	return snode->parents()[0];
 	break;
     default:
-        throw logic_error("Invalid distribution in TruncatedGamma sampler");
+        //throw logic_error("Invalid distribution in TruncatedGamma sampler");
 	return 0;
     } 
 }
@@ -75,8 +72,10 @@ static double calShape(GraphView const *gv, unsigned int chain)
     //Restore original value
     gv->setValue(&xold, 1, chain);
     
+    /*
     if (y1 <= 0 || y0 <= 0)
 	throw logic_error("Invalid scale function in TruncatedGamma");
+    */
 
     return log(2.0)/(log(y1) - log(y0));
 }
@@ -180,7 +179,7 @@ bool TruncatedGamma::canSample(StochasticNode *snode, Graph const &graph)
 }
 
 
-void TruncatedGamma::update(unsigned int chain, RNG *rng) const
+bool TruncatedGamma::update(unsigned int chain, RNG *rng) const
 {
     //Prior
     double r = _shape; // shape
@@ -222,7 +221,8 @@ void TruncatedGamma::update(unsigned int chain, RNG *rng) const
 	    mu += (log(Y) - m) * (log(Y) - m) / 2;
 	    break;
 	default:
-	    throw logic_error("Invalid distribution in TruncatedGamma");
+	    return false;
+	    //throw logic_error("Invalid distribution in TruncatedGamma");
 	}
     }
 
@@ -235,16 +235,18 @@ void TruncatedGamma::update(unsigned int chain, RNG *rng) const
     double lx = snode->parents()[0]->value(chain)[0];
     double ux = snode->parents()[1]->value(chain)[0];
     if (xold < lx || xold > ux) {
-	throw logic_error("Current value invalid TruncatedGamma method");
+	return false;
+	//throw logic_error("Current value invalid TruncatedGamma method");
     }
     if (lx > ux) {
-	throw logic_error("Inconsistent prior in TruncatedGamma method");
+	return false;
+	//throw logic_error("Inconsistent prior in TruncatedGamma method");
     }
 
     if (mu == 0) {
 	double xnew = (_shape > 0) ? lx : ux;
 	_gv->setValue(&xnew, 1, chain);
-	return;
+	return true;
     }
 
     // Find boundaries on the scale of y
@@ -284,6 +286,8 @@ void TruncatedGamma::update(unsigned int chain, RNG *rng) const
 
     double xnew = xold * exp(_shape * (log(ynew) - log(yold)));
     _gv->setValue(&xnew, 1, chain);  
+
+    return true;
 }
 
 string TruncatedGamma::name() const

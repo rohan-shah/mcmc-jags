@@ -11,11 +11,9 @@
 
 #include <cmath>
 #include <string>
-#include <stdexcept>
 #include <vector>
 #include <algorithm>
 
-using std::logic_error;
 using std::string;
 using std::vector;
 using std::exp;
@@ -27,13 +25,16 @@ namespace base {
     FiniteMethod::FiniteMethod(GraphView const *gv, unsigned int chain)
 	: _gv(gv), _chain(chain)
     {
+	/*
 	if (gv->nodes().size() != 1)
 	    throw logic_error("Invalid FiniteMethod");
-
+	*/
 	StochasticNode const *snode = gv->nodes().front();
+	/*
 	if (!canSample(snode)) {
 	    throw logic_error("Invalid FiniteMethod");
 	}
+	*/
 
 	double lower = 0, upper = 0;
 	snode->support(&lower, &upper, 1, 0);
@@ -42,7 +43,7 @@ namespace base {
 	_upper = static_cast<int>(upper);
     }
     
-    void FiniteMethod::update(RNG *rng)
+    bool FiniteMethod::update(RNG *rng)
     {
 	int size = _upper - _lower + 1;
 	vector<double> lik(size);
@@ -64,8 +65,11 @@ namespace base {
 	}
 	
 	if (!jags_finite(liksum)) {
+	    return false;
+	    /*
 	    throw NodeError(_gv->nodes()[0],
 			    "Cannot normalize density");
+	    */
 	}
 
 	/* Sample */
@@ -80,6 +84,8 @@ namespace base {
 	}
 	double ivalue = _lower + i;
 	_gv->setValue(&ivalue, 1, _chain);
+
+	return true;
     }
 
     bool FiniteMethod::isAdaptive() const

@@ -8,11 +8,8 @@
 #include <rng/TruncatedNormal.h>
 #include <rng/RNG.h>
 
-#include <stdexcept>
-
 using std::vector;
 using std::string;
-using std::logic_error;
 
 #define CHILD(i) (_view->stochasticChildren()[i])
 
@@ -31,7 +28,8 @@ static BGLMOutcome getOutcome(StochasticNode const *snode)
     case GLM_BERNOULLI: case GLM_BINOMIAL:
 	lnode = dynamic_cast<LinkNode const*>(snode->parents()[0]);
 	if (!lnode) {
-	    throw logic_error("No link in Holmesheld");
+	    return BGLM_INVALID;
+	    //throw logic_error("No link in Holmesheld");
 	}
 	else if (lnode->linkName() == "probit") {
 	    return BGLM_PROBIT;
@@ -40,10 +38,12 @@ static BGLMOutcome getOutcome(StochasticNode const *snode)
 	    return BGLM_LOGIT;
 	}
 	else {
-	    throw logic_error("Invalid link in BinaryGLM");
+	    return BGLM_INVALID;
+	    //throw logic_error("Invalid link in BinaryGLM");
 	}
     default:
-	throw logic_error("Invalid family in BinaryGLM");
+	return BGLM_INVALID;
+	//throw logic_error("Invalid family in BinaryGLM");
     }
 }
 
@@ -72,6 +72,8 @@ namespace glm {
 	case BGLM_PROBIT: case BGLM_LOGIT:
 	    z = _z[i];
 	    break;
+	case BGLM_INVALID:
+	    break; //-Wall
 	}
 
 	return z;
@@ -90,6 +92,8 @@ namespace glm {
 	case BGLM_LOGIT:
 	    tau = _tau[i];
 	    break;
+	case BGLM_INVALID:
+	    break; //-Wall
 	}
 	
 	return tau;
@@ -112,9 +116,13 @@ namespace glm {
 		else if (y == 0) {
 		    _z[i] = rnormal(0, rng, getMean(i));
 		}
+		/*
 		else {
 		    throw logic_error("Invalid child value in BinaryGLM");
 		}
+		*/
+	    case BGLM_INVALID:
+		break; //-Wall //FIXME RETURN VALUE HERE
 	    }
 	}
 

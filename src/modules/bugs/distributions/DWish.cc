@@ -8,7 +8,6 @@
 #include "matrix.h"
 #include "DWish.h"
 
-#include <stdexcept>
 #include <cfloat>
 #include <cmath>
 #include <vector>
@@ -16,8 +15,6 @@
 #include <JRmath.h>
 
 using std::vector;
-using std::logic_error;
-using std::runtime_error;
 using std::log;
 
 #define SCALE(par) (par[0])
@@ -63,9 +60,12 @@ void DWish::randomSample(double *x, int length,
        Generate random Wishart variable, using an algorithm proposed
        by Bill Venables and originally implemented in S.
     */
+
+    /*
     if (length != nrow*nrow) {
 	throw logic_error("invalid length in DWish::randomSample");
     }
+    */
 
     /* 
        Get inverse of R. Venables' algorithm was implemented in
@@ -73,14 +73,17 @@ void DWish::randomSample(double *x, int length,
        to preserve conjugacy.
     */
     double * C = new double[length];
-    inverse_spd(C, R, nrow);
-
+    if(!inverse_spd(C, R, nrow)) {
+	//throw runtime_error("Inverse failed in dwish");
+    }
     /* Get Choleskly decomposition of C */
     int info = 0;
     F77_DPOTRF("U", &nrow, C, &nrow, &info);
+    /*
     if (info != 0) {
 	throw runtime_error("Failed to get Cholesky decomposition of R in dwish");
     }
+    */
     
     /* Set lower triangle of C to zero */
     for (int j = 0; j < nrow; j++) {
@@ -201,7 +204,9 @@ void DWish::typicalValue(double *x, unsigned int length,
     /* Returns the mean as a typical value. We need to invert the
        scale matrix */
 
-    inverse_spd(x, SCALE(par), NROW(dims));
+    if (!inverse_spd(x, SCALE(par), NROW(dims))) {
+	//throw logic_error("Inverse failed in DWish::typicalValue");
+    }
     for (unsigned int i = 0; i < length; ++i) {
 	x[i] *= DF(par);
     }

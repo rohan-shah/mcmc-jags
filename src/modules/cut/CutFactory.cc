@@ -39,7 +39,7 @@ static set<StochasticNode const*> getUSC(StochasticNode *node,
     return children;
 }
 
-static void checkChildren(StochasticNode *snode, Graph const &graph, 
+static bool checkChildren(StochasticNode *snode, Graph const &graph, 
 			  set<StochasticNode*> &sample_nodes)
 {
     //Check to see if cutnode has any unobserved children that have
@@ -52,9 +52,11 @@ static void checkChildren(StochasticNode *snode, Graph const &graph,
 	 p != children.end(); ++p)
     {
 	if (sample_nodes.count(*p) == 0) {
-	    throw runtime_error("The cut module must be loaded last.");
+	    return false;
 	}
     }
+
+    return true;
 }
 
 /*
@@ -113,7 +115,8 @@ namespace cut {
 	     p != nodes.end(); ++p)
 	{
 	    if ((*p)->distribution()->name() == "dcut") {
-		checkChildren(*p, nodes, graph);
+		if (!checkChildren(*p, nodes, graph))
+		    return 0;
 		candidate_nodes.push_back(*p);
 	    }
 	}

@@ -7,7 +7,6 @@
 #include <cfloat>
 #include <algorithm>
 #include <cmath>
-#include <stdexcept>
 
 #include <JRmath.h>
 
@@ -15,7 +14,6 @@ using std::min;
 using std::max;
 using std::vector;
 using std::max_element;
-using std::logic_error;
 
 #define PROB(par) (par[0])
 #define NCAT(lengths) (lengths[0])
@@ -88,8 +86,10 @@ void DCat::support(double *lower, double *upper, unsigned int length,
 	           vector<double const *> const &par,
 	           vector<unsigned int> const &lengths) const
 {
+    /*
     if (length != 1)
 	throw logic_error("Invalid length in DCat::support");
+    */
 
     *lower = 1;
     *upper = NCAT(lengths);

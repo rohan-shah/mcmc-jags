@@ -22,7 +22,7 @@ public:
     MNormMetropolis(GraphView const *gv, unsigned int chain);
     ~MNormMetropolis();
     void rescale(double p);
-    void update(RNG *rng);
+    bool update(RNG *rng);
     bool checkAdaptation() const;
     std::string name() const;
     void getValue(std::vector<double> &value) const;

@@ -12,14 +12,12 @@
 #include <util/nainf.h>
 
 #include <algorithm>
-#include <stdexcept>
 
 #include <JRmath.h>
 
 using std::vector;
 using std::max;
 using std::min;
-using std::logic_error;
 
 DHyper::DHyper()
     : RScalarDist("dhyper", 4, DIST_SPECIAL, true)
@@ -99,9 +97,11 @@ static void density(double *p, int N,
 {
   int ll = max((int) 0, m1 - n2);
   int uu = min(n1, m1);
+  /*
   if (N != uu - ll + 1) {
     throw logic_error("Length mismatch calculating hypergeometric density");
   }
+  */
 
   int mode = modeCompute(n1, n2, m1, psi);
 

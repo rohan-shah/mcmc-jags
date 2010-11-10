@@ -8,12 +8,10 @@
 
 #include <algorithm>
 #include <cmath>
-#include <stdexcept>
 #include <algorithm>
 #include <cfloat>
 
 using std::vector;
-using std::logic_error;
 using std::copy;
 
 using std::exp;

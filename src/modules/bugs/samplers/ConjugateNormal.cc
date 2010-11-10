@@ -10,7 +10,6 @@
 #include <rng/TruncatedNormal.h>
 
 #include <set>
-#include <stdexcept>
 #include <vector>
 #include <cmath>
 
@@ -21,9 +20,7 @@
 using std::vector;
 using std::set;
 using std::sqrt;
-using std::invalid_argument;
 using std::string;
-using std::logic_error;
 
 static void calBeta(double *beta, GraphView const *gv, unsigned int chain)
 {
@@ -126,7 +123,7 @@ bool ConjugateNormal::canSample(StochasticNode *snode, Graph const &graph)
     return checkLinear(&gv, false);
 }
 
-void ConjugateNormal::update(unsigned int chain, RNG *rng) const
+bool ConjugateNormal::update(unsigned int chain, RNG *rng) const
 {
     vector<StochasticNode const*> const &stoch_children = 
 	_gv->stochasticChildren();
@@ -149,7 +146,8 @@ void ConjugateNormal::update(unsigned int chain, RNG *rng) const
 	B = 0;
     }
     else {
-	throw logic_error("Invalid distribution in conjugate normal method");
+	return false; 
+	//throw logic_error("Invalid distribution in conjugate normal method");
     }
 
     if (_gv->deterministicChildren().empty()) {
@@ -256,10 +254,12 @@ void ConjugateNormal::update(unsigned int chain, RNG *rng) const
 	}
 	break;
     default:
-	throw logic_error("Invalid distribution in conjugate normal method");
+	return false;
+	//throw logic_error("Invalid distribution in conjugate normal method");
     }
     _gv->setValue(&xnew, 1, chain);
 
+    return true;
 }
 
 string ConjugateNormal::name() const

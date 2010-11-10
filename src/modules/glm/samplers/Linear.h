@@ -16,7 +16,7 @@ namespace glm {
 	       unsigned int chain, bool gibbs);
 	double getPrecision(unsigned int i) const;
 	double getValue(unsigned int i) const;
-	void update(RNG *rng);
+	bool update(RNG *rng);
 	std::string name() const;
     };
     

@@ -21,11 +21,9 @@
 #include <rng/RNG.h>
 
 #include <cmath>
-#include <stdexcept>
 #include <vector>
 
 using std::sqrt;
-using std::logic_error;
 using std::vector;
 
 /*
@@ -352,26 +350,21 @@ namespace glm {
     /*
      * Exact mixture parameters for all integer n less than 20
      */
-    void LGMix::updateNExact(double n)
+    void LGMix::updateNExact(int n)
     {
-	int nr = static_cast<int>(n);
-	if (nr != n) {
-	    throw logic_error("Non-integer n in LGMix::updateExact");
-	}
-
-	if (nr < 5) {
+	if (n < 5) {
 	    _ncomp = 10;
-	    nr -= 1;
-	    copy(P10[nr], P10[nr] + _ncomp, _weights);
-	    copy(M10[nr], M10[nr] + _ncomp, _means);
-	    copy(V10[nr], V10[nr] + _ncomp, _variances);
+	    n -= 1;
+	    copy(P10[n], P10[n] + _ncomp, _weights);
+	    copy(M10[n], M10[n] + _ncomp, _means);
+	    copy(V10[n], V10[n] + _ncomp, _variances);
 	}
 	else {
 	    _ncomp = 9;
-	    nr -= 5;
-	    copy(P9[nr], P9[nr] + _ncomp, _weights);
-	    copy(M9[nr], M9[nr] + _ncomp, _means);
-	    copy(V9[nr], V9[nr] + _ncomp, _variances);
+	    n -= 5;
+	    copy(P9[n], P9[n] + _ncomp, _weights);
+	    copy(M9[n], M9[n] + _ncomp, _means);
+	    copy(V9[n], V9[n] + _ncomp, _variances);
 	}
     }
 
@@ -412,10 +405,15 @@ namespace glm {
     void LGMix::updateN(double n)
     {
 	if (n <= 0) {
-	    throw logic_error("n out of range in LGMix::updateN");
+	    return;
+	    //throw logic_error("n out of range in LGMix::updateN");
 	}
 	else if (n < 20) {
-	    updateNExact(n);
+	    int nr = static_cast<int>(n);
+	    if (nr != n) {
+		return; //FIXME! THrow something
+	    }
+	    updateNExact(nr);
 	}
 	else {
 	    updateNApprox(n);

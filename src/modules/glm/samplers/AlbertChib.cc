@@ -10,11 +10,8 @@
 #include <rng/RNG.h>
 #include <cmath>
 
-#include <stdexcept>
-
 using std::vector;
 using std::string;
-using std::logic_error;
 using std::log;
 
 //FIXME: maybe use R math library here
@@ -46,14 +43,14 @@ namespace glm {
     {
     }
 
-    void AlbertChib::update(RNG *rng)
+    bool AlbertChib::update(RNG *rng)
     {
 
 	if (_gibbs) {
-	    updateLMGibbs(rng);
+	    if (!updateLMGibbs(rng)) return false;
 	}
 	else {
-	    updateLM(rng);
+	    if (!updateLM(rng))	return false;
 	}
 
 	unsigned int nrow = _view->stochasticChildren().size();
@@ -72,7 +69,8 @@ namespace glm {
 		    _z[r] = rnormal(0, rng, getMean(r));
 		}
 		else {
-		    throw logic_error("Invalid child value in HolmesHeld");
+		    return false;
+		    //throw logic_error("Invalid child value in HolmesHeld");
 		}
 		break;
 	    case BGLM_LOGIT:
@@ -85,15 +83,18 @@ namespace glm {
 		    _z[r] = rlogit(0, rng, mu);
 		}
 		else {
-		    throw logic_error("Invalid child value in HolmesHeld");
+		    return false;
+		    //throw logic_error("Invalid child value in HolmesHeld");
 		}
 		_tau[r] = 1/sample_lambda(fabs(_z[r] - mu), rng);
+		break;
+	    case BGLM_INVALID:
+		return false;
 		break;
 	    }
 	}
 
-
-	
+	return true;
     }
 	
     string AlbertChib::name() const
