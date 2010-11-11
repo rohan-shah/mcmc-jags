@@ -3,6 +3,7 @@
 
 #include <cmath>
 #include <cfloat>
+#include <stdexcept>
 
 #define repeat for(;;)
 
@@ -13,6 +14,7 @@ using std::sin;
 using std::cos;
 using std::sqrt;
 using std::fabs;
+using std::logic_error;
 
 #define PI 3.141592653589793238462643383280
 
@@ -296,4 +298,8 @@ double RmathRNG::normal()
 	}
 
     }/*switch*/
+
+    // Not reached, but an exit statement is required for -Wall
+    throw logic_error("Bad exit from RmathRNG::normal");
+    return 0;
 }
