@@ -18,6 +18,7 @@ using std::string;
 using std::vector;
 using std::exp;
 using std::fabs;
+using std::log;
 
 static unsigned int nchildren(GraphView const *view)
 {

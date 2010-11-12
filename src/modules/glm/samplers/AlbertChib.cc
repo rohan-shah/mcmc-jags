@@ -13,6 +13,8 @@
 using std::vector;
 using std::string;
 using std::log;
+using std::exp;
+using std::fabs;
 
 //FIXME: maybe use R math library here
 
