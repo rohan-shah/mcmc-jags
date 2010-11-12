@@ -312,7 +312,8 @@ Solaris provides two versions of the C++ standard library:
 \texttt{libCstd}, which is the default, and \texttt{libstlport4},
 which conforms more closely to the C++ standard. \JAGS\ may be linked
 to the stlport4 library by adding the options
-\verb+-library=stlport4 -lCrun+ to \verb+CXXFLAGS+.
+\verb+-library=stlport4+ to \verb+CXXFLAGS+. For older versions of the
+Sun Studio compiler you may need to also add the option \verb+-lCrun+.
 
 The configure script automatically detects the Sun Performance library,
 which implements the BLAS/LAPACK functions.  Automatic detection may
