@@ -13,5 +13,7 @@ msm_la_LIBADD = distributions/msmdist.la              \
         $(top_builddir)/src/lib/libjags.la 		\
         @LAPACK_LIBS@ @BLAS_LIBS@ 
 
-msm_la_LDFLAGS = -no-undefined -module -avoid-version
-
+msm_la_LDFLAGS = -module -avoid-version
+if WINDOWS
+msm_la_LDFLAGS += -no-undefined
+endif

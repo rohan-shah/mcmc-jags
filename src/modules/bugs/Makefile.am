@@ -14,5 +14,7 @@ bugs_la_LIBADD = distributions/bugsdist.la              \
         $(top_builddir)/src/lib/libjags.la 		\
         @LAPACK_LIBS@ @BLAS_LIBS@ 
 
-bugs_la_LDFLAGS = -no-undefined -module -avoid-version
-
+bugs_la_LDFLAGS = -module -avoid-version
+if WINDOWS
+bugs_la_LDFLAGS += -no-undefined
+endif

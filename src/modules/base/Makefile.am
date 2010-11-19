@@ -13,5 +13,7 @@ basemod_la_LIBADD = functions/basefunctions.la  \
 	$(top_builddir)/src/jrmath/libjrmath.la \
 	$(top_builddir)/src/lib/libjags.la        
 
-basemod_la_LDFLAGS = -no-undefined -module -avoid-version
-
+basemod_la_LDFLAGS = -module -avoid-version
+if WINDOWS
+basemod_la_LDFLAGS += -no-undefined
+endif

@@ -10,6 +10,7 @@ using std::log;
 using std::exp;
 using std::pow;
 using std::sqrt;
+using std::fabs;
 
 static bool r_intvl(double u, double lambda)
 {

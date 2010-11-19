@@ -11,4 +11,7 @@ mix_la_LIBADD = distributions/mixdist.la               \
         $(top_builddir)/src/jrmath/libjrmath.la		\
         $(top_builddir)/src/lib/libjags.la 
 
-mix_la_LDFLAGS = -no-undefined -module -avoid-version
+mix_la_LDFLAGS = -module -avoid-version
+if WINDOWS
+mix_la_LDFLAGS += -no-undefined
+endif
