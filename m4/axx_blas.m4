@@ -158,8 +158,8 @@ if test $ax_blas_ok = no; then
 	if test "x$GCC" != xyes; then # only works with Sun CC
 		AC_CHECK_LIB(sunmath, acosp,
 			[AC_CHECK_LIB(sunperf, $sgemm,
-				[BLAS_LIBS="-library=sunperf -lsunmath"
-                                 ax_blas_ok=yes],[],[-lsunmath])])
+				[BLAS_LIBS="-library=sunperf"
+                                 ax_blas_ok=yes])])
 	fi
 fi
 
