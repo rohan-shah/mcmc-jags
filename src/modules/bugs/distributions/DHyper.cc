@@ -301,7 +301,11 @@ double DHyper::r(vector<double const *> const &parameters, RNG *rng) const
   getParameters(n1, n2, m1, psi, parameters);
 
   int mode = modeCompute(n1, n2, m1, psi);
-  int N = max((int) 0, m1 - n2) - min(n1, m1) + 1;
+
+  int ll = max((int) 0, m1 - n2);
+  int uu = min(n1, m1);
+  int N = uu - ll + 1;
+
   double *pi = new double[N];
   int y =  singleDraw(n1, n2, m1, psi, mode, pi, N, rng->uniform());
   delete [] pi;
