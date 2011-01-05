@@ -24,6 +24,26 @@ struct isFuncName: public binary_function<FunctionPtr, string, bool>
 	    return VECTOR(func)->name() == name;
 	if (ARRAY(func))
 	    return ARRAY(func)->name() == name;
+
+	return false;
+    }
+};
+
+
+// Adaptable binary predicate for find_if algorithm 
+struct isFuncAlias: public binary_function<FunctionPtr, string, bool> 
+{
+    bool operator()(FunctionPtr const &func, string const &name) const
+    {
+	if (LINK(func))
+	    return LINK(func)->alias() == name;
+	if (SCALAR(func))
+	    return SCALAR(func)->alias() == name;
+	if (VECTOR(func))
+	    return VECTOR(func)->alias() == name;
+	if (ARRAY(func))
+	    return ARRAY(func)->alias() == name;
+
 	return false;
     }
 };
@@ -48,6 +68,10 @@ FunctionPtr const &FuncTab::find(string const &name) const
 {
     FuncList::const_iterator p = 
 	find_if(_flist.begin(), _flist.end(), bind2nd(isFuncName(), name));
+
+    if (p == _flist.end()) {
+	p = find_if(_flist.begin(), _flist.end(), bind2nd(isFuncAlias(), name));
+    }
 
     return (p == _flist.end()) ? _nullfun : *p;
 }

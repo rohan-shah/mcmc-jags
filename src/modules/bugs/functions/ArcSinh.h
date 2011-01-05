@@ -16,6 +16,7 @@ namespace bugs {
     {
     public:
 	ArcSinh ();
+	std::string alias() const;
 	double evaluate(std::vector<double const *> const &args) const;
     };
 

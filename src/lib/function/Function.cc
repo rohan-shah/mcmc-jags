@@ -19,6 +19,11 @@ string const & Function::name () const
   return _name;
 }
 
+string Function::alias() const
+{
+    return "";
+}
+
 bool Function::checkNPar (unsigned int npar) const
 {
   return _npar == 0 ||  npar == _npar;

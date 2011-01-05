@@ -35,6 +35,13 @@ public:
      */
     std::string const &name() const;
     /**
+     * Returns an alternate name for the distribution. The default
+     * implementation returns an empty string. However, this function
+     * may be overridden to return a non-empty string giving an
+     * alternate name for the distribution.
+     */
+    virtual std::string alias() const;
+    /**
      * Indicates whether the support of the distribution is fixed.
      *
      * @param fixmask Boolean vector indicating which parameters have

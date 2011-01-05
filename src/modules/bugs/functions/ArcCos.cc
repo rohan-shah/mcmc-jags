@@ -5,12 +5,18 @@
 
 using std::vector;
 using std::acos;
+using std::string;
 
 namespace bugs {
 
     ArcCos::ArcCos ()
 	: ScalarFunction ("arccos", 1)
     {
+    }
+
+    string ArcCos::alias() const
+    {
+	return "acos";
     }
     
     double ArcCos::evaluate(vector<double const *> const &args) const

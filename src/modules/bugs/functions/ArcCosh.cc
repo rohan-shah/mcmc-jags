@@ -6,6 +6,7 @@
 using std::vector;
 using std::log;
 using std::sqrt;
+using std::string;
 
 namespace bugs {
 
@@ -14,6 +15,10 @@ namespace bugs {
     {
     }
 
+    string ArcCosh::alias() const
+    {
+	return "acosh";
+    }
 
     double ArcCosh::evaluate(vector<double const *> const &args) const
     {

@@ -9,6 +9,7 @@
 
 using std::vector;
 using std::max;
+using std::string;
 
 #define PROB(par) (*par[0])
 #define SIZE(par) (*par[1])
@@ -16,6 +17,11 @@ using std::max;
 DNegBin::DNegBin()
     : RScalarDist("dnegbin", 2, DIST_POSITIVE, true)
 {}
+
+string DNegBin::alias() const
+{
+    return "dnbinom";
+}
 
 bool 
 DNegBin::checkParameterValue (vector<double const *> const &par) const

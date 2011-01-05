@@ -5,12 +5,18 @@
 
 using std::vector;
 using std::asin;
+using std::string;
 
 namespace bugs {
 
     ArcSin::ArcSin ()
 	: ScalarFunction ("arcsin", 1)
     {
+    }
+
+    string ArcSin::alias() const
+    {
+	return "asin";
     }
     
     double ArcSin::evaluate(vector<double const *> const &args) const

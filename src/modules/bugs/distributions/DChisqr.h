@@ -25,7 +25,7 @@ class DChisqr : public RScalarDist {
    * Checks that k > 0
    */
   bool checkParameterValue(std::vector<double const *> const &parameters) const;
-
+  std::string alias() const;
 };
 
 #endif /* DCHISQ_H_ */

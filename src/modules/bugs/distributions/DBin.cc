@@ -8,6 +8,7 @@
 using std::vector;
 using std::max;
 using std::min;
+using std::string;
 
 /* BUGS parameterization is in opposite order to R parameterization */
 #define SIZE(par) (*par[1])
@@ -16,6 +17,11 @@ using std::min;
 DBin::DBin()
     : RScalarDist("dbin", 2, DIST_SPECIAL, true)
 {}
+
+string DBin::alias() const
+{
+    return "dbinom";
+}
 
 bool 
 DBin::checkParameterDiscrete (vector<bool> const &mask) const

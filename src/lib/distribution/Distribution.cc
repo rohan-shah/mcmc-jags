@@ -19,6 +19,11 @@ string const &Distribution::name() const
   return _name;
 }
 
+string Distribution::alias() const
+{
+    return "";
+}
+
 bool Distribution::checkNPar (unsigned int npar) const
 {
   return _npar == 0 ||  npar == _npar;

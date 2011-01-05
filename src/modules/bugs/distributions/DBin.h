@@ -13,7 +13,7 @@
 class DBin : public RScalarDist {
  public:
   DBin();
-
+  std::string alias() const;
   double d(double x, std::vector<double const *> const &parameters, 
 	   bool give_log) const;
   double p(double x, std::vector<double const *> const &parameters, bool lower,

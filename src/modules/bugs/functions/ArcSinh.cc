@@ -6,6 +6,7 @@
 using std::vector;
 using std::log;
 using std::sqrt;
+using std::string;
 
 /* We don't use the cmath function asinh because it is defined in C99
    and is not necessarily available in C++, which uses the C90
@@ -20,6 +21,11 @@ namespace bugs {
     ArcSinh::ArcSinh ()
 	: ScalarFunction ("arcsinh", 1)
     {
+    }
+
+    string ArcSinh::alias() const
+    {
+	return "asinh";
     }
 
     double ArcSinh::evaluate(vector<double const *> const &args) const

@@ -16,6 +16,7 @@ namespace bugs {
     {
     public:
 	ArcTan ();
+	std::string alias() const;
 	double evaluate(std::vector<double const *> const &args) const;
     };
 

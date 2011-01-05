@@ -16,6 +16,7 @@ namespace bugs {
     {
     public:
 	ArcCosh ();
+	std::string alias() const;
 	double evaluate(std::vector<double const *> const &args) const;
 	bool checkParameterValue(std::vector<double const *> const &args) const;
     };

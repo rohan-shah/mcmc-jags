@@ -36,6 +36,13 @@ public:
      * Returns the  BUGS language name of the function
      */
     std::string const &name () const;
+   /**
+     * Returns an alternate name for the function. The default
+     * implementation returns an empty string. However, this function
+     * may be overridden to return a non-empty string giving an
+     * alternate name for the function.
+     */
+    virtual std::string alias() const;
     /**
      * Checks that a vector of parameters of length npar is consistent
      * with the function.

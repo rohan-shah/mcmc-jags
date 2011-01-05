@@ -5,12 +5,18 @@
 
 using std::vector;
 using std::log;
+using std::string;
 
 namespace bugs {
 
     ArcTanh::ArcTanh ()
 	: ScalarFunction ("arctanh", 1)
     {
+    }
+
+    string ArcTanh::alias() const
+    {
+	return "atanh";
     }
 
     double ArcTanh::evaluate(vector<double const *> const &args) const

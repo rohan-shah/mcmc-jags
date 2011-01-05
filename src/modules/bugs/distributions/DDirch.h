@@ -22,7 +22,7 @@ struct RNG;
 class DDirch : public VectorDist {
 public:
     DDirch();
-
+    std::string alias() const;
     double logLikelihood(double const *x, unsigned int length,
 			 std::vector<double const *> const &parameters,
 			 std::vector<unsigned int> const &lengths,

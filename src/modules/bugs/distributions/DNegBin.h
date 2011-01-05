@@ -13,7 +13,7 @@
 class DNegBin : public RScalarDist {
  public:
   DNegBin();
-
+  std::string alias() const;
   double d(double x, std::vector<double const *> const &parameters, 
 	   bool give_log) const;
   double p(double q, std::vector<double const *> const &parameters, bool lower,

@@ -4,6 +4,7 @@
 #include <JRmath.h>
 
 using std::vector;
+using std::string;
 
 #define DF(par) (*par[0])
 
@@ -11,6 +12,10 @@ DChisqr::DChisqr()
     : RScalarDist("dchisqr", 1, DIST_POSITIVE)
 {}
 
+string DChisqr::alias() const
+{
+    return "dchisq";
+}
 
 bool 
 DChisqr::checkParameterValue (vector<double const *> const &par) const

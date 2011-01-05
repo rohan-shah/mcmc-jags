@@ -9,10 +9,10 @@
 #include <JRmath.h>
 
 using std::vector;
+using std::string;
 
 #define ALPHA(par) (par[0])
 #define LENGTH(len) (len[0])
-
 
 /* The Dirichlet distribution is extended to allow zero shape parameters.
    These represent structural zeros: when x ~ ddirch(alpha) is forward
@@ -24,6 +24,11 @@ using std::vector;
 DDirch::DDirch()
   : VectorDist("ddirch", 1) 
 {}
+
+string DDirch::alias() const
+{
+    return "ddirich";
+}
 
 unsigned int DDirch::length(vector<unsigned int> const &len) const
 {

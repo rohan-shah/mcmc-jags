@@ -1263,12 +1263,12 @@ tables \ref{table:bugs:distributions:real} and
 Usage  & Description & Value & Restrictions on arguments \\ 
 \hline
 \verb+abs(x)+       & Absolute value        & Real & \\
-\verb+acos(x)+      & Arc-cosine            & Real & $-1 < x < 1$\\
-\verb+acosh(x)+     & Hyperbolic arc-cosine & Real & $1 < x$ \\
-\verb+asin(x)+      & Arc-sine              & Real & $-1 < x < 1$\\
-\verb+asinh(x)+     & Hyperbolic arc-sine   & Real &\\
-\verb+atan(x)+      & Arc-tangent           & Real &\\
-\verb+atanh(x)+     & Hyperbolic arc-tangent & Real & $-1 < x < 1$\\
+\verb+arccos(x)+    & Arc-cosine            & Real & $-1 < x < 1$\\
+\verb+arccosh(x)+   & Hyperbolic arc-cosine & Real & $1 < x$ \\
+\verb+arcsin(x)+    & Arc-sine              & Real & $-1 < x < 1$\\
+\verb+arcsinh(x)+   & Hyperbolic arc-sine   & Real &\\
+\verb+arctan(x)+    & Arc-tangent           & Real &\\
+\verb+arctanh(x)+   & Hyperbolic arc-tangent & Real & $-1 < x < 1$\\
 \verb+cos(x)+       & Cosine              & Real & \\
 \verb+cosh(x)+      & Hyperbolic Cosine   & Real & \\
 \verb+cloglog(x)+    & Complementary log log & Real & $0 < x < 1$ \\
@@ -1346,7 +1346,7 @@ Link function         & Description & Range & Inverse \\
 \end{center}
 \end{table}
 
-\section{Scalar-valued functions with vector arguments}
+\subsection{Scalar-valued functions with vector arguments}
 
 Table \ref{table:bugs:scalar2} lists the scalar-valued functions in the
 \texttt{bugs} module that take general arguments. Unless otherwise
@@ -1379,7 +1379,7 @@ Function & Description & Restrictions \\
   arguments in the \texttt{bugs} module \label{table:bugs:scalar2}}
 \end{table}
 
-\section{Vector- and array-valued functions}
+\subsection{Vector- and array-valued functions}
 
 Table \ref{table:bugs:vector} lists vector- or matrix-valued functions
 in the \texttt{bugs} module.
@@ -1410,6 +1410,33 @@ Usage & Description & Restrictions \\
 \end{center}
 \end{table}
 
+\section{Function aliases}
+
+A function may optionally have an alias, which can be used in the
+model definition in place of the canonical name. Aliases are used to
+to avoid confusion with other software in which functions may have
+different names. Table \ref{table:bugs:functions:alias} shows the
+functions in the \texttt{bugs} module with an alias.
+
+\begin{table}
+\begin{center}
+\begin{tabular}{llll}
+\hline
+Distribution           & Canonical & Alias & Compatibile  \\
+                       & name      &       & with         \\
+\hline
+Arc-cosine             & arccos    & acos  & R \\
+Hyperbolic arc-cosine  & arccosh   & acosh & R \\
+Arc-sine               & arcsin    & asin  & R \\
+Hyperbolic arc-sine    & arcsinh   & asinh & R \\
+Arc-tangent            & arctan    & atan  & R \\
+\hline
+\end{tabular}
+\caption{Functions with aliases in \texttt{bugs} module
+  \label{table:bugs:functions:alias}}
+\end{center}
+\end{table}
+
 \chapter{Distributions}
 \label{section:distributions}
 
@@ -1426,7 +1453,6 @@ given invalid parameter values when evaluating the log-likelihood, it
 returns $-\infty$. When a model is initialized, all stochastic nodes
 are checked to ensure that the initial parameter values are valid for
 their distribution.
-
 
 \begin{table}
   \begin{center}
@@ -1574,6 +1600,35 @@ their distribution.
     \caption{Multivariate distributions in the \texttt{bugs} module
       \label{table:bugs:distributions:multi}}
   \end{center}
+\end{table}
+
+\section{Distribution aliases}
+\label{subsection:distributions:aliases}
+
+A distribution may optionally have an alias, which can be used in the
+model definition in place of the canonical name. Aliases are used to
+to avoid confusion with other statistical software in which
+distributions may have different names. Table
+\ref{table:bugs:distributions:alias} shows the distributions in the
+\texttt{bugs} module with an alias.
+
+\begin{table}
+\begin{center}
+\begin{tabular}{llll}
+\hline
+Distribution & Canonical & Alias & Compatibile  \\
+             & name      &       & with         \\
+\hline
+Binomial           & dbin      & dbinom   & R   \\
+Chi-square         & dchisqr   & pchisq   & R   \\ 
+Negative binomial  & dnegbin   & pnbinom  & R   \\
+Weibull            & dweib     & pweibull & R   \\ 
+Dirichlet          & ddirch    & ddirich  & OpenBUGS \\
+\hline
+\end{tabular}
+\caption{Distributions with aliases in \texttt{bugs} module
+  \label{table:bugs:distributions:alias}}
+\end{center}
 \end{table}
 
 \chapter{Differences between \JAGS\ and \WinBUGS}
@@ -1841,6 +1896,8 @@ for (i in 1:3) {
 }
 alpha[1:3] <- sort(alpha0)
 \end{verbatim}
+
+\chapter{Compatibility with R}
 
 \chapter{Feedback}
 

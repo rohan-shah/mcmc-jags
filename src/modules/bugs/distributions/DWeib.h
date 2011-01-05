@@ -13,7 +13,7 @@
 class DWeib : public RScalarDist {
 public:
   DWeib();
-
+  std::string alias() const;
   double d(double x, std::vector<double const *> const &parameters, 
 	   bool give_log) const;
   double p(double q, std::vector<double const *> const &parameters, bool lower,
@@ -25,7 +25,6 @@ public:
    * Checks that a > 0, b > 0
    */
   bool checkParameterValue(std::vector<double const *> const &parameters) const;
-
 };
 
 #endif /* DWEIB_H_ */
