@@ -58,12 +58,12 @@ ArrayStochasticNode::ArrayStochasticNode(ArrayDist const *dist,
     }
 }
 
-double ArrayStochasticNode::logDensity(unsigned int chain) const
+double ArrayStochasticNode::logDensity(unsigned int chain, PDFType type) const
 {
     if(!_dist->checkParameterValue(_parameters[chain], _dims))
 	return JAGS_NEGINF;
     
-    return _dist->logDensity(_data + _length * chain, _length,
+    return _dist->logDensity(_data + _length * chain, _length, type,
 			     _parameters[chain], _dims,
 			     lowerLimit(chain), upperLimit(chain));
 }

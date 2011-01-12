@@ -18,7 +18,7 @@ DMT::DMT()
   : ArrayDist("dmt", 3) 
 {}
 
-double DMT::logDensity(double const *x, unsigned int m,
+double DMT::logDensity(double const *x, unsigned int m, PDFType type,
 		       vector<double const *> const &parameters,
 		       vector<vector<unsigned int> > const &dims,
 		       double const *lower, double const *upper) const
@@ -41,8 +41,15 @@ double DMT::logDensity(double const *x, unsigned int m,
     delete [] delta;
 
     double d = m; // Avoid problems with integer division
-    return -((k + d)/2) * log(1 + ip/k) + logdet(T, m)/2 +
-	lgamma((k + d)/2) - lgamma(k/2) - (d/2) * log(k) - (d/2) * log(M_PI);
+    if (type == PDF_PRIOR) {
+	//No need to calculate normalizing constant
+	return -((k + d)/2) * log(1 + ip/k);
+    }
+    else {
+	return -((k + d)/2) * log(1 + ip/k) + logdet(T, m)/2 +
+	    lgamma((k + d)/2) - lgamma(k/2) - (d/2) * log(k) - 
+	    (d/2) * log(M_PI);
+    }
 }
 
 void DMT::randomSample(double *x, unsigned int length,

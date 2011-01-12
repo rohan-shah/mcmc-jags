@@ -20,7 +20,7 @@ bool DSum::isDiscreteValued(vector<bool> const &mask) const
     return allTrue(mask);
 }
 
-double DSum::logDensity(double const *x, unsigned int length,
+double DSum::logDensity(double const *x, unsigned int length, PDFType type,
 			vector<double const *> const &par,
 			vector<vector<unsigned int> > const &dims,
 			double const *lower, double const *upper) const

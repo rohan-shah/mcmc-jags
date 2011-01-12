@@ -18,6 +18,6 @@ namespace dic {
 
     double PoptMonitor::weight(unsigned int k, unsigned int ch) const
     {
-	return exp(-_snodes[k]->logDensity(ch));
+	return exp(-_snodes[k]->logDensity(ch, PDF_FULL));
     }
 }

@@ -42,7 +42,7 @@ bool DCat::checkParameterValue(vector<double const *> const &par,
     return nz;
 }
 
-double DCat::logDensity(double const *x, unsigned int length,
+double DCat::logDensity(double const *x, unsigned int length, PDFType type,
 			vector<double const *> const &par,
 			vector<unsigned int> const &lengths,
 			double const *lower, double const *upper) const
@@ -51,7 +51,13 @@ double DCat::logDensity(double const *x, unsigned int length,
     if (y < 1 || y > NCAT(lengths)) {
 	return JAGS_NEGINF;
     }
+    
+    if (type == PDF_PRIOR) {
+	//No need to calculate the normalizing constant
+	return log(PROB(par)[y-1]);
+    }
     else {
+	//Need to normalize the log density
 	double sump = 0.0;
 	for (unsigned int i = 0; i < NCAT(lengths); i++) {
 	    sump += PROB(par)[i];

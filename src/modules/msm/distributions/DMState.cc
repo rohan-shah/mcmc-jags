@@ -86,7 +86,7 @@ DMState::checkParameterValue(vector<double const *> const &par,
 }
 
 
-double DMState::logDensity(double const *y, unsigned int length,
+double DMState::logDensity(double const *y, unsigned int length, PDFType type,
 		    vector<double const *> const &par,
 		    vector<vector<unsigned int> > const &dims,
 		    double const *lower, double const *upper) const

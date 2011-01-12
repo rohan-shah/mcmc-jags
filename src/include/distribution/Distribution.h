@@ -7,6 +7,30 @@
 struct RNG;
 
 /**
+ * Specifies different ways of calculating the log probability density
+ * function. Typically we are only interested in calculating ratios of
+ * probability density functions. When some terms in the log density
+ * are constant (and therefore cancel out when taking ratios) they may
+ * optionally be omitted from the calculations for improved
+ * efficiency.
+ *
+ * PDF_FULL is used when neither the sampled values nor the
+ * pararameters are constant. This implies full evaluation of the log
+ * density.
+ *
+ * PDF_PRIOR is used when the parameters are constant. Terms that
+ * depend only on the parameters may be omitted from the log density.
+ * 
+ * PDF_LIKELIHOOD is used when the sampled value is constant. Terms
+ * that depend only on the sampled value may be omitted from the log
+ * density.
+ *
+ * Note that any function taking a PDFType argument is free to ignore
+ * it and can always calculate the full density function.
+ */
+enum PDFType {PDF_FULL, PDF_PRIOR, PDF_LIKELIHOOD};
+
+/**
  * @short Distribution of a random variable
  *
  * Distribution objects contain only constant data members and all

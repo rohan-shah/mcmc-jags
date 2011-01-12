@@ -27,12 +27,12 @@ ScalarStochasticNode::ScalarStochasticNode(ScalarDist const *dist,
     }
 }
 
-double ScalarStochasticNode::logDensity(unsigned int chain) const
+double ScalarStochasticNode::logDensity(unsigned int chain, PDFType type) const
 {
     if(!_dist->checkParameterValue(_parameters[chain]))
 	return JAGS_NEGINF;
     
-    return _dist->logDensity(_data[chain], _parameters[chain],
+    return _dist->logDensity(_data[chain], type, _parameters[chain], 
 			     lowerLimit(chain), upperLimit(chain));
 }
 

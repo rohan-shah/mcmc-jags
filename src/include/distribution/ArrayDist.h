@@ -28,6 +28,11 @@ public:
     /**
      * @param x Value at which to evaluate the density.
      *
+     * @param type Indicates whether the full probability density
+     * function is required (PDF_FULL) or whether partial calculations
+     * are permitted (PDF_PRIOR, PDF_LIKELIHOOD). See PDFType for
+     * details.
+     *
      * @param length Size of the array x.
      *
      * @param parameters Vector of parameter values of the
@@ -42,7 +47,7 @@ public:
      * is undefined.
      */
     virtual double 
-	logDensity(double const *x, unsigned int length,
+	logDensity(double const *x, unsigned int length, PDFType type,
 		   std::vector<double const *> const &parameters,
 		   std::vector<std::vector<unsigned int> > const &dims,
 		   double const *lbound, double const *ubound) const = 0;

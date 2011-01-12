@@ -17,7 +17,7 @@ DMNorm::DMNorm()
   : ArrayDist("dmnorm", 2) 
 {}
 
-double DMNorm::logDensity(double const *x, unsigned int m,
+double DMNorm::logDensity(double const *x, unsigned int m, PDFType type,
 			  vector<double const *> const &parameters,
 			  vector<vector<unsigned int> > const &dims,
 			  double const *lower, double const *upper) const
@@ -25,8 +25,8 @@ double DMNorm::logDensity(double const *x, unsigned int m,
     double const * mu = parameters[0];
     double const * T = parameters[1];
 
-    double loglik = logdet(T, m)/2;
-    double * delta = new double[m];
+    double loglik = 0;
+    vector<double> delta(m);
     for (unsigned int i = 0; i < m; ++i) {
 	delta[i] = x[i] - mu[i];
 	loglik -= (delta[i] * T[i + i * m] * delta[i])/2;
@@ -34,9 +34,13 @@ double DMNorm::logDensity(double const *x, unsigned int m,
 	    loglik -= (delta[i] * T[i + j * m] * delta[j]);
 	}
     }
-    delete [] delta;
 
-    return loglik;
+    if (type == PDF_PRIOR) {
+	return loglik; //No need to calculate normalizing constant
+    }
+    else {
+	return loglik + logdet(T, m)/2;
+    }
 }
 
 void DMNorm::randomSample(double *x, unsigned int m,

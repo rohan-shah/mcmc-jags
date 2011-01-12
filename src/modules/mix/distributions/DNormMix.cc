@@ -43,7 +43,8 @@ namespace mix {
 	return true;
     }
 
-    double DNormMix::logDensity(double const *x, unsigned int length,
+    double DNormMix::logDensity(double const *x, unsigned int length, 
+				PDFType type,
 				vector<double const *> const &par,
 				vector<unsigned int> const &lengths,
 				double const *lower, double const *upper) 

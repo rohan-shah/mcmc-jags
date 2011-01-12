@@ -48,25 +48,41 @@ DMulti::checkParameterValue(vector<double const *> const &par,
     return true;
 }
 
-double DMulti::logDensity(double const *x, unsigned int length,
+double DMulti::logDensity(double const *x, unsigned int length, PDFType type,
 			  vector<double const *> const &par,
 			  vector<unsigned int> const &len,
 			  double const *lower, double const *upper) const
 {
+    //FIXME: We don't actually check whether sum(x) == SIZE(par)
+
     double loglik = 0.0;
-    double sump = 0.0;
     for (unsigned int i = 0; i < length; i++) {
 	if (x[i] != 0) {
 	    if (PROB(par)[i] == 0) {
 		return JAGS_NEGINF;
 	    }
 	    else {
-		loglik += x[i] * log(PROB(par)[i]) - lgamma(x[i] + 1);
+		loglik += x[i] * log(PROB(par)[i]);
 	    }
 	}
-	sump += PROB(par)[i];
     }
-    loglik += lgamma(SIZE(par) + 1) - SIZE(par) * log(sump);
+
+    if (type != PDF_PRIOR) {
+	//Normalizing constant
+	double sump = 0.0;
+	for (unsigned int i = 0; i < length; ++i) {
+	    sump += PROB(par)[i];
+	}
+	loglik -= SIZE(par) * log(sump);
+    }
+
+    if (type != PDF_LIKELIHOOD) {
+	//Terms depending on sampled value only
+	for (unsigned int i = 0; i < length; ++i) {
+	    loglik -= lgamma(x[i] + 1);
+	}
+	loglik += lgamma(SIZE(par) + 1);
+    }
 
     return loglik;
 }

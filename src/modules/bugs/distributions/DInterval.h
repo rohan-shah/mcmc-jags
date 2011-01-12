@@ -15,7 +15,7 @@ class DInterval : public VectorDist {
 public:
     DInterval();
   
-    double logDensity(double const *x, unsigned int length,
+    double logDensity(double const *x, unsigned int length, PDFType type,
 		      std::vector<double const *> const &parameters,
 		      std::vector<unsigned int> const &lengths,
 		      double const *lower, double const *upper) const;

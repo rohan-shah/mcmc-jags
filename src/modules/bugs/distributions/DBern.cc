@@ -24,7 +24,8 @@ DBern::checkParameterValue (vector<double const *> const &parameters) const
     return  (PROB(parameters) >= 0.0 && PROB(parameters) <= 1.0);
 }
 
-double DBern::logDensity(double x, vector<double const *> const &parameters,
+double DBern::logDensity(double x, PDFType type,
+			 vector<double const *> const &parameters,
 			 double const *lbound, double const *ubound) const 
 {
     double d = 0;

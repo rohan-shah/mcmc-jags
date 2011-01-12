@@ -51,7 +51,7 @@ bool DInterval::checkParameterValue(vector<double const *> const &par,
 }
 
 double 
-DInterval::logDensity(double const *y, unsigned int length, 
+DInterval::logDensity(double const *y, unsigned int length, PDFType type,
 		      vector<double const *> const &par,
 		      vector<unsigned int> const &lengths,
 		      double const *lower, double const *upper) const

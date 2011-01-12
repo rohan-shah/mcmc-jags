@@ -2,8 +2,8 @@
 #define STOCHASTIC_NODE_H_
 
 #include <graph/Node.h>
+#include <distribution/Distribution.h>
 
-class Distribution;
 class RNG;
 
 /**
@@ -68,8 +68,16 @@ public:
     /**
      * Returns the log of the prior density of the StochasticNode
      * given the current parameter values.
+     *
+     * @param chain Number of chain (starting from zero) for which
+     * to evaluate log density.
+     *
+     * @param type Indicates whether the full probability density
+     * function is required (PDF_FULL) or whether partial calculations
+     * are permitted (PDF_PRIOR, PDF_LIKELIHOOD). See PDFType for
+     * details.
      */
-    virtual double logDensity(unsigned int chain) const = 0;
+    virtual double logDensity(unsigned int chain, PDFType type) const = 0;
     /**
      * Draws a random sample from the prior distribution of the node
      * given the current values of it's parents, and sets the Node

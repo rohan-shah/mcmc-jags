@@ -23,7 +23,7 @@ public:
     ScalarStochasticNode(ScalarDist const *dist,
 			 std::vector<Node const *> const &parameters,
 			 Node const *lower, Node const *upper);
-    double logDensity(unsigned int chain) const;
+    double logDensity(unsigned int chain, PDFType type) const;
     void randomSample(RNG *rng, unsigned int chain);
     void truncatedSample(RNG *rng, unsigned int chain,
 			 double const *lower, double const *upper);

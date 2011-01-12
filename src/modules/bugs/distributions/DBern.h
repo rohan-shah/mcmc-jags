@@ -13,7 +13,7 @@
 class DBern : public ScalarDist {
 public:
     DBern();
-    double logDensity(double x, 
+    double logDensity(double x, PDFType type,
 		      std::vector<double const *> const &parameters,
 		      double const *lbound, double const *ubound) const;
     double randomSample(std::vector<double const *> const &parameters, 

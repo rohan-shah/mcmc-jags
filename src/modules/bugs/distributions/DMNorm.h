@@ -14,7 +14,7 @@ class DMNorm : public ArrayDist {
 public:
   DMNorm();
 
-  double logDensity(double const *x, unsigned int length,
+  double logDensity(double const *x, unsigned int length, PDFType type,
 		    std::vector<double const *> const &parameters,
 		    std::vector<std::vector<unsigned int> > const &dims,
 		    double const *lower, double const *upper)  const;

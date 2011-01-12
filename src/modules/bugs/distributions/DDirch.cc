@@ -59,14 +59,13 @@ DDirch::checkParameterValue(vector<double const *> const &par,
     return has_nonzero_alpha;
 }
 
-double DDirch::logDensity(double const *x, unsigned int length,
+double DDirch::logDensity(double const *x, unsigned int length, PDFType type,
 			  vector<double const *> const &par,
 			  vector<unsigned int> const &len,
 			  double const *lower, double const *upper) const
 {
     double const *alpha = ALPHA(par);
 
-    double alphasum = 0.0;
     double loglik = 0.0;
     for (unsigned int i = 0; i < length; i++) {
 	if (alpha[i] == 0) {
@@ -74,11 +73,21 @@ double DDirch::logDensity(double const *x, unsigned int length,
 		return JAGS_NEGINF;
 	}
 	else {
-	    alphasum += alpha[i];
-	    loglik += (alpha[i] - 1) * log(x[i]) - lgamma(alpha[i]);
+	    loglik += (alpha[i] - 1) * log(x[i]);
 	}
     }
-    loglik += lgamma(alphasum);
+
+    if (type != PDF_PRIOR) {
+	//Need to calculate normalizing constant
+	double alphasum = 0.0;
+	for (unsigned int i = 0; i < length; i++) {
+	    if (alpha[i] != 0) {
+		loglik -= lgamma(alpha[i]);
+		alphasum += alpha[i];
+	    }
+	}
+	loglik += lgamma(alphasum);
+    }
 
     return loglik;
 }

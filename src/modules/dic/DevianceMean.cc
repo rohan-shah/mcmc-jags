@@ -49,7 +49,7 @@ namespace dic {
 	    double loglik = 0;
 	    unsigned int nchain = _snodes[i]->nchain();
 	    for (unsigned int ch = 0; ch < nchain; ++ch) {
-		loglik += _snodes[i]->logDensity(ch) / nchain;
+		loglik += _snodes[i]->logDensity(ch, PDF_FULL) / nchain;
 	    }
 	    _values[i] += (-2*loglik - _values[i])/_n;
 	}

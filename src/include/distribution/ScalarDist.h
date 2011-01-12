@@ -70,7 +70,7 @@ class ScalarDist : public Distribution
   /**
    * Calculates log probability density of the distribution
    */
-  virtual double logDensity(double x, 
+  virtual double logDensity(double x, PDFType type,
 			    std::vector<double const *> const &parameters,
 			    double const *lbound, double const *ubound)
       const = 0;

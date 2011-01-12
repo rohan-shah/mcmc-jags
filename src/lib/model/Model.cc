@@ -168,7 +168,7 @@ void Model::initialize(bool datagen)
 	for (unsigned int ch = 0; ch < _nchain; ++ch) {
 	    for (unsigned int i = 0; i < _stochastic_nodes.size(); ++i) {
 		StochasticNode const *snode = _stochastic_nodes[i];
-		double ld = snode->logDensity(ch);
+		double ld = snode->logDensity(ch, PDF_PRIOR);
 		if (jags_isnan(ld)) {
 		    string msg = "Error calculating log density at initial values";
 		    throw NodeError(snode, msg);

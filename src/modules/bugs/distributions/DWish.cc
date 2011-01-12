@@ -34,7 +34,7 @@ static double log_multigamma(double n, unsigned int p)
     return y;
 }
     
-double DWish::logDensity(double const *x, unsigned int length,
+double DWish::logDensity(double const *x, unsigned int length, PDFType type,
 			 vector<double const *> const &par,
 			 vector<vector<unsigned int> > const &dims,
 			 double const *lower, double const *upper) const
@@ -42,12 +42,16 @@ double DWish::logDensity(double const *x, unsigned int length,
     double const *scale = SCALE(par);
     unsigned int p = NROW(dims);
 
-    double loglik = 0;
+    double loglik = (DF(par) - p - 1) * logdet(x, p);
     for (unsigned int i = 0; i < length; ++i) {
 	loglik -= scale[i] * x[i];
     }
-    loglik += DF(par) * logdet(scale, p) + (DF(par) - p - 1) * logdet(x, p);
-    loglik -= DF(par) * p * log(2.0) + 2 * log_multigamma(DF(par), p);
+
+    if (type != PDF_PRIOR) {
+	//Normalize density
+	loglik += DF(par) * logdet(scale, p) -  DF(par) * p * log(2.0) -
+	    2 * log_multigamma(DF(par), p);
+    }
 
     return loglik/2;
 }

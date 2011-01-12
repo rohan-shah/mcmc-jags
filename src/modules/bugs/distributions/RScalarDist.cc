@@ -80,19 +80,21 @@ RScalarDist::typicalValue(vector<double const *> const &parameters,
 }
 
 double 
-RScalarDist::logDensity(double x, vector<double const *> const &parameters,
+RScalarDist::logDensity(double x, PDFType type,
+			vector<double const *> const &parameters,
 			double const *lower, double const *upper) const
 {
+    if (lower && x < *lower)
+	return JAGS_NEGINF;
+    if (upper && x > *upper)
+	return JAGS_NEGINF;
+    if (upper && lower && *upper < *lower)
+	return JAGS_NEGINF;
+    
     double loglik =  d(x, parameters, true);
 
-    if (lower || upper) {
-
-	if (lower && x < *lower)
-	    return JAGS_NEGINF;
-	if (upper && x > *upper)
-	    return JAGS_NEGINF;
-	if (upper && lower && *upper < *lower)
-	    return JAGS_NEGINF;
+    if (type != PDF_PRIOR && (lower || upper)) {
+	//Normalize truncated distributions
 
 	//Make adjustment for discrete-valued distributions
 	double ll = 0;

@@ -26,6 +26,13 @@ class VectorDist : public Distribution
     /**
      * @param x Value at which to evaluate the density.
      *
+     * @param length Size of the array x.
+     *
+     * @param type Indicates whether the full probability density
+     * function is required (PDF_FULL) or whether partial calculations
+     * are permitted (PDF_PRIOR, PDF_LIKELIHOOD). See PDFType for
+     * details.
+     * 
      * @param parameters Vector of parameter values of the
      * distribution.
      * 
@@ -40,7 +47,7 @@ class VectorDist : public Distribution
      * 
      */
     virtual double 
-	logDensity(double const *x, unsigned int length,
+	logDensity(double const *x, unsigned int length, PDFType type,
 		   std::vector<double const *> const &parameters,
 		   std::vector<unsigned int> const &lengths,
 		   double const *lbound, double const *ubound) const = 0;
