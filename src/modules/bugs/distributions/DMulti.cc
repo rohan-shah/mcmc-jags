@@ -48,10 +48,10 @@ DMulti::checkParameterValue(vector<double const *> const &par,
     return true;
 }
 
-double DMulti::logLikelihood(double const *x, unsigned int length,
-			     vector<double const *> const &par,
-			     vector<unsigned int> const &len,
-			     double const *lower, double const *upper) const
+double DMulti::logDensity(double const *x, unsigned int length,
+			  vector<double const *> const &par,
+			  vector<unsigned int> const &len,
+			  double const *lower, double const *upper) const
 {
     double loglik = 0.0;
     double sump = 0.0;

@@ -14,10 +14,10 @@ class DCat : public VectorDist {
 public:
     DCat();
 
-    double logLikelihood(double const *x, unsigned int length,
-			 std::vector<double const *> const &parameters,
-			 std::vector<unsigned int> const &lengths,
-			 double const *lower, double const *upper) const;
+    double logDensity(double const *x, unsigned int length,
+		      std::vector<double const *> const &parameters,
+		      std::vector<unsigned int> const &lengths,
+		      double const *lower, double const *upper) const;
     void randomSample(double *x, unsigned int length,
 		      std::vector<double const *> const &parameters,
 		      std::vector<unsigned int> const &lengths,

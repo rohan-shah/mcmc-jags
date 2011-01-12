@@ -65,9 +65,9 @@ double VectorStochasticNode::logDensity(unsigned int chain) const
     if(!_dist->checkParameterValue(_parameters[chain], _lengths))
 	return JAGS_NEGINF;
     
-    return _dist->logLikelihood(_data + _length * chain, _length,
-				_parameters[chain], _lengths,
-				lowerLimit(chain), upperLimit(chain));
+    return _dist->logDensity(_data + _length * chain, _length,
+			     _parameters[chain], _lengths,
+			     lowerLimit(chain), upperLimit(chain));
 }
 
 void VectorStochasticNode::deterministicSample(unsigned int chain)

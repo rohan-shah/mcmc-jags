@@ -18,10 +18,10 @@ DMT::DMT()
   : ArrayDist("dmt", 3) 
 {}
 
-double DMT::logLikelihood(double const *x, unsigned int m,
-			  vector<double const *> const &parameters,
-			  vector<vector<unsigned int> > const &dims,
-			  double const *lower, double const *upper) const
+double DMT::logDensity(double const *x, unsigned int m,
+		       vector<double const *> const &parameters,
+		       vector<vector<unsigned int> > const &dims,
+		       double const *lower, double const *upper) const
 {
     double const * mu = parameters[0];
     double const * T = parameters[1];

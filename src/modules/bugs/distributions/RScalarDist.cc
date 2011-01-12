@@ -80,8 +80,8 @@ RScalarDist::typicalValue(vector<double const *> const &parameters,
 }
 
 double 
-RScalarDist::logLikelihood(double x, vector<double const *> const &parameters,
-			   double const *lower, double const *upper) const
+RScalarDist::logDensity(double x, vector<double const *> const &parameters,
+			double const *lower, double const *upper) const
 {
     double loglik =  d(x, parameters, true);
 

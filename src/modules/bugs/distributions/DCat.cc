@@ -42,10 +42,10 @@ bool DCat::checkParameterValue(vector<double const *> const &par,
     return nz;
 }
 
-double DCat::logLikelihood(double const *x, unsigned int length,
-			   vector<double const *> const &par,
-			   vector<unsigned int> const &lengths,
-			   double const *lower, double const *upper) const
+double DCat::logDensity(double const *x, unsigned int length,
+			vector<double const *> const &par,
+			vector<unsigned int> const &lengths,
+			double const *lower, double const *upper) const
 {
     unsigned int y = static_cast<unsigned int>(*x);
     if (y < 1 || y > NCAT(lengths)) {

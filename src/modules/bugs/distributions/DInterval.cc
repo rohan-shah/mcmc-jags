@@ -51,10 +51,10 @@ bool DInterval::checkParameterValue(vector<double const *> const &par,
 }
 
 double 
-DInterval::logLikelihood(double const *y, unsigned int length, 
-			 vector<double const *> const &par,
-			 vector<unsigned int> const &lengths,
-			 double const *lower, double const *upper) const
+DInterval::logDensity(double const *y, unsigned int length, 
+		      vector<double const *> const &par,
+		      vector<unsigned int> const &lengths,
+		      double const *lower, double const *upper) const
 {
     if (*y < 0)
 	return JAGS_NEGINF;

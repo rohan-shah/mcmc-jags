@@ -43,10 +43,10 @@ namespace mix {
 	return true;
     }
 
-    double DNormMix::logLikelihood(double const *x, unsigned int length,
-				   vector<double const *> const &par,
-				   vector<unsigned int> const &lengths,
-				   double const *lower, double const *upper) 
+    double DNormMix::logDensity(double const *x, unsigned int length,
+				vector<double const *> const &par,
+				vector<unsigned int> const &lengths,
+				double const *lower, double const *upper) 
 	const
     {
 	double density = 0.0;

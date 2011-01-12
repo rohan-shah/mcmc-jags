@@ -32,8 +32,8 @@ double ScalarStochasticNode::logDensity(unsigned int chain) const
     if(!_dist->checkParameterValue(_parameters[chain]))
 	return JAGS_NEGINF;
     
-    return _dist->logLikelihood(_data[chain], _parameters[chain],
-				lowerLimit(chain), upperLimit(chain));
+    return _dist->logDensity(_data[chain], _parameters[chain],
+			     lowerLimit(chain), upperLimit(chain));
 }
 
 void ScalarStochasticNode::deterministicSample(unsigned int chain)

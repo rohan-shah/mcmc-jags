@@ -17,10 +17,10 @@ DMNorm::DMNorm()
   : ArrayDist("dmnorm", 2) 
 {}
 
-double DMNorm::logLikelihood(double const *x, unsigned int m,
-			     vector<double const *> const &parameters,
-			     vector<vector<unsigned int> > const &dims,
-			     double const *lower, double const *upper) const
+double DMNorm::logDensity(double const *x, unsigned int m,
+			  vector<double const *> const &parameters,
+			  vector<vector<unsigned int> > const &dims,
+			  double const *lower, double const *upper) const
 {
     double const * mu = parameters[0];
     double const * T = parameters[1];

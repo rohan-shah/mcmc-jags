@@ -24,8 +24,8 @@ DBern::checkParameterValue (vector<double const *> const &parameters) const
     return  (PROB(parameters) >= 0.0 && PROB(parameters) <= 1.0);
 }
 
-double DBern::logLikelihood(double x, vector<double const *> const &parameters,
-			    double const *lbound, double const *ubound) const 
+double DBern::logDensity(double x, vector<double const *> const &parameters,
+			 double const *lbound, double const *ubound) const 
 {
     double d = 0;
     if (x == 1)

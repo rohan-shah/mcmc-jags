@@ -63,9 +63,9 @@ double ArrayStochasticNode::logDensity(unsigned int chain) const
     if(!_dist->checkParameterValue(_parameters[chain], _dims))
 	return JAGS_NEGINF;
     
-    return _dist->logLikelihood(_data + _length * chain, _length,
-				_parameters[chain], _dims,
-				lowerLimit(chain), upperLimit(chain));
+    return _dist->logDensity(_data + _length * chain, _length,
+			     _parameters[chain], _dims,
+			     lowerLimit(chain), upperLimit(chain));
 }
 
 void ArrayStochasticNode::deterministicSample(unsigned int chain)

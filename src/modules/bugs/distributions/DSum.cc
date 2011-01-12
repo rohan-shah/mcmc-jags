@@ -20,10 +20,10 @@ bool DSum::isDiscreteValued(vector<bool> const &mask) const
     return allTrue(mask);
 }
 
-double DSum::logLikelihood(double const *x, unsigned int length,
-			   vector<double const *> const &par,
-			   vector<vector<unsigned int> > const &dims,
-			   double const *lower, double const *upper) const
+double DSum::logDensity(double const *x, unsigned int length,
+			vector<double const *> const &par,
+			vector<vector<unsigned int> > const &dims,
+			double const *lower, double const *upper) const
 {
     const double tol = sqrt(DBL_EPSILON);
     for (unsigned int i = 0; i < length; ++i) {

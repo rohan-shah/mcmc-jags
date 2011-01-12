@@ -24,7 +24,7 @@ class VectorDist : public Distribution
      */
     VectorDist(std::string const &name, unsigned int npar);
     /**
-     * @param x Value at which to evaluate the likelihood.
+     * @param x Value at which to evaluate the density.
      *
      * @param parameters Vector of parameter values of the
      * distribution.
@@ -32,27 +32,32 @@ class VectorDist : public Distribution
      * @param lengths Vector of parameter lengths corresponding to the
      * parameter vector.
      *
-     * @returns the log likelihood.  If the likelihood should be zero
-     * because x is inconsistent with the parameters then -Inf is
+     * @returns the log probability density.  If the density should be
+     * zero because x is inconsistent with the parameters then -Inf is
      * returned. If the parameters are invalid
      * (i.e. checkParameterValue returns false), then the return value
      * is undefined.
      * 
      */
     virtual double 
-	logLikelihood(double const *x, unsigned int length,
-		      std::vector<double const *> const &parameters,
-		      std::vector<unsigned int> const &lengths,
-		      double const *lbound, double const *ubound) const = 0;
+	logDensity(double const *x, unsigned int length,
+		   std::vector<double const *> const &parameters,
+		   std::vector<unsigned int> const &lengths,
+		   double const *lbound, double const *ubound) const = 0;
     /**
      * Draws a random sample from the distribution. 
      *
      * @param x Array to which the sample values are written
      *
+     * @param length Size of the array x.
+     *
      * @param parameters  Vector of parameter values at which
      * to evaluate the likelihood. This vector should be of length
      * npar().
      *
+     * @param lengths Vector of lengths of the arrays in the argument
+     * "parameters".
+     * 
      * @param rng pseudo-random number generator to use.
      *
      * @exception length_error 
@@ -69,18 +74,19 @@ class VectorDist : public Distribution
      *
      * @param x Array to which the sample values are written
      *
+     * @param length Size of the array x.
+     * 
      * @param parameters  Vector of parameter values at which
      * to evaluate the likelihood. This vector should be of length
      * npar().
      *
-     * @param dims Vector of parameter dimensions.
+     * @param lengths Vector of parameters lengths.
      *
-     * @param lbound Lower bound, for truncated distributions, or a NULL
+     * @param lbound Lower bound for truncated distributions, or a NULL
      * pointer if the distribution is not truncated.
      *
-     * @param ubound Upper bound, for truncated distributions, or a NULL
+     * @param ubound Upper bound for truncated distributions, or a NULL
      * pointer if the distribution is not truncated.
-
      *
      * @exception length_error 
      */
@@ -103,11 +109,7 @@ class VectorDist : public Distribution
      */
     virtual bool isSupportFixed(std::vector<bool> const &fixmask) const = 0;
     /**
-     * Checks that dimensions of the parameters are correct.
-     *
-     * This function only needs to be run once for each parameter
-     * vector. Thereafter, the values of the parameters will change,
-     * but the dimensions will not.
+     * Checks that lengths of the parameters are correct.
      */
     virtual bool 
 	checkParameterLength (std::vector<unsigned int> const &parameters) 
@@ -118,14 +120,14 @@ class VectorDist : public Distribution
      * than certain parameters are positive, or lie in a given
      * range.
      *
-     * This function assumes that checkParameterDim returns true.
+     * This function assumes that checkParameterLength returns true.
      */
     virtual bool 
 	checkParameterValue(std::vector<double const *> const &parameters,
 			    std::vector<unsigned int> const &lengths) const = 0;
     /**
-     * Calculates what the length of the distribution should be, based
-     * on the lengths of its parameters.
+     * Calculates what the length of a sampled value should be, based
+     * on the lengths of the parameters.
      *
      * @param par vector of lengths of the parameters.
      */

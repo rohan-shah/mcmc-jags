@@ -13,7 +13,7 @@
 class DUnif : public ScalarDist {
   public:
     DUnif();
-    double logLikelihood(double x,
+    double logDensity(double x,
 			 std::vector<double const *> const &parameters,
 			 double const *lower, double const *upper) const;
     double randomSample(std::vector<double const *> const &parameters,

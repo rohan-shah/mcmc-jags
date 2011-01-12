@@ -68,11 +68,11 @@ class ScalarDist : public Distribution
    */
   virtual double u(std::vector<double const *> const &parameters) const;
   /**
-   * Calculates log likelihood
+   * Calculates log probability density of the distribution
    */
-  virtual double logLikelihood(double x, 
-			       std::vector<double const *> const &parameters,
-			       double const *lbound, double const *ubound)
+  virtual double logDensity(double x, 
+			    std::vector<double const *> const &parameters,
+			    double const *lbound, double const *ubound)
       const = 0;
   /**
    * Draws a random sample 

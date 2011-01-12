@@ -34,10 +34,10 @@ static double log_multigamma(double n, unsigned int p)
     return y;
 }
     
-double DWish::logLikelihood(double const *x, unsigned int length,
-			    vector<double const *> const &par,
-			    vector<vector<unsigned int> > const &dims,
-			    double const *lower, double const *upper) const
+double DWish::logDensity(double const *x, unsigned int length,
+			 vector<double const *> const &par,
+			 vector<vector<unsigned int> > const &dims,
+			 double const *lower, double const *upper) const
 {
     double const *scale = SCALE(par);
     unsigned int p = NROW(dims);

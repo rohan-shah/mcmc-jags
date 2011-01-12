@@ -86,11 +86,10 @@ DMState::checkParameterValue(vector<double const *> const &par,
 }
 
 
-double 
-DMState::logLikelihood(double const *y, unsigned int length,
-		       vector<double const *> const &par,
-		       vector<vector<unsigned int> > const &dims,
-		       double const *lower, double const *upper) const
+double DMState::logDensity(double const *y, unsigned int length,
+		    vector<double const *> const &par,
+		    vector<vector<unsigned int> > const &dims,
+		    double const *lower, double const *upper) const
 {
     int initial = INITIAL(par);
     double time = TIME(par);

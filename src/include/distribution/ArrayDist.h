@@ -9,11 +9,12 @@
 struct RNG;
 
 /**
- * @short Distribution of a random variable
+ * @short Matrix- or array-valued distribution
  *
- * Distribution objects contain only constant data members and all
- * member functions are constant. Hence only one object needs to be
- * instantiated for each subclass.
+ * This is the most general sub-class for distributions and is used
+ * whenever a distribution takes values in a matrix or
+ * higher-dimensional array (e.g. Wishart) or has parameters that are
+ * array-valued (e.g. multivariate normal).
  */
 class ArrayDist : public Distribution
 {
@@ -25,34 +26,47 @@ public:
      */
     ArrayDist(std::string const &name, unsigned int npar);
     /**
-     * @param x Value at which to evaluate the likelihood.
+     * @param x Value at which to evaluate the density.
      *
-     * @param dim Dimensions of the value
+     * @param length Size of the array x.
      *
      * @param parameters Vector of parameter values of the
      * distribution.
      * 
      * @param dims Dimensions of the parameters.
      *
-     * @returns The log likelihood.  If the likelihood should be zero
-     * because x is inconsistent with the parameters then -Inf is
+     * @returns The log probability density.  If the density should be
+     * zero because x is inconsistent with the parameters then -Inf is
      * returned. If the parameters are invalid
      * (i.e. checkParameterValue returns false), then the return value
      * is undefined.
      */
     virtual double 
-	logLikelihood(double const *x, unsigned int length,
-		      std::vector<double const *> const &parameters,
-		      std::vector<std::vector<unsigned int> > const &dims,
-		      double const *lbound, double const *ubound)
-	const = 0;
+	logDensity(double const *x, unsigned int length,
+		   std::vector<double const *> const &parameters,
+		   std::vector<std::vector<unsigned int> > const &dims,
+		   double const *lbound, double const *ubound) const = 0;
     /**
      * Draws a random sample from the distribution. 
      *
      * @param x Array to which the sample values are written
      *
-     * @param parameters Vector of parameter values at which to
-     * evaluate the likelihood. This vector should be of length npar(). 
+     * @param length Size of the array x.
+     * 
+     * @param parameters Parameters for the distribution. This vector
+     * should be of length npar().  Each element is a pointer to the
+     * start of an array containing the parameters. The size of the 
+     * array should correspond to the dims parameter. 
+     *
+     * @param dims Dimensions of the parameters
+     *
+     * @param lbound pointer to array containing the lower boundary of
+     * the distribution. This should be of size length or may be NULL if
+     * there is no lower boundary.
+     *
+     * @param lbound pointer to array containing the upper boundary of
+     * the distribution. This should be of size length or may be NULL if
+     * there is no upper boundary.
      *
      * @param rng pseudo-random number generator to use.
      *
@@ -71,9 +85,10 @@ public:
      *
      * @param x Array to which the sample values are written
      *
-     * @param parameters  Vector of parameter values at which
-     * to evaluate the likelihood. This vector should be of length
-     * npar().
+     * @param length Size of the array x.
+     * 
+     * @param parameters  Vector of parameter values for the distribution.
+     * This vector should be of length npar().
      *
      * @param dims Vector of parameter dimensions.
      *
@@ -87,19 +102,14 @@ public:
 	const = 0;
     /**
      * Checks that dimensions of the parameters are correct.
-     *
-     * This function only needs to be run once for each parameter
-     * vector. Thereafter, the values of the parameters will change,
-     * but the dimensions will not.
      */
     virtual bool 
 	checkParameterDim (std::vector<std::vector<unsigned int> > const &parameters) 
 	const = 0;
     /**
      * Checks that the values of the parameters are consistent with
-     * the distribution. For example, some distributions require
-     * than certain parameters are positive, or lie in a given
-     * range.
+     * the distribution. For example, some distributions require than
+     * certain parameters are positive, or lie in a given range.
      *
      * This function assumes that checkParameterDim returns true.
      */
@@ -131,4 +141,4 @@ public:
 		std::vector<std::vector<unsigned int> > const &dims) const = 0;
 };
 
-#endif /* DISTRIBUTION_H_ */
+#endif /* ARRAY_DIST_H_ */

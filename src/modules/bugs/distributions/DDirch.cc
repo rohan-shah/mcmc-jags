@@ -59,10 +59,10 @@ DDirch::checkParameterValue(vector<double const *> const &par,
     return has_nonzero_alpha;
 }
 
-double DDirch::logLikelihood(double const *x, unsigned int length,
-			     vector<double const *> const &par,
-                             vector<unsigned int> const &len,
-			     double const *lower, double const *upper) const
+double DDirch::logDensity(double const *x, unsigned int length,
+			  vector<double const *> const &par,
+			  vector<unsigned int> const &len,
+			  double const *lower, double const *upper) const
 {
     double const *alpha = ALPHA(par);
 
