@@ -64,9 +64,11 @@ Node *BUGSModel::getNode(string const &name, Range const &target_range)
     if (isNULL(range)) {
 	range = array->range();
     }
+    else if (array->range().dim(false) != target_range.dim(false)) {
+	return 0; //Dimension mismatch
+    }
     else if (!array->range().contains(target_range)) {
-	//FIXME. What if target_range has wrong dimension?
-	return 0;
+	return 0; //Indices out of range
     }
     unsigned int NNode = graph().size();
     Node *node = array->getSubset(range, *this);
