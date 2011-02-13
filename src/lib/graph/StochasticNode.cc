@@ -2,6 +2,7 @@
 #include <graph/GraphMarks.h>
 #include <graph/Graph.h>
 #include <graph/StochasticNode.h>
+#include <distribution/DistError.h>
 #include <distribution/Distribution.h>
 #include <util/nainf.h>
 #include <util/dim.h>
@@ -40,21 +41,17 @@ StochasticNode::StochasticNode(vector<unsigned int> const &dim,
       _discrete(false), _parameters(nchain())
 {
     if (!_dist->checkNPar(parameters.size())) {
-	string msg = "Incorrect number of parameters for distribution " +
-	    dist->name();
-	throw runtime_error(msg);
+	throw DistError(_dist, "Incorrect number of parameters");
     }
 
     //check boundaries
     if ((lower && lower->dim() != this->dim()) || 
 	(upper && upper->dim() != this->dim()))
     {
-	throw runtime_error(string("Dimension mismatch when setting bounds")
-			    + " for distribution " + dist->name());
+	throw DistError(_dist, "Dimension mismatch when setting bounds");
     }
     if (!_dist->canBound() && (lower || upper)) {
-	throw runtime_error(string("distribution ") + dist->name() +
-				   " cannot be bounded");
+	throw DistError(_dist, "Distribution cannot be bounded");
     }
 
     //check discreteness of parents
@@ -63,8 +60,7 @@ StochasticNode::StochasticNode(vector<unsigned int> const &dim,
 	mask[i] = parameters[i]->isDiscreteValued();
     }
     if (!_dist->checkParameterDiscrete(mask)) {
-	throw runtime_error(string("Distribution ") + _dist->name() +
-			    " failed check for discrete-valued parameters");
+	throw DistError(_dist, "Failed check for discrete-valued parameters");
     }
     _discrete = _dist->isDiscreteValued(mask);
 
