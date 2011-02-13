@@ -64,7 +64,7 @@ Node *BUGSModel::getNode(string const &name, Range const &target_range)
     if (isNULL(range)) {
 	range = array->range();
     }
-    else if (array->range().dim(false) != target_range.dim(false)) {
+    else if (array->range().ndim(false) != target_range.ndim(false)) {
 	return 0; //Dimension mismatch
     }
     else if (!array->range().contains(target_range)) {

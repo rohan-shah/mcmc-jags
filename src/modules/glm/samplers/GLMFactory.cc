@@ -102,7 +102,7 @@ namespace glm {
 	}
 
 	// Check linearity of deterministic descendants
-	if (!checkLinear(view, false, true))
+	if (!checkLinear(view, fixedGLM(), true))
 	    return false;
 
 	return true;
@@ -220,7 +220,7 @@ namespace glm {
 	    }
 	    if (sample_nodes.size() > 1) {
 		view = new GraphView(sample_nodes, graph);
-		if (checkLinear(view, false, true)) {
+		if (checkLinear(view, fixedGLM(), true)) {
 		    break;
 		}
 		else {
@@ -278,5 +278,9 @@ namespace glm {
 	    return vector<Sampler*>();
     }
 
+    bool GLMFactory::fixedGLM() const
+    {
+	return false;
+    }
 }
 

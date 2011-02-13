@@ -41,19 +41,22 @@ namespace glm {
     AlbertChib::AlbertChib(GraphView const *view,
 			   vector<GraphView const *> const &sub_views,
 			   unsigned int chain, bool gibbs)
-	: BinaryGLM(view, sub_views, chain), _gibbs(gibbs)
+	: BinaryGLM(view, sub_views, chain), _gibbs(gibbs), _aux_init(true)
     {
     }
 
     bool AlbertChib::update(RNG *rng)
     {
+	if (_aux_init) {
+	    initAuxiliary(rng);
+	    _aux_init = false;
+	}
 
-	if (_gibbs) {
-	    if (!updateLMGibbs(rng)) return false;
-	}
-	else {
-	    if (!updateLM(rng))	return false;
-	}
+	/*
+	  Update the auxiliary variables *before* calling
+	  updateLM. This ordering is important for models with a
+	  variable design matrix (e.g.  measurement error models).
+	*/
 
 	unsigned int nrow = _view->stochasticChildren().size();
 	
@@ -94,6 +97,13 @@ namespace glm {
 		return false;
 		break;
 	    }
+	}
+
+	if (_gibbs) {
+	    if (!updateLMGibbs(rng)) return false;
+	}
+	else {
+	    if (!updateLM(rng))	return false;
 	}
 
 	return true;

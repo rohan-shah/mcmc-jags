@@ -38,7 +38,12 @@ namespace glm {
 		      unsigned int chain) const = 0;
 	virtual bool canSample(StochasticNode const *snode) const = 0;
 	std::string name() const;
-	
+	/**
+	 * Returns true if the factory requires a fixed generalized
+	 * linear model with a fixed design matrix, and false
+	 * otherwise.  The default implementation returns false.
+	 */
+	virtual bool fixedGLM() const;
     };
 
 }

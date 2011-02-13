@@ -19,4 +19,9 @@ namespace glm {
 	return new HolmesHeld(view, sub_views, chain);
     }
 
+    
+    bool HolmesHeldFactory::fixedGLM() const
+    {
+	return true;
+    }
 }

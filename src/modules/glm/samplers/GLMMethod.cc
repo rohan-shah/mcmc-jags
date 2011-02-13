@@ -181,8 +181,6 @@ namespace glm {
 	for (unsigned int i = 0; i < sub_views.size(); ++i) {
 	    _fixed[i] = checkLinear(sub_views[i], true, link);
 	}
-
-
     }
 
     GLMMethod::~GLMMethod()
@@ -344,7 +342,6 @@ namespace glm {
 	//   of the sampled nodes, as the origin
 
 	if (_init) {
-	    initAuxiliary(rng);
 	    calDesign();
 	    symbolic();
 	    _init = false;
@@ -448,7 +445,6 @@ namespace glm {
 		return false;
 		//throw logic_error("updateLMGibbs can only act on scalar nodes");
 	    }
-	    initAuxiliary(rng);
 	    calDesign();
 	    _init = false;
 	}
@@ -546,10 +542,6 @@ namespace glm {
 	}
     }
 
-    void GLMMethod::initAuxiliary(RNG *rng)
-    {
-    }
-    
     bool GLMMethod::updateAuxiliary(cholmod_dense *b, cholmod_factor *N, RNG *rng)
     {
 	return true;

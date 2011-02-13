@@ -10,6 +10,7 @@ namespace glm {
      */
     class AlbertChib : public BinaryGLM {
 	bool _gibbs;
+	bool _aux_init;
     public:
 	AlbertChib(GraphView const *view, 
 		   std::vector<GraphView const *> const &sub_views,

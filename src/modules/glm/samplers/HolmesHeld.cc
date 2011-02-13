@@ -42,7 +42,7 @@ namespace glm {
     HolmesHeld::HolmesHeld(GraphView const *view,
 			   vector<GraphView const *> const &sub_views,
 			   unsigned int chain)
-	: BinaryGLM(view, sub_views, chain)
+	: BinaryGLM(view, sub_views, chain), _aux_init(true)
     {
     }
 
@@ -175,9 +175,16 @@ namespace glm {
     
     bool HolmesHeld::update(RNG *rng)
     {
-	if (!updateLM(rng))
-	    return false;
-	
+	if (_aux_init) {
+	    initAuxiliary(rng);
+	    _aux_init = false;
+	}
+
+	/*
+	  Update the auxiliary variables *before* calling
+	  updateLM. This ordering is important for models with a
+	  variable design matrix (e.g.  measurement error models).
+	*/
 	for (unsigned int r = 0; r < _tau.size(); ++r)
 	{
 	    if (_outcome[r] == BGLM_LOGIT) {
@@ -185,6 +192,9 @@ namespace glm {
 		_tau[r] = 1/sample_lambda(delta, rng);
 	    }
 	}
+
+	if (!updateLM(rng))
+	    return false;
 	
 	return true;
     }
