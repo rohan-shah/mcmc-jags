@@ -119,7 +119,7 @@ Sampler *ConjugateFactory::makeSampler(StochasticNode *snode,
 	    }
 	    else {
 		return 0;
-		//logic_error("Cannot find conjugate sampler for uniform");
+		//throw logic_error("Cannot find conjugate sampler for uniform");
 	    }
 	    break;
 	default:
