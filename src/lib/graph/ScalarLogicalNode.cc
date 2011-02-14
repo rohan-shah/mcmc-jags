@@ -1,5 +1,6 @@
 #include <config.h>
 #include <graph/ScalarLogicalNode.h>
+#include <function/FuncError.h>
 #include <function/ScalarFunction.h>
 #include <graph/GraphMarks.h>
 #include <graph/Graph.h>
@@ -14,16 +15,18 @@ using std::vector;
 using std::string;
 using std::set;
 using std::logic_error;
-using std::runtime_error;
 
 ScalarLogicalNode::ScalarLogicalNode(ScalarFunction const *function, 
 				     vector<Node const *> const &parameters)
     : LogicalNode(vector<unsigned int>(1,1), parameters, function),
       _func(function)
 {
+    if (!function) {
+	throw logic_error("NULL function in ScalarLogicalNode constructor");
+    }
     for (unsigned int j = 0; j < parameters.size(); ++j) {
 	if (!isScalar(parameters[j]->dim())) {
-	    throw logic_error("Invalid parameter dims in ScalarLogicalNode");
+	    throw FuncError(function, "Invalid parameter dims");
 	}
     }
 

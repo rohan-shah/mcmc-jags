@@ -1,5 +1,6 @@
 #include <config.h>
 #include <graph/ArrayLogicalNode.h>
+#include <function/FuncError.h>
 #include <function/ArrayFunction.h>
 #include <util/dim.h>
 
@@ -10,7 +11,6 @@
 using std::vector;
 using std::string;
 using std::logic_error;
-using std::runtime_error;
 
 static vector<unsigned int> mkDim(ArrayFunction const *func, 
 				  vector<Node const *> const &parents)
@@ -28,12 +28,10 @@ static vector<unsigned int> mkDim(ArrayFunction const *func,
 	throw logic_error("NULL function in ArrayLogicalNode constructor");
     }
     if (!func->checkNPar(parameter_dims.size())) {
-	throw runtime_error(string("Incorrect number of parameters for ")
-			    + func->name());
+	throw FuncError(func, "Incorrect number of parameters");
     }
     if (!func->checkParameterDim(parameter_dims)) {
-	throw runtime_error(string("Non-conforming parameters for function ")
-			    + func->name());
+	throw FuncError(func, "Non-conforming parameters");
     }
     return func->dim(parameter_dims);
 }

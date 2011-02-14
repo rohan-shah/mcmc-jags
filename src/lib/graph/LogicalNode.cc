@@ -1,5 +1,6 @@
 #include <config.h>
 #include <graph/LogicalNode.h>
+#include <function/FuncError.h>
 #include <function/Function.h>
 #include <graph/GraphMarks.h>
 #include <graph/Graph.h>
@@ -14,7 +15,6 @@ using std::vector;
 using std::string;
 using std::set;
 using std::logic_error;
-using std::runtime_error;
 
 static vector<vector<double const *> > 
 mkParams(vector<Node const*> const &parents, unsigned int nchain)
@@ -37,9 +37,7 @@ LogicalNode::LogicalNode(vector<unsigned int> const &dim,
       _parameters(mkParams(parameters, nchain()))
 {
     if (!function->checkNPar(parameters.size())) {
-	string msg = "Incorrect number of parameters for function " +
-	    function->name();
-	throw runtime_error(msg);
+	throw FuncError(function, "Incorrect number of parameters");
     }
     vector<bool> mask(parents().size());
     for (unsigned long j = 0; j < parents().size(); ++j) {

@@ -1,6 +1,7 @@
 #ifndef DIST_ERROR_H_
 #define DIST_ERROR_H_
 
+#include <string>
 #include <stdexcept>
 
 class Distribution;

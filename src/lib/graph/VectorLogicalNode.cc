@@ -1,5 +1,6 @@
 #include <config.h>
 #include <graph/VectorLogicalNode.h>
+#include <function/FuncError.h>
 #include <function/VectorFunction.h>
 #include <graph/GraphMarks.h>
 #include <graph/Graph.h>
@@ -14,7 +15,6 @@ using std::vector;
 using std::string;
 using std::set;
 using std::logic_error;
-using std::runtime_error;
 
 static unsigned int valueLength(VectorFunction const *func, 
 				vector<Node const *> const &parents)
@@ -33,12 +33,10 @@ static unsigned int valueLength(VectorFunction const *func,
 	throw logic_error("NULL function in VectorLogicalNode constructor");
     }
     if (!func->checkNPar(parents.size())) {
-	throw runtime_error(string("Incorrect number of parameters for ")
-			    + func->name());
+	throw FuncError(func, "Incorrect number of parameters");
     }
     if (!func->checkParameterLength(parameter_lengths)) {
-	throw runtime_error(string("Non-conforming parameters for function ")
-			    + func->name());
+	throw FuncError(func, "Non-conforming parameters");
     }
     return func->length(parameter_lengths);
 }
