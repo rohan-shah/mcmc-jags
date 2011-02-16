@@ -13,7 +13,7 @@
 class DGenGamma : public RScalarDist {
  public:
   DGenGamma();
-
+  std::string alias() const;
   double d(double x, std::vector<double const *> const &parameters, 
 	   bool give_log) const;
   double p(double q, std::vector<double const *> const &parameters, bool lower,
@@ -25,7 +25,6 @@ class DGenGamma : public RScalarDist {
    * Checks that r > 0, mu > 0, beta > 0
    */
   bool checkParameterValue(std::vector<double const *> const &parameters) const;
-
 };
 
 #endif /* DGEN_GAMMA_H_ */

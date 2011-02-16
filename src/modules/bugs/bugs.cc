@@ -109,6 +109,7 @@ BUGSModule::BUGSModule()
     Rinsert(new DExp);
     Rinsert(new DF);
     Rinsert(new DGamma);
+    Rinsert(new DGenGamma);
     Rinsert(new DLnorm);
     Rinsert(new DLogis);
     insert(new DMNorm);
