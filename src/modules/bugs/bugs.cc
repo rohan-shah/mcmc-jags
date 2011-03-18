@@ -3,6 +3,7 @@
 
 #include <distributions/DBern.h>
 #include <distributions/DBeta.h>
+#include <distributions/DBetaBin.h>
 #include <distributions/DBin.h>
 #include <distributions/DCat.h>
 #include <distributions/DChisqr.h>
@@ -101,6 +102,7 @@ BUGSModule::BUGSModule()
     //Load distributions
     insert(new DBern);
     Rinsert(new DBeta);
+    Rinsert(new DBetaBin);
     Rinsert(new DBin);
     insert(new DCat);
     Rinsert(new DChisqr);
