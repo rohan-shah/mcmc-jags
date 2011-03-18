@@ -33,7 +33,7 @@ static unsigned int sumLength(vector<StochasticNode *> const &nodes)
 GraphView::GraphView(vector<StochasticNode *> const &nodes, Graph const &graph,
 		     bool multilevel)
     : _length(sumLength(nodes)), _nodes(nodes), _stoch_children(0),
-      _determ_children(0)
+      _determ_children(0), _multilevel(false)
 {
     classifyChildren(nodes, graph, _stoch_children, _determ_children,
 		     multilevel);
@@ -41,7 +41,7 @@ GraphView::GraphView(vector<StochasticNode *> const &nodes, Graph const &graph,
 
 GraphView::GraphView(StochasticNode * node, Graph const &graph)
     : _length(node->length()), _nodes(vector<StochasticNode*>(1,node)), 
-      _stoch_children(0), _determ_children(0)
+      _stoch_children(0), _determ_children(0), _multilevel(false)
 {
     classifyChildren(_nodes, graph, _stoch_children, _determ_children, false);
 }
@@ -143,6 +143,11 @@ void GraphView::classifyChildren(vector<StochasticNode *> const &nodes,
 	for (p = nodes.begin(); p != nodes.end(); ++p) {
 	    sset.erase(*p);
 	}
+	/* 
+	   We also need ensure that we calculate the full log density
+	   for each sampled node.
+	*/
+	_multilevel = true;
     }
     else {
 	for (p = nodes.begin(); p != nodes.end(); ++p) {
@@ -165,10 +170,12 @@ void GraphView::classifyChildren(vector<StochasticNode *> const &nodes,
 
 double GraphView::logFullConditional(unsigned int chain) const
 {
+    PDFType pdf_prior = _multilevel ? PDF_FULL : PDF_PRIOR;
+
     double lprior = 0.0;
     vector<StochasticNode*>::const_iterator p = _nodes.begin();
     for (; p != _nodes.end(); ++p) {
-	lprior += (*p)->logDensity(chain, PDF_PRIOR);
+	lprior += (*p)->logDensity(chain, pdf_prior);
     }
   
     double llike = 0.0;
@@ -188,7 +195,7 @@ double GraphView::logFullConditional(unsigned int chain) const
 
 	//Check prior
 	for (p = _nodes.begin(); p != _nodes.end(); ++p) {
-	    if (jags_isnan((*p)->logDensity(chain, PDF_PRIOR))) {
+	    if (jags_isnan((*p)->logDensity(chain, pdf_prior))) {
 		throw NodeError(*p, "Failure to calculate log density");
 	    }
 	}
@@ -230,18 +237,21 @@ double GraphView::logFullConditional(unsigned int chain) const
 
 double GraphView::logPrior(unsigned int chain) const
 {
-    double lprior = 0.0;
+    //In a multi-level GraphView we need to calculate the full log
+    //density of each sampled node
+    PDFType pdf_prior = _multilevel ? PDF_FULL : PDF_PRIOR;
 
+    double lprior = 0.0;
     vector<StochasticNode*>::const_iterator p = _nodes.begin();
     for (; p != _nodes.end(); ++p) {
-	lprior += (*p)->logDensity(chain, PDF_PRIOR);
+	lprior += (*p)->logDensity(chain, pdf_prior);
     }
   
     if(jags_isnan(lprior)) {
 	//Try to find where the calculation went wrong
 	for (p = _nodes.begin(); p != _nodes.end(); ++p) {
-	    if (jags_isnan((*p)->logDensity(chain, PDF_PRIOR))) {
-		throw NodeError(*p, "Failure to calculate log density");
+	    if (jags_isnan((*p)->logDensity(chain, pdf_prior))) {
+		throw NodeError(*p, "Failure to calculate log prior density");
 	    }
 	}
 	throw logic_error("Failure in GraphView::logLikelihood");
@@ -263,7 +273,7 @@ double GraphView::logLikelihood(unsigned int chain) const
 	//Try to find where the calculation went wrong
 	for (q = _stoch_children.begin(); q != _stoch_children.end(); ++q) {
 	    if (jags_isnan((*q)->logDensity(chain, PDF_LIKELIHOOD))) {
-		throw NodeError(*q, "Failure to calculate log density");
+		throw NodeError(*q, "Failure to calculate log likelihood");
 	    }
 	}
 

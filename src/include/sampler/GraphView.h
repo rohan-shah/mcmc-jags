@@ -42,11 +42,12 @@ class GraphView {
   std::vector<StochasticNode *> _nodes;
   std::vector<StochasticNode const *> _stoch_children;
   std::vector<DeterministicNode*> _determ_children;
+  bool _multilevel;
   void classifyChildren(std::vector<StochasticNode *> const &nodes,
 			Graph const &graph,
 			std::vector<StochasticNode const*> &stoch_nodes,
 			std::vector<DeterministicNode*> &dtrm_nodes, 
-			bool multilevel);
+			bool allow_multilevel);
 public:
   /**
    * Constructs a GraphView for the given vector of nodes.  
@@ -57,7 +58,7 @@ public:
    *        an error if this Graph does not contain all of the Nodes
    *        to be sampled.
    *
-   * @param multilevel Indicates whether the GraphView may be
+   * @param allow_multilevel Indicates whether the GraphView may be
    *        multilevel, i.e.  some sampled nodes are stochastic
    *        children of other sampled nodes.  Many update methods do
    *        not work with multi-level models so this parameter is false
@@ -65,7 +66,7 @@ public:
    *        view when the multilevel is false, a logic_error is thrown.
    */
   GraphView(std::vector<StochasticNode *> const &nodes, Graph const &graph,
-	    bool multilevel=false);
+	    bool allow_multilevel=false);
   /**
    * Constructs a GraphView for a single node
    */
