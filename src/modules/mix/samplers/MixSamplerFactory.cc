@@ -84,7 +84,7 @@ namespace mix {
 	    delete gvec[i];
 	}
 	if (NormMix::canSample(sample_nodes)) {
-	    GraphView *gv = new GraphView(sample_nodes, graph);
+	    GraphView *gv = new GraphView(sample_nodes, graph, true);
 	    unsigned int nchain = sample_nodes[0]->nchain();
 	    vector<SampleMethod*> methods(nchain,0);	    
 	    for (unsigned int ch = 0; ch < nchain; ++ch) {
