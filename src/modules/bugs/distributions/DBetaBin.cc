@@ -20,6 +20,12 @@ static double dbb(double x, double a, double b, double n)
     return choose(a+x-1, x) * choose(b+n-x-1, n-x) / choose(a+b+n-1, n);
 }
 
+static double ldbb(double x, double a, double b, double n)
+{
+    //Log probability density function
+    return lchoose(a+x-1, x) + lchoose(b+n-x-1, n-x) - lchoose(a+b+n-1, n);
+}
+
 DBetaBin::DBetaBin()
     : RScalarDist("dbetabin", 3, DIST_SPECIAL, true)
 {}
@@ -32,7 +38,7 @@ string DBetaBin::alias() const
 bool 
 DBetaBin::checkParameterDiscrete (vector<bool> const &mask) const
 {
-    return mask[1] == true;
+    return mask[2] == true;
 }
 
 bool DBetaBin::checkParameterValue (vector<double const *> const &par) const
@@ -43,8 +49,10 @@ bool DBetaBin::checkParameterValue (vector<double const *> const &par) const
 double DBetaBin::d(double x, vector<double const *> const &par, 
 		   bool give_log) const
 {
-    double y = dbb(x, A(par), B(par), SIZE(par));
-    return give_log ? log(y) : y;
+    if (give_log)
+	return ldbb(x, A(par), B(par), SIZE(par));
+    else
+	return dbb(x, A(par), B(par), SIZE(par));
 }
 
 static double pbb(double x, double a, double b, double n)
