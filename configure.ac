@@ -100,6 +100,7 @@ AC_CONFIG_FILES([
   src/lib/graph/Makefile
   src/lib/sampler/Makefile
   src/lib/model/Makefile
+  src/lib/module/Makefile
   src/lib/compiler/Makefile
   src/lib/rng/Makefile
   src/jrmath/Makefile	
@@ -111,6 +112,7 @@ AC_CONFIG_FILES([
   src/include/graph/Makefile
   src/include/sampler/Makefile
   src/include/model/Makefile
+  src/include/module/Makefile
   src/include/compiler/Makefile
   src/include/rng/Makefile
   src/modules/Makefile

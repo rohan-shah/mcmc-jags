@@ -22,4 +22,4 @@ libjags_la_LDFLAGS += -no-undefined
 endif
 
 SUBDIRS = util sarray distribution function sampler graph model	\
-	compiler rng 
+	compiler rng module
