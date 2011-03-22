@@ -11,7 +11,8 @@ namespace dic {
 
     double CalKLExact::divergence(unsigned int i, unsigned int j) const
     {
-	return _kl->divergence(_snode->parameters(i), _snode->parameters(j));
+	return _kl->divergence(_snode->parameters(i), _snode->parameters(j)) +
+	    _kl->divergence(_snode->parameters(j), _snode->parameters(i));
     }
 
 }
