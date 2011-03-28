@@ -1314,7 +1314,7 @@ Double exponential & ddexp     & pdexp     & qdexp \\
 Exponential        & dexp      & pexp      & qexp \\
 F                  & df        & pf        & qf \\
 Gamma              & dgamma    & pgamma    & qgamma \\
-Generalized gamma  & dgengamma & pgengamma & qgengamma \\
+Generalized gamma  & dgen.gamma & pgen.gamma & qgen.gamma \\
 Hypergeometric     & dhyper    & phyper    & qhyper \\
 Log-normal         & dlnorm    & plnorm    & qlnorm \\
 Negative binomial  & dnegbin   & pnegbin   & qnegbin \\
@@ -1491,7 +1491,9 @@ their distribution.
       & $\mu > 0$, $r > 0$ \\
       Generalized & \verb+dgen.gamma(r,mu,beta)+ &  
       \multirow{2}{*}{
-        $\beta \mu^{\beta r} x^{\beta r - 1}  \exp\{-(\mu x)^{\beta}\}$
+        $\frac
+        {\textstyle \beta \mu^{\beta r} x^{\beta r - 1}  \exp\{-(\mu x)^{\beta}\}}
+        {\textstyle \Gamma(r)}$
       } & $0$ & \\
       gamma       & $\mu >0$, $\beta > 0$, $r > 0$ \\
       Log-normal  & \verb+dlnorm(mu,tau)+ & 
