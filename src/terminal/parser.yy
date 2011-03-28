@@ -267,6 +267,10 @@ parameters_in: parameters r_assignment_list ENDDATA
        RNG state in addition to the parameter values then all
        chains will be identical!
     */
+    if (console->model() == 0) {
+	std::cout << "WARNING: Initial values ignored. "
+		  <<  "(You must compile the model first)" << std::endl;
+    }
     for (unsigned int i = 1; i <= console->nchain(); ++i) {
 	/* We have to set the name first, because the state or seed
 	   might be embedded in the parameter_table */
