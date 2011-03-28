@@ -1316,6 +1316,7 @@ F                  & df        & pf        & qf \\
 Gamma              & dgamma    & pgamma    & qgamma \\
 Generalized gamma  & dgen.gamma & pgen.gamma & qgen.gamma \\
 Hypergeometric     & dhyper    & phyper    & qhyper \\
+Logistic           & dlogis    & plogis    & qlogis \\
 Log-normal         & dlnorm    & plnorm    & qlnorm \\
 Negative binomial  & dnegbin   & pnegbin   & qnegbin \\
 Normal             & dnorm     & pnorm     & qnorm \\
@@ -1496,6 +1497,12 @@ their distribution.
         {\textstyle \Gamma(r)}$
       } & $0$ & \\
       gamma       & $\mu >0$, $\beta > 0$, $r > 0$ \\
+      Logistic    & \verb+dlogis(mu, tau)+ &
+      \multirow{2}{*}{
+        $\frac{\textstyle \tau \exp\{(x - \mu) \tau\}}
+        {\textstyle  \left[1 + \exp\{(x - \mu) \tau\}\right]^2}$
+      } &  & \\
+      ~ & $\tau > 0$ \\
       Log-normal  & \verb+dlnorm(mu,tau)+ & 
       \multirow{2}{*}{
         $\tau^{\frac{1}{2}} x^{-1} \exp \left\{-\tau (\log(x) - \mu)^2/2 \right\}$} & 0 \\
