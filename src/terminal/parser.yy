@@ -82,7 +82,7 @@
     static void listFactories(FactoryType type);
     static void setFactory(std::string const &name, FactoryType type,
                            std::string const &status);
-
+    static bool Jtry(bool ok);
     %}
 
 %defines
@@ -211,16 +211,17 @@ model: MODEL IN file_name {
     std::FILE *file = std::fopen(ExpandFileName(($3)->c_str()).c_str(), "r");
     if (!file) {
 	std::cerr << "Failed to open file " << *($3) << std::endl;
+	if (!interactive) exit(1);
     }
     else {
-	console->checkModel(file);
+	Jtry(console->checkModel(file));
 	std::fclose(file);
     }
     delete $3;
-}
+ }
 | MODEL CLEAR {
     console->clearModel();
-}
+ }
 ;
 
 data_in: data r_assignment_list ENDDATA {
@@ -231,7 +232,10 @@ data_in: data r_assignment_list ENDDATA {
     }
     delete_pvec($2);
  }
-| data {}    // Failed to open the data file 
+| data {
+    // Failed to open the data file 
+    if (!interactive) exit(1);
+  }    
 ;
 
 data_to: DATA TO file_name {
@@ -246,14 +250,15 @@ data: DATA IN file_name {
     }
     else {
 	std::cerr << "Unable to open file " << *$3 << std::endl << std::flush;
+	if (!interactive) exit(1);
     }
     delete $3;
  }
 ;
 
 data_clear: DATA CLEAR {
-  std::cout << "Clearing data table " << std::endl;
-  _data_table.clear();
+    std::cout << "Clearing data table " << std::endl;
+    _data_table.clear();
 }
 ;
 
@@ -268,16 +273,17 @@ parameters_in: parameters r_assignment_list ENDDATA
        chains will be identical!
     */
     if (console->model() == 0) {
-	std::cout << "WARNING: Initial values ignored. "
+	std::cout << "ERROR: Initial values ignored. "
 		  <<  "(You must compile the model first)" << std::endl;
+	if (!interactive) exit(1);
     }
     for (unsigned int i = 1; i <= console->nchain(); ++i) {
 	/* We have to set the name first, because the state or seed
 	   might be embedded in the parameter_table */
 	if (rngname.size() != 0) {
-	    console->setRNGname(rngname, i);
+	    Jtry(console->setRNGname(rngname, i));
 	}
-	console->setParameters(parameter_table, i);
+	Jtry(console->setParameters(parameter_table, i));
     }
 }
 | parameters r_assignment_list ENDDATA ',' CHAIN '(' INT ')' 
@@ -289,9 +295,9 @@ parameters_in: parameters r_assignment_list ENDDATA
     /* We have to set the name first, because the state or seed
        might be embedded in the parameter_table */
     if (rngname.size() != 0) {
-        console->setRNGname(rngname, $7);
+        Jtry(console->setRNGname(rngname, $7));
     }
-    console->setParameters(parameter_table, $7);
+    Jtry(console->setParameters(parameter_table, $7));
 }
 | parameters {} // Failed to open the file
 ;
@@ -328,19 +334,19 @@ parameters: PARAMETERS IN file_name {
 ;
 
 compile: COMPILE {
-    console->compile(_data_table, 1, true);
+    Jtry(console->compile(_data_table, 1, true));
     print_unused_variables();
 }
 | COMPILE ',' NCHAINS '(' INT ')' {
-    console->compile(_data_table, $5, true);
+    Jtry(console->compile(_data_table, $5, true));
     print_unused_variables();
 }
 ;
 
 initialize: INITIALIZE {
-  if (!console->initialize()) {
-    errordump();
-  }
+    if (!console->initialize()) {
+	errordump();
+    }
 }
 ;
 
@@ -1016,16 +1022,18 @@ void setName(ParseTree *p, std::string *name)
 
 static void errordump()
 {
-  if (console->model()) {
-    std::ostringstream fname;
-    for (unsigned int i = 1; i <= console->nchain(); ++i) {
-       fname << "jags.dump" << i << ".R";
-       std::cout << "Dumping chain " << i << " at iteration " 
-                 << console->iter() << " to file " << fname.str() << std::endl;
-       doDump(fname.str(), DUMP_ALL, i);
-       fname.str("");
+    if (console->model()) {
+	std::ostringstream fname;
+	for (unsigned int i = 1; i <= console->nchain(); ++i) {
+	    fname << "jags.dump" << i << ".R";
+	    std::cout << "Dumping chain " << i << " at iteration " 
+		      << console->iter() << " to file " << fname.str() 
+		      << std::endl;
+	    doDump(fname.str(), DUMP_ALL, i);
+	    fname.str("");
+	}
     }
-  }
+    if (!interactive) exit(1);
 }
 
 static void updatestar(long niter, long refresh, int width)
@@ -1033,13 +1041,13 @@ static void updatestar(long niter, long refresh, int width)
     bool adapt = console->isAdapting();
 	
     if (refresh == 0) {
-	console->update(niter/2);
+	Jtry(console->update(niter/2));
 	bool status = true;
 	if (adapt && !console->adaptOff(status)) {
 	    errordump();
 	    return;
 	}
-	console->update(niter - niter/2);
+	Jtry(console->update(niter - niter/2));
 	if (!status) {
 	    std::cerr << "WARNING: Adaptation incomplete\n";
 	}
@@ -1415,3 +1423,10 @@ void setFactory(std::string const &name, FactoryType type,
     }
 }
 	    
+bool Jtry(bool ok)
+{
+    if (!ok && !interactive) 
+	exit(1);
+    else
+	return ok;
+}
