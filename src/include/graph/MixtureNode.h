@@ -30,7 +30,7 @@ typedef std::map<std::vector<int> , Node const *>  MixMap;
  * x[1], ... x[M].
  */
 class MixtureNode : public DeterministicNode {
-    MixMap _map;
+    MixMap const &_map;
     unsigned int _Nindex;
     bool _discrete;
 public:

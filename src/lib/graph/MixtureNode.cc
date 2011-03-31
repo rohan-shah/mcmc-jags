@@ -15,6 +15,67 @@ using std::invalid_argument;
 using std::logic_error;
 using std::set;
 using std::string;
+using std::pair;
+
+static map<MixMap, int> &mixMapMap()
+{
+    /* 
+       Repository of MixMaps that are shared between MixtureNode
+       objects.  We use reference counting to keep track of whether a
+       MixMap is in use.
+    */
+    static map<MixMap, int> _mixmapmap;
+    return _mixmapmap;
+}
+
+static MixMap const &insertMixMap(MixMap const &m)
+{
+    /*
+      Inserts a MixMap into the shared repository if it is unique, or
+      increments its reference count if it is already contained in the
+      repository.
+      
+      The return value is a reference to a copy of the mixmap in the
+      repository, which will persist as long as we need it.
+
+      N.B. This must be called only by the MixtureNode constructor!
+    */
+
+    map<MixMap, int> &mmap = mixMapMap();
+    map<MixMap, int>::iterator p = mmap.find(m);
+    if (p == mmap.end()) {
+	mmap.insert(pair<MixMap,int>(m, 1));
+	p = mmap.find(m);
+    }
+    else {
+	p->second++;
+    }
+    return p->first;
+}
+
+static void removeMixMap(MixMap const &m)
+{
+    /*
+      Decrements the reference count of a MixMap in the shared
+      repository.  When the reference count reaches zero, the MixMap
+      is removed.
+
+      N.B. This must be called only by the MixtureNode destructor!
+    */
+    
+    map<MixMap, int> &mmap = mixMapMap();
+    map<MixMap, int>::iterator p = mmap.find(m);
+    if (p == mmap.end()) {
+	throw logic_error("Failed to find MixMap in MixtureNode");
+    }
+    else {
+	p->second--;
+    }
+
+    if (p->second == 0) {
+	mmap.erase(p);
+    }
+}
 
 /*
   Calculates the dimensions of a mixture node given its possible parent
@@ -62,7 +123,7 @@ mkParents(vector<Node const *> const &index,
 MixtureNode::MixtureNode (vector<Node const *> const &index,
 			  map<vector<int>, Node const *> const &mixmap)
     : DeterministicNode(mkDim(mixmap), mkParents(index, mixmap)),
-      _map(mixmap), _Nindex(index.size()), _discrete(true)
+      _map(insertMixMap(mixmap)), _Nindex(index.size()), _discrete(true)
 {
     // Check validity of index argument
 
@@ -103,6 +164,7 @@ MixtureNode::MixtureNode (vector<Node const *> const &index,
 
 MixtureNode::~MixtureNode()
 {
+    removeMixMap(_map);
 }
 
 /* Do not delete commented sections: they are useful for debugging
