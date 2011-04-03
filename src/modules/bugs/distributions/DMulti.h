@@ -46,6 +46,9 @@ public:
   bool isSupportFixed(std::vector<bool> const &fixmask) const;
   unsigned int df(std::vector<unsigned int> const &lengths) const;
   bool isDiscreteValued(std::vector<bool> const &mask) const;
+  double KL(std::vector<double const *> const &par1,
+	    std::vector<double const *> const &par2,
+	    std::vector<unsigned int> const &lengths) const;
 };
 
 #endif /* DMULTI_H_ */

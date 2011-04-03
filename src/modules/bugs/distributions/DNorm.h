@@ -33,6 +33,8 @@ class DNorm : public RScalarDist {
   double randomSample(std::vector<double const *> const &par,
 		      double const *lower, double const *upper,
 		      RNG *rng) const;
+  double KL(std::vector<double const *> const &par0,
+	    std::vector<double const *> const &par1) const;
 };
 
 #endif /* DNORM_H_ */

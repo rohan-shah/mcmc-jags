@@ -40,6 +40,9 @@ public:
     unsigned int df(std::vector<unsigned int> const &lengths) const;
     bool isDiscreteValued(std::vector<bool> const &mask) const;
     unsigned int length(std::vector<unsigned int> const &params) const;
+    double KL(std::vector<double const *> const &par1,
+	      std::vector<double const *> const &par2,
+	      std::vector<unsigned int> const &lengths) const;
 };
 
 #endif /* DINTERVAL_H_ */

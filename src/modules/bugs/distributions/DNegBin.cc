@@ -56,3 +56,14 @@ double DNegBin::r(vector<double const *> const &par, RNG *rng) const
     return rnbinom(SIZE(par), PROB(par), rng);
 }
 
+double DNegBin::KL(vector<double const *> const &par1,
+		   vector<double const *> const &par2) const
+{
+    double p1 = PROB(par1);
+    double r1 = SIZE(par1);
+    double p2 = PROB(par2);
+    double r2 = SIZE(par2);
+
+    return r1 * log(p1) - r2 * log(p2) + 
+	(1 - p1) * r1 * (log(1 - p1) - log(1 - p2)) / p1;
+}

@@ -53,9 +53,8 @@ double DMulti::logDensity(double const *x, unsigned int length, PDFType type,
 			  vector<unsigned int> const &len,
 			  double const *lower, double const *upper) const
 {
-    //FIXME: We don't actually check whether sum(x) == SIZE(par)
-
     double loglik = 0.0;
+    double S = 0;
     for (unsigned int i = 0; i < length; i++) {
 	if (x[i] != 0) {
 	    if (PROB(par)[i] == 0) {
@@ -64,8 +63,11 @@ double DMulti::logDensity(double const *x, unsigned int length, PDFType type,
 	    else {
 		loglik += x[i] * log(PROB(par)[i]);
 	    }
+	    S += x[i];
 	}
     }
+    if (S != SIZE(par))
+	return JAGS_NEGINF;
 
     if (type != PDF_PRIOR) {
 	//Normalizing constant
@@ -174,3 +176,34 @@ unsigned int DMulti::df(vector<unsigned int> const &len) const
 {
     return len[0] - 1;
 } 
+
+double DMulti::KL(vector<double const *> const &par1,
+		  vector<double const *> const &par2,
+		  vector<unsigned int> const &lengths) const
+{
+    if (SIZE(par1) != SIZE(par2))
+	return JAGS_POSINF;
+
+    unsigned int ncat = lengths[0];
+    double y = 0, S1 = 0, S2 = 0;
+    for (unsigned int i = 0; i < ncat; ++i) {
+	double p1 = PROB(par1)[i];
+	double p2 = PROB(par2)[i];
+	
+	if (p1 == 0) {
+	    S2 += p2;
+	}
+	else if (p2 == 0) {
+	    return JAGS_POSINF;
+	}
+	else {
+	    y += p1 * (log(p1) - log(p2));
+	    S1 += p1;
+	    S2 += p2;
+	}
+	y /= S1;
+	y += log(S2) - log(S1);
+	y *= SIZE(par1);
+    }
+    return y;
+}

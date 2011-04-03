@@ -149,3 +149,35 @@ unsigned int DDirch::df(vector<unsigned int> const &len) const
 {
     return LENGTH(len) - 1;
 }
+
+double DDirch::KL(vector<double const *> const &par1,
+		  vector<double const *> const &par2,
+		  vector<unsigned int> const &len) const
+{
+    //Generalization of the Kullback-Leibler divergence for the beta
+    //distribution. We also have to take care of structural zeros as
+    //in DCat
+
+    unsigned int N = LENGTH(len);
+
+    double S1 = 0, S2 = 0, y = 0;
+    for (unsigned int i = 0; i < N; ++i) {
+	double a1 = ALPHA(par1)[i];
+	double a2 = ALPHA(par2)[i];
+
+	if (a1 == 0) {
+	    S2 += a2;
+	}
+	else if (a2 == 0) {
+	    return JAGS_POSINF;
+	}
+	else {
+	    y += (a1 - a2) * digamma(a1) + lgamma(a2) - lgamma(a1);
+	    S1 += a1;
+	    S2 += a2;
+	}
+    }
+    y -= (S1 - S2) * digamma(S1) + lgamma(S2) - lgamma(S1);
+
+    return y;
+}

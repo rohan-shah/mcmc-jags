@@ -12,12 +12,14 @@
 #include <util/nainf.h>
 
 #include <algorithm>
+#include <vector>
 
 #include <JRmath.h>
 
 using std::vector;
 using std::max;
 using std::min;
+using std::vector;
 
 DHyper::DHyper()
     : RScalarDist("dhyper", 4, DIST_SPECIAL, true)
@@ -93,16 +95,12 @@ double rfunction(int n1, int n2, int m1, double psi, int i)
     return psi * (n1 - i + 1) * (m1 - i + 1)/(i * (n2 - m1 + i));
 }  
 
-static void density(double *p, int N,
-		    int n1, int n2, int m1, double psi)
+static vector<double> density(int n1, int n2, int m1, double psi)
 {
     int ll = max((int) 0, m1 - n2);
     int uu = min(n1, m1);
-    /*
-      if (N != uu - ll + 1) {
-      throw logic_error("Length mismatch calculating hypergeometric density");
-      }
-    */
+    int N = uu - ll + 1;
+    vector<double> p(N);
 
     int mode = modeCompute(n1, n2, m1, psi);
 
@@ -136,6 +134,7 @@ static void density(double *p, int N,
     for (int i = 0; i < N; ++i) {
 	p[i] /= sump;
     }
+    return p;
 }
 
 static int 
@@ -212,11 +211,7 @@ double DHyper::d(double z, vector<double const *> const &parameters,
 
     double den = 0;
     if (x >= ll && x <= uu) {
-	int N = uu - ll + 1;
-	double *pi = new double[N];
-	density(pi, N, n1, n2, m1, psi);
-	den = pi[x - ll];
-	delete [] pi;
+	den = density(n1, n2, m1, psi)[x - ll];
     }
 
     if (give_log) {
@@ -243,13 +238,10 @@ double DHyper::p(double x, vector<double const *> const &parameters, bool lower,
 	    sumpi = 1;
 	}
 	else {
-	    int N = uu - ll + 1;
-	    double *pi = new double[N];
-	    density(pi, N, n1, n2, m1, psi);
+	    vector<double> pi = density(n1, n2, m1, psi);
 	    for (int i = ll; i <= x; ++i) {
 		sumpi += pi[i - ll];
 	    }
-	    delete [] pi;
 	}
     }
 
@@ -274,9 +266,7 @@ double DHyper::q(double p, vector<double const *> const &parameters, bool lower,
     int ll = max((int) 0, m1 - n2);
     int uu = min(n1, m1);
   
-    int N = uu - ll + 1;
-    double *pi = new double[N];
-    density(pi, N, n1, n2, m1, psi);
+    vector<double> pi = density(n1, n2, m1, psi);
 
     if (log_p)
 	p = exp(p);
@@ -287,11 +277,9 @@ double DHyper::q(double p, vector<double const *> const &parameters, bool lower,
     for (int i = ll; i < uu; ++i) {
 	sumpi += pi[i - ll];
 	if (sumpi >= p) {
-	    delete [] pi;
 	    return i;
 	}
     }
-    delete [] pi;
     return uu;
 }
 
@@ -334,4 +322,36 @@ double DHyper::u(vector<double const *> const &parameters) const
 bool DHyper::isSupportFixed(vector<bool> const &fixmask) const
 {
     return fixmask[0] && fixmask[1] && fixmask[2]; //Margins fixed
+}
+
+double DHyper::KL(vector<double const *> const &para,
+		  vector<double const *> const &parb) const
+{
+    int n1a,n2a,m1a;
+    double psia;
+    getParameters(n1a, n2a, m1a, psia, para);
+
+    int lla = max((int) 0, m1a - n2a);
+    int uua = min(n1a, m1a);
+
+    int n1b,n2b,m1b;
+    double psib;
+    getParameters(n1b, n2b, m1b, psib, para);
+
+    int llb = max((int) 0, m1b - n2b);
+    int uub = min(n1b, m1b);
+
+    if (lla < llb || uua > uub)
+	return JAGS_POSINF;
+
+    vector<double> da = density(n1a, n2a, m1a, psia);
+    vector<double> db = density(n1b, n2b, m1b, psib);
+
+    double y = 0;
+    for (int i = lla; i <= uua; ++i) {
+	double proba = da[i - lla];
+	double probb = db[i - llb];
+	y += proba * (log(proba) - log(probb));
+    }
+    return y;
 }

@@ -59,3 +59,14 @@ bool DUnif::isSupportFixed(vector<bool> const &fixmask) const
 {
     return fixmask[0] && fixmask[1]; //Lower and upper bounds fixed
 }
+
+double DUnif::KL(vector<double const *> const &par1,
+		 vector<double const *> const &par2) const
+{
+    if (LOWER(par2) < LOWER(par1))
+	return JAGS_POSINF;
+    if (UPPER(par2) > UPPER(par1))
+	return JAGS_POSINF;
+
+    return log(UPPER(par2) - LOWER(par2)) - log(UPPER(par1) - LOWER(par1));
+}

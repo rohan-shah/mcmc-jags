@@ -35,3 +35,4 @@ double DF::r(vector<double const *> const &par, RNG *rng) const
 {
     return rF(*par[0], *par[1], rng);
 }
+

@@ -25,7 +25,8 @@ class DLnorm : public RScalarDist {
    * Checks that tau > 0
    */
   bool checkParameterValue(std::vector<double const *> const &parameters) const;
-
+  double KL(std::vector<double const *> const &par0,
+	    std::vector<double const *> const &par1) const;
 };
 
 #endif /* DLNORM_H_ */

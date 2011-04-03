@@ -39,3 +39,17 @@ double DBeta::r(vector<double const *> const &par, RNG *rng) const
 {
     return rbeta(*par[0], *par[1], rng);
 }
+
+double DBeta::KL(vector<double const *> const &par1, 
+		 vector<double const *> const &par2) const
+{
+    double a1 = *par1[0];
+    double b1 = *par1[1];
+    double a2 = *par2[0];
+    double b2 = *par2[1];
+
+    return lbeta(a2, b2) - lbeta(a1, b1) 
+	- (a2 - a1) * digamma(a1)
+	- (b2 - b1) * digamma(b1)
+	+ (a2 + b2 - a1 - b1) * digamma(a1 + b1);
+}

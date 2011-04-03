@@ -39,6 +39,9 @@ public:
     bool isDiscreteValued(std::vector<bool> const &mask) const;
     bool checkParameterLength(std::vector<unsigned int> const &lengths) const;
     unsigned int length(std::vector<unsigned int> const &lengths) const;
+    double KL(std::vector<double const *> const &par1,
+	      std::vector<double const *> const &par2,
+	      std::vector<unsigned int> const &lengths) const;
 };
 
 #endif /* DCAT_H_ */

@@ -5,6 +5,8 @@
 
 #include <JRmath.h>
 
+#include <util/nainf.h>
+
 using std::vector;
 using std::max;
 using std::min;
@@ -74,3 +76,29 @@ bool DBin::isSupportFixed(vector<bool> const &fixmask) const
 {
    return fixmask[1]; //SIZE is fixed;
 } 
+
+double DBin::KL(vector<double const *> const &par0,
+		vector<double const *> const &par1) const
+{
+    double N0 = SIZE(par0);
+    double N1 = SIZE(par1);
+    double p0 = PROB(par0);
+    double p1 = PROB(par1);
+
+    //FIXME: If N0 < N1 then we can still calculate finite KL
+    if (N0 != N1) {
+	return JAGS_POSINF;
+    }
+    else if (p0 == 0) {
+	return - N0 * log(1 - p1);
+    }
+    else if (p0 == 1) {
+	return - N0 * log(p1);
+    }
+    else {
+	return (N0 * p0 * (log(p0) - log(p1)) +
+		N0 * (1 - p0) * (log(1 - p0) - log(1 - p1)));
+    }
+}
+
+//FIXME Namespace???
