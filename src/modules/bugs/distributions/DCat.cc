@@ -3,7 +3,7 @@
 #include <rng/RNG.h>
 #include <util/dim.h>
 #include <util/nainf.h>
-//#include <module/ModuleError.h>
+#include <module/ModuleError.h>
 
 #include <cfloat>
 #include <algorithm>
@@ -94,7 +94,7 @@ void DCat::support(double *lower, double *upper, unsigned int length,
 	           vector<unsigned int> const &lengths) const
 {
     if (length != 1)
-	//moduleError("Invalid length in DCat::support", true);
+	throwLogicError("Invalid length in DCat::support");
 
     *lower = 1;
     *upper = NCAT(lengths);

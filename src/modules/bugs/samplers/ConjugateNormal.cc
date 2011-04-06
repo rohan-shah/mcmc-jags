@@ -8,6 +8,7 @@
 #include <sampler/Linear.h>
 #include <sampler/GraphView.h>
 #include <rng/TruncatedNormal.h>
+#include <module/ModuleError.h>
 
 #include <set>
 #include <vector>
@@ -146,8 +147,7 @@ bool ConjugateNormal::update(unsigned int chain, RNG *rng) const
 	B = 0;
     }
     else {
-	return false; 
-	//throw logic_error("Invalid distribution in conjugate normal method");
+	throwLogicError("Invalid distribution in conjugate normal method");
     }
 
     if (_gv->deterministicChildren().empty()) {
@@ -254,8 +254,7 @@ bool ConjugateNormal::update(unsigned int chain, RNG *rng) const
 	}
 	break;
     default:
-	return false;
-	//throw logic_error("Invalid distribution in conjugate normal method");
+	throwLogicError("Invalid distribution in conjugate normal method");
     }
     _gv->setValue(&xnew, 1, chain);
 

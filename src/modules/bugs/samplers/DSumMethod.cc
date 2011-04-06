@@ -100,7 +100,22 @@ void DSumMethod::getLimits(double *lower, double *upper) const
 
 void DSumMethod::update(RNG *rng)
 {
-    updateDouble(rng);
+    if (!updateDouble(rng)) {
+	switch(state()) {
+	case SLICER_POSINF:
+	    throwNodeError(_gv->nodes().front(),
+			   "Slicer stuck at value with infinite density");
+	    break;
+	case SLICER_NEGINF:
+		throwNodeError(_gv->nodes().front(),
+			       "Current value is inconsistent with data");
+		break;
+	case SLICER_OK:
+	    break;
+	}
+	return false;
+    }
+    return true;
 }
 
 string DSumMethod::name() const

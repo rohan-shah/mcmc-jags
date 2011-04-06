@@ -7,6 +7,7 @@
 #include <graph/StochasticNode.h>
 #include <sampler/Linear.h>
 #include <sampler/GraphView.h>
+#include <module/ModuleError.h>
 
 #include "lapack.h"
 
@@ -295,11 +296,8 @@ bool ConjugateMNormal::update(unsigned int chain, RNG *rng) const
 	delete [] Acopy;
 	delete [] A;
 	delete [] b;
-	return false;
-	/*
-	throw NodeError(snode,
-			"unable to solve linear equations in conjugate multivariate normal method");
-	*/
+	throwNodeError(snode,
+		       "unable to solve linear equations in ConjugateMNormal");
     }
 
     //Shift origin back to original scale

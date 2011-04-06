@@ -14,7 +14,8 @@ libjags_la_LIBADD = model/libmodel.la		\
         distribution/libdist.la			\
 	graph/libgraph.la			\
 	compiler/libcompiler.la			\
-        rng/librng.la
+        rng/librng.la				\
+	module/libmodule.la
 
 libjags_la_LDFLAGS = -version-info 2:2:0
 if WINDOWS

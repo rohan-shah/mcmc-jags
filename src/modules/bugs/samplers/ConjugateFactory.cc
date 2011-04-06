@@ -14,6 +14,7 @@
 #include <graph/StochasticNode.h>
 #include <distribution/Distribution.h>
 #include <sampler/GraphView.h>
+#include <module/ModuleError.h>
 
 #include <string>
 
@@ -91,8 +92,7 @@ Sampler *ConjugateFactory::makeSampler(StochasticNode *snode,
 		method = new ConjugateNormal(gv);
 	    }
 	    else {
-		return 0;
-		//throw logic_error("Cannot find conjugate sampler for exponential");
+		throwLogicError("Cannot find conjugate sampler for exponential");
 	    }
 	    break;
 	case BETA:
@@ -118,13 +118,11 @@ Sampler *ConjugateFactory::makeSampler(StochasticNode *snode,
 		method = new ConjugateBeta(gv);
 	    }
 	    else {
-		return 0;
-		//throw logic_error("Cannot find conjugate sampler for uniform");
+		throwLogicError("Cannot find conjugate sampler for uniform");
 	    }
 	    break;
 	default:
-	    return 0;
-	    //throw invalid_argument("Unable to create conjugate sampler");
+	    throwLogicError("Unable to create conjugate sampler");
 	}
 /* 
    }

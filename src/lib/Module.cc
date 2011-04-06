@@ -18,6 +18,7 @@ Module::Module(string const &name)
 
 Module::~Module()
 {
+    //FIXME: Could be causing windows segfault??
     unload();
     list<Module*>::iterator p = find(modules().begin(), modules().end(), this);
     if (p != modules().end()) {

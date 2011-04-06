@@ -5,6 +5,7 @@
 #include <distribution/Distribution.h>
 #include <sarray/nainf.h>
 #include <rng/RNG.h>
+#include <module/ModuleError.h>
 
 #include <algorithm>
 #include <cmath>
@@ -155,7 +156,7 @@ void RESampler::transformValues(const double *v, unsigned int length,
      const
 {
     if (length != value_length() || nlength != length) {
-	throw logic_error("Length error in RESampler::transformValues");
+	throwLogicError("Length error in RESampler::transformValues");
     }
     
     bool bb = jags_finite(_lower); //bounded below

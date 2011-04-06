@@ -3,7 +3,7 @@
 #include <rng/RNG.h>
 #include <util/dim.h>
 #include <util/nainf.h>
-//#include <module/ModuleError.h>
+#include <module/ModuleError.h>
 
 #include "lapack.h"
 #include "matrix.h"
@@ -67,7 +67,7 @@ void DWish::randomSample(double *x, int length,
     */
 
     if (length != nrow*nrow) {
-	//moduleError("invalid length in DWish::randomSample", true);
+	throwLogicError("invalid length in DWish::randomSample");
     }
 
     /* 
@@ -77,13 +77,13 @@ void DWish::randomSample(double *x, int length,
     */
     double * C = new double[length];
     if(!inverse_spd(C, R, nrow)) {
-	//moduleError("Inverse failed in dwish");
+	throwRuntimeError("Inverse failed in DWish::randomSample");
     }
     /* Get Choleskly decomposition of C */
     int info = 0;
     F77_DPOTRF("U", &nrow, C, &nrow, &info);
     if (info != 0) {
-	//moduleError("Failed to get Cholesky decomposition of R in dwish");
+	throwRuntimeError("Failed to get Cholesky decomposition of R");
     }
     
     /* Set lower triangle of C to zero */
@@ -206,7 +206,7 @@ void DWish::typicalValue(double *x, unsigned int length,
        scale matrix */
 
     if (!inverse_spd(x, SCALE(par), NROW(dims))) {
-	//moduleError("Inverse failed in DWish::typicalValue", true);
+	throwDistError(this, "Inverse failed in typicalValue");
     }
     for (unsigned int i = 0; i < length; ++i) {
 	x[i] *= DF(par);

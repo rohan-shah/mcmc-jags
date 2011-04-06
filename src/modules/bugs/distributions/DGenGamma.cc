@@ -89,6 +89,6 @@ double DGenGamma::KL(vector<double const *> const &par1,
 
     return - log(phi) - beta2 * r2 * log(theta)
 	+ (r1 -  phi * r2) * digamma(r1)
-	+ pow(theta, beta2) * gamma(r1 + phi) / gamma(r1) - r1
-	+ lgamma(r2) - lgamma(r1);
+	+ pow(theta, beta2) * gammafn(r1 + phi) / gammafn(r1) - r1
+	+ lgammafn(r2) - lgammafn(r1);
 }

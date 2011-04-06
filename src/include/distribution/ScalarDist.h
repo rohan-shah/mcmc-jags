@@ -98,8 +98,11 @@ class ScalarDist : public Distribution
    * deterministic functions of the parameters, this must be overridden.
    */
   virtual unsigned int df() const;
-
-
+  /*
+  virtual double KL(std::vector<double const *> const &par1,
+		    std::vector<double const *> const &par2,
+		    bool symmetric, RNG *rng, unsigned int nrep);
+  */
 };
 
 #endif /* SCALAR_DIST_H_ */

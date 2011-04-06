@@ -2,34 +2,34 @@
 
 #include <module/ModuleError.h>
 #include <graph/NodeError.h>
-
-#include <stdexcept>
+#include <distribution/DistError.h>
+#include <function/FuncError.h>
 
 using std::string;
 using std::runtime_error;
+using std::logic_error;
 
-static string _error_message;
-static Node const *_error_node;
-
-void setModuleError(string const &message, Node const *node)
+void throwLogicError(string const &message)
 {
-    _error_message = message;
-    _error_node = node;
+    throw logic_error(message);
 }
 
-void throwModuleError()
+void throwRuntimeError(string const &message)
 {
-    if (!_error_message.empty()) {
+    throw runtime_error(message);
+}
 
-	string emsg = _error_message; _error_message.clear();
-	Node const *enode = _error_node; enode = 0;
-	
-	if (enode) {
-	    throw NodeError(enode, emsg);
-	}
-	else {
-	    throw runtime_error(emsg);
-	}
-    }
+void throwNodeError(Node const *node, string const &message)
+{
+    throw NodeError(node, message);
+}
 
+void throwDistError(Distribution const *dist, string const &message)
+{
+    throw DistError(dist, message);
+}
+
+void throwFuncError(Function const *func, string const &message)
+{
+    throw FuncError(func, message);
 }
