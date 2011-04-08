@@ -65,7 +65,7 @@ void DMT::randomSample(double *x, unsigned int length,
     DMNorm::randomsample(x, mu, T, true, length, rng);
     double C = rchisq(k, rng);
     for (unsigned int i = 0; i < length; ++i) {
-	x[i] /= C;
+	x[i] /= sqrt(C/k);
     }
 }
 
