@@ -1,4 +1,9 @@
 If you wish to distribute runtime libraries with the JAGS installer,
-put the DLLs (*.dll) and, if required, the import libraries (*.dll.a) in
-this subdirectory of the build tree. They will be detected and included
-in the installation.
+put the DLLs (*.dll) and, if required, the import libraries (*.dll.a)
+in this subdirectory of the build tree.  They will be detected and
+included in the installation.
+
+As of JAGS 3.0, both 32-bit and 64-bit versions of JAGS are included
+in the same installer.  32-bit DLLs should go in a sub-directory "i386"
+and 64-bit DLLs in "x64".
+

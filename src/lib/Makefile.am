@@ -16,7 +16,7 @@ libjags_la_LIBADD = model/libmodel.la		\
 	compiler/libcompiler.la			\
         rng/librng.la
 
-libjags_la_LDFLAGS = -version-info 2:2:0
+libjags_la_LDFLAGS = -version-info $(JAGS_MAJOR):$(JAGS_MINOR):0
 if WINDOWS
 libjags_la_LDFLAGS += -no-undefined
 endif
