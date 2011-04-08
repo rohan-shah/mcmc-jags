@@ -6,6 +6,7 @@
 #include <sampler/GraphView.h>
 #include <graph/NodeError.h>
 #include <graph/StochasticNode.h>
+#include <module/ModuleError.h>
 
 #include <vector>
 #include <cmath>
@@ -32,7 +33,7 @@ Censored::Censored(GraphView const *gv)
     for (unsigned int ch = 0; ch < _snode->nchain(); ++ch) {
 	int y = indicator(gv, ch);
 	if (y < 0 || y > nbreaks) {
-	    throw NodeError(_snode, "Bad interval-censored node");
+	    throwNodeError(_snode, "Bad interval-censored node");
 	}
     }
 }

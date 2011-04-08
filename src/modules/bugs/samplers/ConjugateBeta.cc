@@ -9,6 +9,7 @@
 #include <graph/MixtureNode.h>
 #include <sampler/GraphView.h>
 #include <sampler/Linear.h>
+#include <module/ModuleError.h>
 
 #include <set>
 #include <vector>
@@ -100,8 +101,7 @@ bool ConjugateBeta::update(unsigned int chain, RNG *rng) const
 	b = 1;
 	break;
     default:
-	return false;
-	//throw logic_error("invalid distribution in ConjugateBeta sampler");
+	throwLogicError("Invalid distribution in ConjugateBeta sampler");
     }
     unsigned int Nchild = stoch_children.size();
 
@@ -146,8 +146,7 @@ bool ConjugateBeta::update(unsigned int chain, RNG *rng) const
 		bplus = 1 - y;
 		break;
 	    default:
-		return false;
-		//throw logic_error("Invalid distribution in Conjugate Beta sampler");
+		throwLogicError("Invalid distribution in Conjugate Beta sampler");
 	    }
 	    a += aplus;
 	    b += bplus;

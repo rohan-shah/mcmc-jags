@@ -25,6 +25,8 @@ class DPois : public RScalarDist {
    * Checks that lambda > 0
    */
   bool checkParameterValue(std::vector<double const *> const &parameters) const;
+  double KL(std::vector<double const *> const &par1,
+	    std::vector<double const *> const &par2) const;
 };
 
 #endif /* DPOIS_H_ */

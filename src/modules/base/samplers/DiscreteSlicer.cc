@@ -3,6 +3,7 @@
 #include <graph/NodeError.h>
 #include <distribution/Distribution.h>
 #include <sampler/GraphView.h>
+#include <module/ModuleError.h>
 
 #include "DiscreteSlicer.h"
 
@@ -18,11 +19,9 @@ namespace base {
 				   double width, long ndoubles)
 	: Slicer(width, ndoubles), _gv(gv), _chain(chain), _x(0)
     {
-	/*
 	if (gv->nodes().size() != 1 || !canSample(gv->nodes()[0])) {
-	    throw logic_error("Invalid DiscreteSlicer");
+	    throwLogicError("Invalid DiscreteSlicer");
 	}
-	*/
 	
 	_x = _gv->nodes()[0]->value(chain)[0];
     }
@@ -56,7 +55,22 @@ namespace base {
     
     bool DiscreteSlicer::update(RNG *rng)
     {
-	return updateDouble(rng);
+	if (!updateDouble(rng)) {
+	    switch(state()) {
+	    case SLICER_POSINF:
+		throwNodeError(_gv->nodes().front(),
+			       "Slicer stuck at value with infinite density");
+		break;
+	    case SLICER_NEGINF:
+		throwNodeError(_gv->nodes().front(),
+			       "Current value is inconsistent with data");
+		break;
+	    case SLICER_OK:
+		break;
+	    }
+	    return false;
+	}
+	return true;
     }
 
     string DiscreteSlicer::name() const

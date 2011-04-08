@@ -119,3 +119,18 @@ unsigned int DInterval::length(vector<unsigned int> const &params) const
 {
     return 1;
 }
+
+double DInterval::KL(vector<double const *> const &par1,
+		     vector<double const *> const &par2,
+		     vector<unsigned int> const &lengths) const
+{
+    unsigned int y1 = value(par1, NCUT(lengths));
+    unsigned int y2 = value(par2, NCUT(lengths));
+    if (y1 == y2) {
+	return 0;
+    }
+    else {
+	return JAGS_POSINF;
+    }
+}
+

@@ -9,6 +9,7 @@
 #include <sarray/SArray.h>
 #include <sampler/Linear.h>
 #include <sampler/GraphView.h>
+#include <module/ModuleError.h>
 
 #include <set>
 #include <vector>
@@ -36,12 +37,10 @@ getScale(StochasticNode const *snode, ConjugateDist d, unsigned int chain)
 	return *snode->parents()[0]->value(chain);
 	break;
     default:
+	throwNodeError(snode, 
+		       "Can't get scale parameter: invalid distribution");
 	return 0; //-Wall
-	/*
-    default:
-	throw NodeError(snode, 
-			"Can't get scale parameter: invalid distribution");
-	*/
+	
     } 
 }
 
@@ -149,8 +148,7 @@ bool ConjugateGamma::update(unsigned int chain, RNG *rng) const
 	mu = 1/2;
 	break;
     default:
-	return false;
-	//throw logic_error("invalid distribution in ConjugateGamma method");
+	throwLogicError("invalid distribution in ConjugateGamma method");
     }
 
     // likelihood 
@@ -205,8 +203,7 @@ bool ConjugateGamma::update(unsigned int chain, RNG *rng) const
 		mu += coef_i * (log(Y) - m) * (log(Y) - m) / 2;
 		break;
 	    default:
-		return false;
-		//throw logic_error("Invalid distribution in Conjugate Gamma method");
+		throwLogicError("Invalid distribution in Conjugate Gamma method"); 
 	    }
 	}
     }

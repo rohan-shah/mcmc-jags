@@ -6,6 +6,7 @@
 #include <util/nainf.h>
 #include <graph/NodeError.h>
 #include <sampler/GraphView.h>
+#include <module/ModuleError.h>
 
 #include "FiniteMethod.h"
 
@@ -25,16 +26,12 @@ namespace base {
     FiniteMethod::FiniteMethod(GraphView const *gv, unsigned int chain)
 	: _gv(gv), _chain(chain)
     {
-	/*
 	if (gv->nodes().size() != 1)
-	    throw logic_error("Invalid FiniteMethod");
-	*/
+	    throwLogicError("Invalid FiniteMethod");
 	StochasticNode const *snode = gv->nodes().front();
-	/*
 	if (!canSample(snode)) {
-	    throw logic_error("Invalid FiniteMethod");
+	    throwLogicError("Invalid FiniteMethod");
 	}
-	*/
 
 	double lower = 0, upper = 0;
 	snode->support(&lower, &upper, 1, 0);
@@ -65,11 +62,7 @@ namespace base {
 	}
 	
 	if (!jags_finite(liksum)) {
-	    return false;
-	    /*
-	    throw NodeError(_gv->nodes()[0],
-			    "Cannot normalize density");
-	    */
+	    throwNodeError(_gv->nodes()[0], "Cannot normalize density");
 	}
 
 	/* Sample */

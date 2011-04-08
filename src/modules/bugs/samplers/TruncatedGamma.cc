@@ -10,6 +10,7 @@
 #include <sampler/Linear.h>
 #include <sampler/GraphView.h>
 #include <util/nainf.h>
+#include <module/ModuleError.h>
 
 #include <set>
 #include <vector>
@@ -43,8 +44,8 @@ static Node const * getParent(StochasticNode const *snode)
 	return snode->parents()[0];
 	break;
     default:
-        //throw logic_error("Invalid distribution in TruncatedGamma sampler");
-	return 0;
+        throwLogicError("Invalid distribution in TruncatedGamma sampler");
+	return 0; //-Wall
     } 
 }
 
@@ -72,10 +73,8 @@ static double calShape(GraphView const *gv, unsigned int chain)
     //Restore original value
     gv->setValue(&xold, 1, chain);
     
-    /*
     if (y1 <= 0 || y0 <= 0)
-	throw logic_error("Invalid scale function in TruncatedGamma");
-    */
+	throwLogicError("Invalid scale function in TruncatedGamma");
 
     return log(2.0)/(log(y1) - log(y0));
 }

@@ -50,3 +50,10 @@ double DExp::r(vector<double const *> const &par, RNG *rng) const
     return rexp(SCALE(par), rng);
 }
 
+
+double DExp::KL(vector<double const *> const &par1,
+		vector<double const *> const &par2) const
+{
+    double r = (*par2[0]) / (*par1[0]);
+    return (r - 1)  - log(r);
+}

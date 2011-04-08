@@ -18,6 +18,11 @@ static inline double SCALE(vector<double const *> const &par)
     return 1/(*par[1]);
 }
 
+static inline double RATE(vector<double const *> const &par)
+{
+    return *par[1];
+}
+
 DDexp::DDexp()
     : RScalarDist("ddexp", 2, DIST_UNBOUNDED)
 {}
@@ -85,4 +90,16 @@ double DDexp::r(vector<double const *> const &par, RNG *rng) const
     else
 	ans += rexp(SCALE(par), rng);
     return ans;
+}
+
+
+double DDexp::KL(vector<double const *> const &par1,
+		 vector<double const *> const &par2) const
+{
+    //FIXME Shouldn't fabs be in namespace std??
+
+    double r = RATE(par2) / RATE(par2); 
+    double delta = RATE(par1) * fabs(MU(par2) - MU(par1));
+    
+    return r * (delta + exp(-delta)) - 1 - log(r);
 }

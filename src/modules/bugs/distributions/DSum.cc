@@ -1,6 +1,7 @@
 #include <config.h>
 #include <util/logical.h>
 #include <util/nainf.h>
+#include <module/ModuleError.h>
 #include "DSum.h"
 
 #include <cfloat>
@@ -32,8 +33,7 @@ double DSum::logDensity(double const *x, unsigned int length, PDFType type,
 	    s -= par[j][i];
 	}
 	if (fabs(s) > tol) {
-	    return JAGS_NEGINF;
-	    //throw runtime_error("Inconsistent arguments for dsum");
+	    throwDistError(this, "Inconsistent arguments for logDensity");
 	}
     }
     return 0;

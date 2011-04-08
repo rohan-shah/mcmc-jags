@@ -31,7 +31,7 @@ DGenGamma::DGenGamma()
 
 string DGenGamma::alias() const
 {
-    return "gen.gamma";
+    return "gengamma";
 }
 
 bool DGenGamma::checkParameterValue (vector<double const *> const &par) const
@@ -75,4 +75,20 @@ double DGenGamma::r(vector<double const *> const &par, RNG *rng) const
 {
     double x = rgamma(SHAPE(par), 1.0, rng);
     return UNtransform(x, par);
+}
+
+double DGenGamma::KL(vector<double const *> const &par1,
+		     vector<double const *> const &par2) const
+{
+    // Collapses to gamma distribution with beta1 = beta2 = 1;
+
+    double beta1 = POW(par1), beta2 = POW(par2);
+    double theta = URATE(par2) / URATE(par1); 
+    double phi = beta2 / beta1;
+    double r1 = SHAPE(par1), r2 = SHAPE(par2);
+
+    return - log(phi) - beta2 * r2 * log(theta)
+	+ (r1 -  phi * r2) * digamma(r1)
+	+ pow(theta, beta2) * gammafn(r1 + phi) / gammafn(r1) - r1
+	+ lgammafn(r2) - lgammafn(r1);
 }

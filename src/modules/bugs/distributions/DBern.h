@@ -28,6 +28,8 @@ public:
     bool canBound() const;
     /** Bernoulli distribution is discrete valued */
     bool isDiscreteValued(std::vector<bool> const &mask) const;
+    double KL(std::vector<double const *> const &par1, 
+	      std::vector<double const *> const &par2) const;
 };
 
 #endif /* DBERN_H_ */

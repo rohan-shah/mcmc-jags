@@ -3,6 +3,7 @@
 #include <rng/RNG.h>
 #include <util/dim.h>
 #include <util/nainf.h>
+#include <module/ModuleError.h>
 
 #include <cfloat>
 #include <algorithm>
@@ -92,10 +93,8 @@ void DCat::support(double *lower, double *upper, unsigned int length,
 	           vector<double const *> const &par,
 	           vector<unsigned int> const &lengths) const
 {
-    /*
     if (length != 1)
-	throw logic_error("Invalid length in DCat::support");
-    */
+	throwLogicError("Invalid length in DCat::support");
 
     *lower = 1;
     *upper = NCAT(lengths);
@@ -122,4 +121,29 @@ bool DCat::checkParameterLength(vector<unsigned int> const &lengths) const
 unsigned int DCat::length(vector<unsigned int> const &lengths) const
 {
     return 1;
+}
+
+double DCat::KL(vector<double const *> const &par1,
+		vector<double const *> const &par2,
+		vector<unsigned int> const &lengths) const
+{
+    double psum1 = 0, psum2 = 0, y = 0;
+    for (unsigned int i = 0; i < NCAT(lengths); ++i) {
+	double p1 = PROB(par1)[i];
+	double p2 = PROB(par2)[i];
+	if (p1 == 0) {
+	    psum2 += p2;
+	}
+	else if (p2 == 0) {
+	    return JAGS_POSINF;
+	}
+	else {
+	    y += p1 * (log(p1) - log(p2));
+	    psum1 += p1;
+	    psum2 += p2;
+	}
+    }
+    y /= psum1;
+    y -= (log(psum1) - log(psum2));
+    return y;
 }

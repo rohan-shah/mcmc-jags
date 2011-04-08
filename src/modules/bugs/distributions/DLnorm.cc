@@ -46,3 +46,16 @@ DLnorm::r(vector<double const *> const &par, RNG *rng) const
 {
     return rlnorm(MU(par), SDLOG(par), rng);
 }
+
+double
+DLnorm::KL(vector<double const *> const &par0,
+	   vector<double const *> const &par1) const
+{
+    //Same as the normal distribution
+
+    double mu0 = MU(par0), tau0 = TAU(par0);
+    double mu1 = MU(par1), tau1 = TAU(par1);
+
+    return ((mu0 - mu1) * (mu0 - mu1) * tau1 + tau1/tau0 - 1 + 
+	    log(tau0/tau1)) / 2;
+}

@@ -67,3 +67,12 @@ unsigned int ScalarDist::df() const
 {
     return 1;
 }
+
+/*
+double ScalarDist::KL(vector<double const *> const &par1,
+		      vector<double const *> const &par2) const
+{
+    double x1 = 
+
+}
+*/

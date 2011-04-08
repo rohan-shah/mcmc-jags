@@ -47,3 +47,11 @@ double DChisqr::r(vector<double const *> const &par, RNG *rng) const
 {
     return rchisq(DF(par), rng);
 }
+
+double DChisqr::KL(vector<double const *> const &par1,
+		   vector<double const *> const &par2) const
+{
+    //Specialisation of the gamma Kullback-Leibler divergence
+    double b1 = DF(par1)/2, b2 = DF(par2)/2; 
+    return (b1 - b2) * digamma(b1) + lgamma(b2) - lgamma(b1);
+}

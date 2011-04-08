@@ -29,6 +29,8 @@ class DGamma : public RScalarDist {
    */
   double  typicalValue(std::vector<double const *> const &par,
 		       double const *lower, double const *upper) const;
+  double KL(std::vector<double const *> const &par1,
+	    std::vector<double const *> const &par2) const;
 };
 
 #endif /* DGAMMA_H_ */

@@ -44,3 +44,5 @@ DLogis::r(vector<double const *> const &par, RNG *rng) const
     double ans = rlogis(MU(par), SCALE(par), rng);
     return ans;
 }
+
+//FIXME: No entry in manual
