@@ -454,23 +454,25 @@ You need to install the following packages
 \end{itemize}
 
 MinGW (Minimalist GNU for Windows) is a build environment for Windows.
-There is an official release from \url{http://www.mingw.org}.  However,
-we used the TDM-GCC distribution (\url{http://tdm-gcc-tdragon.net}).
-This distribution, which also includes 64-bit compilers from the
-MinGW-w64 project, was chosen because it allows us to build a version of
-JAGS that is statically linked against the gcc runtime library.  This,
-in turn, is necessary to have a functional rjags package on windows.
-We also tried the official MinGW distribution, and version 212 of Rtools
-(\url{http://www.murdoch-sutherland.com/Rtools}). Although the resulting
-JAGS library is functional, it is not compatible with R: loading the
-rjags package causes R to crash on exit.
+There is an official release from \url{http://www.mingw.org}.
+However, we used the TDM-GCC distribution
+(\url{http://tdm-gcc-tdragon.net}).  This distribution was chosen
+because it allows us to build a version of JAGS that is statically
+linked against the gcc runtime library.  This, in turn, is necessary
+to have a functional rjags package on Windows.  We also tried version
+213 of Rtools
+(\url{http://www.murdoch-sutherland.com/Rtools}). Although the
+resulting JAGS library is functional, it is not compatible with R:
+loading the rjags package causes R to crash on exit.
 
 TDM-GCC has a nice installer, available from sourceforge (follow the
 links on the main TDM-GCC web site). Select a ``Recommended C/C++''
 installation and customize it by selecting the fortran compiler, which
 is not installed by default. After installation, to force the compiler
 to use static linking, delete any import libraries (files ending in
-\verb+.dll.a+) in the TDM-GCC tree.
+\verb+.dll.a+) in the TDM-GCC tree.  The 32-bit and 64-bit versions
+of TDM-GCC are installed separately. You need both to make the JAGS
+installer.
 
 MSYS (the Minimal SYStem) is part of the MinGW project. It provides a
 bash shell for you to build Unix software. These instructions were
@@ -494,11 +496,11 @@ the AccessControl plug-in for NSIS, which is available from
 \subsubsection{Building LAPACK}
 
 Download the LAPACK source file from
-\url{http://www.netlib.org/lapack}. We used version 3.2.2, which is
-packaged as \verb+lapack.tgz+. Unpack the file in your home directory.
+\url{http://www.netlib.org/lapack}. We used version 3.3.0.  Unpack the
+file in your home directory.
 \begin{verbatim}
-tar xfvz lapack.tgz
-cd lapack-3.2.2
+tar xfvz lapack-3.3.0.tgz
+cd lapack-3.3.0
 \end{verbatim}
 Copy the file \texttt{INSTALL/make.inc.gfortran} to \texttt{make.inc} in
 the top level source directory.  Then edit \texttt{make.inc},
@@ -545,12 +547,20 @@ gcc -shared -o liblapack.dll -Wl,--out-implib=liblapack.dll.a \
 liblapack.def lapack_MinGW.a  -L./ -lblas -lgfortran
 \end{verbatim}
 
+Repeat these instructions for both 32-bit and 64-bit Windows using the
+respective versions of TDM-GCC.
+
+Note that, although the 64-bit version of TDM-GCC is a cross-compiler,
+you cannot cross-build 64-bit BLAS and LAPACK on a 32-bit Windows
+system. This is because the build process includes compilation of test
+programs which must be run.
+
 \subsection{Compiling \JAGS}
 
 Unpack the JAGS source
 \begin{verbatim}
-tar xfvz JAGS-2.2.0.tar.gz
-cd JAGS-2.2.0
+tar xfvz JAGS-3.0.0.tar.gz
+cd JAGS-3.0.0
 \end{verbatim}
 and configure JAGS
 \begin{verbatim}
@@ -561,47 +571,47 @@ import libraries (\verb+libblas.dll.a+ and \verb+liblapack.dll.a+).
 This must be an {\em absolute} path name, and not relative to
 the JAGS build directory.
 
-Normally you will want to distribute the blas and lapack libraries
-with JAGS.  In this case, put the DLLs and import libraries in the
-sub-directory \verb+win/runtime+. They will be detected and included
-with the distribution.
+If you are cross-compiling a 64-bit version of JAGS on 32-bit windows,
+you need to add the configure flag \verb+--host=x86_64-win64-mingw32+.
 
-Make sure that the file \verb+makensis.exe+, provided by NSIS, is in
-your PATH. For a typical installation of NSIS, on 32-bit windows:
+Normally you will want to distribute the blas and lapack libraries
+with JAGS.  In this case, put the 32-bit DLLs and import libraries in
+the sub-directory \verb+win/runtime32+ and the 64-bit DLLs and import
+libraries in the sub-directory \verb+win/runtime64+. They will be
+detected and included with the distribution.
+
+To install the 32-bit version of JAGS, after the configure step, type
+\begin{verbatim}
+make win32-installer
+\end{verbatim}
+This will install JAGS into the subdirectory \verb+win/inst32+.
+Note that you must go straight from the configure step to \texttt{make
+  win32-install} without the usual step of typing \texttt{make} on
+its own.  The \texttt{win32-install} target resets the installation
+prefix, and this will cause an error if the source is already
+compiled.
+
+To install the 64-bit version, \verb+make clean+, reconfigure JAGS
+and type 
+\begin{verbatim}
+make win64-installer
+\end{verbatim}
+This will install JAGS into the subdirectory \verb+win/inst64+.
+
+With both 32-bit and 64-bit installations in place you can create the
+installer. Make sure that the file \verb+makensis.exe+, provided by
+NSIS, is in your PATH. For a typical installation of NSIS, on 32-bit
+windows:
 \begin{verbatim}
 PATH=$PATH:/c/Program\ files/NSIS
 \end{verbatim}
 Then type
 \begin{verbatim}
-make win32-installer
+make installer
 \end{verbatim}
 After the build process finishes, the self extracting archive will be
 in the subdirectory \verb+win+.
 
-Note that you must go straight from the configure step to \texttt{make
-  win32-installer} without the usual step of typing \texttt{make} on
-its own.  The \texttt{win32-installer} target resets the installation
-prefix, and this will cause an error if the source is already
-compiled.
-
-\subsection{Building on 64-bit windows}
-
-The build instructions for 64-bit windows are similar
-to the instructions for 32-bit windows.  The TDM-GCC distribution also
-includes 64-bit compilers from the MinGW-w64 project
-(\url{http://www.sourceforge.net/projects/mingw-w64}).  These are actually
-cross-compilers. They will run under MSYS -- which is still 32-bit --
-but will produce 64-bit code.
-
-The 64-bit compilers are prefixed with \verb+x86_64-w64-mingw32-+ to
-distinguish them from the 32-bit compilers. When building BLAS and LAPACK
-you need to use the 64-bit version of gfortran by setting the FORTRAN
-and ARCH variables accordingly in the Makefile, and also use
-the 64-bit version of gcc when building the DLLs for BLAS and
-LAPACK. \footnote{Although we are using a cross-compiler, you cannot
-cross-build 64-bit BLAS and LAPACK on a 32-bit Windows system. This is
-because the build process includes compilation of test programs which
-must be run.}
 
 To build 64-bit \JAGS\, just add the configure option
 \begin{verbatim}

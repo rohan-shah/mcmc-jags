@@ -2,7 +2,7 @@
 !define PUBLISHER "JAGS"
 
 ;Name used for JAGS registry keys
-!define JAGS_KEYNAME "${APP_NAME}-${MAJOR}"
+!define JAGS_KEYNAME "${APP_NAME}-${VERSION}"
 ;Name visible to users, for shortcuts, installation directories, etc.
 !define JAGS_VISIBLE_NAME  "${APP_NAME} ${VERSION}"
 
@@ -117,7 +117,11 @@ Section "32-bit installation" Sec32
       # The CreateShortCut function takes the current output path to be
       # the working directory for the shortcut
       SetOutPath "%USERPROFILE%"
-      CreateShortCut "$SMPROGRAMS\$SM_FOLDER\${JAGS_VISIBLE_NAME} (32-bit).lnk" "$INSTDIR\i386\bin\jags.bat"
+      ${If} ${RunningX64}
+         CreateShortCut "$SMPROGRAMS\$SM_FOLDER\${JAGS_VISIBLE_NAME} (32-bit).lnk" "$INSTDIR\i386\bin\jags.bat"
+      ${Else}
+         CreateShortCut "$SMPROGRAMS\$SM_FOLDER\${JAGS_VISIBLE_NAME}.lnk" "$INSTDIR\i386\bin\jags.bat"
+      ${Endif}
       SetOutPath ""
    !insertmacro MUI_STARTMENU_WRITE_END
 
@@ -156,11 +160,11 @@ Section "64-bit installation" Sec64
    AccessControl::GrantOnFile "$INSTDIR\x64\bin\jags.bat" "BUILTIN\USERS" "GenericRead + GenericExecute"
 
    !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
-      # The CreateShortCut function takes the current output path to be
-      # the working directory for the shortcut
-      SetOutPath "%USERPROFILE%"
-      CreateShortCut "$SMPROGRAMS\$SM_FOLDER\${JAGS_VISIBLE_NAME} (64-bit).lnk" "$INSTDIR\x64\bin\jags.bat"
-      SetOutPath ""
+   # The CreateShortCut function takes the current output path to be
+   # the working directory for the shortcut
+   SetOutPath "%USERPROFILE%"
+   CreateShortCut "$SMPROGRAMS\$SM_FOLDER\${JAGS_VISIBLE_NAME} (64-bit).lnk" "$INSTDIR\x64\bin\jags.bat"
+   SetOutPath ""
    !insertmacro MUI_STARTMENU_WRITE_END
 
 SectionEnd #64-bit installation
@@ -168,11 +172,17 @@ SectionEnd #64-bit installation
 Function .onInit
    !insertmacro MULTIUSER_INIT
    !insertmacro UNINSTALL.LOG_PREPARE_INSTALL
-;   ${If} ${RunningX64}
+   ${If} ${RunningX64}
       ;Nothing to do
-;   ${Else}
-;      ${RemoveSection} Sec64
-;   ${EndIf}
+   ${Else}
+      ; Deselect and hide 64-bit section
+      Push $0
+      SectionGetFlags ${Sec64} $0
+      IntOp $0 $0 & ${SECTION_OFF}
+      SectionSetFlags ${Sec64} $0
+      SectionSetText  ${Sec64} ""
+      Pop $0
+   ${EndIf}
 FunctionEnd
 
 Function .onInstSuccess
@@ -199,9 +209,13 @@ Section "Uninstall"
    RMDir "$INSTDIR"
   
    !insertmacro MUI_STARTMENU_GETFOLDER Application $SM_FOLDER
-    
-   Delete "$SMPROGRAMS\$SM_FOLDER\${JAGS_VISIBLE_NAME} (32-bit).lnk"
-   Delete "$SMPROGRAMS\$SM_FOLDER\${JAGS_VISIBLE_NAME} (64-bit).lnk"
+
+   ${If} ${RunningX64}
+      Delete "$SMPROGRAMS\$SM_FOLDER\${JAGS_VISIBLE_NAME} (32-bit).lnk"
+      Delete "$SMPROGRAMS\$SM_FOLDER\${JAGS_VISIBLE_NAME} (64-bit).lnk"
+   ${Else}
+      Delete "$SMPROGRAMS\$SM_FOLDER\${JAGS_VISIBLE_NAME}.lnk"
+   ${EndIf}
    Delete "$SMPROGRAMS\$SM_FOLDER\Uninstall ${JAGS_VISIBLE_NAME}.lnk"
   
    ;Delete empty start menu parent diretories

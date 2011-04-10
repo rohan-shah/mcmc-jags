@@ -1,6 +1,6 @@
-SUBDIRS = runtime
+SUBDIRS = runtime32 runtime64
 
-EXTRA_DIST=jags.nsi jags64.nsi AdvUninstLog.nsh MultiUser64.nsh README.WIN
+EXTRA_DIST=jags.nsi AdvUninstLog.nsh MultiUser64.nsh README.WIN
 
 clean-local:
 	rm -rf inst 

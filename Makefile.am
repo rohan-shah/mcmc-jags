@@ -5,20 +5,20 @@ EXTRA_DIST = Doxyfile
 win32-install:
 	make prefix=`pwd`/win/inst32
 	make install prefix=`pwd`/win/inst32
-	(cd win; for f in `ls runtime/i386/*.dll`; do \
+	(cd win; for f in `ls runtime32/*.dll`; do \
 	    ${INSTALL} $${f} inst32/bin/; \
 	  done; \
-	  for f in `ls runtime/i386/*.dll.a`; do \
+	  for f in `ls runtime32/*.dll.a`; do \
 	    ${INSTALL} $${f} inst32/lib/; \
 	  done;) 
 
 win64-install:
 	make prefix=`pwd`/win/inst64 
 	make install prefix=`pwd`/win/inst64
-	(cd win; for f in `ls runtime/x64/*.dll`; do \
+	(cd win; for f in `ls runtime64/*.dll`; do \
 	    ${INSTALL} $${f} inst64/bin/; \
 	  done; \
-	  for f in `ls runtime/x64/*.dll.a`; do \
+	  for f in `ls runtime64/*.dll.a`; do \
 	    ${INSTALL} $${f} inst64/lib/; \
 	  done;) 
 
