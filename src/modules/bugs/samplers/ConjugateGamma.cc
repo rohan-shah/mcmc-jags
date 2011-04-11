@@ -123,7 +123,7 @@ bool ConjugateGamma::canSample(StochasticNode *snode, Graph const &graph)
 }
 
 
-bool ConjugateGamma::update(unsigned int chain, RNG *rng) const
+void ConjugateGamma::update(unsigned int chain, RNG *rng) const
 {
     vector<StochasticNode const*> const &stoch_children = 
 	_gv->stochasticChildren();
@@ -230,8 +230,6 @@ bool ConjugateGamma::update(unsigned int chain, RNG *rng) const
 	xnew = rgamma(r, 1/mu, rng);
     }
     _gv->setValue(&xnew, 1, chain);  
-
-    return true;
 }
 
 string ConjugateGamma::name() const

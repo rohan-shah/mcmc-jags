@@ -9,6 +9,7 @@
 #include <rng/TruncatedNormal.h>
 #include <rng/RNG.h>
 #include <cmath>
+#include <module/ModuleError.h>
 
 using std::vector;
 using std::string;
@@ -45,7 +46,7 @@ namespace glm {
     {
     }
 
-    bool AlbertChib::update(RNG *rng)
+    void AlbertChib::update(RNG *rng)
     {
 	if (_aux_init) {
 	    initAuxiliary(rng);
@@ -74,8 +75,7 @@ namespace glm {
 		    _z[r] = rnormal(0, rng, getMean(r));
 		}
 		else {
-		    return false;
-		    //throw logic_error("Invalid child value in HolmesHeld");
+		    throwLogicError("Invalid child value in HolmesHeld");
 		}
 		break;
 	    case BGLM_LOGIT:
@@ -88,25 +88,19 @@ namespace glm {
 		    _z[r] = rlogit(0, rng, mu);
 		}
 		else {
-		    return false;
-		    //throw logic_error("Invalid child value in HolmesHeld");
+		    throwLogicError("Invalid child value in HolmesHeld");
 		}
 		_tau[r] = 1/sample_lambda(fabs(_z[r] - mu), rng);
-		break;
-	    case BGLM_INVALID:
-		return false;
 		break;
 	    }
 	}
 
 	if (_gibbs) {
-	    if (!updateLMGibbs(rng)) return false;
+	    updateLMGibbs(rng);
 	}
 	else {
-	    if (!updateLM(rng))	return false;
+	    updateLM(rng);
 	}
-
-	return true;
     }
 	
     string AlbertChib::name() const

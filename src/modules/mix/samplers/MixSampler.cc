@@ -8,10 +8,10 @@
 #include <util/dim.h>
 #include <util/nainf.h>
 #include <sampler/GraphView.h>
+#include <module/ModuleError.h>
 
 #include <cmath>
 #include <algorithm>
-#include <stdexcept>
 
 using std::vector;
 using std::copy;
@@ -36,7 +36,7 @@ static void read_bounds(vector<StochasticNode*> const &snodes,
 	unsigned int length_j = snodes[j]->length();
 	node_length += length_j;
 	if (node_length > length) {
-	    throw logic_error("Invalid length in read_bounds (MixSampler)");
+	    throwLogicError("Invalid length in read_bounds (MixSampler)");
 	}
 	else {
 	    support(lp, up, length_j, snodes[j], chain);
@@ -71,7 +71,7 @@ namespace mix {
 	  _temper(false)
     {
 	if (_delta <= 0) {
-	    throw invalid_argument("delta must be positive in MixSampler");
+	    throwLogicError("delta must be positive in MixSampler");
 	}
 
 	_lstep[0] = -5;

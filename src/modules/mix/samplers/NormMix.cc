@@ -5,14 +5,13 @@
 #include <util/nainf.h>
 #include <sampler/GraphView.h>
 #include <distribution/Distribution.h>
+#include <module/ModuleError.h>
 
 #include <cmath>
-#include <stdexcept>
 
 class Graph;
 
 using std::vector;
-using std::logic_error;
 using std::log;
 using std::exp;
 using std::string;
@@ -78,7 +77,7 @@ namespace mix {
 	    lp += length_j;
 	    up += length_j;
 	    if (lp - _lower > N) {
-		throw logic_error("Invalid length in read_bounds (NormMix)");
+		throwLogicError("Invalid length in read_bounds (NormMix)");
 	    }
 	}
     }

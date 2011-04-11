@@ -14,9 +14,9 @@ namespace glm {
 	HolmesHeld(GraphView const *view, 
 		   std::vector<GraphView const *> const &sub_views,
 		   unsigned int chain);
-	bool updateAuxiliary(cholmod_dense *b, cholmod_factor *N, RNG *rng);
+	void updateAuxiliary(cholmod_dense *b, cholmod_factor *N, RNG *rng);
 	std::string name() const;
-	bool update(RNG *rng);
+	void update(RNG *rng);
     };
     
 }

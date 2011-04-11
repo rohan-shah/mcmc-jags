@@ -69,7 +69,7 @@ ConjugateWishart::ConjugateWishart(GraphView const *gv)
     : ConjugateMethod(gv)
 {}
 
-bool 
+void 
 ConjugateWishart::update(unsigned int chain, RNG *rng) const
 {
     vector<StochasticNode const*> const &stoch_children = 
@@ -139,8 +139,6 @@ ConjugateWishart::update(unsigned int chain, RNG *rng) const
     delete [] R;
     _gv->setValue(xnew, N, chain);
     delete [] xnew;
-
-    return true;
 }
 
 string ConjugateWishart::name() const

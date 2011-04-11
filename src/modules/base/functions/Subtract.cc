@@ -2,10 +2,7 @@
 #include <util/logical.h>
 #include "Subtract.h"
 
-#include <stdexcept>
-
 using std::vector;
-using std::logic_error;
 
 namespace base {
 

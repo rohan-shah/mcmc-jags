@@ -14,7 +14,7 @@ namespace base {
 	int _lower, _upper;
     public:
 	FiniteMethod(GraphView const *gv, unsigned int chain);
-	bool update(RNG *rng);
+	void update(RNG *rng);
 	/**
 	 * FiniteMethod is not adaptive. This function returns false.
 	 */

@@ -20,11 +20,10 @@
  * start of the next stream or substream is in RngStreamFactory.cc
  */
 
-#include <stdexcept>
 #include "RngStream.h"
+#include <module/ModuleError.h>
 
 using std::vector;
-using std::logic_error;
 
 #define norm  2.328306549295727688e-10 /* 2^-32 */
 #define a12     1403580.0
@@ -77,7 +76,7 @@ namespace lecuyer {
 	: RmathRNG("lecuyer::RngStream", KINDERMAN_RAMAGE)
     {
 	if (!checkState(state)) {
-	    throw logic_error("Invalid initial state in RngStream");
+	    throwLogicError("Invalid initial state in RngStream");
 	}
 	for (int i = 0; i < 6; ++i) {
 	    Cg[i] = state[i];

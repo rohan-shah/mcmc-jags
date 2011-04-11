@@ -84,7 +84,7 @@ ConjugateBeta::ConjugateBeta(GraphView const *gv)
 {
 }
 
-bool ConjugateBeta::update(unsigned int chain, RNG *rng) const
+void ConjugateBeta::update(unsigned int chain, RNG *rng) const
 {
     vector<StochasticNode const*> const &stoch_children = 
 	_gv->stochasticChildren();
@@ -171,7 +171,7 @@ bool ConjugateBeta::update(unsigned int chain, RNG *rng) const
 	    if (xnew >= lower && xnew <= upper) {
 		_gv->setValue(&xnew, 1, chain);
                 if (is_mix) delete [] C;
-		return true;
+		return;
 	    }
 	    xnew = rbeta(a, b, rng);
 	}
@@ -186,8 +186,6 @@ bool ConjugateBeta::update(unsigned int chain, RNG *rng) const
     if (is_mix) {
 	delete [] C;
     }
-
-    return true;
 }
 
 string ConjugateBeta::name() const

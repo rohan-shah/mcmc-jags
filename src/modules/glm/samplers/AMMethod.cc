@@ -8,6 +8,7 @@
 
 #include <graph/LinkNode.h>
 #include <graph/StochasticNode.h>
+#include <module/ModuleError.h>
 
 using std::vector;
 using std::string;
@@ -56,7 +57,7 @@ namespace glm {
 					   y->value(chain)[0]);
 		break;
 	    default:
-		//throw logic_error("Invalid family in AMMethod");
+		throwLogicError("Invalid family in AMMethod");
 		break;
 	    }
 	}
@@ -79,13 +80,13 @@ namespace glm {
 	return _aux[i]->precision();
     }
 
-    bool AMMethod::update(RNG *rng)
+    void AMMethod::update(RNG *rng)
     {
 	for (unsigned int r = 0; r < _aux.size(); ++r)
 	{
 	    _aux[r]->update(rng);
 	}
-	return updateLM(rng);
+	updateLM(rng);
     }
 
     string AMMethod::name() const

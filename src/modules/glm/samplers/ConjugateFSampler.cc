@@ -30,10 +30,9 @@ string ConjugateFSampler::name() const
     return "conjugateF";
 }
 
-bool ConjugateFSampler::update(vector<RNG*> const &rngs)
+void ConjugateFSampler::update(vector<RNG*> const &rngs)
 {
     for (unsigned int i = 0; i < _methods.size(); ++i) {
-	if (!_methods[i]->update(rngs[i])) return false;
+	_methods[i]->update(rngs[i]);
     }
-    return true;
 }

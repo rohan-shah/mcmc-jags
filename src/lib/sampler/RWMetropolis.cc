@@ -29,7 +29,7 @@ void RWMetropolis::rescale(double p)
     _niter++;
 }
 
-bool RWMetropolis::update(RNG *rng)
+void RWMetropolis::update(RNG *rng)
 {
     vector<double> value(length());
     getValue(value);
@@ -39,7 +39,6 @@ bool RWMetropolis::update(RNG *rng)
     setValue(value);
     log_p += logDensity() + logJacobian(value);
     accept(rng, exp(log_p));
-    return true;
 }
 
 bool RWMetropolis::checkAdaptation() const

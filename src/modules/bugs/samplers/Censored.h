@@ -13,7 +13,7 @@ class Censored : public ConjugateMethod {
 public:
     Censored(GraphView const *gv);
     static bool canSample(StochasticNode *snode, Graph const &graph);
-    bool update(unsigned int chain, RNG * rng) const;
+    void update(unsigned int chain, RNG * rng) const;
     std::string name() const;
 };
 

@@ -1,7 +1,6 @@
 #include <config.h>
 #include <graph/Node.h>
 
-#include <stdexcept>
 #include <algorithm>
 
 #include "TraceMonitor.h"

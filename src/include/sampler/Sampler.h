@@ -35,9 +35,8 @@ public:
      * deterministic descendants using the update function.
      *
      * @param rng vector of Pseudo-random number generator functions.
-     * @return Success indicator
      */
-    virtual bool update(std::vector<RNG *> const &rng) = 0;
+    virtual void update(std::vector<RNG *> const &rng) = 0;
     /**
      * When a sampler is constructed, it may be in adaptive mode, which
      * allows it to adapt its behaviour for increased

@@ -14,7 +14,7 @@
 class ConjugateWishart : public ConjugateMethod {
 public:
     ConjugateWishart(GraphView const *gv);
-    bool update(unsigned int chain, RNG *rng) const;
+    void update(unsigned int chain, RNG *rng) const;
     static bool canSample(StochasticNode *snode, Graph const &graph);
     std::string name() const;
 };

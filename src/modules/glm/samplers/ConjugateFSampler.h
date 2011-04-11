@@ -17,7 +17,7 @@ public:
     ConjugateFSampler(GraphView *gv1, GraphView *gv2, 
 		      std::vector<ConjugateFMethod*> const &methods);
     ~ConjugateFSampler();
-    bool update(std::vector<RNG*> const &rngs);
+    void update(std::vector<RNG*> const &rngs);
     bool isAdaptive() const;
     bool adaptOff();
     std::string name() const;

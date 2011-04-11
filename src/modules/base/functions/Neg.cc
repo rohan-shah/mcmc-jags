@@ -2,11 +2,9 @@
 #include <util/logical.h>
 #include "Neg.h"
 
-#include <stdexcept>
 #include <cmath>
 
 using std::vector;
-using std::logic_error;
 using std::string;
 
 namespace base {

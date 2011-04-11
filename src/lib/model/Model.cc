@@ -385,10 +385,7 @@ void Model::update(unsigned int niter)
 	for (vector<Sampler*>::iterator i = _samplers.begin(); 
 	     i != _samplers.end(); ++i) 
 	{
-	    if (!(*i)->update(_rng)) {
-		//FIXME. Something more informative here?
-		throw runtime_error("Error during update");
-	    }
+	    (*i)->update(_rng);
 	}
 
 	for (unsigned int n = 0; n < _nchain; ++n) {

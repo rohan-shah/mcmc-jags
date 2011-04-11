@@ -51,7 +51,7 @@ namespace base {
 	_gv->nodes().front()->support(lower, upper, 1, _chain);
     }
 
-    bool RealSlicer::update(RNG *rng)
+    void RealSlicer::update(RNG *rng)
     {
 	if (!updateStep(rng)) {
 	    switch(state()) {
@@ -66,9 +66,7 @@ namespace base {
 	    case SLICER_OK:
 		break;
 	    }
-	    return false;
 	}
-	return true;
     }
 
     string RealSlicer::name() const

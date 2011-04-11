@@ -72,7 +72,7 @@ public:
     /**
      * Updates the current value using tempered transitions.
      */
-    bool update(RNG *rng);
+    void update(RNG *rng);
     /**
      * Modifies the step size at each temperature level to achieve the
      * target acceptance probability using a noisy gradient algorithm

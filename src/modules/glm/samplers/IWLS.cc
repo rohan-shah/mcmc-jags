@@ -5,6 +5,7 @@
 //#include <function/LinkFunction.h>
 #include <distribution/Distribution.h>
 #include <rng/RNG.h>
+#include <module/ModuleError.h>
 
 #include <cmath>
 
@@ -25,12 +26,10 @@ static unsigned int nchildren(GraphView const *view)
     return view->stochasticChildren().size();
 }
 
-static double logDet(cholmod_factor *F, bool &status)
+static double logDet(cholmod_factor *F)
 {
     if (!F->is_ll && !F->is_monotonic) {
-	status = false;
-	return 0;
-	//throw logic_error("Non-monotonic simplicial factor in logDet");
+	throwLogicError("Non-monotonic simplicial factor in logDet");
     }
 
     int *Fp = static_cast<int*>(F->p);
@@ -113,8 +112,7 @@ namespace glm {
 	    return 1;
 	    break;
 	case GLM_UNKNOWN:
-	    break;
-	    //throw logic_error("Unknown GLM family in IWLS");
+	    throwLogicError("Unknown GLM family in IWLS");
 	}
 
 	return 0; //-Wall
@@ -122,7 +120,7 @@ namespace glm {
 
     double IWLS::logPTransition(vector<double> const &xorig, 
 				vector<double> const &x,
-				double *b, cholmod_sparse *A, bool &status)
+				double *b, cholmod_sparse *A)
     {
 	unsigned int n = _view->length();
 	
@@ -136,9 +134,7 @@ namespace glm {
 	
 	int ok = cholmod_factorize(A, _factor, glm_wk);
 	if (!ok) {
-	    status = false;
-	    return 0;
-	    //throw logic_error("Cholesky decomposition failure in IWLS");
+	    throwRuntimeError("Cholesky decomposition failure in IWLS");
 	}
 
 	//Posterior mean
@@ -158,22 +154,21 @@ namespace glm {
 	    }
 	    deviance += dx[r] * (Adr - 2 * b[r])  + b[r] * mux[r];
 	}
-	deviance -= logDet(_factor, status);
+	deviance -= logDet(_factor);
 
 	cholmod_free_dense(&delta, glm_wk);
 	cholmod_free_dense(&mu, glm_wk);
 
-	if (!status) return 0;
 	return -deviance/2;
     }
 		
-    bool IWLS::update(RNG *rng)
+    void IWLS::update(RNG *rng)
     {
 	if (_init) {
 	    _w = 0;
 	    for (unsigned int i = 0; i < MAX_ITER; ++i) {
 		_w += 1.0/MAX_ITER;
-		if (!updateLM(rng, false)) return false;
+		updateLM(rng, false);
             }
 	    _init = false;
 	}
@@ -187,18 +182,15 @@ namespace glm {
 	calCoef(b1, A1);
 	
 	logp -= _view->logFullConditional(_chain);
-	if (!updateLM(rng)) return false;
+	updateLM(rng);
 	logp += _view->logFullConditional(_chain);
 
 	vector<double> xnew(_view->length());
 	_view->getValue(xnew, _chain);
 	calCoef(b2, A2);
 
-	bool status = true;
-	logp -= logPTransition(xold, xnew, b1, A1, status);
-	if (!status) return false;
-	logp += logPTransition(xnew, xold, b2, A2, status);
-	if (!status) return false;
+	logp -= logPTransition(xold, xnew, b1, A1);
+	logp += logPTransition(xnew, xold, b2, A2);
 
 	cholmod_free_sparse(&A1, glm_wk);
 	cholmod_free_sparse(&A2, glm_wk);
@@ -208,7 +200,5 @@ namespace glm {
 	if (rng->uniform() > exp(logp)) {
 	    _view->setValue(xold, _chain);
 	}
-
-	return true;
     }
 }

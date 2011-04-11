@@ -40,7 +40,7 @@ namespace base {
 	_upper = static_cast<int>(upper);
     }
     
-    bool FiniteMethod::update(RNG *rng)
+    void FiniteMethod::update(RNG *rng)
     {
 	int size = _upper - _lower + 1;
 	vector<double> lik(size);
@@ -77,8 +77,6 @@ namespace base {
 	}
 	double ivalue = _lower + i;
 	_gv->setValue(&ivalue, 1, _chain);
-
-	return true;
     }
 
     bool FiniteMethod::isAdaptive() const

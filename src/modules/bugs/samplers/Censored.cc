@@ -75,7 +75,7 @@ bool Censored::canSample(StochasticNode *snode, Graph const &graph)
     return true;
 }	
 
-bool Censored::update(unsigned int chain, RNG * rng) const
+void Censored::update(unsigned int chain, RNG * rng) const
 {
     int y = indicator(_gv, chain);
     double const *b = breaks(_gv)->value(chain);
@@ -85,7 +85,6 @@ bool Censored::update(unsigned int chain, RNG * rng) const
     double const *upper = (y == ymax) ? 0 : b + y;
 	
     _snode->truncatedSample(rng, chain, lower, upper);
-    return true;
 }
 
 string Censored::name() const

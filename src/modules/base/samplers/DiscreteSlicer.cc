@@ -53,7 +53,7 @@ namespace base {
 	*upper += 1;
     }
     
-    bool DiscreteSlicer::update(RNG *rng)
+    void DiscreteSlicer::update(RNG *rng)
     {
 	if (!updateDouble(rng)) {
 	    switch(state()) {
@@ -68,9 +68,7 @@ namespace base {
 	    case SLICER_OK:
 		break;
 	    }
-	    return false;
 	}
-	return true;
     }
 
     string DiscreteSlicer::name() const

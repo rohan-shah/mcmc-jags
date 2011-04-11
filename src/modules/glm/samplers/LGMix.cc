@@ -19,6 +19,7 @@
 #include "LGMix.h"
 #include <JRmath.h>
 #include <rng/RNG.h>
+#include <module/ModuleError.h>
 
 #include <cmath>
 #include <vector>
@@ -405,13 +406,12 @@ namespace glm {
     void LGMix::updateN(double n)
     {
 	if (n <= 0) {
-	    return;
-	    //throw logic_error("n out of range in LGMix::updateN");
+	    throwLogicError("n out of range in LGMix::updateN");
 	}
 	else if (n < 20) {
 	    int nr = static_cast<int>(n);
 	    if (nr != n) {
-		return; //FIXME! THrow something
+		throwLogicError("Invalid in in LGMix::updateN");
 	    }
 	    updateNExact(nr);
 	}

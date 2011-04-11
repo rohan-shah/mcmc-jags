@@ -318,7 +318,7 @@ static bool checkzero(StochasticNode const *snode, unsigned int chain,
     return true;
 }
 
-bool ConjugateDirichlet::update(unsigned int chain, RNG *rng) const
+void ConjugateDirichlet::update(unsigned int chain, RNG *rng) const
 {
     StochasticNode *snode = _gv->nodes()[0];
     unsigned long size = snode->length();
@@ -411,8 +411,6 @@ bool ConjugateDirichlet::update(unsigned int chain, RNG *rng) const
 
     delete [] xnew;
     delete [] alpha;
-
-    return true;
 }
 
 string ConjugateDirichlet::name() const

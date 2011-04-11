@@ -9,6 +9,7 @@
 #include <distribution/Distribution.h>
 #include <sampler/GraphView.h>
 #include <sampler/Linear.h>
+#include <module/ModuleError.h>
 
 #include <string>
 #include <algorithm>
@@ -87,11 +88,10 @@ static void convertStochasticChildren(StochasticNode *snode,
     
     delete [] inarray;
     delete [] inptrs;
-    /*
+
     if (!ok) {
-	throw logic_error("Conversion mismatch in Conjugate F Factory");
+	throwLogicError("Conversion mismatch in Conjugate F Factory");
     }
-    */
 }
 
 namespace glm {

@@ -31,7 +31,7 @@ protected:
 public:
     ConjugateMethod(GraphView const *gv);
     virtual ~ConjugateMethod();
-    virtual bool update(unsigned int chain, RNG *rng) const = 0;
+    virtual void update(unsigned int chain, RNG *rng) const = 0;
     virtual std::string name() const = 0;
 };
 

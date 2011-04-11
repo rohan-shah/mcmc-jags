@@ -124,7 +124,7 @@ bool ConjugateNormal::canSample(StochasticNode *snode, Graph const &graph)
     return checkLinear(&gv, false);
 }
 
-bool ConjugateNormal::update(unsigned int chain, RNG *rng) const
+void ConjugateNormal::update(unsigned int chain, RNG *rng) const
 {
     vector<StochasticNode const*> const &stoch_children = 
 	_gv->stochasticChildren();
@@ -257,8 +257,6 @@ bool ConjugateNormal::update(unsigned int chain, RNG *rng) const
 	throwLogicError("Invalid distribution in conjugate normal method");
     }
     _gv->setValue(&xnew, 1, chain);
-
-    return true;
 }
 
 string ConjugateNormal::name() const

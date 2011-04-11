@@ -137,7 +137,7 @@ bool ConjugateMNormal::canSample(StochasticNode *snode, Graph const &graph)
     return true; //We made it!
 }
 
-bool ConjugateMNormal::update(unsigned int chain, RNG *rng) const
+void ConjugateMNormal::update(unsigned int chain, RNG *rng) const
 {
     vector<StochasticNode const*> const &stoch_children = 
           _gv->stochasticChildren();
@@ -313,8 +313,6 @@ bool ConjugateMNormal::update(unsigned int chain, RNG *rng) const
     delete [] Acopy;
     delete [] b;
     delete [] xnew;
-
-    return true;
 }
 
 string ConjugateMNormal::name() const

@@ -62,7 +62,7 @@ MNormMetropolis::~MNormMetropolis()
     delete [] _prec;
 }
 
-bool MNormMetropolis::update(RNG *rng)
+void MNormMetropolis::update(RNG *rng)
 {
     double logdensity = -_gv->logFullConditional(_chain);
     double step = exp(_lstep);
@@ -81,8 +81,6 @@ bool MNormMetropolis::update(RNG *rng)
     setValue(xnew);
     logdensity += _gv->logFullConditional(_chain);
     accept(rng, exp(logdensity));
-
-    return true;
 }
 
 void MNormMetropolis::rescale(double p)

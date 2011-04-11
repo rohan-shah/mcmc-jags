@@ -13,8 +13,9 @@
 #include <config.h>
 
 #include <string>
-#include <stdexcept>
 #include <cmath>
+
+#include <module/ModuleError.h>
 
 #include "lapack.h"
 #include "matexp.h"
@@ -22,7 +23,6 @@
 using std::pow;
 using std::exp;
 using std::log;
-using std::runtime_error;
 
 namespace msm {
 
@@ -73,7 +73,7 @@ static void solve (double *X, double const *A, double const *B, int n)
     int info = 0;
     F77_DGESV (&n, &n, Acopy, &n, ipiv, X, &n, &info);
     if (info != 0) {
-	throw runtime_error("Unable to solve linear equations");
+	throwRuntimeError("Unable to solve linear equations");
     }
   
     delete [] Acopy;

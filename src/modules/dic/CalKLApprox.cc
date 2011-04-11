@@ -3,6 +3,7 @@
 
 #include <graph/StochasticNode.h>
 #include <rng/RNG.h>
+#include <module/ModuleError.h>
 
 using std::vector;
 
@@ -19,10 +20,8 @@ namespace dic {
 			     unsigned int nrep)
 	: _repnode(mkRep(snode)), _rngs(rngs), _nrep(nrep)
     {
-	/*
 	if (snode->nchain() != rngs.size())
-	    throw logic_error("Incorrect number of rngs in CalKLApprox");
-	*/
+	    throwLogicError("Incorrect number of rngs in CalKLApprox");
     }
 
     CalKLApprox::~CalKLApprox()

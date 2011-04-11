@@ -3,6 +3,7 @@
 #include "PDMonitor.h"
 #include "CalKL.h"
 #include <graph/StochasticNode.h>
+#include <module/ModuleError.h>
 
 #include <algorithm>
 
@@ -25,12 +26,9 @@ namespace dic {
 	  _values(snodes.size(), 0),  _weights(snodes.size(), 0),
 	  _scale(scale), _nchain(snodes[0]->nchain())
     {
-	/*
-	  //Taken care of by factory
 	if (snodes[0]->nchain() < 2) {
-	    throw logic_error("PDMonitor needs at least 2 chains");
+	    throwLogicError("PDMonitor needs at least 2 chains");
 	}
-	*/
     }
 
     PDMonitor::~PDMonitor() 

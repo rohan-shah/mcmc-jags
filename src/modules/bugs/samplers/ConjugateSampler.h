@@ -11,7 +11,7 @@ class ConjugateSampler : public Sampler
 public:
     ConjugateSampler(GraphView *gv, ConjugateMethod *method);
     ~ConjugateSampler();
-    bool update(std::vector<RNG*> const &);
+    void update(std::vector<RNG*> const &);
     /**
      * Conjugate methods are not adaptive
      */

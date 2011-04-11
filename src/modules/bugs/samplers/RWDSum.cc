@@ -127,7 +127,7 @@ void RWDSum::rescale(double p)
     _niter++;
 }
 
-bool RWDSum::update(RNG *rng)
+void RWDSum::update(RNG *rng)
 {
     vector<double> value(length());
     unsigned int nrow = _dsnode->length();
@@ -142,8 +142,6 @@ bool RWDSum::update(RNG *rng)
 	log_p += _gv->logFullConditional(_chain);
 	accept(rng, exp(log_p));
     }
-
-    return true;
 }
 
 bool RWDSum::checkAdaptation() const

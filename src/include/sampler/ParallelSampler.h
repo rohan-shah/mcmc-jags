@@ -26,7 +26,7 @@ public:
      */
     ParallelSampler(GraphView *gv, std::vector<SampleMethod*> const &methods);
     ~ParallelSampler();
-    bool update(std::vector<RNG*> const &rngs);
+    void update(std::vector<RNG*> const &rngs);
     bool isAdaptive() const;
     bool adaptOff();
     std::string name() const;

@@ -8,6 +8,7 @@
 #include <sampler/GraphView.h>
 #include <rng/TruncatedNormal.h>
 #include <rng/RNG.h>
+#include <module/ModuleError.h>
 
 extern "C" {
 #include <cs.h>
@@ -46,7 +47,7 @@ namespace glm {
     {
     }
 
-    bool HolmesHeld::updateAuxiliary(cholmod_dense *w, 
+    void HolmesHeld::updateAuxiliary(cholmod_dense *w, 
 				     cholmod_factor *N, RNG *rng)
     {
 	/* 
@@ -75,8 +76,7 @@ namespace glm {
 	cholmod_factor *f = cholmod_copy_factor(_factor, glm_wk);
 	cholmod_sparse *L = cholmod_factor_to_sparse(f, glm_wk);
 	if (!L->packed || !L->sorted) {
-	    return false;
-	    //throw logic_error("Cholesky factor is not packed or not sorted");
+	    throwLogicError("Cholesky factor is not packed or not sorted");
 	}
 	cholmod_free_factor(&f, glm_wk);
 
@@ -135,10 +135,7 @@ namespace glm {
 		double zr_prec = (1 - Hr) * tau_r;
 		
 		if (zr_prec <= 0) {
-		    return false;
-		    /*
-		    throw runtime_error("Invalid precision in Holmes-Held update method.\nThis is a known bug and we are working on it.\nPlease bear with us");
-		    */
+		    throwRuntimeError("Invalid precision in Holmes-Held update method.\nThis is a known bug and we are working on it.\nPlease bear with us");
 		}
 
 		double yr = schildren[r]->value(_chain)[0];
@@ -150,8 +147,7 @@ namespace glm {
 		    _z[r] = rnormal(0, rng, mu_r + zr_mean, 1/sqrt(zr_prec));
 		}
 		else {
-		    return false;
-		    //throw logic_error("Invalid child value in HolmesHeld");
+		    throwLogicError("Invalid child value in HolmesHeld");
 		}
 
 		//Add new contribution of row r back to b
@@ -169,11 +165,9 @@ namespace glm {
 	//cholmod_free_sparse(&u, glm_wk);
 	cholmod_free_sparse(&Pt_x, glm_wk);
 	cholmod_free_sparse(&L, glm_wk);
-
-	return true;
     }
     
-    bool HolmesHeld::update(RNG *rng)
+    void HolmesHeld::update(RNG *rng)
     {
 	if (_aux_init) {
 	    initAuxiliary(rng);
@@ -193,10 +187,7 @@ namespace glm {
 	    }
 	}
 
-	if (!updateLM(rng))
-	    return false;
-	
-	return true;
+	updateLM(rng);
     }
 
     string HolmesHeld::name() const
