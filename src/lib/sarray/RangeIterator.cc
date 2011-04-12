@@ -3,10 +3,10 @@
 #include <stdexcept>
 
 using std::vector;
-using std::out_of_range;
 
 RangeIterator::RangeIterator(Range const &range)
-  : vector<int>(range.lower()), _range(range), _atend(0)
+    : vector<int>(range.lower()), _lower(range.lower()), _upper(range.upper()),
+      _atend(0)
 {}
 
 unsigned int RangeIterator::atEnd() const
@@ -16,16 +16,16 @@ unsigned int RangeIterator::atEnd() const
 
 RangeIterator &RangeIterator::nextLeft()
 {
-    int n = _range.ndim(false);
+    int n = _lower.size();
     int i = 0;
     for (; i < n; ++i) {
         int &ind = operator[](i);
-        if (ind < _range.upper()[i]) {
+        if (ind < _upper[i]) {
             ++ind;
             break;
         }
         else {
-            ind = _range.lower()[i];
+            ind = _lower[i];
         }
     }
     if (i == n) {
@@ -36,15 +36,15 @@ RangeIterator &RangeIterator::nextLeft()
 
 RangeIterator &RangeIterator::nextRight()
 {
-    int i = _range.ndim(false) - 1;
+    int i = _lower.size() - 1;
     for ( ; i >= 0; --i) {
         int &ind = operator[](i);
-        if (ind < _range.upper()[i]) {
+        if (ind < _upper[i]) {
             ++ind;
             break;
         }
         else {
-            ind = _range.lower()[i];
+            ind = _lower[i];
         }
     }
     if (i < 0) {

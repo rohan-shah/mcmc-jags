@@ -87,26 +87,31 @@ void NodeArray::insert(Node *node, Range const &target_range)
 
 Node *NodeArray::find(Range const &target_range) const
 {
-  if (!_range.contains(target_range)) {
-    return 0;
-  }
+    // Find previously inserted node.
 
-  unsigned int offset = _range.leftOffset(target_range.lower());
-  Node *node = _node_pointers[offset];
-  if (!node)
-    return 0;
+    if (!_range.contains(target_range)) {
+	return 0;
+    }
 
-  if (node->dim() != target_range.dim(true))
-    return 0;
+    //We only need to check the first and last elements. If these
+    //are correct then everything else must lie in between.
 
-  RangeIterator j(target_range);
-  for (unsigned int k = 0; !j.atEnd(); j.nextLeft(), ++k) {
-    offset = _range.leftOffset(j);
-    if (_node_pointers[offset] != node || _offsets[offset] != k)
-      return 0;
-  }
+    unsigned int start = _range.leftOffset(target_range.lower());
+    Node *node = _node_pointers[start];
+    if (!node || _offsets[start] != 0)
+	return 0;
 
-  return node;
+    if (node->dim() != target_range.dim(true))
+	return 0;
+
+    if (node->length() > 1) {
+	unsigned int end = _range.leftOffset(target_range.upper());
+	if (_node_pointers[end] != node || _offsets[end] != node->length()) {
+	    return 0;
+	}
+    }
+
+    return node;
 }
 
 Node *NodeArray::getSubset(Range const &target_range, Model &model)

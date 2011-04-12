@@ -20,7 +20,8 @@ using std::vector;
 using std::set;
 using std::string;
 
-static bool checkAggNode(AggNode const *anode, set<Node const *> nodeset)
+static bool checkAggNode(AggNode const *anode, 
+			 set<Node const *> const &nodeset)
 {
     /* 
        Utility function called by ConjugateDirichlet::canSample
@@ -66,7 +67,8 @@ static bool checkAggNode(AggNode const *anode, set<Node const *> nodeset)
     return true;
 }
 
-static bool checkMixNode(MixtureNode const *mnode, set<Node const *> nodeset)
+static bool checkMixNode(MixtureNode const *mnode, 
+			 set<Node const *> const &nodeset)
 {
     /*
       Utility function called by ConjugateDirichlet::canSample

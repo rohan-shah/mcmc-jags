@@ -15,7 +15,7 @@
  * @see Range
  */
 class RangeIterator : public std::vector<int> {
-    const Range _range;
+    std::vector<int> _lower, _upper;
     unsigned int  _atend;
     //Forbid assignment
     RangeIterator &operator=(std::vector<int> const &);

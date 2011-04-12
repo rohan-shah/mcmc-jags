@@ -179,14 +179,13 @@ bool Range::overlaps(Range const &other) const
 
 unsigned int Range::leftOffset(vector<int> const &index) const
 {
-    if (!contains(Range(index,index))) {
-	throw out_of_range("Range::leftOffset. Index outside of allowed range");
-    }
-  
     unsigned int offset = 0;
     int step = 1;
     unsigned int ndim = _upper.size();
     for (unsigned int i = 0; i < ndim; i++) {
+	if (index[i] < _lower[i] || index[i] > _upper[i]) {
+	    throw out_of_range("Range::leftOffset. Index outside of allowed range");
+	}
 	offset += step * (index[i] - _lower[i]);
 	step *= _dim[i];
     }
@@ -210,13 +209,12 @@ vector<int> Range::leftIndex(unsigned int offset) const
 
 unsigned int Range::rightOffset(vector<int> const &index) const
 {
-    if (!contains(Range(index,index))) {
-	throw out_of_range("Range::rightOffset. Index outside of allowed range");
-    }
- 
     unsigned int offset = 0;
     int step = 1;
     for (int i = _upper.size() - 1; i >= 0; --i) {
+	if (index[i] < _lower[i] || index[i] > _upper[i]) {
+	    throw out_of_range("Range::rightOffset. Index outside of allowed range");
+	}
 	offset += step * (index[i] - _lower[i]);
 	step *= _dim[i];
     }

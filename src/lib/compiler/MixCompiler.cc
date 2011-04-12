@@ -147,7 +147,8 @@ static bool hasDescendant(DeterministicNode *node,
 
 //  Find stochastic parents of given set of nodes within the model,
 //  and their intermediate deterministic nodes in forward-sampling order
-static void findStochasticParents(vector<Node const *> const &tgt_nodes, 
+//  We are looking for discrete, univariate parents.
+static bool findStochasticIndices(vector<Node const *> const &tgt_nodes, 
 				  Model const &model,
 				  vector<StochasticNode *> &stoch_parents,
 				  vector<DeterministicNode *> &dtrm_parents)
@@ -160,10 +161,22 @@ static void findStochasticParents(vector<Node const *> const &tgt_nodes,
     set<DeterministicNode*> known_dnodes;
     vector<StochasticNode*> const &snodes = model.stochasticNodes();
     for (unsigned int i = 0; i < snodes.size(); ++i) {
+	/*
+	  if (snodes[i]->isObserved())
+	  continue;
+	*/
 	if (tgt_set.count(snodes[i])) {
 	    stoch_parents.push_back(snodes[i]);
 	}
 	else {
+	    if (snodes[i]->length() != 1 || !snodes[i]->isDiscreteValued() ||
+		!isSupportFixed(snodes[i]))
+	    {
+		//We are only interested if all the stochastic parents
+		//are discrete, univariate, unbounded.
+		return false;
+	    }
+
 	    bool ans = false;
 	    set<DeterministicNode*> const *dc = 
 		snodes[i]->deterministicChildren();
@@ -176,6 +189,11 @@ static void findStochasticParents(vector<Node const *> const &tgt_nodes,
 	    }
 	    if (ans) {
 		stoch_parents.push_back(snodes[i]);
+		if (stoch_parents.size() > 10) {
+		    //This algorithm grinds to a halt with too many
+		    //stochastic parents. So bail out after 10
+		    return 0;
+		}
 	    }
 	}
     }
@@ -185,6 +203,7 @@ static void findStochasticParents(vector<Node const *> const &tgt_nodes,
        dtrm_parents in reverse sampling order.
     */
     reverse(dtrm_parents.begin(), dtrm_parents.end());
+    return true;
 }
 
 static void cloneNodes(vector<StochasticNode*> const &nodes, 
@@ -237,23 +256,8 @@ getMixtureNode1(NodeArray *array, vector<SSI> const &limits, Compiler *compiler)
 
     vector<StochasticNode *> sparents;
     vector<DeterministicNode *> dparents;
-    findStochasticParents(indices, compiler->model(), sparents, dparents);
-
-    if (sparents.size() > 10) {
-	//This algorithm grinds to a halt with too many stochastic parents.
-	//So bail out after 10
+    if (!findStochasticIndices(indices, compiler->model(), sparents, dparents))
 	return 0;
-    }
-
-    for (vector<StochasticNode*>::const_iterator p = sparents.begin();
-	 p != sparents.end(); ++p)
-    {
-	if ((*p)->length() != 1 || !(*p)->isDiscreteValued() ||
-	    !isSupportFixed(*p))
-	{
-	    return 0;
-	}
-    }
 
     unsigned int nparents = sparents.size();  
     vector<int> lower(nparents), upper(nparents);
