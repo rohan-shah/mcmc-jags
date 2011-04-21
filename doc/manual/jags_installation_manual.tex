@@ -87,14 +87,19 @@ If you do not have administrative privileges, you may wish to install
 configuration options
 \begin{verbatim}
 export JAGS_HOME=$HOME/jags #or wherever you want it
-./configure --bindir=$JAGS_HOME/bin --libdir=$JAGS_HOME/lib \
- --libexecdir=$JAGS_HOME/bin --includedir=$JAGS_HOME/include
+./configure --prefix=$JAGS_HOME
 \end{verbatim}
-You then need to modify your PATH environment variable to include
-\verb+$JAGS_HOME/bin+. You may also need to set \verb+LD_LIBRARY_PATH+
-to include \verb+$JAGS_HOME/lib+ (On Linux this is not necessary as
-the location of libjags and libjrmath is hard-coded into the
-\JAGS\ binary).
+For more detailed control over the installation directories type
+\begin{verbatim}
+./configure --help
+\end{verbatim}
+and read the section ``Fine-tuning of the installation directories.''
+
+With a private installation, you need to modify your PATH environment
+variable to include \verb+$JAGS_HOME/bin+. You may also need to set
+\verb+LD_LIBRARY_PATH+ to include \verb+$JAGS_HOME/lib+ (On Linux this
+is not necessary as the location of libjags and libjrmath is hard-coded
+into the \JAGS\ binary).
 
 \subsection{BLAS and LAPACK}
 \label{section:blas:lapack}
