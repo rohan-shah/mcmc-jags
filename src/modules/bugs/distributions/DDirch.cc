@@ -82,11 +82,11 @@ double DDirch::logDensity(double const *x, unsigned int length, PDFType type,
 	double alphasum = 0.0;
 	for (unsigned int i = 0; i < length; i++) {
 	    if (alpha[i] != 0) {
-		loglik -= lgamma(alpha[i]);
+		loglik -= lgammafn(alpha[i]);
 		alphasum += alpha[i];
 	    }
 	}
-	loglik += lgamma(alphasum);
+	loglik += lgammafn(alphasum);
     }
 
     return loglik;
@@ -172,12 +172,12 @@ double DDirch::KL(vector<double const *> const &par1,
 	    return JAGS_POSINF;
 	}
 	else {
-	    y += (a1 - a2) * digamma(a1) + lgamma(a2) - lgamma(a1);
+	    y += (a1 - a2) * digamma(a1) + lgammafn(a2) - lgammafn(a1);
 	    S1 += a1;
 	    S2 += a2;
 	}
     }
-    y -= (S1 - S2) * digamma(S1) + lgamma(S2) - lgamma(S1);
+    y -= (S1 - S2) * digamma(S1) + lgammafn(S2) - lgammafn(S1);
 
     return y;
 }

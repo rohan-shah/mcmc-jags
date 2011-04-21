@@ -47,7 +47,7 @@ double DMT::logDensity(double const *x, unsigned int m, PDFType type,
     }
     else {
 	return -((k + d)/2) * log(1 + ip/k) + logdet(T, m)/2 +
-	    lgamma((k + d)/2) - lgamma(k/2) - (d/2) * log(k) - 
+	    lgammafn((k + d)/2) - lgammafn(k/2) - (d/2) * log(k) - 
 	    (d/2) * log(M_PI);
     }
 }

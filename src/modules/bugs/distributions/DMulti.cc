@@ -81,9 +81,9 @@ double DMulti::logDensity(double const *x, unsigned int length, PDFType type,
     if (type != PDF_LIKELIHOOD) {
 	//Terms depending on sampled value only
 	for (unsigned int i = 0; i < length; ++i) {
-	    loglik -= lgamma(x[i] + 1);
+	    loglik -= lgammafn(x[i] + 1);
 	}
-	loglik += lgamma(SIZE(par) + 1);
+	loglik += lgammafn(SIZE(par) + 1);
     }
 
     return loglik;
