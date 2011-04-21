@@ -79,7 +79,7 @@ Sampler * DSumFactory::makeSampler(set<StochasticNode*> const &nodes,
 	return 0;
     }
     
-    GraphView *gv = new GraphView(parameters, graph);
+    GraphView *gv = new GraphView(parameters, graph, true);
     unsigned int nchain = parameters[0]->nchain();
     vector<SampleMethod*> methods(nchain, 0);
     for (unsigned int ch = 0; ch < nchain; ++ch) {

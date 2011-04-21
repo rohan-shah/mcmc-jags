@@ -180,7 +180,7 @@ bool RWDSum::canSample(vector<StochasticNode *> const &nodes,
 	    return false;
     }
 
-    GraphView gv(nodes, graph);
+    GraphView gv(nodes, graph, true);
 
     set<Node const *> nodeset;
     for (unsigned int i = 0; i < nodes.size(); ++i) {
