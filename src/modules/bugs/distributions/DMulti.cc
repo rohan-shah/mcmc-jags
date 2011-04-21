@@ -24,8 +24,8 @@ bool DMulti::isDiscreteValued(vector<bool> const &mask) const
 
 bool DMulti::checkParameterLength(vector<unsigned int> const &len) const
 {
-    //Check that PROB is a vector and SIZE is a scalar
-    return len[0] > 1  && len[1] == 1;
+    //Check that SIZE is a scalar
+    return len[1] == 1;
 }
 
 bool DMulti::checkParameterDiscrete(vector<bool> const &mask) const
