@@ -25,6 +25,8 @@ using std::max;
 using std::sort;
 using std::string;
 
+namespace bugs {
+
 static double 
 getScale(StochasticNode const *snode, ConjugateDist d, unsigned int chain)
 {
@@ -44,6 +46,7 @@ getScale(StochasticNode const *snode, ConjugateDist d, unsigned int chain)
     } 
 }
 
+
 static void calCoef(double *coef, GraphView const *gv,
 		    vector<ConjugateDist> const &child_dist, unsigned int chain)
 {   
@@ -62,6 +65,7 @@ static void calCoef(double *coef, GraphView const *gv,
     }
     gv->setValue(&xold, 1, chain);
 }
+
 
 ConjugateGamma::ConjugateGamma(GraphView const *gv)
     : ConjugateMethod(gv), _coef(0)
@@ -235,4 +239,6 @@ void ConjugateGamma::update(unsigned int chain, RNG *rng) const
 string ConjugateGamma::name() const
 {
     return "ConjugateGamma";
+}
+
 }

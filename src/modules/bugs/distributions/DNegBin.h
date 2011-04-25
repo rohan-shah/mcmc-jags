@@ -3,6 +3,8 @@
 
 #include "RScalarDist.h"
 
+namespace bugs {
+
 /**
  * <pre>
  * x ~ dnegbin(p, r)
@@ -28,5 +30,7 @@ class DNegBin : public RScalarDist {
   double KL(std::vector<double const *> const &par1,
 	    std::vector<double const *> const &par2) const;
 };
+
+}
 
 #endif /* DNEGBIN_H_ */

@@ -11,9 +11,12 @@ using std::log;
 #define LOWER(par) (*par[0])
 #define UPPER(par) (*par[1])
 
+namespace bugs {
+
 DUnif::DUnif()
     : ScalarDist("dunif", 2, DIST_SPECIAL)
 {}
+
 
 bool  DUnif::checkParameterValue (vector<double const *> const &par) const
 {
@@ -69,4 +72,6 @@ double DUnif::KL(vector<double const *> const &par1,
 	return JAGS_POSINF;
 
     return log(UPPER(par2) - LOWER(par2)) - log(UPPER(par1) - LOWER(par1));
+}
+
 }

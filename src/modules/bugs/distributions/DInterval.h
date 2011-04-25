@@ -3,6 +3,8 @@
 
 #include <distribution/VectorDist.h>
 
+namespace bugs {
+
 /**
  * @short Interval censored distribution
  * <pre>
@@ -44,5 +46,7 @@ public:
 	      std::vector<double const *> const &par2,
 	      std::vector<unsigned int> const &lengths) const;
 };
+
+}
 
 #endif /* DINTERVAL_H_ */

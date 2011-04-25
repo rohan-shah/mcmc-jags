@@ -14,7 +14,7 @@
 using std::vector;
 using std::string;
 
-int indicator(GraphView const *gv, unsigned int ch)
+static int indicator(GraphView const *gv, unsigned int ch)
 {
     return static_cast<int>(gv->stochasticChildren()[0]->value(ch)[0]);
 }
@@ -24,6 +24,7 @@ static Node const *breaks(GraphView const *gv)
     return gv->stochasticChildren()[0]->parents()[1];
 }
 
+namespace bugs {
 
 Censored::Censored(GraphView const *gv)
     : ConjugateMethod(gv), 
@@ -90,4 +91,6 @@ void Censored::update(unsigned int chain, RNG * rng) const
 string Censored::name() const
 {
     return "Censored";
+}
+
 }

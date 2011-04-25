@@ -5,6 +5,8 @@
 
 class StochasticNode;
 
+namespace bugs {
+
 /**
  * @short Sample parents of dsum nodes
  */
@@ -16,5 +18,7 @@ public:
 	      unsigned int ncol, double s, RNG *rng) const;
     std::string name() const;
 };
+
+}
 
 #endif /* DISCRETE_DSUM_H_ */

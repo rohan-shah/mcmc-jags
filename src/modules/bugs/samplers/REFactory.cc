@@ -25,6 +25,8 @@ static bool is_stoch(Node const *node)
    return asStochastic(node);
 }
 
+namespace bugs {
+
 REFactory::REFactory()
     : _name("RE")
 {}
@@ -161,4 +163,6 @@ void REFactory::makeSampler(set<StochasticNode*, less_sampler> &nodes,
 string const &REFactory::name() const
 {
     return _name;
+}
+
 }

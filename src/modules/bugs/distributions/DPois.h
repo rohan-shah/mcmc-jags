@@ -3,6 +3,8 @@
 
 #include "RScalarDist.h"
 
+namespace bugs {
+
 /**
  * <pre>
  * r ~ dpois(lambda)
@@ -28,5 +30,7 @@ class DPois : public RScalarDist {
   double KL(std::vector<double const *> const &par1,
 	    std::vector<double const *> const &par2) const;
 };
+
+}
 
 #endif /* DPOIS_H_ */

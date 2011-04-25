@@ -5,6 +5,8 @@
 
 class GraphView;
 
+namespace bugs {
+
 class MNormMetropolis : public Metropolis
 {
     GraphView const *_gv;
@@ -28,5 +30,7 @@ public:
     void getValue(std::vector<double> &value) const;
     void setValue(std::vector<double> const &value);
 };
+
+}
 
 #endif /* MNORM_METROPOLIS_H_ */

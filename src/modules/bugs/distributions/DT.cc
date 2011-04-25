@@ -11,6 +11,8 @@ using std::vector;
 #define TAU(par) (*par[1])
 #define DF(par) (*par[2])
 
+namespace bugs {
+
 DT::DT()
     : RScalarDist("dt", 3, DIST_UNBOUNDED)
 {}
@@ -46,4 +48,6 @@ double DT::q(double p, vector<double const *> const &par, bool lower,
 double DT::r(vector<double const *> const &par, RNG *rng) const
 {
     return rt(DF(par), rng) / sqrt(TAU(par)) + MU(par);
+}
+
 }

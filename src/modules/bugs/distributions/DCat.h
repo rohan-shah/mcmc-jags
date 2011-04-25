@@ -3,6 +3,8 @@
 
 #include <distribution/VectorDist.h>
 
+namespace bugs {
+
 /**
  * @short Categorical distribution
  * <pre>
@@ -43,5 +45,7 @@ public:
 	      std::vector<double const *> const &par2,
 	      std::vector<unsigned int> const &lengths) const;
 };
+
+}
 
 #endif /* DCAT_H_ */

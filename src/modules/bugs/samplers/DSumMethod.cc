@@ -22,6 +22,8 @@ using std::exp;
 using std::string;
 using std::floor;
 
+namespace bugs {
+
 DSumMethod::DSumMethod(GraphView const *gv, unsigned int chain)
     : Slicer(2, 10), _gv(gv), _chain(chain),
       _sum(gv->stochasticChildren()[0]->value(chain)[0]),
@@ -126,4 +128,6 @@ string DSumMethod::name() const
 double DSumMethod::logDensity() const
 {
     return _gv->logFullConditional(_chain);
+}
+
 }

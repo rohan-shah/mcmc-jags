@@ -23,6 +23,8 @@ static inline double RATE(vector<double const *> const &par)
     return *par[1];
 }
 
+namespace bugs {
+
 DDexp::DDexp()
     : RScalarDist("ddexp", 2, DIST_UNBOUNDED)
 {}
@@ -102,4 +104,6 @@ double DDexp::KL(vector<double const *> const &par1,
     double delta = RATE(par1) * fabs(MU(par2) - MU(par1));
     
     return r * (delta + exp(-delta)) - 1 - log(r);
+}
+
 }

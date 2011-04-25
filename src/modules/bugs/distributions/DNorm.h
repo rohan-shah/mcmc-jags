@@ -3,6 +3,8 @@
 
 #include "RScalarDist.h"
 
+namespace bugs {
+
 /**
  * <pre>
  * x ~ dnorm(mu, tau)
@@ -36,5 +38,7 @@ class DNorm : public RScalarDist {
   double KL(std::vector<double const *> const &par0,
 	    std::vector<double const *> const &par1) const;
 };
+
+}
 
 #endif /* DNORM_H_ */

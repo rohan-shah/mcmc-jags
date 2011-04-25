@@ -14,6 +14,8 @@
 
 using std::vector;
 
+namespace bugs {
+
 DMT::DMT()
   : ArrayDist("dmt", 3) 
 {}
@@ -134,4 +136,6 @@ void DMT::typicalValue(double *x, unsigned int length,
 bool DMT::isSupportFixed(vector<bool> const &fixmask) const
 {
     return true;
+}
+
 }

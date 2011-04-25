@@ -21,6 +21,8 @@ static vector<double> initValue(GraphView const *gv, unsigned int chain)
     return ivalue;
 }
 
+namespace bugs {
+
 DirchMetropolis::DirchMetropolis(GraphView const *gv, unsigned int chain)
     : RWMetropolis(initValue(gv, chain), 0.1),
       _gv(gv), _chain(chain), _s(1)
@@ -85,4 +87,6 @@ double DirchMetropolis::logJacobian(vector<double> const &value) const
 string DirchMetropolis::name() const
 {
     return "DirchMetropolis";
+}
+
 }

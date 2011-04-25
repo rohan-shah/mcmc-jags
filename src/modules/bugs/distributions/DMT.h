@@ -3,6 +3,8 @@
 
 #include <distribution/ArrayDist.h>
 
+namespace bugs {
+
 /**
  * @short Multivariate t distribution
  * <pre>
@@ -45,5 +47,7 @@ public:
                std::vector<std::vector<unsigned int> > const &dims) const;
   bool isSupportFixed(std::vector<bool> const &fixmask) const;
 };
+
+}
 
 #endif /* DMT_H_ */

@@ -3,9 +3,9 @@
 
 #include <function/ScalarFunction.h>
 
-class RScalarDist;
-
 namespace bugs {
+
+    class RScalarDist;
 
     class DPQFunction : public ScalarFunction
     {

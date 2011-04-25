@@ -13,6 +13,8 @@ using std::log;
 using std::min;
 using std::max;
 
+namespace bugs {
+
 double RScalarDist::calPlower(double lower, 
 			      vector<double const*> const &parameters) const
 {
@@ -175,4 +177,6 @@ bool RScalarDist::discrete() const
 unsigned int RScalarDist::npar() const
 {
     return _npar;
+}
+
 }

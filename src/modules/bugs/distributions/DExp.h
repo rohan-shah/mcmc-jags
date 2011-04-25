@@ -3,6 +3,8 @@
 
 #include "RScalarDist.h"
 
+namespace bugs {
+
 /**
  * @short Exponential distribution
  * <pre>
@@ -27,5 +29,7 @@ class DExp : public RScalarDist {
   double KL(std::vector<double const *> const &par1,
 	    std::vector<double const *> const &par2) const;
 };
+
+}
 
 #endif /* DEXP_H_ */

@@ -3,6 +3,8 @@
 
 #include "RScalarDist.h"
 
+namespace bugs {
+
 /**
  * <pre>
  * x ~ dpar(alpha, c);
@@ -28,5 +30,7 @@ class DPar : public RScalarDist {
   bool checkParameterValue(std::vector<double const *> const &parameters) const;
   bool isSupportFixed(std::vector<bool> const &fixmask) const;
 };
+
+}
 
 #endif /* DPAR_H_ */

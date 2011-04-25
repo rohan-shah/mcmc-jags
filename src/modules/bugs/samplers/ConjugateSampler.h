@@ -4,6 +4,8 @@
 #include "ConjugateMethod.h"
 #include <sampler/Sampler.h>
 
+namespace bugs {
+
 class ConjugateSampler : public Sampler
 {
     ConjugateMethod *_method;
@@ -19,5 +21,7 @@ public:
     bool adaptOff();
     std::string name() const;
 };
+
+}
 
 #endif /* CONJUGATE_SAMPLER_H_ */

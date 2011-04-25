@@ -3,6 +3,8 @@
 
 #include "RScalarDist.h"
 
+namespace bugs {
+
 /**
  * @short Beta-Binomial distribution
  * <pre>
@@ -35,5 +37,7 @@ class DBetaBin : public RScalarDist {
   bool checkParameterValue(std::vector<double const *> const &parameters) const;
   bool isSupportFixed(std::vector<bool> const &fixmask) const;
 };
+
+}
 
 #endif /* DBETA_BIN_H_ */

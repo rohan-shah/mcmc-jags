@@ -13,6 +13,8 @@
 using std::vector;
 using std::string;
 
+namespace bugs {
+
 bool 
 MNormalFactory::canSample(StochasticNode * snode, Graph const &graph) const
 {
@@ -35,4 +37,6 @@ MNormalFactory::makeSampler(StochasticNode *snode, Graph const &graph) const
 string MNormalFactory::name() const 
 {
     return "bugs::MNormal";
+}
+
 }

@@ -7,6 +7,8 @@
 class Graph;
 class GraphView;
 
+namespace bugs {
+
 /**
  * @short Random Walk Metropolis-Hastings for parents of DSum nodes
  */
@@ -72,5 +74,6 @@ public:
 
 };
 
+}
 
 #endif /* RW_DSUM_H_ */

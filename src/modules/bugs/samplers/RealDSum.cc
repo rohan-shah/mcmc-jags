@@ -13,11 +13,6 @@
 using std::vector;
 using std::string;
 
-RealDSum::RealDSum(GraphView const *gv, unsigned int chain)
-    : RWDSum(gv, chain, STEP)
-{
-}
-
 //Pick a random integer between 0 and n - 1
 static int pick(int n, RNG *rng)
 {
@@ -25,6 +20,13 @@ static int pick(int n, RNG *rng)
     int i = 1;
     while (i < u) ++i;
     return i - 1;
+}
+
+namespace bugs {
+
+RealDSum::RealDSum(GraphView const *gv, unsigned int chain)
+    : RWDSum(gv, chain, STEP)
+{
 }
 
 void RealDSum::step(vector<double> &value, unsigned int nrow,
@@ -47,6 +49,8 @@ void RealDSum::step(vector<double> &value, unsigned int nrow,
 string RealDSum::name() const
 {
     return "RealDSum";
+}
+
 }
 
 

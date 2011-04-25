@@ -3,6 +3,8 @@
 
 #include <distribution/ScalarDist.h>
 
+namespace bugs {
+
 /**
  * <pre>
  * x ~ dunif(a, b)
@@ -32,5 +34,7 @@ class DUnif : public ScalarDist {
     double KL(std::vector<double const *> const &par1,
 	      std::vector<double const *> const &par2) const;
 };
+
+}
 
 #endif /* DUNIF_H_ */

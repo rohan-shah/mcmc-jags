@@ -9,6 +9,8 @@
 using std::max;
 using std::vector;
 
+namespace bugs {
+
 DExp::DExp()
     : RScalarDist("dexp", 1, DIST_POSITIVE)
 {}
@@ -56,4 +58,6 @@ double DExp::KL(vector<double const *> const &par1,
 {
     double r = (*par2[0]) / (*par1[0]);
     return (r - 1)  - log(r);
+}
+
 }

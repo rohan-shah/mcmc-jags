@@ -10,6 +10,8 @@ class StochasticNode;
 class DeterministicNode;
 class GraphView;
 
+namespace bugs {
+
 /**
  * @short Sample parents of dsum nodes
  */
@@ -32,5 +34,7 @@ public:
     static bool canSample(std::vector<StochasticNode *> const &nodes, 
 			  Graph const &graph);
 };
+
+}
 
 #endif /* DSUM_METHOD_H_ */

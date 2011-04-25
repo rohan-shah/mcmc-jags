@@ -3,6 +3,8 @@
 
 #include <sampler/SamplerFactory.h>
 
+namespace bugs {
+
 /**
  * @short Factory object for discrete sum samplers
  */
@@ -15,5 +17,7 @@ public:
 			  Graph const &graph) const;
     std::string name() const;
 };
+
+}
 
 #endif /* DSUM_FACTORY_H_ */

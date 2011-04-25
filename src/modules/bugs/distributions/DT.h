@@ -3,6 +3,8 @@
 
 #include "RScalarDist.h"
 
+namespace bugs {
+
 /**
  * t-distribution on k degrees of freedom, with median mu and
  * scale parameter tau.
@@ -29,5 +31,7 @@ class DT : public RScalarDist {
   bool checkParameterValue(std::vector<double const *> const &parameters) const;
 
 };
+
+}
 
 #endif /* DT_H_ */

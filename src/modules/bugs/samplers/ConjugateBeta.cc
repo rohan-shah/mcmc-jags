@@ -25,6 +25,8 @@ using std::max;
 using std::min;
 using std::string;
 
+namespace bugs {
+
 bool ConjugateBeta::canSample(StochasticNode *snode, Graph const &graph)
 {
     switch(getDist(snode)) {
@@ -191,4 +193,6 @@ void ConjugateBeta::update(unsigned int chain, RNG *rng) const
 string ConjugateBeta::name() const
 {
     return "ConjugateBeta";
+}
+
 }

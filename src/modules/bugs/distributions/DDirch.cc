@@ -21,6 +21,8 @@ using std::string;
    is fixed.
 */
 
+namespace bugs {
+
 DDirch::DDirch()
   : VectorDist("ddirch", 1) 
 {}
@@ -180,4 +182,6 @@ double DDirch::KL(vector<double const *> const &par1,
     y -= (S1 - S2) * digamma(S1) + lgammafn(S2) - lgammafn(S1);
 
     return y;
+}
+
 }

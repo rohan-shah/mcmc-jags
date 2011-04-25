@@ -3,6 +3,8 @@
 
 #include <distribution/ArrayDist.h>
 
+namespace bugs {
+
 /**
  * <pre>
  * x[] ~ dwish(R[,], k)
@@ -49,5 +51,7 @@ public:
   bool isSupportFixed(std::vector<bool> const &fixmask) const;
   unsigned int df(std::vector<std::vector<unsigned int> > const &dims) const;
 };
+
+}
 
 #endif /* DWISH_H_ */

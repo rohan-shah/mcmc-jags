@@ -21,6 +21,8 @@ using std::set;
 using std::sqrt;
 using std::string;
 
+namespace bugs {
+
 bool ConjugateWishart::canSample(StochasticNode *snode, Graph const &graph)
 {
     if (getDist(snode) != WISH)
@@ -144,4 +146,6 @@ ConjugateWishart::update(unsigned int chain, RNG *rng) const
 string ConjugateWishart::name() const
 {
     return "ConjugateWishart";
+}
+
 }

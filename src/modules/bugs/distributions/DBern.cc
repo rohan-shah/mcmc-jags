@@ -14,6 +14,8 @@ using std::max;
 
 #define PROB(par) (*par[0])
 
+namespace bugs {
+
 DBern::DBern()
     : ScalarDist("dbern", 1, DIST_PROPORTION)
 {}
@@ -79,4 +81,6 @@ double DBern::KL(vector<double const *> const &par1,
     else {
 	return p1 * (log(p1) - log(p2)) +  (1 - p1) * (log(1-p1) - log(1-p2));
     }
+}
+
 }

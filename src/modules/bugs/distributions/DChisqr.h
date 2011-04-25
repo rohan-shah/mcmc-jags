@@ -3,6 +3,8 @@
 
 #include "RScalarDist.h"
 
+namespace bugs {
+
 /**
  * @short Chi square distribution
  * <pre>
@@ -29,5 +31,7 @@ class DChisqr : public RScalarDist {
   double KL(std::vector<double const *> const &par1,
 	    std::vector<double const *> const &par2) const;
 };
+
+}
 
 #endif /* DCHISQ_H_ */

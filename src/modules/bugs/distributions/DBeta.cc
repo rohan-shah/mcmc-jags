@@ -5,6 +5,8 @@
 
 using std::vector;
 
+namespace bugs {
+
 DBeta::DBeta()
     : RScalarDist("dbeta", 2, DIST_PROPORTION)
 {}
@@ -52,4 +54,6 @@ double DBeta::KL(vector<double const *> const &par1,
 	- (a2 - a1) * digamma(a1)
 	- (b2 - b1) * digamma(b1)
 	+ (a2 + b2 - a1 - b1) * digamma(a1 + b1);
+}
+
 }

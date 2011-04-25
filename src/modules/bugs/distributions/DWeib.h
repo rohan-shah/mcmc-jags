@@ -3,6 +3,8 @@
 
 #include "RScalarDist.h"
 
+namespace bugs {
+
 /**
  * <pre>
  * x ~ dweib(a, b)
@@ -26,5 +28,7 @@ public:
    */
   bool checkParameterValue(std::vector<double const *> const &parameters) const;
 };
+
+}
 
 #endif /* DWEIB_H_ */

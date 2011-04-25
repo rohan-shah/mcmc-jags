@@ -20,6 +20,8 @@
 
 using std::string;
 
+namespace bugs {
+
 bool ConjugateFactory::canSample(StochasticNode * snode,
 				 Graph const &graph) const
 {
@@ -134,4 +136,6 @@ Sampler *ConjugateFactory::makeSampler(StochasticNode *snode,
 string ConjugateFactory::name() const
 {
     return "bugs::Conjugate";
+}
+
 }

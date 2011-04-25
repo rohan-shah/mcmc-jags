@@ -59,6 +59,7 @@ static void calBeta(double *beta, GraphView const *gv, unsigned int chain)
     }
 }
 
+namespace bugs {
 
 ConjugateNormal::ConjugateNormal(GraphView const *gv)
     : ConjugateMethod(gv), _betas(0), _length_betas(0)
@@ -262,4 +263,6 @@ void ConjugateNormal::update(unsigned int chain, RNG *rng) const
 string ConjugateNormal::name() const
 {
     return "ConjugateNormal";
+}
+
 }

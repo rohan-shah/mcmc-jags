@@ -5,6 +5,8 @@
 
 #include <sampler/SingletonFactory.h>
 
+namespace bugs {
+
 /**
  * @short Factory object for multivariate normal samplers
  */
@@ -15,5 +17,7 @@ public:
     Sampler *makeSampler(StochasticNode *snode, Graph const &graph) const;
     std::string name() const;
 };
+
+}
 
 #endif /* DIRICHLET_FACTORY_H_ */

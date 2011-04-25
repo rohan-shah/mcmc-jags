@@ -9,6 +9,8 @@ using std::vector;
 #define SCALE(par) (1 / *par[1])
 #define RATE(par) (*par[1])
 
+namespace bugs {
+
 DGamma::DGamma()
     : RScalarDist("dgamma", 2, DIST_POSITIVE)
 {}
@@ -63,4 +65,6 @@ double DGamma::KL(vector<double const *> const &par1,
     double r = RATE(par2) / RATE(par1);
     return (r - 1) * b1  - b2 * log(r)
 	+ (b1 - b2) * digamma(b1) + lgammafn(b2) - lgammafn(b1);
+}
+
 }

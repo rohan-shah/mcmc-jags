@@ -5,6 +5,8 @@
 
 struct RNG;
 
+namespace bugs {
+
 /**
  * @short Scalar Distribution using R math library infrastructure.
  *
@@ -102,4 +104,7 @@ public:
     unsigned int npar() const;
 };
 
+}
+
 #endif /* SCALAR_DIST_RMATH_H_ */
+

@@ -3,6 +3,8 @@
 
 #include "ConjugateMethod.h"
 
+namespace bugs {
+
 /**
  * Conjugate method for the Wishart distribution
  *
@@ -18,5 +20,7 @@ public:
     static bool canSample(StochasticNode *snode, Graph const &graph);
     std::string name() const;
 };
+
+}
 
 #endif /* CONJUGATE_WISHART_H_ */

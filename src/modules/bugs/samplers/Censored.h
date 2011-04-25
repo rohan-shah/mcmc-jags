@@ -5,6 +5,8 @@
 
 class StochasticNode;
 
+namespace bugs {
+
 /**
  * Update Method for censored real-valued distributions.
  */
@@ -16,5 +18,7 @@ public:
     void update(unsigned int chain, RNG * rng) const;
     std::string name() const;
 };
+
+}
 
 #endif /* CENSORED_H_ */

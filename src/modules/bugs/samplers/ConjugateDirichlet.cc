@@ -106,6 +106,8 @@ static bool checkMixNode(MixtureNode const *mnode,
     return true;
 }
 
+namespace bugs {
+
 bool ConjugateDirichlet::canSample(StochasticNode *snode, Graph const &graph)
 {
     /*
@@ -418,4 +420,6 @@ void ConjugateDirichlet::update(unsigned int chain, RNG *rng) const
 string ConjugateDirichlet::name() const
 {
     return "ConjugateDirichlet";
+}
+
 }

@@ -30,6 +30,8 @@ static vector<StochasticNode*> merg(StochasticNode *variance,
     return nodes;
 }
 
+namespace bugs {
+
 RESampler::RESampler(StochasticNode *variance,
 		     vector<StochasticNode *> const &effects,
 		     Graph const &graph, unsigned int chain,
@@ -181,4 +183,6 @@ void RESampler::transformValues(const double *v, unsigned int length,
 bool RESampler::checkAdaptation() const
 {
     return true; //FIXME!!
+}
+
 }

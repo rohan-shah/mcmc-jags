@@ -86,128 +86,131 @@
 #include <samplers/DirichletFactory.h>
 
 using std::vector;
-using namespace bugs;
 
-class BUGSModule : public Module {
-public:
-    BUGSModule();
-    ~BUGSModule();
-    void Rinsert(RScalarDist *dist);
-};
+namespace bugs {
 
-BUGSModule::BUGSModule() 
-    : Module("bugs")
-{
+    class BUGSModule : public Module {
+    public:
+	BUGSModule();
+	~BUGSModule();
+	void Rinsert(RScalarDist *dist);
+    };
 
-    //Load distributions
-    insert(new DBern);
-    Rinsert(new DBeta);
-    Rinsert(new DBetaBin);
-    Rinsert(new DBin);
-    insert(new DCat);
-    Rinsert(new DChisqr);
-    Rinsert(new DDexp);
-    insert(new DDirch);
-    Rinsert(new DExp);
-    Rinsert(new DF);
-    Rinsert(new DGamma);
-    Rinsert(new DGenGamma);
-    Rinsert(new DLnorm);
-    Rinsert(new DLogis);
-    insert(new DMNorm);
-    insert(new DMT);
-    insert(new DMulti);
-    Rinsert(new DNegBin);
-    Rinsert(new DNorm);
-    Rinsert(new DPar);
-    Rinsert(new DPois);
-    Rinsert(new DT);
-    insert(new DUnif);
-    Rinsert(new DWeib);
-    insert(new DWish);
-    Rinsert(new DHyper);
+    BUGSModule::BUGSModule() 
+	: Module("bugs")
+    {
 
-    //Load functions
-    insert(new Abs);
-    insert(new ArcCos);
-    insert(new ArcCosh);
-    insert(new ArcSin);
-    insert(new ArcSinh);
-    insert(new ArcTan);
-    insert(new ArcTanh);
-    insert(new Cos);
-    insert(new Cosh);
-    insert(new CLogLog);
-    insert(new Exp);
-    insert(new Equals);
-    insert(new ICLogLog);
-    insert(new ILogit);
-    insert(new InProd);
-    insert(new InterpLin);
-    insert(new Inverse);
-    insert(new Log);
-    insert(new LogDet);
-    insert(new LogFact);
-    insert(new LogGam);
-    insert(new Logit);
-    insert(new MatMult);
-    insert(new Max);
-    insert(new Mean);
-    insert(new Min);
-    insert(new Phi);
-    insert(new Pow);
-    insert(new Probit);
-    insert(new Prod);
-    insert(new Rank);
-    insert(new Round);
-    insert(new SD);
-    insert(new Sin);
-    insert(new Sinh);
-    insert(new Sort);
-    insert(new Sqrt);
-    insert(new Step);
-    insert(new Sum);
-    insert(new Tan);
-    insert(new Tanh);
-    insert(new Transpose);
-    insert(new Trunc);
+	//Load distributions
+	insert(new DBern);
+	Rinsert(new DBeta);
+	Rinsert(new DBetaBin);
+	Rinsert(new DBin);
+	insert(new DCat);
+	Rinsert(new DChisqr);
+	Rinsert(new DDexp);
+	insert(new DDirch);
+	Rinsert(new DExp);
+	Rinsert(new DF);
+	Rinsert(new DGamma);
+	Rinsert(new DGenGamma);
+	Rinsert(new DLnorm);
+	Rinsert(new DLogis);
+	insert(new DMNorm);
+	insert(new DMT);
+	insert(new DMulti);
+	Rinsert(new DNegBin);
+	Rinsert(new DNorm);
+	Rinsert(new DPar);
+	Rinsert(new DPois);
+	Rinsert(new DT);
+	insert(new DUnif);
+	Rinsert(new DWeib);
+	insert(new DWish);
+	Rinsert(new DHyper);
 
-    //Load observable functions
-    insert(new DSum, new DSumFunc);
-    insert(new DInterval, new DIntervalFunc);
+	//Load functions
+	insert(new Abs);
+	insert(new ArcCos);
+	insert(new ArcCosh);
+	insert(new ArcSin);
+	insert(new ArcSinh);
+	insert(new ArcTan);
+	insert(new ArcTanh);
+	insert(new Cos);
+	insert(new Cosh);
+	insert(new CLogLog);
+	insert(new Exp);
+	insert(new Equals);
+	insert(new ICLogLog);
+	insert(new ILogit);
+	insert(new InProd);
+	insert(new InterpLin);
+	insert(new Inverse);
+	insert(new Log);
+	insert(new LogDet);
+	insert(new LogFact);
+	insert(new LogGam);
+	insert(new Logit);
+	insert(new MatMult);
+	insert(new Max);
+	insert(new Mean);
+	insert(new Min);
+	insert(new Phi);
+	insert(new Pow);
+	insert(new Probit);
+	insert(new Prod);
+	insert(new Rank);
+	insert(new Round);
+	insert(new SD);
+	insert(new Sin);
+	insert(new Sinh);
+	insert(new Sort);
+	insert(new Sqrt);
+	insert(new Step);
+	insert(new Sum);
+	insert(new Tan);
+	insert(new Tanh);
+	insert(new Transpose);
+	insert(new Trunc);
+
+	//Load observable functions
+	insert(new DSum, new DSumFunc);
+	insert(new DInterval, new DIntervalFunc);
         
-    //Load sampler factories
-    insert(new MNormalFactory);
-    insert(new DirichletFactory);
-    insert(new ConjugateFactory);
-    //insert(new REFactory);
-    insert(new DSumFactory);
-}
-
-BUGSModule::~BUGSModule() {
-
-    vector<Distribution*> const &dvec = distributions();
-    for (unsigned int i = 0; i < dvec.size(); ++i) {
-	delete dvec[i];
+	//Load sampler factories
+	insert(new MNormalFactory);
+	insert(new DirichletFactory);
+	insert(new ConjugateFactory);
+	//insert(new REFactory);
+	insert(new DSumFactory);
     }
 
-    vector<Function*> const &fvec = functions();
-    for (unsigned int i = 0; i < fvec.size(); ++i) {
-	delete fvec[i];
+    BUGSModule::~BUGSModule() {
+
+	vector<Distribution*> const &dvec = distributions();
+	for (unsigned int i = 0; i < dvec.size(); ++i) {
+	    delete dvec[i];
+	}
+
+	vector<Function*> const &fvec = functions();
+	for (unsigned int i = 0; i < fvec.size(); ++i) {
+	    delete fvec[i];
+	}
+
+	vector<SamplerFactory*> const &svec = samplerFactories();
+	for (unsigned int i = 0; i < svec.size(); ++i) {
+	    delete svec[i];
+	}
     }
 
-    vector<SamplerFactory*> const &svec = samplerFactories();
-    for (unsigned int i = 0; i < svec.size(); ++i) {
-	delete svec[i];
+    void BUGSModule::Rinsert(RScalarDist *dist)
+    {
+	insert(dist);    
+	insert(new DFunction(dist));
+	insert(new PFunction(dist));
+	insert(new QFunction(dist));
     }
+
 }
 
-void BUGSModule::Rinsert(RScalarDist *dist)
-{
-    insert(dist);    
-    insert(new DFunction(dist));
-    insert(new PFunction(dist));
-    insert(new QFunction(dist));
-}
-
-BUGSModule _bugs_module;
+bugs::BUGSModule _bugs_module;

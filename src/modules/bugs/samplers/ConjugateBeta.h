@@ -3,6 +3,8 @@
 
 #include "ConjugateMethod.h"
 
+namespace bugs {
+
 /**
  * @short Conjugate sampler for the beta distribution
  *
@@ -19,5 +21,7 @@ public:
     static bool canSample(StochasticNode *snode, Graph const &graph);
     std::string name() const;
 };
+
+}
 
 #endif /* CONJUGATE_BETA_H_ */

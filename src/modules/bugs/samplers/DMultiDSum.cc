@@ -16,6 +16,8 @@ using std::string;
 //Initial step size
 #define STEP 1
 
+namespace bugs {
+
 DMultiDSum::DMultiDSum(GraphView const *gv, unsigned int chain)
     : RWDSum(gv, chain, STEP)
 {
@@ -60,3 +62,4 @@ string DMultiDSum::name() const
     return "DMultiDSum";
 }
 
+}

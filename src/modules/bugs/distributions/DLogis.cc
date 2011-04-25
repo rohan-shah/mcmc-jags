@@ -9,6 +9,8 @@ using std::vector;
 #define SCALE(par) (1 / *par[1])
 #define TAU(par) (*par[1])
 
+namespace bugs {
+
 DLogis::DLogis()
     : RScalarDist("dlogis", 2, DIST_UNBOUNDED)
 {}
@@ -45,4 +47,4 @@ DLogis::r(vector<double const *> const &par, RNG *rng) const
     return ans;
 }
 
-//FIXME: No entry in manual
+}

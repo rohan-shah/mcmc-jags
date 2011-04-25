@@ -25,6 +25,8 @@ static inline double UNtransform(double x, vector<double const*> const &par)
     return exp(log(x) / POW(par) - log(URATE(par)));
 }
 
+namespace bugs {
+
 DGenGamma::DGenGamma()
     : RScalarDist("dgen.gamma", 3, DIST_POSITIVE)
 {}
@@ -91,4 +93,6 @@ double DGenGamma::KL(vector<double const *> const &par1,
 	+ (r1 -  phi * r2) * digamma(r1)
 	+ pow(theta, beta2) * gammafn(r1 + phi) / gammafn(r1) - r1
 	+ lgammafn(r2) - lgammafn(r1);
+}
+
 }

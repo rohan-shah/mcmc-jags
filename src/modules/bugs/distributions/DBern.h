@@ -3,6 +3,8 @@
 
 #include "RScalarDist.h"
 
+namespace bugs {
+
 /**
  * @short Bernoulli distribution
  * <pre>
@@ -31,5 +33,7 @@ public:
     double KL(std::vector<double const *> const &par1, 
 	      std::vector<double const *> const &par2) const;
 };
+
+}
 
 #endif /* DBERN_H_ */

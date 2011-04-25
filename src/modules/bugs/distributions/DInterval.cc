@@ -24,6 +24,8 @@ static unsigned int value(vector<double const *> const &par, unsigned int ncut)
     return ncut;
 }
 
+namespace bugs {
+
 DInterval::DInterval()
     : VectorDist("dinterval", 2)
 {
@@ -134,3 +136,4 @@ double DInterval::KL(vector<double const *> const &par1,
     }
 }
 
+}

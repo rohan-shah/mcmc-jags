@@ -13,6 +13,8 @@ using std::vector;
 #define SIGMA(par) (1/sqrt(*par[1]))
 #define TAU(par) (*par[1])
 
+namespace bugs {
+
 DNorm::DNorm()
     : RScalarDist("dnorm", 2, DIST_UNBOUNDED)
 {}
@@ -82,4 +84,6 @@ double DNorm::KL(vector<double const *> const &par0,
 
     return ((mu0 - mu1) * (mu0 - mu1) * tau1 + tau1/tau0 - 1 + 
 	    log(tau0/tau1)) / 2;
+}
+
 }

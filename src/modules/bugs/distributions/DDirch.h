@@ -5,6 +5,8 @@
 
 struct RNG;
 
+namespace bugs {
+
 /**
  * @short Dirichlet distribution
  *
@@ -60,5 +62,7 @@ public:
 	      std::vector<double const *> const &par2,
 	      std::vector<unsigned int> const &len) const;
 };
+
+}
 
 #endif /* DDIRCH_H_ */

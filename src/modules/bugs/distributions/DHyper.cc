@@ -21,6 +21,8 @@ using std::max;
 using std::min;
 using std::vector;
 
+namespace bugs {
+
 DHyper::DHyper()
     : RScalarDist("dhyper", 4, DIST_SPECIAL, true)
 {}
@@ -354,4 +356,6 @@ double DHyper::KL(vector<double const *> const &para,
 	y += proba * (log(proba) - log(probb));
     }
     return y;
+}
+
 }

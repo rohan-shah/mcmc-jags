@@ -32,6 +32,7 @@ static vector<double> initValue(GraphView const *gv, unsigned int chain)
     return ivalue;
 }
 
+namespace bugs {
 
 MNormMetropolis::MNormMetropolis(GraphView const *gv, unsigned int chain)
     : Metropolis(initValue(gv, chain)),
@@ -173,4 +174,6 @@ void MNormMetropolis::getValue(vector<double> &value) const
 void MNormMetropolis::setValue(vector<double> const &value)
 {
     _gv->setValue(value, _chain);
+}
+
 }

@@ -108,6 +108,8 @@ static vector<double> nodeValues(GraphView const *gv, unsigned int chain)
     return(ans);
 }
 
+namespace bugs {
+
 RWDSum::RWDSum(GraphView const *gv, unsigned int chain, double step)
     : Metropolis(nodeValues(gv, chain)), _gv(gv), _chain(chain), 
     _step_adapter(step, PROB), _pmean(0), _niter(2), _dsnode(getDSumNode(gv))
@@ -228,4 +230,6 @@ void RWDSum::setValue(vector<double> const &value)
 void RWDSum::getValue(vector<double> &value) const
 {
     _gv->getValue(value, _chain);
+}
+
 }

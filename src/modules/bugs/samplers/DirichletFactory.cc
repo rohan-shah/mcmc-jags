@@ -13,6 +13,8 @@
 using std::vector;
 using std::string;
 
+namespace bugs {
+
 bool 
 DirichletFactory::canSample(StochasticNode * snode, Graph const &graph) const
 {
@@ -35,4 +37,6 @@ DirichletFactory::makeSampler(StochasticNode *snode, Graph const &graph) const
 string DirichletFactory::name() const
 {
     return "bugs::Dirichlet";
+}
+
 }

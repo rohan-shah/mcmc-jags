@@ -3,6 +3,8 @@
 
 #include "RScalarDist.h"
 
+namespace bugs {
+
 /**
  * @short Beta distribution
  * <pre>
@@ -28,5 +30,7 @@ class DBeta : public RScalarDist {
   double KL(std::vector<double const *> const &par1, 
 	    std::vector<double const *> const &par2) const;
 };
+
+}
 
 #endif /* DBETA_H_ */

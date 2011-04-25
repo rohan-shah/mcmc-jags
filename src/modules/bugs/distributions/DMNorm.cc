@@ -13,6 +13,8 @@
 
 using std::vector;
 
+namespace bugs {
+
 DMNorm::DMNorm()
   : ArrayDist("dmnorm", 2) 
 {}
@@ -167,4 +169,6 @@ void DMNorm::typicalValue(double *x, unsigned int m,
 bool DMNorm::isSupportFixed(vector<bool> const &fixmask) const
 {
     return true;
+}
+
 }

@@ -8,6 +8,8 @@
 class StochasticNode;
 class GraphView;
 
+namespace bugs {
+
 /**
  * @short Sample parents of dsum nodes
  */
@@ -19,5 +21,7 @@ public:
 	      unsigned int ncol, double s, RNG *rng) const;
     std::string name() const;
 };
+
+}
 
 #endif /* REAL_DSUM_H_ */

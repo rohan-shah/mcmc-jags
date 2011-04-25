@@ -13,6 +13,8 @@ using std::log;
 #define ALPHA(par) (*par[0])
 #define C(par) (*par[1])
 
+namespace bugs {
+
 DPar::DPar()
     : RScalarDist("dpar", 2, DIST_SPECIAL)
 {}
@@ -99,4 +101,6 @@ double DPar::u(vector<double const*> const &par) const
 bool DPar::isSupportFixed(vector<bool> const &fixmask) const
 {
     return fixmask[1]; //Fixed if C is fixed
+}
+
 }

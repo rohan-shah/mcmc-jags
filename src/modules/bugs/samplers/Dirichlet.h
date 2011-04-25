@@ -4,7 +4,7 @@
 #include <sampler/RWMetropolis.h>
 #include <sampler/GraphView.h>
 
-//class GraphView;
+namespace bugs {
 
 class DirchMetropolis : public RWMetropolis
 {
@@ -20,5 +20,7 @@ public:
     double logDensity() const;
     std::string name() const;
 };
+
+}
 
 #endif /* DIRICHLET_METROPOLIS_H_ */

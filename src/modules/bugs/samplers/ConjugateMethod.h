@@ -9,6 +9,8 @@ class RNG;
 class Graph;
 class StochasticNode;
 
+namespace bugs {
+
 enum ConjugateDist {
     BERN, BETA, BIN, CAT, CHISQ, DEXP, DIRCH, EXP, GAMMA,
     LNORM, LOGIS, MNORM, MULTI, NEGBIN, NORM, PAR, POIS,
@@ -34,6 +36,8 @@ public:
     virtual void update(unsigned int chain, RNG *rng) const = 0;
     virtual std::string name() const = 0;
 };
+
+}
 
 #endif /* CONJUGATE_METHOD_H_ */
 

@@ -3,6 +3,8 @@
 
 #include "RScalarDist.h"
 
+namespace bugs {
+
 /**
  * F distribution on n1, n2 degrees of freedom
  * <pre>
@@ -28,5 +30,7 @@ class DF : public RScalarDist {
    */
   bool checkParameterValue(std::vector<double const *> const &parameters) const;
 };
+
+}
 
 #endif /* DF_H_ */

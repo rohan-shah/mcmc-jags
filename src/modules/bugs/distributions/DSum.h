@@ -3,6 +3,8 @@
 
 #include <distribution/ArrayDist.h>
 
+namespace bugs {
+
 /**
  * @short Sum of 2 or more random variables
  */
@@ -37,5 +39,7 @@ public:
     std::vector<unsigned int> 
 	dim(std::vector <std::vector<unsigned int> > const &dims) const;
 };
+
+}
 
 #endif /* DSUM_H_ */

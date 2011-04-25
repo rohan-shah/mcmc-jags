@@ -22,10 +22,6 @@ using std::log;
 #define DF(par)    (*par[1])
 #define NROW(dims)  (dims[0][0])
 
-DWish::DWish()
-  : ArrayDist("dwish", 2) 
-{}
-
 static double log_multigamma(double n, unsigned int p)
 {
     double y =  (p * (p-1) * log(M_PI))/4;
@@ -34,7 +30,13 @@ static double log_multigamma(double n, unsigned int p)
     }
     return y;
 }
+
+namespace bugs {
     
+DWish::DWish()
+  : ArrayDist("dwish", 2) 
+{}
+
 double DWish::logDensity(double const *x, unsigned int length, PDFType type,
 			 vector<double const *> const &par,
 			 vector<vector<unsigned int> > const &dims,
@@ -223,3 +225,4 @@ unsigned int DWish::df(vector<vector<unsigned int> > const &dims) const
   return dims[0][0] * (dims[0][0] + 1) / 2;
 }
 
+}

@@ -5,6 +5,8 @@
 
 class Node;
 
+namespace bugs {
+
 class TruncatedGamma : public ConjugateMethod {
     double _shape;
     Node const *_parent;
@@ -15,5 +17,7 @@ public:
     void update(unsigned int chain, RNG *rng) const;
     std::string name() const;
 };
+
+}
 
 #endif /* TRUNCATED_GAMMA_H_ */

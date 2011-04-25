@@ -3,6 +3,8 @@
 
 #include "ConjugateMethod.h"
 
+namespace bugs {
+
 /**
  * Conjugate sampler for the normal distribution.
  * A conjugate sampler can be created for a stochastic node "snode"
@@ -21,5 +23,7 @@ public:
     static bool canSample(StochasticNode *snode, Graph const &graph);
     std::string name() const;
 };
+
+}
 
 #endif /* CONJUGATE_NORMAL_H_ */

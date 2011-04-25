@@ -14,6 +14,8 @@ using std::string;
 #define PROB(par) (*par[0])
 #define SIZE(par) (*par[1])
 
+namespace bugs {
+
 DNegBin::DNegBin()
     : RScalarDist("dnegbin", 2, DIST_POSITIVE, true)
 {}
@@ -66,4 +68,6 @@ double DNegBin::KL(vector<double const *> const &par1,
 
     return r1 * log(p1) - r2 * log(p2) + 
 	(1 - p1) * r1 * (log(1 - p1) - log(1 - p2)) / p1;
+}
+
 }

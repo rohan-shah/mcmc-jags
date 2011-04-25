@@ -11,6 +11,8 @@ using std::max;
 
 #define LAMBDA(par) (*par[0])
 
+namespace bugs {
+
 DPois::DPois()
     : RScalarDist("dpois", 1, DIST_POSITIVE, true)
 {}
@@ -52,4 +54,6 @@ double DPois::KL(vector<double const *> const &par1,
     double lambda2 = LAMBDA(par2);
 
     return lambda1 * (log(lambda1) - log(lambda2)) - lambda1 + lambda2;
+}
+
 }

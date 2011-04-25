@@ -19,6 +19,8 @@ using std::max_element;
 #define PROB(par) (par[0])
 #define NCAT(lengths) (lengths[0])
 
+namespace bugs {
+
 DCat::DCat()
     : VectorDist("dcat", 1) 
 {}
@@ -146,4 +148,6 @@ double DCat::KL(vector<double const *> const &par1,
     y /= psum1;
     y -= (log(psum1) - log(psum2));
     return y;
+}
+
 }

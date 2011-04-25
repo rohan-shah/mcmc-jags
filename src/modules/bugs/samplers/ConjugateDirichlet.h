@@ -3,6 +3,8 @@
 
 #include "ConjugateMethod.h"
 
+namespace bugs {
+
 /**
  * @short Conjugate sampler for Dirichlet distribution.  
  *
@@ -23,5 +25,7 @@ public:
     static bool canSample(StochasticNode *snode, Graph const &graph);
     std::string name() const;
 };
+
+}
 
 #endif /* CONJUGATE_DIRICHLET_H_ */

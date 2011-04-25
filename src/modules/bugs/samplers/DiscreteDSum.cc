@@ -16,10 +16,6 @@ using std::string;
 //Initial step size
 #define STEP 1
 
-DiscreteDSum::DiscreteDSum(GraphView const *gv, unsigned int chain)
-    : RWDSum(gv, chain, STEP)
-{
-}
 
 //Pick a random integer between 0 and n - 1
 static int pick(int n, RNG *rng)
@@ -28,6 +24,13 @@ static int pick(int n, RNG *rng)
     int i = 1;
     while (i < u) ++i;
     return i - 1;
+}
+
+namespace bugs {
+
+DiscreteDSum::DiscreteDSum(GraphView const *gv, unsigned int chain)
+    : RWDSum(gv, chain, STEP)
+{
 }
 
 void DiscreteDSum::step(vector<double> &value, 
@@ -54,3 +57,4 @@ string DiscreteDSum::name() const
     return "DiscreteDSum";
 }
 
+}

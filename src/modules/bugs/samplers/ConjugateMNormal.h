@@ -3,6 +3,8 @@
 
 #include "ConjugateMethod.h"
 
+namespace bugs {
+
 /**
  * Conjugate sampler for multivariate normal distribution
  *
@@ -26,5 +28,7 @@ class ConjugateMNormal : public ConjugateMethod {
   static bool canSample(StochasticNode *snode, Graph const &graph);
   std::string name() const;
 };
+
+}
 
 #endif /* CONJUGATE_M_NORMAL_H_ */

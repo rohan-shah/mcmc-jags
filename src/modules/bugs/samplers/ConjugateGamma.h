@@ -3,6 +3,8 @@
 
 #include "ConjugateMethod.h"
 
+namespace bugs {
+
 class ConjugateGamma : public ConjugateMethod {
     double *_coef;
 public:
@@ -12,5 +14,7 @@ public:
     void update(unsigned int chain, RNG *rng) const;
     std::string name() const;
 };
+
+}
 
 #endif /* CONJUGATE_GAMMA_H_ */

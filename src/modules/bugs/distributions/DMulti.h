@@ -5,6 +5,8 @@
 
 struct RNG;
 
+namespace bugs {
+
 /**
  * <pre>
  * X[] ~ dmulti(p[], N)
@@ -50,5 +52,7 @@ public:
 	    std::vector<double const *> const &par2,
 	    std::vector<unsigned int> const &lengths) const;
 };
+
+}
 
 #endif /* DMULTI_H_ */

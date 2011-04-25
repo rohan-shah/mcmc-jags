@@ -32,6 +32,8 @@ using std::string;
    permitted.  
 */
 
+namespace bugs {
+
 static Node const * getParent(StochasticNode const *snode)
 {
     //Choose appropriate parent for stochastic child
@@ -287,4 +289,6 @@ void TruncatedGamma::update(unsigned int chain, RNG *rng) const
 string TruncatedGamma::name() const
 {
     return "TruncatedGamma";
+}
+
 }

@@ -13,6 +13,8 @@ using std::vector;
 #define PROB(par) (par[0])
 #define SIZE(par) (*par[1])
 
+namespace bugs {
+
 DMulti::DMulti()
   : VectorDist("dmulti", 2) 
 {}
@@ -206,4 +208,6 @@ double DMulti::KL(vector<double const *> const &par1,
 	y *= SIZE(par1);
     }
     return y;
+}
+
 }

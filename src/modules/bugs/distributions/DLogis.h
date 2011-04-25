@@ -3,6 +3,8 @@
 
 #include "RScalarDist.h"
 
+namespace bugs {
+
 /** 
  * Logistic distribution
  * <pre>
@@ -25,5 +27,7 @@ class DLogis : public RScalarDist {
    */
   bool checkParameterValue(std::vector<double const *> const &parameters) const;
 };
+
+}
 
 #endif /* DLOGIS_H_ */

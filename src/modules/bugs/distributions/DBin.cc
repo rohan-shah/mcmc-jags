@@ -16,6 +16,8 @@ using std::string;
 #define SIZE(par) (*par[1])
 #define PROB(par) (*par[0])
 
+namespace bugs {
+
 DBin::DBin()
     : RScalarDist("dbin", 2, DIST_SPECIAL, true)
 {}
@@ -101,4 +103,4 @@ double DBin::KL(vector<double const *> const &par0,
     }
 }
 
-//FIXME Namespace???
+}

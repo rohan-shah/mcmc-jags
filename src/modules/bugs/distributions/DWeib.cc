@@ -17,6 +17,8 @@ using std::string;
 #define V(par) (*par[0])
 #define LAMBDA(par) (*par[1])
 
+namespace bugs {
+
 DWeib::DWeib()
     : RScalarDist("dweib", 2, DIST_POSITIVE)
 {}
@@ -98,4 +100,6 @@ double DWeib::r(vector<double const *> const &par, RNG *rng) const
     //return exp(log(rng->exponential()/LAMBDA(par))/V(par));
 
     return rweibull(SHAPE(par), SCALE(par), rng);
+}
+
 }

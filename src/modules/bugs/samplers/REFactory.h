@@ -5,6 +5,8 @@
 class StochasticNode;
 class Graph;
 
+namespace bugs {
+
 /**
  * @short Factory object for random effect samplers
  *
@@ -23,5 +25,7 @@ public:
 		     std::vector<std::vector<Sampler*> > &samplers) const;
     std::string const &name() const;
 };
+
+}
 
 #endif /* RANDOM_EFFECT_FACTORY_H_ */

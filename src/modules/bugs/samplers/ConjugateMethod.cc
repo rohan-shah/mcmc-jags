@@ -12,6 +12,8 @@ using std::vector;
 using std::map;
 using std::string;
 
+namespace bugs {
+
 ConjugateDist getDist(StochasticNode const *snode)
 {
     static map<string, ConjugateDist> dist_table;
@@ -70,3 +72,5 @@ ConjugateMethod::ConjugateMethod(GraphView const *gv)
 
 ConjugateMethod::~ConjugateMethod()
 {}
+
+}

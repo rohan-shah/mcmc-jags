@@ -3,6 +3,8 @@
 
 #include "RScalarDist.h"
 
+namespace bugs {
+
 /**
  * @short Binomial distribution
  * <pre>
@@ -35,5 +37,7 @@ class DBin : public RScalarDist {
   double KL(std::vector<double const *> const &par1, 
 	    std::vector<double const *> const &par2) const;
 };
+
+}
 
 #endif /* DBIN_H_ */

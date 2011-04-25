@@ -3,6 +3,8 @@
 
 #include "RScalarDist.h"
 
+namespace bugs {
+
 /** 
  * @short Lognormal distribution
  * <pre>
@@ -28,5 +30,7 @@ class DLnorm : public RScalarDist {
   double KL(std::vector<double const *> const &par0,
 	    std::vector<double const *> const &par1) const;
 };
+
+}
 
 #endif /* DLNORM_H_ */

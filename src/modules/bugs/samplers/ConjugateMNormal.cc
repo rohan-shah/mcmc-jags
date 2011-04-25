@@ -89,6 +89,7 @@ static unsigned int sumChildrenLength(GraphView const *gv)
     return N;
 }
 
+namespace bugs {
 
 ConjugateMNormal::ConjugateMNormal(GraphView const *gv)
     : ConjugateMethod(gv), _betas(0), 
@@ -318,4 +319,6 @@ void ConjugateMNormal::update(unsigned int chain, RNG *rng) const
 string ConjugateMNormal::name() const
 {
     return "ConjugateMNormal";
+}
+
 }

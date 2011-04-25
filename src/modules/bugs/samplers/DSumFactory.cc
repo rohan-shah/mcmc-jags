@@ -17,6 +17,8 @@ using std::set;
 using std::vector;
 using std::string;
 
+namespace bugs {
+
 static StochasticNode const *getDSumChild(StochasticNode *node)
 {
     set<StochasticNode*>::const_iterator p;
@@ -110,4 +112,6 @@ vector<Sampler*>  DSumFactory::makeSamplers(set<StochasticNode*> const &nodes,
 	return vector<Sampler*>(1, s);
     else 
 	return vector<Sampler*>();
+}
+
 }

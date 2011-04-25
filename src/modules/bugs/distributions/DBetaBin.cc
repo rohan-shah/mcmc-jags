@@ -26,6 +26,8 @@ static double ldbb(double x, double a, double b, double n)
     return lchoose(a+x-1, x) + lchoose(b+n-x-1, n-x) - lchoose(a+b+n-1, n);
 }
 
+namespace bugs {
+
 DBetaBin::DBetaBin()
     : RScalarDist("dbetabin", 3, DIST_SPECIAL, true)
 {}
@@ -119,3 +121,5 @@ bool DBetaBin::isSupportFixed(vector<bool> const &fixmask) const
 {
    return fixmask[2]; //SIZE is fixed;
 } 
+
+}

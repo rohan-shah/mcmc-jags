@@ -11,6 +11,8 @@ using std::vector;
 using std::fabs;
 using std::sqrt;
 
+namespace bugs {
+
 DSum::DSum()
     : ArrayDist("dsum", 0)
 {
@@ -116,4 +118,6 @@ void DSum::support(double *lower, double *upper, unsigned int length,
 vector<unsigned int> DSum::dim(vector<vector<unsigned int> > const &dims) const
 {
     return dims[0];
+}
+
 }
