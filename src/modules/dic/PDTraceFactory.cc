@@ -24,16 +24,21 @@ namespace dic {
     Monitor *PDTraceFactory::getMonitor(string const &name,
 					Range const &range,
 					BUGSModel *model,
-					string const &type)
+					string const &type,
+					string &msg)
     {
-	if (model->nchain() < 2)
-	    return 0;
 	if (name != "pD") 
 	    return 0;
 	if (type != "trace")
 	    return 0;
-	if (!isNULL(range))
+	if (model->nchain() < 2) {
+	    msg = "at least two chains are required for a pD trace monitor";
 	    return 0;
+	}
+	if (!isNULL(range)) {
+	    msg = "cannot monitor a subset of pD";
+	    return 0;
+	}
 
 	vector<StochasticNode const *> observed_nodes;
 	vector<StochasticNode *> const &snodes = model->stochasticNodes();

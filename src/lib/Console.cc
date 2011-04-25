@@ -392,10 +392,14 @@ bool Console::setMonitor(string const &name, Range const &range,
     }
 
     try {
-	bool ok = _model->setMonitor(name, range, thin, type);
+	string msg;
+	bool ok = _model->setMonitor(name, range, thin, type, msg);
 	if (!ok) {
-	    _err << "Failed to set " << type << " monitor for node " << 
+	    _err << "Failed to set " << type << " monitor for " << 
 		name << print(range) << endl;
+	    if (!msg.empty()) {
+		_err << msg << endl;
+	    }
 	    return false;
 	}
     }

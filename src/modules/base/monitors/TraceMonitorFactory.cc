@@ -15,13 +15,15 @@ namespace base {
     Monitor *TraceMonitorFactory::getMonitor(string const &name,
 					     Range const &range,
 					     BUGSModel *model,
-					     string const &type)
+					     string const &type,
+					     string &msg)
     {
 	if (type != "trace")
 	    return 0;
 
 	Node *node = model->getNode(name, range);
 	if (!node) {
+	    msg = "Node not found";
 	    return 0;
 	}
 	

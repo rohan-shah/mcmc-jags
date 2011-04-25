@@ -182,13 +182,15 @@ void BUGSModel::setParameters(map<string, SArray> const &param_table,
 
 
 bool BUGSModel::setMonitor(string const &name, Range const &range,
-			   unsigned int thin, string const &type)
+			   unsigned int thin, string const &type,
+			   string &msg)
 {
     for (list<MonitorInfo>::const_iterator i = _bugs_monitors.begin();
 	 i != _bugs_monitors.end(); ++i)
     {
 	if (i->name() == name && i->range() == range && i->type() == type)
-	    return false; //Node is already being monitored.
+	    msg = "Monitor already exists and cannot be duplicated";
+	return false; 
     }
 
     Monitor *monitor = 0;
@@ -198,7 +200,7 @@ bool BUGSModel::setMonitor(string const &name, Range const &range,
 	j != faclist.end(); ++j)
     {
 	if (j->second) {
-	    monitor = j->first->getMonitor(name, range, this, type);
+	    monitor = j->first->getMonitor(name, range, this, type, msg);
 	    if (monitor)
 		break;
 	}

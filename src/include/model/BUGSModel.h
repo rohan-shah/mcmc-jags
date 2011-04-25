@@ -106,10 +106,14 @@ public:
      *
      * @param type Type of monitor to create
      *
+     * @param msg User-friendly error message that may be given if no
+     * monitor can be created.
+     *
      * @return True if the monitor was created.  
      */
     bool setMonitor(std::string const &name, Range const &range,
-		    unsigned int thin, std::string const &type);
+		    unsigned int thin, std::string const &type,
+		    std::string &msg);
     /**
      * Deletes a Monitor that has been previously created with a call
      * to setMonitor.

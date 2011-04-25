@@ -16,16 +16,19 @@ namespace dic {
     Monitor *DevianceMonitorFactory::getMonitor(string const &name, 
 						Range const &range,
 						BUGSModel *model,
-						string const &type)
+						string const &type,
+						string &msg)
     {
 
 	if (type != "mean" && type != "trace")
 	    return 0;
 	if (name != "deviance")
 	    return 0;
-	if (!isNULL(range))
+	if (!isNULL(range)) {
+	    msg = "cannot monitor a subset of deviance";
 	    return 0;
-
+	}
+	
 	vector<StochasticNode *> const &snodes = model->stochasticNodes();
 	vector<StochasticNode const *> observed_snodes;
 	for (unsigned int i = 0; i < snodes.size(); ++i) {
