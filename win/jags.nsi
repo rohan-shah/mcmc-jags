@@ -60,12 +60,6 @@ Var SM_FOLDER
 
 Section #Default section
 
-   SetOutPath "$INSTDIR\include"
-   !insertmacro UNINSTALL.LOG_OPEN_INSTALL
-   File inst32\include\JAGS\*.h
-   File /r inst32\include\JAGS\*
-   !insertmacro UNINSTALL.LOG_CLOSE_INSTALL
-
    WriteRegStr ${INSTDIR_REG_ROOT} "${INSTDIR_REG_KEY}" "InstallDir" "$INSTDIR"
    WriteRegStr ${INSTDIR_REG_ROOT} "${INSTDIR_REG_KEY}" "DisplayName" "${JAGS_VISIBLE_NAME}"
    WriteRegStr ${INSTDIR_REG_ROOT} "${INSTDIR_REG_KEY}" "UninstallString" "${UNINST_EXE}"
@@ -92,11 +86,11 @@ Section "32-bit installation" Sec32
    File inst32\libexec\jags-terminal.exe
    !insertmacro UNINSTALL.LOG_CLOSE_INSTALL
 
-   SetOutPath "$INSTDIR\i386\lib"
-   !insertmacro UNINSTALL.LOG_OPEN_INSTALL
-   File inst32\lib\*.dll.a
-   File inst32\lib\*.la
-   !insertmacro UNINSTALL.LOG_CLOSE_INSTALL
+#   SetOutPath "$INSTDIR\i386\lib"
+#   !insertmacro UNINSTALL.LOG_OPEN_INSTALL
+#   File inst32\lib\*.dll.a
+#   File inst32\lib\*.la
+#   !insertmacro UNINSTALL.LOG_CLOSE_INSTALL
 
    SetOutPath "$INSTDIR\i386\modules"
    !insertmacro UNINSTALL.LOG_OPEN_INSTALL
@@ -139,11 +133,11 @@ Section "64-bit installation" Sec64
    File inst64\libexec\jags-terminal.exe
    !insertmacro UNINSTALL.LOG_CLOSE_INSTALL
 
-   SetOutPath "$INSTDIR\x64\lib"
-   !insertmacro UNINSTALL.LOG_OPEN_INSTALL
-   File inst64\lib\*.dll.a
-   File inst64\lib\*.la
-   !insertmacro UNINSTALL.LOG_CLOSE_INSTALL
+#   SetOutPath "$INSTDIR\x64\lib"
+#   !insertmacro UNINSTALL.LOG_OPEN_INSTALL
+#   File inst64\lib\*.dll.a
+#   File inst64\lib\*.la
+#   !insertmacro UNINSTALL.LOG_CLOSE_INSTALL
 
    SetOutPath "$INSTDIR\x64\modules"
    !insertmacro UNINSTALL.LOG_OPEN_INSTALL
@@ -169,6 +163,22 @@ Section "64-bit installation" Sec64
 
 SectionEnd #64-bit installation
 
+Section "Header files" SecHeader
+
+   SetOutPath "$INSTDIR\include"
+   !insertmacro UNINSTALL.LOG_OPEN_INSTALL
+   File inst32\include\JAGS\*.h
+   File /r inst32\include\JAGS\*
+   !insertmacro UNINSTALL.LOG_CLOSE_INSTALL
+
+SectionEnd
+
+!insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
+  !insertmacro MUI_DESCRIPTION_TEXT ${Sec32} "Files for 32-bit Windows"
+  !insertmacro MUI_DESCRIPTION_TEXT ${Sec64} "Files for 64-bit Windows"
+  !insertmacro MUI_DESCRIPTION_TEXT ${SecHeader} "For developers who need to compile programs linked to JAGS"
+!insertmacro MUI_FUNCTION_DESCRIPTION_END
+
 Function .onInit
    !insertmacro MULTIUSER_INIT
    !insertmacro UNINSTALL.LOG_PREPARE_INSTALL
@@ -182,6 +192,13 @@ Function .onInit
       SectionSetFlags ${Sec64} $0
       SectionSetText  ${Sec64} ""
       Pop $0
+      ; Enforce 32-bit selection
+      Push $1
+      SectionGetFlags ${Sec32} $1
+#      IntOp $1 $1 & ${SF_SELECTED}
+      IntOp $1 $1 | ${SF_RO}
+      SectionSetFlags ${Sec32} $1
+      Pop $1
    ${EndIf}
 FunctionEnd
 
