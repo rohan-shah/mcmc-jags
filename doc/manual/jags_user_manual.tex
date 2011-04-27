@@ -1485,18 +1485,18 @@ their distribution.
         \left(\frac{n}{m} \right)^{\frac{n}{2}} x^{\frac{n}{2} - 1} 
         \left\{1 + \frac{nx}{m} \right\}^{-\frac{(n + m)}{2}}$} & 0 & \\
       & $n > 0$, $m > 0$ \\
-      Gamma       & \verb+dgamma(r, mu)+ & 
+      Gamma       & \verb+dgamma(r, lambda)+ & 
       \multirow{2}{*}{
-        $\frac{\textstyle \mu^r x^{r - 1} \exp(-\mu x)}
+        $\frac{\textstyle \lambda^r x^{r - 1} \exp(-\lambda x)}
         {\textstyle \Gamma(r)}$} & 0 & \\
-      & $\mu > 0$, $r > 0$ \\
-      Generalized & \verb+dgen.gamma(r,mu,beta)+ &  
+      & $\lambda > 0$, $r > 0$ \\
+      Generalized & \verb+dgen.gamma(r,lambda,beta)+ &  
       \multirow{2}{*}{
         $\frac
-        {\textstyle \beta \mu^{\beta r} x^{\beta r - 1}  \exp\{-(\mu x)^{\beta}\}}
+        {\textstyle \beta \lambda^{\beta r} x^{\beta r - 1}  \exp\{-(\lambda x)^{\beta}\}}
         {\textstyle \Gamma(r)}$
       } & $0$ & \\
-      gamma       & $\mu >0$, $\beta > 0$, $r > 0$ \\
+      gamma       & $\lambda >0$, $\beta > 0$, $r > 0$ \\
       Logistic    & \verb+dlogis(mu, tau)+ &
       \multirow{2}{*}{
         $\frac{\textstyle \tau \exp\{(x - \mu) \tau\}}
@@ -1550,8 +1550,8 @@ their distribution.
       \multirow{2}{*}{${n \choose x}  p^x (1-p)^{n-x}$}
       ~  & $0$ & $n$ \\
       ~ & $0 < p < 1$, $n \in \mathbb{N}^*$ \\
-      Categorical & \verb+dcat(p)+ & \multirow{2}{*}{$\frac{\textstyle p_x}{\textstyle \sum_i p_i}$} & $1$ & $N$ \\
-      ~ & $p \in (\mathbb{R}^+)^N$  \\
+      Categorical & \verb+dcat(pi)+ & \multirow{2}{*}{$\frac{\textstyle \pi_x}{\textstyle \sum_i \pi_i}$} & $1$ & $N$ \\
+      ~ & $\pi \in (\mathbb{R}^+)^N$  \\
       Hypergeometric & \verb+dhyper(n1,n2,m1,psi)+ &
       \multirow{2}{*}{
         $\textstyle {n_1 \choose x} {n_2 \choose m_1 - x} \psi^x$
@@ -1599,10 +1599,10 @@ their distribution.
         |\Omega|^{1/2}
         \left\{1 + \frac{1}{k} (x - \mu)^T \Omega (x - \mu) \right\}^{-\frac{(k+p)}{2}}$   } \\
       Student t &  $\Omega$ pos. def. & \\
-      Multinomial  & \verb+x ~ dmulti(p, n)+ & 
+      Multinomial  & \verb+x ~ dmulti(pi, n)+ & 
       \multirow{2}{*}{$n! \prod_j 
-        \frac{\textstyle p_j^{x_j}}{\textstyle x_j!}$} \\
-      ~ & $\sum_i x_i = n$ \\
+        \frac{\textstyle \pi_j^{x_j}}{\textstyle x_j!}$} \\
+      ~ & $\sum_j x_j = n$ \\
       & \\
     \hline
     \end{tabular}
