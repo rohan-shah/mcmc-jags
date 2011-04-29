@@ -1319,6 +1319,7 @@ Hypergeometric     & dhyper    & phyper    & qhyper \\
 Logistic           & dlogis    & plogis    & qlogis \\
 Log-normal         & dlnorm    & plnorm    & qlnorm \\
 Negative binomial  & dnegbin   & pnegbin   & qnegbin \\
+Noncentral Chi-square & dchisqr   & pchisqr   & qchisqr \\
 Normal             & dnorm     & pnorm     & qnorm \\
 Pareto             & dpar      & ppar      & qpar \\
 Poisson            & dpois     & ppois     & qpois \\
@@ -1490,13 +1491,13 @@ their distribution.
         $\frac{\textstyle \lambda^r x^{r - 1} \exp(-\lambda x)}
         {\textstyle \Gamma(r)}$} & 0 & \\
       & $\lambda > 0$, $r > 0$ \\
-      Generalized & \verb+dgen.gamma(r,lambda,beta)+ &  
+      Generalized & \verb+dgen.gamma(r,lambda,b)+ &  
       \multirow{2}{*}{
         $\frac
-        {\textstyle \beta \lambda^{\beta r} x^{\beta r - 1}  \exp\{-(\lambda x)^{\beta}\}}
+        {\textstyle b \lambda^{b r} x^{b r - 1}  \exp\{-(\lambda x)^{b}\}}
         {\textstyle \Gamma(r)}$
       } & $0$ & \\
-      gamma       & $\lambda >0$, $\beta > 0$, $r > 0$ \\
+      gamma       & $\lambda >0$, $b > 0$, $r > 0$ \\
       Logistic    & \verb+dlogis(mu, tau)+ &
       \multirow{2}{*}{
         $\frac{\textstyle \tau \exp\{(x - \mu) \tau\}}
@@ -1507,6 +1508,15 @@ their distribution.
       \multirow{2}{*}{
         $\tau^{\frac{1}{2}} x^{-1} \exp \left\{-\tau (\log(x) - \mu)^2/2 \right\}$} & 0 \\
       ~ & $\tau > 0$ \\
+      Noncentral & \verb+dnchisqr(k)+ & 
+      \multirow{2}{*}{
+        $\sum_{r=0}^{\infty} 
+        \frac{ \exp(-\frac{\delta}{2}) (\frac{\delta}{2})^r}{\textstyle r!} \,
+        \frac{ x^{(k/2 + r - 1)} \exp(-\frac{x}{2})}
+             { 2^{(k/2 + r)} \Gamma({ \frac{k}{2} + r})}
+        $
+      } & 0 & \\
+      Chi-squre & $k > 0, \delta \geq 0$ \\
       Normal   & \verb+dnorm(mu,tau)+ & 
       \multirow{2}{*}{
         $\left(\frac{\tau}{2\pi}\right)^{\frac{1}{2}} \exp\{-(x - \mu)^2 \tau\}$} & & \\
@@ -1629,8 +1639,8 @@ Distribution & Canonical & Alias & Compatibile  \\
              & name      &       & with         \\
 \hline
 Binomial           & dbin      & dbinom   & R   \\
-Chi-square         & dchisqr   & pchisq   & R   \\ 
-Negative binomial  & dnegbin   & pnbinom  & R   \\
+Chi-square         & dchisqr   & dchisq   & R   \\ 
+Negative binomial  & dnegbin   & dnbinom  & R   \\
 Weibull            & dweib     & pweibull & R   \\ 
 Dirichlet          & ddirch    & ddirich  & OpenBUGS \\
 \hline

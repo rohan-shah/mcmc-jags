@@ -20,6 +20,7 @@
 #include <distributions/DMT.h>
 #include <distributions/DMulti.h>
 #include <distributions/DNegBin.h>
+#include <distributions/DNChisqr.h>
 #include <distributions/DNorm.h>
 #include <distributions/DPar.h>
 #include <distributions/DPois.h>
@@ -118,6 +119,7 @@ namespace bugs {
 	insert(new DMNorm);
 	insert(new DMT);
 	insert(new DMulti);
+	Rinsert(new DNChisqr);
 	Rinsert(new DNegBin);
 	Rinsert(new DNorm);
 	Rinsert(new DPar);
