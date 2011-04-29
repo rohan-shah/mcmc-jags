@@ -188,9 +188,10 @@ bool BUGSModel::setMonitor(string const &name, Range const &range,
     for (list<MonitorInfo>::const_iterator i = _bugs_monitors.begin();
 	 i != _bugs_monitors.end(); ++i)
     {
-	if (i->name() == name && i->range() == range && i->type() == type)
+	if (i->name() == name && i->range() == range && i->type() == type) {
 	    msg = "Monitor already exists and cannot be duplicated";
-	return false; 
+	    return false; 
+	}
     }
 
     Monitor *monitor = 0;
