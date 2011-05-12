@@ -106,7 +106,7 @@ Node *NodeArray::find(Range const &target_range) const
 
     if (node->length() > 1) {
 	unsigned int end = _range.leftOffset(target_range.upper());
-	if (_node_pointers[end] != node || _offsets[end] != node->length()) {
+	if (_node_pointers[end] != node || _offsets[end] + 1 != node->length()) {
 	    return 0;
 	}
     }
