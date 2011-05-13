@@ -11,6 +11,7 @@ namespace base {
     class BaseRNGFactory : public RNGFactory
     {
 	unsigned int _index;
+	unsigned int _seed;
 	std::vector<RNG*> _rngvec;
     public:
 	BaseRNGFactory();

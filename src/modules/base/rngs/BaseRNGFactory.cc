@@ -16,7 +16,7 @@ using std::string;
 namespace base {
 
     BaseRNGFactory::BaseRNGFactory()
-	: _index(0)
+	: _index(0), _seed(static_cast<unsigned int>(time(NULL)))
     {
     }
 
@@ -29,36 +29,31 @@ namespace base {
 
     vector<RNG *> BaseRNGFactory::makeRNGs(unsigned int n)
     {
-	unsigned int seed = static_cast<unsigned int>(time(NULL));
-
 	vector<RNG *> ans;
 	for (unsigned int i = 0; i < n; i++) {
 	    RNG *rng = 0;
 	    switch(_index) {
 	    case 0:
-		rng =  new WichmannHillRNG(seed, DEFAULT_NORM_KIND);
+		rng =  new WichmannHillRNG(_seed, DEFAULT_NORM_KIND);
 		break;
 	    case 1:
-		rng = new MarsagliaRNG(seed, DEFAULT_NORM_KIND);
+		rng = new MarsagliaRNG(_seed, DEFAULT_NORM_KIND);
 		break;
 	    case 2:
-		rng = new SuperDuperRNG(seed, DEFAULT_NORM_KIND);
+		rng = new SuperDuperRNG(_seed, DEFAULT_NORM_KIND);
 		break;
 	    case 3:
-		rng = new MersenneTwisterRNG(seed, DEFAULT_NORM_KIND);
+		rng = new MersenneTwisterRNG(_seed, DEFAULT_NORM_KIND);
 		break;
 	    default:
 		break;
 	    }
 
 	    //Move onto the next generator
-	    if (_index == 3) 
-		_index = 0;
-	    else
-		_index++;
+	    _index = (_index + 1) % 3;
 
 	    //Reset the seed
-	    seed = static_cast<unsigned int>(rng->uniform() * UINT_MAX);
+	    _seed = static_cast<unsigned int>(rng->uniform() * UINT_MAX);
 	    
 	    // Store generated RNG for memory management
 	    _rngvec.push_back(rng);
