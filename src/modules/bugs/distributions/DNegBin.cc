@@ -33,10 +33,11 @@ DNegBin::checkParameterValue (vector<double const *> const &par) const
 }
 
 double
-DNegBin::d(double x, vector<double const *> const &par, bool give_log) 
+DNegBin::d(double x, PDFType type,
+	   vector<double const *> const &par, bool give_log) 
     const
 {
-  return dnbinom(x, SIZE(par), PROB(par), give_log);
+    return dnbinom(x, SIZE(par), PROB(par), give_log);
 }
 
 double

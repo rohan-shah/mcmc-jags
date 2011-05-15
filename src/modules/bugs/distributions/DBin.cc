@@ -1,5 +1,6 @@
 #include <config.h>
 #include "DBin.h"
+#include <util/nainf.h>
 
 #include <algorithm>
 
@@ -38,10 +39,24 @@ bool DBin::checkParameterValue (vector<double const *> const &par) const
     return (SIZE(par) >= 0 && PROB(par) >= 0.0 && PROB(par) <= 1.0);
 }
 
-double DBin::d(double x, vector<double const *> const &par, 
+double DBin::d(double x, PDFType type, vector<double const *> const &par, 
 	       bool give_log) const
 {
-    return dbinom(x, SIZE(par), PROB(par), give_log);
+    if (type == PDF_LIKELIHOOD) {
+	//Avoid expensive call to lchoose
+	double p = PROB(par), n = SIZE(par);
+	if (x < 0 || x > n || (p == 0 && x != 0) || (p == 1 && x != n))
+	    return give_log ? JAGS_NEGINF : 0;
+	double y = 0;
+	if (p != 0)
+	    y +=  x * log(p);
+	if (p != 1)
+	    y += (n - x) * log(1 - p);
+	return give_log ? y : exp(y);
+    }
+    else {
+	return dbinom(x, SIZE(par), PROB(par), give_log);
+    }
 }
 
 double DBin::p(double x, vector<double const *> const &par, 

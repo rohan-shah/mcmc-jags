@@ -35,7 +35,8 @@ bool DDexp::checkParameterValue (vector<double const *> const &par) const
 }
 
 double 
-DDexp::d(double x, vector<double const *> const &par, bool dolog) const
+DDexp::d(double x, PDFType type,
+	 vector<double const *> const &par, bool dolog) const
 {
     double d = dexp(fabs(x - MU(par)), SCALE(par), dolog);
     if (dolog)

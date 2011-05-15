@@ -2,6 +2,7 @@
 #include "DGamma.h"
 
 #include <JRmath.h>
+#include <util/nainf.h>
 
 using std::vector;
 
@@ -22,10 +23,26 @@ DGamma::checkParameterValue (vector<double const *> const &par) const
 }
 
 double
-DGamma::d(double x, vector<double const *> const &par, bool give_log) 
-    const
+DGamma::d(double x, PDFType type,
+	  vector<double const *> const &par, bool give_log)  const
 {
-    return dgamma(x, SHAPE(par), SCALE(par), give_log);
+    if (type == PDF_PRIOR) {
+	//Avoid expensive evaluation of gamma function
+	if (x < 0) {
+	    return give_log ? JAGS_NEGINF : 0;
+	}
+	else if (x == 0) {
+	    //Density at zero defined by continuity
+	    return xlog0(SHAPE(par) - 1, give_log);
+	}
+	else {
+	    double y = (SHAPE(par) - 1) * log(x) - RATE(par) * x;
+	    return give_log ? y : exp(y);
+	}
+    }
+    else {
+	return dgamma(x, SHAPE(par), SCALE(par), give_log);
+    }
 }
 
 double

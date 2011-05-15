@@ -64,9 +64,9 @@ RScalarDist::typicalValue(vector<double const *> const &parameters,
     double med = q(pmed, parameters, true, false);	
 
     //Calculate the log densities
-    double dllimit = d(llimit, parameters, true);
-    double dulimit = d(ulimit, parameters, true);
-    double dmed = d(med, parameters, true);
+    double dllimit = d(llimit, PDF_FULL, parameters, true);
+    double dulimit = d(ulimit, PDF_FULL, parameters, true);
+    double dmed = d(med, PDF_FULL, parameters, true);
 
     //Pick the median if it has the highest density, otherwise pick
     //a point near to (but not on) the boundary
@@ -93,7 +93,7 @@ RScalarDist::logDensity(double x, PDFType type,
     if (upper && lower && *upper < *lower)
 	return JAGS_NEGINF;
     
-    double loglik =  d(x, parameters, true);
+    double loglik =  d(x, type, parameters, true);
 
     if (type != PDF_PRIOR && (lower || upper)) {
 	//Normalize truncated distributions
@@ -179,4 +179,9 @@ unsigned int RScalarDist::npar() const
     return _npar;
 }
 
+    double xlog0(double x, bool give_log) {
+	if (x < 0) return JAGS_POSINF;
+	else if (x > 0) return give_log ? JAGS_NEGINF : 0;
+	else return give_log ? 0 : 1;
+    }
 }

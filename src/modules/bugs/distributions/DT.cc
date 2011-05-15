@@ -22,10 +22,15 @@ bool DT::checkParameterValue (vector<double const *> const &par) const
     return (TAU(par) > 0 && DF(par) > 0);
 }
 
-double DT::d(double x, vector<double const *> const &par, bool give_log) const
+double DT::d(double x, PDFType type,
+vector<double const *> const &par, bool give_log) const
 {
     x = (x - MU(par)) * sqrt(TAU(par));
-    if (give_log) {
+    if (type == PDF_PRIOR) {
+	double y = - (DF(par) + 1) * log(1 + x * x / DF(par)) / 2;
+	return give_log ? y : exp(y);
+    }
+    else if (give_log) {
 	return dt(x, DF(par), 1) + log(TAU(par))/2;
     }
     else {

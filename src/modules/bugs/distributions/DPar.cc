@@ -25,7 +25,8 @@ bool DPar::checkParameterValue (vector<double const *> const &par) const
 }
 
 double 
-DPar::d(double x, vector<double const *> const &par, bool give_log) const
+DPar::d(double x, PDFType type,
+vector<double const *> const &par, bool give_log) const
 {
   double alpha = ALPHA(par);
   double c = C(par);

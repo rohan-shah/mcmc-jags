@@ -21,7 +21,8 @@ bool DLogis::checkParameterValue (vector<double const *> const &par) const
 }
 
 double 
-DLogis::d(double x, vector<double const *> const &par, bool give_log) const
+DLogis::d(double x, PDFType type,
+vector<double const *> const &par, bool give_log) const
 {
     return dlogis(x, MU(par), SCALE(par), give_log);
 }

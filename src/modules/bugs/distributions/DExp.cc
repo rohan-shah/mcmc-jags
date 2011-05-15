@@ -27,8 +27,8 @@ bool DExp::checkParameterValue (vector<double const *> const &par) const
 }
 
 double
-DExp::d(double x, vector<double const *> const &par, bool give_log) 
-    const
+DExp::d(double x, PDFType type,
+	vector<double const *> const &par, bool give_log)  const
 {
     return dexp(x, SCALE(par), give_log);
 }

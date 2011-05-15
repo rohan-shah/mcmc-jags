@@ -1,5 +1,6 @@
 #include <config.h>
 #include "DPois.h"
+#include <util/nainf.h>
 
 #include <limits.h>
 #include <algorithm>
@@ -23,9 +24,24 @@ bool DPois::checkParameterValue (vector<double const *> const &par) const
 }
 
 double
-DPois::d(double x, vector<double const *> const &par, bool give_log) const
+DPois::d(double x, PDFType type,
+	 vector<double const *> const &par, bool give_log) const
 {
-    return dpois(x, LAMBDA(par), give_log);
+    if (type == PDF_LIKELIHOOD) {
+	//Avoid expensive normalizing constant
+	double lambda = LAMBDA(par);
+	if (x < 0 || (lambda == 0 && x != 0)) {
+	    return give_log ?  JAGS_NEGINF : 0;
+	}
+	double y = -lambda;
+	if (lambda > 0) {
+	    y += x * log(lambda);
+	}
+	return give_log ? y : exp(y);
+    }
+    else {
+	return dpois(x, LAMBDA(par), give_log);
+    }
 }
 
 double

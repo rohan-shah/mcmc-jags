@@ -16,7 +16,8 @@ class DPar : public RScalarDist {
  public:
   DPar();
 
-  double d(double x, std::vector<double const *> const &parameters, bool give_log) const;
+  double d(double x, PDFType type,
+	   std::vector<double const *> const &parameters, bool give_log) const;
   double p(double q, std::vector<double const *> const &parameters, bool lower,
 	   bool give_log) const;
   double q(double p, std::vector<double const *> const &parameters, bool lower,

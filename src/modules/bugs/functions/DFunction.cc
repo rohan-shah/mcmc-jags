@@ -19,7 +19,7 @@ namespace bugs {
 	    param[i-1] = args[i];
 	}
 	
-	return dist()->d(x, param, false);
+	return dist()->d(x, PDF_FULL, param, false);
     }
 
     bool 

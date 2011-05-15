@@ -16,7 +16,8 @@ class DWeib : public RScalarDist {
 public:
   DWeib();
   std::string alias() const;
-  double d(double x, std::vector<double const *> const &parameters, 
+  double d(double x, PDFType type,
+	   std::vector<double const *> const &parameters, 
 	   bool give_log) const;
   double p(double q, std::vector<double const *> const &parameters, bool lower,
 	   bool give_log) const;

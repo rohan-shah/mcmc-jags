@@ -2,6 +2,7 @@
 #include "DBeta.h"
 
 #include <JRmath.h>
+#include <util/nainf.h>
 
 using std::vector;
 
@@ -18,9 +19,30 @@ DBeta::checkParameterValue (vector<double const *> const &par) const
 }
 
 double 
-DBeta::d(double x, vector<double const *> const &par, bool give_log) const
+DBeta::d(double x, PDFType type,
+	 vector<double const *> const &par, bool give_log) const
 {
-    return dbeta(x, *par[0], *par[1], give_log);
+    if (type == PDF_PRIOR) {
+	//Avoid expensive evaluation of the beta function
+	if (x < 0 || x > 1) {
+	    return give_log ? JAGS_NEGINF : 0;
+	}
+	else if (x == 0) {
+	    //Density at 0 defined by continuity
+	    return xlog0(*par[0] - 1, give_log);
+	}
+	else if (x == 1) {
+	    //Density at 1 defined by continuity
+	    return xlog0(*par[1] - 1, give_log);
+	}
+	else {
+	    double y = (*par[0] - 1) * log(x) + (*par[1] - 1) * log(1 - x);
+	    return give_log ? y : exp(y);
+	}
+    }
+    else {
+	return dbeta(x, *par[0], *par[1], give_log);
+    }
 }
 
 double 

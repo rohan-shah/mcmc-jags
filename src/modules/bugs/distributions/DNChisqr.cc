@@ -27,7 +27,8 @@ namespace bugs {
     }
 
     double 
-    DNChisqr::d(double x, vector<double const *> const &par, bool give_log) const
+    DNChisqr::d(double x, PDFType type,
+		vector<double const *> const &par, bool give_log) const
     {
 	return dnchisq(x, DF(par), NCP(par), give_log);
     }

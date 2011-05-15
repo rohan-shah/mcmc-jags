@@ -18,7 +18,8 @@ class DT : public RScalarDist {
  public:
   DT();
 
-  double d(double x, std::vector<double const *> const &parameters, 
+  double d(double x, PDFType type,
+	   std::vector<double const *> const &parameters, 
 	   bool log) const;
   double p(double x, std::vector<double const *> const &parameters, bool lower,
 	   bool log) const;

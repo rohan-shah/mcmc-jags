@@ -2,6 +2,7 @@
 #include "DChisqr.h"
 
 #include <JRmath.h>
+#include <util/nainf.h>
 
 using std::vector;
 using std::string;
@@ -26,9 +27,26 @@ DChisqr::checkParameterValue (vector<double const *> const &par) const
 }
 
 double 
-DChisqr::d(double x, vector<double const *> const &par, bool give_log) const
+DChisqr::d(double x, PDFType type,
+	   vector<double const *> const &par, bool give_log) const
 {
-    return dchisq(x, DF(par), give_log);
+    if (type == PDF_PRIOR) {
+	//Avoid expensive evaluation of gamma function
+	if (x < 0) {
+	    return give_log ? JAGS_NEGINF : 0;
+	}
+	else if (x == 0) {
+	    //Density at zero defined by continuity
+	    return xlog0(DF(par) - 2, give_log);
+	}
+	else {
+	    double y = (DF(par)/2 - 1) * log(x) - x/2;
+	    return give_log ? y : exp(y);
+	}
+    }
+    else {
+	return dchisq(x, DF(par), give_log);
+    }
 }
 
 double 

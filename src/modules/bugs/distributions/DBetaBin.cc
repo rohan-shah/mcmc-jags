@@ -48,7 +48,7 @@ bool DBetaBin::checkParameterValue (vector<double const *> const &par) const
     return (SIZE(par) >= 0 && A(par) > 0.0 && B(par) > 0.0);
 }
 
-double DBetaBin::d(double x, vector<double const *> const &par, 
+double DBetaBin::d(double x, PDFType type, vector<double const *> const &par, 
 		   bool give_log) const
 {
     if (give_log)

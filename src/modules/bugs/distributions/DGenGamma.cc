@@ -42,7 +42,8 @@ bool DGenGamma::checkParameterValue (vector<double const *> const &par) const
 }
 
 double
-DGenGamma::d(double x, vector<double const *> const &par, bool give_log) 
+DGenGamma::d(double x, PDFType type,
+vector<double const *> const &par, bool give_log) 
     const
 {
     double log_jacobian = (POW(par) - 1)*log(x) + log(POW(par)) 

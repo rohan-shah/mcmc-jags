@@ -23,7 +23,8 @@ bool DLnorm::checkParameterValue (vector<double const *> const &par) const
 }
 
 double 
-DLnorm::d(double x, vector<double const *> const &par, bool give_log) const
+DLnorm::d(double x, PDFType type,
+	  vector<double const *> const &par, bool give_log) const
 {
     return dlnorm(x, MU(par), SDLOG(par), give_log);
 }

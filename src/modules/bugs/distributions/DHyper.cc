@@ -200,8 +200,9 @@ static int singleDraw(int n1, int n2, int m1, double psi,
     }
 }
 
-double DHyper::d(double z, vector<double const *> const &parameters, 
-	 bool give_log) const
+double DHyper::d(double z, PDFType type,
+                 vector<double const *> const &parameters, 
+		 bool give_log) const
 {
     int n1,n2,m1;
     double psi;
