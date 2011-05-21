@@ -24,6 +24,9 @@ static unsigned int mkLength(VectorDist const *dist,
        parents
     */
 
+    if (!dist->checkNPar(parents.size())) {
+	throw DistError(dist, "Incorrect number of parameters");
+    }
     vector<unsigned int> parameter_lengths(parents.size());
     for (unsigned long j = 0; j < parents.size(); ++j) {
 	parameter_lengths[j] = parents[j]->length();

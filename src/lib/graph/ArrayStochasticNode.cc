@@ -23,6 +23,9 @@ static vector<unsigned int> mkDim(ArrayDist const *dist,
        parents
     */
 
+    if (!dist->checkNPar(parents.size())) {
+	throw DistError(dist, "Incorrect number of parameters");
+    }
     vector<vector<unsigned int> > parameter_dims(parents.size());
     for (unsigned long j = 0; j < parents.size(); ++j) {
 	parameter_dims[j] = parents[j]->dim();
