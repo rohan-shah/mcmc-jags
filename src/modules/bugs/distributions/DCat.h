@@ -9,7 +9,7 @@ namespace bugs {
  * @short Categorical distribution
  * <pre>
  * R ~ dcat(p[])
- * f(r|p[]) = p[r] ; r in 1:dim(p)
+ * f(r|p[]) = p[r] ; r in 1:length(p)
  * </pre>
  */
 class DCat : public VectorDist {

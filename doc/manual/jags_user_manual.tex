@@ -1424,7 +1424,7 @@ functions in the \texttt{bugs} module with an alias.
 \begin{center}
 \begin{tabular}{llll}
 \hline
-Distribution           & Canonical & Alias & Compatibile  \\
+Function               & Canonical & Alias & Compatibile  \\
                        & name      &       & with         \\
 \hline
 Arc-cosine             & arccos    & acos  & R \\
@@ -1508,7 +1508,7 @@ their distribution.
       \multirow{2}{*}{
         $\tau^{\frac{1}{2}} x^{-1} \exp \left\{-\tau (\log(x) - \mu)^2/2 \right\}$} & 0 \\
       ~ & $\tau > 0$ \\
-      Noncentral & \verb+dnchisqr(k)+ & 
+      Noncentral & \verb+dnchisqr(k, delta)+ & 
       \multirow{2}{*}{
         $\sum_{r=0}^{\infty} 
         \frac{ \exp(-\frac{\delta}{2}) (\frac{\delta}{2})^r}{\textstyle r!} \,
@@ -1551,6 +1551,12 @@ their distribution.
       \hline
       Name & Usage & Density & Lower & Upper \\
       \hline
+      Beta & \verb+dbetabin(a, b, n)+ &
+     \multirow{2}{*}{
+        $\textstyle {a+x-1 \choose x} {b+n-x-1 \choose n - x} 
+                    {a+b+n-1 \choose n}^{-1}$
+      } & $0$ & $n$ \\
+      binomial & $a > 0, b > 0, n \in \mathbb{N}^*$ \\
       Bernoulli & \verb+dbern(p)+ & 
       \multirow{2}{*}{$p^x (1 - p)^{1 -x}$} & 
       $0$ & $1$ \\
@@ -1602,7 +1608,7 @@ their distribution.
         $\frac{\textstyle |\Omega|^{(k-p-1)/2} |R|^{k/2} \exp\{-\text{Tr}(R\Omega/2)\}}
                {\textstyle 2^{pk/2} \Gamma_p (k/2)}$
       } \\
-      & $R$ pos. def. \\
+      & $R \; p \times p$ pos. def., $k \geq p$ \\
       Multivariate & \verb+x ~ dmt(mu,Omega,k)+ &
       \multirow{2}{*}{
         $\frac{\textstyle \Gamma \{(k+p)/2\}}{\textstyle \Gamma(k/2) (n\pi)^{p/2}}

@@ -8,10 +8,8 @@ namespace bugs {
 /**
  * @short Beta-Binomial distribution
  * <pre>
- * Y ~ dbin(p, n, phi)
- * f(y|p,n,phi) = choose(a+y-1, y) * choose(b+n-y-1, n-y) / choose(a+b+n-1, n)
- * a = p * (phi - 1)
- * b = (1 - p) * (phi - 1)
+ * Y ~ dbin(a, b, n)
+ * f(y|a,b,n) = choose(a+y-1, y) * choose(b+n-y-1, n-y) / choose(a+b+n-1, n)
  * </pre>
  */
 class DBetaBin : public RScalarDist {
