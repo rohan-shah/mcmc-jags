@@ -12,7 +12,7 @@ using std::string;
 namespace bugs {
 
     DNChisqr::DNChisqr()
-	: RScalarDist("dnchisqr", 1, DIST_POSITIVE)
+	: RScalarDist("dnchisqr", 2, DIST_POSITIVE)
     {}
 
     string DNChisqr::alias() const
