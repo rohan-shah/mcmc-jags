@@ -307,6 +307,7 @@ bool Console::initialize()
 	return true;
     }
     try {
+	_out << "Initializing model" << endl;
 	_model->initialize(false);
     }
     CATCH_ERRORS;
