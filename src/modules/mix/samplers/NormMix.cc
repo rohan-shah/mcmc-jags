@@ -52,7 +52,7 @@ namespace mix {
 	: TemperedMetropolis(initialValue(gv, chain), nlevel, max_temp, nrep),
 	  _gv(gv), _chain(chain)
     {
-	unsigned int N = gv->length();
+	int N = gv->length();
 	_lower = new double[N];
 	_upper = new double[N];
 
