@@ -86,7 +86,7 @@ DPar::q(double p, vector<double const *> const &par, bool lower,
 
 double DPar::r(vector<double const *> const &par, RNG *rng) const
 {
-    return exp(log(C(par)) - rng->exponential()/ALPHA(par));
+    return C(par) * exp(rng->exponential()/ALPHA(par));
 }
 
 double DPar::l(vector<double const*> const &par) const
