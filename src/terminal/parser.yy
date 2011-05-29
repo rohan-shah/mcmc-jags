@@ -1040,7 +1040,7 @@ static void updatestar(long niter, long refresh, int width)
 {
     bool adapt = console->isAdapting();
 	
-    if (refresh == 0) {
+    if (!interactive || refresh == 0) {
 	Jtry(console->update(niter/2));
 	bool status = true;
 	if (adapt && !console->adaptOff(status)) {
@@ -1107,7 +1107,7 @@ static void adaptstar(long niter, long refresh, int width)
     }
 	
     bool status = true;
-    if (refresh == 0) {
+    if (!interactive || refresh == 0) {
 	console->update(niter);
 	if (!console->adaptOff(status)) {
 	    errordump();
