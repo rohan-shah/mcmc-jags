@@ -16,7 +16,7 @@ void jags_scanner_error(const char *msg);
 
 %}
 
-EXPONENT	[eE][+-][0-9]+
+EXPONENT	[eE][+-]?[0-9]+
 BRACKET		[ \t]*\(
 
 %x COMMENT
