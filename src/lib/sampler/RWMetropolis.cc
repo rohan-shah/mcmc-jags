@@ -1,6 +1,7 @@
 #include <config.h>
 #include <sampler/RWMetropolis.h>
 #include <rng/RNG.h>
+#include <util/nainf.h>
 
 #include <cmath>
 
@@ -34,11 +35,14 @@ void RWMetropolis::update(RNG *rng)
     vector<double> value(length());
     getValue(value);
 
-    double log_p = -logDensity() - logJacobian(value);
+    double log_p = logDensity() + logJacobian(value);
     step(value, _step_adapter.stepSize(), rng);
     setValue(value);
-    log_p += logDensity() + logJacobian(value);
-    accept(rng, exp(log_p));
+    double log_p_new = logDensity() + logJacobian(value);
+    double odds = ( jags_finite( log_p ) && jags_finite( log_p_new ) )
+                ?  exp( log_p_new - log_p )
+                : ( log_p_new > log_p ? 1 : 0 );
+    accept(rng, odds);
 }
 
 bool RWMetropolis::checkAdaptation() const
