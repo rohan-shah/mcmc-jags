@@ -1160,12 +1160,13 @@ static void adaptstar(long niter, long refresh, int width)
 
 static void loadModule(std::string const &name)
 {
+    std::cout << "Loading module: " << name;
     lt_dlhandle mod = lt_dlopenext(name.c_str());
     if (mod == NULL) {
-	std::cout << lt_dlerror() << std::endl;
+	std::cout << ": " << lt_dlerror() << std::endl;
     }
     else {
-	std::cout << "Loading module: " << name << std::endl;
+	std::cout << ": ok" << std::endl;
 	_dyn_lib.push_front(mod);
 	Console::loadModule(name);
     }
