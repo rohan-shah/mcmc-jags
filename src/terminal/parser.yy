@@ -1043,9 +1043,15 @@ static void updatestar(long niter, long refresh, int width)
     if (!interactive || refresh == 0) {
 	Jtry(console->update(niter/2));
 	bool status = true;
-	if (adapt && !console->adaptOff(status)) {
-	    errordump();
-	    return;
+	if (adapt) {
+	    if (!console->checkAdaptation(status)) {
+		errordump();
+		return;
+	    }
+	    if (!console->adaptOff()) {
+		errordump();
+		return;
+	    }
 	}
 	Jtry(console->update(niter - niter/2));
 	if (!status) {
@@ -1069,7 +1075,12 @@ static void updatestar(long niter, long refresh, int width)
     for (long n = niter; n > 0; n -= refresh) {
 	if (adapt && n <= niter/2) {
 	    // Turn off adaptive mode half way through burnin
-	    if (console->adaptOff(status)) {
+	    if (!console->checkAdaptation(status)) {
+		std::cout << std::endl;
+		errordump();
+		return;
+	    }
+	    if (console->adaptOff()) {
 		adapt = false;
 	    }
 	    else {
@@ -1109,12 +1120,12 @@ static void adaptstar(long niter, long refresh, int width)
     bool status = true;
     if (!interactive || refresh == 0) {
 	console->update(niter);
-	if (!console->adaptOff(status)) {
+	if (!console->checkAdaptation(status)) {
 	    errordump();
 	    return;
 	}
 	if (!status) {
-	    std::cerr << "WARNING: Adaptation incomplete\n";
+	    std::cerr << "NOTE: Adaptation incomplete\n";
 	}
 	return;
     }
@@ -1148,13 +1159,13 @@ static void adaptstar(long niter, long refresh, int width)
 	    }
 	}
     }
-    if (!console->adaptOff(status)) {
+    if (!console->checkAdaptation(status)) {
 	std::cout << std::endl;
 	errordump();
 	return;
     }
     if (!status) {
-	std::cerr << "WARNING: Adaptation incomplete\n";
+	std::cerr << "NOTE: Adaptation incomplete\n";
     }
 }
 

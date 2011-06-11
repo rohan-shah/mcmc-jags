@@ -605,7 +605,26 @@ unsigned int Console::nchain() const
   }
 }
 
-bool Console::adaptOff(bool &status) 
+bool Console::checkAdaptation(bool &status) 
+{
+    if (_model == 0) {
+	_err << "Can't update. No model!" << endl;
+	return false;
+    }
+    if (!_model->isInitialized()) {
+	_err << "Model not initialized" << endl;
+	return false;
+    }
+    
+    try {
+	status =  _model->checkAdaptation();
+    }
+    CATCH_ERRORS
+
+    return true;
+}
+    
+bool Console::adaptOff(void) 
 {
   if (_model == 0) {
     _err << "Can't update. No model!" << endl;
@@ -617,7 +636,7 @@ bool Console::adaptOff(bool &status)
   }
 
   try {
-      status =  _model->adaptOff();
+      _model->adaptOff();
   }
   CATCH_ERRORS
 

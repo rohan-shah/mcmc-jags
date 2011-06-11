@@ -413,19 +413,24 @@ unsigned int Model::iteration() const
   return _iteration;
 }
 
-bool Model::adaptOff() 
+void Model::adaptOff() 
 {
-    bool status = true;
-
-    for (vector<Sampler*>::iterator p = _samplers.begin(); 
+    for (vector<Sampler*>::const_iterator p = _samplers.begin(); 
 	 p != _samplers.end(); ++p)
     {
-	if (!(*p)->adaptOff())
-	    status = false;
+	(*p)->adaptOff();
     }
-
     _adapt = false;
-    return status;
+}
+
+bool Model::checkAdaptation() const
+{
+    for (vector<Sampler*>::const_iterator p = _samplers.begin(); 
+	 p != _samplers.end(); ++p)
+    {
+	if (!(*p)->checkAdaptation()) return false;
+    }
+    return true;
 }
 
 bool Model::isAdapting() const

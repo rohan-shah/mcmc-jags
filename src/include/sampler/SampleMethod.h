@@ -21,10 +21,13 @@ public:
      */
     virtual bool isAdaptive() const = 0;
     /**
-     * Turns off adaptive mode, returning true if an adaptation test is
-     * passed.
+     * Turns off adaptive mode
      */
-    virtual bool adaptOff() = 0;
+    virtual void adaptOff() = 0;
+    /**
+     * Checks adaptation 
+     */
+    virtual bool checkAdaptation() const = 0;
     /**
      * Returns an informative name for the sample method.
      */

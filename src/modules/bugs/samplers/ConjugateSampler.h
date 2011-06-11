@@ -18,7 +18,8 @@ public:
      * Conjugate methods are not adaptive
      */
     bool isAdaptive() const;
-    bool adaptOff();
+    bool checkAdaptation() const;
+    void adaptOff();
     std::string name() const;
 };
 

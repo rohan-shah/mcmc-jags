@@ -20,11 +20,14 @@ bool ConjugateFSampler::isAdaptive() const
     return false;
 }
 
-bool ConjugateFSampler::adaptOff()
+void ConjugateFSampler::adaptOff()
+{
+}
+
+bool ConjugateFSampler::checkAdaptation() const
 {
     return true;
 }
-
 string ConjugateFSampler::name() const
 {
     return "conjugateF";

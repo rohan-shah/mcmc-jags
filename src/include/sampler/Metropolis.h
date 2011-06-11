@@ -70,13 +70,7 @@ public:
     /**
      * Turns off adaptive mode
      */
-    bool adaptOff();
-    /**
-     * Tests whether adaptive mode has been successful (e.g. by testing
-     * that the acceptance rate lies in an interval around the target 
-     * value). This function is called by Metropolis#adaptOff;
-     */
-    virtual bool checkAdaptation() const = 0;
+    void adaptOff();
     /**
      * length of the value vector
      */

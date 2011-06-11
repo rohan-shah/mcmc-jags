@@ -257,11 +257,15 @@ bool Slicer::accept(double xold, double xnew, double z, double L, double R,
   return true;
 }  
 
-bool Slicer::adaptOff()
+void Slicer::adaptOff()
 {
   _adapt = false;
-  //FIXME We could try a bit harder than this
-  return (_iter > MIN_ADAPT);
+}
+
+bool Slicer::checkAdaptation() const
+{
+    //FIXME We could try a bit harder than this
+    return (_iter > MIN_ADAPT);
 }
 
 bool Slicer::isAdaptive() const

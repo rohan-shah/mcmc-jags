@@ -34,15 +34,21 @@ void ParallelSampler::update(vector<RNG*> const &rngs)
     }
 }
 
-bool ParallelSampler::adaptOff()
+void ParallelSampler::adaptOff()
 {
-    bool pass = true;
     for (unsigned int ch = 0; ch < _methods.size(); ++ch) {
-	if (!_methods[ch]->adaptOff())
-	    pass = false;
+	_methods[ch]->adaptOff();
     }
-    return pass;
 }
+
+bool ParallelSampler::checkAdaptation() const
+{
+    for (unsigned int ch = 0; ch < _methods.size(); ++ch) {
+	if (!_methods[ch]->checkAdaptation()) return false;
+    }
+    return true;
+}
+
 
 bool ParallelSampler::isAdaptive() const
 {

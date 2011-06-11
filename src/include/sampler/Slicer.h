@@ -70,11 +70,14 @@ public:
      */
     virtual void getLimits(double *lower, double *upper) const = 0;
     /**
-     * Turns off adaptive mode.  The current adaptation test is very
-     * basic, and will return true if a minimum number of iterations
-     * (50) have taken place.
+     * Turns off adaptive mode.  
      */
-    bool adaptOff();
+    void adaptOff();
+    /**
+     * The current adaptation test is very basic, and will return true
+     * if a minimum number of iterations (50) have taken place.
+     */
+    bool checkAdaptation() const;
     /**
      * The slicer method is adaptive.  The step size adapts to the
      * mean distance between consecutive updates

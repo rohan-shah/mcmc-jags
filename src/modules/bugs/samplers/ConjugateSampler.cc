@@ -30,7 +30,11 @@ bool ConjugateSampler::isAdaptive() const
     return false;
 }
 
-bool ConjugateSampler::adaptOff()
+void ConjugateSampler::adaptOff()
+{
+}
+
+bool ConjugateSampler::checkAdaptation() const
 {
     return true;
 }

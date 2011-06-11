@@ -19,7 +19,8 @@ public:
     ~ConjugateFSampler();
     void update(std::vector<RNG*> const &rngs);
     bool isAdaptive() const;
-    bool adaptOff();
+    void adaptOff();
+    bool checkAdaptation() const;
     std::string name() const;
 };
 

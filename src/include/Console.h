@@ -192,7 +192,9 @@ public:
 		    std::string const &type, bool flat);
   bool dumpSamplers(std::vector<std::vector<std::string> > &sampler_list);
   /** Turns off adaptive mode of the model */
-  bool adaptOff(bool &status);
+  bool adaptOff();
+  /** Checks whether adaptation is complete */
+  bool checkAdaptation(bool &status);
   /** Indicates whether model is in adaptive mode */
   bool isAdapting() const;
   /** Clears the model */

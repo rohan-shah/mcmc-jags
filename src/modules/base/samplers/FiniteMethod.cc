@@ -84,7 +84,11 @@ namespace base {
 	return false;
     }
 
-    bool FiniteMethod::adaptOff()
+    void FiniteMethod::adaptOff()
+    {
+    }
+
+    bool FiniteMethod::checkAdaptation() const
     {
 	return true;
     }

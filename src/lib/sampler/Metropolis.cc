@@ -36,10 +36,9 @@ bool Metropolis::accept(RNG *rng, double prob)
     return accept;
 }
 
-bool Metropolis::adaptOff()
+void Metropolis::adaptOff()
 {
     _adapt = false;
-    return checkAdaptation(); 
 }
 
 bool Metropolis::isAdaptive() const

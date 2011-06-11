@@ -502,7 +502,11 @@ namespace glm {
 	return false;
     }
     
-    bool GLMMethod::adaptOff()
+    void GLMMethod::adaptOff()
+    {
+    }
+
+    bool GLMMethod::checkAdaptation() const
     {
 	return true;
     }

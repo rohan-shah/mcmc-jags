@@ -46,7 +46,8 @@ namespace glm {
 	void updateLM(RNG *rng, bool stochastic = true, bool chol=true);
 	void updateLMGibbs(RNG *rng);
 	bool isAdaptive() const;
-	bool adaptOff();
+	void adaptOff();
+	bool checkAdaptation() const;
 	void calCoef(double *&, cholmod_sparse *&);
 	virtual	double getMean(unsigned int i) const;
 	virtual std::string name() const = 0;

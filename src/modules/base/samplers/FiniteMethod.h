@@ -19,11 +19,8 @@ namespace base {
 	 * FiniteMethod is not adaptive. This function returns false.
 	 */
 	bool isAdaptive() const;
-	/**
-	 * FiniteMethod has no adaptive mode. This function simply
-	 * returns true
-	 */
-	bool adaptOff();
+	void adaptOff();
+	bool checkAdaptation() const;
 	std::string name() const;
 	static bool canSample(StochasticNode const *snode);
     };

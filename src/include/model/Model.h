@@ -179,14 +179,18 @@ public:
    */
   bool setRNG(RNG *rng, unsigned int chain);
   /**
-   * Turns off adaptive phase of all samplers.
+   * Tests whether all samplers in adaptive mode have passed the
+   * efficiency test that allows adaptive mode to be switched off
    *
-   * @return true if all samplers passed the efficiency
-   * test. Otherwise false.
+   * @see Sampler#checkAdaptation
+   */
+  bool checkAdaptation() const;
+  /**
+   * Turns off adaptive phase of all samplers.
    *
    * @see Sampler#adaptOff
    */
-  bool adaptOff();
+  void adaptOff();
   /**
    * Indicates whether the model is in adaptive mode (before the
    * adaptOff function has been called).
