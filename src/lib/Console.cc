@@ -387,12 +387,9 @@ bool Console::setMonitor(string const &name, Range const &range,
 	_err << "Can't set monitor. No model!" << endl;    
 	return false;
     }
-    if (_model->isAdapting()) {
-        _err << "Can't set monitor. Model is still adapting" << endl;
-        return false;
-    }
 
     try {
+
 	string msg;
 	bool ok = _model->setMonitor(name, range, thin, type, msg);
 	if (!ok) {
@@ -403,6 +400,11 @@ bool Console::setMonitor(string const &name, Range const &range,
 	    }
 	    return false;
 	}
+	if (_model->isAdapting()) {
+	    _out << "NOTE: Stopping adaptation" << endl;
+	    _model->adaptOff();
+	}
+	
     }
     CATCH_ERRORS
 
@@ -627,11 +629,11 @@ bool Console::checkAdaptation(bool &status)
 bool Console::adaptOff(void) 
 {
   if (_model == 0) {
-    _err << "Can't update. No model!" << endl;
+    _err << "Cannot stop adaptation. No model!" << endl;
     return false;
   }
   if (!_model->isInitialized()) {
-    _err << "Model not initialized" << endl;
+    _err << "Cannot stop adaptation. Model not initialized" << endl;
     return false;
   }
 
