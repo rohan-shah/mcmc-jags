@@ -1,20 +1,105 @@
-3.0.0
-* Added aliases for functions and distributions
-* logLikelihood function renamed to logDensity. This function now takes
-  an argument allowing fast calculation of likelihoods and priors.
+Changes in JAGS 3.0.0
 
-2.3.0
-* Solaris changes:
-  - Macro for detecting blas automatically has been updated to use new syntax
-    -library=sunperf.
-  - We no longer pass the option -no-undefined to the linker when building
-    the library or the modules.
-* Fixed memory bug in DHyper::r (bugs module)
-* Fixed segfault in BUGSMOdel when requesting monitor for node with wrong
+User-visible changes
+====================
+
+* Functions and distributions may now have an alias, so that they can be
+  referred to by more than one name. This allows compatibility with the
+  naming conventions of OpenBUGS (e.g. ddirch vs ddirich) and of R
+  (e.g. dbin vs dbinom).
+* Progress bar
+  - The width of the progress bar is extended from 40 to 50 characters
+  - In batch mode, the progress bar is not printed
+  - Adaptive mode is always indicated by symbol "+"
+* In batch mode JAGS halts on the first error 
+* New distributions in the bugs module
+  - Non-central chi-square (dnchisqr)
+  - Beta binomial (dbetabin)
+  - Generalized gamma (dgen.gamma)
+* Separate messages are printed during compilation and initialization of 
+  the model.
+* The multinomial distribution (dmulti) can take a scalar probability
+  parameter (like dcat)
+* A warning is printed if a user tries to initialize a model before it
+  is compiled. This was previously silently ignored.
+* The user has more control over the adaptive phase.  The adapt command
+  does not automatically turn off the adaptive phase and so may be
+  run sequentially until adaptation is complete.
+* When a monitor cannot be defined an attempt is made to return an
+  informative error message.
+* A single installer for Windows contains both 32-bit and 64-bit
+  versions of JAGS.
+
+Library changes
+===============
+
+* logLikelihood function renamed to logDensity. This function now
+  takes an argument allowing fast calculation of likelihoods and
+  priors.
+* New error functions declared in the header module/ModuleError.h can
+  be called from a module instead of throwing an exception.  This
+  allows safe handling when the library is statitically linked to the
+  C++ runtime, as exceptions cannot be thrown across DLL boundaries in
+  this case.
+* New subclasses of runtime_error for functions (FuncError),
+  distributions (DistError)
+* Mixture nodes may share a common MixMap, with substantial memory savings.
+* Models with large multivariate nodes have been optimized for speed.
+
+Configuration changes
+=====================
+
+* Use up-to-date m4 macros for blas and lapack from gnu autoconf archive
+* For modules, drop the -no-undefined linker flag except on Windows, where
+  it is necessary.
+* On Solaris, the macro for detecting blas automatically has been updated
+  to use new syntax -library=sunperf.
+
+Internal changes in modules 
+===========================
+
+* bugs 
+  - The base RNG factory only uses the time stamp once, during
+    construction, to fix the random number seed.  Use the bugs
+    namespace consistently in the bugs module
+  - Changed all instances of lgamma (C library) to lgamma_fn (R math)
+  - The DSum sampler may be multi-level (i.e. it may sample two nodes,
+    one of which is the descendant of the other)
+
+* glm
+  - The HolmesHeld sampler has been (temporarily) suppressed as its numerical 
+    instability problems have not been solved.
+  - The glm module now contains a copy of CHOLMOD, AMD, COLMOD
+
+* mix
+  - The DNormMix sampler may be multi-level
+
+Bug fixes
+=========
+
+* Fixed segfault in BUGSModel when requesting monitor for node with wrong
   dimensions
 * Fixed segfault in ConjugateMNormal
 * Fixed glm module in case of GLMs with mis-measured covariates
   - Holmes-Held method cannot work with such models
   - With Albert-Chib method we need to update all auxiliary data 
     at the start of each iteration
-  
+* The lexer now accepts floating point expressions when the exponent
+  has no sign (e.g. 6.022E23 now accepted as well as 6.022E+23)
+* Corrected random number generation for
+  - Pareto distribution
+  - Multivariate T distribution
+  - Hypergeometric distribution (seg fault)
+* The constructors for Vector- and ArrayStochasticNodes now check
+  the number of parameters.
+* Fixed serious bug in NodeArray::find (It always returned 0 and led
+  to the creation of spurious aggregate nodes).
+* More informative error messages in case of module loading failure
+* Random walk Metropolis sampler now copes with non-finite log-densities
+* CalKLExact was only returning half the correct value, with 
+  consequences for the pD and popt monitors.
+* The binomial distribution now allows a zero size parameter
+* Fixed bug in PDMonitorFactory that stopped Monitor objects being
+  created when any node in the model is bounded.
+* The scanner throws an exception if it encounters the Unicode 
+  replacement charcter U+FFFD
