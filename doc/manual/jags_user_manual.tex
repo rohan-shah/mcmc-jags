@@ -252,7 +252,8 @@ for (i in 1:N) {
 }
 \end{verbatim}
 $Y$ would be inferred to be an $N \times M$ matrix. Using this method,
-empty indices are not allowed on the left hand side of any relation.
+empty indices ({\en e.g.} \verb+Y[i,]+) are not allowed on the left
+hand side of any relation.
 \item {\bf Using the dimensions of the parents} If a whole node array
   appears on the left hand side of a relation, then its dimensions can
   be inferred from the dimensions of the nodes on the right hand side.
@@ -1315,11 +1316,11 @@ Exponential        & dexp      & pexp      & qexp \\
 F                  & df        & pf        & qf \\
 Gamma              & dgamma    & pgamma    & qgamma \\
 Generalized gamma  & dgen.gamma & pgen.gamma & qgen.gamma \\
-Hypergeometric     & dhyper    & phyper    & qhyper \\
+Noncentral hypergeometric     & dhyper    & phyper    & qhyper \\
 Logistic           & dlogis    & plogis    & qlogis \\
 Log-normal         & dlnorm    & plnorm    & qlnorm \\
 Negative binomial  & dnegbin   & pnegbin   & qnegbin \\
-Noncentral Chi-square & dchisqr   & pchisqr   & qchisqr \\
+Noncentral Chi-square & dnchisqr   & pnchisqr   & qnchisqr \\
 Normal             & dnorm     & pnorm     & qnorm \\
 Pareto             & dpar      & ppar      & qpar \\
 Poisson            & dpois     & ppois     & qpois \\
@@ -1327,8 +1328,9 @@ Student t          & dt        & pt        & qt \\
 Weibull            & dweib     & pweib     & qweib \\
 \hline
 \end{tabular}
-\caption{Wrappers for the d-p-q functions from the \texttt{Rmath} library
-  \label{table:bugs:dpq}}
+\caption{Functions to calculate the probability density, probability
+  function, and quantiles of some of the distributions provided by the
+  \texttt{bugs} module. \label{table:bugs:dpq}}
 \end{center}
 \end{table}
 
@@ -1547,7 +1549,7 @@ their distribution.
 
 \begin{table}
   \begin{center}
-    \begin{tabular}{llllll}
+    \begin{tabular}{llccc}
       \hline
       Name & Usage & Density & Lower & Upper \\
       \hline
@@ -1562,18 +1564,19 @@ their distribution.
       $0$ & $1$ \\
       ~ & $0 < p < 1$ \\
       Binomial  & \verb+dbin(p,n)+ & 
-      %\multirow{2}{*}{$\begin{array}{c} n \\ x \end{array} p^x (1-p)^{n-x}$}
       \multirow{2}{*}{${n \choose x}  p^x (1-p)^{n-x}$}
       ~  & $0$ & $n$ \\
       ~ & $0 < p < 1$, $n \in \mathbb{N}^*$ \\
       Categorical & \verb+dcat(pi)+ & \multirow{2}{*}{$\frac{\textstyle \pi_x}{\textstyle \sum_i \pi_i}$} & $1$ & $N$ \\
       ~ & $\pi \in (\mathbb{R}^+)^N$  \\
-      Hypergeometric & \verb+dhyper(n1,n2,m1,psi)+ &
+      Noncentral & \verb+dhyper(n1,n2,m1,psi)+ &
       \multirow{2}{*}{
-        $\textstyle {n_1 \choose x} {n_2 \choose m_1 - x} \psi^x$
+        $\frac{ {n_1 \choose x} {n_2 \choose m_1 - x} \psi^x}
+              { \sum_i {n_1 \choose i} {n_2 \choose m_1 - i} \psi^i}$
       } &
-      $\text{max}(0,n_+ - m_1)$ & $\text{min}(n_1,m_1)$ \\
-      ~ & $0 \leq n_i$, $0 < m_1 \leq n_+$  \\
+      $\scriptstyle \text{max}(0,n_+ - m_1)$ & 
+      $\scriptstyle \text{min}(n_1,m_1)$ \\
+      hypergeometric & $0 \leq n_i$, $0 < m_1 \leq n_+$  \\
       Negative & \verb+dnegbin(p, r)+ &
       \multirow{2}{*}{${x + r -1 \choose x} p^r (1-p)^x$} & 0 & \\
       binomial & $0 < p < 1$, $r \in \mathbb{N}^+$ \\
