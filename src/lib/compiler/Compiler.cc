@@ -431,29 +431,6 @@ getFunction(ParseTree const *t, FuncTab const &functab)
     return func;
 }
 
-/*
-static Distribution const *getDistribution(ParseTree const *pstoch_rel, 
-				           DistTab const &table)
-{
-  //Get the distribution from a stochastic relation
-  
-  if (pstoch_rel->treeClass() != P_STOCHREL) {
-    throw logic_error("Malformed parse tree. Expecting stochastic relation");
-  }
-  
-  // Get the distribution
-  ParseTree const *pdist = pstoch_rel->parameters()[1];
-  if (pdist->treeClass() != P_DENSITY) {
-    throw logic_error("Malformed parse tree. Expected density expression");
-  }
-  Distribution const *dist = table.find(pdist->name());
-  if (dist == 0) {
-      CompileError(pdist, "Unknown distribution:", pdist->name());
-  }
-  return dist;
-}
-*/
-
 Node *Compiler::getLength(ParseTree const *p, SymTab const &symtab)
 {
     if (p->treeClass() != P_LENGTH) {
@@ -635,23 +612,18 @@ Node * Compiler::allocateStochastic(ParseTree const *stoch_relation)
     if (!getParameterVector(distribution, parameters)) {
 	return 0;
     }
-/*
-    vector<ParseTree*> const &param_list = distribution->parameters();
-    for (unsigned int i = 0; i < param_list.size(); ++i) {
-        Node *param = getParameter(param_list[i]);
-        if (param) {
-            parameters.push_back(param);
-        }
-        else {
-            return 0;
-        }
-    }
-*/
+
     // Set upper and lower bounds
     Node *lBound = 0, *uBound = 0;
     if (stoch_relation->parameters().size() == 3) {
 	//Truncated distribution
 	ParseTree const *truncated = stoch_relation->parameters()[2];
+	switch(truncated->treeClass()) {
+	case P_BOUNDS: case P_INTERVAL:
+	    break;
+	default:
+	    throw logic_error("Invalid parse tree");
+	}
 	ParseTree const *ll = truncated->parameters()[0];
 	ParseTree const *ul = truncated->parameters()[1];
 	if (ll) {
@@ -731,6 +703,23 @@ Node * Compiler::allocateStochastic(ParseTree const *stoch_relation)
 	}
     }	
 
+    /* 
+       We allow BUGS-style interval censoring notation for
+       compatibility but only allow it if there are no free parameters
+       in the distribution
+    */
+    if (stoch_relation->parameters().size() == 3) {
+	ParseTree const *t = stoch_relation->parameters()[2];
+	if (t->treeClass() == P_BOUNDS) {
+	    for (unsigned int i = 0; i < parameters.size(); ++i) {
+		if (!parameters[i]->isObserved()) {
+		    CompileError(stoch_relation,
+				 "BUGS I(,) notation is not allowed unless",
+				 "all parameters are fixed");
+		}
+	    }
+	}
+    }
     StochasticNode *snode = 0;
     if (SCALAR(dist)) {
 	snode =  new ScalarStochasticNode(SCALAR(dist), parameters, 
