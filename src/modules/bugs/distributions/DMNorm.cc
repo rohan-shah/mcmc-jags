@@ -127,22 +127,7 @@ bool
 DMNorm::checkParameterValue(vector<double const *> const &parameters,
 			    vector<vector<unsigned int> > const &dims) const
 {
-    /*
-      // We only use the lower triangle so symmetry check is rendundant 
-
-      unsigned int n = dims[0][0];
-      double const *T = parameters[1];
-      // Check symmetry
-      for (unsigned int i = 1; i < n; i++) {
-      for (unsigned int j = 0; j < i - 1; j++) {
-      if (fabs(T[i + j*n] - T[j + i*n]) > 16 * DBL_EPSILON)
-      return false;
-      }
-      }
-      // Don't bother checking positive definiteness
-    */
-    return true;
-
+    return check_symmetry(parameters[1], dims[0][0]);
 }
 
 

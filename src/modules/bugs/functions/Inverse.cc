@@ -24,6 +24,13 @@ namespace bugs {
 	return isSquareMatrix(dims[0]);
     }
 
+    bool 
+    Inverse::checkParameterValue(vector<double const *> const &args,
+				 vector<vector<unsigned int> > const &dims) const
+    {
+	return check_symmetry(args[0], dims[0][0]);
+    }
+
     vector<unsigned int> 
     Inverse::dim (vector<vector<unsigned int> > const &dims) const
     {

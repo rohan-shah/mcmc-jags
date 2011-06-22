@@ -9,6 +9,7 @@
 #include "matrix.h"
 
 using std::log;
+using std::fabs;
 
 double logdet(double const *a, int n)
 {
@@ -164,6 +165,17 @@ bool inverse (double *X, double const *A, int n)
 
     if (info != 0) {
 	return false;
+    }
+    return true;
+}
+
+bool check_symmetry(double const *x, unsigned int nrow, double tol)
+{
+    for (unsigned int i = 1; i < nrow; ++i) {
+	for (unsigned int j = 0; j < i; ++j) {
+	    if (fabs(x[i + nrow*j] - x[j + nrow*i]) > tol)
+		return false;
+	}
     }
     return true;
 }

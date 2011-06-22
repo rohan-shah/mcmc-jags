@@ -6,7 +6,7 @@
 namespace bugs {
 
     /**
-     * @short Inverts a square matrix
+     * @short Inverts a square symmetric matrix
      * <pre>
      * y[,] <- inverse(x[,])
      * </pre>
@@ -20,7 +20,9 @@ namespace bugs {
 	    const;
 	std::vector<unsigned int> 
 	    dim(std::vector<std::vector<unsigned int> > const &args) const;
-	bool checkParameterDim(std::vector<std::vector<unsigned int> > const &dims)const;
+	bool checkParameterDim(std::vector<std::vector<unsigned int> > const &dims) const;
+	bool checkParameterValue(std::vector<double const *> const &args,
+				 std::vector<std::vector<unsigned int> > const &dims) const;
     };
 
 }

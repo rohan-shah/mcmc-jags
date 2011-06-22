@@ -4,6 +4,7 @@
 #include "matrix.h"
 
 #include <util/dim.h>
+#include <cmath>
 
 using std::vector;
 
@@ -31,7 +32,14 @@ namespace bugs {
     {
 	return vector<unsigned int>(1,1);
     }
-}
 
-/* FIXME: we need a checkParameterValue function */
+
+    bool 
+    LogDet::checkParameterValue(vector<double const *> const &args,
+				vector<vector<unsigned int> > const &dims) const
+    {
+	return check_symmetry(args[0], dims[0][0]);
+    }
+
+}
 

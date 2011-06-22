@@ -97,19 +97,13 @@ DMT::checkParameterValue(vector<double const *> const &parameters,
     double const *T = parameters[1];
     double k = *parameters[2];
 
-    if (k < 2)
+    if (k < 2) {
 	return false;
-
-    // Check symmetry
-    for (unsigned int i = 1; i < n; i++) {
-	for (unsigned int j = 0; j < i - 1; j++) {
-	    if (fabs(T[i + j*n] - T[j + i*n]) > DBL_EPSILON)
-		return false;
-	}
     }
-    // Don't bother checking positive definiteness
-
-    return true;
+    else {
+	//NB Not checking positive definiteness
+	return check_symmetry(T, n);
+    }
 }
 
 

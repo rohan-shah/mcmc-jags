@@ -58,7 +58,10 @@ double DMulti::logDensity(double const *x, unsigned int length, PDFType type,
     double loglik = 0.0;
     double S = 0;
     for (unsigned int i = 0; i < length; i++) {
-	if (x[i] != 0) {
+	if (x[i] < 0 || floor(x[i]) != x[i]) {
+	    return JAGS_NEGINF;
+	}
+	else if (x[i] != 0) {
 	    if (PROB(par)[i] == 0) {
 		return JAGS_NEGINF;
 	    }
@@ -68,11 +71,13 @@ double DMulti::logDensity(double const *x, unsigned int length, PDFType type,
 	    S += x[i];
 	}
     }
+
+    //Check consistency between parameters and data
     if (S != SIZE(par))
 	return JAGS_NEGINF;
 
     if (type != PDF_PRIOR) {
-	//Normalizing constant
+	//Terms depending on parameters only
 	double sump = 0.0;
 	for (unsigned int i = 0; i < length; ++i) {
 	    sump += PROB(par)[i];
@@ -85,6 +90,11 @@ double DMulti::logDensity(double const *x, unsigned int length, PDFType type,
 	for (unsigned int i = 0; i < length; ++i) {
 	    loglik -= lgammafn(x[i] + 1);
 	}
+    }
+
+    if (type == PDF_FULL) {
+	//If either data or parameters are fixed then this term is constant
+	//bearing in mind consistency check above.
 	loglik += lgammafn(SIZE(par) + 1);
     }
 
@@ -105,7 +115,7 @@ void DMulti::randomSample(double *x, unsigned int length,
     //Normalize probability
     double sump = 0;
     for (unsigned int i = 0; i < length; ++i) {
-	sump += PROB(par)[i];
+	sump += prob[i];
     }
 
     for (unsigned int i = 0; i < length - 1; i++) {
