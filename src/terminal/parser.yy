@@ -351,21 +351,21 @@ initialize: INITIALIZE {
 ;
 
 adapt: ADAPT INT {
-    long refresh = $2/40;
-    adaptstar($2, refresh, 40);
+    long refresh = $2/50;
+    adaptstar($2, refresh, 50);
 }
 | ADAPT INT ',' BY '(' INT ')' {
-    adaptstar($2,$6,40);
+    adaptstar($2,$6, 50);
 }
 ;
 
 update: UPDATE INT {
   //fixme: put refresh option
   long refresh = $2/40;
-  updatestar($2, refresh, 40);
+  updatestar($2, refresh, 50);
 }
 | UPDATE INT ',' BY '(' INT ')' {
-  updatestar($2,$6, 40);
+  updatestar($2,$6, 50);
 }
 ;
 
@@ -1090,8 +1090,12 @@ static void updatestar(long niter, long refresh, int width)
 	    }
 	}
 	long nupdate = std::min(n, refresh);
-	if(console->update(nupdate))
-	    std::cout << "*" << std::flush;
+	if(console->update(nupdate)) {
+	    if (adapt) 
+		std::cout << "+" << std::flush;
+	    else 
+		std::cout << "*" << std::flush;
+	}
 	else {
 	    std::cout << std::endl;
 	    errordump();
