@@ -169,12 +169,15 @@ bool inverse (double *X, double const *A, int n)
     return true;
 }
 
-bool check_symmetry(double const *x, unsigned int nrow, double tol)
+bool check_symmetry(double const *x, unsigned int n, double tol)
 {
-    for (unsigned int i = 1; i < nrow; ++i) {
+    for (unsigned int i = 1; i < n; ++i) {
+	double const *xp = x + i;
+	double const *yp = x + n*i;
 	for (unsigned int j = 0; j < i; ++j) {
-	    if (fabs(x[i + nrow*j] - x[j + nrow*i]) > tol)
-		return false;
+	    if (fabs(*xp - *yp) > tol) return false;
+	    xp += n;
+	    yp++;
 	}
     }
     return true;
