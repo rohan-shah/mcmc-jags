@@ -5,7 +5,7 @@
 \usepackage{url}
 \usepackage{multirow}
 \usepackage{amsfonts}
-\newcommand{\release}{2.2.0}
+\newcommand{\release}{3.0.0}
 \newcommand{\JAGS}{\textsf{JAGS}}
 \newcommand{\rjags}{\textsf{rjags}}
 \newcommand{\BUGS}{\textsf{BUGS}}
@@ -16,6 +16,7 @@
 
 \title{JAGS Version \release\ user manual}
 \author{Martyn Plummer}
+\date{29 June 2011}
 \maketitle
 
 \tableofcontents
@@ -252,7 +253,7 @@ for (i in 1:N) {
 }
 \end{verbatim}
 $Y$ would be inferred to be an $N \times M$ matrix. Using this method,
-empty indices ({\en e.g.} \verb+Y[i,]+) are not allowed on the left
+empty indices ({\em e.g.} \verb+Y[i,]+) are not allowed on the left
 hand side of any relation.
 \item {\bf Using the dimensions of the parents} If a whole node array
   appears on the left hand side of a relation, then its dimensions can

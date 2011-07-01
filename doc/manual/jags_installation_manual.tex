@@ -44,10 +44,7 @@ make -j4
 At configure time you also have the option of defining options such
 as:
 \begin{itemize}
-\item The names of the C, C++, and Fortran compilers.  Although
-  \JAGS\ contains no Fortran code, you are required to define a
-  Fortran compiler so that \JAGS\ modules can be linked against
-  libraries written in Fortran (such as BLAS and LAPACK)
+\item The names of the C, C++, and Fortran compilers.  
 \item Optimization flags for the C and C++ compilers.  \JAGS\ is
   optimized by default if the GNU compiler (gcc) is used. Otherwise
   you must explicitly supply optimization flags.
@@ -280,7 +277,8 @@ version of MKL:
 ./configure --disable-shared \
   --with-blas="-lmkl_gf_lp64 -lmkl_sequential -lmkl_core -lpthread"
 \end{verbatim}
-Note that the library still depends on \verb+libpthread+.
+Note that \verb+libpthread+ is still required, even when linking
+to sequential MKL.
 
 Threaded MKL may be used with:
 \begin{verbatim}
@@ -294,12 +292,14 @@ but can be controlled by setting \verb+OMP_NUM_THREADS+ or
 
 \subsubsection{Using Intel Compilers}
 
-\JAGS\ has been successfully built with the Intel C, C++ and Fortran
-compilers.  The additional configure options required to use the Intel
-compilers are:
+\JAGS\ has been successfully built with the Intel Composer XE
+compilers. To set up the environment for using these compilers call
+the \verb+compilervars.sh+ shell script, {\em e.g.}
 \begin{verbatim}
-source /opt/intel/Compiler/11.1/bin/ifortvars.sh
-source /opt/intel/Compiler/11.1/bin/iccvars.sh
+source /opt/intel/composerxe-2011/bin/compilervars.sh intel64
+\end{verbatim}
+Then call the configure script with the Intel compilers:
+\begin{verbatim}
 CC=icc CXX=icpc F77=ifort ./configure 
 \end{verbatim}
 
@@ -331,33 +331,7 @@ to the stlport4 library by adding the options
 \verb+-library=stlport4+ to \verb+CXXFLAGS+. 
 
 The configure script automatically detects the Sun Performance library,
-which implements the BLAS/LAPACK functions.  Automatic detection may
-not work on older versions of Sun Studio, which used a different syntax
-for specifying this library.  In this case, you may need to use the
-configure option
-\begin{verbatim}
---with-blas="-xlic_lib=sunperf -lsunmath"
-\end{verbatim}
-
-\subsection{IRIX}
-
-\JAGS\ has not been tested on IRIX for some time.  Version 1.0.0 was
-successfully built using the MIPSpro 7.4 compiler on IRIX 6.5. The
-following configure options were used:
-\begin{verbatim}
-./configure CC=cc CXX=CC F77=f77 \
-CFLAGS="-O2 -g2 -OPT:IEEE_NaN_inf=ON" \
-CXXFLAGS="-O2 -g2 -OPT:IEEE_NaN_inf=ON" 
-\end{verbatim}
-and \JAGS\ was built with \verb+gmake+ (GNU make).
-
-BLAS and LAPACK functions on IRIX are provided by the Scientific
-Computing Software library (\verb+scs+). The presence of this library
-is detected automatically by the configure script.
-
-When using the MIPSpro compiler, optimization flags must be given
-explicitly at configure time. If this is not done, then \JAGS\ will
-not be optimized at all and will run slowly.
+which implements the BLAS/LAPACK functions.  
 
 \clearpage
 \section{Mac OS X}
