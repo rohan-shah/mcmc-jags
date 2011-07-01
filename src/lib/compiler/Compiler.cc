@@ -710,7 +710,7 @@ Node * Compiler::allocateStochastic(ParseTree const *stoch_relation)
     */
     if (stoch_relation->parameters().size() == 3) {
 	ParseTree const *t = stoch_relation->parameters()[2];
-	if (t->treeClass() == P_BOUNDS) {
+	if (t->treeClass() == P_INTERVAL) {
 	    for (unsigned int i = 0; i < parameters.size(); ++i) {
 		if (!parameters[i]->isObserved()) {
 		    CompileError(stoch_relation,
