@@ -29,6 +29,7 @@
 #include <algorithm>
 #include <string>
 #include <set>
+#include <sstream>
 
 using std::string;
 using std::vector;
