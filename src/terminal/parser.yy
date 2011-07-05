@@ -1038,8 +1038,21 @@ static void errordump()
 
 static void updatestar(long niter, long refresh, int width)
 {
+    std::cout << "Updating " << niter << std::endl;
+
     bool adapt = console->isAdapting();
-	
+    if (adapt && console->iter() > 0) {
+	//Turn off iteration immediately if we have some burn-in
+	if (console->adaptOff()) {
+	    adapt = false;
+	}
+	else {
+	    std::cout << std::endl;
+	    errordump();
+	    return;
+	}
+    }
+
     if (!interactive || refresh == 0) {
 	Jtry(console->update(niter/2));
 	bool status = true;
@@ -1063,7 +1076,6 @@ static void updatestar(long niter, long refresh, int width)
     if (width > niter / refresh + 1)
 	width = niter / refresh + 1;
 
-    std::cout << "Updating " << niter << std::endl;
     for (int i = 0; i < width - 1; ++i) {
 	std::cout << "-";
     }
@@ -1091,10 +1103,7 @@ static void updatestar(long niter, long refresh, int width)
 	}
 	long nupdate = std::min(n, refresh);
 	if(console->update(nupdate)) {
-	    if (adapt) 
-		std::cout << "+" << std::flush;
-	    else 
-		std::cout << "*" << std::flush;
+	    std::cout << "*" << std::flush;
 	}
 	else {
 	    std::cout << std::endl;
@@ -1117,10 +1126,12 @@ static void updatestar(long niter, long refresh, int width)
 
 static void adaptstar(long niter, long refresh, int width)
 {
+    std::cout << "Adapting " << niter << std::endl;
     if (!console->isAdapting()) {
-	std::cerr << "NOTE: Model is not in adaptive mode\n";
+	std::cerr << "ERROR: Model is not in adaptive mode\n";
+	return;
     }
-	
+    
     bool status = true;
     if (!interactive || refresh == 0) {
 	console->update(niter);
@@ -1129,15 +1140,17 @@ static void adaptstar(long niter, long refresh, int width)
 	    return;
 	}
 	if (!status) {
-	    std::cerr << "NOTE: Adaptation incomplete\n";
+	    std::cerr << "Adaptation incomplete\n";
 	}
-	return;
+	else {
+	    std::cerr << "Adaptation successful\n";
+	    return;
+	}
     }
 
     if (width > niter / refresh + 1)
 	width = niter / refresh + 1;
 
-    std::cout << "Adapting " << niter << std::endl;
     for (int i = 0; i < width - 1; ++i) {
 	std::cout << "-";
     }
@@ -1169,7 +1182,10 @@ static void adaptstar(long niter, long refresh, int width)
 	return;
     }
     if (!status) {
-	std::cerr << "NOTE: Adaptation incomplete\n";
+	std::cerr << "Adaptation incomplete.\n";
+    }
+    else {
+	std::cerr << "Adaptation successful\n";
     }
 }
 
