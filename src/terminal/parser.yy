@@ -351,7 +351,7 @@ initialize: INITIALIZE {
 ;
 
 adapt: ADAPT INT {
-    long refresh = $2/50;
+    long refresh = interactive ? $2/50 : 0;
     adaptstar($2, refresh, 50);
 }
 | ADAPT INT ',' BY '(' INT ')' {
@@ -360,9 +360,8 @@ adapt: ADAPT INT {
 ;
 
 update: UPDATE INT {
-  //fixme: put refresh option
-  long refresh = $2/40;
-  updatestar($2, refresh, 50);
+    long refresh = interactive ? $2/50 : 0;
+    updatestar($2, refresh, 50);
 }
 | UPDATE INT ',' BY '(' INT ')' {
   updatestar($2,$6, 50);
@@ -1053,7 +1052,7 @@ static void updatestar(long niter, long refresh, int width)
 	}
     }
 
-    if (!interactive || refresh == 0) {
+    if (refresh == 0) {
 	Jtry(console->update(niter/2));
 	bool status = true;
 	if (adapt) {
@@ -1133,7 +1132,7 @@ static void adaptstar(long niter, long refresh, int width)
     }
     
     bool status = true;
-    if (!interactive || refresh == 0) {
+    if (refresh == 0) {
 	console->update(niter);
 	if (!console->checkAdaptation(status)) {
 	    errordump();
