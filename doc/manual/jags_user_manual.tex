@@ -626,15 +626,20 @@ values supplied for each chain.
 \end{verbatim}
 Updates the model by \texttt{n} iterations. 
 
-A progress bar is printed on the standard output consisting of 50
-asterisks. If the \texttt{by} option is supplied, a new asterisk is
-printed every \texttt{m} iterations. If this entails more than 50
-asterisks, the progress bar will be wrapped over several lines.  If
-\texttt{m} is zero, the printing of the progress bar is suppressed.
+If JAGS is being run interactively, a progress bar is printed on the
+standard output consisting of 50 asterisks. If the \texttt{by} option
+is supplied, a new asterisk is printed every \texttt{m} iterations. If
+this entails more than 50 asterisks, the progress bar will be wrapped
+over several lines.  If \texttt{m} is zero, the printing of the
+progress bar is suppressed.
 
-If the model is has an adaptive mode, the first UPDATE statement turns
-off adaptive mode for all samplers in the model after \texttt{n/2}
-iterations. A warning is printed if adaptation is
+If JAGS is being run in batch mode, then the progress bar is
+suppressed by default, but you may activate it by supplying the
+\texttt{by} option with a non-zero value of \texttt{m}.
+
+If the model has an adaptive sampling phase, the first UPDATE
+statement turns off adaptive mode for all samplers in the model after
+\texttt{n/2} iterations. A warning is printed if adaptation is
 incomplete. Incomplete adaptation means that the mixing of the Markov
 chain is not optimal. It is still possible to continue with a model
 that has not completely adapted, but it may be preferable to run the
@@ -656,6 +661,9 @@ adaptive mode immediately.
 
 Use this instead of the first UPDATE statement if you want explicit
 control over the length of the adaptive sampling phase.
+
+Like the UPDATE statement, the ADAPT statement prints a progress
+bar, but with plus signs instead of asterisks.
 
 \subsection{MONITOR}
 \label{section:monitor}
