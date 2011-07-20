@@ -194,6 +194,7 @@ bool BUGSModel::setMonitor(string const &name, Range const &range,
 	}
     }
 
+    msg.clear();
     Monitor *monitor = 0;
 
     list<pair<MonitorFactory*, bool> > const &faclist = monitorFactories();
@@ -202,7 +203,7 @@ bool BUGSModel::setMonitor(string const &name, Range const &range,
     {
 	if (j->second) {
 	    monitor = j->first->getMonitor(name, range, this, type, msg);
-	    if (monitor)
+	    if (monitor || !msg.empty())
 		break;
 	}
     }

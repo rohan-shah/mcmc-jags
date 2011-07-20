@@ -1,3 +1,24 @@
+Changes in JAGS 3.0.1
+
+User-visible changes
+====================
+* Allow progress bar in batch mode if user gives "by" option to update
+  or adapt.
+
+
+Library changes
+===============
+* BUGSModel::setMonitor will return after the first error message is 
+  reported from a MonitorFactory.
+
+Internal changes in modules
+===========================
+
+* dic
+  - Improved error messages from PDTraceFactory in case a pD monitor
+    cannot be generated.
+
+-----------------------------------------------------------------------
 Changes in JAGS 3.0.0
 
 User-visible changes
