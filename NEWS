@@ -1,10 +1,15 @@
-Changes in JAGS 3.0.1
+Changes in JAGS 3.1.0
 
 User-visible changes
 ====================
 * Allow progress bar in batch mode if user gives "by" option to update
   or adapt.
 
+Bug fixes
+=========
+* If a monitor is requested while the model is in adaptive mode, then
+  adaptive mode is turned off, with a NOTE to the user, instead of
+  throwing an exception.
 
 Library changes
 ===============
@@ -13,7 +18,6 @@ Library changes
 
 Internal changes in modules
 ===========================
-
 * dic
   - Improved error messages from PDTraceFactory in case a pD monitor
     cannot be generated.

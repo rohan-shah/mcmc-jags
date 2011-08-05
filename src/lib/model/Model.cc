@@ -491,7 +491,7 @@ void Model::setSampledExtra()
 void Model::addMonitor(Monitor *monitor, unsigned int thin)
 {
     if (_adapt) {
-	throw logic_error("Cannot add monitor to adapting model");
+	throw runtime_error("Turn off adaptive mode before setting monitors");
     }
     
     _monitors.push_back(MonitorControl(monitor, _iteration+1, thin));
