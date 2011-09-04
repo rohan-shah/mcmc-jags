@@ -50,7 +50,7 @@ namespace base {
 	    }
 
 	    //Move onto the next generator
-	    _index = (_index + 1) % 3;
+	    _index = (_index + 1) % 4;
 
 	    //Reset the seed
 	    _seed = static_cast<unsigned int>(rng->uniform() * UINT_MAX);
