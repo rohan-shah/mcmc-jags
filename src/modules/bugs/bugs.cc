@@ -24,6 +24,7 @@
 #include <distributions/DNorm.h>
 #include <distributions/DPar.h>
 #include <distributions/DPois.h>
+#include <distributions/DRound.h>
 #include <distributions/DT.h>
 #include <distributions/DUnif.h>
 #include <distributions/DWeib.h>
@@ -42,6 +43,7 @@
 #include <functions/Cos.h>
 #include <functions/Cosh.h>
 #include <functions/DIntervalFunc.h>
+#include <functions/DRoundFunc.h>
 #include <functions/DSumFunc.h>
 #include <functions/Exp.h>
 #include <functions/Equals.h>
@@ -178,7 +180,8 @@ namespace bugs {
 	//Load observable functions
 	insert(new DSum, new DSumFunc);
 	insert(new DInterval, new DIntervalFunc);
-        
+	insert(new DRound, new DRoundFunc);
+
 	//Load sampler factories
 	insert(new MNormalFactory);
 	insert(new DirichletFactory);
