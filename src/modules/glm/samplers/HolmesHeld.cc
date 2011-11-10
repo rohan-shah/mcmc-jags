@@ -56,7 +56,8 @@ namespace glm {
 	   solves A %*% mu = b.
 	   
 	   In this call, "w" solves A %*% w = P %*% b and "N" holds
-	   the Cholesky decomposition of P %*% A %*% t(P). 
+	   the Cholesky decomposition of P %*% A %*% t(P), where P
+	   is a permutation matrix.
 	*/
 
 	vector<StochasticNode const *> const &schildren = 
@@ -104,57 +105,61 @@ namespace glm {
 	double *wx = static_cast<double *>(w->x);
 	
 	for (unsigned int r = 0; r < nrow; ++r) {
+
+	    // In a heterogeneous GLM, we may have some normal
+	    // outcomes as well as binary outcomes. These can be
+	    // skipped as there is no need for auxiliary variables
+
+	    if (_outcome[r] == BGLM_NORMAL)
+		continue;
+		
+	    int top = cs_spsolve(&cs_L, &cs_Ptx, r, xi, ur, 0, 1);
+		
+	    double mu_r = getMean(r);
+	    double tau_r = getPrecision(r);
 	    
-	    if (_outcome[r] != BGLM_NORMAL) {
-		
-		int top = cs_spsolve(&cs_L, &cs_Ptx, r, xi, ur, 0, 1);
-		
-		double mu_r = getMean(r);
-		double tau_r = getPrecision(r);
-
-		//Calculate mean and precision of z[r] conditional
-		//on z[s] for s != r
-		double zr_mean = 0;
-		double Hr = 0; // 
-
-		if (_factor->is_ll) {
-		    for (unsigned int j = top; j < ncol; ++j) {
-			zr_mean  += ur[xi[j]] * wx[xi[j]]; 
-			Hr  += ur[xi[j]] * ur[xi[j]];
-		    }
-		}
-		else {
-		    for (unsigned int j = top; j < ncol; ++j) {
-			zr_mean  += ur[xi[j]] * wx[xi[j]] / d[xi[j]]; 
-			Hr  += ur[xi[j]] * ur[xi[j]] / d[xi[j]];
-		    }
-		}
-		Hr *= tau_r;
-		zr_mean -= Hr * (_z[r] - mu_r);
-		zr_mean /= (1 - Hr);
-		double zr_prec = (1 - Hr) * tau_r;
-		
-		if (zr_prec <= 0) {
-		    throwRuntimeError("Invalid precision in Holmes-Held update method.\nThis is a known bug and we are working on it.\nPlease bear with us");
-		}
-
-		double yr = schildren[r]->value(_chain)[0];
-		double zold = _z[r];
-		if (yr == 1) {
-		    _z[r] = lnormal(0, rng, mu_r + zr_mean, 1/sqrt(zr_prec));
-		}
-		else if (yr == 0) {
-		    _z[r] = rnormal(0, rng, mu_r + zr_mean, 1/sqrt(zr_prec));
-		}
-		else {
-		    throwLogicError("Invalid child value in HolmesHeld");
-		}
-
-		//Add new contribution of row r back to b
-		double zdelta = (_z[r] - zold) * tau_r;
+	    //Calculate mean and precision of z[r] conditional
+	    //on z[s] for s != r
+	    double zr_mean = 0;
+	    double Hr = 0; // 
+	    
+	    if (_factor->is_ll) {
 		for (unsigned int j = top; j < ncol; ++j) {
-		    wx[xi[j]] += ur[xi[j]] * zdelta; 
+		    zr_mean  += ur[xi[j]] * wx[xi[j]]; 
+		    Hr  += ur[xi[j]] * ur[xi[j]];
 		}
+	    }
+	    else {
+		for (unsigned int j = top; j < ncol; ++j) {
+		    zr_mean  += ur[xi[j]] * wx[xi[j]] / d[xi[j]]; 
+		    Hr  += ur[xi[j]] * ur[xi[j]] / d[xi[j]];
+		}
+	    }
+	    Hr *= tau_r;
+	    zr_mean -= Hr * (_z[r] - mu_r);
+	    zr_mean /= (1 - Hr);
+	    double zr_prec = (1 - Hr) * tau_r;
+	    
+	    if (zr_prec <= 0) {
+		throwRuntimeError("Invalid precision in Holmes-Held update method.\nThis is a known bug and we are working on it.\nPlease bear with us");
+	    }
+	    
+	    double yr = schildren[r]->value(_chain)[0];
+	    double zold = _z[r];
+	    if (yr == 1) {
+		_z[r] = lnormal(0, rng, mu_r + zr_mean, 1/sqrt(zr_prec));
+	    }
+	    else if (yr == 0) {
+		_z[r] = rnormal(0, rng, mu_r + zr_mean, 1/sqrt(zr_prec));
+	    }
+	    else {
+		throwLogicError("Invalid child value in HolmesHeld");
+	    }
+	    
+	    //Add new contribution of row r back to b
+	    double zdelta = (_z[r] - zold) * tau_r;
+	    for (unsigned int j = top; j < ncol; ++j) {
+		wx[xi[j]] += ur[xi[j]] * zdelta; 
 	    }
 	}
 	    
@@ -162,7 +167,6 @@ namespace glm {
 	delete [] ur;
 	delete [] xi;
 	
-	//cholmod_free_sparse(&u, glm_wk);
 	cholmod_free_sparse(&Pt_x, glm_wk);
 	cholmod_free_sparse(&L, glm_wk);
     }
@@ -174,11 +178,6 @@ namespace glm {
 	    _aux_init = false;
 	}
 
-	/*
-	  Update the auxiliary variables *before* calling
-	  updateLM. This ordering is important for models with a
-	  variable design matrix (e.g.  measurement error models).
-	*/
 	for (unsigned int r = 0; r < _tau.size(); ++r)
 	{
 	    if (_outcome[r] == BGLM_LOGIT) {

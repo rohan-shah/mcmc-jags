@@ -9,6 +9,9 @@ class GraphView;
 
 namespace glm {
 
+    /**
+     * @short Base class for GLM samplers.
+     */
     class GLMSampler : public ParallelSampler
     {
 	std::vector<GraphView*> _sub_views;

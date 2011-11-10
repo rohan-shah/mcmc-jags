@@ -12,8 +12,11 @@ using std::copy;
 namespace glm {
 
     /**
+     * @short Finite mixture representation of negative log-gamma distribution
+     *
      * Represents a negative log gamma distribution with shape n and
-     * scale 1 as a finite mixture of normals
+     * scale 1 as a finite mixture of normals. This is used by the
+     * AMMethod sampling method for Poisson and binomial GLMs.
      */
     class LGMix {
 	double _nlast;
@@ -29,14 +32,24 @@ namespace glm {
 	LGMix(double n);
 	/**
 	 * Updates the mixture representation
-	 * @param z Value sampled from log gamma distribution
+	 *
+	 * @param z Value sampled from negative log gamma distribution
 	 * @param n Value of n, which may be different from value used in
 	 *          constructor
 	 * @param rng Random number generator
 	 */
 	void update(double z, double n, RNG *rng);
+	/**
+	 * Rturns the mean of the current normal component
+	 */
 	double mean() const;
+	/**
+	 * Returns the variance of the current normal component
+	 */
 	double variance() const;
+	/**
+	 * Returns the precision of the current normal component
+	 */
 	double precision() const;
     };
 
