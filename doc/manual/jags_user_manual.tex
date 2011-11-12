@@ -1665,28 +1665,47 @@ supply data values for a logical node.
 
 This restriction can occasionally be inconvenient, as there are
 important cases where the data are a deterministic function of
-unobserved variables.  Two important examples are
+unobserved variables.  Three important examples are
 \begin{enumerate}
 \item Censored data, which commonly occurs in survival analysis. In
 the most general case, we know that unobserved failure time $T$
 lies in the interval $(L,U]$.
+\item Rounded data, when there is a discrete underlying distribution
+but the measurements are rounded to a fixed number of decimal places.
 \item Aggregate data when we observe the sum of two or more
 unobserved variables.
 \end{enumerate}
-\JAGS\ contains two novel distributions to handle these situations.  
-\begin{enumerate}
-\item The \texttt{dinterval} distribution represents interval-censored
+\JAGS\ contains novel distributions to handle these situations.  
+
+\subsubsection{Interval censored data: \texttt{dinterval}}
+
+
+\begin{verbatim}
+t <- c(1.2, 4.7, NA, NA, 3.2)
+is.censored <- c(0, 0, 1, 1, 0)
+cutpoint <- 5
+\end{verbatim}
+
+The \texttt{dinterval} distribution represents interval-censored
 data. It has two parameters: $t$ the original continuous variable, and
-$c[]$, a vector of cut points of length $M$, say. If \texttt{X $\sim$
-dinterval(t, c)} then 
+$c[]$, a vector of cut points of length $M$, say. If \texttt{Y $\sim$
+  dinterval(t, c)} then
 
 \begin{tabular}{lll}
-$X=0$   & if & $t \leq c[1]$\\
-$X=m$   & if & $c[m] < t \leq c[m+1]$ for $1 \leq m < M$\\
-$X = M$ & if & $c[M] < t$.
+$Y=0$   & if & $t \leq c[1]$\\
+$Y=m$   & if & $c[m] < t \leq c[m+1]$ for $1 \leq m < M$\\
+$Y = M$ & if & $c[M] < t$.
 \end{tabular}
 
-\item The \texttt{dsum} distribution represents the sum of two or more
+\subsubsection{Rounded data: \texttt{dround}}
+
+The \texttt{dround} distribution represents rounded data. It has two
+parameters: $t$ the original continuous variable and $d$, the number
+of decimal places to which the measurements are rounded.
+
+\subsubsection{Summed data: \texttt{dsum}}
+
+The \texttt{dsum} distribution represents the sum of two or more
 variables.  It takes a variable number of parameters. If \texttt{Y $\sim$
 dsum(x1,x2,x3)} then $Y=x1+x2+x3$.
 \end{enumerate}
