@@ -38,9 +38,14 @@ namespace glm {
     {
 	vector<Node const *> const &parents = snode->parents();
 	for (unsigned int i = 0; i < parents.size(); ++i) {
-	    if (!snode->isObserved())
+	    if (!parents[i]->isObserved())
 		return false;
 	}
 	return !isBounded(snode);
+    }
+
+    bool IWLSFactory::fixedGLM() const
+    {
+	return true;
     }
 }

@@ -6,23 +6,32 @@
 namespace glm {
 
   /**
-   * @short Factory object for conjugate samplers
+   * @short Factory for Conjugate F Sampler 
+   *
+   * @see ConjugateFSampler
    */
   class ConjugateFFactory : public SingletonFactory
   {
   public:
     ~ConjugateFFactory();
     /**
-     * Provides a simple interface to the canSample member functions of
-     * the various conjugate samplers.  The distribution of snode is found
-     * and, if it has an associated conjugate sampler, the appropriate
-     * canSample member function is dispatched
+     * If a stochastic node is the precision hyper-parameter of one or
+     * more parameters in a linear model, with an F(m, 1) distribution
+     * for fixed m, then it may be sampled by a ConjugateFSampler.
+     * Scale transformations are also permitted.
+     *
+     * ConjugateFSampler works by marginalizing over the coefficients
+     * of the linear model. It requires that these coefficients have
+     * unbounded normal distributions.
      */
     bool canSample(StochasticNode *snode, Graph const &graph) const;
     /**
      * Creates a ConjugateFSampler for a stochastic node. 
      */
     Sampler *makeSampler(StochasticNode *snode, Graph const &graph) const;
+    /**
+     * returns "glm::ConjugateF"
+     */
     std::string name() const;
   };
 

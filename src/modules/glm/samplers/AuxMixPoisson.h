@@ -8,8 +8,16 @@ namespace glm {
     class LGMix;
 
     /**
-     * Represents a Poisson distribution with log link as a mixture
-     * of normals.
+     * @short Finite normal mixture approximation for Poisson variables
+     *
+     * Represents a Poisson outcome with log link in terms of one or
+     * two underlying continous auxiliary variables and then
+     * approximates the distribution of the auxiliary variables as a
+     * mixture of normals.
+     *
+     * The auxiliary variables are based on inter-arrival times of a
+     * Poisson process.  If the Poisson count is zero, only one
+     * auxiliary variable is required. Otherwise two are used.
      */
     class AuxMixPoisson : public AuxMix
     {
@@ -19,9 +27,9 @@ namespace glm {
 	double _tau1, _tau2; /* inter-arrival times */
       public:
 	/**
-	 * Constructor. The constructor uses references to the parameters
-	 * of the model and the member functions gauss_approx and update
-	 * use the current values of these parameters.
+	 * Constructor. The constructor uses references to the
+	 * parameters of the model and the member function update uses
+	 * the current values of these parameters.
 	 *
 	 * @param eta Linear predictor for the mean (assuming log link)
 	 * @param y Value of Poisson random variable
@@ -29,8 +37,22 @@ namespace glm {
 	 */
 	AuxMixPoisson(double const &eta, double const &y);
 	~AuxMixPoisson();
+	/**
+	 * Samples the auxiliary variable from its posterior distribution
+	 * given the outcome (y in the constructor) and then calculates
+	 * a new normal approximation
+	 */
 	void update(RNG *rng);
+	/**
+	 * Returns a weighted mean of the residuals from the current
+	 * normal approximation. The residuals are weighted by their
+	 * precisions. This provides a single value to AMMethod, even
+	 * when there are two auxiliary variables.
+	 */
 	double value() const;
+	/**
+	 * Returns the sum of the precisions of the two auxiliary variables
+	 */
 	double precision() const;
     };
 
