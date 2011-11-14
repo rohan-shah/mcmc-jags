@@ -73,4 +73,5 @@ namespace glm {
     {
 	return !isBounded(snode);
     }
+
 }

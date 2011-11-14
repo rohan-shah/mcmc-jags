@@ -16,6 +16,9 @@ extern "C" {
 
 #include <cmath>
 
+// Regularization penalty for precision 
+#define REG_PENALTY 0.001
+
 using std::vector;
 using std::string;
 using std::sqrt;
@@ -182,7 +185,7 @@ namespace glm {
 	{
 	    if (_outcome[r] == BGLM_LOGIT) {
 		double delta = fabs(getValue(r) - getMean(r));
-		_tau[r] = 1/sample_lambda(delta, rng);
+		_tau[r] = REG_PENALTY + 1/sample_lambda(delta, rng);
 	    }
 	}
 

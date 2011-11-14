@@ -93,6 +93,9 @@ namespace glm {
 	    if (!checkOutcome(stoch_nodes[i], lnode)) {
 		return false; //Invalid outcome or link
 	    }
+	    if (fixedOutcome() && !stoch_nodes[i]->isObserved()) {
+		return false; //Unobserved outcome not allowed by sampler
+	    }
 	    //Check that other parameters do not depend on snode	    
 	    for (unsigned int j = 1; j < param.size(); ++j) {
 		if (view->isDependent(param[j])) {
@@ -102,7 +105,7 @@ namespace glm {
 	}
 
 	// Check linearity of deterministic descendants
-	if (!checkLinear(view, fixedGLM(), true))
+	if (!checkLinear(view, fixedDesign(), true))
 	    return false;
 
 	return true;
@@ -220,7 +223,7 @@ namespace glm {
 	    }
 	    if (sample_nodes.size() > 1) {
 		view = new GraphView(sample_nodes, graph);
-		if (checkLinear(view, fixedGLM(), true)) {
+		if (checkLinear(view, fixedDesign(), true)) {
 		    break;
 		}
 		else {
@@ -278,9 +281,15 @@ namespace glm {
 	    return vector<Sampler*>();
     }
 
-    bool GLMFactory::fixedGLM() const
+    bool GLMFactory::fixedDesign() const
     {
 	return false;
     }
+
+    bool GLMFactory::fixedOutcome() const
+    {
+	return false;
+    }
+
 }
 

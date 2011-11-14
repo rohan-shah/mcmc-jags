@@ -20,10 +20,16 @@ namespace glm {
 			     std::vector<GraphView const *> const &sub_views,
 			     unsigned int chain) const;
 	/**
-	 * Returns true. The Holmes-Held method requires a fixed
-	 * design matrix.
+	 * Returns true. The Holmes-Held update method requires a
+	 * fixed outcome because the auxiliary variables are updated
+	 * by a reversible transition from their current values.
 	 */
-	bool fixedGLM() const;
+	bool fixedOutcome() const;
+	/**
+	 * Returns true. The Holmes-Held update method requires a
+	 * fixed design matrix
+	 */
+	bool fixedDesign() const;
     };
 
 }

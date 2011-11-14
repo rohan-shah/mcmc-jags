@@ -84,21 +84,34 @@ namespace glm {
 	 */
 	std::string name() const;
 	/**
+	 * Returns true if the factory can only work with outcome
+	 * variables that are observed. The default implementation
+	 * returns false.
+	 *
+	 * If a sampling method uses auxiliary variables, then
+	 * generally it cannot work with unobserved outcomes.  With
+	 * auxiliary variable sampling the observed outcome is
+	 * considered to be a deterministic function of the auxiliary
+	 * variables. When an unobserved outcome variable is updated
+	 * (by a sampling method independent of this one) it may be
+	 * inconsistent with the current values of the auxiliary
+	 * variables, leaving them in an invalid state. An exception
+	 * is when the auxiliary variables can be sampled directly,
+	 * without reference to the current values.
+	 */
+	virtual bool fixedOutcome() const;
+	/**
 	 * Returns true if the factory can only work on a GLM with a
 	 * fixed design matrix (i.e. one that does not change between
 	 * iterations) and false otherwise.  GLMs with variable design
 	 * matrices occur in the context of missing data and
-	 * measurement error models.
+	 * measurement error models.  The default implementation
+	 * returns false.
 	 *
-	 * Generally speaking, if a sampling method uses auxiliary
-	 * variables that are persistant from one iteration to another
-	 * (i.e. it is necessary to know the current values of the
-	 * auxiliary variables before sampling the new values), then it
-	 * will not work with variable design matrices.
-	 * 
-	 * The default implementation returns false.
+	 * Note that the same restrictions as for the fixedOutome
+	 * function apply for auxiliary variables.
 	 */
-	virtual bool fixedGLM() const;
+	virtual bool fixedDesign() const;
     };
 
 }

@@ -45,7 +45,7 @@ namespace glm {
 	 * reparameterize a random effect as a fixed effect with a
 	 * varying coefficient.
 	 */
-	bool fixedGLM() const;
+	bool fixedDesign() const;
     };
 
 }

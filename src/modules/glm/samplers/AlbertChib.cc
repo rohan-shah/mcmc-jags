@@ -17,6 +17,9 @@ using std::log;
 using std::exp;
 using std::fabs;
 
+//Regularization penalty to stop precision going to zero in logistic model
+#define REG_PENALTY 0.001
+
 //FIXME: maybe use R math library here
 
 //Random sample from a left-truncated logistic distribution
@@ -90,7 +93,7 @@ namespace glm {
 		else {
 		    throwLogicError("Invalid child value in HolmesHeld");
 		}
-		_tau[r] = 1/sample_lambda(fabs(_z[r] - mu), rng);
+		_tau[r] = REG_PENALTY + 1/sample_lambda(fabs(_z[r] - mu), rng);
 		break;
 	    }
 	}

@@ -44,7 +44,7 @@ namespace glm {
 	return !isBounded(snode);
     }
 
-    bool IWLSFactory::fixedGLM() const
+    bool IWLSFactory::fixedDesign() const
     {
 	return true;
     }

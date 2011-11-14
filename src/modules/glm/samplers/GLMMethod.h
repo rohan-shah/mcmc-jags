@@ -167,6 +167,11 @@ namespace glm {
 	 * equation: thus the first argument (y) should contain the
 	 * posterior mean.
 	 *
+	 * IMPORTANT NOTE: GLMMethod uses a parameterization in which
+	 * the current value of the parameters is considered the
+	 * origin. The value of "y" (mu or b) may need to be adjusted
+	 * for this centring by an implementation of updateAuxiliary.
+	 * 
 	 * @param y Dense vector which may be either the posterior
 	 * mean "mu" or (A %*% mu), where "A" is the posterior
 	 * precision.
