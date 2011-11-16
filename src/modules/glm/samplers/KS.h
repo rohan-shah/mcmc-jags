@@ -5,14 +5,14 @@ class RNG;
 
 namespace glm {
     /**
-     * Utility function used by the HolmesHeld sampling method in
-     * binary logistic regression models.
+     * Utility function used by the HolmesHeld and AlbertChib sampling
+     * methods in binary logistic regression models.
      *
      * A variable "Z" with logistic distribution may be considered as
      * a scale mixture of normal distributions with variance lambda,
-     * where lambda has a Kolmogorov-Smirnov distribution. Given Z,
-     * this function draws a sample from the posterior distribution of
-     * lambda.
+     * where lambda=(2*psi)^2 and "psi" has a Kolmogorov-Smirnov
+     * distribution. Given Z, this function draws a sample from the
+     * posterior distribution of lambda.
      *
      * Although the posterior distribution of lambda given Z cannot
      * be expressed in closed form, it can be efficiently sampled using
