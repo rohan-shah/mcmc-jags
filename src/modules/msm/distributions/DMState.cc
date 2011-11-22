@@ -186,4 +186,10 @@ void DMState::typicalValue(double *x, unsigned int length,
 	return vector<unsigned int>(1, 1);
     }
 
+
+bool DMState::isDiscreteValued(vector<bool> const &mask) const
+{
+    return true;
+}
+
 }
