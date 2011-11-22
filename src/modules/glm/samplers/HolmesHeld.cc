@@ -61,6 +61,11 @@ namespace glm {
 	   In this call, "w" solves A %*% w = P %*% b and "N" holds
 	   the Cholesky decomposition of P %*% A %*% t(P), where P
 	   is a permutation matrix.
+	   
+	   IMPORTANT NOTE: mu, b use a parameterization in which the
+	   current value of the regressions parameters is taken as the
+	   origin.  This requires us to adjust the calculations using
+	   the current value of the linear predictor (mu_r).
 	*/
 
 	vector<StochasticNode const *> const &schildren = 
@@ -112,19 +117,18 @@ namespace glm {
 	    // In a heterogeneous GLM, we may have some normal
 	    // outcomes as well as binary outcomes. These can be
 	    // skipped as there is no need for auxiliary variables
-
 	    if (_outcome[r] == BGLM_NORMAL)
 		continue;
 		
 	    int top = cs_spsolve(&cs_L, &cs_Ptx, r, xi, ur, 0, 1);
 		
-	    double mu_r = getMean(r);
+	    double mu_r = getMean(r); // See IMPORTANT NOTE above
 	    double tau_r = getPrecision(r);
 	    
 	    //Calculate mean and precision of z[r] conditional
 	    //on z[s] for s != r
 	    double zr_mean = 0;
-	    double Hr = 0; // 
+	    double Hr = 0; // Diagonal of hat matrix
 	    
 	    if (_factor->is_ll) {
 		for (unsigned int j = top; j < ncol; ++j) {
@@ -139,13 +143,14 @@ namespace glm {
 		}
 	    }
 	    Hr *= tau_r;
+	    if (1 - Hr <= 0) {
+		// Theoretically this should never happen, but numerical instability may cause it
+		StochasticNode const *snode = _view->stochasticChildren()[r];
+		throwNodeError(snode, "Highly influential outcome variable in Holmes-Held update method.");
+	    }
 	    zr_mean -= Hr * (_z[r] - mu_r);
 	    zr_mean /= (1 - Hr);
 	    double zr_prec = (1 - Hr) * tau_r;
-	    
-	    if (zr_prec <= 0) {
-		throwRuntimeError("Invalid precision in Holmes-Held update method.\nThis is a known bug and we are working on it.\nPlease bear with us");
-	    }
 	    
 	    double yr = schildren[r]->value(_chain)[0];
 	    double zold = _z[r];

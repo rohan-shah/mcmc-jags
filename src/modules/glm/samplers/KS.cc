@@ -77,27 +77,29 @@ static bool accept(double lambda, RNG *rng)
     // and Held (2006) and adapted from the original algorithm for
     // sampling from the KS distribution by Devroye (1986).
 
-    // We use separate alternating series expansions for lambda <=
-    // 2.25 and lambda > 2.25.  This cut-off is recommended by Devroye
-    // (1986) and guarantees extremely rapid convergence of the
-    // infinite series expansions in each range. Hence, although both
-    // l_intvl and r_intvl contain infinite loops, they will exit
-    // almost immediately.
+    // We use separate alternating series expansions for lambda <= 3
+    // and lambda > 3.  This cut-off gives extremely rapid convergence
+    // of the infinite series expansions in each range. Hence,
+    // although both l_intvl and r_intvl contain infinite loops, they
+    // will exit almost immediately.
 
     double u = rng->uniform();
-    return lambda > 2.25 ? r_intvl(u, lambda) : l_intvl(u, lambda);
+    return lambda > 3 ? r_intvl(u, lambda) : l_intvl(u, lambda);
 }
 
 
 static double gig(double delta, RNG *rng)
 {
     // Draws a sample from the generalized inverse gaussian distribution
-    // GIG(0.5, 1, delta^2). 
+    // GIG(0.5, 1, delta^2) = delta/IG(1, delta). 
     //
-    // Note that GIG(0.5, 1, delta^2) = delta/IG(1, delta) and the IG
-    // (Inverse Gaussian) distribution is sampled using the algorithm
-    // of Michael, Schucany and Haas (1976) as described by Devroye
-    // (1986).
+    // The IG (Inverse Gaussian) distribution is sampled using the
+    // algorithm of Michael, Schucany and Haas (1976) as described by
+    // Devroye (1986).
+    //
+    // Note that as delta -> 0, GIG(0.5, 1, delta^2) tends to a
+    // chisquare distribution on 1 df. We use this approximation for
+    // small delta.
     
     double y = rng->normal();
     y = y * y;
