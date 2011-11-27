@@ -45,10 +45,11 @@ namespace glm {
 	 * the regression parameters is represented by the matrix "A"
 	 * and the posterior mean "mu" solves A %*% mu = b.
 	 *
-	 * In this call, "N" holds the Cholesky decomposition of P %*%
-	 * A %*% t(P), where P is a permutation matrix chosen to make
-	 * the Cholesky decomposition more efficient, and "w" solves
-	 * the equation A %*% w = P %*% b.
+	 * In this call, "N" holds the factorization 
+	 * P %*% A %*% t(P) = L %*% D %*% t(L)
+         * where P is a permutation matrix chosen to make
+	 * the factorization more efficient, and "w" solves
+	 * the equation L %*% w = P %*% b,
 	 *
 	 * These values are then used to calculate the marginal mean
 	 * and variance of z[], which forms a multivariate truncated

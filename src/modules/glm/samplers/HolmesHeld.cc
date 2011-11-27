@@ -54,13 +54,15 @@ namespace glm {
 				     cholmod_factor *N, RNG *rng)
     {
 	/* 
-	   In the parent GLMMethod class, the posterior precision is
-	   represented by the matrix "A"; the posterior mean "mu"
-	   solves A %*% mu = b.
+	   In the parent GLMMethod class, the posterior precision of
+           the regression parameters is represented by the matrix "A";
+           the posterior mean "mu" solves A %*% mu = b.
 	   
-	   In this call, "w" solves A %*% w = P %*% b and "N" holds
-	   the Cholesky decomposition of P %*% A %*% t(P), where P
-	   is a permutation matrix.
+           In this call, "N" holds the factorization of P %*% A %*% t(P), 
+           where P is a permutation matrix.  The factorization takes
+           the form L %*% D %*% t(L), where D is diagonal and L is
+           a lower triangular matrix. The parameter "w" solves
+           L %*% w = P %*% b
 	   
 	   IMPORTANT NOTE: mu, b use a parameterization in which the
 	   current value of the regressions parameters is taken as the
