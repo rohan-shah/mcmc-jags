@@ -328,7 +328,7 @@ namespace glm {
 	cholmod_free_sparse(&Alik, glm_wk);
     }
 
-    void GLMMethod::updateLM(RNG *rng, bool stochastic, bool chol) 
+    void GLMMethod::updateLM(RNG *rng, bool stochastic) 
     {
 	//   The log of the full conditional density takes the form
 	//   -(t(x) %*% A %*% x - 2 * b %*% x)/2
@@ -357,8 +357,7 @@ namespace glm {
 	}
 
 	// Use the LDL' decomposition to generate a new sample
-	// with mean mu such that A %*% mu = b and precision A. The
-	// vector b is overwritten with the result
+	// with mean mu such that A %*% mu = b and precision A. 
 	
 	unsigned int nrow = _view->length();
 	cholmod_dense *w = cholmod_allocate_dense(nrow, 1, nrow, CHOLMOD_REAL, 
@@ -371,15 +370,9 @@ namespace glm {
 	    wx[i] = b[perm[i]];
 	}
 
-	cholmod_dense *u1 = 0;
-	if (chol) {
-	    u1 = cholmod_solve(CHOLMOD_L, _factor, w, glm_wk);
-	    updateAuxiliary(u1, _factor, rng);
-	}
-	else {
-	    updateAuxiliary(w, _factor, rng);
-	    u1 = cholmod_solve(CHOLMOD_L, _factor, w, glm_wk);
-	}
+	cholmod_dense *u1 = cholmod_solve(CHOLMOD_L, _factor, w, glm_wk);
+	updateAuxiliary(u1, _factor, rng);
+
 	if (stochastic) {
 	    double *u1x = static_cast<double*>(u1->x);
 	    if (_factor->is_ll) {

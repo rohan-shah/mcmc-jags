@@ -98,8 +98,8 @@ namespace glm {
 	 * implemented by sub-classes: getPrecision, getValue and
 	 * updateAuxiliary.
 	 *
-	 * In order to provide more flexibility, updateLM has optional
-	 * arguments stochastic and chol.
+	 * In order to provide more flexibility, updateLM has an optional
+	 * arguments stochastic.
 	 *
 	 * @param rng Random number generator used for sampling
 	 *
@@ -107,10 +107,8 @@ namespace glm {
 	 * a sample from the posterior distribution of the regression
 	 * parameters. If false then it sets the regression parameters
 	 * to their posterior mean.
-	 *
-	 * @param chol Logical flag. For update
 	 */
-	void updateLM(RNG *rng, bool stochastic = true, bool chol=true);
+	void updateLM(RNG *rng, bool stochastic = true);
 	/**
 	 * Updates the regression parameters element-wise (i.e. with
 	 * Gibbs sampling).  Although Gibbs sampling less efficient
