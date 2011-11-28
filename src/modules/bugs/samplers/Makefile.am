@@ -15,12 +15,13 @@ ConjugateWishart.cc ConjugateBeta.cc ConjugateMNormal.cc	\
 ConjugateDirichlet.cc ConjugateNormal.cc DSumFactory.cc		\
 ConjugateFactory.cc ConjugateSampler.cc RWDSum.cc RealDSum.cc	\
 DiscreteDSum.cc MNormal.cc MNormalFactory.cc ConjugateMethod.cc	\
-Dirichlet.cc DirichletFactory.cc TruncatedGamma.cc DMultiDSum.cc
+Dirichlet.cc DirichletFactory.cc TruncatedGamma.cc DMultiDSum.cc \
+ShiftedPoisson.cc
 
 noinst_HEADERS = Censored.h ConjugateFactory.h ConjugateNormal.h	\
 ConjugateBeta.h ConjugateGamma.h ConjugateSampler.h DSumFactory.h	\
 ConjugateDirichlet.h ConjugateMNormal.h ConjugateWishart.h		\
 RWDSum.h RealDSum.h DiscreteDSum.h MNormal.h MNormalFactory.h		\
 ConjugateMethod.h Dirichlet.h DirichletFactory.h TruncatedGamma.h	\
-DMultiDSum.h
+DMultiDSum.h ShiftedPoisson.h
 

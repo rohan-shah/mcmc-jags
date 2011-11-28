@@ -10,6 +10,7 @@
 #include "ConjugateSampler.h"
 //#include "Censored.h"
 //#include "TruncatedGamma.h"
+#include "ShiftedPoisson.h"
 
 #include <graph/StochasticNode.h>
 #include <distribution/Distribution.h>
@@ -60,6 +61,8 @@ bool ConjugateFactory::canSample(StochasticNode * snode,
         */
 	ans = ConjugateBeta::canSample(snode, graph);
 	break;
+    case POIS:
+	ans = ShiftedPoisson::canSample(snode, graph);
     default:
 	break;
     }
@@ -122,6 +125,9 @@ Sampler *ConjugateFactory::makeSampler(StochasticNode *snode,
 	    else {
 		throwLogicError("Cannot find conjugate sampler for uniform");
 	    }
+	    break;
+	case POIS:
+	    method = new ShiftedPoisson(gv);
 	    break;
 	default:
 	    throwLogicError("Unable to create conjugate sampler");
