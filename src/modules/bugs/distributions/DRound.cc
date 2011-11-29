@@ -60,7 +60,7 @@ namespace bugs {
 	return value(par);
     }
     
-    unsigned int DRound::df(vector<unsigned int> const &lengths) const
+    unsigned int DRound::df() const
     {
 	return 0;
 

@@ -2,14 +2,8 @@
 
 #include "ShiftedPoisson.h"
 
-//#include <graph/LogicalNode.h>
 #include <graph/StochasticNode.h>
-//#include <graph/MixtureNode.h>
-//#include <graph/NodeError.h>
-//#include <sarray/SArray.h>
-//#include <sampler/Linear.h>
 #include <sampler/GraphView.h>
-//#include <module/ModuleError.h>
 
 #include <JRmath.h>
 

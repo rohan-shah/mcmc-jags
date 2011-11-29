@@ -28,7 +28,7 @@ public:
     double l(std::vector<double const *> const &parameters) const;
     double u(std::vector<double const *> const &parameters) const;
     bool isSupportFixed(std::vector<bool> const &fixmask) const;
-    unsigned int df(std::vector<unsigned int> const &lengths) const;
+    unsigned int df() const;
     bool checkParameterValue(std::vector<double const *> const &par) const;
     double KL(std::vector<double const *> const &par1,
 	      std::vector<double const *> const &par2) const;
