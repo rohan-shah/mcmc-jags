@@ -11,6 +11,7 @@
 //#include "Censored.h"
 //#include "TruncatedGamma.h"
 #include "ShiftedPoisson.h"
+#include "ShiftedMultinomial.h"
 
 #include <graph/StochasticNode.h>
 #include <distribution/Distribution.h>
@@ -63,6 +64,10 @@ bool ConjugateFactory::canSample(StochasticNode * snode,
 	break;
     case POIS:
 	ans = ShiftedPoisson::canSample(snode, graph);
+	break;
+    case MULTI:
+	ans = ShiftedMultinomial::canSample(snode, graph);
+	break;
     default:
 	break;
     }
@@ -128,6 +133,9 @@ Sampler *ConjugateFactory::makeSampler(StochasticNode *snode,
 	    break;
 	case POIS:
 	    method = new ShiftedPoisson(gv);
+	    break;
+	case MULTI:
+	    method = new ShiftedMultinomial(gv);
 	    break;
 	default:
 	    throwLogicError("Unable to create conjugate sampler");
