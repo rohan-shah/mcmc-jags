@@ -10,7 +10,7 @@
 #include "ConjugateSampler.h"
 //#include "Censored.h"
 //#include "TruncatedGamma.h"
-#include "ShiftedPoisson.h"
+#include "ShiftedCount.h"
 #include "ShiftedMultinomial.h"
 
 #include <graph/StochasticNode.h>
@@ -62,8 +62,8 @@ bool ConjugateFactory::canSample(StochasticNode * snode,
         */
 	ans = ConjugateBeta::canSample(snode, graph);
 	break;
-    case POIS:
-	ans = ShiftedPoisson::canSample(snode, graph);
+    case POIS: case BIN: case NEGBIN:
+	ans = ShiftedCount::canSample(snode, graph);
 	break;
     case MULTI:
 	ans = ShiftedMultinomial::canSample(snode, graph);
@@ -132,7 +132,7 @@ Sampler *ConjugateFactory::makeSampler(StochasticNode *snode,
 	    }
 	    break;
 	case POIS:
-	    method = new ShiftedPoisson(gv);
+	    method = new ShiftedCount(gv);
 	    break;
 	case MULTI:
 	    method = new ShiftedMultinomial(gv);
