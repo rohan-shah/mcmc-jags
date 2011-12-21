@@ -1700,7 +1700,10 @@ $Y = M$ & if & $c[M] < t$.
 
 The \texttt{dround} distribution represents rounded data. It has two
 parameters: $t$ the original continuous variable and $d$, the number
-of decimal places to which the measurements are rounded.
+of decimal places to which the measurements are rounded. Thus if
+$t=1.2345$ and $d=2$ then the rounded value is $1.23$. Note that $d$
+can be negative: if $d=-2$ then the data are rounded to the nearest
+$100$.
 
 \subsubsection{Summed data: \texttt{dsum}}
 
