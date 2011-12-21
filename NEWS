@@ -1,3 +1,30 @@
+Changes in JAGS 3.1.1
+
+User-visible changes
+====================
+* New observable function "dround" may be used to represent data that have
+  been rounded to a given number of decimal places.
+
+Bug fixes
+=========
+* BaseRNGFactory did not recycle RNGs correctly.
+* DMState now declares itself to be a discrete-valued distribution.
+* Likelihood calculations were incorrect for the binomial distribution
+  with unobserved size parameter.
+* The Holmes-Held sampler for logistic regression models with binary
+  outcomes is now more numerically stable.
+
+Internal changes in modules
+===========================
+* New ShiftedCount sampler samples nodes with a Poisson, binomial or
+  negative binomial prior distribution that are used as the size
+  parameter of a binomial distribution. 
+* New ShiftedMultinomial sampler is a multivariate version of shiftedCount.
+  It samples nodes with a multinomial prior distribution, elements of
+  which are used as the size parameters of distinct binomial children.
+* Headers in the GLM module are properly documented.
+
+---------------------------------------------------------------------
 Changes in JAGS 3.1.0
 
 User-visible changes

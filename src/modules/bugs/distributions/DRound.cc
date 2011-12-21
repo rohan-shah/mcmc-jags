@@ -10,16 +10,17 @@
 using std::min;
 using std::max;
 using std::vector;
+using std::vector;
 
 #define T(par) (*par[0])
 #define NDIGITS(par) (*par[1])
-
-using std::vector;
 
 static inline double value(vector<double const *> const &par)
 {
     return fprec(T(par), NDIGITS(par));
 }
+
+static double tol = sqrt(DBL_EPSILON);
 
 namespace bugs {
 
@@ -29,9 +30,14 @@ namespace bugs {
     }
 
     bool 
-    DRound::checkParameterValue(vector<double const *> const &par) const
+    DRound::checkParameterValue(vector<double const *> const &parameters) const
     {
-	return NDIGITS(par) >= 0;
+	return true;
+    }
+
+    bool DRound::checkParameterDiscrete(vector<bool> const &mask) const
+    {
+	return mask[1];
     }
     
     double 
@@ -39,8 +45,8 @@ namespace bugs {
 		       vector<double const *> const &par,
 		       double const *lower, double const *upper) const
     {
-	return (y == value(par)) ? 0 : JAGS_NEGINF;
-}
+	return fabs(y - value(par)) < tol ? 0 : JAGS_NEGINF;
+    }
 
     double DRound::randomSample(vector<double const *> const &par,
 				double const *lower, double const *upper,
@@ -63,7 +69,6 @@ namespace bugs {
     unsigned int DRound::df() const
     {
 	return 0;
-
     }
 
     double DRound::l(vector<double const *> const &par) const

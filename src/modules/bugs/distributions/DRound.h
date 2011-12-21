@@ -16,7 +16,9 @@ namespace bugs {
 class DRound : public ScalarDist {
 public:
     DRound();
-  
+    bool checkParameterValue(std::vector<double const *> const &parameters) 
+	const;
+    bool checkParameterDiscrete(std::vector<bool> const &mask) const;
     double logDensity(double const x, PDFType type,
 		      std::vector<double const *> const &parameters,
 		      double const *lower, double const *upper) const;
@@ -29,7 +31,6 @@ public:
     double u(std::vector<double const *> const &parameters) const;
     bool isSupportFixed(std::vector<bool> const &fixmask) const;
     unsigned int df() const;
-    bool checkParameterValue(std::vector<double const *> const &par) const;
     double KL(std::vector<double const *> const &par1,
 	      std::vector<double const *> const &par2) const;
 };
