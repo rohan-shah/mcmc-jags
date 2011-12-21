@@ -365,7 +365,7 @@ Node *Compiler::getArraySubset(ParseTree const *p)
 {
     Node *node = 0;
     
-    switch(p->treeClass() != P_VAR) {
+    if (p->treeClass() != P_VAR) {
 	throw logic_error("Expecting expression");
     }
 

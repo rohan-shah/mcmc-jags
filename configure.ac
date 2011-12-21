@@ -2,9 +2,9 @@ dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.63)
 
-AC_INIT([JAGS],[3.1.0],[martyn_plummer@users.sourceforge.net],[JAGS])
+AC_INIT([JAGS],[3.2.0],[martyn_plummer@users.sourceforge.net],[JAGS])
 JAGS_MAJOR=3
-JAGS_MINOR=1
+JAGS_MINOR=2
 AC_SUBST(JAGS_MAJOR)
 AC_SUBST(JAGS_MINOR)
 
