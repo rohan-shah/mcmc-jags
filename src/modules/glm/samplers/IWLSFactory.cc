@@ -4,8 +4,10 @@
 
 #include "IWLSFactory.h"
 #include "IWLS.h"
+#include <graph/LinkNode.h>
 
 using std::vector;
+using std::string;
 
 namespace glm {
 
@@ -16,13 +18,23 @@ namespace glm {
     bool IWLSFactory::checkOutcome(StochasticNode const *snode,
 				   LinkNode const *lnode) const
     {
-	switch (GLMMethod::getFamily(snode)) {
-	case GLM_NORMAL:
+	GLMFamily family = GLMMethod::getFamily(snode);
+	if (family == GLM_NORMAL) {
 	    return lnode == 0;
-	case GLM_UNKNOWN:
+	}
+	else if (!lnode) {
 	    return false;
-	default:
-	    return lnode != 0;
+	}
+	else {
+	    string link = lnode->linkName();
+	    switch(family) {
+	    case GLM_BERNOULLI: case GLM_BINOMIAL:
+		return link == "probit" || link == "logit";
+	    case GLM_POISSON:
+		return link == "log";
+	    case GLM_UNKNOWN: case GLM_NORMAL:
+		return false;
+	    }
 	}
     }
     
