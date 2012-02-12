@@ -123,8 +123,8 @@ does not have a name.  This ability to hide deterministic nodes by
 embedding them in other expressions underscores an important fact:
 only the stochastic nodes in a model are really
 important. Deterministic nodes are merely a syntactically convenient
-way of describing the relations between, or transformations of, the
-stochastic nodes.
+way of describing the relations between stochastic nodes, or
+transformations of them.
 
 \subsection{Data}
 \label{section:data}
@@ -138,25 +138,34 @@ frames cannot be parsed by \JAGS\, nor can non-numeric vectors.  Any
 \R\ attributes of the data (such as names and dimnames) are stripped
 when they are read into \JAGS.
 
-The data may contain missing values, but you cannot supply partially
-missing values for a multivariate node. In \JAGS\ a node is either
-completely observed, or completely unobserved.  The unobserved nodes
-are referred to as the {\em parameters} of the model. The data file
-therefore defines the parameters of the model by omission.
+Data values may be supplied for stochastic nodes and constants
+(including constant values used inside for loops). It is an error to
+supply a data value for a deterministic node. (See, however, section
+\ref{section:obfun} on observable functions).
 
 Here are the data for the \verb+LINE+ example:
 \begin{verbatim}
-`x` <-
-c(1, 2, 3, 4, 5)
+`x` <- c(1, 2, 3, 4, 5)
 #R-style comments, like this one, can be embedded in the data file
-`Y` <-
-c(1, 3, 3, 3, 5)
-`N` <-
-5
+`Y` <- c(1, 3, 3, 3, 5)
+`N` <- 5
 \end{verbatim}
 
-It is an error to supply a data value for a deterministic node. (See, however,
-section \ref{section:obfun} on observable functions).
+The unobserved stochastic nodes are referred to as the {\em
+  parameters} of the model. The data file therefore defines the
+parameters of the model by omission. In the \verb+LINE+ example, the
+parameters are \texttt{alpha}, \texttt{beta} and \texttt{tau}.
+
+If a node array contains both observed and unobserved nodes, then the
+data should contain missing values (\texttt{NA}) for the unobserved
+elements. In the \verb+LINE+ example, if \verb+Y[2]+ and \verb+Y[5]+
+were unobserved, then the data would be
+\begin{verbatim}
+`Y` <- c(1, NA, 3, 3, NA)
+\end{verbatim}
+Multivariate nodes cannot be partially observed, so if a node takes up
+two or more elements of a node array, then the corresponding data
+values must be all present or all missing.
 
 \subsection{Node Array dimensions}
 
@@ -285,6 +294,31 @@ The user may supply an initial value file containing values for the
 model parameters. The file may not contain values for logical or
 constant nodes. The format is the same as the data file (see section
 \ref{section:data}).
+
+As with the data file, you may supply missing values in the initial
+values file.  This need typically arises with contrast parameters.
+Suppose $X$ is a categorical covariate taking values from 1 to
+4. There is one parameter for each level of x ($\beta_1 \ldots
+\beta_4$) , but the first parameter $\beta_1$ is set to zero for
+identifiability. The remaining parameters $\beta_2 \ldots \beta_4$
+represent contrasts with respect to the first level of $X$.
+\begin{verbatim}
+for (i in 1:N) {
+   Y[i] ~ alpha + beta[x[i]]
+}
+# Prior distribution
+alpha ~ dnorm(0, 1.0E-3)
+beta[1] <- 0
+for(i in 2:4) {
+   beta[i] ~ dnorm(0, 1.0E-3)
+}
+\end{verbatim}
+A suitable initial value for \verb+beta+ would be
+\begin{verbatim}
+`beta` <- c(NA, 1.03, -2.03, 0.52)
+\end{verbatim}
+This allows parameter values to be supplied for the stochastic
+elements of \verb+beta+ but not the constant first element.
 
 If initial values are not supplied by the user, then each parameter
 chooses its own initial value based on the values of its parents.  The
@@ -420,7 +454,7 @@ used for more control over the adaptive phase.  The \texttt{adapt}
 command updates the model but keeps it in adaptive mode. At the end of
 each update, the convergence test is called. The message ``Adaptation
 successful'' will be printed if the convergence test is successful,
-otherwise the message will read ``Adapation incomplete''.  Successive
+otherwise the message will read ``Adaptation incomplete''.  Successive
 calls to \texttt{adapt} are possible while keeping the model in
 adaptive mode. The next \texttt{update} command will immediately turn
 off adaptive mode.
@@ -605,7 +639,7 @@ omitted, in which case the parameter values in all chains are set to
 the same value.
 
 The PARAMETERS IN statement must be used after the COMPILE statement
-and before the INITIALIZE statment.  You may only supply the values of
+and before the INITIALIZE statement.  You may only supply the values of
 unobserved stochastic nodes in the parameters file, not logical or
 constant nodes.
 
@@ -1389,7 +1423,7 @@ functions in the \texttt{bugs} module with an alias.
 \begin{center}
 \begin{tabular}{llll}
 \hline
-Function               & Canonical & Alias & Compatibile  \\
+Function               & Canonical & Alias & Compatible  \\
                        & name      &       & with         \\
 \hline
 Arc-cosine             & arccos    & acos  & R \\
