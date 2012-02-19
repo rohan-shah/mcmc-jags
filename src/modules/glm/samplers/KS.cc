@@ -77,14 +77,16 @@ static bool accept(double lambda, RNG *rng)
     // and Held (2006) and adapted from the original algorithm for
     // sampling from the KS distribution by Devroye (1986).
 
-    // We use separate alternating series expansions for lambda <= 3
-    // and lambda > 3.  This cut-off gives extremely rapid convergence
-    // of the infinite series expansions in each range. Hence,
-    // although both l_intvl and r_intvl contain infinite loops, they
-    // will exit almost immediately.
+    // We use separate alternating series expansions for lambda <=
+    // 3.1039 and lambda > 3.1039.  This cut-off was chosen after
+    // numerical investigation of the series expansions to optimize
+    // convergence.  With this cutoff, the error is no more than
+    // 3.6E-5 when the expansion is truncated to the first
+    // term. Hence, although both l_intvl and r_intvl contain infinite
+    // loops, they will exit almost immediately.
 
     double u = rng->uniform();
-    return lambda > 3 ? r_intvl(u, lambda) : l_intvl(u, lambda);
+    return lambda > 3.1039 ? r_intvl(u, lambda) : l_intvl(u, lambda);
 }
 
 

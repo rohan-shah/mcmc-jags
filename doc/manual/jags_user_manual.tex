@@ -1152,6 +1152,8 @@ for (i in 1:D[1])
    }
 }
 \end{verbatim}
+Inverse link functions are an exception to this rule ({\em i.e.} exp,
+icloglog, ilogit, phi) and cannot be vectorized. 
 
 \section{Base functions}
 \label{section:functions:base}
@@ -1364,16 +1366,16 @@ arguments. This usage is  compatible with \OpenBUGS, although more general.
 \hline
 Function & Description & Restrictions \\
 \hline
-\verb+inprod(x1,x2)+ & Inner product & Dimensions of $a$, $b$ conform \\
+\verb+inprod(x1,x2)+ & Inner product & Dimensions of $x1$, $x2$ conform \\
 \verb+interp.lin(e,v1,v2)+ & Linear Interpolation & $e$ scalar, \\
                           &                     & $v1,v2$ conforming vectors \\
-\verb+logdet(a)+ & Log determinant & $a$ is a square matrix \\
+\verb+logdet(m)+ & Log determinant & $m$ is a symmetric positive definite matrix \\
 \verb+max(x1,x2,...)+ & Maximum element among all arguments & \\
-\verb+mean(x)+  & Mean of elements of $a$ & \\
+\verb+mean(x)+  & Mean of elements of $x$ & \\
 \verb+min(x1,x2,...)+ & Minimum element among all arguments & \\
-\verb+prod(x)+  & Product of elements of $a$ & \\
-\verb+sum(a)+   & Sum of elements of $a$& \\
-\verb+sd(a)+    & Standard deviation of elements of $a$ & \\
+\verb+prod(x)+  & Product of elements of $x$ & \\
+\verb+sum(x)+   & Sum of elements of $x$& \\
+\verb+sd(x)+    & Standard deviation of elements of $x$ & \\
 \hline
 \end{tabular}
 \caption{Scalar-valued functions with general
