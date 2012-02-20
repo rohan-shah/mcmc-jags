@@ -30,11 +30,11 @@ using std::vector;
 /*
  * Exact mixture parameters are stored for integer n in the range 1 ... 19.
  *
- * For n = 1 ... 4, 10 mixture components are required and the
+ * For n = 1 ... 4; 10 mixture components are required and the
  * parameters are stored in the 4 x 10 arrays P10 (weights), M10
  * (means) and V10 (variances)
  *
- * For n = 5 ... 19, 9 components are required and the parameters are
+ * For n = 5 ... 19; 9 components are required and the parameters are
  * stored in the 15 x 9 arrays P9 (weights), M9 (means) and V9
  * (variances)
  */
@@ -379,8 +379,8 @@ namespace glm {
 	//Number of components in each approximation
 	const int ncomp[5] = {4, 3, 2, 2, 2};
 
-	//Each of P,M,V is a 3-dimensional ragged array.
-	//C array syntax doesn't make this easy
+	//Each element of P,M,V is a 3-dimensional ragged array.
+	//C array syntax doesn't make this evident
 	const double (*P[5])[4] = {Coef_p3, Coef_p4, Coef_p5, Coef_p6, Coef_p7};
 	const double (*M[5])[4] = {Coef_m3, Coef_m4, Coef_m5, Coef_m6, Coef_m7};
 	const double (*V[5])[4] = {Coef_v3, Coef_v4, Coef_v5, Coef_v6, Coef_v7};
@@ -435,7 +435,7 @@ namespace glm {
 
     void LGMix::update(double z, double n, RNG *rng)
     {
-	// Check that value of n has not changed since last update
+	// Check whether value of n has changed since last update
 	if (n != _nlast) {
 	    updateN(n);
 	}

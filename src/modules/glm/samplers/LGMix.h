@@ -14,7 +14,7 @@ namespace glm {
     /**
      * @short Finite mixture representation of negative log-gamma distribution
      *
-     * Represents a negative log gamma distribution with shape n and
+     * Represents a negative log gamma distribution with integer shape n > 0 and
      * scale 1 as a finite mixture of normals. This is used by the
      * AMMethod sampling method for Poisson and binomial GLMs.
      */
@@ -35,7 +35,7 @@ namespace glm {
 	 *
 	 * @param z Value sampled from negative log gamma distribution
 	 * @param n Value of n, which may be different from value used in
-	 *          constructor
+	 *          constructor. 
 	 * @param rng Random number generator
 	 */
 	void update(double z, double n, RNG *rng);
