@@ -47,7 +47,7 @@ AM_CONDITIONAL(WINDOWS, test x$win = xtrue)
 dnl fortran stuff
 AC_F77_WRAPPERS
 AC_F77_LIBRARY_LDFLAGS
-ACX_LAPACK([],[
+AX_LAPACK([],[
 	AC_MSG_ERROR("You need to install the LAPACK library")
 ])
 
