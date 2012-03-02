@@ -39,15 +39,20 @@ bool
 DMulti::checkParameterValue(vector<double const *> const &par,
 			    vector<unsigned int> const &len) const
 {
-    if (SIZE(par) < 1)
+    if (SIZE(par) < 0)
 	return false;
+
+    // If SIZE is non-zero, we need at least one non-zero probability
+    bool nz = SIZE(par) == 0;
 
     for (unsigned int i = 0; i < len[0]; ++i) {
 	if (PROB(par)[i] < 0)
 	    return false;
+	else if (PROB(par)[i] > 0)
+	    nz = true; 
     }
 
-    return true;
+    return nz;
 }
 
 double DMulti::logDensity(double const *x, unsigned int length, PDFType type,
