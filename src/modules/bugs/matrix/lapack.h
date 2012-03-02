@@ -17,6 +17,7 @@
 #define F77_DSYR   F77_FUNC(dsyr,DSYR)
 #define F77_DSYMM  F77_FUNC(dsymm, DSYMM)
 #define F77_DPOTRI F77_FUNC(dpotri, DPOTRI)
+#define F77_DDOT   F77_FUNC(ddot, DDOT)
 
 extern "C" {
 /*
@@ -86,6 +87,9 @@ extern "C" {
     
     void F77_DSCAL (const int* n, double const *alpha, double *X, 
 		    const int *incx);
+
+    double F77_DDOT (const int* n, double const *X, const int *incx, 
+		     double const *Y, const int *incy);
 }
 
 #endif

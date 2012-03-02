@@ -2,6 +2,8 @@
 #include <util/logical.h>
 #include "InProd.h"
 
+#include "lapack.h"
+
 using std::vector;
 
 namespace bugs {
@@ -13,12 +15,8 @@ namespace bugs {
     void InProd::evaluate(double *x, vector<double const *> const &args,
 			  vector<unsigned int> const &lengths) const
     {
-	double svalue = 0;
-	for (unsigned int i = 0; i < lengths[0]; i++)
-	{
-	    svalue += args[0][i] * args[1][i];
-	}
-	*x = svalue;
+        int one = 1, N = lengths[0];
+        *x = F77_DDOT(&N, args[0], &one, args[1], &one);
     }
 
     bool 

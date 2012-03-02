@@ -22,6 +22,9 @@ Bug fixes
 
 Internal changes in modules
 ===========================
+  bugs module
+* The InProd and MatMult functions now use BLAS calls.
+
   glm module:
 * Cutoff for left and right expansions in Holmes-Held sampler  is now optimal.
 * IWLS sampler only works with certain link functions

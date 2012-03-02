@@ -3,6 +3,8 @@
 #include "MatMult.h"
 #include <util/dim.h>
 
+#include "lapack.h"
+
 using std::vector;
 
 namespace bugs {
@@ -18,7 +20,7 @@ namespace bugs {
     MatMult::evaluate (double *value, vector<double const *> const &args,
 		       vector<vector<unsigned int> > const &dims) const
     {
-	unsigned int d1, d2, d3;
+	int d1, d2, d3;
 
 	if (dims[0].size() == 1) {
 	    d1 = 1;
@@ -35,14 +37,9 @@ namespace bugs {
 	    d3 = dims[1][1];
 	}
     
-	for(unsigned int i = 0; i < d1; ++i) {
-	    for (unsigned int j = 0; j < d3; ++j) {
-		value[i + d1*j] = 0;
-		for (unsigned int k = 0; k < d2; ++k) {
-		    value[i + d1*j] += args[0][i + d1*k] * args[1][k + d2*j];
-		}
-	    }
-	}
+	double one = 1, zero = 0;
+	F77_DGEMM ("N", "N", &d1, &d3, &d2, &one,
+		   args[0], &d1, args[1], &d2, &zero, value, &d1);
     }
 
     vector<unsigned int> 
@@ -63,10 +60,10 @@ namespace bugs {
     bool 
     MatMult::checkParameterDim (vector<vector<unsigned int> > const &dims) const
     {
-	if ((dims[0].size() > 2 || dims[1].size() > 2)) {
+	if (dims[0].size() > 2 || dims[1].size() > 2) {
 	    return false;
 	}
-
+	
 	if (dims[0].size() == 1) {
 	    return dims[0][0] == dims[1][0];
 	}
