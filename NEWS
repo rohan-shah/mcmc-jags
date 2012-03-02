@@ -1,4 +1,36 @@
-Changes in JAGS 3.1.1
+Changes in JAGS 3.3.0
+=====================
+
+User-visible changes
+====================
+* JAGS now prints a warning about unused initial values
+* Failure to set a "pD" monitor from the "dic" module should produce 
+  more informative error messages
+
+Bug fixes
+=========
+* The inverse and logdet functions now work on scalars
+* NodeArray::setValue could overwrite values of observed nodes.
+  In practice, one could change the value of a constant node by providing
+  an initial value
+* Underflow errors in the Weibull distribution are now caught.
+* The auxiliary mixture sampling method now works with binomial data
+  that have a zero denominator.
+* The multinomial distribution now allows a zero size parameter.
+* The log-density of the uniform distribution was incorrect when
+  doing likelihood calculations.
+
+Internal changes in modules
+===========================
+  glm module:
+* Cutoff for left and right expansions in Holmes-Held sampler  is now optimal.
+* IWLS sampler only works with certain link functions
+
+  dic module
+* Faster Kullback-Leibler calculations for the Bernoulli distribution
+
+--------------------------------------------------------------------------
+Changes in JAGS 3.2.0
 
 User-visible changes
 ====================
