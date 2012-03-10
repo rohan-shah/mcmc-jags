@@ -27,6 +27,11 @@ namespace base {
 	}
     }
 
+    void BaseRNGFactory::setSeed(unsigned int seed)
+    {
+	_seed = seed;
+    }
+
     vector<RNG *> BaseRNGFactory::makeRNGs(unsigned int n)
     {
 	vector<RNG *> ans;

@@ -19,6 +19,14 @@ class RNGFactory
      */
     virtual ~RNGFactory() {};
     /**
+     * Sets the random seed of the RNG factory so that a reproducible
+     * sequence of RNGs can be produced.
+     *
+     * @param seed Seed that uniquely determines the sequence of RNGs 
+     * produced by subsequent calls to makeRNGs.
+     */
+    virtual void setSeed(unsigned int seed) = 0;
+    /**
      * Returns a vector of newly allocated RNG objects.
      *
      * @param n Number of RNGs requested. Note that an RNG factory have the
