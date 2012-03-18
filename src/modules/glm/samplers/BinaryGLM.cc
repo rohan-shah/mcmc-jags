@@ -14,7 +14,7 @@ using std::string;
 
 #define CHILD(i) (_view->stochasticChildren()[i])
 
-static unsigned int nchildren(GraphView const *view)
+static inline unsigned int nchildren(GraphView const *view)
 {
     return view->stochasticChildren().size();
 }
@@ -29,7 +29,7 @@ static BGLMOutcome getOutcome(StochasticNode const *snode)
     case GLM_BERNOULLI: case GLM_BINOMIAL:
 	lnode = dynamic_cast<LinkNode const*>(snode->parents()[0]);
 	if (!lnode) {
-	    throwLogicError("No link in Holmesheld");
+	    throwLogicError("No link in BinaryGLM");
 	}
 	else if (lnode->linkName() == "probit") {
 	    return BGLM_PROBIT;
@@ -54,7 +54,7 @@ namespace glm {
 			   unsigned int chain)
 	: GLMMethod(view, sub_views, chain, true), 
 	  _outcome(nchildren(view)),
-	  _z(nchildren(view)), _tau(nchildren(view))
+	  _z(nchildren(view), 0), _tau(nchildren(view), 1)
     {
 	for (unsigned int i = 0; i < _outcome.size(); ++i) {
 	    _outcome[i] = getOutcome(CHILD(i));
@@ -99,12 +99,8 @@ namespace glm {
     void BinaryGLM::initAuxiliary(RNG *rng)    
     {	    
 	for (unsigned int i = 0; i < _z.size(); ++i) {
-	    _tau[i] = 1;
 	    double y = CHILD(i)->value(_chain)[0];
 	    switch(_outcome[i]) {
-	    case BGLM_NORMAL:
-		_z[i] = 0;
-		break;
 	    case BGLM_PROBIT: case BGLM_LOGIT:
 		if (y == 1) {
 		    _z[i] = lnormal(0, rng, getMean(i));
@@ -115,6 +111,9 @@ namespace glm {
 		else {
 		    throwLogicError("Invalid child value in BinaryGLM");
 		}
+		break;
+	    case BGLM_NORMAL:
+		break; //We don't use _z[i] for normal outcomes
 	    }
 	}
     }

@@ -1,3 +1,90 @@
+Changes in JAGS 3.3.0
+=====================
+
+User-visible changes
+====================
+* JAGS now prints a warning about unused initial values
+* Failure to set a "pD" monitor from the "dic" module should produce 
+  more informative error messages
+
+Bug fixes
+=========
+* The inverse and logdet functions now work on scalars
+* NodeArray::setValue could overwrite values of observed nodes.
+  In practice, one could change the value of a constant node by providing
+  an initial value
+* Underflow errors in the Weibull distribution are now caught.
+* The auxiliary mixture sampling method now works with binomial data
+  that have a zero denominator.
+* The multinomial distribution now allows a zero size parameter.
+* The log-density of the uniform distribution was incorrect when
+  doing likelihood calculations.
+
+Internal changes in modules
+===========================
+  bugs module
+* The InProd and MatMult functions now use BLAS calls.
+
+  glm module:
+* Cutoff for left and right expansions in Holmes-Held sampler  is now optimal.
+* IWLS sampler only works with certain link functions
+
+  dic module
+* Faster Kullback-Leibler calculations for the Bernoulli distribution
+
+--------------------------------------------------------------------------
+Changes in JAGS 3.2.0
+
+User-visible changes
+====================
+* New observable function "dround" may be used to represent data that have
+  been rounded to a given number of decimal places.
+
+Bug fixes
+=========
+* BaseRNGFactory did not recycle RNGs correctly.
+* DMState now declares itself to be a discrete-valued distribution.
+* Likelihood calculations were incorrect for the binomial distribution
+  with unobserved size parameter.
+* The Holmes-Held sampler for logistic regression models with binary
+  outcomes is now more numerically stable.
+
+Internal changes in modules
+===========================
+* New ShiftedCount sampler samples nodes with a Poisson, binomial or
+  negative binomial prior distribution that are used as the size
+  parameter of a binomial distribution. 
+* New ShiftedMultinomial sampler is a multivariate version of shiftedCount.
+  It samples nodes with a multinomial prior distribution, elements of
+  which are used as the size parameters of distinct binomial children.
+* Headers in the GLM module are properly documented.
+
+---------------------------------------------------------------------
+Changes in JAGS 3.1.0
+
+User-visible changes
+====================
+* Allow progress bar in batch mode if user gives "by" option to update
+  or adapt.
+
+Bug fixes
+=========
+* If a monitor is requested while the model is in adaptive mode, then
+  adaptive mode is turned off, with a NOTE to the user, instead of
+  throwing an exception.
+
+Library changes
+===============
+* BUGSModel::setMonitor will return after the first error message is 
+  reported from a MonitorFactory.
+
+Internal changes in modules
+===========================
+* dic
+  - Improved error messages from PDTraceFactory in case a pD monitor
+    cannot be generated.
+
+-----------------------------------------------------------------------
 Changes in JAGS 3.0.0
 
 User-visible changes

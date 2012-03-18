@@ -4,6 +4,7 @@
 #include "KLNorm.h"
 #include "KLPois.h"
 #include "KLBin.h"
+#include "KLBern.h"
 
 using std::string;
 using std::map;
@@ -14,6 +15,7 @@ namespace dic {
 	_klmap["dnorm"] = new KLNorm;
 	_klmap["dbin"] = new KLBin;
 	_klmap["dpois"] = new KLPois;
+	_klmap["dbern"] = new KLBern;
     }
 
     KLTab::~KLTab() {

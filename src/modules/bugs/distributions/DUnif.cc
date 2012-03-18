@@ -32,7 +32,7 @@ double DUnif::logDensity(double x, PDFType type,
     else if (type == PDF_PRIOR) 
 	return 0;
     else
-	return log(UPPER(par) - LOWER(par));
+	return - log(UPPER(par) - LOWER(par));
 }
 
 double DUnif::randomSample(vector<double const *> const &par, 

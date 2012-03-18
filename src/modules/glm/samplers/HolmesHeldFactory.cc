@@ -20,7 +20,12 @@ namespace glm {
     }
 
     
-    bool HolmesHeldFactory::fixedGLM() const
+    bool HolmesHeldFactory::fixedOutcome() const
+    {
+	return true;
+    }
+
+    bool HolmesHeldFactory::fixedDesign() const
     {
 	return true;
     }

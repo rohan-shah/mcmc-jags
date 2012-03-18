@@ -17,9 +17,12 @@ using std::log;
 using std::exp;
 using std::fabs;
 
+//Regularization penalty to stop precision going to zero in logistic model
+#define REG_PENALTY 0.001
+
 //FIXME: maybe use R math library here
 
-//Left truncated logit
+//Random sample from a left-truncated logistic distribution
 static double llogit(double left, RNG *rng, double mu)
 {
     double qleft = 1/(1 + exp(mu-left));
@@ -27,7 +30,7 @@ static double llogit(double left, RNG *rng, double mu)
     return mu + log(x) - log(1 - x);
 }
 
-//Right truncated logit
+//Random sample from a right-truncated logistc distribution
 static double rlogit(double right, RNG *rng, double mu)
 {
     double qright = 1/(1 + exp(mu-right));
@@ -54,9 +57,9 @@ namespace glm {
 	}
 
 	/*
-	  Update the auxiliary variables *before* calling
-	  updateLM. This ordering is important for models with a
-	  variable design matrix (e.g.  measurement error models).
+	  Note that we must update the auxiliary variables *before*
+	  calling updateLM. This ordering is important for models with
+	  a variable design matrix (e.g. measurement error models).
 	*/
 
 	unsigned int nrow = _view->stochasticChildren().size();
@@ -90,7 +93,7 @@ namespace glm {
 		else {
 		    throwLogicError("Invalid child value in HolmesHeld");
 		}
-		_tau[r] = 1/sample_lambda(fabs(_z[r] - mu), rng);
+		_tau[r] = REG_PENALTY + 1/sample_lambda(fabs(_z[r] - mu), rng);
 		break;
 	    }
 	}

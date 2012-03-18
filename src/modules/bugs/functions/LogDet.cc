@@ -24,7 +24,7 @@ namespace bugs {
     bool 
     LogDet::checkParameterDim (vector<vector<unsigned int> > const &dims) const
     {
-	return isSquareMatrix(dims[0]);
+	return isSquareMatrix(dims[0]) || isScalar(dims[0]);
     }
 
     vector<unsigned int>

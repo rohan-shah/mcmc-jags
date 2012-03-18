@@ -52,12 +52,15 @@ namespace dic {
 		    observed_nodes.push_back(snodes[i]);
 		}
 		else {
+		    msg = "Support of observed nodes is not fixed";
 		    return 0;
 		}
 	    }
 	}
-	if (observed_nodes.empty())
+	if (observed_nodes.empty()) {
+	    msg = "There are no observed nodes";
 	    return 0;
+	}
 
 	unsigned int nchain = model->nchain();
 	vector<RNG*> rngs;

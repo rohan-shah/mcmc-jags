@@ -41,6 +41,7 @@ public:
 			     std::vector<std::vector<unsigned int> > const &dims) const;
     std::vector<unsigned int> dim(std::vector<std::vector<unsigned int> >
 				  const &dims) const;
+    bool isDiscreteValued(std::vector<bool> const &mask) const;
 };
 
 }

@@ -2,6 +2,7 @@
 #include "DWeib.h"
 
 #include <rng/RNG.h>
+#include <util/nainf.h>
 
 #include <vector>
 #include <cmath>
@@ -31,7 +32,8 @@ namespace bugs {
     bool 
     DWeib::checkParameterValue (vector<double const *> const &par) const
     {
-	return (*par[0] > 0 && *par[1] > 0);
+	//We can get underflow and overflow when changing parameterization
+	return (*par[0] > 0 && *par[1] > 0 && jags_finite(SCALE(par)) && SCALE(par) > 0);
     }
     
     double DWeib::d(double x, PDFType type,

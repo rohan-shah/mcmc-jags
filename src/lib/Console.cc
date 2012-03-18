@@ -390,6 +390,10 @@ bool Console::setMonitor(string const &name, Range const &range,
 
     try {
 
+	if (_model->isAdapting()) {
+	    _out << "NOTE: Stopping adaptation\n" << endl;
+	    _model->adaptOff();
+	}
 	string msg;
 	bool ok = _model->setMonitor(name, range, thin, type, msg);
 	if (!ok) {
@@ -400,11 +404,6 @@ bool Console::setMonitor(string const &name, Range const &range,
 	    }
 	    return false;
 	}
-	if (_model->isAdapting()) {
-	    _out << "NOTE: Stopping adaptation" << endl;
-	    _model->adaptOff();
-	}
-	
     }
     CATCH_ERRORS
 

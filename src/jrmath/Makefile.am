@@ -7,7 +7,7 @@ libjrmath_la_LDFLAGS = -no-undefined -version-info 0:0:0
 libjrmath_la_SOURCES = callbacks.cc \
 mlutils.c stirlerr.c bd0.c choose.c gamma.c lgamma.c toms708.c \
 d1mach.c i1mach.c fsign.c imax2.c imin2.c \
-fmin2.c fmax2.c ftrunc.c \
+fmin2.c fmax2.c fprec.c fround.c ftrunc.c \
 chebyshev.c lgammacor.c log1p.c lbeta.c \
 rbeta.c dbeta.c pbeta.c qbeta.c \
 rbinom.c dbinom.c pbinom.c qbinom.c \

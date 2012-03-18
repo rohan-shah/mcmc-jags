@@ -16,6 +16,9 @@ extern "C" {
 
 #include <cmath>
 
+// Regularization penalty for precision 
+#define REG_PENALTY 0.001
+
 using std::vector;
 using std::string;
 using std::sqrt;
@@ -51,12 +54,20 @@ namespace glm {
 				     cholmod_factor *N, RNG *rng)
     {
 	/* 
-	   In the parent GLMMethod class, the posterior precision is
-	   represented by the matrix "A"; the posterior mean "mu"
-	   solves A %*% mu = b.
+	   In the parent GLMMethod class, the posterior precision of
+           the regression parameters is represented by the matrix "A";
+           the posterior mean "mu" solves A %*% mu = b.
 	   
-	   In this call, "w" solves A %*% w = P %*% b and "N" holds
-	   the Cholesky decomposition of P %*% A %*% t(P). 
+           In this call, "N" holds the factorization of P %*% A %*% t(P), 
+           where P is a permutation matrix.  The factorization takes
+           the form L %*% D %*% t(L), where D is diagonal and L is
+           a lower triangular matrix. The parameter "w" solves
+           L %*% w = P %*% b
+	   
+	   IMPORTANT NOTE: mu, b use a parameterization in which the
+	   current value of the regressions parameters is taken as the
+	   origin.  This requires us to adjust the calculations using
+	   the current value of the linear predictor (mu_r).
 	*/
 
 	vector<StochasticNode const *> const &schildren = 
@@ -104,57 +115,61 @@ namespace glm {
 	double *wx = static_cast<double *>(w->x);
 	
 	for (unsigned int r = 0; r < nrow; ++r) {
+
+	    // In a heterogeneous GLM, we may have some normal
+	    // outcomes as well as binary outcomes. These can be
+	    // skipped as there is no need for auxiliary variables
+	    if (_outcome[r] == BGLM_NORMAL)
+		continue;
+		
+	    int top = cs_spsolve(&cs_L, &cs_Ptx, r, xi, ur, 0, 1);
+		
+	    double mu_r = getMean(r); // See IMPORTANT NOTE above
+	    double tau_r = getPrecision(r);
 	    
-	    if (_outcome[r] != BGLM_NORMAL) {
-		
-		int top = cs_spsolve(&cs_L, &cs_Ptx, r, xi, ur, 0, 1);
-		
-		double mu_r = getMean(r);
-		double tau_r = getPrecision(r);
-
-		//Calculate mean and precision of z[r] conditional
-		//on z[s] for s != r
-		double zr_mean = 0;
-		double Hr = 0; // 
-
-		if (_factor->is_ll) {
-		    for (unsigned int j = top; j < ncol; ++j) {
-			zr_mean  += ur[xi[j]] * wx[xi[j]]; 
-			Hr  += ur[xi[j]] * ur[xi[j]];
-		    }
-		}
-		else {
-		    for (unsigned int j = top; j < ncol; ++j) {
-			zr_mean  += ur[xi[j]] * wx[xi[j]] / d[xi[j]]; 
-			Hr  += ur[xi[j]] * ur[xi[j]] / d[xi[j]];
-		    }
-		}
-		Hr *= tau_r;
-		zr_mean -= Hr * (_z[r] - mu_r);
-		zr_mean /= (1 - Hr);
-		double zr_prec = (1 - Hr) * tau_r;
-		
-		if (zr_prec <= 0) {
-		    throwRuntimeError("Invalid precision in Holmes-Held update method.\nThis is a known bug and we are working on it.\nPlease bear with us");
-		}
-
-		double yr = schildren[r]->value(_chain)[0];
-		double zold = _z[r];
-		if (yr == 1) {
-		    _z[r] = lnormal(0, rng, mu_r + zr_mean, 1/sqrt(zr_prec));
-		}
-		else if (yr == 0) {
-		    _z[r] = rnormal(0, rng, mu_r + zr_mean, 1/sqrt(zr_prec));
-		}
-		else {
-		    throwLogicError("Invalid child value in HolmesHeld");
-		}
-
-		//Add new contribution of row r back to b
-		double zdelta = (_z[r] - zold) * tau_r;
+	    //Calculate mean and precision of z[r] conditional
+	    //on z[s] for s != r
+	    double zr_mean = 0;
+	    double Hr = 0; // Diagonal of hat matrix
+	    
+	    if (_factor->is_ll) {
 		for (unsigned int j = top; j < ncol; ++j) {
-		    wx[xi[j]] += ur[xi[j]] * zdelta; 
+		    zr_mean  += ur[xi[j]] * wx[xi[j]]; 
+		    Hr  += ur[xi[j]] * ur[xi[j]];
 		}
+	    }
+	    else {
+		for (unsigned int j = top; j < ncol; ++j) {
+		    zr_mean  += ur[xi[j]] * wx[xi[j]] / d[xi[j]]; 
+		    Hr  += ur[xi[j]] * ur[xi[j]] / d[xi[j]];
+		}
+	    }
+	    Hr *= tau_r;
+	    if (1 - Hr <= 0) {
+		// Theoretically this should never happen, but numerical instability may cause it
+		StochasticNode const *snode = _view->stochasticChildren()[r];
+		throwNodeError(snode, "Highly influential outcome variable in Holmes-Held update method.");
+	    }
+	    zr_mean -= Hr * (_z[r] - mu_r);
+	    zr_mean /= (1 - Hr);
+	    double zr_prec = (1 - Hr) * tau_r;
+	    
+	    double yr = schildren[r]->value(_chain)[0];
+	    double zold = _z[r];
+	    if (yr == 1) {
+		_z[r] = lnormal(0, rng, mu_r + zr_mean, 1/sqrt(zr_prec));
+	    }
+	    else if (yr == 0) {
+		_z[r] = rnormal(0, rng, mu_r + zr_mean, 1/sqrt(zr_prec));
+	    }
+	    else {
+		throwLogicError("Invalid child value in HolmesHeld");
+	    }
+	    
+	    //Add new contribution of row r back to b
+	    double zdelta = (_z[r] - zold) * tau_r;
+	    for (unsigned int j = top; j < ncol; ++j) {
+		wx[xi[j]] += ur[xi[j]] * zdelta; 
 	    }
 	}
 	    
@@ -162,7 +177,6 @@ namespace glm {
 	delete [] ur;
 	delete [] xi;
 	
-	//cholmod_free_sparse(&u, glm_wk);
 	cholmod_free_sparse(&Pt_x, glm_wk);
 	cholmod_free_sparse(&L, glm_wk);
     }
@@ -174,16 +188,11 @@ namespace glm {
 	    _aux_init = false;
 	}
 
-	/*
-	  Update the auxiliary variables *before* calling
-	  updateLM. This ordering is important for models with a
-	  variable design matrix (e.g.  measurement error models).
-	*/
 	for (unsigned int r = 0; r < _tau.size(); ++r)
 	{
 	    if (_outcome[r] == BGLM_LOGIT) {
 		double delta = fabs(getValue(r) - getMean(r));
-		_tau[r] = 1/sample_lambda(delta, rng);
+		_tau[r] = REG_PENALTY + 1/sample_lambda(delta, rng);
 	    }
 	}
 

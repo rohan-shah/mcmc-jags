@@ -78,7 +78,7 @@
     static void unloadModule(std::string const &name);
     static void dumpSamplers(std::string const &file);
     static void delete_pvec(std::vector<ParseTree*> *);
-    static void print_unused_variables();
+    static void print_unused_variables(std::map<std::string, SArray> const &table, bool data);
     static void listFactories(FactoryType type);
     static void setFactory(std::string const &name, FactoryType type,
                            std::string const &status);
@@ -285,6 +285,8 @@ parameters_in: parameters r_assignment_list ENDDATA
 	}
 	Jtry(console->setParameters(parameter_table, i));
     }
+    print_unused_variables(parameter_table, false);
+
 }
 | parameters r_assignment_list ENDDATA ',' CHAIN '(' INT ')' 
 {
@@ -298,6 +300,7 @@ parameters_in: parameters r_assignment_list ENDDATA
         Jtry(console->setRNGname(rngname, $7));
     }
     Jtry(console->setParameters(parameter_table, $7));
+    print_unused_variables(parameter_table, false);
 }
 | parameters {} // Failed to open the file
 ;
@@ -335,11 +338,11 @@ parameters: PARAMETERS IN file_name {
 
 compile: COMPILE {
     Jtry(console->compile(_data_table, 1, true));
-    print_unused_variables();
+    print_unused_variables(_data_table, true);
 }
 | COMPILE ',' NCHAINS '(' INT ')' {
     Jtry(console->compile(_data_table, $5, true));
-    print_unused_variables();
+    print_unused_variables(_data_table, true);
 }
 ;
 
@@ -1353,24 +1356,36 @@ static void delete_pvec(std::vector<ParseTree*> *pv)
     delete pv;
 }
 
-static void print_unused_variables()
+static void print_unused_variables(std::map<std::string, SArray> const &table,
+				   bool data)
 {
-    std::vector<std::string> data_vars;
-    for (std::map<std::string, SArray>::const_iterator p = _data_table.begin();
-	 p != _data_table.end(); ++p)
+    std::vector<std::string> supplied_vars;
+    for (std::map<std::string, SArray>::const_iterator p = table.begin();
+	 p != table.end(); ++p)
     {
-	data_vars.push_back(p->first);
+	supplied_vars.push_back(p->first);
     }
     
     std::vector<std::string> unused_vars;
-    std::vector<std::string> const &model_vars = console->variableNames();
-
-    std::set_difference(data_vars.begin(), data_vars.end(),
+    std::vector<std::string> model_vars = console->variableNames();
+    if (!data) {
+	// Initial values table may legitimately contain these names
+	model_vars.push_back(".RNG.name");
+	model_vars.push_back(".RNG.seed");
+	model_vars.push_back(".RNG.state");
+    }
+    std::set_difference(supplied_vars.begin(), supplied_vars.end(),
 			model_vars.begin(), model_vars.end(),
 			std::inserter(unused_vars, unused_vars.begin()));
 
     if (!unused_vars.empty()) {
-	std::cerr << "\nWARNING: Unused variable(s) in data table:\n";
+	std::cerr << "\nWARNING: Unused variable(s) in ";
+	if (data) {
+	    std::cerr << "data table:\n";
+	}
+	else {
+	    std::cerr << "initial value table:\n";
+	}
 	std::copy(unused_vars.begin(), unused_vars.end(),
 		  std::ostream_iterator<std::string>(std::cerr, "\n"));
 	std::cerr << "\n";

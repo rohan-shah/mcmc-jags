@@ -10,6 +10,8 @@
 #include "ConjugateSampler.h"
 //#include "Censored.h"
 //#include "TruncatedGamma.h"
+#include "ShiftedCount.h"
+#include "ShiftedMultinomial.h"
 
 #include <graph/StochasticNode.h>
 #include <distribution/Distribution.h>
@@ -59,6 +61,12 @@ bool ConjugateFactory::canSample(StochasticNode * snode,
 	      ConjugateBeta::canSample(snode, graph);
         */
 	ans = ConjugateBeta::canSample(snode, graph);
+	break;
+    case POIS: case BIN: case NEGBIN:
+	ans = ShiftedCount::canSample(snode, graph);
+	break;
+    case MULTI:
+	ans = ShiftedMultinomial::canSample(snode, graph);
 	break;
     default:
 	break;
@@ -122,6 +130,12 @@ Sampler *ConjugateFactory::makeSampler(StochasticNode *snode,
 	    else {
 		throwLogicError("Cannot find conjugate sampler for uniform");
 	    }
+	    break;
+	case POIS:
+	    method = new ShiftedCount(gv);
+	    break;
+	case MULTI:
+	    method = new ShiftedMultinomial(gv);
 	    break;
 	default:
 	    throwLogicError("Unable to create conjugate sampler");

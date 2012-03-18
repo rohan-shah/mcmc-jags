@@ -28,7 +28,9 @@ namespace glm {
 	    linkname = lnode->linkName();
 	}
 
-	switch(GLMMethod::getFamily(snode)) {
+	GLMFamily family = GLMMethod::getFamily(snode);
+
+	switch(family) {
 	case GLM_BERNOULLI:
 	    return linkname == "probit" || linkname=="logit";
 	case GLM_BINOMIAL:

@@ -2,24 +2,34 @@
 #define HOLMES_HELD_FACTORY_H_
 
 #include "BinaryFactory.h"
-#include "BinaryGLM.h"
 
 namespace glm {
 
     /**
-     * @shortFactory object for conjugate linear model sampler
+     * @short Factory object for the Holmes-Held sampling method
      */
     class HolmesHeldFactory : public BinaryFactory
     {
     public:
 	HolmesHeldFactory();
+	/**
+	 * Returns a newly allocated object of class HolmesHeld for
+	 * sampling binary GLMs with probit or logistic link.
+	 */
 	BinaryGLM *newBinary(GraphView const *view, 
 			     std::vector<GraphView const *> const &sub_views,
 			     unsigned int chain) const;
 	/**
-	 * Holmes-Held method requires a fixed design matrix
+	 * Returns true. The Holmes-Held update method requires a
+	 * fixed outcome because the auxiliary variables are updated
+	 * by a reversible transition from their current values.
 	 */
-	bool fixedGLM() const;
+	bool fixedOutcome() const;
+	/**
+	 * Returns true. The Holmes-Held update method requires a
+	 * fixed design matrix
+	 */
+	bool fixedDesign() const;
     };
 
 }

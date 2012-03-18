@@ -47,11 +47,14 @@ namespace dic {
 		observed_nodes.push_back(snodes[i]);
 	    }
 	    if (!isSupportFixed(snodes[i])) {
+		msg = "pD is infinite because at least one observed node does not have fixed support";
 		return 0;
 	    }
 	}
-	if (observed_nodes.empty())
+	if (observed_nodes.empty()) {
+	    msg = "there are no observed nodes";
 	    return 0;
+	}
 
 	unsigned int nchain = model->nchain();
 	vector<RNG*> rngs;

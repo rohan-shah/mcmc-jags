@@ -23,20 +23,18 @@ namespace glm {
 
     void AuxMixBinomial::update(RNG *rng)
     {
+	if (_nb == 0) 
+	    return;
+
 	// sample the aggregated utility 
-	if (_nb == 0) {
-	    _y_star = 0;
-	}
-	else {
-	    double lambda = exp(_eta);
-	    
-	    double u = rgamma(_nb, 1.0, rng);
-	    double v = 0.0;
-	    if (static_cast<int>(_y) < static_cast<int>(_nb)) {
-		v = rgamma(_nb - _y, 1.0, rng);
-	    } 
-	    _y_star = -log(u / (1.0 + lambda) + v / lambda);
-	}
+	double lambda = exp(_eta);
+	
+	double u = rgamma(_nb, 1.0, rng);
+	double v = 0.0;
+	if (static_cast<int>(_y) < static_cast<int>(_nb)) {
+	    v = rgamma(_nb - _y, 1.0, rng);
+	} 
+	_y_star = -log(u / (1.0 + lambda) + v / lambda);
 	
 	// ...then the mixture representation 
 	_mix->update(_y_star - _eta, _nb, rng);
@@ -44,11 +42,21 @@ namespace glm {
 
     double AuxMixBinomial::value() const
     {
-	return _y_star - _mix->mean();
+	if (_nb == 0) {
+	    return 0;
+	}
+	else {
+	    return _y_star - _mix->mean();
+	}
     }
     
     double AuxMixBinomial::precision() const
     {
-	return _mix->precision();
+	if (_nb == 0) {
+	    return 0;
+	}
+	else {
+	    return _mix->precision();
+	}
     }
 }

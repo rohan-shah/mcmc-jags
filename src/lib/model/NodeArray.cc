@@ -171,6 +171,10 @@ void NodeArray::setValue(SArray const &value, unsigned int chain)
 		throw runtime_error(msg + name() + 
 				    print(value.range().leftIndex(i)));
 	    }
+	    if (node->isObserved()) {
+		throw NodeError(node,
+				"Attempt to overwrite value of observed node");
+	    }
 	    if (node->isRandomVariable()) {
 		setnodes.insert(node);
 	    }
