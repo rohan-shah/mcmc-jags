@@ -985,8 +985,8 @@ void Compiler::traverseTree(ParseTree const *relations, CompilerMemFn fun,
   }
 
   vector<ParseTree*> const &relation_list = relations->parameters();
-  for (vector<ParseTree*>::const_iterator p = relation_list.begin(); 
-       p != relation_list.end(); ++p) 
+  for (vector<ParseTree*>::const_reverse_iterator p = relation_list.rbegin(); 
+       p != relation_list.rend(); ++p) 
     {  
       Counter *counter;
       ParseTree *var;
