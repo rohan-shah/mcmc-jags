@@ -1507,7 +1507,7 @@ their distribution.
       ~ & $\tau > 0$ \\
       Log-normal  & \verb+dlnorm(mu,tau)+ & 
       \multirow{2}{*}{
-        $\tau^{\frac{1}{2}} x^{-1} \exp \left\{-\tau (\log(x) - \mu)^2/2 \right\}$} & 0 \\
+        $\left(\frac{\tau}{2\pi}\right)^{\frac{1}{2}} x^{-1} \exp \left\{-\tau (\log(x) - \mu)^2 / 2 \right\}$} & 0 \\
       ~ & $\tau > 0$ \\
       Noncentral & \verb+dnchisqr(k, delta)+ & 
       \multirow{2}{*}{
@@ -1520,7 +1520,7 @@ their distribution.
       Chi-squre & $k > 0, \delta \geq 0$ \\
       Normal   & \verb+dnorm(mu,tau)+ & 
       \multirow{2}{*}{
-        $\left(\frac{\tau}{2\pi}\right)^{\frac{1}{2}} \exp\{-(x - \mu)^2 \tau\}$} & & \\
+        $\left(\frac{\tau}{2\pi}\right)^{\frac{1}{2}} \exp\{- \tau (x - \mu)^2 / 2\}$} & & \\
       ~ & $\tau > 0$ \\
       Pareto      & \verb+dpar(alpha, c)+ & 
       \multirow{2}{*}{
