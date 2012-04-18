@@ -48,6 +48,7 @@
 #include <functions/Exp.h>
 #include <functions/Equals.h>
 #include <functions/ICLogLog.h>
+#include <functions/IfElse.h>
 #include <functions/ILogit.h>
 #include <functions/InProd.h>
 #include <functions/InterpLin.h>
@@ -146,6 +147,7 @@ namespace bugs {
 	insert(new Exp);
 	insert(new Equals);
 	insert(new ICLogLog);
+	insert(new IfElse);
 	insert(new ILogit);
 	insert(new InProd);
 	insert(new InterpLin);

@@ -3,7 +3,7 @@
 
 #include <function/ScalarFunction.h>
 
-namespace base {
+namespace bugs {
 
 /**
  * The ifelse function returns either a or b depending on whether the 
