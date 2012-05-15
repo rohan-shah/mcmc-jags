@@ -785,6 +785,10 @@ gives the order in which Samplers are updated at each iteration.
 If a Sampler updates multiple nodes then it is represented by multiple rows
 with the same index number.
 
+Note that the list includes only those nodes that are updated by a
+Sampler.  Stochastic nodes that are updated by forward sampling from
+the prior are not listed.
+
 \subsection{LOAD}
 \label{load}
 \begin{verbatim}
