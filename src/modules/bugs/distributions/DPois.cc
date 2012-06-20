@@ -30,7 +30,7 @@ DPois::d(double x, PDFType type,
     if (type == PDF_LIKELIHOOD) {
 	//Avoid expensive normalizing constant
 	double lambda = LAMBDA(par);
-	if (x < 0 || (lambda == 0 && x != 0)) {
+	if (x < 0 || (lambda == 0 && x != 0) || !jags_finite(lambda)) {
 	    return give_log ?  JAGS_NEGINF : 0;
 	}
 	double y = -lambda;
