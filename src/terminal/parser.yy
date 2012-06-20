@@ -585,6 +585,9 @@ r_attribute_list: r_dim
 r_dim: DIM '=' r_collection {
   $$ = $3;
 }
+| DIM '=' range_element {
+  $$ = $3;
+}
 ;
 
 r_collection: r_integer_collection

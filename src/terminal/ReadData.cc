@@ -71,43 +71,62 @@ bool readRData(std::vector<ParseTree*> const *array_list,
 	  unsigned long length = vec->parameters().size();
     
 	  /* Get the number of dimensions of the array */
-	  ParseTree const *pdim;
-	  long ndim;
+	  ParseTree const *pdim = 0;
+	  int ndim = 1;
 	  if ((*p)->parameters().size() == 2) {
-	    // Array has dimension attribute
-	    pdim = (*p)->parameters()[1];
-	    ndim = pdim->parameters().size();
+	      // Array has dimension attribute
+	      pdim = (*p)->parameters()[1];
+	      if (pdim->treeClass() == P_VECTOR) {
+		  ndim = pdim->parameters().size();
+	      }
+	      else if (pdim->treeClass() == P_RANGE) {
+		  // R dump can store a contiguous integer sequence
+		  // using the ":" notation e.g. c(3,4,5) is written 3:5
+		  int lower = (int) pdim->parameters()[0]->value();
+		  int upper = (int) pdim->parameters()[1]->value();
+		  ndim = upper - lower + 1;
+		  if (ndim < 0 || lower <= 0) {
+		      cerr << "Invalid dimension attribute for variable " << name << endl;
+		      return false;
+		  }
+	      }
+	      else {
+		  cerr << "Invalid dimension attribute for variable " << name << endl;
+		  return false;
+	      }
 	  }
-	  else {
-	    // No dimension attribute
-	    pdim = 0;
-	    ndim = 1;
-	  }
-
 	  /* Get the dimensions of the array */
 	  vector<unsigned int> dim(ndim);
 	  if (pdim) {
-	    for (int i = 0; i < ndim; ++i) {
-              int dim_i = (int) (pdim->parameters()[i]->value() + 1.0E-6);
-              if (dim_i <= 0) {
-                 cerr << "Non-positive dimension for variable "
-                      << name << endl; 
-                 return false;
-              }
-	      dim[i] = (unsigned int) dim_i;
-	    }
-	    /* Check that dimension is consistent with length */
-	    unsigned long dimprod = 1;
-	    for (int i = 0; i < ndim; i++) {
-	      dimprod *= dim[i];
-	    }
-	    if (dimprod != length) {
-	      cerr << "Bad dimension for variable " << name << endl;
-	      return false;
-	    }
+	      if (pdim->treeClass() == P_VECTOR) {
+		  for (int i = 0; i < ndim; ++i) {
+		      int dim_i = (int) (pdim->parameters()[i]->value() + 1.0E-6);
+		      if (dim_i <= 0) {
+			  cerr << "Non-positive dimension for variable "
+			       << name << endl; 
+			  return false;
+		      }
+		      dim[i] = (unsigned int) dim_i;
+		  }
+	      }
+	      else if (pdim->treeClass() == P_RANGE) {
+		  int lower = (int) pdim->parameters()[0]->value();
+		  for (int i = 0; i < ndim; ++i) {
+		      dim[i] = (unsigned int) (lower + i);
+		  }
+	      }
+	      /* Check that dimension is consistent with length */
+	      unsigned long dimprod = 1;
+	      for (int i = 0; i < ndim; i++) {
+		  dimprod *= dim[i];
+	      }
+	      if (dimprod != length) {
+		  cerr << "Bad dimension for variable " << name << endl;
+		  return false;
+	      }
 	  }
 	  else {
-	    dim[0] = length;
+	      dim[0] = length;
 	  }
 
 	  /* Get the data */
