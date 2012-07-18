@@ -4,21 +4,23 @@ Changes in JAGS 3.3.0
 User-visible changes
 ====================
 * JAGS now prints a warning about unused initial values
-* Failure to set a "pD" monitor from the "dic" module should produce 
+* Failure to set a "pD" monitor from the "dic" module should produce a
   more informative error messages
 
 Bug fixes
 =========
 * The inverse and logdet functions now work on scalars
 * NodeArray::setValue could overwrite values of observed nodes.
-  In practice, one could change the value of a constant node by providing
-  an initial value
+  At the user-interface level, one could change the value of a constant
+  node by providing an initial value.
 * Underflow errors in the Weibull distribution are now caught.
 * The auxiliary mixture sampling method now works with binomial data
   that have a zero denominator.
 * The multinomial distribution now allows a zero size parameter.
 * The log-density of the uniform distribution was incorrect when
   doing likelihood calculations.
+* The ConjugateWishart distribution did not work correctly in mixture
+  models.
 
 Internal changes in modules
 ===========================
