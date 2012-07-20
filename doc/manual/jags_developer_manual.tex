@@ -40,15 +40,19 @@ source directory and typing
 \begin{verbatim}
 autoreconf -fi
 \end{verbatim}
-Your source tree is then ready to work with.  
+Your source tree is then ready to work with.  Note that JAGS is not
+currently compatible with automake-1.12.  You must use automake-1.11
+or earlier.
 
-The CVS repository also excludes some \texttt{C++} source files that are
-included in the source tarball. These files are re-created in the
+The CVS repository also excludes some \texttt{C++} source files that
+are included in the source tarball. These files are re-created in the
 build tree by the GNU tools \verb+flex+ and \verb+bison+. You must
 also have these tools installed if you are using the CVS
 repository. Note that the standard unix versions of these tools --
 \verb+lex+ and \verb+yacc+ -- are not sufficient, and you must have an
-up-to-date version of \verb+flex+.
+up-to-date version of \verb+flex+. \footnote{On Solaris, the OpenCSW
+  package \texttt{flex} contains version 2.5.4, which is not compatible
+  with JAGS. Use the \texttt{flexnew} package}
 
 Once you have checked out a CVS tree, you can keep it up to date with
 \begin{verbatim}
