@@ -1703,7 +1703,6 @@ parameterization used in OpenBUGS 3.2.2. OpenBUGS is parameterized as
 X ~ dhyper(n, m, N, psi)     #OpenBUGS
 \end{verbatim}
 where $n, m, N$ are the following table margins:
-
 \begin{center}
 \begin{tabular}{|cc|c|}
 \hline
@@ -1714,18 +1713,16 @@ m & - & N \\
 \hline
 \end{tabular}
 \end{center}
-
 This parameterization is symmetric in $n$, $m$. In JAGS, \verb+dhyper+
 is parameterized as
 \begin{verbatim}
-X ~ dhyper(m, n1, n2, psi) #JAGS 
+X ~ dhyper(n1, n2, m1, psi) #JAGS 
 \end{verbatim}
-where $m, n1, n2$ are
-
+where $n1, n2, m1$ are
 \begin{center}
 \begin{tabular}{|cc|c|}
 \hline
-x & - & m \\
+x & - & m1 \\
 -  & - & -   \\
 \hline
 n1 & n2 & - \\
