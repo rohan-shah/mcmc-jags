@@ -1696,6 +1696,43 @@ normalized internally so that
 p_i \rightarrow \frac{p_i}{\sum_j p_j}
 \]
 
+The non-central hypergeometric distribution (\verb+dhyper+) uses the
+same parameterization as R, which is different from the
+parameterization used in OpenBUGS 3.2.2. OpenBUGS is parameterized as
+\begin{verbatim}
+X ~ dhyper(n, m, N, psi)     #OpenBUGS
+\end{verbatim}
+where $n, m, N$ are the following table margins:
+
+\begin{center}
+\begin{tabular}{|cc|c|}
+\hline
+x & - & n \\
+-  & - & -  \\
+\hline
+m & - & N \\
+\hline
+\end{tabular}
+\end{center}
+
+This parameterization is symmetric in $n$, $m$. In JAGS, \verb+dhyper+
+is parameterized as
+\begin{verbatim}
+X ~ dhyper(m, n1, n2, psi) #JAGS 
+\end{verbatim}
+where $m, n1, n2$ are
+
+\begin{center}
+\begin{tabular}{|cc|c|}
+\hline
+x & - & m \\
+-  & - & -   \\
+\hline
+n1 & n2 & - \\
+\hline
+\end{tabular}
+\end{center}
+
 \subsection{Observable Functions}
 \label{section:obfun}
 

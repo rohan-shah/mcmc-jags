@@ -21,6 +21,8 @@ Bug fixes
   doing likelihood calculations.
 * The ConjugateWishart distribution did not work correctly in mixture
   models.
+* The choose and lchoose functions in the JRmath library could go into
+  an infinite recursion, overflowing the C stack and crashing JAGS.
 
 Internal changes in modules
 ===========================
