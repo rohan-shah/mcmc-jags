@@ -23,6 +23,8 @@ Bug fixes
   models.
 * The choose and lchoose functions in the JRmath library could go into
   an infinite recursion, overflowing the C stack and crashing JAGS.
+* The Poisson log-likelihood function did not return zero for non-integer
+  values. This could lead to a crash in the glm module.
 
 Internal changes in modules
 ===========================
