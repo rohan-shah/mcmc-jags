@@ -392,7 +392,7 @@ range_list: range_element {
 ;
 
 range_element: index {
-  $$ = new ParseTree(P_RANGE); setParameters($$,$1);
+  $$ = new ParseTree(P_RANGE); setParameters($$, $1);
 }
 | index ':' index {
   $$ = new ParseTree(P_RANGE); setParameters($$, $1, $3);
@@ -570,6 +570,10 @@ r_structure: STRUCTURE '(' r_collection ',' r_attribute_list ')' {
   if ($5) 
     setParameters($$, $3, $5);
   else
+    setParameters($$, $3);
+}
+| STRUCTURE '(' r_collection ')' {
+    $$ = new ParseTree(P_ARRAY);
     setParameters($$, $3);
 }
 ;
