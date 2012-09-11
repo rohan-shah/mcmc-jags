@@ -10,6 +10,15 @@
 \newcommand{\WinBUGS}{\textsf{WinBUGS}}
 \newcommand{\R}{\textsf{R}}
 \newcommand{\CODA}{\textsf{coda}}
+
+\usepackage{verbatim}
+
+\newcommand{\code}[1]{{\bgroup{\normalfont\ttfamily #1}\egroup}}
+\newcommand{\samp}[1]{{`\bgroup\normalfont\texttt{#1}'\egroup}}
+\newcommand{\file}[1]{{`\normalfont\textsf{#1}'}}
+\let\command=\code
+\let\option=\samp
+
 \begin{document}
 
 \title{JAGS Version \release\ installation manual}
@@ -33,7 +42,7 @@ which is described in more detail in the file \texttt{INSTALL} in
 the top-level source directory. On some UNIX platforms, you may
 be required to use GNU make (gmake) instead of the native make
 command. On systems with multiple processors, you may use the option 
-\verb+-j+ to speed up compilation, {\em e.g.} for a quad-core PC you
+\option{-j} to speed up compilation, {\em e.g.} for a quad-core PC you
 may use:
 \begin{verbatim}
 make -j4
@@ -51,23 +60,23 @@ as:
 \item Installation directories. \JAGS\ conforms to the GNU standards
   for where files are installed. You can control the installation
   directories in more detail using the flags that are listed when
-  you type \verb+./configure --help+.
+  you type \command{./configure --help}.
 \end{itemize}
 
 \subsubsection{Configuration for a 64-bit build}
 
 By default, JAGS will install all libraries into
-\verb+/usr/local/lib+.  If you are building a 64-bit version of \JAGS,
+\file{/usr/local/lib}.  If you are building a 64-bit version of \JAGS,
 this may not be appropriate for your system. On Fedora and other
 RPM-based distributions, for example, 64-bit libraries should be
-installed in \verb+lib64+, and on Solaris, 64-bit libraries are in a
-subdirectory of \verb+lib+ ({\em e.g.} \verb+lib/amd64+ if you are
+installed in \file{lib64}, and on Solaris, 64-bit libraries are in a
+subdirectory of \file{lib} ({\em e.g.} \file{lib/amd64} if you are
 using a x86-64 processor), whereas on Debian, and other Linux
 distributions that conform to the FHS, the correct installation
-directory is \verb+lib+.
+directory is \file{lib}.
 
 To ensure that \JAGS\ libraries are installed in the correct
-directory, you should supply the \verb+--libdir+ argument to the
+directory, you should supply the \option{--libdir} argument to the
 configure script, {\em e.g.}:
 \begin{verbatim}
 ./configure --libdir=/usr/local/lib64
@@ -93,8 +102,8 @@ For more detailed control over the installation directories type
 and read the section ``Fine-tuning of the installation directories.''
 
 With a private installation, you need to modify your PATH environment
-variable to include \verb+$JAGS_HOME/bin+. You may also need to set
-\verb+LD_LIBRARY_PATH+ to include \verb+$JAGS_HOME/lib+ (On Linux this
+variable to include \file{\$JAGS\_HOME/bin}. You may also need to set
+\code{LD\_LIBRARY\_PATH} to include \file{\$JAGS\_HOME/lib} (On Linux this
 is not necessary as the location of libjags and libjrmath is hard-coded
 into the \JAGS\ binary).
 
@@ -117,7 +126,7 @@ options \texttt{--with-blas} and \texttt{--with-lapack}
 \end{verbatim}
 
 If the BLAS and LAPACK libraries are in a directory that is not on the
-default linker path, you must set the \verb+LDFLAGS+ environment variable
+default linker path, you must set the \code{LDFLAGS} environment variable
 to point to this directory at configure time:
 \begin{verbatim}
 LDFLAGS="-L/path/to/my/libs" ./configure ...
@@ -125,7 +134,7 @@ LDFLAGS="-L/path/to/my/libs" ./configure ...
 
 At runtime, if you have linked \JAGS\ against BLAS or LAPACK in
 a non-standard location, you must supply this location with the
-environment variable \verb+LD_LIBRARY_PATH+, {\em e.g.}
+environment variable \code{LD\_LIBRARY\_PATH}, {\em e.g.}
 \begin{verbatim}
 LD_LIBRARY_PATH="/path/to/my/libs:${LD_LIBRARY_PATH}"
 \end{verbatim} %$
@@ -157,17 +166,17 @@ third-party compilers and linear algebra libraries.
 \subsubsection{Fortran compiler}
 
 The GNU FORTRAN compiler changed between gcc 3.x and gcc 4.x from
-\verb+g77+ to \verb+gfortran+. Code produced by the two compilers is
+\code{g77} to \code{gfortran}. Code produced by the two compilers is
 binary incompatible. If your BLAS and LAPACK libraries are linked
-against \verb+libgfortran+, then they were built with \verb+gfortran+
+against \code{libgfortran}, then they were built with \code{gfortran}
 and you must also use this to compile \JAGS. 
 
 Most recent GNU/Linux distributions have moved completely to gcc 4.x.
 However, some older systems may have both compilers installed.
-Unfortunately, if \verb+g77+ is on your path then the configure script
+Unfortunately, if \code{g77} is on your path then the configure script
 will find it first, and will attempt to use it to build \JAGS. This
 results in a failure to recognize the installed BLAS and LAPACK
-libraries. In this event, set the \verb+F77+ variable at configure time.
+libraries. In this event, set the \code{F77} variable at configure time.
 \begin{verbatim}
 F77=gfortran ./configure
 \end{verbatim}
@@ -203,14 +212,14 @@ atlas libraries in the non-standard directory \texttt{/usr/lib/atlas}
 (or \texttt{/usr/lib64/atlas} for 64-bit builds) to avoid conflicts
 with the standard \texttt{blas} and \texttt{lapack} RPMs. To use the
 atlas libraries, you must supply their location using the
-\verb+LDFLAGS+ variable (see section \ref{section:blas:lapack})
+\code{LDFLAGS} variable (see section \ref{section:blas:lapack})
 \begin{verbatim}
 ./configure LDFLAGS="-L/usr/lib/atlas"
 \end{verbatim}
 Runtime linking to the correct libraries is ensured by the automatic
 addition of \texttt{/usr/lib/atlas} to the linker path (see the directory
 \texttt{/etc/ld.so.conf.d}), so you do not need to set the
-environment variable \verb+LD_LIBRARY_PATH+ at run time.
+environment variable \code{LD\_LIBRARY\_PATH} at run time.
 
 \subsubsection{AMD Core Math Library}
 \label{section:acml:linux}
@@ -227,20 +236,20 @@ For example, to link to the 64-bit acml using gcc 4.0+:
 LDFLAGS="-L/opt/acml4.3.0/gfortran64/lib" \
 ./configure --with-blas="-lacml -lacml_mv" 
 \end{verbatim}
-The library \verb+acmv_mv+ library is a vectorized math library that
+The \code{acmv\_mv} library is a vectorized math library that
 exists only for the 64-bit version and is omitted when linking against
 32-bit acml.
 
 On multi-core systems, you may wish to use the threaded acml library
 (See the warning in section \ref{section:blas:multithreaded} however).
-To do this, link to \verb+acml_mp+ and add the compiler flag
-\verb+-fopenmp+:
+To do this, link to \code{acml\_mp} and add the compiler flag
+\option{-fopenmp}:
 \begin{verbatim}
 LDFLAGS="-L/opt/acml4.3.0/gfortran64_mp/lib" \
 CXXFLAGS="-O2 -g -fopenmp" ./configure --with-blas="-lacml_mp -lacml_mv" 
 \end{verbatim}
 The number of threads used by multi-threaded acml may be controlled
-with the environment variable \verb+OMP_NUM_THREADS+.
+with the environment variable \code{OMP\_NUM\_THREADS}.
 
 \subsubsection{Intel Math Kernel Library}
 
@@ -249,18 +258,18 @@ routines for Intel processors.  MKL is designed to be linked to
 executables, not shared libraries. This means that it can only be
 linked to a static version of \JAGS, in which the \JAGS\ library and
 modules are linked into the main executable. To build a static version
-of \JAGS, use the configure option \verb+--disable-shared+.
+of \JAGS, use the configure option \option{--disable-shared}.
 
 MKL version 10.0 and above uses a ``pure layered'' model for linking.
 The layered model gives the user fine-grained control over four
 different library layers: interface, threading, computation, and
 run-time. Some examples of linking to MKL using this layered model are
 given below. These examples are for GCC compilers on
-\verb+x86_64+. The choice of interface layer is important on
-\verb+x86_64+ since the Intel Fortran compiler returns complex values
+\code{x86\_64}. The choice of interface layer is important on
+\code{x86\_64} since the Intel Fortran compiler returns complex values
 differently from the GNU Fortran compiler. You must therefore use the
-interface layer that matches your compiler (\verb+mkl_intel*+ or
-\verb+mkl_gf*+).
+interface layer that matches your compiler (\code{mkl\_intel*} or
+\code{mkl\_gf*}).
 
 For further guidance, consult the MKL Link Line advisor at
 \url{http://software.intel.com/en-us/articles/intel-mkl-link-line-advisor}.
@@ -277,7 +286,7 @@ version of MKL as follows:
 ./configure --disable-shared \
   --with-blas="-lmkl_gf_lp64 -lmkl_sequential -lmkl_core -lpthread"
 \end{verbatim}
-Note that \verb+libpthread+ is still required, even when linking
+Note that \code{libpthread} is still required, even when linking
 to sequential MKL.
 
 Threaded MKL may be used with:
@@ -286,15 +295,15 @@ Threaded MKL may be used with:
   --with-blas="-lmkl_gf_lp64 -lmkl_gnu_thread -lmkl_core -liomp5 -lpthread"
 \end{verbatim}
 The default number of threads will be chosen by the OpenMP software,
-but can be controlled by setting \verb+OMP_NUM_THREADS+ or
-\verb+MKL_NUM_THREADS+.  (See the warning in section
+but can be controlled by setting \code{OMP\_NUM\_THREADS} or
+\code{MKL\_NUM\_THREADS}.  (See the warning in section
 \ref{section:blas:multithreaded} however).
 
 \subsubsection{Using Intel Compilers}
 
 \JAGS\ has been successfully built with the Intel Composer XE
 compilers. To set up the environment for using these compilers call
-the \verb+compilervars.sh+ shell script, {\em e.g.}
+the \file{compilervars.sh} shell script, {\em e.g.}
 \begin{verbatim}
 source /opt/intel/composerxe-2011/bin/compilervars.sh intel64
 \end{verbatim}
@@ -314,20 +323,20 @@ FFLAGS="-xO3 -xarch=sse2" \
 CXXFLAGS="-xO3 -xarch=sse2"
 \end{verbatim}
 The Sun Studio compiler is not optimized by default. Use the option
-\verb+-xO3+ for optimization (NB This is the letter ``O'' not the
-number 0) In order to use the optimization flag \verb+-xO3+ you
-must specify the architecture with the \verb+-xarch+ flag. The options
+\option{-xO3} for optimization (NB This is the letter ``O'' not the
+number 0) In order to use the optimization flag \option{-xO3} you
+must specify the architecture with the \option{-xarch} flag. The options
 above are for an Intel processor with SSE2 instructions. This must be
 adapted to your own platform.
 
-To compile a 64-bit version of JAGS, add the option \verb+-m64+ to
+To compile a 64-bit version of JAGS, add the option \option{-m64} to
 all the compiler flags.
 
 Solaris provides two versions of the C++ standard library:
 \texttt{libCstd}, which is the default, and \texttt{libstlport4},
 which conforms more closely to the C++ standard. \JAGS\ may be linked
-to the stlport4 library by adding the options
-\verb+-library=stlport4+ to \verb+CXXFLAGS+. 
+to the stlport4 library by adding the option
+\option{-library=stlport4} to \code{CXXFLAGS}. 
 
 The configure script automatically detects the Sun Performance library,
 which implements the BLAS/LAPACK functions.  
@@ -398,17 +407,17 @@ directory. Type the following:
 ./configure
 make
 \end{verbatim}
-(if you have multiple CPUs try \verb+make -j 4+ or
-\verb+make -j 8+. It may need to be issued more than once)
+(if you have multiple CPUs try \command{make -j 4} or
+\command{make -j 8}. It may need to be issued more than once)
 \begin{verbatim}
 sudo make install
 \end{verbatim}
 
 You need to ensure \texttt{/usr/local/bin} is in your PATH in order
-for `jags' to work from a shell prompt.
+for \command{jags} to work from a shell prompt.
 
 This will build the default architecture for you Mac: ppc on a G4 or
-G5 and i386 or \verb+x86_64+ on an Intel Mac.  If you want to build
+G5 and i386 or \code{x86\_64} on an Intel Mac.  If you want to build
 multiple architecture fat binaries, you will need to ensure that
 libtool in the JAGS sources is version 1.5.24 or later.  Then you can
 use configure commands like
@@ -445,8 +454,7 @@ We used the TDM-GCC compilers based on the MinGW-w64 project
 because it allows us to build a version of JAGS that is statically
 linked against the gcc runtime library.  This, in turn, is necessary
 to have a functional rjags package on Windows.  We also tried version
-213 of Rtools
-(\url{http://www.murdoch-sutherland.com/Rtools}). Although the
+Rtools (\url{http://www.murdoch-sutherland.com/Rtools}). Although the
 resulting JAGS library is functional, it is not compatible with R:
 loading the rjags package causes R to crash on exit.
 
@@ -458,28 +466,25 @@ MinGW-w64/sjlj version as this is capable of producing both 32-bit and
 Select a ``Recommended C/C++'' installation and customize it by
 selecting the Fortran compiler, which is not installed by
 default. After installation, to force the compiler to use static
-linking, delete any import libraries (files ending in \verb+.dll.a+)
+linking, delete any import libraries (files ending in \file{.dll.a}
 in the TDM-GCC tree.  
 
 MSYS (the Minimal SYStem) is part of the MinGW project. It provides a
-bash shell for you to build Unix software. Up until version 1.0.11,
-MSYS was distributed with a separate installer, but it is now distributed
-with the rest of MinGW (\url{www.mingw.org}).
-
-Download the MinGW installer from \url{http://www.mingw.org}. We used
-\texttt{mingw-get-inst-20110530.exe}.  Run the installer and select
+bash shell for you to build Unix software. Download the MinGW
+installer from \url{http://www.mingw.org}. We used
+\file{mingw-get-inst-20120426.exe}.  Run the installer and select
 ``MSYS Basic System''.  There is no need to install the ``MinGW
 Developer Toolkit'' if you are working with a release tarball of
-\JAGS.  The installer also forces you to install the MinGW C compiler
-which we do not need and do not want.  Work around this by
-editing the file \verb+c:\mingw\msys\1.0\etc\fstab+. to read
+\JAGS.  It is not necessary to install any of the compilers that come
+with MinGW as we shall be using the TDM versions. To make MSYS use the
+TDM-compilers, edit the file \file{c:/mingw/msys/1.0/etc/fstab}
+to read
 \begin{verbatim}
 c:\MinGW64\    /mingw
 \end{verbatim}
-MSYS will then use the TDM-compilers instead.
 
 MSYS creates a home directory for you in
-\verb+c:\mingw\msys\1.0\home\<username>+, where \texttt{<username>} is
+\file{c:/mingw/msys/1.0/home/username}, where \code{username} is
 your user name under Windows. You will need to copy and paste the
 source files for LAPACK and JAGS into this directory.
 
@@ -488,101 +493,101 @@ The Nullsoft Scriptable Install System
 self-extracting executable that installs \JAGS\ on the target PC.
 These instructions were tested with NSIS 2.46.  You must also install
 the AccessControl plug-in for NSIS, which is available from
-\url{http://nsis.sourceforge.net/AccessControl_plug-in}.
+\url{http://nsis.sourceforge.net/AccessControl_plug-in}. The plug-in
+is distributed as a zip file which is unpacked into the installation
+directory of NSIS.
 
 \subsubsection{Building LAPACK}
 
 Download the LAPACK source file from
 \url{http://www.netlib.org/lapack} to your MSYS home directory. We
-used version 3.3.1.
+used version 3.4.1.
 
 You need to build LAPACK twice: once for 32-bit \JAGS\ and once for
 64-bit \JAGS. The instructions below are for 32-bit \JAGS. To build
-64-bit versions, repeat the instructions with the flag \verb+-m32+
-replaced by \verb+-m64+ and start in a clean build directory.  Note
-that you cross-build 64-bit BLAS and LAPACK on a 32-bit Windows
+64-bit versions, repeat the instructions with the flag \option{-m32}
+replaced by \option{-m64} and start in a clean build directory.  Note
+that you cannot cross-build 64-bit BLAS and LAPACK on a 32-bit Windows
 system. This is because the build process must run some 64-bit test
 programs.
 
 Launch MSYS, labelled as ``MinGW shell'' on the Windows Start Menu,
 and unpack the tarball.
 \begin{verbatim}
-tar xfvz lapack-3.3.1.tgz
-cd lapack-3.3.1
+tar xfvz lapack-3.4.1.tgz
+cd lapack-3.4.1
 \end{verbatim}
-Copy the file \texttt{INSTALL/make.inc.gfortran} to \texttt{make.inc} in
-the top level source directory.  Then edit \texttt{make.inc} replacing
+Copy the file \file{INSTALL/make.inc.gfortran} to \file{make.inc} in
+the top level source directory.  Then edit \file{make.inc} replacing
 the following lines:
 \begin{verbatim}
-PLAT = _MinGW
 FORTRAN = gfortran -m32
 LOADER = gfortran -m32
 \end{verbatim}
-Edit the file \texttt{Makefile} so that it builds the BLAS library. The
-line that starts \texttt{lib:} should read
-\begin{verbatim}
-lib: blaslib lapacklib tmglib
-\end{verbatim}
 Type
 \begin{verbatim}
-make 
+make blaslib
+make lapacklib 
 \end{verbatim}
 The compilation process is slow. Eventually, it will create two static
-libraries \verb+blas_MinGW.a+ and \verb+lapack_MingGW.a+. These are
+libraries \file{librefblas.a} and \file{liblapack.a}. These are
 insufficient for building \JAGS: you need to create dynamic link
 library (DLL) for each one.
 
-First create a definition file \verb+libblas.def+ that exports all the
+First create a definition file \file{libblas.def} that exports all the
 symbols from the BLAS library
 \begin{verbatim}
-dlltool -z libblas.def --export-all-symbols blas_MinGW.a
+dlltool -z libblas.def --export-all-symbols librefblas.a
 \end{verbatim}
 Then link this with the static library to create a DLL
-(\verb+libblas.dll+) and an import library (\verb+libblas.dll.a+)
+(\file{libblas.dll}) and an import library (\file{libblas.dll.a})
 \begin{verbatim}
 gcc -m32 -shared -o libblas.dll -Wl,--out-implib=libblas.dll.a \
-libblas.def blas_MinGW.a -lgfortran
+libblas.def librefblas.a -lgfortran
 \end{verbatim}
  
 Repeat the same steps for the LAPACK library, creating an import library
-(\verb+liblapack.dll.a+) and DLL (\verb+liblapack.dll+)
+(\file{liblapack.dll.a}) and DLL (\file{liblapack.dll})
 \begin{verbatim}
-dlltool -z liblapack.def --export-all-symbols lapack_MinGW.a
+dlltool -z liblapack.def --export-all-symbols liblapack.a
 
 gcc -m32 -shared -o liblapack.dll -Wl,--out-implib=liblapack.dll.a \
-liblapack.def lapack_MinGW.a  -L./ -lblas -lgfortran
+liblapack.def liblapack.a  -L./ -lblas -lgfortran
 \end{verbatim}
 
 \subsection{Compiling \JAGS}
 
 Unpack the JAGS source
 \begin{verbatim}
-tar xfvz JAGS-3.0.0.tar.gz
-cd JAGS-3.0.0
+tar xfvz JAGS-3.3.0.tar.gz
+cd JAGS-3.3.0
 \end{verbatim}
 and configure JAGS for a 32-bit build
 \begin{verbatim}
 CC="gcc -m32" CXX="g++ -m32" F77="gfortran -m32" \
 ./configure LDFLAGS="-L/path/to/import/libs/ -Wl,--enable-auto-import" 
 \end{verbatim}
-where \verb+/path/to/import/libs+ is a directory that contains the
-32-bit import libraries (\verb+libblas.dll.a+ and
-\verb+liblapack.dll.a+).  This must be an {\em absolute} path name,
+where \file{/path/to/import/libs} is a directory that contains the
+32-bit import libraries (\file{libblas.dll.a} and
+\file{liblapack.dll.a}).  This must be an {\em absolute} path name,
 and not relative to the JAGS build directory.
 
 After the configure step, type
 \begin{verbatim}
 make win32-install
 \end{verbatim}
-This will install JAGS into the subdirectory \verb+win/inst32+.
+This will install JAGS into the subdirectory \file{win/inst32}.
 Note that you must go straight from the configure step to \texttt{make
   win32-install} without the usual step of typing \texttt{make} on
 its own.  The \texttt{win32-install} target resets the installation
 prefix, and this will cause an error if the source is already
 compiled.
 
-To install the 64-bit version, \verb+make clean+, reconfigure JAGS
-for a 64-bit build:
+To install the 64-bit version, clean the build directory 
+\begin{verbatim}
+make clean 
+\end{verbatim}
+reconfigure JAGS for a 64-bit build:
 \begin{verbatim}
 CC="gcc -m64" CXX="g++ -m64" F77="gfortran -m64" \
 ./configure LDFLAGS="-L/path/to/import/libs/ -Wl,--enable-auto-import" 
@@ -591,17 +596,17 @@ Then type
 \begin{verbatim}
 make win64-install
 \end{verbatim}
-This will install JAGS into the subdirectory \verb+win/inst64+.
+This will install JAGS into the subdirectory \file{win/inst64}.
 
 With both 32-bit and 64-bit installations in place you can create the
 installer.  Normally you will want to distribute the blas and lapack
 libraries with JAGS.  In this case, put the 32-bit DLLs and import
-libraries in the sub-directory \verb+win/runtime32+ and the 64-bit
+libraries in the sub-directory \file{win/runtime32} and the 64-bit
 DLLs and import libraries in the sub-directory
-\verb+win/runtime64+. They will be detected and included with the
+\file{win/runtime64}. They will be detected and included with the
 distribution.
 
-Make sure that the file \verb+makensis.exe+, provided by
+Make sure that the file \file{makensis.exe}, provided by
 NSIS, is in your PATH. For a typical installation of NSIS, on 32-bit
 windows:
 \begin{verbatim}
@@ -612,7 +617,7 @@ Then type
 make installer
 \end{verbatim}
 After the build process finishes, the self extracting archive will be
-in the subdirectory \verb+win+.
+in the subdirectory \file{win}.
 
 \end{document}
 
