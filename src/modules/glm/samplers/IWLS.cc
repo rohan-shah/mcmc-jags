@@ -20,6 +20,7 @@ using std::vector;
 using std::exp;
 using std::fabs;
 using std::log;
+using std::copy;
 
 static unsigned int nchildren(GraphView const *view)
 {
@@ -28,14 +29,12 @@ static unsigned int nchildren(GraphView const *view)
 
 static double logDet(cholmod_factor *F)
 {
-    if (!F->is_ll && !F->is_monotonic) {
-	throwLogicError("Non-monotonic simplicial factor in logDet");
-    }
+    //NB Requiring simplicial factorization here. See glm.cc.
 
-    int *Fp = static_cast<int*>(F->p);
     double *Fx = static_cast<double*>(F->x);
+    int *Fp = static_cast<int*>(F->p);
 
-    double y = 0;
+    double y = 0;    
     for (unsigned int r = 0; r < F->n; ++r) {
 	y += log(Fx[Fp[r]]);
     }
@@ -60,6 +59,9 @@ namespace glm {
 	for (unsigned int i = 0; i < children.size(); ++i) {
 	    _link[i] = dynamic_cast<LinkNode const*>(children[i]->parents()[0]);
 	    _family[i] = getFamily(children[i]);
+	    if ((_link[i] == 0) != (_family[i] == GLM_NORMAL)) {
+		throwLogicError("Invalid link");
+	    }
 	}
     }
     
@@ -71,12 +73,12 @@ namespace glm {
     double IWLS::getPrecision(unsigned int i) const
     {
 	double w = _w;
-	if (_family[i] == GLM_BINOMIAL) {
-	    Node const *size = _view->stochasticChildren()[i]->parents()[1];
-	    w *= size->value(_chain)[0];
+	if(_family[i] == GLM_BINOMIAL || _family[i] == GLM_NORMAL) {
+	    Node const *scale = _view->stochasticChildren()[i]->parents()[1];
+	    w *= scale->value(_chain)[0];
 	}
 
-	double grad = _link[i]->grad(_chain);
+	double grad = _link[i] ? _link[i]->grad(_chain) : 1;
 	return (w * grad * grad)/ var(i);
     }
 
@@ -90,16 +92,21 @@ namespace glm {
 	    y /= N;
 	}
 
-	double mu = _link[i]->value(_chain)[0];
-	double eta = _link[i]->eta(_chain);
-	double grad = _link[i]->grad(_chain);
-
-	return eta + (y - mu) / grad;
+	if (_link[i] == 0) {
+	    return y;
+	}
+	else {
+	    double mu = _link[i]->value(_chain)[0];
+	    double eta = _link[i]->eta(_chain);
+	    double grad = _link[i]->grad(_chain);
+	    
+	    return eta + (y - mu) / grad;
+	}
     }
  
     double IWLS::var(unsigned int i) const
     {
-	double mu = _link[i]->value(_chain)[0];
+	double mu = _link[i] ? _link[i]->value(_chain)[0] : 0;
 
 	switch(_family[i]) {
 	case GLM_BERNOULLI: case GLM_BINOMIAL:
@@ -118,27 +125,34 @@ namespace glm {
 	return 0; //-Wall
     }
 
-    double IWLS::logPTransition(vector<double> const &xorig, 
-				vector<double> const &x,
+    double IWLS::logPTransition(vector<double> const &xold, 
+				vector<double> const &xnew,
 				double *b, cholmod_sparse *A)
     {
-	unsigned int n = _view->length();
-	
-	//Difference between new and old values
-	cholmod_dense *delta = cholmod_allocate_dense(n, 1, n, CHOLMOD_REAL, 
-						      glm_wk);
-	double *dx = static_cast<double*>(delta->x);
-	for (unsigned int i = 0; i < n; ++i) {
-	    dx[i] = x[i] - xorig[i];
-	}
-	
+	A->stype = -1;
 	int ok = cholmod_factorize(A, _factor, glm_wk);
 	if (!ok) {
 	    throwRuntimeError("Cholesky decomposition failure in IWLS");
 	}
+	unsigned int n = _factor->n;
+	
+	//Difference between new and old values
+	vector<double> dx(n);
+	for (unsigned int i = 0; i < n; ++i) {
+	    dx[i] = xnew[i] - xold[i];
+	}
+
+	//Make permuted copy of b
+	cholmod_dense *w = cholmod_allocate_dense(n, 1, n, CHOLMOD_REAL, 
+						  glm_wk);
+	int *perm = static_cast<int*>(_factor->Perm);
+	double *wx = static_cast<double*>(w->x);
+	for (unsigned int i = 0; i < n; ++i) {
+	    wx[i] = b[perm[i]];
+	}
 
 	//Posterior mean
-	cholmod_dense *mu = cholmod_solve(CHOLMOD_A, _factor, delta, glm_wk);
+	cholmod_dense *mu = cholmod_solve(CHOLMOD_LDLt, _factor, w, glm_wk);
 	double *mux = static_cast<double*>(mu->x);
 
 	//Setup pointers to sparse matrix A
@@ -152,11 +166,11 @@ namespace glm {
 	    for (int j = Ap[r]; j < Ap[r+1]; ++j) {
 		Adr += Ax[j] * dx[Ai[j]];
 	    }
-	    deviance += dx[r] * (Adr - 2 * b[r])  + b[r] * mux[r];
+	    deviance += dx[r] * (Adr - 2 * b[r])  + wx[r] * mux[r];
 	}
 	deviance -= logDet(_factor);
 
-	cholmod_free_dense(&delta, glm_wk);
+	cholmod_free_dense(&w, glm_wk);
 	cholmod_free_dense(&mu, glm_wk);
 
 	return -deviance/2;
@@ -171,16 +185,17 @@ namespace glm {
 		updateLM(rng, false);
             }
 	    _init = false;
+	    return;
 	}
 	
 	double *b1, *b2;
 	cholmod_sparse *A1, *A2;
 	double logp = 0;
-	
+
 	vector<double> xold(_view->length());
 	_view->getValue(xold, _chain);
 	calCoef(b1, A1);
-	
+
 	logp -= _view->logFullConditional(_chain);
 	updateLM(rng);
 	logp += _view->logFullConditional(_chain);
@@ -196,9 +211,8 @@ namespace glm {
 	cholmod_free_sparse(&A2, glm_wk);
 	delete [] b1; delete [] b2;
 	
-	//Acceptance step
-	if (rng->uniform() > exp(logp)) {
-	    _view->setValue(xold, _chain);
+	if (logp < 0 && rng->uniform() > exp(logp)) {
+	    _view->setValue(xold, _chain); //reject proposal
 	}
     }
 }
