@@ -312,6 +312,17 @@ Then call the configure script with the Intel compilers:
 CC=icc CXX=icpc F77=ifort ./configure 
 \end{verbatim}
 
+\subsubsection{Using Clang}
+
+\JAGS\ has been built with the clang compiler for C and C++ (version 3.1).
+The configuration was
+\begin{verbatim}
+LD="llvm-ld" CC="clang" CXX="clang++" ./configure
+\end{verbatim}
+In this configuration, the gfortran compiler was used for Fortran and
+the C++ code was linked to the GNU standard C++ library (libstdc++)
+rather than the version supplied by the LLVM project (libc++).
+
 \subsection{Solaris}
 
 \JAGS\ has been successfully built and tested on the Intel x86
