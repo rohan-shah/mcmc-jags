@@ -69,8 +69,8 @@ Section #Default section
       CreateDirectory "$SMPROGRAMS\$SM_FOLDER"
    !insertmacro MUI_STARTMENU_WRITE_END
 
-   ;create shortcut for uninstaller always use ${UNINST_EXE} instead of uninstall.exe
-   CreateShortCut "$SMPROGRAMS\$SM_FOLDER\Uninstall ${JAGS_VISIBLE_NAME}.lnk" "${UNINST_EXE}"
+#   ;create shortcut for uninstaller always use ${UNINST_EXE} instead of uninstall.exe
+#   CreateShortCut "$SMPROGRAMS\$SM_FOLDER\Uninstall ${JAGS_VISIBLE_NAME}.lnk" "${UNINST_EXE}"
 
 SectionEnd
 
