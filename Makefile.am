@@ -14,13 +14,13 @@ win64-install:
 
 installer:
 	(for f in `find win/runtime32 -name '*.dll' -print`; do \
-	   ${INSTALL} -C $$f win/inst32/bin/; done;)
+	   ${INSTALL} $$f win/inst32/bin/; done;)
 	(for f in `find win/runtime32 -name '*.dll.a' -print`; do \
-	   ${INSTALL} -C $$f win/inst32/lib/; done;)
+	   ${INSTALL} $$f win/inst32/lib/; done;)
 	(for f in `find win/runtime64 -name '*.dll' -print`; do \
-	   ${INSTALL} -C $$f win/inst64/bin/; done;)
+	   ${INSTALL} $$f win/inst64/bin/; done;)
 	(for f in `find win/runtime64 -name '*.dll.a' -print`; do \
-	   ${INSTALL} -C $$f win/inst64/lib/; done;)
+	   ${INSTALL} $$f win/inst64/lib/; done;)
 	(cd win && $(MAKE) $@)
 
 docs: FORCE
