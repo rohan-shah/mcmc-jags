@@ -23,6 +23,7 @@
 
 \title{JAGS Version \release\ installation manual}
 \author{Martyn Plummer \and Bill Northcott}
+\date{1 October 2012}
 \maketitle
 
 \JAGS\ is distributed in binary format for Microsoft Windows, Mac OS
@@ -195,15 +196,6 @@ a set of CD/DVD images which can be downloaded from the Novell web
 site.  See \url{http://developer.novell.com/wiki/index.php/SLES_SDK}
 for more information.
 
-It is quite common for the Netlib implementations of BLAS and LAPACK
-to break when they are compiled with the latest GNU compilers.  Linux
-distributions that use ``bleeding edge'' development tools -- such as
-{\bf Fedora} -- may ship with a broken version of BLAS and
-LAPACK. Normally, this problem is quickly identified and
-fixed. However, you need to take care to use the online updates of the
-BLAS and LAPACK packages from your Linux Distributor, and not rely on
-the version that came on the installation disk.
-
 \subsubsection{ATLAS}
 
 On Fedora Linux, pre-compiled atlas libraries are available via the
@@ -355,92 +347,137 @@ which implements the BLAS/LAPACK functions.
 \clearpage
 \section{Mac OS X}
 
-If trying to build software on Mac OS X you really need to use Leopard
-(10.5.x) or Snow Leopard (10.6.x). Unless otherwise stated these
-instruction assume Snow Leopard (10.6.x). The open source support has
-improved greatly in recent releases. You also need the latest version
-of Apple's Xcode development tools. The current version is Xcode 3.2.x
-(Leopard uses 3.1.x).  Early versions have serious bugs which affect R
-and \JAGS.  Xcode is available as a free download from
-\url{http://developer.apple.com}. You need to set up a free login to
-ADC. The Apple developer tools do not include a Fortran
-compiler. Without Fortran, you will not be able to build \JAGS.
+There have been big changes in Apple's developer tools in the last
+couple of years.  Currently (this may change at any time) the core
+suite of tools are contained in Xcode.  This is now a single app,
+which contains the command line tools in
+\file{Xcode.app/Contents/Developer/usr}, instead of installing them in
+\file{/usr} as was the previous arrangement.  The most recent version
+of Xcode (4.5) can be downloaded free from the App Store.  This
+version will only run on Lion 10.7.x and Mountain Lion 10.8.x.  If you
+are trying to build on an earlier version of MacOS, you will need to
+download an older version of Xcode from the Mac Dev Center at
+\url{http://developer.apple.com}.  This is no longer free.  You will
+need to sign up on the Mac Developer Program which costs \$99 per
+year.  The program gives you access to many more resources including
+an Apple signed developer certificate which can be used to sign your
+code.  The instructions that follow assume you are using MacOS 10.7 or
+10.8 and have the free Xcode from the App Store.
+
+\subsection{Required tools}
+
+If you wish to build from a released source package
+i.e. \file{JAGS-\release.tar.gz}, you will need Xcode and the gfortran
+package which you can find by following the ``tools directory'' link
+on the ``R for Mac OS X'' page on CRAN.  You will also need to install
+the command line tools into /usr.  This is done within Xcode from
+Preferences $\rightarrow$ Downloads $\rightarrow$ Components.  This
+setup should be able to build the \JAGS\ sources and also source
+packages in R.  All the necessary libraries such as BLAS and LAPACK
+are included in the standard MacOS install.
+
+\subsection{Prepare the source code}
+
+Move the downloaded \file{JAGS-X.X.X.tar.gz} package to some suitable
+working space on your disk and double click the file.  This will
+decompress the package to give a folder called \file{JAGS-X.X.X},
+where `X.X.X' is the version number.  Open the Terminal app from
+/Applications/Utilities.  This gives you a UNIX shell know as bash.
+In the Terminal window after the \$ prompt type 'cd' followed by a
+space.  In the Finder drag JAGS-X.X.X folder into the Terminal window
+and hit return.  If this worked for you, typing 'ls' followed by a
+return will list the contents of the JAGS folder.
+
+\subsection{Set up the environment}
+
+Executable files on MacOS can contain code for more than one CPU
+architecture: i386, x86\_64 or ppc.  Executables with more than one
+architecture are described as 'fat.' The instructions below will build
+a fat binary of JAGS containing 32-bit i386 and 64-bit x86\_64 code
+which will run on 10.6, 10.7 and 10.8.  This is compatible with
+current CRAN distributions of R and the rjags module.
+
+In your Terminal window type the following instructions which set up
+the environment for the build.  (Note that there is no space after
+'platform' and the '$\backslash$' must not be followed by any spaces)
+\begin{verbatim}
+export CC=/usr/bin/clang
+export CXX=/usr/bin/clang++
+export CFLAGS="-g -Os -mmacosx-version-min=10.6 -isysroot \
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform\
+/Developer/SDKs/MacOSX10.8.sdk \
+-arch i386 -arch x86_64"
+export CXXFLAGS="-g -Os -mmacosx-version-min=10.6 -isysroot \
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform\
+/Developer/SDKs/MacOSX10.8.sdk \
+-arch i386 -arch x86_64"
+export FFLAGS="-g -Os -mmacosx-version-min=10.6 -isysroot \
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform\
+/Developer/SDKs/MacOSX10.8.sdk -arch i386 -arch x86_64"
+export LDFLAGS="-mmacosx-version-min=10.6 -arch i386 -arch x86_64"
+\end{verbatim}
+
+\subsection{Configuration}
+
+To configure the package type:
+\begin{verbatim}
+../configure --disable-dependency-tracking --with-included-ltdl
+\end{verbatim}
+This instruction should complete without reporting an error.
+
+\subsection{Compile}
+
+To compile the code type:
+\begin{verbatim}
+make -j 8
+\end{verbatim}
+The number '8' indicates the number of build threads that should be
+run.  In general this is best as twice the number of CPU cores in the
+computer. Most current Macs have four core CPUs.  If your machine is
+different, you may want to change the number in the instruction.
+Again, this instruction should complete without errors.
+ 
+\subsection{Install}
+
+Finally to install \JAGS\ you need to be using an account with
+administration privileges.  Type:
+\begin{verbatim}
+sudo make install
+\end{verbatim}
+This will ask for your account password and install the code ready to
+run as described in the User Manual.
+
+You need to ensure \texttt{/usr/local/bin} is in your PATH in order
+for `jags' to work from a shell prompt.
+
+\subsection{Older versions of MacOS}
 
 For instructions for building on Tiger or for older versions of
 \R\ see previous versions of this manual.
 
-The GNU gfortran Fortran compiler is included in the \R\ binary
-distribution available on CRAN. Install the \R\ binary and select all
-the optional components in the `Customize' step of the installer.
-These instructions assume R-2.7.x.
+\subsection{Tips for developers and advanced users}
 
-The default C/C++ compiler for Snow Leopard is gcc-4.2.x. Xcode 3.2
-also includes gcc-4.2 and llvm-gcc4.2.  The code has been successfully
-built with these optional compilers but will only run on Leopard.
-llvm is being actively developed by Apple and may produce better code.
+\subsubsection{Compilers}
 
-MacOS X 10.2 and onwards include optimised versions of the BLAS and
-LAPACK libraries.  So no extra libraries are is needed for Snow
-Leopard.  Optimisation continues andApple are working on using GPUs
-for this sort of math.  Make sure your OS is up to date.
+Older versions of Xcode used the gcc compiler suite. Apple abandoned
+the gcc project when GPL3 was introduced.  Current Apple compilers are
+based on LLVM.  They are invoked as clang and clang++.  Although there
+appear to be gcc and gxx, these are actually gcc-llvm with an out of
+date gcc 4.2 front end on LLVM.  These compilers are now deprecated.
+While there are versions of current gcc available for MacOS, they do
+not recognise the Apple specific -arch flag.  This leads to a number
+of problems.
 
-To ensure the \JAGS\ configure script can find the Fortran compiler
-for a bash shell
-\begin{verbatim}
-export F77=/usr/local/bin/gfortran
-\end{verbatim}
+\subsubsection{Developer tools}
 
-On 64 bit hardware, which means most recent Macs, there may be a 
-problem with the Fortran compiler.  Apple's compilers default to 64 bit 
-builds on 64 bit hardware but the Fortran binaries available default to 
-32 bit builds. This means you need to add compile and link options.
-
-For instance on 64 bit Intel Macs type
-\begin{verbatim}
-export CFLAGS='-arch x86_64'
-export CXXFLAGS='-arch x86_64'
-export FFLAGS='-arch x86_64'
-export LDFLAGS='-arch x86_64'
-\end{verbatim}
-
-Some Fortran compilers (not the ones from CRAN) do not understand 
-the -arch option. For these you will need something like:
-\begin{verbatim}
-export CFLAGS='-arch x86_64'
-export CXXFLAGS='-arch x86_64'
-export FFLAGS='-m64'
-export LDFLAGS='-arch x86_64'
-\end{verbatim}
-
-To build \JAGS\ unpack the source code and cd into the source  
-directory. Type the following:
-\begin{verbatim}
-./configure
-make
-\end{verbatim}
-(if you have multiple CPUs try \command{make -j 4} or
-\command{make -j 8}. It may need to be issued more than once)
-\begin{verbatim}
-sudo make install
-\end{verbatim}
-
-You need to ensure \texttt{/usr/local/bin} is in your PATH in order
-for \command{jags} to work from a shell prompt.
-
-This will build the default architecture for you Mac: ppc on a G4 or
-G5 and i386 or \code{x86\_64} on an Intel Mac.  If you want to build
-multiple architecture fat binaries, you will need to ensure that
-libtool in the JAGS sources is version 1.5.24 or later.  Then you can
-use configure commands like
-\begin{verbatim}
-CXXFLAGS="-arch i386 -arch x86_64" ./configure
-\end{verbatim}
-
-Make will then build fat binaries.  See the R Mac developers page 
-\url{http://r.research.att.com/} for instructions to build fat R packages.
-
-A final note on MacOS X builds: do NOT use \texttt{-O3}.  It is not optimal 
-and may find compiler bugs.  Apple recommends \texttt{-Os}.
+Now that Apple do not use gcc, they have no use for many of the
+auxiliary GNU tools required to build it.  So the Xcode does not
+contain any of the autotools (autoconf, automaker and libtool).  If
+you want to work on code from the \JAGS\ repository, you will need to
+build and install these.  Other GNU tools like bison and make are
+available but may be very out of date because of the GPL3 issue.
+Binaries of cvs, subversion and git are included in Xcode, Mercurial
+needs to installed separately if required.
 
 \clearpage
 \section{Windows}
@@ -464,7 +501,7 @@ We used the TDM-GCC compilers based on the MinGW-w64 project
 (\url{http://tdm-gcc.tdragon.net}).  This distribution was chosen
 because it allows us to build a version of JAGS that is statically
 linked against the gcc runtime library.  This, in turn, is necessary
-to have a functional rjags package on Windows.  We also tried version
+to have a functional rjags package on Windows.  We also tried 
 Rtools (\url{http://www.murdoch-sutherland.com/Rtools}). Although the
 resulting JAGS library is functional, it is not compatible with R:
 loading the rjags package causes R to crash on exit.
