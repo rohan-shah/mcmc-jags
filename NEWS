@@ -4,33 +4,43 @@ Changes in JAGS 3.3.0
 User-visible changes
 ====================
 * JAGS now prints a warning about unused initial values
-* Failure to set a "pD" monitor from the "dic" module should produce 
+* Failure to set a "pD" monitor from the "dic" module should produce a
   more informative error messages
+* The Windows installer no longer creates a shortcut in the start menu
+  to the uninstaller.  Use the Control Panel to uninstall JAGS on Windows.
 
 Bug fixes
 =========
 * The inverse and logdet functions now work on scalars
 * NodeArray::setValue could overwrite values of observed nodes.
-  In practice, one could change the value of a constant node by providing
-  an initial value
+  At the user-interface level, one could change the value of a constant
+  node by providing an initial value.
 * Underflow errors in the Weibull distribution are now caught.
 * The auxiliary mixture sampling method now works with binomial data
   that have a zero denominator.
 * The multinomial distribution now allows a zero size parameter.
 * The log-density of the uniform distribution was incorrect when
   doing likelihood calculations.
+* The ConjugateWishart distribution did not work correctly in mixture
+  models.
+* The choose and lchoose functions in the JRmath library could go into
+  an infinite recursion, overflowing the C stack and crashing JAGS.
+* The Poisson log-likelihood function did not return zero for non-integer
+  values. This could lead to a crash in the glm module.
+* Multiple bug fixes in the IWLS sampler in the glm module.
 
 Internal changes in modules
 ===========================
+
   bugs module
 * The InProd and MatMult functions now use BLAS calls.
 
   glm module:
-* Cutoff for left and right expansions in Holmes-Held sampler  is now optimal.
-* IWLS sampler only works with certain link functions
+* Cutoff for left and right expansions in Holmes-Held sampler is now optimal.
+* IWLS sampler only works with certain link functions.
 
   dic module
-* Faster Kullback-Leibler calculations for the Bernoulli distribution
+* Faster Kullback-Leibler calculations for the Bernoulli distribution.
 
 --------------------------------------------------------------------------
 Changes in JAGS 3.2.0

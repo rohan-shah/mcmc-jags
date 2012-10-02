@@ -392,7 +392,7 @@ range_list: range_element {
 ;
 
 range_element: index {
-  $$ = new ParseTree(P_RANGE); setParameters($$,$1);
+  $$ = new ParseTree(P_RANGE); setParameters($$, $1);
 }
 | index ':' index {
   $$ = new ParseTree(P_RANGE); setParameters($$, $1, $3);
@@ -572,6 +572,10 @@ r_structure: STRUCTURE '(' r_collection ',' r_attribute_list ')' {
   else
     setParameters($$, $3);
 }
+| STRUCTURE '(' r_collection ')' {
+    $$ = new ParseTree(P_ARRAY);
+    setParameters($$, $3);
+}
 ;
 
 /* The only attribute we are interested in is .Dim. The rest are
@@ -583,6 +587,9 @@ r_attribute_list: r_dim
 ;
 
 r_dim: DIM '=' r_collection {
+  $$ = $3;
+}
+| DIM '=' range_element {
   $$ = $3;
 }
 ;

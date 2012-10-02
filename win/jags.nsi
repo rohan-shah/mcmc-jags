@@ -23,7 +23,8 @@
 !include "MUI2.nsh"
 !include "Sections.nsh"
 !include "x64.nsh"
-
+!include LogicLib.nsh
+ 
 Name "${JAGS_VISIBLE_NAME}"
 OutFile "${APP_NAME}-${VERSION}.exe"
 
@@ -61,16 +62,25 @@ Var SM_FOLDER
 Section #Default section
 
    WriteRegStr ${INSTDIR_REG_ROOT} "${INSTDIR_REG_KEY}" "InstallDir" "$INSTDIR"
+   WriteRegStr ${INSTDIR_REG_ROOT} "${APP_REG_KEY}"     "InstallDir" "$INSTDIR"
+
+   # Information for uninstaller
    WriteRegStr ${INSTDIR_REG_ROOT} "${INSTDIR_REG_KEY}" "DisplayName" "${JAGS_VISIBLE_NAME}"
    WriteRegStr ${INSTDIR_REG_ROOT} "${INSTDIR_REG_KEY}" "UninstallString" "${UNINST_EXE}"
-   WriteRegStr ${INSTDIR_REG_ROOT} "${APP_REG_KEY}"     "InstallDir" "$INSTDIR"
+   WriteRegStr ${INSTDIR_REG_ROOT} "${INSTDIR_REG_KEY}" "Publisher" "${PUBLISHER}"
+   WriteRegStr ${INSTDIR_REG_ROOT} "${INSTDIR_REG_KEY}" "DisplayVersion" "${VERSION}"
+   WriteRegStr ${INSTDIR_REG_ROOT} "${INSTDIR_REG_KEY}" "URLInfoAbout" "http://mcmc-jags.sourceforge.net"
+   WriteRegDWORD ${INSTDIR_REG_ROOT} "${INSTDIR_REG_KEY}" "NoModify" 1
+   WriteRegDWORD ${INSTDIR_REG_ROOT} "${INSTDIR_REG_KEY}" "NoRepair" 1
+   WriteRegStr ${INSTDIR_REG_ROOT} "${INSTDIR_REG_KEY}" "InstallLocation" "$INSTDIR"
+
+   Call GetInstalledSize
+   pop $0
+   WriteRegDWORD ${INSTDIR_REG_ROOT} "${INSTDIR_REG_KEY}" "EstimatedSize" "$0"
 
    !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
       CreateDirectory "$SMPROGRAMS\$SM_FOLDER"
    !insertmacro MUI_STARTMENU_WRITE_END
-
-   ;create shortcut for uninstaller always use ${UNINST_EXE} instead of uninstall.exe
-   CreateShortCut "$SMPROGRAMS\$SM_FOLDER\Uninstall ${JAGS_VISIBLE_NAME}.lnk" "${UNINST_EXE}"
 
 SectionEnd
 
@@ -233,7 +243,6 @@ Section "Uninstall"
    ${Else}
       Delete "$SMPROGRAMS\$SM_FOLDER\${JAGS_VISIBLE_NAME}.lnk"
    ${EndIf}
-   Delete "$SMPROGRAMS\$SM_FOLDER\Uninstall ${JAGS_VISIBLE_NAME}.lnk"
   
    ;Delete empty start menu parent diretories
    StrCpy $SM_FOLDER "$SMPROGRAMS\$SM_FOLDER"
@@ -359,4 +368,30 @@ Function AdvReplaceInFile
          Pop $2
          Pop $1
          Pop $0
+FunctionEnd
+
+; Return on top of stack the total size of the selected (installed) sections, formated as DWORD
+; Assumes no more than 256 sections are defined
+Var GetInstalledSize.total
+Function GetInstalledSize
+	Push $0
+	Push $1
+	StrCpy $GetInstalledSize.total 0
+	${ForEach} $1 0 256 + 1
+		${if} ${SectionIsSelected} $1
+			SectionGetSize $1 $0
+			IntOp $GetInstalledSize.total $GetInstalledSize.total + $0
+		${Endif}
+ 
+		; Error flag is set when an out-of-bound section is referenced
+		${if} ${errors}
+			${break}
+		${Endif}
+	${Next}
+ 
+	ClearErrors
+	Pop $1
+	Pop $0
+	IntFmt $GetInstalledSize.total "0x%08X" $GetInstalledSize.total
+	Push $GetInstalledSize.total
 FunctionEnd

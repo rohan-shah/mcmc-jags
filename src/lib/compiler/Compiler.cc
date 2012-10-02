@@ -326,7 +326,7 @@ Range Compiler::CounterRange(ParseTree const *var)
   if (var->parameters().size() != 1) {
     throw logic_error("Invalid counter expression");
   }
-  Range range();
+  Range range;
   
   ParseTree const *prange = var->parameters()[0];
   if (prange->treeClass() != P_RANGE) {

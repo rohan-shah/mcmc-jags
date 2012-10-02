@@ -13,6 +13,7 @@
 #include <set>
 #include <vector>
 #include <cmath>
+#include <algorithm>
 
 #include <JRmath.h>
 
@@ -20,6 +21,16 @@ using std::vector;
 using std::set;
 using std::sqrt;
 using std::string;
+using std::copy;
+
+static inline double getPrecision0(StochasticNode const *snode, 
+				   unsigned int chain)
+{
+    //Returns the first element of the precision matrix for a node
+    //with a multivariate normal distribution.
+
+    return snode->parents()[1]->value(chain)[0];
+}
 
 namespace bugs {
 
@@ -85,37 +96,35 @@ ConjugateWishart::update(unsigned int chain, RNG *rng) const
     int nrow = param[0]->dim()[0];
 
     int N = nrow * nrow;
-    double *R = new double[N]; 
-    for (int i = 0; i < N; ++i) {
-	R[i] = Rprior[i];
-    }
+    vector<double> R(N);
+    copy(Rprior, Rprior + N, R.begin());
 
     //Logical mask to determine which stochastic children are active.
     vector<bool> active(nchildren, true);
 
     if (!_gv->deterministicChildren().empty()) {
+	//Mixure model
+
 	//Save first element of precision matrix for each child
 	vector<double> precision0(nchildren); 
 	for (unsigned int i = 0; i < nchildren; ++i) {
-	    precision0[i] = stoch_children[i]->value(chain)[0];
+	    precision0[i] = getPrecision0(stoch_children[i], chain);
 	}
 	//Double the current value
 	double const *x = _gv->nodes()[0]->value(chain);
-	double *x2 = new double[N];
+	vector<double> x2(N);
 	for (int j = 0; j < N; ++j) {
 	    x2[j] = 2 * x[j];
 	}
-	_gv->setValue(x2, N, chain);
-	delete [] x2;
+	_gv->setValue(x2, chain);
 	//See if precision matrix has changed
 	for (unsigned int i = 0; i < nchildren; ++i) {
-	    if (stoch_children[i]->value(chain)[0] == precision0[i]) {
+	    if (getPrecision0(stoch_children[i], chain) == precision0[i]) {
 		active[i] = false; //not active
 	    }
 	}
     }
 
-    double *delta = new double[nrow];
     for (unsigned int i = 0; i < nchildren; ++i) {
 	if (active[i]) {
 	    StochasticNode const *schild = stoch_children[i];
@@ -123,24 +132,17 @@ ConjugateWishart::update(unsigned int chain, RNG *rng) const
 	    double const *mu = schild->parents()[0]->value(chain);
 	    
 	    for (int j = 0; j < nrow; j++) {
-		delta[j] = Y[j] - mu[j];
-	    }
-	    for (int j = 0; j < nrow; j++) {
 		for (int k = 0; k < nrow; k++) {
-		    R[j*nrow + k] += delta[j] * delta[k];
+		    R[j*nrow + k] += (Y[j] - mu[j]) * (Y[k] - mu[k]);
 		}
 	    }
 	    df += 1;
 	}
     }
-    delete [] delta;
 
-    double *xnew = new double[N];
-    DWish::randomSample(xnew, N, R, df, nrow, rng);
-
-    delete [] R;
-    _gv->setValue(xnew, N, chain);
-    delete [] xnew;
+    vector<double> xnew(N);
+    DWish::randomSample(&xnew[0], N, &R[0], df, nrow, rng);
+    _gv->setValue(xnew, chain);
 }
 
 string ConjugateWishart::name() const

@@ -7,7 +7,6 @@
 #include <functions/Equal.h>
 #include <functions/GreaterOrEqual.h>
 #include <functions/GreaterThan.h>
-#include <functions/IfElse.h>
 #include <functions/LessOrEqual.h>
 #include <functions/LessThan.h>
 #include <functions/Multiply.h>
@@ -46,7 +45,6 @@ namespace base {
 	insert(new Equal);
 	insert(new GreaterOrEqual);
 	insert(new GreaterThan);
-        insert(new IfElse);
 	insert(new LessOrEqual);
 	insert(new LessThan);
 	insert(new Multiply);

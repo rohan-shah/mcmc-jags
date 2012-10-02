@@ -29,8 +29,15 @@ namespace glm {
 	glm_wk = new cholmod_common;
 	cholmod_start(glm_wk);
 
-	//glm_wk->final_ll = true; //Use LL' factorisation instead of LDL
-/*
+        //Force use of simplicial factorization. Supernodal factorizations
+	//have a completely different data structure, although held in
+	//the same object.
+        glm_wk->supernodal = CHOLMOD_SIMPLICIAL;
+
+/*	
+	//Force use of LL' factorisation instead of LDL
+	//glm_wk->final_ll = true; 
+
 	//For debuggin purposes we may choose not to reorder matrices
 	//Use only on small problems
 

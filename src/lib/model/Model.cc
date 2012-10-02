@@ -139,31 +139,9 @@ void Model::initialize(bool datagen)
 
     //Initialize nodes
     initializeNodes();
-
-    // Choose Samplers
-    chooseSamplers();
-    
-    if (datagen) {
-	Graph egraph;
-	for (set<Node *>::const_iterator p = _extra_nodes.begin(); 
-	     p != _extra_nodes.end(); ++p)
-	{
-	    egraph.add(*p);
-	}
-	_sampled_extra.clear();
-	egraph.getSortedNodes(_sampled_extra);
-	_data_gen = true;
-    }
-
-    // Switch to adaptive mode if we find an adaptive sampler
-    for (unsigned int i = 0; i < _samplers.size(); ++i) {
-	if (_samplers[i]->isAdaptive()) {
-	    _adapt = true;
-	    break;
-	}
-    }
     
     // Check initial values of all stochastic nodes
+    // Note that we need to do this before choosing samplers.
     if (!datagen) {
 	for (unsigned int ch = 0; ch < _nchain; ++ch) {
 	    for (unsigned int i = 0; i < _stochastic_nodes.size(); ++i) {
@@ -199,6 +177,29 @@ void Model::initialize(bool datagen)
 		    throw NodeError(snode, msg);
 		}
 	    }
+	}
+    }
+
+    // Choose Samplers
+    chooseSamplers();
+    
+    if (datagen) {
+	Graph egraph;
+	for (set<Node *>::const_iterator p = _extra_nodes.begin(); 
+	     p != _extra_nodes.end(); ++p)
+	{
+	    egraph.add(*p);
+	}
+	_sampled_extra.clear();
+	egraph.getSortedNodes(_sampled_extra);
+	_data_gen = true;
+    }
+
+    // Switch to adaptive mode if we find an adaptive sampler
+    for (unsigned int i = 0; i < _samplers.size(); ++i) {
+	if (_samplers[i]->isAdaptive()) {
+	    _adapt = true;
+	    break;
 	}
     }
     

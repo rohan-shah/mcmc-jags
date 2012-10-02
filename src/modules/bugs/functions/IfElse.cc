@@ -3,7 +3,7 @@
 
 using std::vector;
 
-namespace base {
+namespace bugs {
 
     IfElse::IfElse () : ScalarFunction("ifelse", 3)
     {

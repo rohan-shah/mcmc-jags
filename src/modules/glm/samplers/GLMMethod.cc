@@ -324,6 +324,7 @@ namespace glm {
 	cholmod_free_sparse(&t_x, glm_wk);
 	double one[2] = {1, 0};
 	A = cholmod_add(Aprior, Alik, one, one, 1, 0, glm_wk);
+	A->stype = -1;
 	cholmod_free_sparse(&Aprior, glm_wk);
 	cholmod_free_sparse(&Alik, glm_wk);
     }

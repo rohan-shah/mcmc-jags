@@ -131,7 +131,7 @@ Sampler *ConjugateFactory::makeSampler(StochasticNode *snode,
 		throwLogicError("Cannot find conjugate sampler for uniform");
 	    }
 	    break;
-	case POIS:
+	case POIS: case BIN: case NEGBIN:
 	    method = new ShiftedCount(gv);
 	    break;
 	case MULTI:
