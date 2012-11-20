@@ -1,3 +1,15 @@
+Changes in JAGS 3.3.0 patched
+
+User-visible changes
+====================
+* You can now set a monitor of type "mean" for any node, which records
+  the running mean.
+
+Bug fixes
+=========
+* LogicalNode::isClosed could throw a logic_error due to a bug in
+  the checkLinear function (Linear.cc)
+
 Changes in JAGS 3.3.0
 =====================
 
