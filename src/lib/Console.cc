@@ -387,6 +387,12 @@ bool Console::setMonitor(string const &name, Range const &range,
 	_err << "Can't set monitor. No model!" << endl;    
 	return false;
     }
+    if (thin == 0) {
+	_err << "Failed to set " << type << " monitor for " <<
+	    name << print(range) << endl;
+	_err << "Thinning interval must be > 0" << endl;
+	return false;
+    }
 
     try {
 

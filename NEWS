@@ -9,6 +9,8 @@ Bug fixes
 =========
 * LogicalNode::isClosed could throw a logic_error due to a bug in
   the checkLinear function (Linear.cc)
+* Setting a monitor with thinning interval 0 prints an error message
+  but no longer throws a logic_error exception.
 
 Changes in JAGS 3.3.0
 =====================
