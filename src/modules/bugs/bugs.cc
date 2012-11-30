@@ -63,7 +63,6 @@
 #include <functions/Min.h>
 #include <functions/MatMult.h>
 #include <functions/Phi.h>
-#include <functions/Pow.h>
 #include <functions/Probit.h>
 #include <functions/Prod.h>
 #include <functions/Rank.h>
@@ -162,7 +161,6 @@ namespace bugs {
 	insert(new Mean);
 	insert(new Min);
 	insert(new Phi);
-	insert(new Pow);
 	insert(new Probit);
 	insert(new Prod);
 	insert(new Rank);

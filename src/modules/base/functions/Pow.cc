@@ -5,13 +5,18 @@
 #include <cfloat>
 
 using std::vector;
-using std::fabs;
 using std::pow;
+using std::string;
 
 namespace base {
 
 Pow::Pow () : Infix ("^")
 {
+}
+
+string Pow::alias() const
+{
+    return "pow";
 }
 
 double Pow::evaluate(vector<double const *> const &args) const
@@ -21,13 +26,14 @@ double Pow::evaluate(vector<double const *> const &args) const
 
 bool Pow::checkParameterValue(vector<double const *> const &args) const
 {
-    if (*args[0] >= 0) {
+    if (*args[0] > 0) {
 	return true;
     }
+    else if (*args[0] == 0) {
+	return *args[1] >= 0;
+    }
     else {
-	double arg2 = *args[1];
-	int iarg2 = static_cast<int>(arg2 + DBL_EPSILON);
-	return fabs(arg2 - iarg2) < DBL_EPSILON;
+	return *args[1] == static_cast<int>(*args[1]);
     }
 }
 
