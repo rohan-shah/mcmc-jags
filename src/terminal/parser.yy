@@ -1380,7 +1380,9 @@ static void print_unused_variables(std::map<std::string, SArray> const &table,
 	model_vars.push_back(".RNG.name");
 	model_vars.push_back(".RNG.seed");
 	model_vars.push_back(".RNG.state");
+	std::sort(model_vars.begin(), model_vars.end());
     }
+
     std::set_difference(supplied_vars.begin(), supplied_vars.end(),
 			model_vars.begin(), model_vars.end(),
 			std::inserter(unused_vars, unused_vars.begin()));
