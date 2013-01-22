@@ -1,3 +1,4 @@
+
 #include <config.h>
 #include "Dirichlet.h"
 
@@ -63,12 +64,16 @@ void DirchMetropolis::setValue(vector<double> const &value)
 
 double DirchMetropolis::logDensity() const
 {
-    // We need to add a penalty based on _s to stop the random walk
-    // going off to infinity. This penalty is based on a normal 
-    // distribution for log(_s) with mean 0 and variance 0.1.
-    
-    double logS = log(_s);
-    return _gv->logFullConditional(_chain) - 5 * logS * logS;
+    /*
+     We need to add a penalty based on _s to stop the random walk
+     going off to infinity.
+
+     This penalty is based on a gamma distribution with shape n
+     and rate n (mean = 1, var = 1/sqrt(n))
+    */
+
+    double n = _gv->length();
+    return _gv->logFullConditional(_chain) -  (n + 1) * _s + n * log(_s);
 }
 
 double DirchMetropolis::logJacobian(vector<double> const &value) const
