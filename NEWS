@@ -13,6 +13,8 @@ Bug fixes
   but no longer throws a logic_error exception.
 * The command line interface could print a spurious warning that
   ".RNG.seed" or ".RNG.state" was unused.
+* A function or distribution with zero arguments caused a segmentation
+  fault. This now gives a compilation error.
 
 Internal changes in modules
 ===========================

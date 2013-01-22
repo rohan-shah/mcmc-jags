@@ -586,6 +586,8 @@ bool Compiler::getParameterVector(ParseTree const *t,
 
     switch (t->treeClass()) {
     case P_FUNCTION: case P_LINK: case P_DENSITY:
+	if (t->parameters().size() == 0)
+	    CompileError(t, "Parameter(s) missing for", t->name());
 	for (unsigned int i = 0; i < t->parameters().size(); ++i) {
 	    Node *node = getParameter(t->parameters()[i]);
 	    if (node) {
@@ -697,7 +699,6 @@ Node * Compiler::allocateStochastic(ParseTree const *stoch_relation)
 	*/
 	FunctionPtr const &func = obsFuncTab().find(dist);
 	if (!isNULL(func)) {
-	    //FIXME: Why are we not using a factory here?
 	    LogicalNode *lnode = LogicalFactory::newNode(func, parameters);
 	    _model.addNode(lnode);
             return lnode;
@@ -715,7 +716,7 @@ Node * Compiler::allocateStochastic(ParseTree const *stoch_relation)
 	    for (unsigned int i = 0; i < parameters.size(); ++i) {
 		if (!parameters[i]->isObserved()) {
 		    CompileError(stoch_relation,
-				 "BUGS I(,) notation is not allowed unless",
+				 "BUGS I(,) notation is only allowed if",
 				 "all parameters are fixed");
 		}
 	    }

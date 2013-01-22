@@ -42,17 +42,9 @@ Node::Node(vector<unsigned int> const &dim,
       _nchain(countChains(parents)), _data(0)
 {
     if (nchain() == 0) {
-	throw logic_error("chain number mismatch in Node constructor");
+	throw logic_error("Cannot calculate number of chains in Node constructor");
     }
 
-    /*
-    for (unsigned int i = 0; i < parents.size(); ++i) {
-	if (parents[i] == this) {
-	    throw runtime_error("Node cannot be its own parent");
-	}
-    }
-    */
-  
     unsigned int N = _length * _nchain;
     _data = new double[N];
     for (unsigned int i = 0; i < N; ++i) {
@@ -120,16 +112,16 @@ unsigned int Node::nchain() const
 
 unsigned int countChains(vector<Node const *> const &parameters)
 {
-  unsigned int nchain = parameters[0]->nchain();
+    unsigned int nchain = parameters.empty() ? 0 : parameters[0]->nchain();
 
-  for (unsigned int i = 1; i < parameters.size(); ++i) {
-    if (parameters[i]->nchain() != nchain) {
-      nchain = 0;
-      break;
+    for (unsigned int i = 1; i < parameters.size(); ++i) {
+	if (parameters[i]->nchain() != nchain) {
+	    nchain = 0;
+	    break;
+	}
     }
-  }
 
-  return nchain;
+    return nchain;
 }
 
 void Node::setValue(double const *value, unsigned int length, unsigned int chain)
