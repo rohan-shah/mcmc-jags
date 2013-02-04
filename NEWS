@@ -1,6 +1,6 @@
 Changes in JAGS 3.3.0 patched
 
-User-visible changes
+New features
 ====================
 * You can now set a monitor of type "mean" for any node, which records
   the running mean.
@@ -15,6 +15,9 @@ Bug fixes
   ".RNG.seed" or ".RNG.state" was unused.
 * A function or distribution with zero arguments caused a segmentation
   fault. This now gives a compilation error.
+* The "dround" function (bugs module) was incorrectly calling fprec
+  (round to n significant figures) when it should have been calling
+  fround (round to n decimale places).
 
 Internal changes in modules
 ===========================

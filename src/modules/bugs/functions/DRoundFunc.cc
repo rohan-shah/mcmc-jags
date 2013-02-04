@@ -15,7 +15,7 @@ namespace bugs {
 
     double DRoundFunc::evaluate(vector<double const *> const &args) const
     {
-	return(fprec(T(args), NDIGITS(args)));
+	return(fround(T(args), NDIGITS(args)));
     }
 
 }
