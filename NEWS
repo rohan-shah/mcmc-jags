@@ -1,3 +1,45 @@
+Changes in JAGS 4.0.0
+
+Library changes
+===============
+* All C++ objects and functions are in the namespace jags
+
+Internal changes in modules
+===========================
+* All module namespaces are nested inside namespace jags
+
+Changes in JAGS 3.3.0 patched
+
+New features
+====================
+* You can now set a monitor of type "mean" for any node, which records
+  the running mean.
+
+Bug fixes
+=========
+* LogicalNode::isClosed could throw a logic_error due to a bug in
+  the checkLinear function (Linear.cc)
+* Setting a monitor with thinning interval 0 prints an error message
+  but no longer throws a logic_error exception.
+* The command line interface could print a spurious warning that
+  ".RNG.seed" or ".RNG.state" was unused.
+* A function or distribution with zero arguments caused a segmentation
+  fault. This now gives a compilation error.
+* The "dround" function (bugs module) was incorrectly calling fprec
+  (round to n significant figures) when it should have been calling
+  fround (round to n decimale places).
+
+Internal changes in modules
+===========================
+
+* base module
+  The Pow function has alias "pow" so it can be invoked either as "a^b"
+  or as "pow(a,b)"
+
+  bugs module
+* The Pow function has been removed: it was a duplicate of base::pow
+
+
 Changes in JAGS 3.3.0
 =====================
 

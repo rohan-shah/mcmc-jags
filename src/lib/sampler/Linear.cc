@@ -22,10 +22,8 @@ static bool isLink(DeterministicNode const *dnode)
 
 bool checkLinear(GraphView const *gv, bool fixed, bool link)
 {
-    vector<StochasticNode const *> const &stoch_nodes
-	= gv->stochasticChildren();
-    vector<DeterministicNode *> const &dtrm_nodes
-	= gv->deterministicChildren();
+    vector<StochasticNode const *> const &sn = gv->stochasticChildren();
+    vector<DeterministicNode *> const &dn = gv->deterministicChildren();
 
     set<Node const*> ancestors;
     //Sampled nodes are trivial (fixed) linear functions of themselves
@@ -40,25 +38,17 @@ bool checkLinear(GraphView const *gv, bool fixed, bool link)
     ancestors.insert(gv->nodes().begin(), gv->nodes().end());
 #endif
     
-    set<Node const*> stoch_node_parents;
-    if (link) {
-	//Put parents of stoch_nodes, which may be link functions
-	for (unsigned int i = 0; i < stoch_nodes.size(); ++i) {
-	    stoch_node_parents.insert(stoch_nodes[i]->parents().begin(),
-				      stoch_nodes[i]->parents().end());
+    for (unsigned int j = 0; j < dn.size(); ++j) {
+	if (dn[j]->isClosed(ancestors, DNODE_LINEAR, fixed)) {
+	    ancestors.insert(dn[j]);
 	}
-    }
-    
-    for (unsigned int j = 0; j < dtrm_nodes.size(); ++j) {
-	if (dtrm_nodes[j]->isClosed(ancestors, DNODE_LINEAR, fixed)) {
-	    ancestors.insert(dtrm_nodes[j]);
-	}
-	else if (link) {
-	    //Allow an exception for link nodes
-	    if (stoch_node_parents.count(dtrm_nodes[j]) == 0 || 
-		!isLink(dtrm_nodes[j]))
-	    {
-		return false;
+	else if (link && isLink(dn[j])) {
+	    // A link function is allowed if no other deterministic
+	    // nodes in the GraphView depend on it.
+	    for (unsigned int k = j + 1; k < dn.size(); ++k) {
+		if (dn[j]->deterministicChildren()->count(dn[k])) {
+		    return false;
+		}
 	    }
 	}
 	else {

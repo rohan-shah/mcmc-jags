@@ -14,6 +14,7 @@ class Pow : public Infix
 {
 public:
     Pow ();
+    std::string alias() const;
     double evaluate(std::vector<double const *> const &args) const;
     bool checkParameterValue(std::vector<double const*> const &args) const;
     bool isPower(std::vector<bool> const &mask, 

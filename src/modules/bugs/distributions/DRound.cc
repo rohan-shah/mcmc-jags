@@ -17,7 +17,7 @@ using std::vector;
 
 static inline double value(vector<double const *> const &par)
 {
-    return fprec(T(par), NDIGITS(par));
+    return fround(T(par), NDIGITS(par));
 }
 
 static double tol = sqrt(DBL_EPSILON);
