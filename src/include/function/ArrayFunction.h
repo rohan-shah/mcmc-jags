@@ -6,6 +6,8 @@
 #include <string>
 #include <vector>
 
+namespace jags {
+
 /**
  * @short Matrix- or array-valued function
  *
@@ -63,5 +65,7 @@ public:
     virtual std::vector<unsigned int> 
 	dim(std::vector <std::vector<unsigned int> > const &dims) const = 0;
 };
+
+} /* namespace jags */
 
 #endif /* ARRAY_FUNCTION_H_ */

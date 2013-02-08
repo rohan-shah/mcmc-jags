@@ -5,6 +5,8 @@
 #include <distribution/VectorDist.h>
 #include <distribution/ArrayDist.h>
 
+namespace jags {
+
 /**
  * @short Polymorphic pointer to Distribution
  *
@@ -30,5 +32,7 @@ public:
     friend ArrayDist const *ARRAY(DistPtr const &p);
     friend bool isNULL(DistPtr const &p);
 };
+
+} /* namespace jags */
 
 #endif /* DIST_POINTER_H_ */

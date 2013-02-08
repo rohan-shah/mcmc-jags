@@ -7,6 +7,8 @@ using std::vector;
 using std::pair;
 using std::string;
 
+namespace jags {
+
 CounterTab::CounterTab()
 {
 }
@@ -44,3 +46,5 @@ Counter *CounterTab::getCounter(string const &name) const
   }
   return 0;
 }
+
+} //namespace jags

@@ -11,6 +11,8 @@ using std::length_error;
 using std::copy;
 using std::string;
 
+namespace jags {
+
 SArray::SArray(vector<unsigned int> const &dim)
     : _range(dim), _value(_range.length(), JAGS_NA), _discrete(false),
       _s_dimnames(dim.size())
@@ -105,3 +107,5 @@ void SArray::setSDimNames(vector<string> const &names, unsigned int i)
 	throw length_error("Invalid length in SArray::setSDimNames");
     }
 }
+
+} //namespace jags

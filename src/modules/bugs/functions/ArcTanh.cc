@@ -7,6 +7,7 @@ using std::vector;
 using std::log;
 using std::string;
 
+namespace jags {
 namespace bugs {
 
     ArcTanh::ArcTanh ()
@@ -31,4 +32,4 @@ namespace bugs {
 	return *args[0] > -1 && *args[0] <  1;
     }
 
-}
+}}

@@ -91,6 +91,7 @@
 
 using std::vector;
 
+namespace jags {
 namespace bugs {
 
     class BUGSModule : public Module {
@@ -218,6 +219,6 @@ namespace bugs {
 	insert(new QFunction(dist));
     }
 
-}
+}}
 
-bugs::BUGSModule _bugs_module;
+jags::bugs::BUGSModule _bugs_module;

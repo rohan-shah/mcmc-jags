@@ -3,6 +3,7 @@
 
 #include "Infix.h"
 
+namespace jags {
 namespace base {
 
 /**
@@ -27,6 +28,6 @@ public:
 
 };
 
-}
+}}
 
 #endif /* FUNC_DIVIDE_H_ */

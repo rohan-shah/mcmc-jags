@@ -3,6 +3,8 @@
 
 #include "CalKL.h"
 
+namespace jags {
+
 class StochasticNode;
 
 namespace dic {
@@ -17,6 +19,6 @@ namespace dic {
 	double divergence(unsigned int ch1, unsigned int ch2) const;
     };
 
-}
+}}
 
 #endif /* CAL_KL_EXACT_H_ */

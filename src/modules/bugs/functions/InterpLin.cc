@@ -6,6 +6,7 @@
 
 using std::vector;
 
+namespace jags {
 namespace bugs {
 
     InterpLin::InterpLin() : VectorFunction("interp.lin", 3)
@@ -63,4 +64,4 @@ namespace bugs {
 	return true;
     }
 
-}
+}}

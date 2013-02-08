@@ -6,6 +6,8 @@
 #include <vector>
 #include <string>
 
+namespace jags {
+
 struct RNG;
 
 /**
@@ -145,5 +147,7 @@ public:
 		std::vector<double const *> const &support,
 		std::vector<std::vector<unsigned int> > const &dims) const = 0;
 };
+
+} /* namespace jags */
 
 #endif /* ARRAY_DIST_H_ */

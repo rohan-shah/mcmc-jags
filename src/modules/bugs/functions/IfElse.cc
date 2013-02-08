@@ -3,6 +3,7 @@
 
 using std::vector;
 
+namespace jags {
 namespace bugs {
 
     IfElse::IfElse () : ScalarFunction("ifelse", 3)
@@ -19,4 +20,4 @@ namespace bugs {
 	return mask[1] && mask[2];
     }
 
-}
+}}

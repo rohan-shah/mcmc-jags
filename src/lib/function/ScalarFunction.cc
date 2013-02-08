@@ -8,6 +8,8 @@ using std::vector;
 using std::string;
 using std::find_if;
 
+namespace jags {
+
 ScalarFunction::ScalarFunction (string const &name, unsigned int npar)
   : Function (name, npar)
 {
@@ -33,3 +35,5 @@ bool ScalarFunction::isPower(vector<bool> const &mask,
 	return isScale(mask, vector<bool>());
     
 }
+
+} //namespace jags

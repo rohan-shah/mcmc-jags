@@ -8,6 +8,7 @@ using std::min_element;
 using std::min;
 using std::vector;
 
+namespace jags {
 namespace bugs {
 
     Min::Min ()
@@ -36,4 +37,4 @@ namespace bugs {
 	return allTrue(mask);
     }
 
-}
+}}

@@ -8,6 +8,8 @@
 #include <list>
 #include <string>
 
+namespace jags {
+
 class Sampler;
 class SamplerFactory;
 class RNG;
@@ -201,5 +203,7 @@ public:
    */
   std::vector<StochasticNode*> const &stochasticNodes() const;
 };
+
+} /* namespace jags */
 
 #endif /* MODEL_H_ */

@@ -9,6 +9,7 @@ using std::string;
 
 #define DF(par) (*par[0])
 
+namespace jags {
 namespace bugs {
 
 DChisqr::DChisqr()
@@ -76,4 +77,4 @@ double DChisqr::KL(vector<double const *> const &par1,
     return (b1 - b2) * digamma(b1) + lgammafn(b2) - lgammafn(b1);
 }
 
-}
+}}

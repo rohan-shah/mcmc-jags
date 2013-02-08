@@ -22,6 +22,8 @@ using std::invalid_argument;
 using std::runtime_error;
 using std::string;
 
+namespace jags {
+
 bool lt(LogicalPair const &arg1, LogicalPair const &arg2)
 {
     if (arg1.first == arg2.first) {
@@ -107,3 +109,5 @@ Node* LogicalFactory::getNode(FunctionPtr const &func,
 	return lnode;
     }
 }
+
+} //namespace jags

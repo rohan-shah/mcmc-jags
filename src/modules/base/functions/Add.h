@@ -3,6 +3,7 @@
 
 #include "Infix.h"
 
+namespace jags {
 namespace base {
 
 /**
@@ -25,6 +26,6 @@ public:
 		 std::vector<bool> const &fixmask) const;
 };
 
-}
+}}
 
 #endif /* FUNC_ADD_H_ */

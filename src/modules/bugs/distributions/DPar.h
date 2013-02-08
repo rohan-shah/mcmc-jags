@@ -3,6 +3,7 @@
 
 #include "RScalarDist.h"
 
+namespace jags {
 namespace bugs {
 
 /**
@@ -32,6 +33,6 @@ class DPar : public RScalarDist {
   bool isSupportFixed(std::vector<bool> const &fixmask) const;
 };
 
-}
+}}
 
 #endif /* DPAR_H_ */

@@ -3,6 +3,8 @@
 
 using std::string;
 
+namespace jags {
+
 MonitorInfo::MonitorInfo(Monitor *monitor, string const &name,
 			 Range const &range, string const &type)
     : _monitor(monitor), _name(name), _range(range), _type(type)
@@ -35,3 +37,4 @@ bool MonitorInfo::operator==(MonitorInfo const &rhs) const
 	    && _monitor == rhs._monitor);
 }
 
+} //namespace jags

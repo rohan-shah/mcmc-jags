@@ -3,6 +3,7 @@
 
 #include <function/ArrayFunction.h>
 
+namespace jags {
 namespace bugs {
 
     class Transpose : public ArrayFunction
@@ -19,6 +20,6 @@ namespace bugs {
 		     std::vector<bool> const &isfixed) const;
     };
 
-}
+}}
 
 #endif /* TRANSPOSE_H_ */

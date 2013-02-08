@@ -6,6 +6,7 @@
 using std::vector;
 using std::log;
 
+namespace jags {
 namespace bugs {
 
     CLogLog::CLogLog ():ScalarFunction ("cloglog", 1)
@@ -23,4 +24,4 @@ namespace bugs {
 	return (arg > 0 && arg < 1);
     }
 
-}
+}}

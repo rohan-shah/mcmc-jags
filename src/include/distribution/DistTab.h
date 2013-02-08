@@ -6,6 +6,8 @@
 
 #include <distribution/DistPtr.h>
 
+namespace jags {
+
 /**
  * @short Look-up table for Distribution objects
  *
@@ -35,5 +37,7 @@ public:
      */
     void erase(DistPtr const &dist);
 };
+
+} /* namespace jags */
 
 #endif /* DIST_TAB_H_ */

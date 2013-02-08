@@ -7,6 +7,8 @@
 
 using std::vector;
 
+namespace jags {
+
 /* Comparison function for arrays of doubles of equal length */
 bool lt(double const *value1, double const *value2, unsigned int length)
 {
@@ -87,4 +89,6 @@ bool lt(vector<Node const *> const &par1, vector<Node const *> const &par2)
     else {
 	return par1.size() < par2.size();
     }
+}
+
 }

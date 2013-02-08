@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 
+namespace jags {
+
 enum TreeClass { 
     P_VAR, P_RANGE, P_BOUNDS, P_DENSITY, P_LINK, P_COUNTER, 
     P_VALUE, P_STOCHREL, P_DETRMREL, P_FOR,  P_FUNCTION, P_RELATIONS,
@@ -91,6 +93,8 @@ public:
    */
   int line() const;
 };
+
+} /* namespace jags */
 
 #endif /* PARSE_TREE_H_ */
 

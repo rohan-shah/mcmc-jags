@@ -11,6 +11,7 @@ using std::log;
 #define LOWER(par) (*par[0])
 #define UPPER(par) (*par[1])
 
+namespace jags {
 namespace bugs {
 
 DUnif::DUnif()
@@ -74,4 +75,4 @@ double DUnif::KL(vector<double const *> const &par1,
     return log(UPPER(par2) - LOWER(par2)) - log(UPPER(par1) - LOWER(par1));
 }
 
-}
+}}

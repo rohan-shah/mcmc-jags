@@ -16,6 +16,8 @@ using std::string;
 using std::set;
 using std::logic_error;
 
+namespace jags {
+
 static unsigned int valueLength(VectorFunction const *func, 
 				vector<Node const *> const &parents)
 {
@@ -79,3 +81,5 @@ VectorLogicalNode::clone(vector<Node const*> const &parents) const
 {
     return new VectorLogicalNode(_func, parents);
 }
+
+} //namespace jags

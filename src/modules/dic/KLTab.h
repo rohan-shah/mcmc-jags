@@ -4,7 +4,7 @@
 #include <string>
 #include <map>
 
-
+namespace jags {
 namespace dic {
 
     class KL;
@@ -16,6 +16,7 @@ namespace dic {
 	~KLTab();
 	KL const *find(std::string const &name) const;
     };
-}
+
+}}
 
 #endif /* KL_TAB_H_ */

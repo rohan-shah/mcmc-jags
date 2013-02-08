@@ -93,6 +93,7 @@ static void MatVecModM (const double A[3][3], double s[3], double m)
        s[i] = x[i];
 }
 
+namespace jags {
 namespace lecuyer {
 
     RngStreamFactory::RngStreamFactory()
@@ -176,4 +177,5 @@ namespace lecuyer {
     {
 	return "lecuyer::RngStream";
     }
-}
+
+}}

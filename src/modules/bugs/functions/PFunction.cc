@@ -5,6 +5,7 @@
 using std::vector;
 using std::string;
 
+namespace jags {
 namespace bugs {
 
     PFunction::PFunction(RScalarDist const *dist)
@@ -33,4 +34,5 @@ namespace bugs {
 
 	return checkArgs(args);
     }
-}
+
+}}

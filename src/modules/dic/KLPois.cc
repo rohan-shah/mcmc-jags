@@ -9,6 +9,7 @@ using std::log;
 #define lambda0  (*par0[0])
 #define lambda1  (*par1[0])
 
+namespace jags {
 namespace dic {
 
     double KLPois::divergence(vector<double const *> const &par0,
@@ -18,4 +19,4 @@ namespace dic {
 	return  lambda0 * log(lambda0/lambda1) + (lambda1 - lambda0);
     }
     
-}
+}}

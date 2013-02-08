@@ -3,6 +3,7 @@
 
 #include <rng/RmathRNG.h>
 
+namespace jags {
 namespace base {
 
     class MarsagliaRNG : public RmathRNG
@@ -17,6 +18,6 @@ namespace base {
 	double uniform();
     };
 
-}
+}}
 
 #endif /* _MARSAGLIA_RNG_H_ */

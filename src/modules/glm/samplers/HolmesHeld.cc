@@ -41,6 +41,7 @@ static cs shallow_copy(cholmod_sparse *s)
     return c;
 }
 
+namespace jags {
 namespace glm {
 
     HolmesHeld::HolmesHeld(GraphView const *view,
@@ -203,5 +204,6 @@ namespace glm {
     {
 	return "Holmes-Held";
     }
-}
+
+}}
     

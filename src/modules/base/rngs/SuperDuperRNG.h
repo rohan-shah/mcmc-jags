@@ -3,6 +3,7 @@
 
 #include <rng/RmathRNG.h>
 
+namespace jags {
 namespace base {
 
     class SuperDuperRNG : public RmathRNG
@@ -17,6 +18,6 @@ namespace base {
 	void getState(std::vector<int> &state) const;
     };
 
-}
+}}
 
 #endif /* _SUPER_DUPER_RNG_H_ */

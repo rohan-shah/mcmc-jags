@@ -4,6 +4,8 @@
 #include <vector>
 #include <string>
 
+namespace jags {
+
 struct RNG;
 
 /**
@@ -139,5 +141,7 @@ public:
      */
     virtual bool canBound() const;
 };
+
+} /* namespace jags */
 
 #endif /* DISTRIBUTION_H_ */

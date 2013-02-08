@@ -5,6 +5,7 @@
 using std::string;
 using std::vector;
 
+namespace jags {
 namespace glm {
     
     ConjugateFSampler::ConjugateFSampler(GraphView *gv1, GraphView *gv2, 
@@ -42,4 +43,4 @@ namespace glm {
 	}
     }
 
-}
+}}

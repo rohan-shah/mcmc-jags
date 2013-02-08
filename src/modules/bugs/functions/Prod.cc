@@ -4,6 +4,7 @@
 
 using std::vector;
 
+namespace jags {
 namespace bugs {
 
     Prod::Prod () : VectorFunction("prod", 1)
@@ -30,4 +31,4 @@ namespace bugs {
 	return allTrue(mask);
     }
 
-}
+}}

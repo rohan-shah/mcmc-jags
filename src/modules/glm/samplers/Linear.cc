@@ -7,6 +7,7 @@
 using std::vector;
 using std::string;
 
+namespace jags {
 namespace glm {
 
     Linear::Linear(GraphView const *view, 
@@ -41,4 +42,5 @@ namespace glm {
 	else
 	    updateLM(rng);
     }
-}
+
+}}

@@ -3,6 +3,7 @@
 
 #include "Infix.h"
 
+namespace jags {
 namespace base {
 
 /**
@@ -22,6 +23,6 @@ public:
     bool isDiscreteValued(std::vector<bool> const &mask) const;
 };
 
-}
+}}
 
 #endif /* FUNC_LESS_OR_EQUAL_H_ */

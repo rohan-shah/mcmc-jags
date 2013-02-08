@@ -4,6 +4,8 @@
 #include <string>
 #include <stdexcept>
 
+namespace jags {
+
 class Function;
 
 /**
@@ -17,5 +19,7 @@ class FuncError : public std::runtime_error {
 public:
     FuncError(Function const *func, std::string const &msg);
 };
+
+} /* namespace jags */
 
 #endif /* FUNC_ERROR_H_ */

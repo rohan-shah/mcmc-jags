@@ -4,6 +4,8 @@
 using std::vector;
 using std::string;
 
+namespace jags {
+
 Function::Function (string const &name, unsigned int npar)
   : _name (name), _npar (npar)
 {
@@ -66,3 +68,5 @@ string Function::deparse(vector<string> const &par) const
 
     return name;
 }
+
+} //namespace jags

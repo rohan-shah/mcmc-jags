@@ -13,6 +13,7 @@ using std::vector;
 #define PROB(par) (par[0])
 #define SIZE(par) (*par[1])
 
+namespace jags {
 namespace bugs {
 
 DMulti::DMulti()
@@ -225,4 +226,4 @@ double DMulti::KL(vector<double const *> const &par1,
     return y;
 }
 
-}
+}}

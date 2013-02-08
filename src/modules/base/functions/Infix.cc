@@ -4,6 +4,7 @@
 using std::vector;
 using std::string;
 
+namespace jags {
 namespace base {
 
 Infix::Infix(string const &name, unsigned int npar)
@@ -24,4 +25,4 @@ string Infix::deparse(vector<string> const &par) const
     return name;
 }
 
-}
+}}

@@ -3,6 +3,8 @@
 
 #include <graph/StochasticNode.h>
 
+namespace jags {
+
 class ScalarDist;
 
 /**
@@ -33,6 +35,8 @@ public:
 			  Node const *lower, Node const *upper) const;
     unsigned int df() const;
 };
+
+} /* namespace jags */
 
 #endif /* SCALAR_STOCHASTIC_NODE_H_ */
 

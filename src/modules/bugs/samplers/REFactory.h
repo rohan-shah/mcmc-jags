@@ -5,6 +5,7 @@
 class StochasticNode;
 class Graph;
 
+namespace jags {
 namespace bugs {
 
 /**
@@ -26,6 +27,6 @@ public:
     std::string const &name() const;
 };
 
-}
+}}
 
 #endif /* RANDOM_EFFECT_FACTORY_H_ */

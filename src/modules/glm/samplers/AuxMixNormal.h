@@ -3,6 +3,7 @@
 
 #include "AuxMix.h"
 
+namespace jags {
 namespace glm {
 
     /**
@@ -39,6 +40,6 @@ namespace glm {
 	double precision() const;
     };
 
-}
+}}
 
 #endif /* AUX_MIX_NORMAL_H_ */

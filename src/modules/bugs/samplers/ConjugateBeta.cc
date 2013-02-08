@@ -25,6 +25,7 @@ using std::max;
 using std::min;
 using std::string;
 
+namespace jags {
 namespace bugs {
 
 bool ConjugateBeta::canSample(StochasticNode *snode, Graph const &graph)
@@ -195,4 +196,4 @@ string ConjugateBeta::name() const
     return "ConjugateBeta";
 }
 
-}
+}}

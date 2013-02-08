@@ -7,6 +7,8 @@
 #include <string>
 #include <map>
 
+namespace jags {
+
 class SArray;
 class Model;
 
@@ -124,5 +126,6 @@ public:
   unsigned int nchain() const;
 };
 
+} /* namespace jags */
 
 #endif /* NODE_ARRAY_H */

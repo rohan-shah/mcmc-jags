@@ -13,6 +13,7 @@
 using std::string;
 using std::vector;
 
+namespace jags {
 namespace glm {
 
     BinaryFactory::BinaryFactory(string const &name, bool gibbs)
@@ -86,4 +87,5 @@ namespace glm {
 	    return !isBounded(snode);
 	}
     }
-}
+
+}}

@@ -29,7 +29,7 @@
 
 #include "nmath.h"
 
-double rcauchy(double location, double scale, RNG *rng)
+double rcauchy(double location, double scale, JRNG *rng)
 {
     if (ISNAN(location) || !R_FINITE(scale) || scale < 0)
 	ML_ERR_return_NAN;

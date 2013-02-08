@@ -3,6 +3,7 @@
 
 #include "ConjugateMethod.h"
 
+namespace jags {
 namespace bugs {
 
 class ConjugateGamma : public ConjugateMethod {
@@ -15,6 +16,6 @@ public:
     std::string name() const;
 };
 
-}
+}}
 
 #endif /* CONJUGATE_GAMMA_H_ */

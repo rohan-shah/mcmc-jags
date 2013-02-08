@@ -3,6 +3,8 @@
 
 #include <rng/RNG.h>
 
+namespace jags {
+
 enum NormKind {AHRENS_DIETER, BOX_MULLER, KINDERMAN_RAMAGE};
 
 /**
@@ -24,5 +26,7 @@ public:
     double normal();
     double exponential();
 };
+
+} /* namespace jags */
 
 #endif /* RMATH_RNG_H_ */

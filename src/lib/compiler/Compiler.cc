@@ -45,6 +45,8 @@ using std::max;
 using std::set;
 using std::fabs;
 
+namespace jags {
+
 #include <sstream>
 template<class T> 
 string ToString(const T& val)
@@ -285,7 +287,7 @@ Range Compiler::VariableSubsetRange(ParseTree const *var)
   }
   NodeArray *array = _model.symtab().getVariable(name);
   if (array) {
-    // It's a declared node
+    // Declared node
     vector<ParseTree*> const &range_list = var->parameters();
     
     if (range_list.empty()) {
@@ -1173,3 +1175,4 @@ BUGSModel &Compiler::model() const
     return _model;
 }
 
+} //namespace jags

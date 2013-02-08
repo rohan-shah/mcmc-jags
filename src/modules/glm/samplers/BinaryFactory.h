@@ -3,6 +3,7 @@
 
 #include "GLMFactory.h"
 
+namespace jags {
 namespace glm {
 
     class BinaryGLM;
@@ -51,6 +52,6 @@ namespace glm {
 				     unsigned int chain) const = 0;
     };
 
-}
+}}
 
 #endif /* BINARY_FACTORY_H_ */

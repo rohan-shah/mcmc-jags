@@ -3,6 +3,8 @@
 
 #include <distribution/ScalarDist.h>
 
+namespace jags {
+
 struct RNG;
 
 namespace bugs {
@@ -116,7 +118,8 @@ public:
      * is returned, otherwise the limit of p^x.
      */
     double xlog0(double x, bool give_log);
-}
+
+}}
 
 #endif /* SCALAR_DIST_RMATH_H_ */
 

@@ -6,6 +6,7 @@
 
 using std::vector;
 
+namespace jags {
 namespace base {
 
 GreaterOrEqual::GreaterOrEqual () : Infix (">=")
@@ -22,4 +23,4 @@ bool GreaterOrEqual::isDiscreteValued(vector<bool> const &mask) const
   return true;
 }
 
-}
+}}

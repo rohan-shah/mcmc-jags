@@ -3,6 +3,7 @@
 
 #include "Infix.h"
 
+namespace jags {
 namespace base {
 
 /**
@@ -26,6 +27,6 @@ public:
 		  std::vector<bool> const &fix) const;
 };
 
-}
+}}
 
 #endif /* FUNC_SUBTRACT_H_ */

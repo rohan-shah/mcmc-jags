@@ -3,6 +3,8 @@
 
 using std::string;
 
+namespace jags {
+
 FunctionPtr::FunctionPtr()
     : lfunc(0), sfunc(0), vfunc(0), afunc(0)
 {}
@@ -79,3 +81,5 @@ bool isNULL(FunctionPtr const &p)
 {
     return (p.lfunc==0 && p.sfunc == 0 && p.vfunc == 0 && p.afunc == 0);
 }
+
+} //namespace jags

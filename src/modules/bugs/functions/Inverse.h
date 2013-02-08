@@ -3,6 +3,7 @@
 
 #include <function/ArrayFunction.h>
 
+namespace jags {
 namespace bugs {
 
     /**
@@ -25,6 +26,6 @@ namespace bugs {
 				 std::vector<std::vector<unsigned int> > const &dims) const;
     };
 
-}
+}}
 
 #endif /* INVERSE_H_ */

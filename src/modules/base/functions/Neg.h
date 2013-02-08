@@ -3,6 +3,7 @@
 
 #include <function/ScalarFunction.h>
 
+namespace jags {
 namespace base {
 
 /**
@@ -22,6 +23,6 @@ public:
 
 };
 
-}
+}}
 
 #endif /* FUNC_NEG_H_ */

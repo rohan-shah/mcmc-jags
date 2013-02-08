@@ -3,6 +3,8 @@
 
 #include <distribution/Distribution.h>
 
+namespace jags {
+
 struct RNG;
 
 /**
@@ -104,5 +106,7 @@ class ScalarDist : public Distribution
 		    bool symmetric, RNG *rng, unsigned int nrep);
   */
 };
+
+} /* namespace jags */
 
 #endif /* SCALAR_DIST_H_ */

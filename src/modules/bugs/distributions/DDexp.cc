@@ -23,6 +23,7 @@ static inline double RATE(vector<double const *> const &par)
     return *par[1];
 }
 
+namespace jags {
 namespace bugs {
 
 DDexp::DDexp()
@@ -107,4 +108,4 @@ double DDexp::KL(vector<double const *> const &par1,
     return r * (delta + exp(-delta)) - 1 - log(r);
 }
 
-}
+}}

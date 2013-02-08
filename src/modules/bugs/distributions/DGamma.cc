@@ -10,6 +10,7 @@ using std::vector;
 #define SCALE(par) (1 / *par[1])
 #define RATE(par) (*par[1])
 
+namespace jags {
 namespace bugs {
 
 DGamma::DGamma()
@@ -84,4 +85,4 @@ double DGamma::KL(vector<double const *> const &par1,
 	+ (b1 - b2) * digamma(b1) + lgammafn(b2) - lgammafn(b1);
 }
 
-}
+}}

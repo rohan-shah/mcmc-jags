@@ -1,6 +1,8 @@
 #ifndef AUX_MIX_H_
 #define AUX_MIX_H_
 
+namespace jags {
+
 class RNG;
 
 namespace glm {
@@ -35,7 +37,7 @@ namespace glm {
 	virtual void update(RNG *rng) = 0;
     };
 
-}
+}}
 
 #endif /* AUX_MIX_H_ */
 

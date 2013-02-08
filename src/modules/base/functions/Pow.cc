@@ -8,6 +8,7 @@ using std::vector;
 using std::fabs;
 using std::pow;
 
+namespace jags {
 namespace base {
 
 Pow::Pow () : Infix ("^")
@@ -38,4 +39,5 @@ bool Pow::checkParameterValue(vector<double const *> const &args) const
         else
             return fix.empty() || fix[1];
     }
-}
+
+}}

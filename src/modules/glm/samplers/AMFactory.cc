@@ -14,6 +14,7 @@
 using std::string;
 using std::vector;
 
+namespace jags {
 namespace glm {
 
     AMFactory::AMFactory()
@@ -74,4 +75,4 @@ namespace glm {
 	return !isBounded(snode);
     }
 
-}
+}}

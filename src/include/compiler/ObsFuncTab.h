@@ -7,6 +7,8 @@
 #include <function/FunctionPtr.h>
 #include <distribution/DistPtr.h>
 
+namespace jags {
+
 /**
  * @short Look-up table for observable functions 
  *
@@ -52,5 +54,7 @@ public:
      */
     void erase(DistPtr const &dist, FunctionPtr const &func);
 };
+
+} /* namespace jags */
 
 #endif /* OBS_FUNC_TAB_H_ */

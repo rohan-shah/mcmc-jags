@@ -5,6 +5,7 @@ using std::vector;
 
 #define i2_32m1 2.328306437080797e-10/* = 1/(2^32 - 1) */
 
+namespace jags {
 namespace base {
 
     MarsagliaRNG::MarsagliaRNG(unsigned int seed, NormKind normkind)
@@ -58,4 +59,4 @@ namespace base {
 	return fixup(((I[0] << 16)^(I[1] & 0177777)) * i2_32m1); 
     }
 
-}
+}}

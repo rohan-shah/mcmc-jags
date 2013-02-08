@@ -3,6 +3,7 @@
 
 #include <model/MonitorFactory.h>
 
+namespace jags {
 namespace dic {
 
     class DevianceMonitorFactory : public MonitorFactory
@@ -14,6 +15,6 @@ namespace dic {
 	std::string name() const;
     };
     
-}
+}}
 
 #endif /* DEVIANCE_MONITOR_FACTORY_H_ */

@@ -6,6 +6,7 @@
 using std::vector;
 using std::sqrt;
 
+namespace jags {
 namespace bugs {
 
     Sqrt::Sqrt ():ScalarFunction ("sqrt", 1)
@@ -27,5 +28,4 @@ namespace bugs {
         return true;
     }
 
-
-}
+}}

@@ -3,6 +3,8 @@
 
 #include <function/Function.h>
 
+namespace jags {
+
 /**
  * @short Vector-valued function with vector arguments
  *
@@ -47,5 +49,7 @@ public:
 	checkParameterValue(std::vector<double const *> const &args,
 			    std::vector<unsigned int> const &lengths) const; 
 };
+
+} /* namespace jags */
 
 #endif /* VECTOR_FUNCTION_H_ */

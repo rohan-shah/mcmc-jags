@@ -5,6 +5,7 @@
 
 struct RNG;
 
+namespace jags {
 namespace bugs {
 
 /**
@@ -53,6 +54,6 @@ public:
 	    std::vector<unsigned int> const &lengths) const;
 };
 
-}
+}}
 
 #endif /* DMULTI_H_ */

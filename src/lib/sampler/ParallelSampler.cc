@@ -9,6 +9,8 @@ using std::vector;
 using std::logic_error;
 using std::string;
 
+namespace jags {
+
 ParallelSampler::ParallelSampler(GraphView *gv,
 				 vector<SampleMethod *> const &methods)
     : Sampler(gv), _methods(methods)
@@ -63,3 +65,5 @@ string ParallelSampler::name() const
 {
     return _methods[0]->name();
 }
+
+} //namespace jags

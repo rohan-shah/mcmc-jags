@@ -7,6 +7,7 @@
 class Graph;
 class GraphView;
 
+namespace jags {
 namespace bugs {
 
 /**
@@ -74,6 +75,6 @@ public:
 
 };
 
-}
+}}
 
 #endif /* RW_DSUM_H_ */

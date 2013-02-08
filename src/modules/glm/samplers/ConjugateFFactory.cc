@@ -20,6 +20,8 @@ using std::set;
 using std::copy;
 using std::stable_sort;
 
+namespace jags {
+
 static void getStochasticChildren(Node *node, set<StochasticNode*> &sset)
 {
     //Find all stochastic descendants of the given node and add them to the
@@ -200,4 +202,4 @@ namespace glm {
     return "glm::ConjugateF";
   }
   
-}
+}}

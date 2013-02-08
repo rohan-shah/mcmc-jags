@@ -7,6 +7,7 @@
 using std::vector;
 using std::floor;
 
+namespace jags {
 namespace bugs {
 
     Trunc::Trunc ():ScalarFunction ("trunc", 1)
@@ -23,4 +24,5 @@ namespace bugs {
     {
 	return true;
     }
-}
+
+}}

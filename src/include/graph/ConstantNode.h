@@ -3,6 +3,8 @@
 
 #include <graph/Node.h>
 
+namespace jags {
+
 /**
  * @short Top-level Node representing data
  *
@@ -58,6 +60,8 @@ public:
      */
     bool isRandomVariable() const;
 };
+
+} /* namespace jags */
 
 #endif /* CONSTANT_NODE_H_ */
 

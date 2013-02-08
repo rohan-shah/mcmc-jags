@@ -6,6 +6,7 @@
 
 using std::vector;
 
+namespace jags {
 namespace base {
 
 NotEqual::NotEqual () : Infix ("!=")
@@ -22,4 +23,4 @@ bool NotEqual::isDiscreteValued(vector<bool> const &mask) const
   return true;
 }
 
-}
+}}

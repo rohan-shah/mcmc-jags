@@ -7,6 +7,7 @@
 
 using std::vector;
 
+namespace jags {
 namespace msm {
 
     class MSMModule : public Module {
@@ -35,7 +36,8 @@ namespace msm {
 	    delete fvec[i];
 	}
     }
-}
+
+}}
  
-msm::MSMModule _msm_module;
+jags::msm::MSMModule _msm_module;
     

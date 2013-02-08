@@ -10,6 +10,7 @@ using std::log;
 #define PROB0 (*par0[0])
 #define PROB1 (*par1[0])
 
+namespace jags {
 namespace dic {
 
     double KLBern::divergence(vector<double const *> const &par0,
@@ -27,4 +28,4 @@ namespace dic {
 	}
     }
 
-}
+}}

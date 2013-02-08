@@ -3,6 +3,7 @@
 
 #include <function/ArrayFunction.h>
 
+namespace jags {
 namespace bugs {
     
     /**
@@ -22,6 +23,6 @@ namespace bugs {
 	bool isDiscreteValued(std::vector<bool> const &mask) const;
     };
     
-}
+}}
 
 #endif /* DSUM_FUNC_H_ */

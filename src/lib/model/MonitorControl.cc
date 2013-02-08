@@ -7,6 +7,8 @@
 using std::invalid_argument;
 using std::string;
 
+namespace jags {
+
 MonitorControl::MonitorControl (Monitor *monitor, unsigned int start, 
 				unsigned int thin)
     : _monitor(monitor), _start(start), _thin(thin), _niter(0)
@@ -65,4 +67,4 @@ void MonitorControl::reserve(unsigned int niter)
     _monitor->reserve(niter/_thin + 1);
 }
 
-
+} //namespace jags

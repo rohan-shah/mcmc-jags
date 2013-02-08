@@ -3,6 +3,7 @@
 
 #include <sampler/SamplerFactory.h>
 
+namespace jags {
 namespace mix {
 
 /**
@@ -19,6 +20,6 @@ namespace mix {
 	std::string name() const;
     };
 
-}
+}}
 
 #endif /* MIX_SAMPLER_FACTORY_H_ */

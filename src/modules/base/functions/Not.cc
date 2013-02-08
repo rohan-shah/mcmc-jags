@@ -4,6 +4,7 @@
 using std::vector;
 using std::string;
 
+namespace jags {
 namespace base {
 
 Not::Not () : ScalarFunction ("!", 1)
@@ -25,4 +26,4 @@ string Not::deparse(vector<string> const &par) const
     return string("!") + par[0];
 }
 
-}
+}}

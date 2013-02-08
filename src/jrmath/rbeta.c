@@ -29,7 +29,7 @@
 
 #define expmax	(DBL_MAX_EXP * M_LN2)/* = log(DBL_MAX) */
 
-double rbeta(double aa, double bb, RNG *rng)
+double rbeta(double aa, double bb, JRNG *rng)
 {
     double a, b, alpha;
     double r, s, t, u1, u2, v, w, y, z;

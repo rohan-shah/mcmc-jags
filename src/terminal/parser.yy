@@ -49,20 +49,20 @@
     int zzlex();
     int zzlex_destroy();
 #define YYERROR_VERBOSE 0
-    static Console *console;
+    static jags::Console *console;
     bool interactive;
     extern int command_buffer_count;
-    void setName(ParseTree *p, std::string *name);
-    std::map<std::string, SArray> _data_table;
+    void setName(jags::ParseTree *p, std::string *name);
+    std::map<std::string, jags::SArray> _data_table;
     std::deque<lt_dlhandle> _dyn_lib;
     bool open_data_buffer(std::string const *name);
     bool open_command_buffer(std::string const *name);
     void return_to_main_buffer();
-    void setMonitor(ParseTree const *var, int thin, std::string const &type);
-    void clearMonitor(ParseTree const *var, std::string const &type);
-    void doCoda (ParseTree const *var, std::string const &stem);
+    void setMonitor(jags::ParseTree const *var, int thin, std::string const &type);
+    void clearMonitor(jags::ParseTree const *var, std::string const &type);
+    void doCoda (jags::ParseTree const *var, std::string const &stem);
     void doAllCoda (std::string const &stem);
-    void doDump (std::string const &file, DumpType type, unsigned int chain);
+    void doDump (std::string const &file, jags::DumpType type, unsigned int chain);
     void dumpMonitors(std::string const &file, std::string const &type);
     void doSystem(std::string const *command);
     std::string ExpandFileName(char const *s);
@@ -71,16 +71,16 @@
     static void errordump();
     static void updatestar(long niter, long refresh, int width);
     static void adaptstar(long niter, long refresh, int width);
-    static void setParameters(ParseTree *p, ParseTree *param1);
-    static void setParameters(ParseTree *p, std::vector<ParseTree*> *parameters);
-    static void setParameters(ParseTree *p, ParseTree *param1, ParseTree *param2);
+    static void setParameters(jags::ParseTree *p, jags::ParseTree *param1);
+    static void setParameters(jags::ParseTree *p, std::vector<jags::ParseTree*> *parameters);
+    static void setParameters(jags::ParseTree *p, jags::ParseTree *param1, jags::ParseTree *param2);
     static void loadModule(std::string const &name);
     static void unloadModule(std::string const &name);
     static void dumpSamplers(std::string const &file);
-    static void delete_pvec(std::vector<ParseTree*> *);
-    static void print_unused_variables(std::map<std::string, SArray> const &table, bool data);
-    static void listFactories(FactoryType type);
-    static void setFactory(std::string const &name, FactoryType type,
+    static void delete_pvec(std::vector<jags::ParseTree*> *);
+    static void print_unused_variables(std::map<std::string, jags::SArray> const &table, bool data);
+    static void listFactories(jags::FactoryType type);
+    static void setFactory(std::string const &name, jags::FactoryType type,
                            std::string const &status);
     static bool Jtry(bool ok);
     %}
@@ -92,8 +92,8 @@
   int intval;
   double val;
   std::string *stringptr;
-  ParseTree *ptree;
-  std::vector<ParseTree*> *pvec;
+  jags::ParseTree *ptree;
+  std::vector<jags::ParseTree*> *pvec;
   std::vector<double> *vec;
   std::vector<long> *ivec;
 }
@@ -239,7 +239,7 @@ data_in: data r_assignment_list ENDDATA {
 ;
 
 data_to: DATA TO file_name {
-    doDump(*$3, DUMP_DATA, 1);
+    doDump(*$3, jags::DUMP_DATA, 1);
     delete $3;
 }
 ;
@@ -264,7 +264,7 @@ data_clear: DATA CLEAR {
 
 parameters_in: parameters r_assignment_list ENDDATA
 {
-    std::map<std::string, SArray> parameter_table;
+    std::map<std::string, jags::SArray> parameter_table;
     std::string rngname;
     readRData($2, parameter_table, rngname);
     delete_pvec($2);
@@ -290,7 +290,7 @@ parameters_in: parameters r_assignment_list ENDDATA
 }
 | parameters r_assignment_list ENDDATA ',' CHAIN '(' INT ')' 
 {
-    std::map<std::string, SArray> parameter_table;
+    std::map<std::string, jags::SArray> parameter_table;
     std::string rngname;
     readRData($2, parameter_table, rngname);
     delete $2;
@@ -306,11 +306,11 @@ parameters_in: parameters r_assignment_list ENDDATA
 ;
 
 parameters_to: PARAMETERS TO file_name {
-    doDump(*$3, DUMP_PARAMETERS, 1);
+    doDump(*$3, jags::DUMP_PARAMETERS, 1);
     delete $3;
 }
 | PARAMETERS TO file_name ',' CHAIN '(' INT ')' {
-    doDump(*$3, DUMP_PARAMETERS, $7);
+    doDump(*$3, jags::DUMP_PARAMETERS, $7);
     delete $3;
 }
 ;
@@ -375,16 +375,16 @@ exit: EXIT { return 0; }
 ;
 
 var: NAME {
-  $$ = new ParseTree(P_VAR); setName($$, $1);
+  $$ = new jags::ParseTree(jags::P_VAR); setName($$, $1);
 }
 | NAME '[' range_list ']' {
-  $$ = new ParseTree(P_VAR); setName($$, $1);
+  $$ = new jags::ParseTree(jags::P_VAR); setName($$, $1);
   setParameters($$, $3);
 }
 ;
 
 range_list: range_element {
-  $$ = new std::vector<ParseTree*>(1, $1); 
+  $$ = new std::vector<jags::ParseTree*>(1, $1); 
 }
 | range_list ',' range_element {
   $$=$1; $$->push_back($3);
@@ -392,15 +392,15 @@ range_list: range_element {
 ;
 
 range_element: index {
-  $$ = new ParseTree(P_RANGE); setParameters($$, $1);
+  $$ = new jags::ParseTree(jags::P_RANGE); setParameters($$, $1);
 }
 | index ':' index {
-  $$ = new ParseTree(P_RANGE); setParameters($$, $1, $3);
+  $$ = new jags::ParseTree(jags::P_RANGE); setParameters($$, $1, $3);
 }
 ;
 
 /* FIXME: Use integer value here */
-index: INT {$$ = new ParseTree(P_VALUE); $$->setValue($1);}
+index: INT {$$ = new jags::ParseTree(jags::P_VALUE); $$->setValue($1);}
 ;
 
 monitor: monitor_set
@@ -493,37 +493,37 @@ samplers_to: SAMPLERS TO file_name
 
 list_factories: LIST FACTORIES ',' TYPE '(' SAMPLER ')'
 {
-    listFactories(SAMPLER_FACTORY);
+    listFactories(jags::SAMPLER_FACTORY);
 }
 |
 LIST FACTORIES ',' TYPE '(' RNGTOK ')'
 {
-    listFactories(RNG_FACTORY);
+    listFactories(jags::RNG_FACTORY);
 }
 |
 LIST FACTORIES ',' TYPE '(' MONITOR ')'
 {
-    listFactories(MONITOR_FACTORY);
+    listFactories(jags::MONITOR_FACTORY);
 }
 ;
 
 set_factory: SET FACTORY STRING NAME ',' TYPE '(' SAMPLER ')'
 {
-    setFactory(*$3, SAMPLER_FACTORY, *$4);
+    setFactory(*$3, jags::SAMPLER_FACTORY, *$4);
     delete $3;
     delete $4;
 }
 |
 SET FACTORY NAME NAME ',' TYPE '(' RNGTOK ')'
 {
-    setFactory(*$3, RNG_FACTORY, *$4);
+    setFactory(*$3, jags::RNG_FACTORY, *$4);
     delete $3;
     delete $4;
 }
 |
 SET FACTORY NAME NAME ',' TYPE '(' MONITOR ')'
 {
-    setFactory(*$3, MONITOR_FACTORY, *$4);
+    setFactory(*$3, jags::MONITOR_FACTORY, *$4);
     delete $3;
     delete $4;
 }
@@ -532,7 +532,7 @@ SET FACTORY NAME NAME ',' TYPE '(' MONITOR ')'
 /* Rules for scanning dumped R datasets */
 
 r_assignment_list: r_assignment {
-  $$ = new std::vector<ParseTree*>(1, $1);
+  $$ = new std::vector<jags::ParseTree*>(1, $1);
 }
 | r_assignment_list r_assignment {
   $$ = $1; $$->push_back($2);
@@ -546,14 +546,14 @@ r_assignment: r_name ARROW r_structure {
   $$ = $3; setName($$, $1);
 }
 | r_name ARROW r_collection {
-  $$ = new ParseTree(P_ARRAY);
+  $$ = new jags::ParseTree(jags::P_ARRAY);
   setName($$, $1);
   setParameters($$, $3);
 }
 | r_name ARROW STRING {
   /* Allow this for setting the NAME of the random number generator */
-  $$ = new ParseTree(P_VAR); setName($$, $1);
-  ParseTree *p = new ParseTree(P_VAR); setName(p, $3);
+  $$ = new jags::ParseTree(jags::P_VAR); setName($$, $1);
+  jags::ParseTree *p = new jags::ParseTree(jags::P_VAR); setName(p, $3);
   setParameters($$, p);
 }
 ;
@@ -566,14 +566,14 @@ r_name: STRING
 }
 
 r_structure: STRUCTURE '(' r_collection ',' r_attribute_list ')' {
-  $$ = new ParseTree(P_ARRAY); 
+  $$ = new jags::ParseTree(jags::P_ARRAY); 
   if ($5) 
     setParameters($$, $3, $5);
   else
     setParameters($$, $3);
 }
 | STRUCTURE '(' r_collection ')' {
-    $$ = new ParseTree(P_ARRAY);
+    $$ = new jags::ParseTree(jags::P_ARRAY);
     setParameters($$, $3);
 }
 ;
@@ -602,21 +602,21 @@ r_integer_collection: ASINTEGER '(' r_value_collection ')' {$$ = $3;}
 ;
 
 r_value_collection: r_value { 
-  $$ = new ParseTree(P_VECTOR); 
+  $$ = new jags::ParseTree(jags::P_VECTOR); 
   setParameters($$, $1);
 }
 | 'c' '(' r_value_list ')' {
-  $$ = new ParseTree(P_VECTOR);
+  $$ = new jags::ParseTree(jags::P_VECTOR);
   setParameters($$, $3);
 }
 ;
  
-r_value_list: r_value {$$ = new std::vector<ParseTree*>(1, $1); }
+r_value_list: r_value {$$ = new std::vector<jags::ParseTree*>(1, $1); }
 | r_value_list ',' r_value {$$ = $1; $$->push_back($3);}
 ;
 
-r_value: DOUBLE {$$ = new ParseTree(P_VALUE); $$->setValue($1);}
-| NA {$$ = new ParseTree(P_VALUE); $$->setValue(JAGS_NA);}
+r_value: DOUBLE {$$ = new jags::ParseTree(jags::P_VALUE); $$->setValue($1);}
+| NA {$$ = new jags::ParseTree(jags::P_VALUE); $$->setValue(JAGS_NA);}
 ;
 
 /* Rules for parsing generic attributes.  We don't want to do anything
@@ -722,7 +722,7 @@ int zzerror (const char *s)
     return 0;
 }
 
-static Range getRange(ParseTree const *var)
+static jags::Range getRange(jags::ParseTree const *var)
 {
   /* 
      Blank arguments, e.g. foo[] or bar[,1]  are not allowed.
@@ -731,7 +731,7 @@ static Range getRange(ParseTree const *var)
 
   std::vector<int>  ind_lower(size), ind_upper(size);
   for (unsigned int i = 0; i < size; ++i) {
-    ParseTree const *range_element = var->parameters()[i];
+    jags::ParseTree const *range_element = var->parameters()[i];
     switch(range_element->parameters().size()) {
     case 1:
       ind_lower[i] = (int) (range_element->parameters()[0]->value() + 1.0E-6);
@@ -746,15 +746,15 @@ static Range getRange(ParseTree const *var)
       break;
     }
   }
-  return Range(ind_lower, ind_upper);
+  return jags::Range(ind_lower, ind_upper);
 }
 
-void setMonitor(ParseTree const *var, int thin, std::string const &type)
+void setMonitor(jags::ParseTree const *var, int thin, std::string const &type)
 {
     std::string const &name = var->name();
     if (var->parameters().empty()) {
 	/* Requesting the whole node */
-	console->setMonitor(name, Range(), thin, type);
+	console->setMonitor(name, jags::Range(), thin, type);
     }
     else {
 	/* Requesting subset of a multivariate node */
@@ -762,12 +762,12 @@ void setMonitor(ParseTree const *var, int thin, std::string const &type)
     }
 }
 
-void clearMonitor(ParseTree const *var, std::string const &type)
+void clearMonitor(jags::ParseTree const *var, std::string const &type)
 {
     std::string const &name = var->name();
     if (var->parameters().empty()) {
 	/* Requesting the whole node */
-	console->clearMonitor(name, Range(), type);
+	console->clearMonitor(name, jags::Range(), type);
     }
     else {
 	/* Requesting subset of a multivariate node */
@@ -780,18 +780,18 @@ void doAllCoda (std::string const &stem)
     console->coda(stem);
 }
 
-void doCoda (ParseTree const *var, std::string const &stem)
+void doCoda (jags::ParseTree const *var, std::string const &stem)
 {
     //FIXME: Allow list of several nodes
 
-    std::vector<std::pair<std::string, Range> > dmp;
+    std::vector<std::pair<std::string, jags::Range> > dmp;
     if (var->parameters().empty()) {
 	/* Requesting the whole node */
-	dmp.push_back(std::pair<std::string,Range>(var->name(), Range()));
+	dmp.push_back(std::pair<std::string,jags::Range>(var->name(), jags::Range()));
     }
     else {
 	/* Requesting subset of a multivariate node */
-	dmp.push_back(std::pair<std::string,Range>(var->name(), getRange(var)));
+	dmp.push_back(std::pair<std::string,jags::Range>(var->name(), getRange(var)));
     }
     console->coda(dmp, stem);
 }
@@ -822,9 +822,9 @@ static void writeValue(double x, std::ostream &out, bool isdiscrete)
   }
 }
 
-void doDump(std::string const &file, DumpType type, unsigned int chain)
+void doDump(std::string const &file, jags::DumpType type, unsigned int chain)
 {
-    std::map<std::string,SArray> data_table;
+    std::map<std::string,jags::SArray> data_table;
     std::string rng_name;
     if (!console->dumpState(data_table, rng_name, type, chain)) {
 	return;
@@ -841,10 +841,10 @@ void doDump(std::string const &file, DumpType type, unsigned int chain)
 	out << "`.RNG.name` <- \"" << rng_name << "\"\n";
     }
 
-    for (std::map<std::string, SArray>::const_iterator p = data_table.begin();
+    for (std::map<std::string, jags::SArray>::const_iterator p = data_table.begin();
 	 p != data_table.end(); ++p) {
 	std::string const &name = p->first;
-	SArray const &sarray = p->second;
+	jags::SArray const &sarray = p->second;
 	std::vector<double> const &value = sarray.value();
 	long length = sarray.length();
 	out << "`" << name << "` <- " << std::endl;
@@ -894,7 +894,7 @@ void doDump(std::string const &file, DumpType type, unsigned int chain)
 
 void dumpMonitors(std::string const &file, std::string const &type)
 {
-    std::map<std::string,SArray> data_table;
+    std::map<std::string,jags::SArray> data_table;
 
     if (!console->dumpMonitors(data_table, type, false)) {
 	return;
@@ -909,10 +909,10 @@ void dumpMonitors(std::string const &file, std::string const &type)
 
     out << "`" << type << "` <-\nstructure(list(";
 
-    std::map<std::string, SArray>::const_iterator p;
+    std::map<std::string, jags::SArray>::const_iterator p;
     for (p = data_table.begin(); p != data_table.end(); ++p) {
 	std::string const &name = p->first;
-	SArray const &sarray = p->second;
+	jags::SArray const &sarray = p->second;
 	std::vector<double> const &value = sarray.value();
 	long length = sarray.length();
 
@@ -990,7 +990,7 @@ void dumpMonitors(std::string const &file, std::string const &type)
     out.close();
 }
 
-void setParameters(ParseTree *p, std::vector<ParseTree*> *parameters)
+void setParameters(jags::ParseTree *p, std::vector<jags::ParseTree*> *parameters)
 {
   /* 
      The parser dynamically allocates vectors of (pointers to)
@@ -1001,29 +1001,29 @@ void setParameters(ParseTree *p, std::vector<ParseTree*> *parameters)
   delete parameters; 
 }
 
-void setParameters(ParseTree *p, ParseTree *param1)
+void setParameters(jags::ParseTree *p, jags::ParseTree *param1)
 {
   /*
     Wrapper function that creates a vector containing param1
-    to be passed to ParseTree::setParameters.
+    to be passed to jags::ParseTree::setParameters.
   */
-  std::vector<ParseTree *> parameters(1, param1);
+  std::vector<jags::ParseTree *> parameters(1, param1);
   p->setParameters(parameters);
 }
 
-void setParameters(ParseTree *p, ParseTree *param1, ParseTree *param2)
+void setParameters(jags::ParseTree *p, jags::ParseTree *param1, jags::ParseTree *param2)
 {
   /*
     Wrapper function that creates a vector containing param1
-    and param2, to be passed to ParseTree::setParameters
+    and param2, to be passed to jags::ParseTree::setParameters
   */
-  std::vector<ParseTree *> parameters;
+  std::vector<jags::ParseTree *> parameters;
   parameters.push_back(param1);
   parameters.push_back(param2);
   p->setParameters(parameters);
 }
 
-void setName(ParseTree *p, std::string *name)
+void setName(jags::ParseTree *p, std::string *name)
 {
   p->setName(*name);
   delete name;
@@ -1038,7 +1038,7 @@ static void errordump()
 	    std::cout << "Dumping chain " << i << " at iteration " 
 		      << console->iter() << " to file " << fname.str() 
 		      << std::endl;
-	    doDump(fname.str(), DUMP_ALL, i);
+	    doDump(fname.str(), jags::DUMP_ALL, i);
 	    fname.str("");
 	}
     }
@@ -1208,14 +1208,14 @@ static void loadModule(std::string const &name)
     else {
 	std::cout << ": ok" << std::endl;
 	_dyn_lib.push_front(mod);
-	Console::loadModule(name);
+	jags::Console::loadModule(name);
     }
 }
 
 static void unloadModule(std::string const &name)
 {
     std::cout << "Unloading module: " << name << std::endl;
-    Console::unloadModule(name);
+    jags::Console::unloadModule(name);
 }
 
 int main (int argc, char **argv)
@@ -1275,7 +1275,7 @@ int main (int argc, char **argv)
   loadModule("basemod");
   loadModule("bugs");
 
-  console = new Console(std::cout, std::cerr);
+  console = new jags::Console(std::cout, std::cerr);
 
   zzparse();
   zzlex_destroy();
@@ -1285,9 +1285,9 @@ int main (int argc, char **argv)
   }
   
   //Unload modules
-  std::vector<std::string> mods = Console::listModules();
+  std::vector<std::string> mods = jags::Console::listModules();
   for (unsigned int i = 0; i < mods.size(); ++i) {
-      Console::unloadModule(mods[i]);
+      jags::Console::unloadModule(mods[i]);
   }
   delete console;
   //Release dynamic libraries. 
@@ -1355,7 +1355,7 @@ static void dumpSamplers(std::string const &file)
     out.close();
 }
 
-static void delete_pvec(std::vector<ParseTree*> *pv)
+static void delete_pvec(std::vector<jags::ParseTree*> *pv)
 {
     for (unsigned int i = 0; i < pv->size(); ++i) {
 	delete (*pv)[i];
@@ -1363,11 +1363,11 @@ static void delete_pvec(std::vector<ParseTree*> *pv)
     delete pv;
 }
 
-static void print_unused_variables(std::map<std::string, SArray> const &table,
+static void print_unused_variables(std::map<std::string, jags::SArray> const &table,
 				   bool data)
 {
     std::vector<std::string> supplied_vars;
-    for (std::map<std::string, SArray>::const_iterator p = table.begin();
+    for (std::map<std::string, jags::SArray>::const_iterator p = table.begin();
 	 p != table.end(); ++p)
     {
 	supplied_vars.push_back(p->first);
@@ -1425,10 +1425,10 @@ void doSystem(std::string const *command)
     std::system(command->c_str());
 }
 
-void listFactories(FactoryType type)
+void listFactories(jags::FactoryType type)
 {
     std::vector<std::pair<std::string, bool> > faclist = 
-	Console::listFactories(type);
+	jags::Console::listFactories(type);
 
     std::vector<std::pair<std::string, bool> >::const_iterator p;
     unsigned int max_strlen = 0;
@@ -1462,14 +1462,14 @@ void listFactories(FactoryType type)
     }
 }
 
-void setFactory(std::string const &name, FactoryType type, 
+void setFactory(std::string const &name, jags::FactoryType type, 
 		std::string const &status)
 {
     if (status == "on") {
-	Console::setFactoryActive(name, type, true);
+	jags::Console::setFactoryActive(name, type, true);
     }
     else if (status == "off") {
-	Console::setFactoryActive(name, type, false);
+	jags::Console::setFactoryActive(name, type, false);
     }
     else {
 	std::cout << "status should be \"on\" or \"off\"";

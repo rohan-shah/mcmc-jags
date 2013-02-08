@@ -12,6 +12,8 @@ using std::vector;
 using std::map;
 using std::logic_error;
 
+namespace jags {
+
 MixtureNode * 
 MixtureFactory::getMixtureNode(vector<Node const *> const &index_nodes,
 			       MixMap const &mixmap, Model &model)
@@ -46,3 +48,5 @@ MixtureFactory::getMixtureNode(vector<Node const *> const &index_nodes,
 	return mix;
     }
 }
+
+} //namespace jags

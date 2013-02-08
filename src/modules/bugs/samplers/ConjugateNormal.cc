@@ -23,6 +23,9 @@ using std::set;
 using std::sqrt;
 using std::string;
 
+namespace jags {
+namespace bugs {
+
 static void calBeta(double *beta, GraphView const *gv, unsigned int chain)
 {
     StochasticNode *snode = gv->nodes()[0];
@@ -58,8 +61,6 @@ static void calBeta(double *beta, GraphView const *gv, unsigned int chain)
 	bp += nrow;
     }
 }
-
-namespace bugs {
 
 ConjugateNormal::ConjugateNormal(GraphView const *gv)
     : ConjugateMethod(gv), _betas(0), _length_betas(0)
@@ -265,4 +266,4 @@ string ConjugateNormal::name() const
     return "ConjugateNormal";
 }
 
-}
+}}

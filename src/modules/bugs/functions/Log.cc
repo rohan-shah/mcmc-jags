@@ -6,6 +6,7 @@
 using std::vector;
 using std::log;
 
+namespace jags {
 namespace bugs {
 
     Log::Log ()
@@ -23,4 +24,4 @@ namespace bugs {
 	return *args[0] >= 0;
     }
 
-}
+}}

@@ -9,6 +9,7 @@
 using std::vector;
 using std::string;
 
+namespace jags {
 namespace glm {
 
     IWLSFactory::IWLSFactory()
@@ -60,4 +61,5 @@ namespace glm {
     {
 	return true;
     }
-}
+
+}}

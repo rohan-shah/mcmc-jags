@@ -3,6 +3,7 @@
 
 #include "RScalarDist.h"
 
+namespace jags {
 namespace bugs {
 
 /**
@@ -30,6 +31,6 @@ public:
   bool checkParameterValue(std::vector<double const *> const &parameters) const;
 };
 
-}
+}}
 
 #endif /* DWEIB_H_ */

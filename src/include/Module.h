@@ -9,6 +9,8 @@
 #include <function/FunctionPtr.h>
 #include <distribution/DistPtr.h>
 
+namespace jags {
+
 class SamplerFactory;
 class RNGFactory;
 class MonitorFactory;
@@ -88,5 +90,7 @@ public:
     static std::list<Module *> &modules();
     static std::list<Module *> &loadedModules();
 };
+
+} /* namespace jags */
 
 #endif /* _MODULE_H_ */

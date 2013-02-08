@@ -3,6 +3,7 @@
 
 #include <function/ScalarFunction.h>
 
+namespace jags {
 namespace bugs {
 
     /**
@@ -18,6 +19,7 @@ namespace bugs {
 	Tan ();
 	double evaluate(std::vector<double const *> const &args) const;
     };
-}
+
+}}
 
 #endif /* FUNC_TAN_H_ */

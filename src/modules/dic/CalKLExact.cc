@@ -3,6 +3,7 @@
 #include "KL.h"
 #include <graph/StochasticNode.h>
 
+namespace jags {
 namespace dic {
 
     CalKLExact::CalKLExact(StochasticNode const *snode, KL const *kl)
@@ -15,6 +16,6 @@ namespace dic {
 	    _kl->divergence(_snode->parameters(j), _snode->parameters(i));
     }
 
-}
+}}
 
     

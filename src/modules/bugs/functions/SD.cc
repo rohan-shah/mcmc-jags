@@ -6,6 +6,7 @@
 using std::vector;
 using std::sqrt;
 
+namespace jags {
 namespace bugs {
 
     SD::SD ()
@@ -39,4 +40,4 @@ namespace bugs {
 	return lengths[0] >= 2;
     }
 
-}
+}}

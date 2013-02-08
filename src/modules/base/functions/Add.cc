@@ -4,6 +4,7 @@
 
 using std::vector;
 
+namespace jags {
 namespace base {
 
     Add::Add () : Infix ("+", 0)
@@ -33,4 +34,5 @@ namespace base {
     {
 	return allTrue(mask);
     }
-}
+
+}}

@@ -4,6 +4,8 @@
 using std::vector;
 using std::string;
 
+namespace jags {
+
 ArrayFunction::ArrayFunction (string const &name, unsigned int npar)
     : Function(name, npar)
 {
@@ -16,3 +18,5 @@ ArrayFunction::checkParameterValue(vector<double const *> const &args,
 {
     return true;
 }
+
+} //namespace jags

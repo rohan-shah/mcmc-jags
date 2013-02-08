@@ -3,6 +3,7 @@
 
 #include "KL.h"
 
+namespace jags {
 namespace dic {
 
     class KLPois : public KL
@@ -12,6 +13,6 @@ namespace dic {
 	
     };
 
-}
+}}
 
 #endif /* KL_POIS_H_ */

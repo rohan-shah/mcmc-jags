@@ -10,6 +10,8 @@ using std::log;
 using std::exp;
 using std::fabs;
 
+namespace jags {
+
 RWMetropolis::RWMetropolis(vector<double> const &value,
 			   double step, double prob)
     : Metropolis(value), _step_adapter(step, prob), _pmean(0), _niter(2)
@@ -65,3 +67,5 @@ double RWMetropolis::logJacobian(vector<double> const &value) const
 {
     return 0;
 }
+
+} //namespace jags

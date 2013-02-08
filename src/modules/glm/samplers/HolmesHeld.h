@@ -3,6 +3,7 @@
 
 #include "BinaryGLM.h"
 
+namespace jags {
 namespace glm {
 
     /**
@@ -71,6 +72,6 @@ namespace glm {
 	void update(RNG *rng);
     };
     
-}
+}}
 
 #endif /* HOLMES_HELD_H_ */

@@ -7,6 +7,7 @@ using std::vector;
 using std::exp;
 using std::log;
 
+namespace jags {
 namespace bugs {
 
     Exp::Exp ()
@@ -29,4 +30,4 @@ namespace bugs {
 	return exp(eta);
     }
 
-}
+}}

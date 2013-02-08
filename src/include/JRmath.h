@@ -31,7 +31,13 @@
 #define RMATH_H
 
 #ifdef  __cplusplus
+namespace jags {
+    class RNG;
+}
+typedef jags::RNG JRNG;
 extern "C" {
+#else
+typedef struct JRNG JRNG;
 #endif
 
 /*-- Mathlib as part of R --  define this for standalone : */
@@ -348,10 +354,9 @@ double R_pow_di(double, int);
 
 	/* Random Number Generators */
 
-typedef struct RNG RNG;
-double	norm_rand(RNG*);
-double	unif_rand(RNG*);
-double	exp_rand(RNG*);
+double	norm_rand(JRNG*);
+double	unif_rand(JRNG*);
+double	exp_rand(JRNG*);
 
 	/* Normal Distribution */
 
@@ -362,7 +367,7 @@ double	exp_rand(RNG*);
 double	dnorm(double, double, double, int);
 double	pnorm(double, double, double, int, int);
 double	qnorm(double, double, double, int, int);
-double	rnorm(double, double, RNG*); 
+double	rnorm(double, double, JRNG*); 
 void	pnorm_both(double, double *, double *, int, int);/* both tails */
 
 	/* Uniform Distribution */
@@ -370,14 +375,14 @@ void	pnorm_both(double, double *, double *, int, int);/* both tails */
 double	dunif(double, double, double, int);
 double	punif(double, double, double, int, int);
 double	qunif(double, double, double, int, int);
-double	runif(double, double, RNG*);
+double	runif(double, double, JRNG*);
 
 	/* Gamma Distribution */
 
 double	dgamma(double, double, double, int);
 double	pgamma(double, double, double, int, int);
 double	qgamma(double, double, double, int, int);
-double	rgamma(double, double, RNG*);
+double	rgamma(double, double, JRNG*);
 
 double  log1pmx(double);
 double  lgamma1p(double);
@@ -389,116 +394,116 @@ double  logspace_sub(double, double);
 double	dbeta(double, double, double, int);
 double	pbeta(double, double, double, int, int);
 double	qbeta(double, double, double, int, int);
-double	rbeta(double, double, RNG*);
+double	rbeta(double, double, JRNG*);
 
 	/* Lognormal Distribution */
 
 double	dlnorm(double, double, double, int);
 double	plnorm(double, double, double, int, int);
 double	qlnorm(double, double, double, int, int);
-double	rlnorm(double, double, RNG*);
+double	rlnorm(double, double, JRNG*);
 
 	/* Chi-squared Distribution */
 
 double	dchisq(double, double, int);
 double	pchisq(double, double, int, int);
 double	qchisq(double, double, int, int);
-double	rchisq(double, RNG*); 
+double	rchisq(double, JRNG*); 
 
 	/* Non-central Chi-squared Distribution */
 
 double	dnchisq(double, double, double, int);
 double	pnchisq(double, double, double, int, int);
 double	qnchisq(double, double, double, int, int);
-double	rnchisq(double, double, RNG*);
+double	rnchisq(double, double, JRNG*);
 
 	/* F Distibution */
 
 double	dF(double, double, double, int);
 double	pF(double, double, double, int, int);
 double	qF(double, double, double, int, int);
-double	rF(double, double, RNG*); 
+double	rF(double, double, JRNG*); 
 
 	/* Student t Distibution */
 
 double	dt(double, double, int);
 double	pt(double, double, int, int);
 double	qt(double, double, int, int);
-double	rt(double, RNG*);
+double	rt(double, JRNG*);
 
 	/* Binomial Distribution */
 
 double	dbinom(double, double, double, int);
 double	pbinom(double, double, double, int, int);
 double	qbinom(double, double, double, int, int);
-double	rbinom(double, double, RNG*);
+double	rbinom(double, double, JRNG*);
 
 	/* Multnomial Distribution */
 
-void	rmultinom(int, double*, int, int*, RNG*);
+void	rmultinom(int, double*, int, int*, JRNG*);
 
 	/* Cauchy Distribution */
 
 double	dcauchy(double, double, double, int);
 double	pcauchy(double, double, double, int, int);
 double	qcauchy(double, double, double, int, int);
-double	rcauchy(double, double, RNG*);
+double	rcauchy(double, double, JRNG*);
 
 	/* Exponential Distribution */
 
 double	dexp(double, double, int);
 double	pexp(double, double, int, int);
 double	qexp(double, double, int, int);
-double	rexp(double, RNG*);
+double	rexp(double, JRNG*);
 
 	/* Geometric Distribution */
 
 double	dgeom(double, double, int);
 double	pgeom(double, double, int, int);
 double	qgeom(double, double, int, int);
-double	rgeom(double, RNG*);
+double	rgeom(double, JRNG*);
 
 	/* Hypergeometric Distibution */
 
 double	dhyper(double, double, double, double, int);
 double	phyper(double, double, double, double, int, int);
 double	qhyper(double, double, double, double, int, int);
-double	rhyper(double, double, double, RNG*);
+double	rhyper(double, double, double, JRNG*);
 
 	/* Negative Binomial Distribution */
 
 double	dnbinom(double, double, double, int);
 double	pnbinom(double, double, double, int, int);
 double	qnbinom(double, double, double, int, int);
-double	rnbinom(double, double, RNG*);
+double	rnbinom(double, double, JRNG*);
 
 	/* Poisson Distribution */
 
 double	dpois(double, double, int);
 double	ppois(double, double, int, int);
 double	qpois(double, double, int, int);
-double	rpois(double, RNG*);
+double	rpois(double, JRNG*);
 
 	/* Weibull Distribution */
 
 double	dweibull(double, double, double, int);
 double	pweibull(double, double, double, int, int);
 double	qweibull(double, double, double, int, int);
-double	rweibull(double, double, RNG*);
+double	rweibull(double, double, JRNG*);
 
 	/* Logistic Distribution */
 
 double	dlogis(double, double, double, int);
 double	plogis(double, double, double, int, int);
 double	qlogis(double, double, double, int, int);
-double	rlogis(double, double, RNG*);
+double	rlogis(double, double, JRNG*);
 
 	/* Non-central Beta Distribution */
 
 double	dnbeta(double, double, double, double, int);
 double	pnbeta(double, double, double, double, int, int);
 double	qnbeta(double, double, double, double, int, int);
-double	rnbeta(double, double, double, RNG*);
+double	rnbeta(double, double, double, JRNG*);
 
 	/* Non-central F Distribution */
 
@@ -521,14 +526,14 @@ double	qtukey(double, double, double, double, int, int);
 double dwilcox(double, double, double, int);
 double pwilcox(double, double, double, int, int);
 double qwilcox(double, double, double, int, int);
-double rwilcox(double, double, RNG*); 
+double rwilcox(double, double, JRNG*); 
 
 	/* Wilcoxon Signed Rank Distribution */
 
 double dsignrank(double, double, int);
 double psignrank(double, double, int, int);
 double qsignrank(double, double, int, int);
-double rsignrank(double, RNG*);
+double rsignrank(double, JRNG*);
 
 	/* Gamma and Related Functions */
 double	gammafn(double);

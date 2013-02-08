@@ -26,6 +26,8 @@ using std::sqrt;
 
 extern cholmod_common *glm_wk;
 
+namespace jags {
+
 static void getIndices(set<StochasticNode const *> const &schildren,
 		       vector<StochasticNode const*> const &rows,
 		       vector<int> &indices)
@@ -534,4 +536,4 @@ namespace glm {
     {
     }
 
-}
+}}

@@ -3,8 +3,7 @@
 
 #include <distribution/VectorDist.h>
 
-struct RNG;
-
+namespace jags {
 namespace bugs {
 
 /**
@@ -63,6 +62,6 @@ public:
 	      std::vector<unsigned int> const &len) const;
 };
 
-}
+}}
 
 #endif /* DDIRCH_H_ */

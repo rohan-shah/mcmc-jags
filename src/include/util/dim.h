@@ -7,6 +7,8 @@
 #include <vector>
 #include <algorithm>
 
+namespace jags {
+
 /**
  * Tests whether the dimension represented by the vector "dim"
  * corresponds to a scalar quantity.
@@ -90,5 +92,7 @@ std::vector<unsigned int> const &getUnique(std::vector<unsigned int> const &dim)
  */
 std::vector<std::vector<unsigned int> > const & 
 getUnique(std::vector<std::vector<unsigned int> > const &dimvec);
+
+}
 
 #endif /* DIM_H_ */

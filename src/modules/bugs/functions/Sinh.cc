@@ -6,6 +6,7 @@
 using std::vector;
 using std::sinh;
 
+namespace jags {
 namespace bugs {
 
     Sinh::Sinh ()
@@ -18,4 +19,4 @@ namespace bugs {
 	return sinh(*args[0]);
     }
 
-}
+}}

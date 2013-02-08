@@ -15,6 +15,8 @@ using std::fabs;
 using std::vector;
 using std::sqrt;
 
+namespace jags {
+
 ConstantFactory::ConstantFactory(unsigned int nchain)
     : _nchain(nchain)
 {
@@ -83,3 +85,5 @@ ConstantNode * ConstantFactory::getConstantNode(vector<unsigned int> const &dim,
     }
 
 }
+
+} //namespace jags

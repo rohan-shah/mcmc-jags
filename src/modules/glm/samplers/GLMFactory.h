@@ -4,6 +4,8 @@
 #include "GLMMethod.h"
 #include <sampler/SamplerFactory.h>
 
+namespace jags {
+
 class LinkNode;
 
 namespace glm {
@@ -114,6 +116,6 @@ namespace glm {
 	virtual bool fixedDesign() const;
     };
 
-}
+}}
 
 #endif /* GLM_FACTORY_H_ */

@@ -1,6 +1,8 @@
 #ifndef TRUNCATED_NORMAL_H_
 #define TRUNCATED_NORMAL_H_
 
+namespace jags {
+
 class RNG;
 
 /**
@@ -34,5 +36,7 @@ double rnormal(double right, RNG *rng, double mu = 0, double sigma = 1);
  */
 double inormal(double left, double right, RNG *rng, 
 	       double mu = 0, double sigma = 1);
+
+} /* namespace jags */
 
 #endif /* TRUNCATED_NORMAL_H_ */

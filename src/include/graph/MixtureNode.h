@@ -5,6 +5,8 @@
 #include <map>
 #include <vector>
 
+namespace jags {
+
 class Node;
 
 /**
@@ -97,5 +99,7 @@ public:
 
 bool isMixture(Node const *);
 MixtureNode const * asMixture(Node const *);
+
+} /* namespace jags */
 
 #endif /* MIXTURE_NODE_H_ */

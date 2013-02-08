@@ -4,6 +4,8 @@
 #include <graph/LogicalNode.h>
 #include <vector>
 
+namespace jags {
+
 class ArrayFunction;
 
 /**
@@ -29,5 +31,7 @@ public:
     bool checkParentValues(unsigned int chain) const;
     DeterministicNode *clone(std::vector<Node const *> const &parents) const;
 };
+
+} /* namespace jags */
 
 #endif /* ARRAY_LOGICAL_NODE_H_ */

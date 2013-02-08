@@ -11,6 +11,7 @@ using std::vector;
 using std::fabs;
 using std::sqrt;
 
+namespace jags {
 namespace bugs {
 
 DSum::DSum()
@@ -120,4 +121,4 @@ vector<unsigned int> DSum::dim(vector<vector<unsigned int> > const &dims) const
     return dims[0];
 }
 
-}
+}}

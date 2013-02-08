@@ -3,6 +3,7 @@
 
 #include <function/LinkFunction.h>
 
+namespace jags {
 namespace bugs {
 
     /**
@@ -22,6 +23,6 @@ namespace bugs {
 	double grad(double eta) const;
     };
 
-}
+}}
 
 #endif /* FUNC_ICLOGLOG_H_ */

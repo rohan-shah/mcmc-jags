@@ -9,6 +9,7 @@
 using std::max;
 using std::vector;
 
+namespace jags {
 namespace bugs {
 
 DExp::DExp()
@@ -60,4 +61,4 @@ double DExp::KL(vector<double const *> const &par1,
     return (r - 1)  - log(r);
 }
 
-}
+}}

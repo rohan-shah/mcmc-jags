@@ -5,6 +5,10 @@ class Node;
 class ParseTree;
 class Compiler;
 
-Node * getMixtureNode(ParseTree const * var, Compiler *compiler);
+namespace jags {
 
-#endif
+    Node * getMixtureNode(ParseTree const * var, Compiler *compiler);
+
+}
+
+#endif /* MIX_COMPILER_H_ */

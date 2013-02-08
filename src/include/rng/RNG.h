@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 
+namespace jags {
+
 /**
  * Abstract class for a psuedo random number generator
  *
@@ -61,6 +63,12 @@ public:
      * Returns the name of the RNG
      */
     std::string const &name() const;
+
+    static double uniform(void *);
+    static double normal(void *);
+    static double exponential(void *);
 };
+
+} /* namespace jags */
 
 #endif /* RNG_H_ */

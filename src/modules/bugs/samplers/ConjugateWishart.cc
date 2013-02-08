@@ -23,6 +23,9 @@ using std::sqrt;
 using std::string;
 using std::copy;
 
+namespace jags {
+namespace bugs {
+
 static inline double getPrecision0(StochasticNode const *snode, 
 				   unsigned int chain)
 {
@@ -31,8 +34,6 @@ static inline double getPrecision0(StochasticNode const *snode,
 
     return snode->parents()[1]->value(chain)[0];
 }
-
-namespace bugs {
 
 bool ConjugateWishart::canSample(StochasticNode *snode, Graph const &graph)
 {
@@ -150,4 +151,4 @@ string ConjugateWishart::name() const
     return "ConjugateWishart";
 }
 
-}
+}}

@@ -4,6 +4,7 @@
 
 using std::vector;
 
+namespace jags {
 namespace bugs {
 
     Transpose::Transpose()
@@ -45,4 +46,4 @@ namespace bugs {
 	return true;
     }
     
-}
+}}

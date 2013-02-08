@@ -17,6 +17,8 @@ using std::set;
 using std::string;
 using std::pair;
 
+namespace jags {
+
 static map<MixMap, int> &mixMapMap()
 {
     /* 
@@ -303,3 +305,5 @@ bool MixtureNode::isDiscreteValued() const
 {
     return _discrete;
 }
+
+} //namespace jags

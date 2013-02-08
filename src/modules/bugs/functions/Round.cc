@@ -6,6 +6,7 @@
 using std::vector;
 using std::floor;
 
+namespace jags {
 namespace bugs {
 
     Round::Round ():ScalarFunction ("round", 1)
@@ -22,4 +23,5 @@ namespace bugs {
     {
 	return true;
     }
-}
+
+}}

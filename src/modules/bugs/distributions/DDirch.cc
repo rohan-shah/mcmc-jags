@@ -1,12 +1,12 @@
 #include <config.h>
 #include "DDirch.h"
-#include <rng/RNG.h>
 #include <util/dim.h>
 #include <util/nainf.h>
 
 #include <cmath>
 
 #include <JRmath.h>
+#include <rng/RNG.h>
 
 using std::vector;
 using std::string;
@@ -21,6 +21,7 @@ using std::string;
    is fixed.
 */
 
+namespace jags {
 namespace bugs {
 
 DDirch::DDirch()
@@ -184,4 +185,4 @@ double DDirch::KL(vector<double const *> const &par1,
     return y;
 }
 
-}
+}}

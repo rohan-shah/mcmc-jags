@@ -5,6 +5,8 @@
 using std::vector;
 using std::string;
 
+namespace jags {
+
 Distribution::Distribution(string const &name, unsigned int npar)
     : _name(name), _npar(npar)
 {
@@ -53,3 +55,5 @@ bool Distribution::checkParameterDiscrete(vector<bool> const &mask) const
 {
     return true;
 }
+
+} //namespace jags

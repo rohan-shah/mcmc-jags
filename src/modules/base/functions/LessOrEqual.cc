@@ -6,6 +6,7 @@
 
 using std::vector;
 
+namespace jags {
 namespace base {
 
 LessOrEqual::LessOrEqual () : Infix ("<=")
@@ -22,4 +23,4 @@ bool LessOrEqual::isDiscreteValued(vector<bool> const &mask) const
   return true;
 }
 
-}
+}}

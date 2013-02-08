@@ -3,6 +3,7 @@
 
 #include <rng/RmathRNG.h>
 
+namespace jags {
 namespace base {
 
     class WichmannHillRNG : public RmathRNG
@@ -17,6 +18,6 @@ namespace base {
 	void getState(std::vector<int> &state) const;
     };
 
-}
+}}
 
 #endif /* _WICHMANN_HILL_RNG_H_ */

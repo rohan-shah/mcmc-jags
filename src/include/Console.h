@@ -10,6 +10,8 @@
 #include <cstdio>
 #include <list>
 
+namespace jags {
+
 class BUGSModel;
 class ParseTree;
 class RNG;
@@ -224,5 +226,7 @@ public:
 			       bool active);
 
 };
+
+} /* namespace jags */
 
 #endif /* CONSOLE_H_ */

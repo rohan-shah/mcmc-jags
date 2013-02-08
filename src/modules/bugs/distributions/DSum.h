@@ -3,6 +3,7 @@
 
 #include <distribution/ArrayDist.h>
 
+namespace jags {
 namespace bugs {
 
 /**
@@ -40,6 +41,6 @@ public:
 	dim(std::vector <std::vector<unsigned int> > const &dims) const;
 };
 
-}
+}}
 
 #endif /* DSUM_H_ */

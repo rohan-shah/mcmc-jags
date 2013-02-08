@@ -3,6 +3,8 @@
 
 #include <sarray/Range.h>
 
+namespace jags {
+
 class Monitor;
 
 /**
@@ -60,5 +62,7 @@ public:
      */
     bool operator==(MonitorControl const &rhs) const;
 };
+
+} /* namespace jags */
 
 #endif /* MONITOR_CONTROL_H_ */

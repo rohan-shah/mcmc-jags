@@ -6,6 +6,8 @@
 
 #include <vector>
 
+namespace jags {
+
 class Graph;
 class GraphView;
 
@@ -98,6 +100,6 @@ namespace mix {
 	void setValue(std::vector<double> const &value);
     };
 
-}
+}}
 
 #endif /* MIX_SAMPLER_H_ */

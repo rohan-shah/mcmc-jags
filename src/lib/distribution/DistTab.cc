@@ -8,6 +8,8 @@ using std::string;
 using std::binary_function;
 using std::find_if;
 
+namespace jags {
+
 typedef std::list<DistPtr> DistList;
 
 // Adaptable binary predicate for find_if algorithm 
@@ -68,3 +70,4 @@ void DistTab::erase(DistPtr const &dist)
     _dlist.remove(dist);
 }
 
+} //namespace jags

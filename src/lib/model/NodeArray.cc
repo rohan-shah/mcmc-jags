@@ -22,6 +22,8 @@ using std::logic_error;
 using std::set;
 using std::numeric_limits;
 
+namespace jags {
+
 NodeArray::NodeArray(string const &name, vector<unsigned int> const &dim, 
 		     unsigned int nchain)
     : _name(name), _range(dim), _nchain(nchain)
@@ -379,3 +381,5 @@ unsigned int NodeArray::nchain() const
 {
   return _nchain;
 }
+
+} //namespace jags

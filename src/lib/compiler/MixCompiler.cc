@@ -55,6 +55,8 @@ using std::map;
 using std::copy;
 using std::reverse;
 
+namespace jags {
+
 //Structure to hold subset indices
 struct SSI {
   Node const *node;
@@ -504,3 +506,5 @@ if (mnode)
 else
     return getMixtureNode2(array, limits, compiler);
 }
+
+} //namespace jags

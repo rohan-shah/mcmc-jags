@@ -3,6 +3,7 @@
 
 #include <function/ScalarFunction.h>
 
+namespace jags {
 namespace bugs {
 
     /**
@@ -21,6 +22,7 @@ namespace bugs {
         bool isPower(std::vector<bool> const &mask,
                      std::vector<bool> const &fix) const;
     };
-}
+
+}}
 
 #endif /* FUNC_SQRT_H_ */

@@ -6,6 +6,7 @@
 using std::vector;
 using std::fabs;
 
+namespace jags {
 namespace bugs {
 
     Abs::Abs ():ScalarFunction ("abs", 1)
@@ -22,4 +23,5 @@ namespace bugs {
     {
 	return mask[0];
     }
-}
+
+}}

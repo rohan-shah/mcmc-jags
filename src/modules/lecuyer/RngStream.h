@@ -6,6 +6,7 @@
 #define m1    4294967087.0
 #define m2    4294944443.0
 
+namespace jags {
 namespace lecuyer {
     
     /**
@@ -33,7 +34,7 @@ namespace lecuyer {
 	static void seedToState(unsigned int seed, unsigned int state[6]);
     };
  
-}
+}}
 
 #endif /* _RNGSTREAM_H_ */
  

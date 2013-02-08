@@ -13,6 +13,7 @@ using std::vector;
 #define SIGMA(par) (1/sqrt(*par[1]))
 #define TAU(par) (*par[1])
 
+namespace jags {
 namespace bugs {
 
 DNorm::DNorm()
@@ -87,4 +88,4 @@ double DNorm::KL(vector<double const *> const &par0,
 	    log(tau0/tau1)) / 2;
 }
 
-}
+}}

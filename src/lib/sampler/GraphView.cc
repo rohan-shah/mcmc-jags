@@ -20,7 +20,7 @@ using std::string;
 using std::reverse;
 using std::copy;
 
-static unsigned int sumLength(vector<StochasticNode *> const &nodes)
+static unsigned int sumLength(vector<jags::StochasticNode *> const &nodes)
 {
     //Adds up the length of a vector of stochastic nodes
     unsigned int n = 0;
@@ -29,6 +29,8 @@ static unsigned int sumLength(vector<StochasticNode *> const &nodes)
     }
     return n;
 }
+
+namespace jags {
 
 GraphView::GraphView(vector<StochasticNode *> const &nodes, Graph const &graph,
 		     bool multilevel)
@@ -392,3 +394,4 @@ unsigned int nchain(GraphView const *gv)
     return gv->nodes()[0]->nchain();
 }
     
+} //namespace jags

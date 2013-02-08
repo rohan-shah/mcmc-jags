@@ -4,6 +4,7 @@
 #include "GLMFactory.h"
 #include "AMMethod.h"
 
+namespace jags {
 namespace glm {
 
     /**
@@ -35,6 +36,6 @@ namespace glm {
 			      unsigned int chain) const;
     };
 
-}
+}}
 
 #endif /* AM_FACTORY_H_ */

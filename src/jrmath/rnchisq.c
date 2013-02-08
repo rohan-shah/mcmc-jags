@@ -56,7 +56,7 @@
 
 #include "nmath.h"
 
-double rnchisq(double df, double lambda, RNG *rng)
+double rnchisq(double df, double lambda, JRNG *rng)
 {
     if (!R_FINITE(df) || !R_FINITE(lambda) || df < 0. || lambda < 0.)
 	ML_ERR_return_NAN;

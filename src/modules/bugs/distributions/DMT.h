@@ -3,6 +3,7 @@
 
 #include <distribution/ArrayDist.h>
 
+namespace jags {
 namespace bugs {
 
 /**
@@ -48,6 +49,6 @@ public:
   bool isSupportFixed(std::vector<bool> const &fixmask) const;
 };
 
-}
+}}
 
 #endif /* DMT_H_ */

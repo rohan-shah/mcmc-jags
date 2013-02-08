@@ -339,6 +339,7 @@ static void rational_approx(double n, const double (*coef)[4], int nrow,
     }
 }
 
+namespace jags {
 namespace glm {
 
     LGMix::LGMix(double n)
@@ -475,4 +476,5 @@ namespace glm {
     {
 	return 1/_variances[_r];
     }
-}
+
+}}

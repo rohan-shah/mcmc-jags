@@ -8,6 +8,7 @@
 class StochasticNode;
 class GraphView;
 
+namespace jags {
 namespace bugs {
 
 /**
@@ -22,6 +23,6 @@ public:
     std::string name() const;
 };
 
-}
+}}
 
 #endif /* REAL_DSUM_H_ */

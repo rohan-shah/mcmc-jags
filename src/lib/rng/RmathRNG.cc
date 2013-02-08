@@ -18,6 +18,8 @@ using std::logic_error;
 
 #define PI 3.141592653589793238462643383280
 
+namespace jags {
+
 static inline double fmin2(double x, double y) {
         return (x < y) ? x : y;
 }
@@ -303,3 +305,5 @@ double RmathRNG::normal()
     throw logic_error("Bad exit from RmathRNG::normal");
     return 0;
 }
+
+} //namespace jags

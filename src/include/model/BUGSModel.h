@@ -10,6 +10,8 @@
 #include <model/SymTab.h>
 #include <model/MonitorInfo.h>
 
+namespace jags {
+
 /**
  * @short Model with symbol table 
  *
@@ -150,5 +152,7 @@ public:
 	const;
 
 };
+
+} /* namespace jags */
 
 #endif /* BUGS_MODEL_H_ */

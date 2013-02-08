@@ -3,6 +3,8 @@
 
 #include <sampler/Metropolis.h>
 
+namespace jags {
+
 class GraphView;
 
 namespace bugs {
@@ -31,6 +33,6 @@ public:
     void setValue(std::vector<double> const &value);
 };
 
-}
+}}
 
 #endif /* MNORM_METROPOLIS_H_ */

@@ -7,6 +7,7 @@
 
 using std::vector;
 
+namespace jags {
 namespace bugs {
 
     //FIXME: deparse?
@@ -88,4 +89,5 @@ namespace bugs {
 	    return (mask[0] || fix[0]) && (mask[1] || fix[1]);
 	}
     }
-}
+
+}}

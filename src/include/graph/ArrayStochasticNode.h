@@ -3,6 +3,8 @@
 
 #include <graph/StochasticNode.h>
 
+namespace jags {
+
 class ArrayDist;
 
 /**
@@ -32,6 +34,8 @@ public:
 			  Node const *lower, Node const *upper) const;
     unsigned int df() const;
 };
+
+} /* namespace jags */
 
 #endif /* ARRAY_STOCHASTIC_NODE_H_ */
 

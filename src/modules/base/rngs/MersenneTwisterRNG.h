@@ -3,6 +3,7 @@
 
 #include <rng/RmathRNG.h>
 
+namespace jags {
 namespace base {
 
     class MersenneTwisterRNG : public RmathRNG
@@ -20,6 +21,6 @@ namespace base {
 	double uniform();
     };
 
-}
+}}
 
 #endif /* MERSENNE_TWISTER_RNG_H_ */

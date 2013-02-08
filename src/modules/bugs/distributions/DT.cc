@@ -11,6 +11,7 @@ using std::vector;
 #define TAU(par) (*par[1])
 #define DF(par) (*par[2])
 
+namespace jags {
 namespace bugs {
 
 DT::DT()
@@ -55,4 +56,4 @@ double DT::r(vector<double const *> const &par, RNG *rng) const
     return rt(DF(par), rng) / sqrt(TAU(par)) + MU(par);
 }
 
-}
+}}

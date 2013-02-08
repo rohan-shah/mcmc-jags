@@ -14,14 +14,15 @@ using std::log;
 using std::string;
 using std::vector;
 
+namespace jags {
+namespace bugs {
+
 static vector<double> initValue(GraphView const *gv, unsigned int chain)
 {
     vector<double> ivalue(gv->length());
     gv->getValue(ivalue, chain);
     return ivalue;
 }
-
-namespace bugs {
 
 DirchMetropolis::DirchMetropolis(GraphView const *gv, unsigned int chain)
     : RWMetropolis(initValue(gv, chain), 0.1),
@@ -89,4 +90,4 @@ string DirchMetropolis::name() const
     return "DirchMetropolis";
 }
 
-}
+}}

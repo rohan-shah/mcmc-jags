@@ -3,6 +3,7 @@
 
 using std::vector;
 
+namespace jags {
 namespace base {
 
 And::And () : Infix ("&&")
@@ -19,4 +20,4 @@ bool And::isDiscreteValued(vector<bool> const &mask) const
   return true;
 }
 
-}
+}}

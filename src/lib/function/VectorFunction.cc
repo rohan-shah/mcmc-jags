@@ -4,6 +4,8 @@
 using std::vector;
 using std::string;
 
+namespace jags {
+
 VectorFunction::VectorFunction (string const &name, unsigned int npar)
     : Function(name, npar)
 {
@@ -27,3 +29,5 @@ VectorFunction::checkParameterLength(vector<unsigned int> const &args) const
 {
     return true;
 }
+
+} //namespace jags

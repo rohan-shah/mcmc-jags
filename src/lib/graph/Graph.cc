@@ -16,6 +16,8 @@ using std::invalid_argument;
 using std::logic_error;
 using std::reverse;
 
+namespace jags {
+
 Graph::Graph()
     : _nodes() 
 {
@@ -172,4 +174,6 @@ void Graph::getSortedNodes(vector<Node*> &sortednodes) const
 {
     set<Node*> S = _nodes;
     getSortedNodes(S, sortednodes);
+}
+
 }

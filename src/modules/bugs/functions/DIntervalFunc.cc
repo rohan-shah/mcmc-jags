@@ -17,6 +17,7 @@ static unsigned int value(vector<double const *> const &args, unsigned int ncut)
     return ncut;
 }
 
+namespace jags {
 namespace bugs {
 
     DIntervalFunc::DIntervalFunc () : VectorFunction ("dinterval", 2)
@@ -41,4 +42,4 @@ namespace bugs {
 	return true;
     }
     
-}
+}}

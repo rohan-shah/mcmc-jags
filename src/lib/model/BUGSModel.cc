@@ -27,6 +27,8 @@ using std::logic_error;
 using std::runtime_error;
 using std::map;
 
+namespace jags {
+
 /* 
    Nodes accessible to the user in a BUGSModel are identified
    by a variable name and range of indices 
@@ -253,3 +255,5 @@ void BUGSModel::samplerNames(vector<vector<string> > &sampler_names) const
 	sampler_names.push_back(names);
     }    
 }
+
+} //namespace jags

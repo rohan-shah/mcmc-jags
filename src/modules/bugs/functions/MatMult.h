@@ -3,6 +3,7 @@
 
 #include <function/ArrayFunction.h>
 
+namespace jags {
 namespace bugs {
 
     class MatMult : public ArrayFunction
@@ -19,6 +20,6 @@ namespace bugs {
 		     std::vector<bool> const &fix) const;
     };
 
-}
+}}
 
 #endif /* MAT_MULT_H_ */

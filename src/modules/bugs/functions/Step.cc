@@ -3,6 +3,7 @@
 
 using std::vector;
 
+namespace jags {
 namespace bugs {
 
     Step::Step ()
@@ -21,4 +22,4 @@ namespace bugs {
 	return true;
     }
 
-}
+}}

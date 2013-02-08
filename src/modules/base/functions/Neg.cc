@@ -7,6 +7,7 @@
 using std::vector;
 using std::string;
 
+namespace jags {
 namespace base {
 
 Neg::Neg () : ScalarFunction ("NEG", 1)
@@ -33,4 +34,4 @@ string Neg::deparse(vector<string> const &par) const
     return string("-") + par[0];
 }
 
-}
+}}

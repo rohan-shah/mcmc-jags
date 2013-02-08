@@ -11,6 +11,8 @@ using std::vector;
 using std::logic_error;
 using std::copy;
 
+namespace jags {
+
 Monitor::Monitor(string const &type, vector<Node const *> const &nodes)
     : _type(type), _nodes(nodes)
 {
@@ -98,3 +100,5 @@ SArray Monitor::dump(bool flat) const
     }
     return(ans);
 }
+
+} //namespace jags

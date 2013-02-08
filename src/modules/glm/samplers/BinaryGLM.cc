@@ -14,6 +14,8 @@ using std::string;
 
 #define CHILD(i) (_view->stochasticChildren()[i])
 
+namespace jags {
+
 static inline unsigned int nchildren(GraphView const *view)
 {
     return view->stochasticChildren().size();
@@ -118,6 +120,6 @@ namespace glm {
 	}
     }
 
-}
+}}
 
     

@@ -14,6 +14,7 @@
 
 using std::vector;
 
+namespace jags {
 namespace bugs {
 
 DMT::DMT()
@@ -132,4 +133,4 @@ bool DMT::isSupportFixed(vector<bool> const &fixmask) const
     return true;
 }
 
-}
+}}

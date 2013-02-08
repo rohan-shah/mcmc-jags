@@ -3,6 +3,7 @@
 
 #include "RScalarDist.h"
 
+namespace jags {
 namespace bugs {
 
 /**
@@ -32,6 +33,6 @@ class DPois : public RScalarDist {
 	    std::vector<double const *> const &par2) const;
 };
 
-}
+}}
 
 #endif /* DPOIS_H_ */

@@ -21,6 +21,7 @@ using std::max;
 using std::min;
 using std::vector;
 
+namespace jags {
 namespace bugs {
 
 DHyper::DHyper()
@@ -359,4 +360,4 @@ double DHyper::KL(vector<double const *> const &para,
     return y;
 }
 
-}
+}}

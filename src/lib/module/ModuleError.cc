@@ -9,6 +9,8 @@ using std::string;
 using std::runtime_error;
 using std::logic_error;
 
+namespace jags {
+
 void throwLogicError(string const &message)
 {
     throw logic_error(message);
@@ -33,3 +35,5 @@ void throwFuncError(Function const *func, string const &message)
 {
     throw FuncError(func, message);
 }
+
+} //namespace jags

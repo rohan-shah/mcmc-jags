@@ -3,20 +3,21 @@
 
 using std::vector;
 
+namespace jags {
 namespace base {
 
-Or::Or () : Infix ("||")
-{
-}
+    Or::Or () : Infix ("||")
+    {
+    }
 
-double Or::evaluate(vector <double const *> const &args) const
-{
-  return *args[0] || *args[1];
-}
+    double Or::evaluate(vector <double const *> const &args) const
+    {
+	return *args[0] || *args[1];
+    }
 
-bool Or::isDiscreteValued(vector<bool> const &mask) const
-{
-  return true;
-}
+    bool Or::isDiscreteValued(vector<bool> const &mask) const
+    {
+	return true;
+    }
 
-}
+}}

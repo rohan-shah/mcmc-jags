@@ -12,6 +12,8 @@ using std::vector;
 using std::string;
 using std::logic_error;
 
+namespace jags {
+
 static vector<unsigned int> mkDim(ArrayFunction const *func, 
 				  vector<Node const *> const &parents)
 {
@@ -73,3 +75,4 @@ ArrayLogicalNode::clone(vector<Node const*> const &parents) const
     return new ArrayLogicalNode(_func, parents);
 }
 
+} //namespace jags

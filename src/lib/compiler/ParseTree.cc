@@ -6,6 +6,8 @@ using std::string;
 using std::vector;
 using std::logic_error;
 
+namespace jags {
+
 ParseTree::ParseTree(TreeClass tclass, int line)
     : _tclass(tclass), _parameters(), _parent(0), _name(), _value(0), 
       _line(line)
@@ -103,3 +105,5 @@ void ParseTree::setParameters(vector<ParseTree *> const &parameters)
   }
   _parameters = parameters;
 }
+
+} //namespace jags

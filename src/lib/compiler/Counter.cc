@@ -5,6 +5,8 @@
 #include <string>
 
 using std::logic_error;
+
+namespace jags {
  
 Counter::Counter(Range const &range)
   : RangeIterator(range)
@@ -19,12 +21,4 @@ Counter &Counter::next()
   return *this;
 }
 
-
-
-
-
-
-
-
-
-
+} //namespace jags

@@ -1,6 +1,7 @@
 #include <config.h>
 #include "AuxMixNormal.h"
 
+namespace jags {
 namespace glm {
     
     AuxMixNormal::AuxMixNormal(double const &tau, double const &y)
@@ -23,4 +24,4 @@ namespace glm {
 	return _tau;
     }
 
-}
+}}

@@ -3,6 +3,7 @@
 
 #include "BinaryFactory.h"
 
+namespace jags {
 namespace glm {
 
     /**
@@ -32,6 +33,6 @@ namespace glm {
 	bool fixedDesign() const;
     };
 
-}
+}}
 
 #endif /* HOLMES_HELD_FACTORY_H_ */

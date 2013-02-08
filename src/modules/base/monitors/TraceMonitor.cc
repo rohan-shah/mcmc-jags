@@ -8,6 +8,7 @@
 using std::vector;
 using std::string;
 
+namespace jags {
 namespace base {
 
     TraceMonitor::TraceMonitor(Node const *node)
@@ -55,4 +56,5 @@ namespace base {
     {
 	return false;
     }
-}
+
+}}

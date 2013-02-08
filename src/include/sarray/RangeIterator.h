@@ -5,6 +5,8 @@
 
 #include <sarray/Range.h>
 
+namespace jags {
+
 /**
  * @short Mutable index that traverses a Range
  *
@@ -54,4 +56,7 @@ public:
     unsigned int atEnd() const;
 };
 
+} /* namespace jags */
+
 #endif /* RANGE_ITERATOR_H_ */
+

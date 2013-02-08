@@ -3,6 +3,7 @@
 
 #include "RScalarDist.h"
 
+namespace jags {
 namespace bugs {
 
 /**
@@ -37,6 +38,6 @@ class DBetaBin : public RScalarDist {
   bool isSupportFixed(std::vector<bool> const &fixmask) const;
 };
 
-}
+}}
 
 #endif /* DBETA_BIN_H_ */

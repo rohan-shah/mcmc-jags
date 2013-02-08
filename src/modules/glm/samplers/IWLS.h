@@ -3,6 +3,8 @@
 
 #include "GLMMethod.h"
 
+namespace jags {
+
 class LinkNode;
 
 namespace glm {
@@ -56,6 +58,6 @@ namespace glm {
 	void update(RNG *rng);
     };
 
-}
+}}
 
 #endif /* IWLS_H_ */

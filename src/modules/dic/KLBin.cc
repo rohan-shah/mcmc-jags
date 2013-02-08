@@ -12,6 +12,7 @@ using std::log;
 #define N0 (*par0[1])
 #define N1 (*par1[1])
 
+namespace jags {
 namespace dic {
 
     double KLBin::divergence(vector<double const *> const &par0,
@@ -36,4 +37,4 @@ namespace dic {
 	}
     }
 
-}
+}}

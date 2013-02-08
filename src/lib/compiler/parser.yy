@@ -13,7 +13,8 @@
 
 using std::malloc;
 using std::free;
-  
+using jags::ParseTree;
+
   void yyerror(const char *);
   int yylex();
   int yylex_destroy();
@@ -50,8 +51,8 @@ using std::free;
   */
   double val;
   std::string *stringptr;
-  ParseTree *ptree;
-  std::vector<ParseTree*> *pvec;
+  jags::ParseTree *ptree;
+  std::vector<jags::ParseTree*> *pvec;
 }
 
 %token VAR
@@ -115,10 +116,10 @@ dec_list: node_dec { $$ = new std::vector<ParseTree*>(1, $1); }
 ;
 
 node_dec: NAME {
-    $$ = new ParseTree(P_VAR, yylineno); setName($$, $1); 
+    $$ = new ParseTree(jags::P_VAR, yylineno); setName($$, $1); 
 }
 | NAME '[' dim_list ']' {
-    $$ = new ParseTree(P_VAR, yylineno); setName($$, $1);
+    $$ = new ParseTree(jags::P_VAR, yylineno); setName($$, $1);
     setParameters($$, $3);
 }
 ;
@@ -128,21 +129,21 @@ dim_list: expression { $$ = new std::vector<ParseTree*>(1, $1); }
 ;
 
 data_stmt: DATA '{' relation_list '}' {
-    ParseTree *p = new ParseTree(P_RELATIONS, yylineno);
+    ParseTree *p = new ParseTree(jags::P_RELATIONS, yylineno);
     setParameters(p, $3);
     _pdata = p;
 }
 ;
 
 model_stmt: MODEL '{' relation_list '}' { 
-    ParseTree *p = new ParseTree(P_RELATIONS, yylineno);
+    ParseTree *p = new ParseTree(jags::P_RELATIONS, yylineno);
     setParameters(p, $3);
     _prelations = p;
 }
 ;
  
 relations: '{' relation_list '}' {
-    $$ = new ParseTree(P_RELATIONS, yylineno);
+    $$ = new ParseTree(jags::P_RELATIONS, yylineno);
     setParameters($$, $2);
 }
 ;
@@ -159,19 +160,19 @@ relation: stoch_relation
 ;
 
 for_loop: counter relations {
-    $$ = new ParseTree(P_FOR, yylineno);
+    $$ = new ParseTree(jags::P_FOR, yylineno);
     setParameters($$, $1, $2);
 }
 ;
 
 counter: FOR '(' NAME IN range_element ')' {
-    $$ = new ParseTree(P_COUNTER, yylineno); setName($$, $3);
+    $$ = new ParseTree(jags::P_COUNTER, yylineno); setName($$, $3);
     setParameters($$, $5);
 }
 ;
 
 determ_relation: var ARROW expression {
-    $$ = new ParseTree(P_DETRMREL, yylineno);
+    $$ = new ParseTree(jags::P_DETRMREL, yylineno);
     setParameters($$, $1, $3);
 } 
 | FUNC '(' var ')' ARROW expression {
@@ -182,24 +183,24 @@ determ_relation: var ARROW expression {
      function is applied to the RHS of the deterministic relation
   */
      
-    ParseTree *p = new ParseTree(P_LINK, yylineno); setName(p, $1);
+    ParseTree *p = new ParseTree(jags::P_LINK, yylineno); setName(p, $1);
     setParameters(p, $6);
     
-    $$ = new ParseTree(P_DETRMREL, yylineno);
+    $$ = new ParseTree(jags::P_DETRMREL, yylineno);
     setParameters($$, $3, p);
 }
 ;
 
 stoch_relation:	var '~' distribution {
-    $$ = new ParseTree(P_STOCHREL, yylineno); 
+    $$ = new ParseTree(jags::P_STOCHREL, yylineno); 
     setParameters($$, $1, $3);
  }
 | var '~' distribution truncated {
-    $$ = new ParseTree(P_STOCHREL, yylineno); 
+    $$ = new ParseTree(jags::P_STOCHREL, yylineno); 
     setParameters($$, $1, $3, $4);
 }
 | var '~' distribution interval {
-    $$ = new ParseTree(P_STOCHREL, yylineno);
+    $$ = new ParseTree(jags::P_STOCHREL, yylineno);
     setParameters($$, $1, $3, $4);
 }
 ;
@@ -234,77 +235,77 @@ sum: expression '+' expression {
 ;
 
 expression: var 
-| DOUBLE {$$ = new ParseTree(P_VALUE, yylineno); $$->setValue($1);}
+| DOUBLE {$$ = new ParseTree(jags::P_VALUE, yylineno); $$->setValue($1);}
 | LENGTH '(' var ')' {
-    $$ = new ParseTree(P_LENGTH, yylineno);
+    $$ = new ParseTree(jags::P_LENGTH, yylineno);
     setParameters($$,$3);
 }
 | DIM '(' var ')' {
-    $$ = new ParseTree(P_DIM, yylineno);
+    $$ = new ParseTree(jags::P_DIM, yylineno);
     setParameters($$,$3);
 }
 | FUNC '(' expression_list ')' {
-  $$ = new ParseTree(P_FUNCTION, yylineno); setName($$, $1);
+  $$ = new ParseTree(jags::P_FUNCTION, yylineno); setName($$, $1);
   setParameters($$, $3);
 }
 | product {
-    $$ = new ParseTree(P_FUNCTION, yylineno); $$->setName("*");
+    $$ = new ParseTree(jags::P_FUNCTION, yylineno); $$->setName("*");
     setParameters($$, $1);
 }
 | expression '/' expression {
-    $$ = new ParseTree(P_FUNCTION, yylineno); $$->setName("/");
+    $$ = new ParseTree(jags::P_FUNCTION, yylineno); $$->setName("/");
     setParameters($$, $1, $3);
 }
 | sum {
-    $$ = new ParseTree(P_FUNCTION, yylineno); $$->setName("+");
+    $$ = new ParseTree(jags::P_FUNCTION, yylineno); $$->setName("+");
     setParameters($$, $1);
 }
 | expression '-' expression {
-    $$ = new ParseTree(P_FUNCTION, yylineno); $$->setName("-");
+    $$ = new ParseTree(jags::P_FUNCTION, yylineno); $$->setName("-");
     setParameters($$, $1, $3);
 }
 | '-' expression %prec NEG {
-    $$ = new ParseTree(P_FUNCTION, yylineno); $$->setName("NEG");
+    $$ = new ParseTree(jags::P_FUNCTION, yylineno); $$->setName("NEG");
     setParameters($$, $2);
 }
 | expression GT expression {
-    $$ = new ParseTree(P_FUNCTION, yylineno); $$->setName(">");
+    $$ = new ParseTree(jags::P_FUNCTION, yylineno); $$->setName(">");
     setParameters($$, $1, $3);
  }      
 | expression GE expression {
-    $$ = new ParseTree(P_FUNCTION, yylineno); $$->setName(">=");
+    $$ = new ParseTree(jags::P_FUNCTION, yylineno); $$->setName(">=");
     setParameters($$, $1, $3);
  }      
 | expression LT expression {
-    $$ = new ParseTree(P_FUNCTION, yylineno); $$->setName("<");
+    $$ = new ParseTree(jags::P_FUNCTION, yylineno); $$->setName("<");
     setParameters($$, $1, $3);
  }      
 | expression LE expression {
-    $$ = new ParseTree(P_FUNCTION, yylineno); $$->setName("<=");
+    $$ = new ParseTree(jags::P_FUNCTION, yylineno); $$->setName("<=");
     setParameters($$, $1, $3);
  }      
 | expression EQ expression {
-    $$ = new ParseTree(P_FUNCTION, yylineno); $$->setName("==");
+    $$ = new ParseTree(jags::P_FUNCTION, yylineno); $$->setName("==");
     setParameters($$, $1, $3);
  }      
 | expression NE expression {
-    $$ = new ParseTree(P_FUNCTION, yylineno); $$->setName("!=");
+    $$ = new ParseTree(jags::P_FUNCTION, yylineno); $$->setName("!=");
     setParameters($$, $1, $3);
 }      
 | expression AND expression {
-    $$ = new ParseTree(P_FUNCTION, yylineno); $$->setName("&&");
+    $$ = new ParseTree(jags::P_FUNCTION, yylineno); $$->setName("&&");
     setParameters($$, $1, $3);
  }      
 | expression OR expression {
-    $$ = new ParseTree(P_FUNCTION, yylineno); $$->setName("||");
+    $$ = new ParseTree(jags::P_FUNCTION, yylineno); $$->setName("||");
     setParameters($$, $1, $3);
 }
 | expression '^' expression {
-    $$ = new ParseTree(P_FUNCTION, yylineno); $$->setName("^");
+    $$ = new ParseTree(jags::P_FUNCTION, yylineno); $$->setName("^");
     setParameters($$, $1, $3);
   }
 | expression SPECIAL expression {
-    $$ = new ParseTree(P_FUNCTION, yylineno); setName($$, $2);
+    $$ = new ParseTree(jags::P_FUNCTION, yylineno); setName($$, $2);
     setParameters($$, $1, $3);
  }
 | '(' expression ')' { $$ = $2; }
@@ -318,22 +319,22 @@ range_list: range_element { $$ = new std::vector<ParseTree*>(1, $1); }
 | range_list ',' range_element { $$=$1; $$->push_back($3); }
 ;
 
-range_element: {$$ = new ParseTree(P_RANGE, yylineno);}
-| expression {$$ = new ParseTree(P_RANGE, yylineno); setParameters($$,$1);}
+range_element: {$$ = new ParseTree(jags::P_RANGE, yylineno);}
+| expression {$$ = new ParseTree(jags::P_RANGE, yylineno); setParameters($$,$1);}
 | expression ':' expression {
-  $$ = new ParseTree(P_RANGE, yylineno); setParameters($$, $1, $3);
+  $$ = new ParseTree(jags::P_RANGE, yylineno); setParameters($$, $1, $3);
 }
 ;
 
 distribution: FUNC '(' expression_list ')'
 {
-  $$ = new ParseTree(P_DENSITY, yylineno); setName($$, $1);
+  $$ = new ParseTree(jags::P_DENSITY, yylineno); setName($$, $1);
   setParameters($$, $3);
 }
 | FUNC '(' ')'
 {
     //BUGS has a dflat() distribution with no parameters
-    $$ = new ParseTree(P_DENSITY, yylineno); setName($$, $1);
+    $$ = new ParseTree(jags::P_DENSITY, yylineno); setName($$, $1);
 }
 ;
 
@@ -350,10 +351,10 @@ interval: 'I' '(' expression ','  expression ')' {$$ = Interval($3,$5);}
 ;
 
 var: NAME {
-  $$ = new ParseTree(P_VAR, yylineno); setName($$, $1);
+  $$ = new ParseTree(jags::P_VAR, yylineno); setName($$, $1);
 }
 | NAME '[' range_list ']' {
-  $$ = new ParseTree(P_VAR, yylineno); setName($$, $1);
+  $$ = new ParseTree(jags::P_VAR, yylineno); setName($$, $1);
   setParameters($$, $3);
 }
 ;
@@ -376,7 +377,7 @@ void yyerror (const char *s)
 static ParseTree *Truncated (ParseTree *left, ParseTree *right)
 {
     //JAGS-Style truncation notation
-    ParseTree *p = new ParseTree(P_BOUNDS, yylineno);
+    ParseTree *p = new ParseTree(jags::P_BOUNDS, yylineno);
     setParameters(p, left, right);
     return p;
 }
@@ -384,7 +385,7 @@ static ParseTree *Truncated (ParseTree *left, ParseTree *right)
 static ParseTree *Interval (ParseTree *left, ParseTree *right)
 {
     //BUGS-Style interval censoring notation
-    ParseTree *p = new ParseTree(P_INTERVAL, yylineno);
+    ParseTree *p = new ParseTree(jags::P_INTERVAL, yylineno);
     setParameters(p, left, right);
     return p;
 }

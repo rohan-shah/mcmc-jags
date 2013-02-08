@@ -3,6 +3,7 @@
 
 #include "GLMFactory.h"
 
+namespace jags {
 namespace glm {
 
     /**
@@ -48,6 +49,6 @@ namespace glm {
 	bool fixedDesign() const;
     };
 
-}
+}}
 
 #endif /* IWLS_FACTORY_H_ */

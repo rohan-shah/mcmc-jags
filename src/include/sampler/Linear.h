@@ -3,6 +3,8 @@
 
 #include<vector>
 
+namespace jags {
+
 class GraphView;
 
 /**
@@ -52,5 +54,7 @@ bool checkScale(GraphView const *gv, bool fixed);
  * @see Node#isClosed
  */
 bool checkPower(GraphView const *gv, bool fixed);
+
+} /* namespace jags */
 
 #endif /* LINEAR_H_ */

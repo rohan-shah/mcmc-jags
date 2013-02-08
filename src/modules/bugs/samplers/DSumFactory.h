@@ -3,6 +3,7 @@
 
 #include <sampler/SamplerFactory.h>
 
+namespace jags {
 namespace bugs {
 
 /**
@@ -18,6 +19,6 @@ public:
     std::string name() const;
 };
 
-}
+}}
 
 #endif /* DSUM_FACTORY_H_ */

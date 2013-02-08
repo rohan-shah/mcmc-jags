@@ -8,13 +8,15 @@
 #include <string>
 #include <math.h>
 
-class GraphMarks;
-
 using std::vector;
 using std::string;
 using std::set;
 using std::logic_error;
 using std::runtime_error;
+
+namespace jags {
+
+class GraphMarks;
 
 LinkNode::LinkNode(LinkFunction const *function, 
 		   vector<Node const *> const &parents)
@@ -63,3 +65,5 @@ string const &LinkNode::linkName() const
 {
     return _func->linkName();
 }
+
+} //namespace jags

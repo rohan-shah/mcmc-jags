@@ -13,6 +13,7 @@
 using std::vector;
 using std::string;
 
+namespace jags {
 namespace bugs {
 
 bool 
@@ -39,4 +40,4 @@ string DirichletFactory::name() const
     return "bugs::Dirichlet";
 }
 
-}
+}}

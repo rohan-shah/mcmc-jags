@@ -5,6 +5,8 @@
 #include <set>
 #include <vector>
 
+namespace jags {
+
 class Node;
 class Graph;
 
@@ -86,5 +88,7 @@ public:
      */
     //void markDescendants(Node *node, int m);
 };
+
+} /* namespace jags */
 
 #endif /* GRAPH_MARKS_H_ */

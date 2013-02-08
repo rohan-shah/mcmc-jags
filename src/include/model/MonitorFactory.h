@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 
+namespace jags {
+
 class Monitor;
 class Node;
 class BUGSModel;
@@ -46,5 +48,7 @@ public:
      */
     virtual std::string name() const = 0;
 };
+
+} /* namespace jags */
 
 #endif /* MONITOR_FACTORY_H_ */

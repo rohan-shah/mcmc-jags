@@ -5,6 +5,8 @@
 #include <vector>
 #include <string>
 
+namespace jags {
+
 class RNG;
 class StochasticNode;
 class DeterministicNode;
@@ -154,5 +156,7 @@ public:
  * if the parameters are inconsistent
  */
 unsigned int countChains(std::vector<Node const *> const &parameters);
+
+} /* namespace jags */
 
 #endif /* NODE_H_ */

@@ -8,6 +8,8 @@ using std::vector;
 using std::string;
 using std::copy;
 
+namespace jags {
+
 static vector<Node const *> toNode(vector<StochasticNode const *> const &nodes)
 {
     vector<Node const *> ans(nodes.size());
@@ -65,4 +67,4 @@ namespace dic {
 	return false;
     }
 
-}
+}}

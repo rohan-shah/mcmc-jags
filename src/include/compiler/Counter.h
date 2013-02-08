@@ -3,6 +3,8 @@
 
 #include <sarray/RangeIterator.h>
 
+namespace jags {
+
 /**
  * @short Mutable index that traverses a BUGS-language "for" loop
  *
@@ -25,6 +27,8 @@ public:
   /** Increments the value of the counter by 1 */
   Counter &next();
 };
+
+} /* namespace jags */
 
 #endif /* COUNTER_H_ */
 

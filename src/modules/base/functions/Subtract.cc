@@ -4,6 +4,7 @@
 
 using std::vector;
 
+namespace jags {
 namespace base {
 
     Subtract::Subtract () : Infix ("-")
@@ -32,4 +33,5 @@ namespace base {
     {
 	return true;
     }
-}
+
+}}

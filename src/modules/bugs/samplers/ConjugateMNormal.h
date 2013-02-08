@@ -3,6 +3,7 @@
 
 #include "ConjugateMethod.h"
 
+namespace jags {
 namespace bugs {
 
 /**
@@ -29,6 +30,6 @@ class ConjugateMNormal : public ConjugateMethod {
   std::string name() const;
 };
 
-}
+}}
 
 #endif /* CONJUGATE_M_NORMAL_H_ */

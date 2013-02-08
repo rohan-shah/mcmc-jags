@@ -5,6 +5,8 @@
 #include <string>
 #include <set>
 
+namespace jags {
+
 class RNG;
 class StochasticNode;
 class GraphView;
@@ -65,5 +67,7 @@ public:
      */
     virtual std::string name() const = 0;
 };
+
+} /* namespace jags */
 
 #endif /* SAMPLER_H_ */

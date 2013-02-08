@@ -5,6 +5,7 @@
 
 class StochasticNode;
 
+namespace jags {
 namespace bugs {
 
 /**
@@ -19,6 +20,6 @@ public:
     std::string name() const;
 };
 
-}
+}}
 
 #endif /* DMULTI_DSUM_H_ */

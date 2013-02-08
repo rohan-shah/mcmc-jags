@@ -21,6 +21,9 @@ using std::sqrt;
 using std::min;
 using std::string;
 
+namespace jags {
+namespace bugs {
+
 static vector<double> initValue(GraphView const *gv, unsigned int chain)
 {
     double const *x = gv->nodes()[0]->value(chain);
@@ -31,8 +34,6 @@ static vector<double> initValue(GraphView const *gv, unsigned int chain)
     }
     return ivalue;
 }
-
-namespace bugs {
 
 MNormMetropolis::MNormMetropolis(GraphView const *gv, unsigned int chain)
     : Metropolis(initValue(gv, chain)),
@@ -176,4 +177,4 @@ void MNormMetropolis::setValue(vector<double> const &value)
     _gv->setValue(value, _chain);
 }
 
-}
+}}

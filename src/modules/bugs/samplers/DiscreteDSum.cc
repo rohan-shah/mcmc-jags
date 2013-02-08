@@ -16,6 +16,8 @@ using std::string;
 //Initial step size
 #define STEP 1
 
+namespace jags {
+namespace bugs {
 
 //Pick a random integer between 0 and n - 1
 static int pick(int n, RNG *rng)
@@ -25,8 +27,6 @@ static int pick(int n, RNG *rng)
     while (i < u) ++i;
     return i - 1;
 }
-
-namespace bugs {
 
 DiscreteDSum::DiscreteDSum(GraphView const *gv, unsigned int chain)
     : RWDSum(gv, chain, STEP)
@@ -57,4 +57,4 @@ string DiscreteDSum::name() const
     return "DiscreteDSum";
 }
 
-}
+}}

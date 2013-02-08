@@ -7,6 +7,8 @@
 
 #include <graph/MixtureNode.h>
 
+namespace jags {
+
 class NodeArray;
 class Model;
 
@@ -55,5 +57,7 @@ public:
   MixtureNode *getMixtureNode(std::vector<Node const *> const &index,
 			      MixMap const &parameters, Model &model);
 };
+
+} /* namespace jags */
 
 #endif /* MIXTURE_FACTORY_H_ */

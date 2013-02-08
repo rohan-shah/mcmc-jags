@@ -3,6 +3,8 @@
 
 #include <sampler/Slicer.h>
 
+namespace jags {
+
 class StochasticNode;
 class GraphView;
 
@@ -36,7 +38,7 @@ namespace base {
 	double logDensity() const;
     };
 
-}
+}}
 
 #endif /* REAL_SLICER_H_ */
 

@@ -3,6 +3,7 @@
 
 #include "RScalarDist.h"
 
+namespace jags {
 namespace bugs {
 
     /** 
@@ -29,6 +30,6 @@ namespace bugs {
 	std::string alias() const;
     };
 
-}
+}}
 
 #endif /* DNCHISQ_H_ */

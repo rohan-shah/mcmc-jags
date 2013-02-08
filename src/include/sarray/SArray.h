@@ -6,6 +6,8 @@
 #include <vector>
 #include <string>
 
+namespace jags {
+
 /**
  * @short multi-dimensional real-valued array
  *
@@ -117,5 +119,7 @@ public:
     std::vector<unsigned int> const &
 	dim(bool drop) const { return range().dim(drop); }
 };
+
+} /* namespace jags */
 
 #endif /* SARRAY_H_ */

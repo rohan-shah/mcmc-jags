@@ -3,6 +3,8 @@
 
 #include <graph/Node.h>
 
+namespace jags {
+
 /**
  * @short Closed classes of deterministic nodes
  *
@@ -98,5 +100,7 @@ public:
     virtual DeterministicNode * clone(std::vector<Node const *> const &parents)
 	const = 0;
 };
+
+} /* namespace jags */
 
 #endif /* DETERMINISTIC_NODE_H_ */

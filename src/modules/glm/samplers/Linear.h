@@ -3,6 +3,7 @@
 
 #include "GLMMethod.h"
 
+namespace jags {
 namespace glm {
 
     /**
@@ -43,6 +44,6 @@ namespace glm {
 	std::string name() const;
     };
     
-}
+}}
 
 #endif /* LINEAR_H_ */

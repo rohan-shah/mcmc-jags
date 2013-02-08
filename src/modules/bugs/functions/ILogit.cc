@@ -8,6 +8,7 @@ using std::vector;
 using std::exp;
 using std::log;
 
+namespace jags {
 namespace bugs {
 
     ILogit::ILogit ()
@@ -31,4 +32,4 @@ namespace bugs {
 	return exp(eta) / (opexp * opexp);
     }
 
-}
+}}

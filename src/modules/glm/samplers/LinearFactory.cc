@@ -8,6 +8,7 @@
 
 using std::vector;
 
+namespace jags {
 namespace glm {
 
     LinearFactory::LinearFactory()
@@ -33,4 +34,5 @@ namespace glm {
     {
 	return !isBounded(snode);
     }
-}
+
+}}

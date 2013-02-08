@@ -3,6 +3,8 @@
 
 #include <graph/DeterministicNode.h>
 
+namespace jags {
+
 /**
  * @short Aggregate Node combining values from other nodes
  *
@@ -76,5 +78,6 @@ public:
     DeterministicNode *clone(std::vector<Node const *> const &parents) const;
 };
 
+} /* namespace jags */
 
 #endif /* AGGREGATE_NODE_H */

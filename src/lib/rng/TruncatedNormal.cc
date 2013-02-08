@@ -18,6 +18,8 @@ using std::logic_error;
 //sqrt(2*pi)
 #define STP 2.506628274631
 
+namespace jags {
+
 //Calculates optimal scale parameter for exponential envelope
 static double Alpha(double mu)
 {
@@ -164,3 +166,5 @@ double rnormal(double right, RNG *rng, double mu, double sigma) {
 double inormal(double left, double right, RNG *rng, double mu, double sigma) {
     return mu + sigma * inorm((left - mu)/sigma, (right - mu)/sigma, rng);
 }
+
+} //namespace jags

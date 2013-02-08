@@ -24,6 +24,8 @@ using std::string;
 
 #define N_REFRESH 100
 
+namespace jags {
+
 static void read_bounds(vector<StochasticNode*> const &snodes, 
 			unsigned int chain,
 			double *lower, double *upper, unsigned int length)
@@ -288,4 +290,4 @@ namespace mix {
 	_gv->setValue(x, _chain);
     }
 
-}
+}}

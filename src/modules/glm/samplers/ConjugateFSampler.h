@@ -3,6 +3,7 @@
 
 #include <sampler/Sampler.h>
 
+namespace jags {
 namespace glm {
 
     class ConjugateFMethod;
@@ -42,6 +43,6 @@ namespace glm {
 	std::string name() const;
     };
 
-}
+}}
 
 #endif /* CONJUGATE_F_SAMPLER_H_ */

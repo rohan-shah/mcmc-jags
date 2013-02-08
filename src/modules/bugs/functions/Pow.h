@@ -3,6 +3,7 @@
 
 #include <function/ScalarFunction.h>
 
+namespace jags {
 namespace bugs {
 
     /**
@@ -23,6 +24,6 @@ namespace bugs {
 		     std::vector<bool> const &fix) const;
     };
 
-}
+}}
 
 #endif /* FUNC_POW_H_ */

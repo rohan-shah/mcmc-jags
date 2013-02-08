@@ -6,6 +6,8 @@
 #include <list>
 #include <string>
 
+namespace jags {
+
 /**
  * CODA output for monitors that have a separate value for each chain
  * This function opens up an index file "<prefix>index.txt" and one
@@ -63,5 +65,7 @@ void TABLE(std::list<MonitorControl> const &mvec, std::string const &prefix,
  */
 void TABLE0(std::list<MonitorControl> const &mvec, std::string const &prefix,
 	    std::string &warn);
+
+} //namespace jags
 
 #endif /* CODA_H_ */

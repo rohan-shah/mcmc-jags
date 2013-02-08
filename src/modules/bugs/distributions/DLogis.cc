@@ -9,6 +9,7 @@ using std::vector;
 #define SCALE(par) (1 / *par[1])
 #define TAU(par) (*par[1])
 
+namespace jags {
 namespace bugs {
 
 DLogis::DLogis()
@@ -48,4 +49,4 @@ DLogis::r(vector<double const *> const &par, RNG *rng) const
     return ans;
 }
 
-}
+}}

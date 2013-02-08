@@ -17,6 +17,8 @@ using std::runtime_error;
 using std::logic_error;
 using std::set;
 
+namespace jags {
+
 SymTab::SymTab(Model *model)
     : _model(model)
 {
@@ -296,3 +298,4 @@ unsigned int SymTab::nchain() const
     return _model->nchain();
 }
     
+} //namespace jags

@@ -20,7 +20,7 @@
 
 #include "nmath.h"
 
-double rlogis(double location, double scale, RNG *rng)
+double rlogis(double location, double scale, JRNG *rng)
 {
     if (ISNAN(location) || !R_FINITE(scale))
 	ML_ERR_return_NAN;

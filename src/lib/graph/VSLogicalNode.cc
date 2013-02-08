@@ -9,6 +9,8 @@
 using std::vector;
 using std::logic_error;
 
+namespace jags {
+
 static vector<unsigned int> mkDim(vector<Node const *> const &parameters)
 {
     vector<unsigned int> dim(1,1);
@@ -84,3 +86,4 @@ VSLogicalNode::clone(vector<Node const*> const &parents) const
 }
 
 
+} //namespace jags

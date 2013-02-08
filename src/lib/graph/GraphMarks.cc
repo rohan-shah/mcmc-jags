@@ -16,6 +16,8 @@ using std::logic_error;
 using std::pair;
 using std::list;
 
+namespace jags {
+
 GraphMarks::GraphMarks(Graph const &graph)
     : _graph(graph)
 {
@@ -242,3 +244,4 @@ void GraphMarks::markAncestors(vector<Node const *> const &nodes, int m)
 
 }
 
+} //namespace jags

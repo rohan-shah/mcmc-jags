@@ -7,6 +7,7 @@
 
 using std::exp;
 
+namespace jags {
 namespace glm {
 
     AuxMixPoisson::AuxMixPoisson(double const &eta, double const &y)
@@ -67,4 +68,4 @@ namespace glm {
 	}
     }
 
-}
+}}

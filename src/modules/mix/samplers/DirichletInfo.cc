@@ -8,6 +8,7 @@
 
 using std::log;
 
+namespace jags {
 namespace mix {
 
     DirichletInfo::DirichletInfo(StochasticNode const *snode, unsigned int s,
@@ -24,4 +25,5 @@ namespace mix {
     {
 	return (shape - 1) * log(sum) - shape * sum;
     }
-}
+
+}}

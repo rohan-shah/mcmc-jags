@@ -51,7 +51,7 @@
 
 #define repeat for(;;)
 
-double rgamma(double a, double scale, RNG *rng)
+double rgamma(double a, double scale, JRNG *rng)
 {
 /* Constants : */
     const static double sqrt32 = 5.656854;

@@ -9,6 +9,8 @@
 using std::binary_function;
 using std::find_if;
 
+namespace jags {
+
 typedef std::pair<DistPtr, FunctionPtr> ObsFunc;
 typedef std::list<ObsFunc> OFList;
 
@@ -41,3 +43,5 @@ void ObsFuncTab::erase(DistPtr const &dist, FunctionPtr const &func)
 {
     _flist.remove(ObsFunc(dist, func));
 }
+
+} //namespace jags

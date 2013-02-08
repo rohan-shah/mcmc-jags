@@ -8,6 +8,7 @@
 class StochasticNode;
 class CalKL;
 
+namespace jags {
 namespace dic {
 
     class PoptMonitor : public PDMonitor {
@@ -18,6 +19,6 @@ namespace dic {
 	double weight(unsigned int k, unsigned int ch) const;
     };
 
-}
+}}
 
 #endif /* POPT_MONITOR_H_ */

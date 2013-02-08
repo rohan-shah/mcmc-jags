@@ -21,6 +21,7 @@ using std::vector;
 #define NSTATE(dims)   (dims[2][0])
 #define INTENSITY(par) (par[2])
 
+namespace jags {
 namespace msm {
 
 DMState::DMState()
@@ -192,4 +193,4 @@ bool DMState::isDiscreteValued(vector<bool> const &mask) const
     return true;
 }
 
-}
+}}

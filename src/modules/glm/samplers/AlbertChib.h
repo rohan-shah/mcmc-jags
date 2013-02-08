@@ -3,6 +3,7 @@
 
 #include "BinaryGLM.h"
 
+namespace jags {
 namespace glm {
 
     /**
@@ -55,6 +56,6 @@ namespace glm {
 	void update(RNG *rng);
     };
     
-}
+}}
 
 #endif /* ALBERT_CHIB_H_ */

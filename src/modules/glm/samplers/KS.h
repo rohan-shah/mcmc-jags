@@ -3,6 +3,7 @@
 
 class RNG;
 
+namespace jags {
 namespace glm {
     /**
      * Utility function used by the HolmesHeld and AlbertChib sampling
@@ -26,6 +27,7 @@ namespace glm {
      * @param rng Random number generator used for sampling
      */
     double sample_lambda(double Z, RNG *rng);
-}
+
+}}
 
 #endif /* KS_H_ */

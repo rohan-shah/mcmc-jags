@@ -4,6 +4,8 @@
 #include <graph/LogicalNode.h>
 #include <vector>
 
+namespace jags {
+
 class LinkFunction;
 
 /**
@@ -42,5 +44,7 @@ public:
     std::string const &linkName() const;
     DeterministicNode *clone(std::vector<Node const *> const &parents) const;
 };
+
+} /* namespace jags */
 
 #endif /* LINK_NODE_H_ */

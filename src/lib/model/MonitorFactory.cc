@@ -2,7 +2,10 @@
 
 using std::string;
 
+namespace jags {
+
 MonitorFactory::~MonitorFactory()
 {
 }
 
+}

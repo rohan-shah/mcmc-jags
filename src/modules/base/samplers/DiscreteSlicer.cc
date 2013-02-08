@@ -13,6 +13,7 @@ using std::floor;
 using std::vector;
 using std::string;
 
+namespace jags {
 namespace base {
 
     DiscreteSlicer::DiscreteSlicer(GraphView const *gv, unsigned int chain, 
@@ -81,4 +82,4 @@ namespace base {
 	return _gv->logFullConditional(_chain);
     }
 
-}
+}}

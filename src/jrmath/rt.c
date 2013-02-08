@@ -28,7 +28,7 @@
 
 #include "nmath.h"
 
-double rt(double df, RNG *rng)
+double rt(double df, JRNG *rng)
 {
     if (ISNAN(df) || df <= 0.0)	ML_ERR_return_NAN;
 

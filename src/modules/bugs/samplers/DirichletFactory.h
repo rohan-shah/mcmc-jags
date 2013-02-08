@@ -5,6 +5,7 @@
 
 #include <sampler/SingletonFactory.h>
 
+namespace jags {
 namespace bugs {
 
 /**
@@ -18,6 +19,6 @@ public:
     std::string name() const;
 };
 
-}
+}}
 
 #endif /* DIRICHLET_FACTORY_H_ */

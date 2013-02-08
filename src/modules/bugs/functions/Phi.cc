@@ -5,6 +5,7 @@
 
 using std::vector;
 
+namespace jags {
 namespace bugs {
 
     Phi::Phi () : LinkFunction ("phi", "probit")
@@ -35,4 +36,4 @@ namespace bugs {
 	return dnorm (eta, 0, 1, 0);
     }
 
-}
+}}

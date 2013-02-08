@@ -15,6 +15,8 @@ using std::copy;
 using std::min;
 using std::max;
 
+namespace jags {
+
 static vector<unsigned int> mkDim(ArrayDist const *dist, 
 				  vector<Node const *> const &parents)
 {
@@ -153,3 +155,5 @@ void ArrayStochasticNode::sp(double *lower, double *upper, unsigned int length,
 {
     _dist->support(lower, upper, length, _parameters[chain], _dims);
 }
+
+} //namespace jags

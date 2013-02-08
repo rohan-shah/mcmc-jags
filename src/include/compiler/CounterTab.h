@@ -8,6 +8,8 @@
 #include <vector>
 #include <map>
 
+namespace jags {
+
 /**
  * @short Counter table
  *
@@ -41,6 +43,8 @@ public:
    */
   Counter *getCounter(std::string const &name) const;
 };
+
+} /* namespace jags */
 
 #endif /* COUNTERTAB_H_ */
 

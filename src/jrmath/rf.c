@@ -33,7 +33,7 @@
 
 #include "nmath.h"
 
-double rF(double n1, double n2, RNG *rng)
+double rF(double n1, double n2, JRNG *rng)
 {
     double v1, v2;
     if (ISNAN(n1) || ISNAN(n2) || n1 <= 0. || n2 <= 0.)

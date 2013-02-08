@@ -15,6 +15,7 @@ using std::vector;
 
 cholmod_common *glm_wk = 0; /* Workspace for CHOLMOD */
 
+namespace jags {
 namespace glm {
     
     class GLMModule : public Module {
@@ -66,6 +67,7 @@ namespace glm {
 	cholmod_finish(glm_wk);
 	delete glm_wk;
     }
-}
 
-glm::GLMModule _glm_module;
+}}
+
+jags::glm::GLMModule _glm_module;

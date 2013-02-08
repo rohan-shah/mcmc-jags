@@ -22,6 +22,8 @@ using std::map;
 using std::stable_sort;
 using std::string;
 
+namespace jags {
+
 /*
   Aggregates candidate Nodes into a joint linear model. 
   
@@ -291,5 +293,5 @@ namespace glm {
 	return false;
     }
 
-}
+}}
 

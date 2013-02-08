@@ -70,6 +70,7 @@ static void fixState (unsigned int state[6])
     }
 }
 
+namespace jags {
 namespace lecuyer {
 
     RngStream::RngStream(unsigned int state[6])
@@ -168,4 +169,4 @@ namespace lecuyer {
 	fixState(state);
     }
 
-}
+}}

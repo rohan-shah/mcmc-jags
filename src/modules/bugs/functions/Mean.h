@@ -3,6 +3,7 @@
 
 #include <function/VectorFunction.h>
 
+namespace jags {
 namespace bugs {
 
     /**
@@ -23,6 +24,7 @@ namespace bugs {
 	bool isScale(std::vector<bool> const &mask,
 		     std::vector<bool> const &fix) const;
     };
-}
+
+}}
 
 #endif /* FUNC_MEAN_H_ */

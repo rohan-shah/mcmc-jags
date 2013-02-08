@@ -6,6 +6,7 @@
 using std::vector;
 using std::cosh;
 
+namespace jags {
 namespace bugs {
 
     Cosh::Cosh ()
@@ -18,4 +19,4 @@ namespace bugs {
 	return cosh(*args[0]);
     }
 
-}
+}}

@@ -8,6 +8,8 @@
 
 #include <function/FunctionPtr.h>
 
+namespace jags {
+
 class Function;
 class Node;
 class Model;
@@ -74,5 +76,7 @@ public:
     static LogicalNode* newNode(FunctionPtr const &func, 
 				std::vector<Node const *> const &parents);
 };
+
+} /* namespace jags */
 
 #endif /* LOGICAL_FACTORY_H_ */

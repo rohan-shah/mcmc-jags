@@ -3,6 +3,7 @@
 
 #include <config.h>
 
+namespace jags {
 namespace dic {
  
     class CalKL {
@@ -11,6 +12,6 @@ namespace dic {
 	virtual double divergence(unsigned int ch1, unsigned int ch2) const = 0;
     };
 
-}
+}}
 
 #endif /* CAL_KL_H_ */

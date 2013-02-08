@@ -22,6 +22,7 @@
 
 using std::string;
 
+namespace jags {
 namespace bugs {
 
 bool ConjugateFactory::canSample(StochasticNode * snode,
@@ -152,4 +153,4 @@ string ConjugateFactory::name() const
     return "bugs::Conjugate";
 }
 
-}
+}}

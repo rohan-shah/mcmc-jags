@@ -5,6 +5,8 @@
 
 #include <vector>
 
+namespace jags {
+
 class VectorFunction;
 
 /**
@@ -34,5 +36,7 @@ public:
     bool checkParentValues(unsigned int chain) const;
     DeterministicNode *clone(std::vector<Node const *> const &parents) const;
 };
+
+} /* namespace jags */
 
 #endif /* VECTOR_LOGICAL_NODE_H_ */

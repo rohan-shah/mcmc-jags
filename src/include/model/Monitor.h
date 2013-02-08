@@ -6,6 +6,8 @@
 #include <vector>
 #include <string>
 
+namespace jags {
+
 class Node;
 
 /**
@@ -97,4 +99,6 @@ public:
      void setElementNames(std::vector<std::string> const &names);
 };
 
-#endif
+} /* namespace jags */
+
+#endif // MONITOR_H_

@@ -8,6 +8,7 @@ using std::log;
 using std::sqrt;
 using std::string;
 
+namespace jags {
 namespace bugs {
 
     ArcCosh::ArcCosh ()
@@ -31,4 +32,4 @@ namespace bugs {
 	return *args[0] >= 1;
     }
 
-}
+}}

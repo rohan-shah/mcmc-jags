@@ -6,6 +6,7 @@
 using std::vector;
 using std::cos;
 
+namespace jags {
 namespace bugs {
 
     Cos::Cos ()
@@ -18,4 +19,4 @@ namespace bugs {
 	return cos(*args[0]);
     }
 
-}
+}}

@@ -25,6 +25,7 @@ static bool is_stoch(Node const *node)
    return asStochastic(node);
 }
 
+namespace jags {
 namespace bugs {
 
 REFactory::REFactory()
@@ -165,4 +166,4 @@ string const &REFactory::name() const
     return _name;
 }
 
-}
+}}

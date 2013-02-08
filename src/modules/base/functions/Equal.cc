@@ -6,6 +6,7 @@
 
 using std::vector;
 
+namespace jags {
 namespace base {
 
 Equal::Equal () : Infix ("==")
@@ -22,4 +23,4 @@ bool Equal::isDiscreteValued(vector<bool> const &mask) const
   return true;
 }
 
-}
+}}

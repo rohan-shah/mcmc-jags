@@ -6,6 +6,7 @@
 using std::vector;
 using std::tanh;
 
+namespace jags {
 namespace bugs {
 
     Tanh::Tanh ()
@@ -18,4 +19,4 @@ namespace bugs {
 	return tanh(*args[0]);
     }
 
-}
+}}

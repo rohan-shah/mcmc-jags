@@ -5,6 +5,8 @@
 #include <set>
 #include <string>
 
+namespace jags {
+
 class Sampler;
 class StochasticNode;
 class Graph;
@@ -31,5 +33,7 @@ public:
     virtual std::string name() const = 0;
 
 };
+
+} /* namespace jags */
 
 #endif /* SAMPLER_FACTORY_H_ */

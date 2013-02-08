@@ -3,6 +3,7 @@
 
 #include <rng/RNGFactory.h>
 
+namespace jags {
 namespace base {
     
 /**
@@ -22,6 +23,6 @@ namespace base {
 	std::string name() const;
     };
 
-}
+}}
 
 #endif /* BASE_RNG_FACTORY_H_ */

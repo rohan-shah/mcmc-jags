@@ -3,6 +3,7 @@
 
 using std::vector;
 
+namespace jags {
 namespace base {
 
     Divide::Divide () : Infix ("/")
@@ -34,4 +35,4 @@ namespace base {
 	return true;
     }
 	
-}
+}}

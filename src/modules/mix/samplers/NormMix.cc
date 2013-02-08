@@ -18,6 +18,8 @@ using std::string;
 using std::pair;
 using std::set;
 
+namespace jags {
+
 static bool isDirch(StochasticNode const *snode)
 {
     return snode->distribution()->name() == "ddirch";
@@ -240,4 +242,5 @@ namespace mix {
     {
         return _gv->logLikelihood(_chain);
     }
-}
+
+}}

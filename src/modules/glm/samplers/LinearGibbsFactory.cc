@@ -8,6 +8,7 @@
 
 using std::vector;
 
+namespace jags {
 namespace glm {
 
     LinearGibbsFactory::LinearGibbsFactory()
@@ -33,4 +34,5 @@ namespace glm {
     {
 	return snode->length() == 1;
     }
-}
+
+}}

@@ -5,6 +5,8 @@
 
 #include <vector>
 
+namespace jags {
+
 class GraphView;
 
 namespace glm {
@@ -21,6 +23,6 @@ namespace glm {
 	~GLMSampler();
     }; 
 
-}
+}}
 
 #endif /* GLM_SAMPLER_H_ */

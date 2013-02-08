@@ -4,6 +4,7 @@
 #include <sampler/Slicer.h>
 #include <graph/Graph.h>
 
+namespace jags {
 namespace base {
     
 /**
@@ -37,6 +38,6 @@ namespace base {
 	double logDensity() const;
     };
 
-}
+}}
 
 #endif /* DISCRETE_SLICER_H_ */

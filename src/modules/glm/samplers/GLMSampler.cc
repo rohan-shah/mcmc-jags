@@ -4,6 +4,7 @@
 
 using std::vector;
 
+namespace jags {
 namespace glm {
 
     GLMSampler::GLMSampler(GraphView *view, 
@@ -21,4 +22,4 @@ namespace glm {
 	}
     }
 
-}
+}}

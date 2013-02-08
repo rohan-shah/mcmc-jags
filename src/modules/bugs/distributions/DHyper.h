@@ -3,6 +3,7 @@
 
 #include "RScalarDist.h"
 
+namespace jags {
 namespace bugs {
 
 /**
@@ -36,6 +37,6 @@ class DHyper : public RScalarDist {
 	    std::vector<double const *> const &par2) const;
 };
 
-}
+}}
 
 #endif /* DHYPER_H_ */

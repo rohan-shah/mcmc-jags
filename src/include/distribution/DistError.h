@@ -4,6 +4,8 @@
 #include <string>
 #include <stdexcept>
 
+namespace jags {
+
 class Distribution;
 
 /**
@@ -17,5 +19,7 @@ class DistError : public std::runtime_error {
 public:
     DistError(Distribution const *dist, std::string const &msg);
 };
+
+} /* namespace jags */
 
 #endif /* DIST_ERROR_H_ */

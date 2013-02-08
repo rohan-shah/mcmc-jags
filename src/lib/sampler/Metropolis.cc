@@ -10,6 +10,8 @@ using std::vector;
 using std::copy;
 using std::min;
 
+namespace jags {
+
 Metropolis::Metropolis(vector<double> const &value)
     : _last_value(value), _adapt(true)
 {
@@ -51,3 +53,4 @@ unsigned int Metropolis::length() const
     return _last_value.size();
 }
 
+} //namespace jags

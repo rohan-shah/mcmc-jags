@@ -25,6 +25,7 @@ using std::max;
 using std::sort;
 using std::string;
 
+namespace jags {
 namespace bugs {
 
 static double 
@@ -241,4 +242,4 @@ string ConjugateGamma::name() const
     return "ConjugateGamma";
 }
 
-}
+}}

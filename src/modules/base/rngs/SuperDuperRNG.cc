@@ -7,6 +7,7 @@
 
 using std::vector;
 
+namespace jags {
 namespace base {
 
     SuperDuperRNG::SuperDuperRNG(unsigned int seed, NormKind norm_kind)
@@ -68,4 +69,4 @@ namespace base {
 	}
     }
 
-}
+}}

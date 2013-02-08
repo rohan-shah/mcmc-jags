@@ -6,6 +6,8 @@
 #include <vector>
 #include <string>
 
+namespace jags {
+
 struct RNG;
 
 /**
@@ -150,4 +152,7 @@ class VectorDist : public Distribution
     virtual unsigned int df(std::vector<unsigned int> const &lengths) const;
 };
 
+} /* namespace jags */
+
 #endif /* VECTOR_DISTRIBUTION_H_ */
+

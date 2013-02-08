@@ -16,6 +16,8 @@ using std::ostringstream;
 using std::ofstream;
 using std::ostream;
 
+namespace jags {
+
 static void writeDouble(double x, ostream &out)
 {
     if (x == JAGS_NA) {
@@ -286,3 +288,5 @@ void TABLE0(list<MonitorControl> const &mvec, string const &stem, string &warn)
     
     output.close();
 }
+
+} //namespace jags

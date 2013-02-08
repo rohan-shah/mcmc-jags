@@ -24,6 +24,7 @@ using std::pow;
 using std::exp;
 using std::log;
 
+namespace jags {
 namespace msm {
 
 static int c_1 = 1;
@@ -203,4 +204,4 @@ MatrixExpPade(double *ExpAt, double const *A, int n, double t)
     delete [] workspace;
 }
 
-}
+}}

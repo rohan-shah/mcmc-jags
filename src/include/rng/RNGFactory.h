@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 
+namespace jags {
+
 class RNG;
 
 /**
@@ -47,5 +49,7 @@ class RNGFactory
      */
     virtual std::string name() const = 0;
 };
+
+} /* namespace jags */
 
 #endif /* RNG_FACTORY_H_ */

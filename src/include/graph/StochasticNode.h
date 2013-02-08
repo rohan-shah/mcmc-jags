@@ -4,6 +4,8 @@
 #include <graph/Node.h>
 #include <distribution/Distribution.h>
 
+namespace jags {
+
 class RNG;
 
 /**
@@ -167,6 +169,7 @@ bool isSupportFixed(StochasticNode const *snode);
  */
 bool isBounded(StochasticNode const *node);
 
+} /* namespace jags */
 
 #endif /* STOCHASTIC_NODE_H_ */
 

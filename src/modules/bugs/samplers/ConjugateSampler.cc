@@ -6,6 +6,7 @@
 using std::vector;
 using std::string;
 
+namespace jags {
 namespace bugs {
 
 ConjugateSampler::ConjugateSampler(GraphView *gv, ConjugateMethod *method)
@@ -44,4 +45,4 @@ string ConjugateSampler::name() const
     return _method->name();
 }
 
-}
+}}

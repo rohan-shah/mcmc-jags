@@ -5,6 +5,7 @@
 
 class StochasticNode;
 
+namespace jags {
 namespace bugs {
 
 /**
@@ -19,6 +20,6 @@ public:
     std::string name() const;
 };
 
-}
+}}
 
 #endif /* CENSORED_H_ */

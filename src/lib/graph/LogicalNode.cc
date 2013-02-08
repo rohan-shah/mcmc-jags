@@ -16,6 +16,8 @@ using std::string;
 using std::set;
 using std::logic_error;
 
+namespace jags {
+
 static vector<vector<double const *> > 
 mkParams(vector<Node const*> const &parents, unsigned int nchain)
 {
@@ -99,3 +101,5 @@ bool LogicalNode::isDiscreteValued() const
 {
     return _discrete;
 }
+
+} //namespace jags

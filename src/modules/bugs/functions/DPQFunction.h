@@ -3,6 +3,7 @@
 
 #include <function/ScalarFunction.h>
 
+namespace jags {
 namespace bugs {
 
     class RScalarDist;
@@ -24,6 +25,6 @@ namespace bugs {
 	bool checkArgs(std::vector<double const *> const &args) const;
     };
 
-}
+}}
 
 #endif /* DPQ_FUNCTION_H_ */

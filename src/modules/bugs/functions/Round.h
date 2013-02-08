@@ -3,6 +3,7 @@
 
 #include <function/ScalarFunction.h>
 
+namespace jags {
 namespace bugs {
 
     /**
@@ -18,6 +19,7 @@ namespace bugs {
 	double evaluate(std::vector<double const *> const &args) const;
 	bool isDiscreteValued(std::vector<bool> const &mask) const;
     };
-}
+
+}}
 
 #endif /* FUNC_ROUND_H_ */

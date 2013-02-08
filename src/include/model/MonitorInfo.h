@@ -4,6 +4,8 @@
 #include <string>
 #include <sarray/Range.h>
 
+namespace jags {
+
 class Monitor;
 
 /**
@@ -28,5 +30,7 @@ public:
     Range const &range() const;
     bool operator==(MonitorInfo const &rhs) const;
 };
+
+}
 
 #endif /* MONITOR_INFO_H_ */

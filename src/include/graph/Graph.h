@@ -4,6 +4,8 @@
 #include <set>
 #include <vector>
 
+namespace jags {
+
 class Node;
 
 /**
@@ -75,5 +77,7 @@ public:
    */
   static void getSortedNodes(std::set<Node*> &nodes, std::vector<Node*> &sorted);
 };
+
+} /* namespace jags */
 
 #endif /* GRAPH_H_ */

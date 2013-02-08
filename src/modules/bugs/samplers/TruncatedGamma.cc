@@ -32,6 +32,7 @@ using std::string;
    permitted.  
 */
 
+namespace jags {
 namespace bugs {
 
 static Node const * getParent(StochasticNode const *snode)
@@ -291,4 +292,4 @@ string TruncatedGamma::name() const
     return "TruncatedGamma";
 }
 
-}
+}}

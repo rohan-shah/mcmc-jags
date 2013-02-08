@@ -10,6 +10,8 @@ using std::string;
 using std::find;
 using std::pair;
 
+namespace jags {
+
 Module::Module(string const &name)
     : _name(name), _loaded(false)
 {
@@ -292,3 +294,4 @@ list<Module *> &Module::loadedModules()
     return *_modules;
 }
 
+} //namespace jags

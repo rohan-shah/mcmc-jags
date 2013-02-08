@@ -16,6 +16,7 @@ using std::string;
    The same issue affects ArcCosh (acosh) and ArcTanh (atanh).
 */
 
+namespace jags {
 namespace bugs {
 
     ArcSinh::ArcSinh ()
@@ -34,4 +35,4 @@ namespace bugs {
 	return log(x + sqrt(1 + x*x));
     }
 
-}
+}}

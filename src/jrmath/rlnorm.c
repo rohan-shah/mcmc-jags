@@ -29,7 +29,7 @@
 
 #include "nmath.h"
 
-double rlnorm(double meanlog, double sdlog, RNG *rng)
+double rlnorm(double meanlog, double sdlog, JRNG *rng)
 {
     if(ISNAN(meanlog) || !R_FINITE(sdlog) || sdlog < 0.)
 	ML_ERR_return_NAN;

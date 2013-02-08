@@ -14,7 +14,6 @@ using std::logic_error;
 using std::string;
 using std::ostringstream;
 
-
 static vector<int> asSigned(vector<unsigned int> const &orig)
 {
     unsigned int n = orig.size();
@@ -101,6 +100,8 @@ makeLength(vector<unsigned int> const &dim)
 	return length;
     }
 }
+
+namespace jags {
 
 Range::Range()
   : _lower(0), _upper(0), _dim(0), _dim_dropped(0), _length(0)
@@ -286,3 +287,4 @@ string print(Range const &range)
     return ostr.str();
 }
 
+} //namespace jags

@@ -7,6 +7,7 @@
 
 using std::vector;
 
+namespace jags {
 namespace msm {
 
 Mexp::Mexp()
@@ -30,4 +31,4 @@ bool Mexp::checkParameterDim (vector <vector<unsigned int> > const &dims) const
     return isSquareMatrix(dims[0]);
 }
 
-}
+}}

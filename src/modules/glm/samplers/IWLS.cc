@@ -22,6 +22,8 @@ using std::fabs;
 using std::log;
 using std::copy;
 
+namespace jags {
+
 static unsigned int nchildren(GraphView const *view)
 {
     return view->stochasticChildren().size();
@@ -215,4 +217,5 @@ namespace glm {
 	    _view->setValue(xold, _chain); //reject proposal
 	}
     }
-}
+
+}}

@@ -3,6 +3,7 @@
 
 #include <function/ArrayFunction.h>
 
+namespace jags {
 namespace bugs {
 
     /**
@@ -29,6 +30,6 @@ namespace bugs {
 				 std::vector<std::vector<unsigned int> > const &dims) const;
     };
 
-}
+}}
 
 #endif /* LOG_DET_H_ */

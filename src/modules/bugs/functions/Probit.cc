@@ -5,6 +5,7 @@
 
 using std::vector;
 
+namespace jags {
 namespace bugs {
 
     Probit::Probit ()
@@ -23,4 +24,4 @@ namespace bugs {
 	return (p > 0 && p < 1);
     }
 
-}
+}}

@@ -5,6 +5,7 @@
 
 using std::vector;
 
+namespace jags {
 namespace glm {
 
     HolmesHeldFactory::HolmesHeldFactory()
@@ -29,4 +30,5 @@ namespace glm {
     {
 	return true;
     }
-}
+
+}}

@@ -7,6 +7,8 @@
 
 using std::vector;
 
+namespace jags {
+
 static StochasticNode* mkRep(StochasticNode const *snode)
 {
     vector<Node const *> par = snode->parents();
@@ -44,4 +46,4 @@ namespace dic {
 	return div / _nrep;
     }
 
-}
+}}

@@ -3,6 +3,7 @@
 
 #include "ConjugateMethod.h"
 
+namespace jags {
 namespace bugs {
 
     class ShiftedCount : public ConjugateMethod {
@@ -13,6 +14,6 @@ namespace bugs {
 	std::string name() const;
     };
 
-}
+}}
 
 #endif /* SHIFTED_COUNT_H_ */

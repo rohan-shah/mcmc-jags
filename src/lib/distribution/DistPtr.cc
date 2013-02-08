@@ -3,6 +3,8 @@
 
 using std::string;
 
+namespace jags {
+
 DistPtr::DistPtr()
     : sdist(0), vdist(0), adist(0)
 {}
@@ -53,3 +55,5 @@ bool isNULL(DistPtr const &p)
 {
     return (p.sdist == 0 && p.vdist == 0 && p.adist == 0);
 }
+
+} //namespace jags

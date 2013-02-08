@@ -3,6 +3,7 @@
 
 #include <function/VectorFunction.h>
 
+namespace jags {
 namespace bugs {
 
     /**
@@ -22,6 +23,7 @@ namespace bugs {
 		       std::vector<unsigned int> const &lengths) const;
 	bool checkParameterLength (std::vector<unsigned int> const &len) const;
     };
-}
+
+}}
 
 #endif /* FUNC_SD_H_ */

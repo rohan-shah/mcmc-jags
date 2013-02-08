@@ -3,6 +3,8 @@
 
 #include <sampler/SampleMethod.h>
 
+namespace jags {
+
 /**
  * Enumerates different states of the sampler, SLICER_OK means there has
  * been no error, SLICER_POSINF means that the Slicer is stuck at a
@@ -93,5 +95,7 @@ public:
      */
     SlicerState state() const;
 };
+
+} /* namespace jags */
 
 #endif /* SLICER_H_ */

@@ -41,6 +41,8 @@ using std::min;
 using std::max;
 using std::reverse;
 
+namespace jags {
+
 Model::Model(unsigned int nchain)
     : _samplers(0), _nchain(nchain), _rng(nchain, 0), _iteration(0),
       _is_initialized(false), _adapt(false), _data_gen(false)
@@ -694,3 +696,5 @@ vector<StochasticNode*> const &Model::stochasticNodes() const
 {
     return _stochastic_nodes;
 }
+
+} //namespace jags

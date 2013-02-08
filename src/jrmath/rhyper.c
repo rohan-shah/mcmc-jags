@@ -78,7 +78,7 @@ static double afc(int i)
     return value;
 }
 
-double rhyper(double nn1in, double nn2in, double kkin, RNG *rng)
+double rhyper(double nn1in, double nn2in, double kkin, JRNG *rng)
 {
     const static double con = 57.56462733;
     const static double deltal = 0.0078;

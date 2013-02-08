@@ -11,6 +11,9 @@
 using std::log;
 using std::fabs;
 
+namespace jags {
+namespace bugs {
+
 double logdet(double const *a, int n)
 {
    // Log determinant of n x n symmetric positive matrix a */
@@ -182,3 +185,5 @@ bool check_symmetry(double const *x, unsigned int n, double tol)
     }
     return true;
 }
+
+}}

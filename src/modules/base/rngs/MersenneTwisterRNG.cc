@@ -44,6 +44,7 @@
 
 using std::vector;
 
+namespace jags {
 namespace base {
 
     MersenneTwisterRNG::MersenneTwisterRNG(unsigned int seed, 
@@ -173,4 +174,4 @@ namespace base {
 	}
     }
 
-}
+}}

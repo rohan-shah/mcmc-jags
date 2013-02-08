@@ -41,7 +41,7 @@
 
 #define repeat for(;;)
 
-double rbinom(double nin, double pp, RNG *rng)
+double rbinom(double nin, double pp, JRNG *rng)
 {
     /* FIXME: These should become THREAD_specific globals : */
 

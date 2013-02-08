@@ -2,6 +2,7 @@
 
 using std::vector;
 
+namespace jags {
 namespace base {
 
     void WichmannHillRNG::fixupSeeds()
@@ -63,4 +64,4 @@ namespace base {
 	}
     }
 
-}
+}}

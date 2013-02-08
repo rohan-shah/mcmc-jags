@@ -4,6 +4,8 @@
 #include <graph/DeterministicNode.h>
 #include <vector>
 
+namespace jags {
+
 class Function;
 
 /**
@@ -41,5 +43,7 @@ public:
 		  ClosedFuncClass fc, bool fixed) const;
     std::string deparse(std::vector<std::string> const &) const;
 };
+
+} /* namespace jags */
 
 #endif /* LOGICAL_NODE_H_ */

@@ -6,6 +6,7 @@
 
 using std::vector;
 
+namespace jags {
 namespace glm {
 
     AlbertChibFactory::AlbertChibFactory()
@@ -20,4 +21,4 @@ namespace glm {
 	return new AlbertChib(view, sub_views, chain, false);
     }
 
-}
+}}

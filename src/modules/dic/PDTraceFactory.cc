@@ -14,6 +14,7 @@ using std::set;
 using std::string;
 using std::vector;
 
+namespace jags {
 namespace dic {
 
     static KL const *findKL(string const &name) {
@@ -85,4 +86,5 @@ namespace dic {
     {
 	return "dic::PDTrace";
     }
-}
+
+}}

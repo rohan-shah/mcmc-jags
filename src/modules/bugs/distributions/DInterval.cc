@@ -24,6 +24,7 @@ static unsigned int value(vector<double const *> const &par, unsigned int ncut)
     return ncut;
 }
 
+namespace jags {
 namespace bugs {
 
 DInterval::DInterval()
@@ -136,4 +137,4 @@ double DInterval::KL(vector<double const *> const &par1,
     }
 }
 
-}
+}}

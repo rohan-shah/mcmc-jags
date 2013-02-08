@@ -3,6 +3,8 @@
 
 #include <model/Monitor.h>
 
+namespace jags {
+
 class StochasticNode;
 
 namespace dic {
@@ -21,6 +23,6 @@ namespace dic {
 	bool poolIterations() const;
     };
 
-}
+}}
 
 #endif /* DEVIANCE_MEAN_H_ */

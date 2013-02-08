@@ -18,6 +18,8 @@ using std::string;
 #define MAX_TEMP 100
 #define NREP 5
 
+namespace jags {
+
 /* 
  * Returns a pointer to a newly allocated GraphView if snode has a
  * stochastic child with distribution "dnormmix", otherwise a null
@@ -112,4 +114,5 @@ namespace mix {
 	else 
 	    return vector<Sampler*>();
     }
-}
+
+}}

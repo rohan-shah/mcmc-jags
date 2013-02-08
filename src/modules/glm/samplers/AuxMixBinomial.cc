@@ -7,6 +7,7 @@
 
 using std::exp;
 
+namespace jags {
 namespace glm {
     
     AuxMixBinomial::AuxMixBinomial(double const &eta, double const &nb, 
@@ -59,4 +60,5 @@ namespace glm {
 	    return _mix->precision();
 	}
     }
-}
+
+}}

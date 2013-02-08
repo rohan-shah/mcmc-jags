@@ -17,6 +17,7 @@ using std::string;
 #define SIZE(par) (*par[1])
 #define PROB(par) (*par[0])
 
+namespace jags {
 namespace bugs {
 
 DBin::DBin()
@@ -104,4 +105,4 @@ double DBin::KL(vector<double const *> const &par0,
     }
 }
 
-}
+}}

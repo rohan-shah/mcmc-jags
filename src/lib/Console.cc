@@ -57,6 +57,8 @@ using std::FILE;
 
 /* Helper functions for dumpState */
 
+namespace jags {
+
 static bool isData(Node const *node)
 {
   return node->isRandomVariable() && node->isObserved();
@@ -823,3 +825,5 @@ vector<pair<string, bool> >  Console::listFactories(FactoryType type)
     }
     return ans;
 }
+
+} //namespace jags

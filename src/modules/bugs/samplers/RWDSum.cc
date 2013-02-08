@@ -19,6 +19,9 @@ using std::set;
 //Target acceptance probability for Metropolis-Hastings algorithm
 #define PROB  0.5
 
+namespace jags {
+namespace bugs {
+
 /*
  * Returns the stochastic child with a DSum distribution, if it
  * exists, otherwise a null pointer. If there is more than one DSum
@@ -107,8 +110,6 @@ static vector<double> nodeValues(GraphView const *gv, unsigned int chain)
     gv->setValue(ans, chain);
     return(ans);
 }
-
-namespace bugs {
 
 RWDSum::RWDSum(GraphView const *gv, unsigned int chain, double step)
     : Metropolis(nodeValues(gv, chain)), _gv(gv), _chain(chain), 
@@ -232,4 +233,4 @@ void RWDSum::getValue(vector<double> &value) const
     _gv->getValue(value, _chain);
 }
 
-}
+}}

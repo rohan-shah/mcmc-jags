@@ -16,6 +16,8 @@ using std::string;
 using std::set;
 using std::logic_error;
 
+namespace jags {
+
 ScalarLogicalNode::ScalarLogicalNode(ScalarFunction const *function, 
 				     vector<Node const *> const &parameters)
     : LogicalNode(vector<unsigned int>(1,1), parameters, function),
@@ -53,4 +55,4 @@ ScalarLogicalNode::clone(vector<Node const*> const &parents) const
     return new ScalarLogicalNode(_func, parents);
 }
 
-
+} //namespace jags

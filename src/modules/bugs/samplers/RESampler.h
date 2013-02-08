@@ -10,6 +10,7 @@ class StochasticNode;
 class DeterministicNode;
 class Node;
 
+namespace jags {
 namespace bugs {
 
 enum REMode {RE_SHUFFLE=0, RE_SCALE, RE_LOCATION, RE_INIT};
@@ -38,6 +39,6 @@ public:
     std::string name() const;
 };
 
-}
+}}
 
 #endif /* RANDOM_EFFECT_SAMPLER_H_ */

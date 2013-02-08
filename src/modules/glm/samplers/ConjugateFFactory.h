@@ -3,6 +3,7 @@
 
 #include <sampler/SingletonFactory.h>
 
+namespace jags {
 namespace glm {
 
   /**
@@ -35,6 +36,6 @@ namespace glm {
     std::string name() const;
   };
 
-}
+}}
 
 #endif /* CONJUGATE_F_FACTORY_H_ */

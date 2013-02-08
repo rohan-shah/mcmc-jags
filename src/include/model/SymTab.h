@@ -8,6 +8,8 @@
 #include <vector>
 #include <map>
 
+namespace jags {
+
 /**
  * @short Associates a NodeArray object with a BUGS-language name
  *
@@ -106,5 +108,7 @@ public:
    */
   unsigned int nchain() const;
 };
+
+} /* namespace jags */
 
 #endif /* SYMTAB_H_ */

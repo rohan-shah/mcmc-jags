@@ -3,6 +3,7 @@
 
 #include <function/VectorFunction.h>
 
+namespace jags {
 namespace bugs {
 
     /**
@@ -23,6 +24,6 @@ namespace bugs {
 	    const;
     };
 
-}
+}}
 
 #endif /* FUNC_INTERP_LIN_H_ */

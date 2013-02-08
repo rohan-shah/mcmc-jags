@@ -3,6 +3,8 @@
 
 #include <function/Function.h>
 
+namespace jags {
+
 /**
  * @short Inverse link functions.
  *
@@ -34,5 +36,7 @@ public:
     /** Gradient of the inverse link function */
     virtual double grad(double eta) const = 0;
 };
+
+} /* namespace jags */
 
 #endif /* LINK_FUNCTION_H_ */

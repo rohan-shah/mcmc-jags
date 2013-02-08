@@ -4,6 +4,8 @@
 #include <sampler/SampleMethod.h>
 #include <vector>
 
+namespace jags {
+
 class StochasticNode;
 
 /**
@@ -76,5 +78,7 @@ public:
      */
     unsigned int length() const;
 };
+
+} /* namespace jags */
 
 #endif /* METROPOLIS_H_ */

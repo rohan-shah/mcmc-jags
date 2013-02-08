@@ -24,6 +24,8 @@ static vector<double> makePower(int max_level, double max_temp)
     return pwr;
 }
 
+namespace jags {
+
 TemperedMetropolis::TemperedMetropolis(vector<double> const &value,
 				       int max_level, double max_temp, 
 				       unsigned int nrep)
@@ -151,3 +153,5 @@ double TemperedMetropolis::logJacobian(vector<double> const &value) const
 {
     return 0;
 }
+
+} //namespace jags

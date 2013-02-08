@@ -30,6 +30,7 @@ static vector<StochasticNode*> merg(StochasticNode *variance,
     return nodes;
 }
 
+namespace jags {
 namespace bugs {
 
 RESampler::RESampler(StochasticNode *variance,
@@ -185,4 +186,4 @@ bool RESampler::checkAdaptation() const
     return true; //FIXME!!
 }
 
-}
+}}

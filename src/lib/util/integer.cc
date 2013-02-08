@@ -21,6 +21,8 @@ static int coerceInteger(double fval)
     }
 }
 
+namespace jags {
+
 int asInteger(double fval)
 {
     if (fval >= INT_MAX || fval <= INT_MIN) {
@@ -37,3 +39,4 @@ bool checkInteger(double fval)
     return fabs(fval - coerceInteger(fval)) < eps;
 }
 
+}

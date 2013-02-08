@@ -3,6 +3,7 @@
 
 #include <distribution/ScalarDist.h>
 
+namespace jags {
 namespace bugs {
 
 /**
@@ -35,6 +36,6 @@ class DUnif : public ScalarDist {
 	      std::vector<double const *> const &par2) const;
 };
 
-}
+}}
 
 #endif /* DUNIF_H_ */

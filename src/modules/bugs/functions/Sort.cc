@@ -8,6 +8,7 @@
 using std::vector;
 using std::sort;
 
+namespace jags {
 namespace bugs {
 
     Sort::Sort ()
@@ -41,4 +42,4 @@ namespace bugs {
 #endif
     }
 
-}
+}}

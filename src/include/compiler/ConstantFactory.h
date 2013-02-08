@@ -4,6 +4,8 @@
 #include <map>
 #include <compiler/NodeFactory.h>
 
+namespace jags {
+
 class ConstantNode;
 class Model;
 
@@ -50,5 +52,7 @@ public:
 				  std::vector<double> const &value,
 				  Model &graph);
 };
+
+} /* namespace jags */
 
 #endif /* CONSTANT_FACTORY_H_ */

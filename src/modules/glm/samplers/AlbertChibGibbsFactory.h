@@ -3,6 +3,7 @@
 
 #include "BinaryFactory.h"
 
+namespace jags {
 namespace glm {
 
     /**
@@ -26,6 +27,6 @@ namespace glm {
 			     unsigned int chain) const;
     };
 
-}
+}}
 
 #endif /* ALBERT_CHIB_GIBBS_FACTORY_H_ */

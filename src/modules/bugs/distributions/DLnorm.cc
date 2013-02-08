@@ -11,6 +11,7 @@ using std::vector;
 #define TAU(par) (*par[1])
 #define SDLOG(par) (1/sqrt(*par[1]))
 
+namespace jags {
 namespace bugs {
 
 DLnorm::DLnorm()
@@ -63,4 +64,4 @@ DLnorm::KL(vector<double const *> const &par0,
 	    log(tau0/tau1)) / 2;
 }
 
-}
+}}

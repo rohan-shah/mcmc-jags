@@ -4,6 +4,8 @@
 #include <sampler/Metropolis.h>
 #include <sampler/StepAdapter.h>
 
+namespace jags {
+
 /**
  * @short Random Walk Metropolis-Hastings sampling method
  *
@@ -74,5 +76,7 @@ public:
      */
     virtual double logDensity() const = 0;
 };
+
+} /* namespace jags */
 
 #endif /* RW_METROPOLIS_H_ */

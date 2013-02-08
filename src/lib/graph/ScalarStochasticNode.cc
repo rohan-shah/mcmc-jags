@@ -10,6 +10,8 @@
 using std::vector;
 using std::string;
 
+namespace jags {
+
 ScalarStochasticNode::ScalarStochasticNode(ScalarDist const *dist, 
 					   vector<Node const *> const &params,
 					   Node const *lower, Node const *upper)
@@ -88,3 +90,5 @@ void ScalarStochasticNode::sp(double *lower, double *upper, unsigned int length,
     *lower = _dist->l(_parameters[chain]);
     *upper = _dist->u(_parameters[chain]);
 }
+
+} //namespace jags

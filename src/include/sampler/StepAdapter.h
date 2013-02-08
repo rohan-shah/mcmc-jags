@@ -3,6 +3,8 @@
 
 #include <sampler/Metropolis.h>
 
+namespace jags {
+
 /**
  * @short Step size for Random Walk Metropolis-Hastings
  *
@@ -40,5 +42,7 @@ public:
      */
     double logitDeviation(double p) const;
 };
+
+} /* namespace jags */
 
 #endif /* STEP_ADAPTER_H_ */

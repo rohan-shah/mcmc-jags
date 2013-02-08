@@ -1,6 +1,8 @@
 #ifndef DIRICHLET_INFO_H_
 #define DIRICHLET_INFO_H_
 
+namespace jags {
+
 class StochasticNode;
 
 namespace mix {
@@ -22,6 +24,6 @@ namespace mix {
 	double gammaPenalty() const;
     };
 
-}
+}}
 
 #endif /* DIRICHLET_INFO_H_ */

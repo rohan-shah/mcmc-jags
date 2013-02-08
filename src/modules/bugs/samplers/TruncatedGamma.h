@@ -3,6 +3,8 @@
 
 #include "ConjugateMethod.h"
 
+namespace jags {
+
 class Node;
 
 namespace bugs {
@@ -18,6 +20,6 @@ public:
     std::string name() const;
 };
 
-}
+}}
 
 #endif /* TRUNCATED_GAMMA_H_ */

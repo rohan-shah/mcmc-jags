@@ -14,6 +14,7 @@ using std::length_error;
 using std::out_of_range;
 using std::string;
 
+namespace jags {
 
 /* 
    Two utility functions "substitute_parents" and "substitute_offsets"
@@ -204,3 +205,5 @@ vector<unsigned int> const &AggNode::offsets() const
 {
     return _offsets;
 }
+
+} //namespace jags

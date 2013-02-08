@@ -3,6 +3,7 @@
 
 #include <distribution/ArrayDist.h>
 
+namespace jags {
 namespace bugs {
 
 /**
@@ -52,6 +53,6 @@ public:
   unsigned int df(std::vector<std::vector<unsigned int> > const &dims) const;
 };
 
-}
+}}
 
 #endif /* DWISH_H_ */

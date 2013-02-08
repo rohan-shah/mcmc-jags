@@ -3,6 +3,7 @@
 
 #include <distribution/ArrayDist.h>
 
+namespace jags {
 namespace msm {
 
 /**
@@ -44,6 +45,7 @@ public:
     bool isDiscreteValued(std::vector<bool> const &mask) const;
 };
 
-}
+}}
 
 #endif /* DMSTATE_H_ */
+

@@ -7,6 +7,7 @@ using std::vector;
 using std::acos;
 using std::string;
 
+namespace jags {
 namespace bugs {
 
     ArcCos::ArcCos ()
@@ -28,4 +29,5 @@ namespace bugs {
     {
 	return *args[0] >= -1 && *args[0] <= 1;
     }
-}
+
+}}

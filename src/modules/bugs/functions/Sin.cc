@@ -6,6 +6,7 @@
 using std::vector;
 using std::sin;
 
+namespace jags {
 namespace bugs {
 
 
@@ -19,4 +20,4 @@ namespace bugs {
 	return sin(*args[0]);
     }
 
-}
+}}

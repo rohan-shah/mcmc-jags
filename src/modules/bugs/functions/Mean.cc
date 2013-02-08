@@ -3,6 +3,7 @@
 
 using std::vector;
 
+namespace jags {
 namespace bugs {
 
     Mean::Mean ()
@@ -30,5 +31,5 @@ namespace bugs {
     {
 	return true;
     }
-}
 
+}}

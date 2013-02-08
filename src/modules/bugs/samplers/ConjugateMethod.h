@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 
+namespace jags {
+
 class GraphView;
 class RNG;
 class Graph;
@@ -37,7 +39,7 @@ public:
     virtual std::string name() const = 0;
 };
 
-}
+}}
 
 #endif /* CONJUGATE_METHOD_H_ */
 

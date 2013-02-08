@@ -3,6 +3,7 @@
 
 #include <function/ScalarFunction.h>
 
+namespace jags {
 namespace bugs {
 
     /**
@@ -21,6 +22,6 @@ namespace bugs {
 	bool checkParameterValue(std::vector<double const *> const &args) const;
     };
 
-}
+}}
 
 #endif /* FUNC_ARCCOSH_H_ */

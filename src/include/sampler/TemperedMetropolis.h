@@ -5,6 +5,8 @@
 #include <sampler/StepAdapter.h>
 #include <vector>
 
+namespace jags {
+
 class StepAdapter;
 
 /**
@@ -120,5 +122,7 @@ public:
      */
     virtual double logJacobian(std::vector<double> const &value) const;
 };
+
+} /* namespace jags */
 
 #endif /* MIX_METHOD_H_ */

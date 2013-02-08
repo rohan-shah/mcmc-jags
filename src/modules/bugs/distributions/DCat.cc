@@ -19,6 +19,7 @@ using std::max_element;
 #define PROB(par) (par[0])
 #define NCAT(lengths) (lengths[0])
 
+namespace jags {
 namespace bugs {
 
 DCat::DCat()
@@ -150,4 +151,4 @@ double DCat::KL(vector<double const *> const &par1,
     return y;
 }
 
-}
+}}

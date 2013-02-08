@@ -19,6 +19,7 @@ static double const & one()
     return x;
 }
 
+namespace jags {
 namespace glm {
 
     AMMethod::AMMethod(GraphView const *view,
@@ -93,5 +94,6 @@ namespace glm {
     {
 	return "AuxiliaryMixture";
     }
-}
+
+}}
     

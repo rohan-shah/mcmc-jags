@@ -5,6 +5,8 @@
 
 #include <vector>
 
+namespace jags {
+
 class StochasticNode;
 
 namespace dic {
@@ -32,6 +34,6 @@ namespace dic {
 	virtual double weight(unsigned int k, unsigned int ch) const;
     };
 
-}
+}}
 
 #endif /* PD_MONITOR_H_ */

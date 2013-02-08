@@ -3,6 +3,7 @@
 
 #include <function/ScalarFunction.h>
 
+namespace jags {
 namespace bugs {
 
 /**
@@ -24,6 +25,6 @@ public:
     bool isDiscreteValued(std::vector<bool> const &mask) const;
 };
 
-}
+}}
 
 #endif /* IF_ELSE_H_ */

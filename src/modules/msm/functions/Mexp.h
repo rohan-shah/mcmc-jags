@@ -3,6 +3,7 @@
 
 #include <function/ArrayFunction.h>
 
+namespace jags {
 namespace msm {
 
 class Mexp : public ArrayFunction
@@ -16,6 +17,6 @@ public:
     bool checkParameterDim(std::vector <std::vector<unsigned int> > const &dims) const;
 };
 
-}
+}}
 
 #endif /* MEXP_H_ */

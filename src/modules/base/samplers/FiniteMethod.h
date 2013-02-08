@@ -3,6 +3,7 @@
 
 #include <sampler/SampleMethod.h>
 
+namespace jags {
 namespace base {
 
 /**
@@ -24,6 +25,7 @@ namespace base {
 	std::string name() const;
 	static bool canSample(StochasticNode const *snode);
     };
-}
+
+}}
 
 #endif /* FINITE_METHOD_H_ */

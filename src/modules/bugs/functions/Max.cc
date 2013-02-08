@@ -8,6 +8,7 @@ using std::vector;
 using std::max_element;
 using std::max;
 
+namespace jags {
 namespace bugs {
 
     Max::Max ()
@@ -36,4 +37,4 @@ namespace bugs {
 	return allTrue(mask);
     }
 
-}
+}}

@@ -3,6 +3,7 @@
 
 #include <function/VectorFunction.h>
 
+namespace jags {
 namespace bugs {
 
     /**
@@ -25,6 +26,6 @@ namespace bugs {
 		     std::vector<bool> const &isfixed) const;
     };
     
-}
+}}
 
 #endif /* FUNC_SUM_H_ */

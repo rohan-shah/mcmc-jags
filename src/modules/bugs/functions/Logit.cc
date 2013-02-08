@@ -6,6 +6,7 @@
 using std::vector;
 using std::log;
 
+namespace jags {
 namespace bugs {
 
     Logit::Logit ():ScalarFunction ("logit", 1)
@@ -24,4 +25,4 @@ namespace bugs {
 	return (arg >= 0 && arg <= 1);
     }
 
-}
+}}

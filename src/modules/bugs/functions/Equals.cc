@@ -7,6 +7,7 @@
 using std::vector;
 using std::fabs;
 
+namespace jags {
 namespace bugs {
 
     Equals::Equals () : ScalarFunction ("equals",2)
@@ -23,4 +24,4 @@ namespace bugs {
 	return true;
     }
 
-}
+}}

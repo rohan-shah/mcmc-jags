@@ -4,6 +4,10 @@
 /* We must have a real destructor, even though it doesn't do anything,
  * otherwise the destructors for child classes never get called */
 
+namespace jags {
+
 SamplerFactory::~SamplerFactory()
 {
 }
+
+} //namespace jags

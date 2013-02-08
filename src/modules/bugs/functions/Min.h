@@ -3,6 +3,7 @@
 
 #include <function/VectorFunction.h>
 
+namespace jags {
 namespace bugs {
 
     /**
@@ -19,6 +20,7 @@ namespace bugs {
 	/** Returns true if all arguments are true */
 	bool isDiscreteValued(std::vector<bool> const &mask) const;
     };
-}
+
+}}
 
 #endif /* FUNC_MIN_H_ */

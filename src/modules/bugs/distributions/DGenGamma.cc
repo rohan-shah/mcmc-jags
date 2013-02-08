@@ -25,6 +25,7 @@ static inline double UNtransform(double x, vector<double const*> const &par)
     return exp(log(x) / POW(par) - log(URATE(par)));
 }
 
+namespace jags {
 namespace bugs {
 
 DGenGamma::DGenGamma()
@@ -96,4 +97,4 @@ double DGenGamma::KL(vector<double const *> const &par1,
 	+ lgammafn(r2) - lgammafn(r1);
 }
 
-}
+}}

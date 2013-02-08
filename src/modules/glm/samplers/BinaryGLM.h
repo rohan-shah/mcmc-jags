@@ -9,6 +9,7 @@
  */
 enum BGLMOutcome {BGLM_NORMAL, BGLM_LOGIT, BGLM_PROBIT};
 
+namespace jags {
 namespace glm {
 
     /**
@@ -70,6 +71,6 @@ namespace glm {
 	double getPrecision(unsigned int i) const;
     };
     
-}
+}}
 
 #endif /* BINARY_GLM_H_ */

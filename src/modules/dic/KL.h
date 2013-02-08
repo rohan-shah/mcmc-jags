@@ -3,6 +3,7 @@
 
 #include <vector>
 
+namespace jags {
 namespace dic {
     
     class KL
@@ -15,6 +16,6 @@ namespace dic {
 	
     };
 
-}
+}}
 
 #endif /* KL_H_ */

@@ -5,6 +5,7 @@
 
 using std::vector;
 
+namespace jags {
 namespace bugs {
 
     DSumFunc::DSumFunc()
@@ -46,4 +47,4 @@ namespace bugs {
 	return dims[0];
     }
 
-}
+}}

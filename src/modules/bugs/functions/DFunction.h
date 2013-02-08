@@ -3,6 +3,7 @@
 
 #include "DPQFunction.h"
 
+namespace jags {
 namespace bugs {
 
     class DFunction : public DPQFunction
@@ -13,6 +14,6 @@ namespace bugs {
 	double evaluate(std::vector <double const *> const &args) const;
     };
 
-}
+}}
 
 #endif /* D_FUNCTION_H_ */

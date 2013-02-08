@@ -8,6 +8,7 @@ using std::vector;
 using std::fabs;
 using std::pow;
 
+namespace jags {
 namespace bugs {
 
     Pow::Pow ()
@@ -42,4 +43,5 @@ namespace bugs {
 	
  	return true;
     }
-}
+
+}}

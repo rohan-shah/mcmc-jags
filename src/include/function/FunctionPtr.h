@@ -6,6 +6,8 @@
 #include <function/VectorFunction.h>
 #include <function/ArrayFunction.h>
 
+namespace jags {
+
 /**
  * @short Polymorphic pointer to Function
  *
@@ -35,5 +37,7 @@ public:
     friend Function const *FUNC(FunctionPtr const &p);
     friend bool isNULL(FunctionPtr const &p);
 };
+
+} /* namespace jags */
 
 #endif /* FUNCTION_POINTER_H_ */

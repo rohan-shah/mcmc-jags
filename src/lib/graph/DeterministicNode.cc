@@ -3,6 +3,8 @@
 
 using std::vector;
 
+namespace jags {
+
 DeterministicNode::DeterministicNode(vector<unsigned int> const &dim, 
                                      vector<Node const *> const &parents)
     : Node(dim, parents), _observed(true)
@@ -51,3 +53,4 @@ bool DeterministicNode::isObserved() const
     return _observed;
 }
 
+} //namespace jags

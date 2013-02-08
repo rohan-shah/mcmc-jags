@@ -15,6 +15,8 @@ using std::length_error;
 using std::logic_error;
 using std::count_if;
 
+namespace jags {
+
 ScalarDist::ScalarDist(string const &name, unsigned int npar, Support support)
   : Distribution(name, npar), _support(support)
 {
@@ -76,3 +78,5 @@ double ScalarDist::KL(vector<double const *> const &par1,
 
 }
 */
+
+} //namespace jags

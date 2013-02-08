@@ -4,6 +4,8 @@
 #include "CalKL.h"
 #include <vector>
 
+namespace jags {
+
 class StochasticNode;
 class RNG;
 
@@ -20,6 +22,6 @@ namespace dic {
 	double divergence(unsigned int ch1, unsigned int ch2) const;
     };
 
-}
+}}
 
 #endif /* CAL_KL_APPROX_H_ */

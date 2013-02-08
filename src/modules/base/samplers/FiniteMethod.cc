@@ -21,6 +21,7 @@ using std::exp;
 using std::string;
 using std::max;
 
+namespace jags {
 namespace base {
 
     FiniteMethod::FiniteMethod(GraphView const *gv, unsigned int chain)
@@ -130,4 +131,5 @@ namespace base {
     {
 	return "FiniteMethod";
     }
-}
+
+}}

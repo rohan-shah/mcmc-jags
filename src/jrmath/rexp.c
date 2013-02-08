@@ -30,7 +30,7 @@
 
 #include "nmath.h"
 
-double rexp(double scale, RNG *rng)
+double rexp(double scale, JRNG *rng)
 {
     if (!R_FINITE(scale) || scale <= 0.0) {
 	if(scale == 0.) return 0.;

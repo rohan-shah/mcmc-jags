@@ -8,6 +8,7 @@
 
 using std::vector;
 
+namespace jags {
 namespace bugs {
 
     LogDet::LogDet ()
@@ -41,5 +42,4 @@ namespace bugs {
 	return check_symmetry(args[0], dims[0][0]);
     }
 
-}
-
+}}

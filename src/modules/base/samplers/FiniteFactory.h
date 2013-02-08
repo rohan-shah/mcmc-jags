@@ -3,6 +3,7 @@
 
 #include <sampler/SingletonFactory.h>
 
+namespace jags {
 namespace base {
 
 /**
@@ -16,6 +17,6 @@ namespace base {
 	std::string name() const;
     };
 
-}
+}}
 
 #endif /* FINITE_FACTORY_H_ */

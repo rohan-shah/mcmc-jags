@@ -13,6 +13,7 @@
 
 using std::vector;
 
+namespace jags {
 namespace bugs {
 
 DMNorm::DMNorm()
@@ -156,4 +157,4 @@ bool DMNorm::isSupportFixed(vector<bool> const &fixmask) const
     return true;
 }
 
-}
+}}

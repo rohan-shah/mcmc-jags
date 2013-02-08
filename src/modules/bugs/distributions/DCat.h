@@ -3,6 +3,7 @@
 
 #include <distribution/VectorDist.h>
 
+namespace jags {
 namespace bugs {
 
 /**
@@ -46,6 +47,6 @@ public:
 	      std::vector<unsigned int> const &lengths) const;
 };
 
-}
+}}
 
 #endif /* DCAT_H_ */

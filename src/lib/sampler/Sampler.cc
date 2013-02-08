@@ -4,6 +4,8 @@
 
 using std::vector;
 
+namespace jags {
+
 Sampler::Sampler(GraphView *gv)
     : _gv(gv)
 {
@@ -18,3 +20,5 @@ vector<StochasticNode*> const &Sampler::nodes() const
 {
     return _gv->nodes();
 }
+
+} //namespace jags

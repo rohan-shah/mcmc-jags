@@ -3,6 +3,7 @@
 
 #include <model/MonitorFactory.h>
 
+namespace jags {
 namespace base {
 
     class TraceMonitorFactory : public MonitorFactory
@@ -14,6 +15,6 @@ namespace base {
 	std::string name() const;
     };
     
-}
+}}
 
 #endif /* TRACE_MONITOR_FACTORY_H_ */

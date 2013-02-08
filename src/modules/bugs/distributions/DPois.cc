@@ -13,6 +13,7 @@ using std::max;
 #define LAMBDA(par) (*par[0])
 #define R_D_nonint(x)     (fabs((x) - floor((x)+0.5)) > 1e-7)
 
+namespace jags {
 namespace bugs {
 
 DPois::DPois()
@@ -75,4 +76,4 @@ double DPois::KL(vector<double const *> const &par1,
     return lambda1 * (log(lambda1) - log(lambda2)) - lambda1 + lambda2;
 }
 
-}
+}}

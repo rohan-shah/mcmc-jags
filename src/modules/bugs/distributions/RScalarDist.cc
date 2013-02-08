@@ -13,6 +13,7 @@ using std::log;
 using std::min;
 using std::max;
 
+namespace jags {
 namespace bugs {
 
 double RScalarDist::calPlower(double lower, 
@@ -184,4 +185,5 @@ unsigned int RScalarDist::npar() const
 	else if (x > 0) return give_log ? JAGS_NEGINF : 0;
 	else return give_log ? 0 : 1;
     }
-}
+
+}}

@@ -5,6 +5,7 @@
 
 using std::vector;
 
+namespace jags {
 namespace bugs {
 
     Inverse::Inverse (): ArrayFunction ("inverse", 1)
@@ -37,4 +38,4 @@ namespace bugs {
 	return dims[0];
     }
 
-}
+}}

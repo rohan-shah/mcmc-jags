@@ -20,6 +20,9 @@ using std::vector;
 using std::set;
 using std::string;
 
+namespace jags {
+namespace bugs {
+
 static bool checkAggNode(AggNode const *anode, 
 			 set<Node const *> const &nodeset)
 {
@@ -105,8 +108,6 @@ static bool checkMixNode(MixtureNode const *mnode,
 
     return true;
 }
-
-namespace bugs {
 
 bool ConjugateDirichlet::canSample(StochasticNode *snode, Graph const &graph)
 {
@@ -422,4 +423,4 @@ string ConjugateDirichlet::name() const
     return "ConjugateDirichlet";
 }
 
-}
+}}

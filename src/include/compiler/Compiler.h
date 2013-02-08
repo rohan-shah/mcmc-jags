@@ -16,6 +16,8 @@
 #include <utility>
 #include <list>
 
+namespace jags {
+
 class ParseTree;
 class SymTab;
 class FuncTab;
@@ -120,6 +122,8 @@ public:
   MixtureFactory &mixtureFactory1();
   MixtureFactory &mixtureFactory2();
 };
+
+} /* namespace jags */
 
 #endif /* COMPILER_H_ */
 

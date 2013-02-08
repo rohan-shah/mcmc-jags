@@ -11,6 +11,7 @@ static bool lt_doubleptr (double const *arg1, double const *arg2) {
   return *arg1 < *arg2;
 }
 
+namespace jags {
 namespace bugs {
 
     Rank::Rank ()
@@ -47,4 +48,4 @@ namespace bugs {
 	return true;
     }
 
-}
+}}

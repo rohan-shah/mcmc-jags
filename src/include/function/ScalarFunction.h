@@ -3,6 +3,8 @@
 
 #include <function/Function.h>
 
+namespace jags {
+
 /**
  * @short Scalar-valued Function with scalar arguments
  *
@@ -41,5 +43,7 @@ public:
     bool isPower(std::vector<bool> const &mask,
 		 std::vector<bool> const &isfixed) const;
 };
+
+} /* namespace jags */
 
 #endif /* SCALAR_FUNCTION_H_ */

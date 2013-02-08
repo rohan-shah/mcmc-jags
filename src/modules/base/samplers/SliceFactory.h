@@ -5,6 +5,7 @@
 class StochasticNode;
 class Graph;
 
+namespace jags {
 namespace base {
 
 /**
@@ -18,6 +19,6 @@ namespace base {
 	std::string name() const;
     };
 
-}
+}}
 
 #endif /* SLICE_FACTORY_H_ */

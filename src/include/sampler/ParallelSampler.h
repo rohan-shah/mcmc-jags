@@ -3,6 +3,8 @@
 
 #include <sampler/Sampler.h>
 
+namespace jags {
+
 class RNG;
 class SampleMethod;
 
@@ -32,5 +34,7 @@ public:
     bool checkAdaptation() const;
     std::string name() const;
 };
+
+} /* namespace jags */
 
 #endif /* PARALLEL_SAMPLER_H_ */

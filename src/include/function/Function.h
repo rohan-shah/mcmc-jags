@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 
+namespace jags {
+
 class Range;
 
 /**
@@ -114,5 +116,7 @@ public:
      */
     virtual std::string deparse(std::vector<std::string> const &par) const;
 };
+
+} /* namespace jags */
 
 #endif /* FUNCTION_H_ */

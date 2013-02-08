@@ -6,6 +6,8 @@
 #include <vector>
 #include <set>
 
+namespace jags {
+
 class StochasticNode;
 class DeterministicNode;
 class GraphView;
@@ -35,6 +37,6 @@ public:
 			  Graph const &graph);
 };
 
-}
+}}
 
 #endif /* DSUM_METHOD_H_ */

@@ -3,6 +3,7 @@
 
 #include "RScalarDist.h"
 
+namespace jags {
 namespace bugs {
 
 /**
@@ -34,6 +35,6 @@ public:
 	      std::vector<double const *> const &par2) const;
 };
 
-}
+}}
 
 #endif /* DBERN_H_ */

@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 
+namespace jags {
+
 /**
  * @short Represents a range of array indices 
  *
@@ -147,5 +149,7 @@ inline bool isNULL(Range const &range) { return range.length() == 0; }
  * (3,3,3) will be printed as "[1:3,2:3,3]"
  */
 std::string print(Range const &range);
+
+} /* namespace jags */
 
 #endif /* RANGE_H_ */

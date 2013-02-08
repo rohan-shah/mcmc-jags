@@ -4,6 +4,8 @@
 
 using std::vector;
 
+namespace jags {
+
 RangeIterator::RangeIterator(Range const &range)
     : vector<int>(range.lower()), _lower(range.lower()), _upper(range.upper()),
       _atend(0)
@@ -52,3 +54,5 @@ RangeIterator &RangeIterator::nextRight()
     }
     return *this;
 }
+
+} //namespace jags

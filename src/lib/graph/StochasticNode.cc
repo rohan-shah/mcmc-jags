@@ -18,6 +18,8 @@ using std::string;
 using std::runtime_error;
 using std::logic_error;
 
+namespace jags {
+
 static vector<Node const *> mkParents(vector<Node const *> const &parameters,
                                       Node const *lower, Node const *upper)
 {
@@ -246,3 +248,5 @@ bool isBounded(StochasticNode const *node)
 {
     return node->lowerBound() || node->upperBound();
 }
+
+} //namespace jags

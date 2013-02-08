@@ -1,6 +1,9 @@
 #ifndef MATRIX_H_
 #define MATRIX_H_
 
+namespace jags {
+namespace bugs {
+
 /**
  * Inverts a general square matrix using the LAPACK routine DGESV
  *
@@ -47,5 +50,7 @@ double logdet(double const *A, int n);
  * @param tol tolerance for symmetry test
  */
 bool check_symmetry(double const *X, unsigned int n, double tol=1e-7);
+
+}}
 
 #endif /* MATRIX_H_ */

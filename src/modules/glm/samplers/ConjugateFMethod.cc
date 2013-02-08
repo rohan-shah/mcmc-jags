@@ -33,6 +33,8 @@ using std::fabs;
 #define MIN_SCALE 1.0E-3
 #define MAX_RNORM 20
 
+namespace jags {
+
 static double getScale(StochasticNode const *snode, unsigned int chain)
 {
     //Get precision parameter of normal distribution
@@ -216,4 +218,4 @@ namespace glm {
 	_gv1->setValue(&xnew, 1, _chain);
     }
 
-}
+}}

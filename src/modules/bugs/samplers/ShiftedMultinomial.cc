@@ -16,6 +16,9 @@ using std::copy;
   Helper functions
 */
 
+namespace jags {
+namespace bugs {
+
 static inline 
 StochasticNode const *CHILD(GraphView const *gv, unsigned int i)
 {
@@ -102,8 +105,6 @@ static vector<int> makeIndex(GraphView const *gv, unsigned int chain)
 
     return index;
 }
-
-namespace bugs {
 
     ShiftedMultinomial::ShiftedMultinomial(GraphView const *gv)
 	: ConjugateMethod(gv), _index(makeIndex(gv,0))
@@ -210,4 +211,4 @@ namespace bugs {
 	return "ShiftedMultinomial";
     }
 
-}
+}}

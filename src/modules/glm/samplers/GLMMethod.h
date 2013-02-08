@@ -11,6 +11,8 @@ extern "C" {
 #include <cholmod.h>
 }
 
+namespace jags {
+
 class Graph;
 class RNG;
 class StochasticNode;
@@ -201,5 +203,6 @@ namespace glm {
 	static GLMFamily getFamily(StochasticNode const *snode);
     };
 
-}
+}}
+
 #endif /* GLM_METHOD_H_ */

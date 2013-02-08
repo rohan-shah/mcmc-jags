@@ -8,6 +8,7 @@
 using std::vector;
 using std::exp;
 
+namespace jags {
 namespace dic {
 
     PoptMonitor::PoptMonitor(vector<StochasticNode const *> const &snodes,
@@ -20,4 +21,5 @@ namespace dic {
     {
 	return exp(-_snodes[k]->logDensity(ch, PDF_FULL));
     }
-}
+
+}}

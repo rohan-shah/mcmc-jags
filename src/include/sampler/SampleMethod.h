@@ -3,6 +3,8 @@
 
 #include <string>
 
+namespace jags {
+
 class RNG;
 
 /**
@@ -33,5 +35,7 @@ public:
      */
     virtual std::string name() const = 0;
 };
+
+} /* namespace jags */
     
 #endif /* SAMPLE_METHOD_H_ */

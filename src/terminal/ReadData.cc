@@ -13,9 +13,16 @@ using std::map;
 using std::string;
 using std::vector;
 
-bool readRData(std::vector<ParseTree*> const *array_list, 
-	       std::map<std::string, SArray> &table,
-	       std::string &rngname)
+using jags::SArray;
+using jags::ParseTree;
+using jags::P_VAR;
+using jags::P_VECTOR;
+using jags::P_ARRAY;
+using jags::P_RANGE;
+
+bool readRData(vector<ParseTree*> const *array_list, 
+	       map<string, SArray> &table,
+	       string &rngname)
 {
     /* Check validity of expressions */
     for (vector<ParseTree*>::const_iterator p = array_list->begin(); 

@@ -3,6 +3,7 @@
 
 #include "RScalarDist.h"
 
+namespace jags {
 namespace bugs {
 
 /**
@@ -32,6 +33,6 @@ class DF : public RScalarDist {
   bool checkParameterValue(std::vector<double const *> const &parameters) const;
 };
 
-}
+}}
 
 #endif /* DF_H_ */

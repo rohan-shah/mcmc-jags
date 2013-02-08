@@ -7,6 +7,7 @@ using std::vector;
 using std::log;
 using std::exp;
 
+namespace jags {
 namespace bugs {
 
     ICLogLog::ICLogLog(): LinkFunction("icloglog", "cloglog")
@@ -28,4 +29,4 @@ namespace bugs {
 	return exp(eta) * exp(-exp(eta));
     }
 
-}
+}}

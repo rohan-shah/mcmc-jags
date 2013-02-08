@@ -14,6 +14,8 @@ using std::vector;
 using std::fabs;
 using std::runtime_error;
 
+namespace jags {
+
 Slicer::Slicer(double width, unsigned int max)
     : _width(width), _adapt(true), _max(max), _sumdiff(0), _iter(0), 
       _state(SLICER_OK)
@@ -277,3 +279,5 @@ SlicerState Slicer::state() const
 {
     return _state;
 }
+
+} //namespace jags

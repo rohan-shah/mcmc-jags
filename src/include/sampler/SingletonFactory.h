@@ -3,6 +3,8 @@
 
 #include <sampler/SamplerFactory.h>
 
+namespace jags {
+
 /**
  * @short Factory object for a Sampler that samples a single node
  *
@@ -33,5 +35,7 @@ public:
     std::vector<Sampler*> makeSamplers(std::set<StochasticNode*> const &nodes, 
 				       Graph const &graph) const;
 };
+
+} /* namespace jags */
 
 #endif /* SINGLETON_FACTORY_H */

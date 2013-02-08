@@ -3,6 +3,7 @@
 
 #include <function/VectorFunction.h>
 
+namespace jags {
 namespace bugs {
 
     /**
@@ -21,6 +22,7 @@ namespace bugs {
 	unsigned int length(std::vector<unsigned int> const &parlengths) const;
 	bool isDiscreteValued(std::vector<bool> const &mask) const;
     };
-}
+
+}}
 
 #endif /* FUNC_SORT_H_ */

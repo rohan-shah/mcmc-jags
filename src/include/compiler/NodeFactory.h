@@ -4,6 +4,8 @@
 #include <vector>
 #include <cfloat>
 
+namespace jags {
+
 class Node;
 
 inline bool lt(double value1, double value2)
@@ -16,5 +18,7 @@ bool lt(double const *value1, double const *value2, unsigned int length);
 bool lt(Node const *node1, Node const *node2);
 bool lt(std::vector<Node const *> const &par1, 
 	std::vector<Node const *> const &par2);
+
+} /* namespace jags */
 
 #endif /* NODE_FACTORY_H_ */

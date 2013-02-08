@@ -14,6 +14,7 @@ using std::vector;
 #define PROB(par) (par[2])
 #define NCAT(lengths) (lengths[0])
 
+namespace jags {
 namespace mix {
 
     DNormMix::DNormMix()
@@ -129,4 +130,4 @@ namespace mix {
 	return 1;
     }
 
-}
+}}

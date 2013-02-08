@@ -7,6 +7,7 @@ using std::vector;
 #define T(args) (*args[0])
 #define NDIGITS(args) (*args[1])
 
+namespace jags {
 namespace bugs {
 
     DRoundFunc::DRoundFunc () : ScalarFunction ("dround", 2)
@@ -18,4 +19,4 @@ namespace bugs {
 	return(fprec(T(args), NDIGITS(args)));
     }
 
-}
+}}

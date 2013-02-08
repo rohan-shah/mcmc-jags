@@ -14,6 +14,7 @@ using std::string;
 #define PROB(par) (*par[0])
 #define SIZE(par) (*par[1])
 
+namespace jags {
 namespace bugs {
 
 DNegBin::DNegBin()
@@ -71,4 +72,4 @@ double DNegBin::KL(vector<double const *> const &par1,
 	(1 - p1) * r1 * (log(1 - p1) - log(1 - p2)) / p1;
 }
 
-}
+}}

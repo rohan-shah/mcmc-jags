@@ -13,6 +13,8 @@ using std::floor;
 using std::copy;
 using std::logic_error;
 
+namespace jags {
+
 ConstantNode::ConstantNode(double value, unsigned int nchain)
   : Node(vector<unsigned int>(1,1), nchain)
 {
@@ -83,3 +85,5 @@ bool ConstantNode::isObserved() const
 {
     return true;
 }
+
+} //namespace jags

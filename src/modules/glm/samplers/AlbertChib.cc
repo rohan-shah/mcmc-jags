@@ -22,6 +22,8 @@ using std::fabs;
 
 //FIXME: maybe use R math library here
 
+namespace jags {
+
 //Random sample from a left-truncated logistic distribution
 static double llogit(double left, RNG *rng, double mu)
 {
@@ -113,5 +115,6 @@ namespace glm {
 	else
 	    return "Albert-Chib";
     }
-}
+
+}}
     

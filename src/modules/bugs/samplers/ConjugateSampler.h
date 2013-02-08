@@ -4,6 +4,7 @@
 #include "ConjugateMethod.h"
 #include <sampler/Sampler.h>
 
+namespace jags {
 namespace bugs {
 
 class ConjugateSampler : public Sampler
@@ -23,6 +24,6 @@ public:
     std::string name() const;
 };
 
-}
+}}
 
 #endif /* CONJUGATE_SAMPLER_H_ */

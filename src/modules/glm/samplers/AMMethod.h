@@ -3,6 +3,7 @@
 
 #include "GLMMethod.h"
 
+namespace jags {
 namespace glm {
 
     class AuxMix;
@@ -49,6 +50,6 @@ namespace glm {
 	void update(RNG *rng);
     };
     
-}
+}}
 
 #endif /* AM_METHOD_H_ */

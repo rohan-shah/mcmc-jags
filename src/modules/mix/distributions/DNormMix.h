@@ -3,6 +3,7 @@
 
 #include <distribution/VectorDist.h>
 
+namespace jags {
 namespace mix {
 
 /**
@@ -48,7 +49,8 @@ namespace mix {
 			  std::vector<unsigned int> const &lengths)  const;
 	unsigned int length(std::vector<unsigned int> const &parlengths) const;
     };
-}
+
+}}
 
 
 #endif /* DNORM_MIX_H_ */

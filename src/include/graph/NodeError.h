@@ -3,6 +3,8 @@
 
 #include <stdexcept>
 
+namespace jags {
+
 class Node;
 
 /**
@@ -13,5 +15,7 @@ public:
     Node const * node;
     NodeError(Node const *enode, std::string const &msg);
 };
+
+} /* namespace jags */
 
 #endif /* NODE_ERROR_H_ */

@@ -3,6 +3,7 @@
 
 #include <function/ScalarFunction.h>
 
+namespace jags {
 namespace base {
 
 /**
@@ -18,6 +19,6 @@ public:
     std::string deparse(std::vector<std::string> const &par) const;
 };
 
-}
+}}
 
 #endif /* INFIX_H_ */

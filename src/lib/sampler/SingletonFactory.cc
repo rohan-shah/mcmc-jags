@@ -5,6 +5,8 @@
 using std::vector;
 using std::set;
 
+namespace jags {
+
 vector<Sampler *>
 SingletonFactory::makeSamplers(set<StochasticNode*> const &nodes, 
 			       Graph const &graph) const
@@ -18,3 +20,5 @@ SingletonFactory::makeSamplers(set<StochasticNode*> const &nodes,
     }
     return samplers;
 }
+
+} //namespace jags

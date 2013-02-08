@@ -30,7 +30,7 @@
 
 #include "nmath.h"
 
-double rnorm(double mu, double sigma, RNG *rng)
+double rnorm(double mu, double sigma, JRNG *rng)
 {
     if (ISNAN(mu) || !R_FINITE(sigma) || sigma < 0.)
 	ML_ERR_return_NAN;

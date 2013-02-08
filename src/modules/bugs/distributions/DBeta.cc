@@ -6,6 +6,7 @@
 
 using std::vector;
 
+namespace jags {
 namespace bugs {
 
 DBeta::DBeta()
@@ -78,4 +79,4 @@ double DBeta::KL(vector<double const *> const &par1,
 	+ (a2 + b2 - a1 - b1) * digamma(a1 + b1);
 }
 
-}
+}}

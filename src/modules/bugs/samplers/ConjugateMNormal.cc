@@ -28,6 +28,9 @@ using std::set;
 using std::sqrt;
 using std::string;
 
+namespace jags {
+namespace bugs {
+
 static void calBeta(double *betas, GraphView const *gv,
                     unsigned int chain)
 {
@@ -88,8 +91,6 @@ static unsigned int sumChildrenLength(GraphView const *gv)
     }
     return N;
 }
-
-namespace bugs {
 
 ConjugateMNormal::ConjugateMNormal(GraphView const *gv)
     : ConjugateMethod(gv), _betas(0), 
@@ -321,4 +322,4 @@ string ConjugateMNormal::name() const
     return "ConjugateMNormal";
 }
 
-}
+}}

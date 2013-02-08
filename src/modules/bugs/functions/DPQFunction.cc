@@ -5,6 +5,7 @@
 using std::vector;
 using std::string;
 
+namespace jags {
 namespace bugs {
 
     DPQFunction::DPQFunction(string const &name, RScalarDist const *dist) 
@@ -25,4 +26,5 @@ namespace bugs {
 	
 	return _dist->checkParameterValue(param);
     }
-}
+
+}}

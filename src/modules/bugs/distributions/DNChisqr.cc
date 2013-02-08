@@ -9,6 +9,7 @@ using std::string;
 #define DF(par) (*par[0])
 #define NCP(par) (*par[1])
 
+namespace jags {
 namespace bugs {
 
     DNChisqr::DNChisqr()
@@ -51,4 +52,4 @@ namespace bugs {
 	return rnchisq(DF(par), NCP(par), rng);
     }
 
-}
+}}

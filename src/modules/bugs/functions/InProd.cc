@@ -6,6 +6,7 @@
 
 using std::vector;
 
+namespace jags {
 namespace bugs {
 
     InProd::InProd () : VectorFunction ("inprod", 2)
@@ -44,4 +45,5 @@ namespace bugs {
 	    return (mask[0] || fix[0]) && (mask[1] || fix[1]); 
         }
     }
-}
+
+}}

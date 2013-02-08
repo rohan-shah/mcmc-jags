@@ -22,6 +22,7 @@ using std::exp;
 using std::string;
 using std::floor;
 
+namespace jags {
 namespace bugs {
 
 DSumMethod::DSumMethod(GraphView const *gv, unsigned int chain)
@@ -130,4 +131,4 @@ double DSumMethod::logDensity() const
     return _gv->logFullConditional(_chain);
 }
 
-}
+}}

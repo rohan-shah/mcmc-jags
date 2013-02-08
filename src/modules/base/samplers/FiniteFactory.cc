@@ -11,6 +11,7 @@
 using std::vector;
 using std::string;
 
+namespace jags {
 namespace base {
 
     bool 
@@ -35,4 +36,5 @@ namespace base {
     {
 	return "base::Finite";
     }
-}
+
+}}

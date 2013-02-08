@@ -16,6 +16,8 @@ using std::max;
 using std::min;
 using std::copy;
 
+namespace jags {
+
 static unsigned int mkLength(VectorDist const *dist, 
 			     vector<Node const *> const &parents)
 {
@@ -149,3 +151,5 @@ void VectorStochasticNode::sp(double *lower, double *upper, unsigned int length,
 {
     _dist->support(lower, upper, length, _parameters[chain], _lengths);
 }
+
+} //namespace jags

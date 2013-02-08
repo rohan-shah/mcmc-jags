@@ -3,6 +3,7 @@
 
 #include "GLMFactory.h"
 
+namespace jags {
 namespace glm {
 
     /**
@@ -38,6 +39,6 @@ namespace glm {
 	bool canSample(StochasticNode const *snode) const;
     };
 
-}
+}}
 
 #endif /* LINEAR_GIBBS_FACTORY_H_ */

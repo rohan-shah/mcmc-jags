@@ -3,6 +3,7 @@
 
 #include "Infix.h"
 
+namespace jags {
 namespace base {
 
     /**
@@ -24,6 +25,6 @@ namespace base {
 		     std::vector<bool> const &fix) const;
     };
     
-}
+}}
 
 #endif /* FUNC_MULTIPLY_H_ */

@@ -3,6 +3,7 @@
 
 #include <function/ScalarFunction.h>
 
+namespace jags {
 namespace bugs {
 
     /**
@@ -20,6 +21,6 @@ namespace bugs {
 	double evaluate(std::vector<double const *> const &args) const;
     };
 
-}
+}}
 
 #endif /* FUNC_ARCSINH_H_ */

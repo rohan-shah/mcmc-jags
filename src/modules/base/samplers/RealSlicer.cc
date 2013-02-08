@@ -11,6 +11,7 @@
 using std::vector;
 using std::string;
 
+namespace jags {
 namespace base {
 
     RealSlicer::RealSlicer(GraphView const *gv, unsigned int chain,
@@ -78,4 +79,5 @@ namespace base {
     {
 	return _gv->logFullConditional(_chain);
     }
-}
+
+}}

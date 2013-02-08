@@ -5,6 +5,8 @@
 
 #include <vector>
 
+namespace jags {
+
 class StochasticNode;
 
 namespace dic {
@@ -28,6 +30,6 @@ namespace dic {
 	void update();
     };
 
-}
+}}
 
 #endif /* PD_TRACE_H_ */

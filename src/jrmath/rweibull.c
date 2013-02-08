@@ -24,7 +24,7 @@
 
 #include "nmath.h"
 
-double rweibull(double shape, double scale, RNG *rng)
+double rweibull(double shape, double scale, JRNG *rng)
 {
     if (!R_FINITE(shape) || !R_FINITE(scale) || shape <= 0. || scale <= 0.) {
 	if(scale == 0.) return 0.;

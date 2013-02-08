@@ -18,6 +18,7 @@ using std::string;
 #define V(par) (*par[0])
 #define LAMBDA(par) (*par[1])
 
+namespace jags {
 namespace bugs {
 
     DWeib::DWeib()
@@ -60,4 +61,4 @@ namespace bugs {
 	return rweibull(SHAPE(par), SCALE(par), rng);
     }
 
-}
+}}

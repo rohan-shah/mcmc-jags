@@ -3,6 +3,10 @@
 
 #include <distribution/ArrayDist.h>
 
+namespace jags {
+
+class RNG;
+
 namespace bugs {
 
 /**
@@ -70,6 +74,6 @@ public:
   bool isSupportFixed(std::vector<bool> const &fixmask) const;
 };
 
-}
+}}
 
 #endif /* DMNORM_H_ */

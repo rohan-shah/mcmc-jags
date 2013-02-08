@@ -4,6 +4,7 @@
 #include <sampler/SampleMethod.h>
 #include <sampler/GraphView.h>
 
+namespace jags {
 namespace glm {
 
     /**
@@ -33,6 +34,6 @@ namespace glm {
 	void update(RNG *rng);
     };
 
-}
+}}
 
 #endif /* CONJUGATE_F_METHOD_H_ */

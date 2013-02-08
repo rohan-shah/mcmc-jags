@@ -9,6 +9,7 @@
 using std::string;
 using std::map;
 
+namespace jags {
 namespace dic {
 
     KLTab::KLTab() {
@@ -34,4 +35,5 @@ namespace dic {
 	    return p->second;
 	}
     }
-}
+
+}}

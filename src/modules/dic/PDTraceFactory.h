@@ -3,6 +3,7 @@
 
 #include <model/MonitorFactory.h>
 
+namespace jags {
 namespace dic {
 
     class PDTraceFactory : public MonitorFactory
@@ -14,6 +15,6 @@ namespace dic {
 	std::string name() const;
     };
     
-}
+}}
 
 #endif /* PD_TRACE_FACTORY_H_ */

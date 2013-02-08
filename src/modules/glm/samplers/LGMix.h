@@ -5,9 +5,11 @@
 #include <cmath>
 #include <algorithm>
 
-class RNG;
-
 using std::copy;
+
+namespace jags {
+
+class RNG;
 
 namespace glm {
 
@@ -53,6 +55,6 @@ namespace glm {
 	double precision() const;
     };
 
-}
+}}
 
 #endif /* LG_MIX_H */

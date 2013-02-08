@@ -13,6 +13,7 @@ using std::string;
 
 #define DEFAULT_NORM_KIND KINDERMAN_RAMAGE
 
+namespace jags {
 namespace base {
 
     BaseRNGFactory::BaseRNGFactory()
@@ -92,4 +93,5 @@ namespace base {
     {
 	return "base::BaseRNG";
     }
-}
+
+}}

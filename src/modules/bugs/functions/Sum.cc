@@ -3,6 +3,7 @@
 
 using std::vector;
 
+namespace jags {
 namespace bugs {
 
     Sum::Sum () : VectorFunction("sum", 1)
@@ -33,4 +34,5 @@ namespace bugs {
     {
 	return true;
     }
-}
+
+}}

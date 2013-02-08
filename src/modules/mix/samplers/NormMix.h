@@ -6,6 +6,8 @@
 
 #include <vector>
 
+namespace jags {
+
 class Graph;
 class GraphView;
 
@@ -55,6 +57,6 @@ namespace mix {
 	static bool canSample(std::vector<StochasticNode *> const &snodes);
     };
 
-}
+}}
 
 #endif /* NORM_MIX_METHOD_H_ */

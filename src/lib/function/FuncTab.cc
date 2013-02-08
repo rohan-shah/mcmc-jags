@@ -9,6 +9,8 @@ using std::string;
 using std::binary_function;
 using std::find_if;
 
+namespace jags {
+
 typedef std::list<FunctionPtr> FuncList;
 
 // Adaptable binary predicate for find_if algorithm 
@@ -90,3 +92,4 @@ void FuncTab::erase(FunctionPtr const &func)
 
 }
 
+} //namespace jags

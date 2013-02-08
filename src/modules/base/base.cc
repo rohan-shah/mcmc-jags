@@ -26,6 +26,7 @@
 
 using std::vector;
 
+namespace jags {
 namespace base {
 
     class BaseModule : public Module {
@@ -87,6 +88,6 @@ namespace base {
 	}
     }
 
-}
+}}
 
-base::BaseModule _base_module;
+jags::base::BaseModule _base_module;

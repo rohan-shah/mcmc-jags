@@ -5,6 +5,7 @@
 
 #include <vector>
 
+namespace jags {
 namespace base {
 
 /**
@@ -21,6 +22,7 @@ namespace base {
 	bool poolChains() const;
 	bool poolIterations() const;
     };
-}
+
+}}
 
 #endif /* TRACE_MONITOR_H_ */

@@ -5,6 +5,8 @@
 #include <string>
 #include <set>
 
+namespace jags {
+
 class StochasticNode;
 class DeterministicNode;
 class Node;
@@ -140,5 +142,7 @@ public:
 };
 
 unsigned int nchain(GraphView const *updater);
+
+} /* namespace jags */
 
 #endif /* GRAPH_VIEW_H_ */

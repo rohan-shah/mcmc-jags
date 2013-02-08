@@ -12,6 +12,8 @@ using std::pow;
 using std::sqrt;
 using std::fabs;
 
+namespace jags {
+
 static bool r_intvl(double u, double lambda)
 {
     // Rejection algorithm based on an alternating series expansion
@@ -127,5 +129,5 @@ namespace glm {
 	}
     }
 
-}
+}}
 	

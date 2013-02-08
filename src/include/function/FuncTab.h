@@ -6,6 +6,8 @@
 
 #include <function/FunctionPtr.h>
 
+namespace jags {
+
 /**
  * @short Look-up table for Function objects
  *
@@ -44,5 +46,7 @@ public:
      */
     void erase(FunctionPtr const &func);
 };
+
+} /* namespace jags */
 
 #endif /* FUNC_TAB_H_ */

@@ -3,6 +3,8 @@
 
 using std::string;
 
+namespace jags {
+
 RNG::RNG(string const &name)
   : _name(name)
 {}
@@ -24,3 +26,5 @@ string const &RNG::name() const
 {
    return _name;
 }
+
+} //namespace jags

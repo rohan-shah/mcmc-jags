@@ -3,6 +3,7 @@
 
 #include "RScalarDist.h"
 
+namespace jags {
 namespace bugs {
 
 /**
@@ -33,6 +34,6 @@ class DT : public RScalarDist {
 
 };
 
-}
+}}
 
 #endif /* DT_H_ */

@@ -11,6 +11,7 @@
 using std::vector;
 using std::string;
 
+namespace jags {
 namespace bugs {
 
     ShiftedCount::ShiftedCount(GraphView const *gv)
@@ -96,4 +97,4 @@ namespace bugs {
 	return "ShiftedCount";
     }
 
-}
+}}

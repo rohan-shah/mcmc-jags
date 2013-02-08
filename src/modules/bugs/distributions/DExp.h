@@ -3,6 +3,7 @@
 
 #include "RScalarDist.h"
 
+namespace jags {
 namespace bugs {
 
 /**
@@ -31,6 +32,6 @@ class DExp : public RScalarDist {
 	    std::vector<double const *> const &par2) const;
 };
 
-}
+}}
 
 #endif /* DEXP_H_ */

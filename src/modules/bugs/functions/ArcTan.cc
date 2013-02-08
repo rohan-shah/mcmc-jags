@@ -7,6 +7,7 @@ using std::vector;
 using std::atan;
 using std::string;
 
+namespace jags {
 namespace bugs {
 
     ArcTan::ArcTan ()
@@ -24,4 +25,4 @@ namespace bugs {
 	return atan(*args[0]);
     }
 
-}
+}}

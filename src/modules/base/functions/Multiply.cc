@@ -4,6 +4,7 @@
 
 using std::vector;
 
+namespace jags {
 namespace base {
 
     Multiply::Multiply () : Infix ("*", 0)
@@ -65,4 +66,4 @@ namespace base {
 	return true;
     }
 
-}
+}}

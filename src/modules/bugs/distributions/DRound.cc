@@ -22,6 +22,7 @@ static inline double value(vector<double const *> const &par)
 
 static double tol = sqrt(DBL_EPSILON);
 
+namespace jags {
 namespace bugs {
 
     DRound::DRound()
@@ -97,4 +98,4 @@ namespace bugs {
 	}
     }
 
-}
+}}

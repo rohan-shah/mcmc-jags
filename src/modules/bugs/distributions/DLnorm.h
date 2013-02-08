@@ -3,6 +3,7 @@
 
 #include "RScalarDist.h"
 
+namespace jags {
 namespace bugs {
 
 /** 
@@ -32,6 +33,6 @@ class DLnorm : public RScalarDist {
 	    std::vector<double const *> const &par1) const;
 };
 
-}
+}}
 
 #endif /* DLNORM_H_ */

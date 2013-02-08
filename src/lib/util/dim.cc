@@ -6,6 +6,8 @@
 using std::vector;
 using std::set;
 
+namespace jags {
+
 vector<unsigned int> const &getUnique(vector<unsigned int> const &dim)
 {
     static set<vector<unsigned int> > _dimset;
@@ -54,4 +56,6 @@ vector<unsigned int> drop(vector<unsigned int> const &dims)
 	ans.push_back(1);
 
     return ans;
+}
+
 }

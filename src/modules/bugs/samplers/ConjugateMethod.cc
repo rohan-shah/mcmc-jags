@@ -12,6 +12,7 @@ using std::vector;
 using std::map;
 using std::string;
 
+namespace jags {
 namespace bugs {
 
 ConjugateDist getDist(StochasticNode const *snode)
@@ -73,4 +74,4 @@ ConjugateMethod::ConjugateMethod(GraphView const *gv)
 ConjugateMethod::~ConjugateMethod()
 {}
 
-}
+}}

@@ -14,6 +14,7 @@ using std::max;
 
 #define PROB(par) (*par[0])
 
+namespace jags {
 namespace bugs {
 
 DBern::DBern()
@@ -83,4 +84,4 @@ double DBern::KL(vector<double const *> const &par1,
     }
 }
 
-}
+}}
