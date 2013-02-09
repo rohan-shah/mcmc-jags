@@ -7,9 +7,14 @@
 #include "AMMethod.h"
 #include "Linear.h"
 
+#include "AuxMixPoisson.h"
+#include "AuxMixBinomial.h"
+#include "NormalLinear.h"
+
 #include <graph/StochasticNode.h>
 #include <graph/LinkNode.h>
 #include <distribution/Distribution.h>
+#include <module/ModuleError.h>
 
 using std::string;
 using std::vector;
@@ -21,52 +26,47 @@ namespace glm {
 	: GLMFactory("glm::Auxiliary-Mixture")
     {}
 
-    bool AMFactory::checkOutcome(StochasticNode const *snode,
-				 LinkNode const *lnode) const
+    bool AMFactory::checkOutcome(StochasticNode const *snode) const
     {
-	string linkname;
-	if (lnode) {
-	    linkname = lnode->linkName();
-	}
-
-	switch(GLMMethod::getFamily(snode)) {
-	case GLM_BERNOULLI: case GLM_BINOMIAL:
-	    return linkname=="logit";
-	case GLM_POISSON:
-	    return linkname=="log";
-	    /*
-	      case GLM_NORMAL:
-	      return lnode == 0;
-	    */
-	default:
-	    return false;
-	}
+	return AuxMixPoisson::canRepresent(snode) ||
+	    AuxMixBinomial::canRepresent(snode) ||
+	    NormalLinear::canRepresent(snode);
     }
     
     GLMMethod *
     AMFactory::newMethod(GraphView const *view,
-			     vector<GraphView const *> const &sub_views,
-			     unsigned int chain) const
+			 vector<GraphView const *> const &sub_views,
+			 unsigned int chain) const
     {
-	/* 
-	   If we have a pure guassian linear model then make a
-	   conjugate linear sampler instead. 
-	*/
 	bool linear = true;
-	vector<StochasticNode const*> const &children =
-	    view->stochasticChildren();
-	for (unsigned int i = 0; i < children.size(); ++i) {
-	    if (GLMMethod::getFamily(children[i]) != GLM_NORMAL) {
-		linear = false;
-		break;
+	vector<Outcome*> outcomes;
+
+	for (vector<StochasticNode const*>::const_iterator p = view->stochasticChildren().begin();
+	     p != view->stochasticChildren().end(); ++p)
+	{
+	    Outcome *outcome = 0;
+	    if (NormalLinear::canRepresent(*p)) {
+		outcome = new NormalLinear(*p, chain);
 	    }
+	    else if (AuxMixBinomial::canRepresent(*p)) {
+		outcome = new AuxMixBinomial(*p, chain);
+		linear = false;
+	    }
+	    else if (AuxMixPoisson::canRepresent(*p)) {
+		outcome = new AuxMixPoisson(*p, chain);
+		linear = false;
+	    }
+	    else {
+		throwLogicError("Invalid outcome in BinaryFactory");
+	    }
+	    outcomes.push_back(outcome);
 	}
 
 	if (linear) {
-	    return new Linear(view, sub_views, chain, false);
+	    return new Linear(view, sub_views, outcomes, chain, false);
 	}
 	else {
-	    return new AMMethod(view, sub_views, chain);
+	    return new AMMethod(view, sub_views, outcomes, chain);
 	}
     }
 

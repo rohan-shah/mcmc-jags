@@ -5,6 +5,7 @@
 
 #include <vector>
 
+namespace jags {
 namespace base {
 
     /**
@@ -22,6 +23,7 @@ namespace base {
 	bool poolChains() const;
 	bool poolIterations() const;
     };
-}
+
+}}
 
 #endif /* MEAN_MONITOR_H_ */

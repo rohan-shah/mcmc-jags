@@ -20,8 +20,7 @@ namespace glm {
 	 * Returns true if the outcome has a Poisson distribution with
 	 * log link, or a Binomial distribution with logit link.
 	 */
-	bool checkOutcome(StochasticNode const *snode,
-			  LinkNode const *lnode) const;
+	bool checkOutcome(StochasticNode const *snode) const;
 	/**
 	 * Returns true if the node is not bounded
 	 */

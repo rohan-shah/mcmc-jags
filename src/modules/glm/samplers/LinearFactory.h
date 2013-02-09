@@ -16,10 +16,9 @@ namespace glm {
 	LinearFactory();
 	/**
 	 * Checks that the outcome is from the normal family with identity
-	 * link (i.e. lnode is NULL)
+	 * link
 	 */
-	bool checkOutcome(StochasticNode const *snode,
-			  LinkNode const *lnode) const;
+	bool checkOutcome(StochasticNode const *snode) const;
 	/**
 	 * Returns a newly allocated object of class Linear
 	 */

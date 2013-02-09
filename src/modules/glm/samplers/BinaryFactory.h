@@ -6,8 +6,6 @@
 namespace jags {
 namespace glm {
 
-    class BinaryGLM;
-
     /**
      * @short Base class for Binary GLM factories
      */
@@ -22,13 +20,11 @@ namespace glm {
 	 * the link function is logit or probit.  Linear models with
 	 * identity link are also permitted.
 	 */
-	bool checkOutcome(StochasticNode const *snode,
-			  LinkNode const *lnode) const;
+	bool checkOutcome(StochasticNode const *snode) const;
 	/**
-	 * Returns a newly allocated object of class BinaryGLM, unless
+	 * Returns a newly allocated object of class GLMMethod, unless
 	 * we have a pure linear model with normal outcome variables.
-	 * In this case, an object of class Linear is returned, as 
-	 * the overhead of the BinaryGLM class is not required.
+	 * In this case, an object of class Linear is returned.
 	 *
 	 * This function is called by GLMFactory#makeSampler
 	 */
@@ -40,15 +36,15 @@ namespace glm {
 	 * to true, then snode must be scalar. Otherwise, snode must
 	 * be unbounded.
 	 *
-	 * @param snode Candidate node for sampling by BinaryGLM
+	 * @param snode Candidate node for sampling 
 	 */
 	bool canSample(StochasticNode const *snode) const;
 	/**
-	 * Returns a newly allocated BinaryGLM object.
+	 * Returns a newly allocated GLMMethod object.
 	 */
-	virtual BinaryGLM *newBinary(GraphView const *view,
-				     std::vector<GraphView const *> const 
-				     &sub_views,
+	virtual GLMMethod *newBinary(GraphView const *view,
+				     std::vector<GraphView const *> const &sub_views,
+				     std::vector<Outcome *> const &outcomes,
 				     unsigned int chain) const = 0;
     };
 

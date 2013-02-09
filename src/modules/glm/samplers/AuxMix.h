@@ -5,6 +5,8 @@ namespace jags {
 
 class RNG;
 
+#include "Outcome.h"
+
 namespace glm {
     
     /**
@@ -16,7 +18,7 @@ namespace glm {
      *
      * @see AMMethod
      */
-    class AuxMix {
+    class AuxMix : public Outcome {
       public:
 	/**
 	 * Virtual destructor

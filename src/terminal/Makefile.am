@@ -1,4 +1,4 @@
-BUILT_SOURCES = parser.h
+BUILT_SOURCES = parser.hh
 AM_YFLAGS = -d
 
 libexec_PROGRAMS = jags-terminal

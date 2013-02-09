@@ -3,12 +3,16 @@
 #include <string>
 
 #include "BinaryFactory.h"
-#include "BinaryGLM.h"
 #include "Linear.h"
+
+#include "NormalLinear.h"
+#include "BinaryProbit.h"
+#include "BinaryLogit.h"
 
 #include <graph/StochasticNode.h>
 #include <graph/LinkNode.h>
 #include <distribution/Distribution.h>
+#include <module/ModuleError.h>
 
 using std::string;
 using std::vector;
@@ -20,61 +24,47 @@ namespace glm {
 	: GLMFactory(name), _gibbs(gibbs)
     {}
 
-    bool BinaryFactory::checkOutcome(StochasticNode const *snode,
-				     LinkNode const *lnode) const
+    bool BinaryFactory::checkOutcome(StochasticNode const *snode) const
     {
-	Node const *N = 0;
-	string linkname;
-	if (lnode) {
-	    linkname = lnode->linkName();
-	}
-
-	GLMFamily family = GLMMethod::getFamily(snode);
-
-	switch(family) {
-	case GLM_BERNOULLI:
-	    return linkname == "probit" || linkname=="logit";
-	case GLM_BINOMIAL:
-	    N = snode->parents()[1];
-	    if (N->length() != 1)
-		return false;
-	    if (!N->isObserved())
-		return false;
-	    if (N->value(0)[0] != 1)
-		return false;
-	    return linkname == "probit" || linkname=="logit";
-	case GLM_NORMAL:
-	    return lnode == 0;
-	default:
-	    return false;
-	}
+	return (BinaryProbit::canRepresent(snode) ||
+		BinaryLogit::canRepresent(snode) ||
+		NormalLinear::canRepresent(snode));
     }
-    
+
     GLMMethod *
     BinaryFactory::newMethod(GraphView const *view,
 			     vector<GraphView const *> const &sub_views,
 			     unsigned int chain) const
     {
-	/* 
-	   If we have a pure gaussian linear model then make a
-	   conjugate linear sampler instead. There is no need, in this
-	   case, for the extra machinery.
-	*/
 	bool linear = true;
-	vector<StochasticNode const*> const &children =
-	    view->stochasticChildren();
-	for (unsigned int i = 0; i < children.size(); ++i) {
-	    if (GLMMethod::getFamily(children[i]) != GLM_NORMAL) {
-		linear = false;
-		break;
+	vector<Outcome*> outcomes;
+
+	for (vector<StochasticNode const*>::const_iterator p = view->stochasticChildren().begin();
+	     p != view->stochasticChildren().end(); ++p)
+	{
+	    Outcome *outcome = 0;
+	    if (NormalLinear::canRepresent(*p)) {
+		outcome = new NormalLinear(*p, chain);
 	    }
+	    else if (BinaryProbit::canRepresent(*p)) {
+		outcome = new BinaryProbit(*p, chain);
+		linear = false;
+	    }
+	    else if (BinaryLogit::canRepresent(*p)) {
+		outcome = new BinaryLogit(*p, chain);
+		linear = false;
+	    }
+	    else {
+		throwLogicError("Invalid outcome in BinaryFactory");
+	    }
+	    outcomes.push_back(outcome);
 	}
 
 	if (linear) {
-	    return new Linear(view, sub_views, chain, _gibbs);
+	    return new Linear(view, sub_views, outcomes, chain, _gibbs);
 	}
 	else {
-	    return newBinary(view, sub_views, chain);
+	    return newBinary(view, sub_views, outcomes, chain);
 	}
     }
 

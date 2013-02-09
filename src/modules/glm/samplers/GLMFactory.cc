@@ -26,18 +26,6 @@ namespace jags {
 
 /*
   Aggregates candidate Nodes into a joint linear model. 
-  
-  Although each candidate node has a conjugate normal distribution,
-  together they may not form a valid linear model. We therefore test
-  the validity of the joint linear model before aggregating.
-  
-  returns 2 if the candidate can be aggregated with the sample nodes
-  returns 1 if the candidate cannot be aggregated because there is
-            overlap but the joint model is non-linear
-  returns 0 if there is no overlap
-
-  If return value is 2, the arguments sample_nodes and stochastic_children
-  are augmented.
 */
 static bool aggregateLinear(GraphView const *candidate,
 			    set<StochasticNode const *> &stochastic_children,
@@ -90,15 +78,14 @@ namespace glm {
 	    if (isBounded(stoch_nodes[i])) {
 		return false; //Truncated outcome variable
 	    }
-	    vector<Node const *> const &param = stoch_nodes[i]->parents();
-	    LinkNode const *lnode = dynamic_cast<LinkNode const*>(param[0]);
-	    if (!checkOutcome(stoch_nodes[i], lnode)) {
+	    if (!checkOutcome(stoch_nodes[i])) {
 		return false; //Invalid outcome or link
 	    }
 	    if (fixedOutcome() && !stoch_nodes[i]->isObserved()) {
 		return false; //Unobserved outcome not allowed by sampler
 	    }
 	    //Check that other parameters do not depend on snode	    
+	    vector<Node const *> const &param = stoch_nodes[i]->parents();
 	    for (unsigned int j = 1; j < param.size(); ++j) {
 		if (view->isDependent(param[j])) {
 		    return false;

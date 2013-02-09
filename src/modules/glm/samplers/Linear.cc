@@ -12,8 +12,9 @@ namespace glm {
 
     Linear::Linear(GraphView const *view, 
 		   vector<GraphView const *> const &sub_views,
+		   vector<Outcome*> const &outcomes,
 		   unsigned int chain, bool gibbs)
-	: GLMMethod(view, sub_views, chain, false), _gibbs(gibbs)
+	: GLMMethod(view, sub_views, outcomes, chain, false), _gibbs(gibbs)
     {
     }
 

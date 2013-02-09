@@ -3,10 +3,15 @@ Changes in JAGS 4.0.0
 Library changes
 ===============
 * All C++ objects and functions are in the namespace jags
+* Automake 1.12.0 or above is required. The header file generated from
+  C++ yacc source is *.hh, not *.h for automake 1.12 and above. This is 
+  incompatible with previous versions.
 
 Internal changes in modules
 ===========================
 * All module namespaces are nested inside namespace jags
+* Refactorization of samplers in glm module. The new Outcome class
+  presents an abstract normal approximation to the GLM engine.
 
 Changes in JAGS 3.3.0 patched
 

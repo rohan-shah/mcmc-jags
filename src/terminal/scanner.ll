@@ -4,7 +4,7 @@
 #include <string>
 #include <cstring>
 #include <compiler/ParseTree.h>
-#include "parser.h"
+#include "parser.hh"
 
     std::vector<FILE*> file_stack;
     int command_buffer_count = 0;

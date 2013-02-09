@@ -25,8 +25,7 @@ namespace glm {
 	 * Checks that the outcome variable is from a normal family
 	 * with identity link (i.e. lnode is NULL)
 	 */
-	bool checkOutcome(StochasticNode const *snode,
-			  LinkNode const *lnode) const;
+	bool checkOutcome(StochasticNode const *snode) const;
 	/**
 	 * Returns a newly allocated object of class Linear
 	 */

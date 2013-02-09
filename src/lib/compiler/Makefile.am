@@ -1,6 +1,6 @@
 noinst_LTLIBRARIES = libcompiler.la
 AM_YFLAGS = -d
-BUILT_SOURCES = parser.h
+BUILT_SOURCES = parser.hh
 
 libcompiler_la_CPPFLAGS = -I$(top_srcdir)/src/include
 
@@ -9,4 +9,4 @@ LogicalFactory.cc ParseTree.cc Counter.cc CounterTab.cc			\
 ConstantFactory.cc MixtureFactory.cc MixCompiler.cc NodeFactory.cc	\
 ObsFuncTab.cc
 
-noinst_HEADERS = parser.h parser_extra.h remap.h MixCompiler.h
+noinst_HEADERS = parser.hh parser_extra.h remap.h MixCompiler.h

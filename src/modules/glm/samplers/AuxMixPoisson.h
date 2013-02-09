@@ -1,7 +1,7 @@
 #ifndef AUX_MIX_POISSON_H_
 #define AUX_MIX_POISSON_H_
 
-#include "AuxMix.h"
+#include "Outcome.h"
 
 namespace jags {
 namespace glm {
@@ -20,23 +20,22 @@ namespace glm {
      * Poisson process.  If the Poisson count is zero, only one
      * auxiliary variable is required. Otherwise two are used.
      */
-    class AuxMixPoisson : public AuxMix
+    class AuxMixPoisson : public Outcome
     {
-	double const &_eta;
 	double const &_y;
-	LGMix *_mix1, *_mix2; /* the normal mixtures */
-	double _tau1, _tau2; /* inter-arrival times */
+	LGMix *_mix1, *_mix2; // the normal mixtures
+	double _tau1, _tau2;  // inter-arrival times
       public:
-	/**
-	 * Constructor. The constructor uses references to the
-	 * parameters of the model and the member function update uses
-	 * the current values of these parameters.
+        /**
+	 * Constructor
 	 *
-	 * @param eta Linear predictor for the mean (assuming log link)
-	 * @param y Value of Poisson random variable
-	 * @param rng Random number generator used to initialize mixture
+	 * @param snode Stochastic node representing the true outcome
+	 * variable of a GLM
+	 * 
+	 * @param chain Index number of the chain (starting from zero)
+	 * to use
 	 */
-	AuxMixPoisson(double const &eta, double const &y);
+	AuxMixPoisson(StochasticNode const *snode, unsigned int chain);
 	~AuxMixPoisson();
 	/**
 	 * Samples the auxiliary variable from its posterior distribution
@@ -55,8 +54,13 @@ namespace glm {
 	 * Returns the sum of the precisions of the two auxiliary variables
 	 */
 	double precision() const;
+	/**
+	 * AuxMixPoisson represents Poisson outcomes with a log link
+	 */
+	static bool canRepresent (StochasticNode const *snode);
     };
 
 }}
+
 
 #endif /* AUX_MIX_POISSON_H_ */

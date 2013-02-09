@@ -1,10 +1,12 @@
 #include <config.h>
 
-#include <graph/StochasticNode.h>
-
 #include "IWLSFactory.h"
 #include "IWLS.h"
-#include <graph/LinkNode.h>
+#include "Linear.h"
+#include "NormalLinear.h"
+#include "IWLSOutcome.h"
+
+#include <graph/StochasticNode.h>
 
 using std::vector;
 using std::string;
@@ -16,35 +18,38 @@ namespace glm {
 	: GLMFactory("glm::IWLS")
     {}
 
-    bool IWLSFactory::checkOutcome(StochasticNode const *snode,
-				   LinkNode const *lnode) const
+    bool IWLSFactory::checkOutcome(StochasticNode const *snode) const
     {
-	GLMFamily family = GLMMethod::getFamily(snode);
-	if (family == GLM_NORMAL) {
-	    return lnode == 0;
-	}
-	else if (!lnode) {
-	    return false;
-	}
-	else {
-	    string link = lnode->linkName();
-	    switch(family) {
-	    case GLM_BERNOULLI: case GLM_BINOMIAL:
-		return link == "probit" || link == "logit";
-	    case GLM_POISSON:
-		return link == "log";
-	    case GLM_UNKNOWN: case GLM_NORMAL:
-		return false;
-	    }
-	}
+	return NormalLinear::canRepresent(snode) || IWLSOutcome::canRepresent(snode);
     }
     
     GLMMethod *
     IWLSFactory::newMethod(GraphView const *view,
-			     vector<GraphView const *> const &sub_views,
-			     unsigned int chain) const
+			   vector<GraphView const *> const &sub_views,
+			   unsigned int chain) const
     {
-	return new IWLS(view, sub_views, chain);
+        bool linear = true;
+        vector<Outcome*> outcomes;
+
+        for (vector<StochasticNode const*>::const_iterator p = view->stochasticChildren().begin();
+             p != view->stochasticChildren().end(); ++p)
+        {
+            Outcome *outcome = 0;
+            if (NormalLinear::canRepresent(*p)) {
+                outcome = new NormalLinear(*p, chain);
+            }
+            else if (IWLSOutcome::canRepresent(*p)) {
+                outcome = new IWLSOutcome(*p, chain);
+                linear = false;
+            }
+            outcomes.push_back(outcome);
+        }
+
+        if (linear) {
+            return new Linear(view, sub_views, outcomes, chain, false);
+        }
+	
+	return new IWLS(view, sub_views, outcomes, chain);
     }
     
     bool IWLSFactory::canSample(StochasticNode const *snode) const

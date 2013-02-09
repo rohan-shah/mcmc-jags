@@ -2,6 +2,7 @@
 
 #include "HolmesHeld.h"
 #include "KS.h"
+#include "Outcome.h"
 
 #include <graph/StochasticNode.h>
 #include <graph/LinkNode.h>
@@ -46,8 +47,9 @@ namespace glm {
 
     HolmesHeld::HolmesHeld(GraphView const *view,
 			   vector<GraphView const *> const &sub_views,
+			   vector<Outcome *> const &outcomes,
 			   unsigned int chain)
-	: BinaryGLM(view, sub_views, chain), _aux_init(true)
+	: GLMMethod(view, sub_views, outcomes, chain), _aux_init(true)
     {
     }
 
@@ -66,7 +68,7 @@ namespace glm {
            L %*% w = P %*% b
 	   
 	   IMPORTANT NOTE: mu, b use a parameterization in which the
-	   current value of the regressions parameters is taken as the
+	   current value of the regression parameters is taken as the
 	   origin.  This requires us to adjust the calculations using
 	   the current value of the linear predictor (mu_r).
 	*/
@@ -120,13 +122,17 @@ namespace glm {
 	    // In a heterogeneous GLM, we may have some normal
 	    // outcomes as well as binary outcomes. These can be
 	    // skipped as there is no need for auxiliary variables
-	    if (_outcome[r] == BGLM_NORMAL)
+	    /* FIXME
+	       No way to skip in new API
+
+	    if (_outcomes[r] == BGLM_NORMAL)
 		continue;
-		
+	    */
+
 	    int top = cs_spsolve(&cs_L, &cs_Ptx, r, xi, ur, 0, 1);
 		
-	    double mu_r = getMean(r); // See IMPORTANT NOTE above
-	    double tau_r = getPrecision(r);
+	    double mu_r = _outcomes[r]->mean(); // See IMPORTANT NOTE above
+	    double tau_r = _outcomes[r]->precision();
 	    
 	    //Calculate mean and precision of z[r] conditional
 	    //on z[s] for s != r
@@ -151,7 +157,7 @@ namespace glm {
 		StochasticNode const *snode = _view->stochasticChildren()[r];
 		throwNodeError(snode, "Highly influential outcome variable in Holmes-Held update method.");
 	    }
-	    zr_mean -= Hr * (_z[r] - mu_r);
+	    zr_mean -= Hr * (_outcomes[r]->value()_z[r] - mu_r);
 	    zr_mean /= (1 - Hr);
 	    double zr_prec = (1 - Hr) * tau_r;
 	    
@@ -185,18 +191,26 @@ namespace glm {
     void HolmesHeld::update(RNG *rng)
     {
 	if (_aux_init) {
-	    initAuxiliary(rng);
+	    for (unsigned int r = 0; r < _outcomes.size(); ++r) {
+		_outcomes[r]->update(rng);
+	    }
 	    _aux_init = false;
 	}
+
+	/* Well, this is awkward. Nothing in the new API to update mixture parameters separate
+	   from the other auxiliary variables
+
+	   FIXME
 
 	for (unsigned int r = 0; r < _tau.size(); ++r)
 	{
 	    if (_outcome[r] == BGLM_LOGIT) {
-		double delta = fabs(getValue(r) - getMean(r));
+		double delta = fabs(_outcomes[r]->value() - _outcomes[r]->mean());
 		_tau[r] = REG_PENALTY + 1/sample_lambda(delta, rng);
 	    }
 	}
-
+	*/
+	
 	updateLM(rng);
     }
 

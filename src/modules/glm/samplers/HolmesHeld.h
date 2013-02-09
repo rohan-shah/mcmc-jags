@@ -1,7 +1,7 @@
 #ifndef HOLMES_HELD_H_
 #define HOLMES_HELD_H_
 
-#include "BinaryGLM.h"
+#include "GLMMethod.h"
 
 namespace jags {
 namespace glm {
@@ -26,7 +26,7 @@ namespace glm {
      * For logistic regression the improvement over the standard
      * Albert-Chib algorithm is not so clear cut.
      */
-    class HolmesHeld : public BinaryGLM {
+    class HolmesHeld : public GLMMethod {
 	bool _aux_init; //Do we need to initialize auxiliary variables?
     public:
 	/**
@@ -36,6 +36,7 @@ namespace glm {
 	 */
 	HolmesHeld(GraphView const *view, 
 		   std::vector<GraphView const *> const &sub_views,
+		   std::vector<Outcome *> const &outcomes,
 		   unsigned int chain);
 	/**
 	 * Updates the auxiliary variables (z[]) provided by the

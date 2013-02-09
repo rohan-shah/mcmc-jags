@@ -7,7 +7,7 @@
 
 #include <compiler/ParseTree.h>
 #include "remap.h"
-#include "parser.h"
+#include "parser.hh"
 
 #include <stdexcept>
 

@@ -1,7 +1,7 @@
 #ifndef AUX_MIX_BINOM_H_
 #define AUX_MIX_BINOM_H_
 
-#include "AuxMix.h"
+#include "Outcome.h"
 
 namespace jags {
 namespace glm {
@@ -9,33 +9,28 @@ namespace glm {
     class LGMix;
 
     /**
-     * @short Finite normal mixture approximation for Binomial variables
+     * @short Finite normal mixture approximation for Binomial
+     * logistic variables
      * 
      * Represents a binomial outcome with logit link in terms of an
      * underlying continuous auxiliary variable. The distribution of
      * the auxiliary variable is approximated by a finite mixture of
      * normals.
      */
-    class AuxMixBinomial : public AuxMix
+    class AuxMixBinomial : public Outcome
     {
-	double const &_eta;
-	double const &_nb;
-	double const &_y;
-	double _y_star; // the aggregated utility
-	LGMix *_mix; // the normal mixture
-	int _r; // the component indicator
+	double const &_nb; // sample size of binomial distribution
+	double const &_y; // value of binomial random variable
+	double _y_star; // aggregated utility
+	LGMix *_mix; // normal mixture
       public:
-	/**
-	 * Constructor. The constructor uses constant references to
-	 * the three parameters that define the model. The member
-	 * functions update uses the current value of these parameters
-	 *
-	 * @param eta Linear predictor for the probability of success
-	 * (assuming logit link) 
-	 * @param nb Sample size of binomial distribution 
-	 * @param y Value of binomial random variable
-	 */
-	AuxMixBinomial(double const &eta, double const &nb, double const &y);
+        /**
+	 * @param snode Stochastic node representing the true outcome
+	 * variable of a GLM
+	 * 
+	 * @param chain Index number of the chain (starting from zero)
+	 * to use                                                                                                                                                                      */
+	AuxMixBinomial(StochasticNode const *snode, unsigned int chain);
 	~AuxMixBinomial();
 	/**
 	 * Samples the auxiliary variable from its posterior distribution
@@ -52,6 +47,11 @@ namespace glm {
 	 * the current normal approximation
 	 */
 	double precision() const;
+	/**
+	 * AuxMixBinomial represents binary or binomial outcomes with 
+	 * a logistic link
+	 */
+	static bool canRepresent (StochasticNode const *snode);
     };
 
 }}

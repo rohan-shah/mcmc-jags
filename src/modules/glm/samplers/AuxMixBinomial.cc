@@ -1,20 +1,43 @@
 #include <config.h>
+
 #include "AuxMixBinomial.h"
 #include "LGMix.h"
+#include "Classify.h"
+
 #include <JRmath.h>
 #include <rng/RNG.h>
+#include <graph/StochasticNode.h>
+#include <module/ModuleError.h>
+
 #include <cmath>
 
 using std::exp;
 
 namespace jags {
 namespace glm {
-    
-    AuxMixBinomial::AuxMixBinomial(double const &eta, double const &nb, 
-				   double const &y)
-	: _eta(eta), _nb(nb), _y(y)
+
+    static double const &getDenominator(StochasticNode const *snode, unsigned int chain)
     {
-	_mix = new LGMix(nb);
+	static const double one = 1;
+	
+	switch(getFamily(snode)) {
+	case GLM_BERNOULLI:
+	    return one;
+	case GLM_BINOMIAL:
+	    return snode->parents()[1]->value(chain)[0];
+	default:
+	    throwLogicError("Invalid outcome in AuxMixBinomial");
+	}
+
+	return one; //Wall
+    }
+    
+
+    AuxMixBinomial::AuxMixBinomial(StochasticNode const *snode, unsigned int chain)
+	: Outcome(snode, chain), _nb(getDenominator(snode, chain)), 
+	  _y(snode->value(chain)[0]), _y_star(0), _mix(0)
+    {
+	_mix = new LGMix(_nb);
     }
 
     AuxMixBinomial::~AuxMixBinomial()
@@ -28,7 +51,7 @@ namespace glm {
 	    return;
 
 	// sample the aggregated utility 
-	double lambda = exp(_eta);
+	double lambda = exp(_lp);
 	
 	double u = rgamma(_nb, 1.0, rng);
 	double v = 0.0;
@@ -38,7 +61,7 @@ namespace glm {
 	_y_star = -log(u / (1.0 + lambda) + v / lambda);
 	
 	// ...then the mixture representation 
-	_mix->update(_y_star - _eta, _nb, rng);
+	_mix->update(_y_star - _lp, _nb, rng);
     }
 
     double AuxMixBinomial::value() const
@@ -61,4 +84,10 @@ namespace glm {
 	}
     }
 
+    bool AuxMixBinomial::canRepresent(StochasticNode const *snode) 
+    {
+	return (getFamily(snode) == GLM_BINOMIAL || getFamily(snode) == GLM_BERNOULLI) && getLink(snode) == LNK_LOGIT;
+    }
+
 }}
+

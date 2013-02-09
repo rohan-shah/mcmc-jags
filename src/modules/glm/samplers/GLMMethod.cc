@@ -7,6 +7,7 @@
 #include <cmath>
 
 #include "GLMMethod.h"
+#include "Outcome.h"
 
 #include <sampler/GraphView.h>
 #include <sampler/Linear.h>
@@ -45,25 +46,6 @@ static void getIndices(set<StochasticNode const *> const &schildren,
     }
 }
 
-static Node const *getLinearPredictor(StochasticNode const *snode)
-{
-    Node const *lp = 0;
-
-    switch(glm::GLMMethod::getFamily(snode)) {
-    case GLM_NORMAL: case GLM_BERNOULLI: case GLM_BINOMIAL: case GLM_POISSON:
-	lp = snode->parents()[0];
-	break;
-    case GLM_UNKNOWN:
-	break;
-    }
-    
-    LinkNode const *ln = dynamic_cast<LinkNode const*>(lp);
-    if (ln) 
-	lp = ln->parents()[0];
-    
-    return lp;
-}
-
 namespace glm {
 
     void GLMMethod::calDesign() const
@@ -93,7 +75,7 @@ namespace glm {
 
 		for (unsigned int j = 0; j < length; ++j) {
 		    for (int r = Xp[c+j]; r < Xp[c+j+1]; ++r) {
-			Xx[r] = -getMean(Xi[r]);
+			Xx[r] = -_outcomes[Xi[r]]->mean();
 		    }
 		}
 		
@@ -105,7 +87,7 @@ namespace glm {
 		    xnew[j] += 1;
 		    _sub_views[i]->setValue(xnew, length, _chain);
 		    for (int r = Xp[c+j]; r < Xp[c+j+1]; ++r) {
-			Xx[r] += getMean(Xi[r]);
+			Xx[r] += _outcomes[Xi[r]]->mean();
 		    }
 		    xnew[j] -= 1;
 		}
@@ -121,9 +103,9 @@ namespace glm {
     
     GLMMethod::GLMMethod(GraphView const *view, 
 			 vector<GraphView const *> const &sub_views,
+			 vector<Outcome *> const &outcomes,
 			 unsigned int chain, bool link)
-	: _lp(view->stochasticChildren().size()),
-	  _view(view), _chain(chain), _sub_views(sub_views),
+	: _view(view), _chain(chain), _sub_views(sub_views), _outcomes(outcomes),
 	  _x(0), _factor(0), _fixed(sub_views.size(), false), 
 	  _length_max(0), _nz_prior(0), _init(true)
     {
@@ -132,11 +114,6 @@ namespace glm {
 
 	int nrow = schildren.size();
 	int ncol = view->length();
-
-	//Set up linear predictor
-	for (int i = 0; i < nrow; ++i) {
-	    _lp[i] = getLinearPredictor(schildren[i])->value(chain);
-	}
 
 	vector<int> Xp(ncol + 1);
 	vector<int> Xi;
@@ -184,6 +161,10 @@ namespace glm {
 
     GLMMethod::~GLMMethod()
     {
+	while(!_outcomes.empty()) {
+	    delete _outcomes.back();
+	    _outcomes.pop_back();
+	}
 	cholmod_free_sparse(&_x, glm_wk);
     }
     
@@ -313,8 +294,8 @@ namespace glm {
 	double *Tx = static_cast<double*>(t_x->x);
 
 	for (unsigned int c = 0; c < t_x->ncol; ++c) {
-	    double tau = getPrecision(c);
-	    double delta = tau * (getValue(c) - getMean(c));
+	    double tau = _outcomes[c]->precision();
+	    double delta = tau * (_outcomes[c]->value() - _outcomes[c]->mean());
 	    double sigma = sqrt(tau);
 	    for (int r = Tp[c]; r < Tp[c+1]; ++r) {
 		b[Ti[r]] += Tx[r] * delta;
@@ -505,31 +486,6 @@ namespace glm {
     bool GLMMethod::checkAdaptation() const
     {
 	return true;
-    }
-
-    double GLMMethod::getMean(unsigned int i) const
-    {
-	return *_lp[i];
-    }
-
-    GLMFamily GLMMethod::getFamily(StochasticNode const *snode)
-    {
-	string const &name = snode->distribution()->name();
-	if (name == "dbern") {
-	    return GLM_BERNOULLI;
-	}
-	else if (name == "dbin") {
-	    return GLM_BINOMIAL;
-	}
-	else if (name == "dpois") {
-	    return GLM_POISSON;
-	}
-	else if (name == "dnorm") {
-	    return GLM_NORMAL;
-	}
-	else {
-	    return GLM_UNKNOWN;
-	}
     }
 
     void GLMMethod::updateAuxiliary(cholmod_dense *b, cholmod_factor *N, RNG *rng)

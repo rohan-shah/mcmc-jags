@@ -31,7 +31,6 @@ namespace glm {
 	 * Creates a newly-allocated Sampler for the set of candidate nodes,
 	 * or a NULL pointer. Sub-classes of GLMFactory only have to
 	 * implement the abstract member function newMethod.
-	 * the 
 	 */
 	Sampler * makeSampler(std::set<StochasticNode*> const &nodes, 
 			      Graph const &graph) const;
@@ -47,12 +46,8 @@ namespace glm {
 	 * family and link function.
 	 *
 	 * @param snode Stochastic node representing an outcome variable
-	 *
-	 * @param lnode LinkNode representing a link function. The identity
-	 * link is represented by a NULL pointer.
 	 */
-	virtual bool checkOutcome(StochasticNode const *snode,
-				  LinkNode const *lnode) const = 0;
+	virtual bool checkOutcome(StochasticNode const *snode) const = 0;
 	/**
 	 * Function for returning a newly allocated GLMMethod.  This
 	 * is called by GLMFactory#makeSampler

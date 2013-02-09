@@ -22,28 +22,15 @@ namespace glm {
      * the auxiliary variables as normal.
      */
     class AMMethod : public GLMMethod {
-	std::vector<AuxMix*> _aux;
       public:
 	AMMethod(GraphView const *view, 
 		 std::vector<GraphView const *> const &sub_views,
+		 std::vector<Outcome *> const &outcomes,
 		 unsigned int chain);
-	~AMMethod();
 	/**
 	 * Returns "AuxiliaryMixture"
 	 */
 	std::string name() const;
-	/**
-	 * Returns the precision parameter of the auxiliary variable
-	 * for the outcome variable with index i, according to the
-	 * current normal mixture approximation.
-	 */
-	double getPrecision(unsigned int i) const;
-	/**
-	 * Returns the value of the auxiliary variable for the outcome
-	 * with index i, according to the current normal mixture
-	 * approximation.
-	 */
-	double getValue(unsigned int i) const;
 	/**
 	 * Updates the auxiliary variables and then calls updateLM
 	 */

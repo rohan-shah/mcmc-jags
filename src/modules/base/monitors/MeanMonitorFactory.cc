@@ -10,6 +10,7 @@ using std::set;
 using std::string;
 using std::vector;
 
+namespace jags {
 namespace base {
 
     Monitor *MeanMonitorFactory::getMonitor(string const &name,
@@ -56,4 +57,5 @@ namespace base {
     {
 	return "base::Mean";
     }
-}
+
+}}

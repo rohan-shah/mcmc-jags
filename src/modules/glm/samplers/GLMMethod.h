@@ -13,32 +13,19 @@ extern "C" {
 
 namespace jags {
 
-class Graph;
+//class Graph;
 class RNG;
-class StochasticNode;
-
-enum GLMFamily {GLM_NORMAL, GLM_BERNOULLI, GLM_BINOMIAL, GLM_POISSON, 
-		GLM_UNKNOWN};
 
 namespace glm {
+
+    class Outcome;
 
     /**
      * @short Abstract class for sampling generalized linear models.
      *
      * GLMMethod provides a base class for sampling methods that work
      * on generalized linear models (GLMs).  Most of the update
-     * machinery is provided by GLMMethod itself. Sub-classes have to
-     * define member functions that define the inputs to the sampling
-     * algorithm.
-     *
-     * Classes inheriting from GLMMethod typically use auxiliary
-     * variable sampling.  This is a form of data augmentation in
-     * which additional latent (auxiliary) variables are added to the
-     * model to reduce it to the form of a linear model with normal
-     * outcome variables.  We also assume that that the regression
-     * parameters have a prior multivariate normal distribution.  Thus
-     * the posterior distribution is also multivariate normal and the
-     * the regression parameters can be sampled efficiently in a block.
+     * machinery is provided by GLMMethod itself. 
      *
      * GLMMethod uses sparse matrix algebra provided by the libraries
      * CHOLMOD and CSparse. In the context of a hierarchical model,
@@ -46,15 +33,15 @@ namespace glm {
      * that mixed models have a design matrix that is sparse.  The use
      * of CHOLMOD and CSparse, along with auxiliary variable sampling,
      * allows us to handle both fixed and random effects in a
-     * consistent way without needing to distinguish between them, or
-     * rely on asymptotic approximations.
+     * consistent way without needing to distinguish between them or
+     * relying on asymptotic approximations.
      */
     class GLMMethod : public SampleMethod {
-	std::vector<double const *> _lp;
     protected:
 	GraphView const *_view;
 	unsigned int _chain;
 	std::vector<GraphView const *> _sub_views;
+	std::vector<Outcome *> _outcomes;
 	cholmod_sparse *_x;
 	cholmod_factor *_factor;
     private:
@@ -72,8 +59,13 @@ namespace glm {
 	 *
 	 * @param sub_views Vector of pointers to GraphView objects with
 	 * length equal to the number of sampled nodes. Each sub-view
-	 * corresponds to a single sampled node.
+	 * corresponds to a single sampled node. 
 	 *
+	 * @param outcomes Vector of pointers to Outcome objects with length
+	 * equal to the number of stochastic children of the sampled nodes.
+	 * The GLMMethod objects takes ownership of each Outcome in the vector
+	 * and frees the memory in the destructor.
+	 * 
 	 * @param chain Number of the chain (starting from 0) to which
 	 * the sampling method will be applied.
 	 *
@@ -85,6 +77,7 @@ namespace glm {
 	 */
 	GLMMethod(GraphView const *view, 
 		  std::vector<GraphView const *> const &sub_views,
+		  std::vector<Outcome *> const &outcomes,
 		  unsigned int chain, bool link);
 	/**
 	 * Virtual destructor
@@ -92,16 +85,12 @@ namespace glm {
 	virtual ~GLMMethod();
 	/**
 	 * Updates the regression parameters by treating the GLM as a
-	 * linear model (LM), either by a linear approximation or by
-	 * using auxiliary variables. All regression parameters are
-	 * updated together in a block.
+	 * linear model (LM).  All regression parameters are updated
+	 * together in a block.
 	 *
-	 * The updateLM function relies on virtual functions which are
-	 * implemented by sub-classes: getPrecision, getValue and
-	 * updateAuxiliary.
-	 *
-	 * In order to provide more flexibility, updateLM has an optional
-	 * arguments stochastic.
+	 * In order to provide more flexibility, updateLM has an
+	 * optional argument stochastic, which may be set to false for
+	 * a deterministic update.
 	 *
 	 * @param rng Random number generator used for sampling
 	 *
@@ -133,21 +122,6 @@ namespace glm {
 	 * @param A Posterior precision represented as a sparse matrix.
 	 */
 	void calCoef(double *&b, cholmod_sparse *&A);
-	/**
-	 * Returns the linear predictor for the outcome variable with index i.
-	 */
-	double getMean(unsigned int i) const;
-	/**
-	 * Returns the precision of the outcome variable with index i.
-	 * This may be the precision parameter of an auxiliary variable.
-	 */
-	virtual double getPrecision(unsigned int i) const = 0;
-	/**
-	 * Returns the value of the outcome variable with index i.
-	 * This may be an auxiliary variable, rather than the observed
-	 * outcome.
-	 */
-	virtual double getValue(unsigned int i) const = 0;
 	/**
 	 * Updates auxiliary variables.  The default method does
 	 * nothing.  Sampling methods that use auxiliary variables to
@@ -195,12 +169,6 @@ namespace glm {
 	 * Returns true, as GLMMethod is not adaptive
 	 */
 	bool checkAdaptation() const;
-	/**
-	 * Utility function that classifies the distribution of a
-	 * stochastic node into one of the classes defined by the
-	 * enumeration GLMFamily.
-	 */
-	static GLMFamily getFamily(StochasticNode const *snode);
     };
 
 }}

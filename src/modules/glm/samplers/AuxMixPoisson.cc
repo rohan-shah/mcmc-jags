@@ -1,8 +1,12 @@
 #include <config.h>
 #include "AuxMixPoisson.h"
 #include "LGMix.h"
-#include "JRmath.h"
+#include "Classify.h"
+
 #include <rng/RNG.h>
+#include <graph/StochasticNode.h>
+#include <JRmath.h>
+
 #include <cmath>
 
 using std::exp;
@@ -10,8 +14,8 @@ using std::exp;
 namespace jags {
 namespace glm {
 
-    AuxMixPoisson::AuxMixPoisson(double const &eta, double const &y)
-	: _eta(eta), _y(y), _mix1(0), _mix2(0), _tau1(0), _tau2(0)
+    AuxMixPoisson::AuxMixPoisson(StochasticNode const *snode, unsigned int chain)
+	: Outcome(snode, chain), _y(snode->value(chain)[0]), _mix1(0), _mix2(0), _tau1(0), _tau2(0)
     {
 	_mix1 = new LGMix(1);
 	_mix2 = new LGMix(_y);
@@ -25,7 +29,7 @@ namespace glm {
 
     void AuxMixPoisson::update(RNG * rng)
     {
-	double lambda = exp(_eta);
+	double lambda = exp(_lp);
 	double xi = rng->exponential() / lambda;
 
 	//Time of y'th jump
@@ -34,12 +38,12 @@ namespace glm {
 	}
 	else {
 	    _tau2 = rbeta(_y, 1, rng);
-	    _mix2->update(-log(_tau2) - _eta, _y, rng);
+	    _mix2->update(-log(_tau2) - _lp, _y, rng);
 	}
 	
 	//Inter-arrival time to (y+1)'th jump
 	_tau1 = 1 - _tau2 + xi;
-	_mix1->update(-log(_tau1) - _eta, 1, rng);
+	_mix1->update(-log(_tau1) - _lp, 1, rng);
     }
 
     double AuxMixPoisson::precision() const
@@ -68,4 +72,10 @@ namespace glm {
 	}
     }
 
+    bool AuxMixPoisson::canRepresent(StochasticNode const *snode) 
+    {
+	return getFamily(snode) == GLM_POISSON && getLink(snode) == LNK_LOG;
+    }
+
 }}
+

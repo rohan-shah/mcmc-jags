@@ -26,10 +26,6 @@ namespace glm {
      * protected and are thus directly available to sub-classes.
      */
     class BinaryGLM : public GLMMethod {
-    protected:
-	std::vector<BGLMOutcome> _outcome; // Classify outcome and link
-	std::vector<double> _z; // Latent normal variable for binary outcomes
-	std::vector<double> _tau; // Precision parameter for logit link
     public:
 	/**
 	 * Constructor.  The outcome is classified as one of: normal
@@ -41,6 +37,7 @@ namespace glm {
 	 */
 	BinaryGLM(GraphView const *view, 
 		  std::vector<GraphView const *> const &sub_views,
+		  std::vector<Outcome*> const &outcomes,
 		  unsigned int chain);
 	/**
 	 * Initializes the auxiliary variables.  For binary outcomes, the

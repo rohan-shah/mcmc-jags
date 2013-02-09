@@ -22,13 +22,6 @@ using std::fabs;
 using std::log;
 using std::copy;
 
-namespace jags {
-
-static unsigned int nchildren(GraphView const *view)
-{
-    return view->stochasticChildren().size();
-}
-
 static double logDet(cholmod_factor *F)
 {
     //NB Requiring simplicial factorization here. See glm.cc.
@@ -45,86 +38,21 @@ static double logDet(cholmod_factor *F)
 
 #define MAX_ITER 100
 
+namespace jags {
 namespace glm {
 
 
     IWLS::IWLS(GraphView const *view, 
 	       vector<GraphView const *> const &sub_views,
+	       vector<Outcome *> const &outcomes,
 	       unsigned int chain)
-	: GLMMethod(view, sub_views, chain, true),
-	  _link(nchildren(view)), _family(nchildren(view)), 
-	  _init(true), _w(0)
+	: GLMMethod(view, sub_views, outcomes, chain, true), _init(true)
     {
-	vector<StochasticNode const*> const &children =
-	    view->stochasticChildren();
-	
-	for (unsigned int i = 0; i < children.size(); ++i) {
-	    _link[i] = dynamic_cast<LinkNode const*>(children[i]->parents()[0]);
-	    _family[i] = getFamily(children[i]);
-	    if ((_link[i] == 0) != (_family[i] == GLM_NORMAL)) {
-		throwLogicError("Invalid link");
-	    }
-	}
     }
     
     string IWLS::name() const
     {
 	return "IWLS";
-    }
-
-    double IWLS::getPrecision(unsigned int i) const
-    {
-	double w = _w;
-	if(_family[i] == GLM_BINOMIAL || _family[i] == GLM_NORMAL) {
-	    Node const *scale = _view->stochasticChildren()[i]->parents()[1];
-	    w *= scale->value(_chain)[0];
-	}
-
-	double grad = _link[i] ? _link[i]->grad(_chain) : 1;
-	return (w * grad * grad)/ var(i);
-    }
-
-    double IWLS::getValue(unsigned int i) const
-    {
-	Node const *child = _view->stochasticChildren()[i];
-
-	double y = child->value(_chain)[0];
-	if (_family[i] == GLM_BINOMIAL) {
-	    double N = child->parents()[1]->value(_chain)[0];
-	    y /= N;
-	}
-
-	if (_link[i] == 0) {
-	    return y;
-	}
-	else {
-	    double mu = _link[i]->value(_chain)[0];
-	    double eta = _link[i]->eta(_chain);
-	    double grad = _link[i]->grad(_chain);
-	    
-	    return eta + (y - mu) / grad;
-	}
-    }
- 
-    double IWLS::var(unsigned int i) const
-    {
-	double mu = _link[i] ? _link[i]->value(_chain)[0] : 0;
-
-	switch(_family[i]) {
-	case GLM_BERNOULLI: case GLM_BINOMIAL:
-	    return  mu * (1 - mu);
-	    break;
-	case GLM_POISSON:
-	    return mu;
-	    break;
-	case GLM_NORMAL:
-	    return 1;
-	    break;
-	case GLM_UNKNOWN:
-	    throwLogicError("Unknown GLM family in IWLS");
-	}
-
-	return 0; //-Wall
     }
 
     double IWLS::logPTransition(vector<double> const &xold, 
@@ -181,9 +109,7 @@ namespace glm {
     void IWLS::update(RNG *rng)
     {
 	if (_init) {
-	    _w = 0;
 	    for (unsigned int i = 0; i < MAX_ITER; ++i) {
-		_w += 1.0/MAX_ITER;
 		updateLM(rng, false);
             }
 	    _init = false;

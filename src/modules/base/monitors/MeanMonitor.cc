@@ -8,6 +8,7 @@
 using std::vector;
 using std::string;
 
+namespace jags {
 namespace base {
 
     MeanMonitor::MeanMonitor(Node const *node)
@@ -56,4 +57,5 @@ namespace base {
     {
 	return false;
     }
-}
+
+}}

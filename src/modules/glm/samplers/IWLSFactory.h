@@ -22,8 +22,7 @@ namespace glm {
 	 * families, but in the BUGS language, these are not
 	 * parameterized in terms of their mean and precision.
 	 */
-	bool checkOutcome(StochasticNode const *snode,
-			  LinkNode const *lnode) const;
+	bool checkOutcome(StochasticNode const *snode) const;
 	/**
 	 * Returns a newly allocated object of class IWLS
 	 */
