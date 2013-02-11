@@ -259,7 +259,7 @@ bool Console::compile(map<string, SArray> &data_table, unsigned int nchain,
 	    delete _model;
 	    _model = 0;
 	}
-	CATCH_ERRORS
+	CATCH_ERRORS;
     }
 
     _model = new BUGSModel(nchain);
@@ -332,9 +332,9 @@ bool Console::setParameters(map<string, SArray> const &init_table,
   try {
     _model->setParameters(init_table, chain - 1);
   } 
-  CATCH_ERRORS
+  CATCH_ERRORS;
 	
-      return true;
+  return true;
 }
 
 bool Console::setRNGname(string const &name, unsigned int chain)
@@ -349,9 +349,9 @@ bool Console::setRNGname(string const &name, unsigned int chain)
 	    _err << "WARNING: RNG name " << name << " not found\n";
 	}
     }
-    CATCH_ERRORS
+    CATCH_ERRORS;
 	
-	return true;
+    return true;
 }
 
 bool Console::update(unsigned int n)
@@ -413,7 +413,7 @@ bool Console::setMonitor(string const &name, Range const &range,
 	    return false;
 	}
     }
-    CATCH_ERRORS
+    CATCH_ERRORS;
 
     return true;
 }
@@ -434,46 +434,10 @@ bool Console::clearMonitor(string const &name, Range const &range,
 	  return false;
       }
   }
-  CATCH_ERRORS
+  CATCH_ERRORS;
 
   return true;
 }
-
-/*
-bool Console::setDefaultMonitors(string const &type, unsigned int thin)
-{
-    if (!_model) {
-	_err << "Can't set monitors. No model!" << endl;    
-	return false;
-    }
-
-    try {
-	bool ok = _model->setDefaultMonitors(type, thin);
-	if (!ok) {
-	    _err << "Failed to set default monitors of type " << type << endl;
-	    return false;
-	}
-    }
-    CATCH_ERRORS
-
-    return true;
-}
-
-bool Console::clearDefaultMonitors(string const &type)
-{
-    if (!_model) {
-	_err << "Can't clear monitors. No model!" << endl;    
-	return true;
-    }
-
-    try {
-	_model->clearDefaultMonitors(type);
-    }
-    CATCH_ERRORS
-
-	return true;
-}
-*/
 
 void Console::clearModel()
 {
@@ -529,7 +493,7 @@ bool Console::dumpState(map<string,SArray> &data_table,
       }
     }
   }
-  CATCH_ERRORS
+  CATCH_ERRORS;
   
   return true;
 }
@@ -553,7 +517,7 @@ bool Console::dumpMonitors(map<string,SArray> &data_table,
 	    }
 	}
     }
-    CATCH_ERRORS
+    CATCH_ERRORS;
 
     return true;
 }
@@ -573,7 +537,7 @@ bool Console::coda(string const &prefix)
             _err << "WARNING:\n" << warn;
         }
     }
-    CATCH_ERRORS
+    CATCH_ERRORS;
 
     return true;
 }
@@ -594,7 +558,7 @@ bool Console::coda(vector<pair<string, Range> > const &nodes,
             _err << "WARNINGS:\n" << warn;
         }
     }
-    CATCH_ERRORS
+    CATCH_ERRORS;
 
     return true;
 }
@@ -628,7 +592,7 @@ bool Console::checkAdaptation(bool &status)
     try {
 	status =  _model->checkAdaptation();
     }
-    CATCH_ERRORS
+    CATCH_ERRORS;
 
     return true;
 }
@@ -647,7 +611,7 @@ bool Console::adaptOff(void)
   try {
       _model->adaptOff();
   }
-  CATCH_ERRORS
+  CATCH_ERRORS;
 
   return true;
 }
@@ -676,7 +640,7 @@ bool Console::dumpSamplers(vector<vector<string> > &sampler_names)
     try {
 	_model->samplerNames(sampler_names);
     }
-    CATCH_ERRORS
+    CATCH_ERRORS;
 
     return true;
 }
@@ -688,6 +652,13 @@ bool Console::loadModule(string const &name)
     {
 	if ((*p)->name() == name) {
 	    (*p)->load();
+	    if (rngSeed() != 0) {
+		// Set default seed of RNG factories
+		vector<RNGFactory*> const &facs = (*p)->rngFactories();
+		for (unsigned int i = 0; i < facs.size(); ++i) {
+		    facs[i]->setSeed(rngSeed());
+		}
+	    }
 	    return true;
 	}
     }
@@ -830,6 +801,25 @@ vector<pair<string, bool> >  Console::listFactories(FactoryType type)
 	break;
     }
     return ans;
+}
+
+unsigned int &Console::rngSeed()
+{
+    static unsigned int seed = 0;
+    return seed;
+}
+    
+void Console::setRNGSeed(unsigned int seed)
+{
+    if (seed == 0) return;
+
+    list<pair<RNGFactory*, bool> >::const_iterator p;
+    for (p = Model::rngFactories().begin(); p != Model::rngFactories().end(); 
+	 ++p) 
+    {
+	p->first->setSeed(seed);
+    }
+    rngSeed() = seed;
 }
 
 } //namespace jags

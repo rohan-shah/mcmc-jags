@@ -10,3 +10,5 @@ ConstantFactory.cc MixtureFactory.cc MixCompiler.cc NodeFactory.cc	\
 ObsFuncTab.cc
 
 noinst_HEADERS = parser.hh parser_extra.h remap.h MixCompiler.h
+
+DISTCLEANFILES = parser.cc scanner.cc parser.hh

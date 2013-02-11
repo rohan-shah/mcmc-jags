@@ -52,6 +52,7 @@ samplers                zzlval.intval=SAMPLERS; return SAMPLERS;
 rng                     zzlval.intval=RNGTOK; return RNGTOK;
 factory                 zzlval.intval=FACTORY; return FACTORY;
 factories               zzlval.intval=FACTORIES; return FACTORIES;
+seed                    zzlval.intval=SEED; return SEED;
 
 coda			zzlval.intval=CODA; return CODA;
 stem			zzlval.intval=STEM; return STEM;

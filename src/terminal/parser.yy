@@ -82,6 +82,7 @@
     static void listFactories(jags::FactoryType type);
     static void setFactory(std::string const &name, jags::FactoryType type,
                            std::string const &status);
+    static void setSeed(unsigned int seed);
     static bool Jtry(bool ok);
     %}
 
@@ -135,6 +136,7 @@
 %token <intval> RNGTOK
 %token <intval> FACTORY;
 %token <intval> FACTORIES;
+%token <intval> SEED;
 
 %token <intval> LIST 
 %token <intval> STRUCTURE
@@ -205,6 +207,7 @@ command: model
 | samplers_to
 | list_factories
 | set_factory
+| set_seed
 ;
 
 model: MODEL IN file_name {
@@ -526,6 +529,12 @@ SET FACTORY NAME NAME ',' TYPE '(' MONITOR ')'
     setFactory(*$3, jags::MONITOR_FACTORY, *$4);
     delete $3;
     delete $4;
+}
+;
+
+set_seed: SET SEED INT
+{
+    setSeed($3);
 }
 ;
 
@@ -1475,6 +1484,16 @@ void setFactory(std::string const &name, jags::FactoryType type,
     }
     else {
 	std::cout << "status should be \"on\" or \"off\"";
+    }
+}
+
+void setSeed(unsigned int seed)
+{
+    if (seed == 0) {
+	std::cout << "seed must be non-zero";
+    }
+    else {
+	jags::Console::setRNGSeed(seed);
     }
 }
 	    

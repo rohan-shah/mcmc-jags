@@ -64,4 +64,5 @@ endif
 ## and cleaning of the jags shell script and its source.
 
 EXTRA_DIST = jags.in
-CLEANFILES = jags
+CLEANFILES = jags 
+DISTCLEANFILES = parser.cc parser.hh scanner.cc
