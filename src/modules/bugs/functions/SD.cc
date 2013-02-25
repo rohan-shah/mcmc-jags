@@ -29,7 +29,7 @@ namespace bugs {
 	    for (i = 0; i < lengths[0]; i++) {
 		var += (args[0][i] - mean) * (args[0][i] - mean);
 	    }
-	    svalue = sqrt (var / lengths[0]);
+	    svalue = sqrt (var / (lengths[0] - 1));
 	}
 	*x = svalue;
     }
