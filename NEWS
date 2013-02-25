@@ -19,6 +19,9 @@ New features
 ====================
 * You can now set a monitor of type "mean" for any node, which records
   the running mean.
+* The order function in the bugs module returns a permutation that sorts
+  its argument in ascending order (the inverse of the permutation 
+  provided by the rank function).
 
 Bug fixes
 =========
@@ -32,7 +35,8 @@ Bug fixes
   fault. This now gives a compilation error.
 * The "dround" function (bugs module) was incorrectly calling fprec
   (round to n significant figures) when it should have been calling
-  fround (round to n decimale places).
+  fround (round to n decimal places).
+* The sd() function divided by n (sample size) instead of (n-1).
 
 Internal changes in modules
 ===========================

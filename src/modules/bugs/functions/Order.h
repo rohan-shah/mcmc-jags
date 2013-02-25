@@ -1,5 +1,5 @@
-#ifndef FUNC_RANK_H_
-#define FUNC_RANK_H_
+#ifndef FUNC_ORDER_H_
+#define FUNC_ORDER_H_
 
 #include <function/VectorFunction.h>
 
@@ -7,22 +7,22 @@ namespace jags {
 namespace bugs {
 
     /**
-     * @short Rank function
+     * @short Order function 
      *
-     * Calculates the sample ranks of the values in a vector. The ranks
-     * define a permutation that is the inverse of the one returned
-     * by the Order function.
+     * Returns a permutation that sorts the elements of a vector in
+     * ascending order. This is the inverse of the permutation
+     * returned by the Rank function.
      *
-     * <pre>
-     * y <- rank(x[])
+     * <pre> 
+     * y <- sort(x[])
      * </pre>
      *
-     * @see Order
+     * @see Rank
      */
-    class Rank : public VectorFunction
+    class Order : public VectorFunction
     {
     public:
-	Rank ();
+	Order ();
 	void evaluate(double *value, 
 		      std::vector<double const *> const &args,
 		      std::vector<unsigned int> const &lengths) const;
@@ -32,4 +32,4 @@ namespace bugs {
     
 }}
 
-#endif /* FUNC_RANK_H_ */
+#endif /* FUNC_ORDER_H_ */
