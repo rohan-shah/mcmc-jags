@@ -1,7 +1,7 @@
 #include <config.h>
 #include <compiler/ConstantFactory.h>
 #include <model/Model.h>
-#include <graph/ConstantNode.h>
+#include <graph/ConstantParameterNode.h>
 #include <compiler/NodeFactory.h>
 #include <util/integer.h>
 
@@ -30,10 +30,10 @@ ConstantNode * ConstantFactory::getConstantNode(double value, Model &model)
 	= _constmap.find(value);
     if (i == _constmap.end()) {
 	if (checkInteger(value)) {
-	    cnode = new ConstantNode(asInteger(value), _nchain);
+	    cnode = new ConstantParameterNode(asInteger(value), _nchain);
 	}
 	else {
-	    cnode = new ConstantNode(value, _nchain);
+	    cnode = new ConstantParameterNode(value, _nchain);
 	}
 	
 	_constmap[value] = cnode;
@@ -70,10 +70,10 @@ ConstantNode * ConstantFactory::getConstantNode(vector<unsigned int> const &dim,
 	}
 	
 	if (is_discrete) {
-	    cnode = new ConstantNode(dim, ivalue, _nchain);
+	    cnode = new ConstantParameterNode(dim, ivalue, _nchain);
 	}
 	else {
-	    cnode = new ConstantNode(dim, value, _nchain);
+	    cnode = new ConstantParameterNode(dim, value, _nchain);
 	}
 	
 	_mv_constmap[cp] = cnode;

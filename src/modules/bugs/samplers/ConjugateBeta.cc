@@ -37,8 +37,8 @@ bool ConjugateBeta::canSample(StochasticNode *snode, Graph const &graph)
 	// dunif(0,1) is equivalent to dbeta(1,1) 
 	if(!(*snode->parents()[0]->value(0) == 0 &&
 	     *snode->parents()[1]->value(0) == 1 &&
-	     snode->parents()[0]->isObserved() &&
-	     snode->parents()[1]->isObserved()))
+	     snode->parents()[0]->isFixed() &&
+	     snode->parents()[1]->isFixed()))
 	    return false;
 	break;
     default:

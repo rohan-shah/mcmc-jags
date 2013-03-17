@@ -99,7 +99,7 @@ bool TruncatedGamma::canSample(StochasticNode *snode, Graph const &graph)
     */
     if (getDist(snode) != UNIF)
 	return false;
-    if (!snode->parents()[0]->isObserved())
+    if (!snode->parents()[0]->isFixed())
 	return false;
     if (snode->parents()[0]->value(0)[0] < 0)
 	return false;
@@ -151,15 +151,17 @@ bool TruncatedGamma::canSample(StochasticNode *snode, Graph const &graph)
 	ConjugateDist dist = getDist(stoch_nodes[i]);
 	vector<Node const*> const &cparam = stoch_nodes[i]->parents();
 
-	//Check that we can guarantee a positive shape parameter a posteriori
+	//We can allow a negative prior value of shape, if we can
+	//guarantee that it is positive a posteriori.
+
 	switch(dist) {
 	case GAMMA:
-	    if (cparam[0]->isObserved()) {
+	    if (cparam[0]->isFixed()) {
 		shape += *cparam[0]->value(0);
 	    }
 	    break;
 	case POIS:
-	    if (stoch_nodes[i]->isObserved()) {
+	    if (stoch_nodes[i]->isFixed()) {
 		shape += *stoch_nodes[i]->value(0);
 	    }
 	    break;

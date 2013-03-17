@@ -59,7 +59,7 @@ VectorLogicalNode::VectorLogicalNode(VectorFunction const *function,
 		  parameters, function),
       _func(function), _lengths(parameterLengths(parameters))
 {
-    if (isObserved()) {
+    if (isFixed()) {
 	for (unsigned int ch = 0; ch < _nchain; ++ch) {
 	    deterministicSample(ch);
 	}

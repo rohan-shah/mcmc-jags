@@ -13,6 +13,18 @@ class DeterministicNode;
 class Graph;
 
 /**
+ * @short Random variable status of nodes
+ *
+ * This enumeration is used by Node#randomVariableStatus to classify
+ * nodes into one of three categories.
+ *
+ * Some nodes are considered as random variables, and among those that
+ * are, they may be observed or unobserved. Conversely, a node that is
+ * not a random variable may not be observed.
+ */
+enum RVStatus {RV_FALSE, RV_TRUE_UNOBSERVED, RV_TRUE_OBSERVED};
+
+/**
  * @short Node in a directed acyclic graph
  */
 class Node {
@@ -105,15 +117,16 @@ public:
      *
      * @param parents Vector of names of parent nodes
      */
-    virtual std::string deparse(std::vector<std::string> const &parents) const = 0;
+    virtual std::string 
+	deparse(std::vector<std::string> const &parents) const = 0;
     /**
-     * Returns true if the node represents a random variable.
+     * Returns the random variable status of a node.
      */
-    virtual bool isRandomVariable() const = 0;
+    virtual RVStatus randomVariableStatus() const = 0;
     /**
-     * Indicates whether the node is observed. 
+     * Indicates whether the value of the node is fixed.
      */
-    virtual bool isObserved() const = 0;
+    virtual bool isFixed() const = 0;
     /**
      * Sets the value of the node for a given chain
      * @param value Array of values to be assigned

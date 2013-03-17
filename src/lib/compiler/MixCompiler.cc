@@ -163,10 +163,7 @@ static bool findStochasticIndices(vector<Node const *> const &tgt_nodes,
     set<DeterministicNode*> known_dnodes;
     vector<StochasticNode*> const &snodes = model.stochasticNodes();
     for (unsigned int i = 0; i < snodes.size(); ++i) {
-	/*
-	  if (snodes[i]->isObserved())
-	  continue;
-	*/
+
 	if (tgt_set.count(snodes[i])) {
 	    stoch_parents.push_back(snodes[i]);
 	}

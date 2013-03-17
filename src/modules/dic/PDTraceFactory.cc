@@ -44,7 +44,7 @@ namespace dic {
 	vector<StochasticNode const *> observed_nodes;
 	vector<StochasticNode *> const &snodes = model->stochasticNodes();
 	for (unsigned int i = 0; i < snodes.size(); ++i) {
-	    if (snodes[i]->isObserved()) {
+	    if (snodes[i]->isFixed()) {
 		observed_nodes.push_back(snodes[i]);
 	    }
 	    if (!isSupportFixed(snodes[i])) {

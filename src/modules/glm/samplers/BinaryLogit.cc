@@ -126,7 +126,7 @@ namespace glm {
             N = snode->parents()[1];
             if (N->length() != 1)
 		return false;
-            if (!N->isObserved())
+            if (!N->isFixed())
 		return false;
             if (N->value(0)[0] != 1)
 		return false;

@@ -6,7 +6,7 @@
 #include <graph/VectorLogicalNode.h>
 #include <graph/ArrayLogicalNode.h>
 #include <graph/LinkNode.h>
-#include <graph/ConstantNode.h>
+#include <graph/ConstantParameterNode.h>
 #include <graph/ScalarStochasticNode.h>
 #include <graph/VectorStochasticNode.h>
 #include <graph/ArrayStochasticNode.h>
@@ -72,8 +72,6 @@ void CompileError(ParseTree const *p, string const &msg1,
     throw runtime_error(msg);
 }
 
-
-
 Node * Compiler::constFromTable(ParseTree const *p)
 {
     // Get a constant value directly from the data table
@@ -109,8 +107,8 @@ Node * Compiler::constFromTable(ParseTree const *p)
                     return 0;
                 }
             }
-            cnode = new ConstantNode(subset_range.dim(false), value, 
-				     _model.nchain());
+            cnode = new ConstantParameterNode(subset_range.dim(false), value, 
+					      _model.nchain());
 
 	}
 	else {
@@ -121,7 +119,7 @@ Node * Compiler::constFromTable(ParseTree const *p)
 		return 0;
 	    }
 	    else {
-		cnode = new ConstantNode(value, _model.nchain());
+		cnode = new ConstantParameterNode(value, _model.nchain());
 	    }
 	    return cnode;
 	}
@@ -159,7 +157,7 @@ bool Compiler::indexExpression(ParseTree const *p, int &value)
     Node *node = getParameter(p);
     _index_expression--;
 
-    if (!node || !node->isObserved()) {
+    if (!node || !node->isFixed()) {
 	return false;
     }
 
@@ -374,7 +372,7 @@ Node *Compiler::getArraySubset(ParseTree const *p)
     Counter *counter = _countertab.getCounter(p->name()); //A counter
     if (counter) {
 	if (_index_expression) {
-	    node = new ConstantNode((*counter)[0], _model.nchain());
+	    node = new ConstantParameterNode((*counter)[0], _model.nchain());
 	    _index_nodes.push_back(node);
 	}
 	else {
@@ -452,7 +450,7 @@ Node *Compiler::getLength(ParseTree const *p, SymTab const &symtab)
 	else {
 	    double length = product(subset_range.dim(true));
 	    if (_index_expression) {
-		Node *node = new ConstantNode(length, _model.nchain());
+		Node *node = new ConstantParameterNode(length, _model.nchain());
 		_index_nodes.push_back(node);
 		return node;
 	    }
@@ -492,7 +490,7 @@ Node *Compiler::getDim(ParseTree const *p, SymTab const &symtab)
 	    vector<unsigned int> d(1, idim.size());
 
 	    if (_index_expression) {
-		Node *node = new ConstantNode(d, ddim, _model.nchain());
+		Node *node = new ConstantParameterNode(d, ddim, _model.nchain());
 		_index_nodes.push_back(node);
 		return node;
 	    }
@@ -520,7 +518,7 @@ Node * Compiler::getParameter(ParseTree const *t)
     switch (t->treeClass()) {
     case P_VALUE:
 	if (_index_expression) {
-	    node = new ConstantNode(t->value(), _model.nchain());
+	    node = new ConstantParameterNode(t->value(), _model.nchain());
 	    _index_nodes.push_back(node);
 	}
 	else {
@@ -567,7 +565,7 @@ Node * Compiler::getParameter(ParseTree const *t)
 
     if (_index_expression) {
 	//Random variables in index expressions must be observed
-	if (node->isRandomVariable() && !node->isObserved())
+	if (node->randomVariableStatus() == RV_TRUE_UNOBSERVED)
 	    return 0;
     }
 
@@ -716,7 +714,7 @@ Node * Compiler::allocateStochastic(ParseTree const *stoch_relation)
 	ParseTree const *t = stoch_relation->parameters()[2];
 	if (t->treeClass() == P_INTERVAL) {
 	    for (unsigned int i = 0; i < parameters.size(); ++i) {
-		if (!parameters[i]->isObserved()) {
+		if (!parameters[i]->isFixed()) {
 		    CompileError(stoch_relation,
 				 "BUGS I(,) notation is only allowed if",
 				 "all parameters are fixed");
@@ -763,7 +761,7 @@ Node * Compiler::allocateLogical(ParseTree const *rel)
 
     switch (expression->treeClass()) {
     case P_VALUE: 
-	cnode = new ConstantNode(expression->value(), _model.nchain());
+	cnode = new ConstantParameterNode(expression->value(), _model.nchain());
 	_model.addNode(cnode);
 	node = cnode;
 	/* The reason we aren't using a ConstantFactory here is to ensure

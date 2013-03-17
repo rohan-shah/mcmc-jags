@@ -165,9 +165,9 @@ namespace mix {
 	    if (isDirch(snodes[i])) {
 		/* We can't handle structural zeros in the Dirichlet
 		   distribution. This excludes Dirichlet nodes with
-		   unobserved parents
+		   non-fixed parents
 		*/
-		if (!snodes[i]->parents()[0]->isObserved()) {
+		if (!snodes[i]->parents()[0]->isFixed()) {
 		    return false;
 		}
 		double const *par = snodes[i]->parents()[0]->value(0);

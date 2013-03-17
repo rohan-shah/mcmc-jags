@@ -33,7 +33,7 @@ namespace dic {
 	vector<StochasticNode *> const &snodes = model->stochasticNodes();
 	vector<StochasticNode const *> observed_snodes;
 	for (unsigned int i = 0; i < snodes.size(); ++i) {
-	    if (snodes[i]->isObserved()) {
+	    if (snodes[i]->isFixed()) {
 		observed_snodes.push_back(snodes[i]);
 	    }
 	}

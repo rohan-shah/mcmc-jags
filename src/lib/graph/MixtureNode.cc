@@ -137,7 +137,7 @@ MixtureNode::MixtureNode (vector<Node const *> const &index,
     {
 	Node const *node = *i;
 	if (node->length() != 1 || !node->isDiscreteValued() ||
-	    node->isObserved()) 
+	    node->isFixed()) 
 	{
 	    throw invalid_argument("Invalid index in MixtureNode constructor");
 	}

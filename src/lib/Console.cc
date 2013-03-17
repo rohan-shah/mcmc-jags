@@ -61,12 +61,12 @@ namespace jags {
 
 static bool isData(Node const *node)
 {
-  return node->isRandomVariable() && node->isObserved();
+    return node->randomVariableStatus() == RV_TRUE_OBSERVED;
 }
 
 static bool isParameter(Node const *node)
 {
-  return node->isRandomVariable() && !node->isObserved();
+    return node->randomVariableStatus() == RV_TRUE_UNOBSERVED;
 }
 
 static bool alwaysTrue(Node const *node)
@@ -230,15 +230,15 @@ bool Console::compile(map<string, SArray> &data_table, unsigned int nchain,
 	    vector<Node*> nodes;
 	    _model->graph().getNodes(nodes);
 	    for (unsigned int i = 0; i < nodes.size(); ++i) {
-		if (nodes[i]->isObserved()) {
+		if (nodes[i]->randomVariableStatus() == RV_TRUE_OBSERVED) {
 		    vector<Node const*> const &parents = nodes[i]->parents();
 		    for (vector<Node const*>::const_iterator p = parents.begin();
 			 p != parents.end(); ++p)
 		    {
-			if (!((*p)->isObserved())) {
+			if (!((*p)->isFixed())) {
 			    _err << "Invalid data graph: observed node " 
 				 << _model->symtab().getName(nodes[i]) 
-				 << " has unobserved parent " 
+				 << " has non-fixed parent " 
 				 << _model->symtab().getName(*p)
 				 << "\n";
 			    clearModel();

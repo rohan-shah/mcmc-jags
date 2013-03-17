@@ -6,19 +6,22 @@
 namespace jags {
 
 /**
- * @short Top-level Node representing data
+ * @short Top-level Node with constant value
  *
- * Constant nodes are the top-level nodes in any directed acyclic graph.
+ * Constant nodes are the top-level nodes in any directed acyclic
+ * graph (i.e. they have no parents). They have a fixed value that is
+ * defined when they are constructed and which is shared across all
+ * chains.
  *
- * In the BUGS language. Constant nodes appear only on the right hand
- * side of a relation. They are considered to represent observed
- * random variables.
+ * There are two sub-classes of ConstantNode representing explicit
+ * constants defined in the model (ConstantParameterNode) and implicit
+ * constants with values supplied by the data (ConstantDataNode).
  */
 class ConstantNode : public Node {
 public:
     /**
-     * Constructs a scalar constant node and sets its value. The value is
-     * fixed and is shared between all chains.
+     * Constructs a scalar constant node and sets its value. The value
+     * is fixed and is shared between all chains.
      */
     ConstantNode(double value, unsigned int nchain);
     /**
@@ -27,18 +30,13 @@ public:
     ConstantNode(std::vector<unsigned int> const &dim, 
 		 std::vector<double> const &value,
 		 unsigned int nchain);
-    ~ConstantNode();
-    /**
-     * A ConstantNode is always observed
-     */
-    bool isObserved() const;
     /**
      * Indicates whether a ConstantNode is discrete-valued
      */
     bool isDiscreteValued() const;
     /**
-     * This function does nothing. It exists only so that objects of
-     * class ConstantNode can be instantiated.
+     * This function does nothing. It exists only so that objects
+     * inheriting from ConstantNode can be instantiated.
      */
     void deterministicSample(unsigned int);
     /**
@@ -55,10 +53,10 @@ public:
      */
     std::string deparse(std::vector<std::string> const &parents) const;
     /**
-     * Constant nodes are observed random variables. This function
-     * returns true.
+     * A constant node is always fixed.
      */
-    bool isRandomVariable() const;
+    bool isFixed() const;
+
 };
 
 } /* namespace jags */

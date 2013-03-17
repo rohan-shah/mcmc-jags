@@ -37,6 +37,7 @@ bool lt(vector<double> const &value1, vector<double> const &value2)
     return false;
 }
 
+//FIXME: Need node indexing
 /* Comparison function for Nodes */
 bool lt(Node const *node1, Node const *node2)
 {
@@ -45,18 +46,18 @@ bool lt(Node const *node1, Node const *node2)
 	return false; 
     }
 
-    bool ob1 = node1->isObserved();
-    bool ob2 = node2->isObserved();
+    bool fix1 = node1->isFixed();
+    bool fix2 = node2->isFixed();
 
-    if (ob1 && !ob2) {
-	//Observed nodes come before unobserved nodes
+    if (fix1 && !fix2) {
+	//Fixed nodes come before non-fixed nodes
 	return true;
     }
-    else if (!ob1 && ob2) {
+    else if (!fix1 && fix2) {
 	return false;
     }
-    else if (ob1 && ob2) {
-	//Observed nodes are sorted by dimension, then value
+    else if (fix1 && fix2) {
+	//Fixed nodes are sorted by dimension, then value
 	if (node1->dim() == node2->dim()) {
 	    return lt(node1->value(0), node2->value(0), node1->length());
 	}
@@ -65,7 +66,7 @@ bool lt(Node const *node1, Node const *node2)
 	}
     }
     else {
-	//Unobserved nodes are sorted by address. The ordering is
+	//Non-fixed nodes are sorted by address. The ordering is
 	//arbitrary, but unique.
 	return (node1 < node2);
     }

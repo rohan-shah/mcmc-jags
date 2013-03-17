@@ -48,7 +48,7 @@ void REFactory::makeSampler(set<StochasticNode*, less_sampler> &nodes,
 	if ((*p)->distribution()->name() == "dnorm" && !(*p)->isBounded()) {
 	    Node const *mu = (*p)->parents()[0];
 	    Node const *tau = (*p)->parents()[1];
-	    if (mu->isObserved() && mu->value(0)[0] == 0 && !tau->isObserved())
+	    if (mu->isFixed() && mu->value(0)[0] == 0 && !tau->isFixed())
             {
 
 		/* The precision parameter (tau) should be a function
@@ -62,7 +62,7 @@ void REFactory::makeSampler(set<StochasticNode*, less_sampler> &nodes,
 		bool cansample = false;
 		for (q = graph.nodes().begin(); q != graph.nodes().end(); ++q) 
 		{
-		    if (marks.mark(*q) == 1 && !(*q)->isObserved()) {
+		    if (marks.mark(*q) == 1 && !(*q)->isFixed()) {
 			if (parent) {
 			    // Too many parents - give up
 			    cansample = false;

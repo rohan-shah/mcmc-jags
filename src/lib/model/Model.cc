@@ -155,25 +155,25 @@ void Model::initialize(bool datagen)
 		}
 		else if (ld == JAGS_NEGINF || (!jags_finite(ld) && ld < 0)) {
 		    string msg;
-		    if (snode->isObserved()) {
+		    if (isObserved(snode)) {
 			msg = "Observed node";
 		    }
 		    else {
 			msg = "Unobserved node";
 		    }
 		    msg.append(" inconsistent with ");
-		    bool obs_par = true;
+		    bool fixed_parents = true;
 		    for (unsigned int j = 0; j < snode->parents().size(); ++j) {
-			if (!snode->parents()[j]->isObserved()) {
-			    obs_par = false;
+			if (!snode->parents()[j]->isFixed()) {
+			    fixed_parents = false;
 			    break;
 			}
 		    }
-		    if (obs_par) {
-			msg.append("observed parents");
+		    if (fixed_parents) {
+			msg.append("fixed parents");
 		    }
 		    else {
-			msg.append("unobserved parents");
+			msg.append("parents");
 		    }
 		    msg.append(" at initialization");
 		    throw NodeError(snode, msg);
@@ -264,7 +264,7 @@ void Model::chooseSamplers()
     vector<Node const*> informative;
     vector<StochasticNode*>::const_iterator p;
     for (p = _stochastic_nodes.begin(); p != _stochastic_nodes.end(); ++p) {
-	if ((*p)->isObserved()) {
+	if (isObserved(*p)) {
 	    sample_graph.add(*p);
 	    informative.push_back(*p);
 	}
@@ -272,7 +272,7 @@ void Model::chooseSamplers()
     marks.markAncestors(informative, 1);
 
     for (p = _stochastic_nodes.begin(); p != _stochastic_nodes.end(); ++p) {
-	if ((*p)->isObserved()) {
+	if (isObserved(*p)) {
 	    marks.mark(*p, 2);
 	}
     }
@@ -519,9 +519,9 @@ void Model::addExtraNode(Node *node)
     if (!_is_initialized) {
 	throw logic_error("Attempt to add extra node to uninitialized model");
     }
-    if (node->isObserved()) {
+    if (node->randomVariableStatus() == RV_TRUE_OBSERVED) {
 	for (unsigned int i = 0; i < node->parents().size(); ++i) {
-	    if (!node->parents()[i]->isObserved())
+	    if (!node->parents()[i]->isFixed())
 		throw logic_error("Cannot add observed node to initialized model");
 	}
     }

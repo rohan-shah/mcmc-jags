@@ -43,7 +43,7 @@ VSLogicalNode::VSLogicalNode(ScalarFunction const *function,
     : LogicalNode(mkDim(parameters), parameters, function),
       _func(function), _isvector(mkIsVector(parameters))
 {
-    if (isObserved()) {
+    if (isFixed()) {
 	for (unsigned int ch = 0; ch < _nchain; ++ch) {
 	    deterministicSample(ch);
 	}

@@ -197,7 +197,7 @@ bool RWDSum::canSample(vector<StochasticNode *> const &nodes,
     else {
 	//It must be an observed direct descendent of sampled nodes
 	//and have no other parents
-	if (!dschild->isObserved())
+	if (!isObserved(dschild))
 	    return false;
 	if (dschild->parents().size() != nodes.size())
 	    return false;

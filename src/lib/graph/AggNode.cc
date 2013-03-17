@@ -102,8 +102,8 @@ AggNode::AggNode(vector<unsigned int> const &dim,
 	}
     }
 
-    // Initialize if fully observed. See DeterministicNode constructor
-    if (isObserved()) {
+    // Initialize if fixed. See comments in the DeterministicNode constructor
+    if (isFixed()) {
 	for (unsigned int ch = 0; ch < _nchain; ++ch) {
 	    deterministicSample(ch);
 	}

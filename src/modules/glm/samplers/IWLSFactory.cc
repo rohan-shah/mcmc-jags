@@ -56,7 +56,7 @@ namespace glm {
     {
 	vector<Node const *> const &parents = snode->parents();
 	for (unsigned int i = 0; i < parents.size(); ++i) {
-	    if (!parents[i]->isObserved())
+	    if (!parents[i]->isFixed())
 		return false;
 	}
 	return !isBounded(snode);

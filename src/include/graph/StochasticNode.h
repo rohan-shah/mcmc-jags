@@ -135,8 +135,21 @@ public:
     double const *upperLimit(unsigned int chain) const;
     std::string deparse(std::vector<std::string> const &parameters) const;
     bool isDiscreteValued() const;
-    bool isObserved() const;
+    /**
+     * A newly created stochastic node is not fixed. But a stochastic
+     * node may be marked as fixed by calling setObserved.
+     */
+    bool isFixed() const;
+    /**
+     * Marks a stochastic node as observed. This change of status is
+     * permanent and irreversible.
+     */
     void setObserved();
+    /**
+     * A stochastic node is always a random variable, and is observed
+     * if setObserved has been called.
+     */
+    RVStatus randomVariableStatus() const;
     Node const *lowerBound() const;
     Node const *upperBound() const;
     /**
@@ -168,6 +181,12 @@ bool isSupportFixed(StochasticNode const *snode);
  * either above or below.
  */
 bool isBounded(StochasticNode const *node);
+
+/**
+ * For stochastic nodes, this is a synonym of isFixed
+ */
+inline bool isObserved(StochasticNode const *s) { return s->isFixed(); }
+
 
 } /* namespace jags */
 

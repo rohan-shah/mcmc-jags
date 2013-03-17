@@ -27,7 +27,7 @@ static StochasticNode const *getDSumChild(StochasticNode *node)
 	 p != node->stochasticChildren()->end(); ++p) 
     {
 	//Skip unobserved nodes
-	if ((*p)->isObserved() && (*p)->distribution()->name() == "dsum") 
+	if (isObserved(*p) && (*p)->distribution()->name() == "dsum") 
 	    return *p;
     }
     return 0;

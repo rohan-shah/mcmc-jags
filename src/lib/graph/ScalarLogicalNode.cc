@@ -32,7 +32,7 @@ ScalarLogicalNode::ScalarLogicalNode(ScalarFunction const *function,
 	}
     }
 
-    if (isObserved()) {
+    if (isFixed()) {
 	for (unsigned int ch = 0; ch < _nchain; ++ch) {
 	    deterministicSample(ch);
 	}

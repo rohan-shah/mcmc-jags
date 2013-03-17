@@ -28,7 +28,7 @@ LinkNode::LinkNode(LinkFunction const *function,
     }
 
     // Initialize if fully observed 
-    if (isObserved()) {
+    if (isFixed()) {
 	for (unsigned int ch = 0; ch < _nchain; ++ch) {
 	    deterministicSample(ch);
 	}

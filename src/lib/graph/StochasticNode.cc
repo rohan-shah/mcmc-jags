@@ -92,20 +92,20 @@ Distribution const *StochasticNode::distribution() const
     return _dist;
 }
 
-bool StochasticNode::isRandomVariable() const
-{
-    return true;
-}
-
 bool StochasticNode::isDiscreteValued() const
 {
     return _discrete;
 }
 
-bool StochasticNode::isObserved() const
+bool StochasticNode::isFixed() const
 {
     return _observed;
 }
+
+RVStatus StochasticNode::randomVariableStatus() const
+{
+    return _observed ? RV_TRUE_OBSERVED : RV_TRUE_UNOBSERVED;    
+}	
 
 void StochasticNode::setObserved() 
 {
@@ -190,9 +190,9 @@ double const *StochasticNode::upperLimit(unsigned int chain) const
 
 bool isSupportFixed(StochasticNode const *node)
 {
-    if (node->lowerBound() && !node->lowerBound()->isObserved())
+    if (node->lowerBound() && !node->lowerBound()->isFixed())
 	return false;
-    if (node->upperBound() && !node->upperBound()->isObserved())
+    if (node->upperBound() && !node->upperBound()->isFixed())
 	return false;
     
     vector<Node const *> parents = node->parents();
@@ -202,7 +202,7 @@ bool isSupportFixed(StochasticNode const *node)
 	parents.pop_back();
     vector<bool> fixmask(parents.size());
     for (unsigned int i = 0; i < parents.size(); ++i) {
-	fixmask[i] = parents[i]->isObserved();
+	fixmask[i] = parents[i]->isFixed();
     }
     return node->distribution()->isSupportFixed(fixmask);
 }

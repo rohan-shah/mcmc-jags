@@ -45,7 +45,7 @@ enum ClosedFuncClass {DNODE_LINEAR, DNODE_SCALE, DNODE_SCALE_MIX, DNODE_POWER};
  * values of its parents.
  */
 class DeterministicNode : public Node {
-    bool _observed;
+    bool _fixed;
 public:
     DeterministicNode(std::vector<unsigned int> const &dim,
 		      std::vector<Node const *> const &parents);
@@ -57,14 +57,13 @@ public:
      */
     void randomSample(RNG*, unsigned int nchain);
     /**
-     * Deterministic nodes are not random variables. This function
-     * always returns false.
+     * Deterministic nodes are not random variables. 
      */
-    bool isRandomVariable() const;
+    RVStatus randomVariableStatus() const;
     /**
-     * A deterministic node is observed if all its parents are
+     * A deterministic node is fixed if all its parents are fixed.
      */
-    bool isObserved() const;
+    bool isFixed() const;
     /**
      * Tests whether the node belongs to a closed class when
      * considered as a function of a given ancestor node X, or nodes

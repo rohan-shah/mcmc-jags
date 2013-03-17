@@ -1,7 +1,7 @@
 #include <config.h>
 #include <model/NodeArray.h>
 #include <model/Model.h>
-#include <graph/ConstantNode.h>
+#include <graph/ConstantDataNode.h>
 #include <graph/StochasticNode.h>
 #include <graph/AggNode.h>
 #include <sarray/RangeIterator.h>
@@ -173,16 +173,18 @@ void NodeArray::setValue(SArray const &value, unsigned int chain)
 		throw runtime_error(msg + name() + 
 				    print(value.range().leftIndex(i)));
 	    }
-	    if (node->isObserved()) {
-		throw NodeError(node,
-				"Attempt to overwrite value of observed node");
-	    }
-	    if (node->isRandomVariable()) {
-		setnodes.insert(node);
-	    }
-	    else {
+	    switch(node->randomVariableStatus()) {
+	    case RV_FALSE:
 		throw NodeError(node, 
 				"Attempt to set value of non-variable node");
+		break;
+	    case RV_TRUE_OBSERVED:
+		throw NodeError(node,
+				"Attempt to overwrite value of observed node");
+		break;
+	    case RV_TRUE_UNOBSERVED:
+		setnodes.insert(node);		
+		break;
 	    }
 	}
     }
@@ -255,8 +257,8 @@ void NodeArray::setData(SArray const &value, Model *model)
     for (unsigned int i = 0; i < _range.length(); ++i) {
 	if (x[i] != JAGS_NA) {
 	    if (_node_pointers[i] == 0) {
-		//Insert a new constant node
-		ConstantNode *cnode = new ConstantNode(x[i], _nchain);
+		//Insert a new constant data node
+		ConstantNode *cnode = new ConstantDataNode(x[i], _nchain);
 		model->addNode(cnode);
 		insert(cnode, _range.leftIndex(i));
 	    }

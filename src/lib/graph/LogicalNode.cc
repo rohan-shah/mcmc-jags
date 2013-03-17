@@ -71,7 +71,7 @@ bool LogicalNode::isClosed(set<Node const *> const &ancestors,
 	    ++nmask;
 	}
 	if (fixed) {
-	    fixed_mask.push_back(par[i]->isObserved());
+	    fixed_mask.push_back(par[i]->isFixed());
 	}
     }
 

@@ -68,7 +68,7 @@ bool DSumMethod::canSample(vector<StochasticNode *> const &nodes,
 	return false;
     if (schild.size() != 1)
 	return false;
-    if (!schild[0]->isObserved())
+    if (!isObserved(schild[0]))
 	return false;
     if (schild[0]->distribution()->name() != "dsum")
 	return false;
