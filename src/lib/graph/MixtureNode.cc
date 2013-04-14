@@ -2,6 +2,7 @@
 #include <graph/MixtureNode.h>
 #include <graph/GraphMarks.h>
 #include <graph/Graph.h>
+#include <graph/MixTab.h>
 
 #include <utility>
 #include <vector>
@@ -17,115 +18,121 @@ using std::set;
 using std::string;
 using std::pair;
 
+
 namespace jags {
 
-static map<MixMap, int> &mixMapMap()
-{
-    /* 
-       Repository of MixMaps that are shared between MixtureNode
-       objects.  We use reference counting to keep track of whether a
-       MixMap is in use.
-    */
-    static map<MixMap, int> _mixmapmap;
-    return _mixmapmap;
-}
+    typedef map<MixMap, pair<MixTab*, int> > MixTabMap;
 
-static MixMap const &insertMixMap(MixMap const &m)
-{
-    /*
-      Inserts a MixMap into the shared repository if it is unique, or
-      increments its reference count if it is already contained in the
-      repository.
-      
-      The return value is a reference to a copy of the mixmap in the
-      repository, which will persist as long as we need it.
-
-      N.B. This must be called only by the MixtureNode constructor!
-    */
-
-    map<MixMap, int> &mmap = mixMapMap();
-    map<MixMap, int>::iterator p = mmap.find(m);
-    if (p == mmap.end()) {
-	mmap.insert(pair<MixMap,int>(m, 1));
-	p = mmap.find(m);
-    }
-    else {
-	p->second++;
-    }
-    return p->first;
-}
-
-static void removeMixMap(MixMap const &m)
-{
-    /*
-      Decrements the reference count of a MixMap in the shared
-      repository.  When the reference count reaches zero, the MixMap
-      is removed.
-
-      N.B. This must be called only by the MixtureNode destructor!
-    */
-    
-    map<MixMap, int> &mmap = mixMapMap();
-    map<MixMap, int>::iterator p = mmap.find(m);
-    if (p == mmap.end()) {
-	throw logic_error("Failed to find MixMap in MixtureNode");
-    }
-    else {
-	p->second--;
+    static MixTabMap &mixTabMap()
+    {
+	// Repository of MixTab objects that are shared between
+	// MixtureNodes.  We use reference counting to keep track of
+	// whether a MixTab is in use.
+	static MixTabMap _map;
+	return _map;
     }
 
-    if (p->second == 0) {
-	mmap.erase(p);
-    }
-}
+    static MixTab const *getTable(MixMap const &mixmap)
+    {
+	// Returns a MixTab object from the repository corresponding
+	// to the given MixMap.
 
-/*
-  Calculates the dimensions of a mixture node given its possible parent
-  values. If the parents have inconsistent dimensions, then a logic
-  error is thrown.
-*/
-static vector<unsigned int> const &
-mkDim(map<vector<int>, Node const *> const &mixmap)
-{
-    map<vector<int>, Node const *>::const_iterator p = mixmap.begin();
-    vector<unsigned int> const &dim = p->second->dim();
-    for (++p ; p != mixmap.end(); ++p) {
-	if (p->second->dim() != dim) {
-	    throw logic_error("Dimension mismatch in MixtureNode parents");
+	// N.B. This must be called only by the MixtureNode
+	// constructor!
+
+	MixTabMap &tabmap = mixTabMap();
+	MixTabMap::iterator p = tabmap.find(mixmap);
+	if (p == tabmap.end()) {
+	    //MixTab does not exist in repository; create and
+	    //insert a new one.
+	    MixTab *newtab = new MixTab(mixmap);
+	    MixTabMap::mapped_type newentry(newtab, 1);
+	    p = tabmap.insert(MixTabMap::value_type(mixmap, newentry)).first;
+	}
+	else {
+	    //MixTab already exists in the repository; increment
+	    //reference count
+	    p->second.second++;
+	}
+	return p->second.first;
+    }
+
+    static MixTabMap::iterator findTable(MixTab const *table)
+    {
+	// Inverse lookup of the MixTab repository using the MixTab
+
+	MixTabMap &tabmap = mixTabMap();
+	MixTabMap::iterator p = tabmap.begin();
+	
+	for( ; p != tabmap.end(); ++p) {
+	    if (p->second.first == table) {
+		return p;
+	    }
+	}
+	throw logic_error("Failed to find MixTab in MixtureNode");
+	return p; //Wall
+    }
+
+    static void removeTable(MixTab const *table)
+    {
+	// Decrements the reference count of a MixTab in the shared
+	// repository.  When the reference count reaches zero, the MixTab
+	// is removed.
+	
+	// N.B. This must be called only by the MixtureNode destructor!
+	
+	MixTabMap::iterator p = findTable(table);
+	p->second.second--;
+	if (p->second.second == 0) {
+	    mixTabMap().erase(p);
 	}
     }
-    return dim;
-}
-
-/* 
-   Creates a vector of parent nodes from the arguments passed to the
-   constructor. 
-   
-   The index nodes come first, in the order supplied, then the parents
-   supplied in the mixmap parameter, in the order determined by the
-   corresponding indices.
-*/
-static vector<Node const *> 
-mkParents(vector<Node const *> const &index,
-	  map<vector<int>, Node const *> const &mixmap)
-{
-    vector<Node const *> parents;
-    parents.reserve(index.size() + mixmap.size());
-    for (unsigned int i = 0; i < index.size(); ++i) {
-	parents.push_back(index[i]);
-    }
-    for (map<vector<int>, Node const *>::const_iterator p = mixmap.begin();
-	 p != mixmap.end(); ++p) 
+    
+    /*
+      Calculates the dimensions of a mixture node given its possible
+      parent values. If the parents have inconsistent dimensions, then
+      a logic error is thrown.
+    */
+    static vector<unsigned int> const &mkDim(MixMap const &mixmap)
     {
-	parents.push_back(p->second);
+	MixMap::const_iterator p = mixmap.begin();
+	vector<unsigned int> const &dim = p->second->dim();
+	for (++p ; p != mixmap.end(); ++p) {
+	    if (p->second->dim() != dim) {
+		throw logic_error("Dimension mismatch in MixtureNode parents");
+	    }
+	}
+	return dim;
     }
-    return parents;
-}
+    
+    /* 
+       Creates a vector of parent nodes from the arguments passed to the
+       constructor. 
+       
+       The index nodes come first, in the order supplied, then the parents
+       supplied in the mixmap parameter, in the order determined by the
+       corresponding indices.
+    */
+    static vector<Node const *> 
+    mkParents(vector<Node const *> const &index, MixMap const &mixmap)
+    {
+	vector<Node const *> parents;
+	parents.reserve(index.size() + mixmap.size());
+	for (unsigned int i = 0; i < index.size(); ++i) {
+	    parents.push_back(index[i]);
+	}
+	for (map<vector<int>, Node const *>::const_iterator p = mixmap.begin();
+	     p != mixmap.end(); ++p) 
+	{
+	    parents.push_back(p->second);
+	}
+	return parents;
+    }
 
 MixtureNode::MixtureNode (vector<Node const *> const &index,
-			  map<vector<int>, Node const *> const &mixmap)
+			  MixMap const &mixmap)
     : DeterministicNode(mkDim(mixmap), mkParents(index, mixmap)),
-      _map(insertMixMap(mixmap)), _Nindex(index.size()), _discrete(true)
+      _table(getTable(mixmap)), _Nindex(index.size()), _discrete(true)
 {
     // Check validity of index argument
 
@@ -143,30 +150,30 @@ MixtureNode::MixtureNode (vector<Node const *> const &index,
 	}
     }
 
-    // Check validity of mixmap argument
-
+    // Check validity of MixMap argument
     if (mixmap.size() < 2)
-	throw invalid_argument("Trivial mixmap in MixtureNode constructor");
+	throw invalid_argument("Trivial MixMap in MixtureNode constructor");
 
-    for (map<vector<int>, Node const *>::const_iterator p = mixmap.begin();
-	 p != mixmap.end(); ++p)
+    // Check consistency of arguments
+    if (index.size() != mixmap.begin()->first.size()) {
+	throw invalid_argument("Dimension mismatch in MixtureNode constructor");
+    }
+
+    //Check discreteness 
+    vector<Node const *> const &par = parents();
+    for (unsigned int i = _Nindex; i < par.size(); ++i)
     {
-	if (p->first.size() != _Nindex) {
-	    throw invalid_argument("Invalid index in MixtureNode");
-	}
-	//Check discreteness of outcome
-	if (!p->second->isDiscreteValued()) {
-	  _discrete = false;
+	if (!par[i]->isDiscreteValued()) {
+	    _discrete = false;
+	    break;
 	}
     }
 
-
 }
-
 
 MixtureNode::~MixtureNode()
 {
-    removeMixMap(_map);
+    removeTable(_table);
 }
 
 /* Do not delete commented sections: they are useful for debugging
@@ -182,8 +189,9 @@ void MixtureNode::deterministicSample(unsigned int chain)
     for (unsigned int j = 0; j < _Nindex; ++j) {
 	i[j] = static_cast<int>(*par[j]->value(chain));
     }
-    map<vector<int>, Node const *>::const_iterator p = _map.find(i);
-    if (p == _map.end()) {
+
+    Node const *pnode = _table->getNode(i);
+    if (pnode == 0) {
 	/*
 	std::cout << "Got " << print(Range(i)) << "\nOriginally\n";
 	for (unsigned int j = 0; j < _Nindex; ++j) {
@@ -191,17 +199,13 @@ void MixtureNode::deterministicSample(unsigned int chain)
 	    if (par[j]->value(chain)[0] == JAGS_NA)
 		std::cout << "(which is  missing)\n";
 	}
-	std::cout << "Expected one of \n";
-	for (p = _map.begin(); p != _map.end(); ++p) {
-	    std::cout << print(Range(p->first)) << "\n";
-	}
 	*/
 	throw NodeError(this, "Invalid index in MixtureNode");
     }
     else {
-	setValue(p->second->value(chain), length(), chain);	
+	setValue(pnode->value(chain), length(), chain);	
     }
-    }
+}
 
 unsigned int MixtureNode::index_size() const
 {
@@ -290,9 +294,11 @@ DeterministicNode *MixtureNode::clone(vector<Node const *> const &parents) const
 	++p;
     }
     
-    map<vector<int>, Node const *> mixmap;
-    map<vector<int>, Node const *>::const_iterator q = _map.begin();
-    while (p != parents.end() && q != _map.end()) {
+    // Find the MixMap corresponding to this node, and copy it
+    MixMap mixmap = findTable(_table)->first;
+    // Replace entries in the copy
+    MixMap::const_iterator q = mixmap.begin();
+    while (p != parents.end() && q != mixmap.end()) {
 	mixmap[q->first] = *p;
 	++q;
 	++p;

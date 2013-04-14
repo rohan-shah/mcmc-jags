@@ -10,8 +10,7 @@ class Node;
 namespace bugs {
 
 class TruncatedGamma : public ConjugateMethod {
-    double _shape;
-    Node const *_parent;
+    const double _exponent;
 public:
     TruncatedGamma(GraphView const *gv);
     ~TruncatedGamma();

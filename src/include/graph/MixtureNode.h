@@ -7,14 +7,15 @@
 
 namespace jags {
 
-class Node;
+    class Node;
+    class MixTab;
 
-/**
- * A MixMap is an STL map object.  The key represents an integer-valued
- * index, and the value is the corresponding Node from which a
- * MixtureNode will copy its values when its indices take that value.
- */
-typedef std::map<std::vector<int> , Node const *>  MixMap;
+    /** 
+     * A MixMap is an STL map that associates an index value (a vector
+     * of unsigned integers) with a node.  
+     */
+    typedef std::map<std::vector<int>, Node const *> MixMap;
+
 
 /**
  * @short Node for mixture models.
@@ -32,7 +33,7 @@ typedef std::map<std::vector<int> , Node const *>  MixMap;
  * x[1], ... x[M].
  */
 class MixtureNode : public DeterministicNode {
-    MixMap const &_map;
+    MixTab const *_table;
     unsigned int _Nindex;
     bool _discrete;
 public:
@@ -42,14 +43,10 @@ public:
      * @param index Vector of index nodes. These must be discrete-valued,
      *  scalar, and unobserved.
      *
-     * @param mixmap STL map object which associates a possible value
-     * of the index nodes with a single parent. Each possible index
-     * value, denoted by a vector of integers, must have the correct
-     * size (matching the size of the index parameter), and the
-     * corresponding parents must all have the same dimension.
+     * @param map a MixMap object which associates each possible value
+     * of the index nodes with a single parent. 
      */
-    MixtureNode(std::vector<Node const *> const &index,
-		std::map<std::vector<int>, Node const *> const &mixmap);
+    MixtureNode(std::vector<Node const *> const &index, MixMap const &mixmap);
     ~MixtureNode();
     /**
      * Calculates the value of the mixture node by looking up the
