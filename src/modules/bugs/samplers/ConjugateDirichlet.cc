@@ -23,6 +23,39 @@ using std::string;
 namespace jags {
 namespace bugs {
 
+    Node const *findUniqueParent(Node const *node,
+				 set<Node const *> const &nodeset)
+    {
+	/*
+	  Utility function called by checkAggNode and checkMixNode. 
+
+	  If node has a single parent in nodeset, then a pointer to
+	  the parent is returned.  If there are multiple parents in
+	  nodeset then a NULL pointer is returned.  
+
+	  If no parents are in nodeset, a logic error is thrown.
+	*/
+	vector<Node const *> const &par = node->parents();
+	Node const *param = 0;
+
+	for (unsigned int i = 0; i < par.size(); ++i) {
+	    if (nodeset.count(par[i])) {
+		if (param) {
+		    if (param != par[i]) return 0;
+		}
+		else {
+		    param = par[i];
+		}
+	    }
+	}
+	if (param == 0) {
+	    throwLogicError("Error in ConjugateDirichlet::canSample");
+	}
+
+	return param;
+    }
+
+
 static bool checkAggNode(AggNode const *anode, 
 			 set<Node const *> const &nodeset)
 {
@@ -39,20 +72,8 @@ static bool checkAggNode(AggNode const *anode,
     vector<unsigned int> const &off = anode->offsets();
 
     //Find unique parent
-    Node const *param = 0;
-    for (unsigned int i = 0; i < par.size(); ++i) {
-	if (nodeset.count(par[i])) {
-	    if (param) {
-		if (par[i] != param) return false;
-	    }
-	    else {
-		param = par[i];
-	    }
-	}
-    }
-    if (param == 0) {
-	throwLogicError("Error 1 in ConjugateDirichlet::canSample");
-    }
+    Node const *param = findUniqueParent(anode, nodeset);
+    if (param == 0) return false;
 
     //Check that parent is entirely contained in anode with offsets
     //in ascending order
@@ -91,22 +112,7 @@ static bool checkMixNode(MixtureNode const *mnode,
     }
 
     //Find unique parent
-    Node const *param = 0;
-    for (unsigned int i = nindex; i < par.size(); ++i) {
-	if (nodeset.count(par[i])) {
-	    if (param) {
-		if (param != par[i]) return false;
-	    }
-	    else {
-		param = par[i];
-	    }
-	}
-    }
-    if (param == 0) {
-	throwLogicError("Error 2 in ConjugateDirichlet::canSample");
-    }
-
-    return true;
+    return findUniqueParent(mnode, nodeset) != 0;
 }
 
 bool ConjugateDirichlet::canSample(StochasticNode *snode, Graph const &graph)
@@ -202,7 +208,7 @@ getAggParent(Node const *node, set<Node const *> const &nodeset)
        Search recursively for an AggNode ancestor node within nodeset.
        We assume that node has either 1 parent in nodeset or 0.
     */
-
+    //FIXME: We can use _tree and _leaves
     vector<Node const*> const &par = node->parents();
     Node const *param = 0;
     for (unsigned int i = 0; i < par.size(); ++i) {
@@ -220,6 +226,25 @@ getAggParent(Node const *node, set<Node const *> const &nodeset)
 	anode = getAggParent(param, nodeset);
     }
     return anode;
+}
+
+static bool findMix(GraphView const *gv)
+{
+    /* 
+       Utility function called by constructor. It returns true if any
+       of the deterministic descendants are mixture nodes.
+
+       When there are no mixture nodes, the update calculations can be
+       simplified.  
+       
+       This static function is called by the constructor and the
+       result is stored in the variable _mix.
+    */
+    vector<DeterministicNode*> const &dchild = gv->deterministicChildren();
+    for (unsigned int i = 0; i < dchild.size(); ++i) {
+	if (isMixture(dchild[i])) return true;
+    }
+    return false;
 }
 
 static vector<vector<unsigned int> > 
@@ -259,24 +284,110 @@ makeOffsets(GraphView const *gv, set<Node const *> const &nodeset)
     return ans;
 }
 
-static bool findMix(GraphView const *gv)
-{
-    //Find mixture nodes among deterministic descendants
-    vector<DeterministicNode*> const &dchild = gv->deterministicChildren();
-    for (unsigned int i = 0; i < dchild.size(); ++i) {
-	if (isMixture(dchild[i])) return true;
+    static vector<int> makeTree(GraphView const *gv)
+    {
+	/* 
+	   If canSample is true then the nodes in the GraphView gv
+	   form a tree with the sampled node as its root.
+
+	   This function creates an integer vector "tree" denoting the
+	   parents of the deterministic descendants: "tree[i] = j" for
+	   j > 0 means that the unique parent of deterministic node
+	   "i" in the GraphView is deterministic node "j".  If the
+	   unique parent is the sampled node then we denote this by
+	   "leaves[i] = -1".
+
+	   This static function is called by the constructor, and
+	   the result is stored in the variable _tree;
+	*/
+	vector<DeterministicNode*> const &dchild = gv->deterministicChildren();
+	StochasticNode *snode = gv->nodes()[0];
+
+	vector<int> tree(dchild.size(), -1);
+
+	set<Node const *> nodeset;
+	nodeset.insert(snode);
+
+	for (unsigned int j = 0; j < dchild.size(); ++j) {
+	    Node const *parent = findUniqueParent(dchild[j], nodeset);
+	    if (parent == 0) {
+		throwLogicError("Invalid tree in ConjugateDirichlet");
+	    }
+	    if (parent != snode) {
+		unsigned int k = 0;
+		for ( ; k < j; ++k) {
+		    if (parent == dchild[k]) {
+			tree[j] = k;
+			break;
+		    }
+		}
+		if (k == j) {
+		    throwLogicError("Invalid tree in ConjugateDirichlet");
+		}
+	    }
+	    nodeset.insert(dchild[j]);
+	}	
+
+	return tree;
     }
-    return false;
-}
+
+    static vector<int> makeLeaves(GraphView const *gv)
+    {
+	/* 
+	   If canSample is true, the nodes in the GraphView gv form a
+	   tree: the sampled node is the root and the stochastic
+	   children are the leaves.
+
+	   This function creates an integer vector "leaves" denoting
+	   the parents of the stochastic children: "leaves[i] = j" for
+	   j > 0 means that the unique parent of stochastic node "i"
+	   in the GraphView is deterministic node "j".  If the unique
+	   parent is the sampled node then we denote this by
+	   "leaves[i] = -1".
+
+	   This static function is called by the constructor, and
+	   the result is stored in the variable _leaves;
+	*/
+
+	vector<StochasticNode const*> const &schild = gv->stochasticChildren();
+	vector<DeterministicNode*> const &dchild = gv->deterministicChildren();
+	StochasticNode *snode = gv->nodes()[0];
+
+	set<Node const *> nodeset;
+	nodeset.insert(snode);
+	for (unsigned int k = 0; k < dchild.size(); ++k) {
+	    nodeset.insert(dchild[k]);
+	}
+
+	vector<int> leaves(schild.size(), -1);
+	for (unsigned int j = 0; j < schild.size(); ++j) {
+	    Node const * parent = findUniqueParent(schild[j], nodeset);
+	    if (parent != snode) {
+		int k = dchild.size() - 1;
+		for ( ; k >= 0; --k) {
+		    if (parent == dchild[k]) {
+			leaves[j] = k;
+			break;
+		    }
+		}
+		if (k < 0) {
+		    throwLogicError("Leaf error in ConjugateDirichlet");
+		}
+	    }
+	}	
+
+	return leaves;
+    }
 
 
 ConjugateDirichlet::ConjugateDirichlet(GraphView const *gv)
-    : ConjugateMethod(gv), _mix(findMix(gv)), 
-      _off(gv->stochasticChildren().size())
+    : ConjugateMethod(gv), _mix(findMix(gv)),
+      _off(gv->stochasticChildren().size()),
+      _tree(makeTree(gv)), _leaves(makeLeaves(gv))
 {
     //Find out if we have any aggregate nodes in the deterministic
     //children
-    vector<DeterministicNode *> dchild = gv->deterministicChildren();
+    vector<DeterministicNode *> const &dchild = gv->deterministicChildren();
     bool have_agg = false;
     for (unsigned int i = 0; i < dchild.size(); ++i) {
 	if (dynamic_cast<AggNode const *>(dchild[i])) {
@@ -285,8 +396,8 @@ ConjugateDirichlet::ConjugateDirichlet(GraphView const *gv)
 	}
     }
     if (have_agg) {
-	//We have aggregate nodes and need to set up offsets for the
-	//update function
+	//We have aggregate nodes in the path and need to set up
+	//offsets for the update function
 	set<Node const*> nodeset;
 	nodeset.insert(gv->nodes()[0]);
 	for (unsigned int i = 0; i < dchild.size(); ++i) {
@@ -304,29 +415,58 @@ ConjugateDirichlet::ConjugateDirichlet(GraphView const *gv)
     }
 }
 
-static bool checkzero(StochasticNode const *snode, unsigned int chain,
-		      vector<unsigned int> const &offsets)
+bool ConjugateDirichlet::isActiveLeaf(int i, unsigned int chain) const 
 {
-    double const *par = snode->parents()[0]->value(chain);
-    unsigned int length = snode->parents()[0]->length();
+    /* 
+       Helper function called by update. Returns true if the
+       stochastic child with index i is "active", i.e. the path from
+       the sampled node to stochastic child i is not blocked by a
+       mixture node that is switched to another mixture component.
+    */
+    if (!_mix) return true; //There are no mixture nodes
+    else return isActiveTree(_leaves[i], chain);
+}
 
-    if (offsets.empty()) {
-	for (unsigned int i = 0; i < length; ++i) {
-	    if (par[i] != 0) return false;
+bool ConjugateDirichlet::isActiveTree(int i, unsigned int chain) const 
+{
+    /*
+      Called by isActiveLeaf. See above for details.
+
+      We traverse the tree of deterministic descendants back from the
+      leaves until either we reach the sampled node (return true) or
+      we find the path is blocked by a mixture node that is set to
+      another mixture component (return false).
+    */
+
+    if (i == -1) {
+	return true; //We have reached the sampled node
+    }
+
+    vector<DeterministicNode*> const &dchild = _gv->deterministicChildren();
+    
+    if (MixtureNode const *m = asMixture(dchild[i])) {
+	Node const *active_parent = m->activeParent(chain);
+	if (_tree[i] == -1) {
+	    //active parent should be the sampled node
+	    if (active_parent != _gv->nodes()[0]) {
+		return false;
+	    }
+	}
+	else {
+	    //active parent should be the parent given by _tree
+	    if (active_parent != dchild[_tree[i]]) {
+		return false;
+	    }
 	}
     }
-    else {
-	for (unsigned int i = 0; i < offsets.size(); ++i) {
-	    if (par[offsets[i]] != 0) return false;
-	}
-    }
-    return true;
+    
+    return isActiveTree(_tree[i], chain);
 }
 
 void ConjugateDirichlet::update(unsigned int chain, RNG *rng) const
 {
     StochasticNode *snode = _gv->nodes()[0];
-    unsigned long size = snode->length();
+    unsigned int size = snode->length();
     double *alpha = new double[size];
     double *xnew = new double[size];
 
@@ -336,22 +476,11 @@ void ConjugateDirichlet::update(unsigned int chain, RNG *rng) const
     }
 
     vector<StochasticNode const*> const &schild = _gv->stochasticChildren();
-    unsigned int nchildren = schild.size();
-    
-    if (_mix) {
-	//Set all elements of snode to zero. This is an illegal value
-	//used to find stochastic children that are "active" (i.e. make
-	//a likelihood contribution in a mixture model.
-	for (unsigned int i = 0; i < size; ++i) {
-	    xnew[i] = 0;
-	}
-	_gv->setValue(xnew, size, chain);
-    }
-
-    for (unsigned int i = 0; i < nchildren; ++i) {
+    for (unsigned int i = 0; i < schild.size(); ++i) {
 	int index = 0;
 	double const *N = 0;
-	if (!_mix || checkzero(schild[i], chain, _off[i])) {
+
+	if (isActiveLeaf(i, chain)) {
 	    switch(_child_dist[i]) {
 	    case MULTI:
 		N = schild[i]->value(chain);

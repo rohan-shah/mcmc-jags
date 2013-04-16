@@ -36,6 +36,8 @@ class MixtureNode : public DeterministicNode {
     MixTab const *_table;
     unsigned int _Nindex;
     bool _discrete;
+    std::vector<Node const *> _active_parents;
+    void updateActive(unsigned int chain);
 public:
     /**
      * Constructs a MixtureNode. 
@@ -49,12 +51,14 @@ public:
     MixtureNode(std::vector<Node const *> const &index, MixMap const &mixmap);
     ~MixtureNode();
     /**
-     * Calculates the value of the mixture node by looking up the
-     * parent node corresponding to the current value of the index
-     * nodes (in the map supplied to the constructor). The mixture node
-     * copies its value from that parent.
+     * Copies the value of the active parent
      */
     void deterministicSample(unsigned int chain);
+    /**
+     * Returns a pointer to the currently active parent (i.e. the one
+     * determined by the current index values) in the given chain.
+     */
+    Node const *activeParent(unsigned int chain) const;
     /**
      * Returns the number of index nodes.
      */

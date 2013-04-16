@@ -132,7 +132,8 @@ namespace jags {
 MixtureNode::MixtureNode (vector<Node const *> const &index,
 			  MixMap const &mixmap)
     : DeterministicNode(mkDim(mixmap), mkParents(index, mixmap)),
-      _table(getTable(mixmap)), _Nindex(index.size()), _discrete(true)
+      _table(getTable(mixmap)), _Nindex(index.size()), _discrete(true),
+      _active_parents(nchain())
 {
     // Check validity of index argument
 
@@ -168,7 +169,6 @@ MixtureNode::MixtureNode (vector<Node const *> const &index,
 	    break;
 	}
     }
-
 }
 
 MixtureNode::~MixtureNode()
@@ -182,7 +182,7 @@ MixtureNode::~MixtureNode()
 #include <sarray/nainf.h>
 #include <graph/NodeError.h>
 */
-void MixtureNode::deterministicSample(unsigned int chain)
+void MixtureNode::updateActive(unsigned int chain)
 {
     vector<int> i(_Nindex);
     vector <Node const*> const &par = parents();
@@ -190,8 +190,8 @@ void MixtureNode::deterministicSample(unsigned int chain)
 	i[j] = static_cast<int>(*par[j]->value(chain));
     }
 
-    Node const *pnode = _table->getNode(i);
-    if (pnode == 0) {
+    _active_parents[chain] = _table->getNode(i);
+    if (_active_parents[chain] == 0) {
 	/*
 	std::cout << "Got " << print(Range(i)) << "\nOriginally\n";
 	for (unsigned int j = 0; j < _Nindex; ++j) {
@@ -202,9 +202,17 @@ void MixtureNode::deterministicSample(unsigned int chain)
 	*/
 	throw NodeError(this, "Invalid index in MixtureNode");
     }
-    else {
-	setValue(pnode->value(chain), length(), chain);	
-    }
+}
+
+void MixtureNode::deterministicSample(unsigned int chain)
+{
+    updateActive(chain);
+    setValue(_active_parents[chain]->value(chain), length(), chain);	
+}
+
+Node const *MixtureNode::activeParent(unsigned int chain) const
+{
+    return _active_parents[chain];
 }
 
 unsigned int MixtureNode::index_size() const
