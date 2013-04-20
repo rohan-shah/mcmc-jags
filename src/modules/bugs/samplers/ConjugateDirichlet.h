@@ -19,9 +19,9 @@ namespace bugs {
  */
 class ConjugateDirichlet : public ConjugateMethod {
     bool _mix;
-    std::vector<std::vector<unsigned int> > _off;
     const std::vector<int> _tree;
-    const std::vector<int> _leaves;
+    std::vector<std::vector<unsigned int> > _offsets;
+    std::vector<int> _leaves;
     bool isActiveLeaf(int index, unsigned int chain) const;
     bool isActiveTree(int index, unsigned int chain) const;
 public:
