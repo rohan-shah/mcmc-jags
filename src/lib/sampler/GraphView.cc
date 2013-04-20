@@ -297,7 +297,7 @@ vector<DeterministicNode*> const &GraphView::deterministicChildren() const
 }
 
 void GraphView::setValue(double const * value, unsigned int length,
-		       unsigned int chain) const
+			 unsigned int chain) const
 {
     if (length != _length) {
       throw logic_error("Argument length mismatch in GraphView::setValue");
@@ -317,25 +317,8 @@ void GraphView::setValue(double const * value, unsigned int length,
 
 void GraphView::setValue(vector<double> const &value, unsigned int chain) const
 {
-    if (value.size() != _length) {
-	throw logic_error("Argument length mismatch in GraphView::setValue");
-    }
-
-    double *x = new double[value.size()];
-    vector<double>::const_iterator p = value.begin();
-    for (unsigned int i = 0; i < _nodes.size(); ++i) {
-	Node *node = _nodes[i];
-	unsigned int N = node->length();
-	copy(p, p + N, x);
-	node->setValue(x, N, chain);
-	p += N;
-    }
-    delete [] x;
-
-    for (vector<DeterministicNode*>::const_iterator p(_determ_children.begin());
-	 p != _determ_children.end(); ++p) {
-      (*p)->deterministicSample(chain);
-    }
+    //FIXME We could inline this
+    setValue(&value[0], value.size(), chain);
 }
  
 void GraphView::getValue(vector<double> &value, unsigned int chain) const 
