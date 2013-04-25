@@ -474,7 +474,34 @@ void ConjugateDirichlet::update(unsigned int chain, RNG *rng) const
 	xnew[i] /= xsum;
     }
 
-    _gv->setValue(xnew, size, chain);
+    if (_mix) {
+
+	//Override default updating of deterministic nodes in gv
+
+	snode->setValue(xnew, size, chain);
+
+	vector<DeterministicNode*> const &dchild = _gv->deterministicChildren();
+	vector<bool> modified(dchild.size(), false);
+	for (unsigned int d = 0; d < dchild.size(); ++d) {
+	    if (_tree[d] == -1) {
+		MixtureNode *m = dynamic_cast<MixtureNode*>(dchild[d]);
+		if (m == 0 || m->activeParent(chain) == snode) {
+		    dchild[d]->deterministicSample(chain);
+		    modified[d] = true;
+		}
+	    }
+	    else if (modified[_tree[d]]) {
+		MixtureNode *m = dynamic_cast<MixtureNode*>(dchild[d]);
+		if (m == 0 || m->activeParent(chain) == dchild[_tree[d]]) {
+		    dchild[d]->deterministicSample(chain);
+		    modified[d] = true;
+		}
+	    }
+	}
+    }
+    else {
+	_gv->setValue(xnew, size, chain);
+    }
 
     delete [] xnew;
     delete [] alpha;
