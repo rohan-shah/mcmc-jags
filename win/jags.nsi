@@ -45,6 +45,7 @@ Var SM_FOLDER
 
 !insertmacro MUI_PAGE_WELCOME
 !insertmacro MUI_PAGE_LICENSE ${LICENSE}
+!insertmacro MULTIUSER_PAGE_INSTALLMODE
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_STARTMENU Application $SM_FOLDER
 !insertmacro MUI_PAGE_COMPONENTS
@@ -66,7 +67,8 @@ Section #Default section
 
    # Information for uninstaller
    WriteRegStr ${INSTDIR_REG_ROOT} "${INSTDIR_REG_KEY}" "DisplayName" "${JAGS_VISIBLE_NAME}"
-   WriteRegStr ${INSTDIR_REG_ROOT} "${INSTDIR_REG_KEY}" "UninstallString" "${UNINST_EXE}"
+   WriteRegStr ${INSTDIR_REG_ROOT} "${INSTDIR_REG_KEY}" "UninstallString" "${UNINST_EXE} /$MultiUser.InstallMode"
+   WriteRegStr ${INSTDIR_REG_ROOT} "${INSTDIR_REG_KEY}" "QuietUninstallString" "${UNINST_EXE} /$MultiUser.InstallMode /S"
    WriteRegStr ${INSTDIR_REG_ROOT} "${INSTDIR_REG_KEY}" "Publisher" "${PUBLISHER}"
    WriteRegStr ${INSTDIR_REG_ROOT} "${INSTDIR_REG_KEY}" "DisplayVersion" "${VERSION}"
    WriteRegStr ${INSTDIR_REG_ROOT} "${INSTDIR_REG_KEY}" "URLInfoAbout" "http://mcmc-jags.sourceforge.net"
@@ -96,11 +98,11 @@ Section "32-bit installation" Sec32
    File inst32\libexec\jags-terminal.exe
    !insertmacro UNINSTALL.LOG_CLOSE_INSTALL
 
-#   SetOutPath "$INSTDIR\i386\lib"
-#   !insertmacro UNINSTALL.LOG_OPEN_INSTALL
-#   File inst32\lib\*.dll.a
-#   File inst32\lib\*.la
-#   !insertmacro UNINSTALL.LOG_CLOSE_INSTALL
+   SetOutPath "$INSTDIR\i386\lib"
+   !insertmacro UNINSTALL.LOG_OPEN_INSTALL
+   File inst32\lib\*.dll.a
+   File inst32\lib\*.la
+   !insertmacro UNINSTALL.LOG_CLOSE_INSTALL
 
    SetOutPath "$INSTDIR\i386\modules"
    !insertmacro UNINSTALL.LOG_OPEN_INSTALL
@@ -143,11 +145,11 @@ Section "64-bit installation" Sec64
    File inst64\libexec\jags-terminal.exe
    !insertmacro UNINSTALL.LOG_CLOSE_INSTALL
 
-#   SetOutPath "$INSTDIR\x64\lib"
-#   !insertmacro UNINSTALL.LOG_OPEN_INSTALL
-#   File inst64\lib\*.dll.a
-#   File inst64\lib\*.la
-#   !insertmacro UNINSTALL.LOG_CLOSE_INSTALL
+   SetOutPath "$INSTDIR\x64\lib"
+   !insertmacro UNINSTALL.LOG_OPEN_INSTALL
+   File inst64\lib\*.dll.a
+   File inst64\lib\*.la
+   !insertmacro UNINSTALL.LOG_CLOSE_INSTALL
 
    SetOutPath "$INSTDIR\x64\modules"
    !insertmacro UNINSTALL.LOG_OPEN_INSTALL
