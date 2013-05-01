@@ -1,29 +1,35 @@
 #include <config.h>
-#include "MixDirichFactory.h"
-#include "NormMix.h"
-#include <graph/GraphMarks.h>
+#include "DirichletCatFactory.h"
+#include "DirichletCat.h"
+
+#include <sampler/ParallelSampler.h>
+#include <sampler/SampleMethod.h>
+#include <sampler/GraphView.h>
+//#include <graph/GraphMarks.h>
 #include <graph/Graph.h>
 #include <graph/StochasticNode.h>
+#include <graph/MixtureNode.h>
 #include <distribution/Distribution.h>
-#include <sampler/ParallelSampler.h>
-#include <sampler/GraphView.h>
 
 #include <set>
+#include <map>
 
 using std::set;
 using std::vector;
 using std::string;
+using std::map;
 
 #define NLEVEL 200
 #define MAX_TEMP 100
 #define NREP 5
 
-//STL syntax becomes unreadable if we don't use a typedef
-typedef map<vector<StochasticNode const *>, vector<StochasticNode*> > MDMap;
-
 namespace jags {
 
-    static bool isCandidate(GraphView const &gv)
+    //STL syntax becomes unreadable if we don't use a typedef
+    typedef map<vector<StochasticNode const *>, vector<StochasticNode*> > DCMap;
+
+    //static
+    bool isCandidate(GraphView const &gv)
     {
 	vector<StochasticNode const*> const &schild = gv.stochasticChildren();
 	vector<DeterministicNode *> const &dchild = gv.deterministicChildren();
@@ -33,15 +39,18 @@ namespace jags {
 	if (schild.size() != dchild.size()) return false;
 	
 	//Stochastic children must all have dcat distribution
-	for (unsigned int i = 0; i < schild.size(); ++i) {
-	    if (schild[i]->distribution()->name() != "ddirch") return false;
+	Distribution const *dist0 = schild[0]->distribution();
+	if (dist0->name() != "dcat") return false;
+	for (unsigned int i = 1; i < schild.size(); ++i) {
+	    if (schild[i]->distribution() != dist0) return false;
 	}
 	
 	//Deterministic descendants must all be mixture nodes
 	for (unsigned int j = 0; j < dchild.size(); ++j) {
 	    if (!isMixture(dchild[j])) return false;
 	}
-	
+
+	/*
 	//Mixture nodes cannot have any deterministic children in the
 	//graph
 	for (unsigned int j = 0; j < dchild.size(); ++j) {
@@ -59,64 +68,60 @@ namespace jags {
 		}
 	    }
 	}
+	*/
+
 	return true;
     }
 
     namespace mix {
 	
 	Sampler * 
-	BlockDirichFactory::makeSampler(vector<StochasticNode*> const &snodes, 
-					Graph const &graph) const
+	DirichletCatFactory::makeSampler(vector<StochasticNode*> const &snodes, 
+					 Graph const &graph) const
 	{
-	    GraphView *gv = new GraphView(sample_nodes, graph);
+	    GraphView *gv = new GraphView(snodes, graph);
+	    Sampler * sampler = 0;
+	    unsigned int nchain = snodes[0]->nchain();
 
-	    if (MixDirich::canSample(gv)) {
+	    if (DirichletCat::canSample(gv)) {
 		vector<SampleMethod*> methods(nchain);	    
 		for (unsigned int ch = 0; ch < nchain; ++ch) {
-		    methods[ch] = new MixDirich(gv, ch);
+		    methods[ch] = new DirichletCat(gv, ch);
 		}
-		return new ParallelSampler(gv, methods);		
+		sampler = new ParallelSampler(gv, methods);		
 	    }
 	    else {
 		delete gv;
-		return 0;
 	    }
+	    return sampler;
 	}
 
-	string MixDirichFactory::name() const
+	string DirichletCatFactory::name() const
 	{
-	    return "mix::MixDirich";
+	    return "mix::DirichletCat";
 	}
 
 	vector<Sampler*>  
-	MixDirichFactory::makeSamplers(set<StochasticNode*> const &nodes, 
-				      Graph const &graph) const
+	DirichletCatFactory::makeSamplers(set<StochasticNode*> const &nodes, 
+					  Graph const &graph) const
 	{
 	    //Assemble candidates from available nodes and classify
 	    //them by their stochastic children
-	    MDMap cmap;
+	    DCMap cmap;
 
 	    for (set<StochasticNode*>::const_iterator p = nodes.begin();
 		 p != nodes.end(); ++p)
 	    {
 		if ((*p)->distribution()->name() != "ddirch") continue;
-
 		GraphView gv(*p, graph);
 		if (isCandidate(gv)) {
-		    MDMap::iterator q = cmap.find(gv.stochasticChildren());
-		    if (q == cmap.end()) {
-			//create a new entry
-			MDMap::value_type r(gv.stochasticChildren(),
-					    set<StochasticNode*>());
-			q = cmap.insert(r)->first;
-		    }
-		    q->second.push_back(snode);
+		    cmap[gv.stochasticChildren()].push_back(*p);
 		}
 	    }
 	    
 	    //Now traverse the candidate map and generate samplers
 	    vector<Sampler*> samplers;
-	    for (MDMap::const_iterator q = cmap.begin(); q != cmap.end(); ++q)
+	    for (DCMap::const_iterator q = cmap.begin(); q != cmap.end(); ++q)
 	    {
 		Sampler *s = makeSampler(q->second, graph);		
 		if (s) samplers.push_back(s);
