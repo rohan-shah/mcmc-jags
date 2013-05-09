@@ -190,7 +190,7 @@ void Model::initialize(bool datagen)
 	for (set<Node *>::const_iterator p = _extra_nodes.begin(); 
 	     p != _extra_nodes.end(); ++p)
 	{
-	    egraph.add(*p);
+	    egraph.insert(*p);
 	}
 	_sampled_extra.clear();
 	egraph.getSortedNodes(_sampled_extra);
@@ -265,7 +265,7 @@ void Model::chooseSamplers()
     vector<StochasticNode*>::const_iterator p;
     for (p = _stochastic_nodes.begin(); p != _stochastic_nodes.end(); ++p) {
 	if (isObserved(*p)) {
-	    sample_graph.add(*p);
+	    sample_graph.insert(*p);
 	    informative.push_back(*p);
 	}
     }
@@ -288,25 +288,24 @@ void Model::chooseSamplers()
 	    break;
 	case 1:
 	    sset.insert(*p); 
-	    sample_graph.add(*p);
+	    sample_graph.insert(*p);
 	    break;
 	case 2:
-	    sample_graph.add(*p);
+	    sample_graph.insert(*p);
 	    break;
 	default:
 	    throw logic_error("Invalid mark");
 	}
     }
 
-    set<Node*> const &nodes = _graph.nodes();
     set<Node*>::const_iterator j;
-    for (j = nodes.begin(); j != nodes.end(); ++j) {
+    for (j = _graph.begin(); j != _graph.end(); ++j) {
 	switch(marks.mark(*j)) {
 	case 0:
 	    _extra_nodes.insert(*j);
 	    break;
 	case 1: case 2:
-	    sample_graph.add(*j);
+	    sample_graph.insert(*j);
 	    break;
 	}
     }
@@ -463,7 +462,7 @@ void Model::setSampledExtra()
     for (set<Node *>::const_iterator p = _extra_nodes.begin(); 
 	 p != _extra_nodes.end(); ++p)
     {
-	egraph.add(*p);
+	egraph.insert(*p);
     }
     //Mark the ancestors of all monitored nodes in this graph
     GraphMarks emarks(egraph);
@@ -484,7 +483,7 @@ void Model::setSampledExtra()
 	 p != _extra_nodes.end(); ++p)
     {
 	if (emarks.mark(*p) == 0)
-	    egraph.remove(*p);
+	    egraph.erase(*p);
     }
     //Replace vector of sampled extra nodes
     _sampled_extra.clear();
@@ -542,7 +541,7 @@ void Model::addExtraNode(Node *node)
     }
 
     if (!_graph.contains(node)) {
-	_graph.add(node);
+	_graph.insert(node);
     }
 
     _extra_nodes.insert(node);
@@ -678,18 +677,18 @@ void Model::clearDefaultMonitors(string const &type)
 
 void Model::addNode(StochasticNode *node)
 {
-    _graph.add(node);
+    _graph.insert(node);
     _stochastic_nodes.push_back(node);
 }
 
 void Model::addNode(DeterministicNode *node)
 {
-    _graph.add(node);
+    _graph.insert(node);
 }
 
 void Model::addNode(ConstantNode *node)
 {
-    _graph.add(node);
+    _graph.insert(node);
 }
 
 vector<StochasticNode*> const &Model::stochasticNodes() const

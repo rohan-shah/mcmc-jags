@@ -18,94 +18,43 @@ using std::reverse;
 
 namespace jags {
 
-Graph::Graph()
-    : _nodes() 
-{
-}
+    Graph::Graph() {}
 
-void Graph::add(Node *node)
-{
-  if (!node) {
-    throw invalid_argument("Attempt to add null node to graph");
-  }
-  if (!this->contains(node)) {
-    _nodes.insert(node);
-  }
-}
-
-void Graph::remove(Node *node)
-{
-  if (this->contains(node)) {
-      _nodes.erase(node);
-  }
-}
-
-void Graph::clear()
-{
-    _nodes.clear();
-}
-
-bool Graph::contains(Node const *node) const
-{
-    return  _nodes.find(const_cast<Node*>(node)) != _nodes.end();
-}
-
-unsigned int Graph::size() const
-{
-  return _nodes.size();
-}
-
-#include <graph/NodeError.h>
-bool Graph::isClosed() const
-{
-    //Determine whether any nodes in the graph have children or
-    //parents outside the graph 
-
-    for (set<Node*>::iterator i = _nodes.begin(); i != _nodes.end(); i++) {
-    
-	// Check parents
-	vector<Node const *> const &parents = (*i)->parents();
-	for (vector<Node const *>::const_iterator j = parents.begin(); 
-	     j != parents.end(); j++) 
-	{
-	    if (!this->contains(*j)) {
-		return false;
-	    }
-	}
-
-	// Check children
-	set<StochasticNode*> const *sch = (*i)->stochasticChildren();
-	for (set<StochasticNode*>::iterator k = sch->begin(); k != sch->end(); k++)
-	{
-	    if (!this->contains(*k)) {
-		return false;
-	    }
-	}
-
-	set<DeterministicNode*> const *dch = (*i)->deterministicChildren();
-	for (set<DeterministicNode*>::iterator k = dch->begin(); k != dch->end(); k++)
-	{
-	    if (!this->contains(*k)) {
-		return false;
-	    }
-	}
-    }
-    return true;
-}
-
-set<Node*> const &Graph::nodes() const
-{
-    return _nodes;
-}
-
-void Graph::getNodes(vector<Node*> &nodes) const
-{
-  for (set<Node*>::iterator p = _nodes.begin();
-       p != _nodes.end(); p++)
+    bool Graph::contains(Node const *node) const
     {
-      nodes.push_back(*p);
+	return find(const_cast<Node*>(node)) != end();
     }
-}
+
+    bool Graph::isClosed() const
+    {
+	//Determine whether any nodes in the graph have children or
+	//parents outside the graph 
+
+	for (iterator i = begin(); i != end(); i++) {
+    
+	    // Check parents
+	    vector<Node const *> const &parents = (*i)->parents();
+	    for (vector<Node const *>::const_iterator j = parents.begin(); 
+		 j != parents.end(); j++) 
+	    {
+		if (!contains(*j)) return false;
+	    }
+
+	    // Check children
+	    set<StochasticNode*> const *sch = (*i)->stochasticChildren();
+	    for (set<StochasticNode*>::iterator k = sch->begin(); k != sch->end(); k++)
+	    {
+		if (!contains(*k)) return false;
+	    }
+
+	    set<DeterministicNode*> const *dch = (*i)->deterministicChildren();
+	    for (set<DeterministicNode*>::iterator k = dch->begin(); k != dch->end(); k++)
+	    {
+		if (!contains(*k)) return false;
+	    }
+	}
+	return true;
+    }
 
 /* Helper function for Graph::getSortedNodes. Returns true
    if node has any children in set S */
@@ -172,7 +121,7 @@ void Graph::getSortedNodes(set<Node*> &S, vector<Node*> &sortednodes)
 
 void Graph::getSortedNodes(vector<Node*> &sortednodes) const
 {
-    set<Node*> S = _nodes;
+    set<Node*> S = *this;
     getSortedNodes(S, sortednodes);
 }
 
