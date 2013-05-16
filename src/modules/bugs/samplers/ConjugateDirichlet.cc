@@ -282,7 +282,7 @@ namespace jags {
     
 	    GraphView gv(snode, graph);
 	    vector<DeterministicNode*> const &dchild = gv.deterministicChildren();
-	    vector<StochasticNode const*> const &schild = gv.stochasticChildren();
+	    vector<StochasticNode *> const &schild = gv.stochasticChildren();
     
 	    // Check stochastic children
 	    for (unsigned int i = 0; i < schild.size(); ++i) {
@@ -331,7 +331,7 @@ namespace jags {
 	    vector<vector<unsigned int> > offsets = makeOffsets(gv, _tree);
 	    
 	    //Create a map from stochastic children onto their indices
-	    vector<StochasticNode const *> const &schild =
+	    vector<StochasticNode *> const &schild =
 		gv->stochasticChildren();
 
 	    map<StochasticNode const *, int> smap;
@@ -408,7 +408,7 @@ void ConjugateDirichlet::update(unsigned int chain, RNG *rng) const
 	alpha[i] = prior[i];
     }
 
-    vector<StochasticNode const*> const &schild = _gv->stochasticChildren();
+    vector<StochasticNode *> const &schild = _gv->stochasticChildren();
     for (unsigned int i = 0; i < schild.size(); ++i) {
 	unsigned int index = 0;
 	double const *N = 0;

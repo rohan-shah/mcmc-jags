@@ -62,7 +62,7 @@ bool Censored::canSample(StochasticNode *snode, Graph const &graph)
     //Check that we have a single stochastic child, which is a direct
     //child of the sampled node which has distribution "dinterval"
     GraphView gv(snode, graph);
-    vector<StochasticNode const*> const &schild = gv.stochasticChildren();
+    vector<StochasticNode *> const &schild = gv.stochasticChildren();
     vector<DeterministicNode*> const &dchild = gv.deterministicChildren();
 
     if(schild.size() != 1)

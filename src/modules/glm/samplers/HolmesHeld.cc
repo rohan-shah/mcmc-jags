@@ -73,7 +73,7 @@ namespace glm {
 	   the current value of the linear predictor (mu_r).
 	*/
 
-	vector<StochasticNode const *> const &schildren = 
+	vector<StochasticNode *> const &schildren = 
 	    _view->stochasticChildren();
 
 	unsigned int nrow = schildren.size();

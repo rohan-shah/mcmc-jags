@@ -54,7 +54,7 @@ vector<StochasticNode *> const &GraphView::nodes() const
 }
 
 static bool classifyNode(StochasticNode *snode, Graph const &sample_graph, 
-			 set<StochasticNode const *> &sset)
+			 set<StochasticNode *> &sset)
 {
     // classification function for stochastic nodes
 
@@ -71,7 +71,7 @@ static bool classifyNode(StochasticNode *snode, Graph const &sample_graph,
 }
 
 static bool classifyNode(DeterministicNode *dnode, Graph const &sample_graph,
-                         set<StochasticNode const *> &sset,
+                         set<StochasticNode *> &sset,
 			 set<DeterministicNode const *> &dset,
 			 vector<DeterministicNode *> &dvec)
 {
@@ -108,12 +108,12 @@ static bool classifyNode(DeterministicNode *dnode, Graph const &sample_graph,
 
 void GraphView::classifyChildren(vector<StochasticNode *> const &nodes,
 				 Graph const &graph,
-				 vector<StochasticNode const*> &stoch_nodes,
+				 vector<StochasticNode *> &stoch_nodes,
 				 vector<DeterministicNode*> &dtrm_nodes,
 				 bool multilevel)
 {
     set<DeterministicNode const *> dset;
-    set<StochasticNode const *> sset;
+    set<StochasticNode *> sset;
 
     dtrm_nodes.clear();
 
@@ -160,10 +160,10 @@ void GraphView::classifyChildren(vector<StochasticNode *> const &nodes,
     }
 
     stoch_nodes.clear();
-    for (set<StochasticNode const *>::const_iterator i = sset.begin();
+    for (set<StochasticNode *>::const_iterator i = sset.begin();
          i != sset.end(); ++i)
     {
-       stoch_nodes.push_back(*i);
+	stoch_nodes.push_back(*i);
     }
 
     // Deterministic nodes are pushed onto dtrm_nodes in reverse order
@@ -181,7 +181,7 @@ double GraphView::logFullConditional(unsigned int chain) const
     }
   
     double llike = 0.0;
-    vector<StochasticNode const*>::const_iterator q = _stoch_children.begin();
+    vector<StochasticNode *>::const_iterator q = _stoch_children.begin();
     for (; q != _stoch_children.end(); ++q) {
 	llike += (*q)->logDensity(chain, PDF_LIKELIHOOD);
     }
@@ -266,7 +266,7 @@ double GraphView::logLikelihood(unsigned int chain) const
 {
     double llik = 0.0;
 
-    vector<StochasticNode const*>::const_iterator q = _stoch_children.begin();
+    vector<StochasticNode *>::const_iterator q = _stoch_children.begin();
     for (; q != _stoch_children.end(); ++q) {
 	llik += (*q)->logDensity(chain, PDF_LIKELIHOOD);
     }
@@ -286,7 +286,7 @@ double GraphView::logLikelihood(unsigned int chain) const
     return llik;
 }
 
-vector<StochasticNode const*> const &GraphView::stochasticChildren() const
+vector<StochasticNode *> const &GraphView::stochasticChildren() const
 {
   return _stoch_children;
 }

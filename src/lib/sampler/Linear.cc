@@ -22,7 +22,6 @@ static bool isLink(DeterministicNode const *dnode)
 
 bool checkLinear(GraphView const *gv, bool fixed, bool link)
 {
-    vector<StochasticNode const *> const &sn = gv->stochasticChildren();
     vector<DeterministicNode *> const &dn = gv->deterministicChildren();
 
     set<Node const*> ancestors;

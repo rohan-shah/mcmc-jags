@@ -6,6 +6,9 @@ Library changes
 * Automake 1.12.0 or above is required. The header file generated from
   C++ yacc source is *.hh, not *.h for automake 1.12 and above. This is 
   incompatible with previous versions.
+* The GraphView API has changed: stochasticChildren now returns a vector
+  of (non-const) pointers. This is necessary for collapsing in multi-level
+  models.
 
 Internal changes in modules
 ===========================

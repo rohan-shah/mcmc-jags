@@ -23,6 +23,7 @@ namespace jags {
 	    std::vector<MixtureNode const *> _mixparents;
 	    unsigned int _chain;
 	    unsigned int _size;
+	    void updateParMap();
 	  public:
 	    DirichletCat(GraphView const *gv, unsigned int chain);
 	    void update(RNG *rng);
@@ -31,6 +32,13 @@ namespace jags {
 	    bool checkAdaptation() const;
 	    std::string name() const;
 	    static bool canSample(GraphView const *gv);
+	    /**
+	     * Returns the active parameter for the stochastic child
+	     * with index i. This is used by the companion sampler
+	     * CatDirichlet in the case where the stochastic children
+	     * are also unobserved.
+	     */
+	    std::vector<double> &getActiveParameter(unsigned int i);
 	};
     } 
 }

@@ -131,7 +131,7 @@ namespace glm {
     GraphView gv1(vector<StochasticNode*>(1,snode), graph);
     
     // Check stochastic children
-    vector<StochasticNode const*> const &schildren1 = gv1.stochasticChildren();
+    vector<StochasticNode *> const &schildren1 = gv1.stochasticChildren();
     for (unsigned int i = 0; i < schildren1.size(); ++i) {
       if (schildren1[i]->distribution()->name() != "dnorm") {
 	return false;
@@ -162,7 +162,7 @@ namespace glm {
     if (!checkLinear(&gv2, false, false))
       return false;
     
-    vector<StochasticNode const *> const &schildren2 = gv2.stochasticChildren();
+    vector<StochasticNode *> const &schildren2 = gv2.stochasticChildren();
     for (unsigned int i = 0; i < schildren2.size(); ++i) {
       if (schildren2[i]->distribution()->name() != "dnorm") {
 	return false;

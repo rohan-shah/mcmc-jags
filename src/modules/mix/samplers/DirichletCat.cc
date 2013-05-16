@@ -28,7 +28,7 @@ namespace jags {
 
     static vector<MixtureNode const *>  makeMixParents(GraphView const *gv) 
     {
-	vector<StochasticNode const *> const &schildren =
+	vector<StochasticNode *> const &schildren =
 	    gv->stochasticChildren();
 	
 	vector<MixtureNode const *> mixnodes;
@@ -93,7 +93,7 @@ namespace jags {
 	    }
     
 	    // Check stochastic children
-	    vector<StochasticNode const*> const &schildren = 
+	    vector<StochasticNode *> const &schildren = 
 		gv->stochasticChildren();
 	    
 	    for (unsigned int i = 0; i < schildren.size(); ++i) {
@@ -112,10 +112,21 @@ namespace jags {
 	    : _gv(gv), _parmap(makeParMap(gv)), _mixparents(makeMixParents(gv)),
 	      _chain(chain), _size(gv->nodes()[0]->length())
 	{
-
+	    updateParMap();
 	}
 
-	void DirichletCat::update(RNG *rng)
+	vector<double> &DirichletCat::getActiveParameter(unsigned int i)
+	{
+	    Node const *active = _mixparents[i]->activeParent(_chain);
+	    map<Node const *, vector<double> >::iterator p =
+		_parmap.find(active);
+	    if (p == _parmap.end()) {
+		throwLogicError("No active parameter in DirichletCat sampler");
+	    }
+	    return p->second;
+	}
+	
+	void DirichletCat::updateParMap()
 	{
 	    vector<StochasticNode*> const &snodes = _gv->nodes();
 
@@ -126,13 +137,13 @@ namespace jags {
 		copy(prior, prior + _size, param.begin());
 	    }
 
-	    vector<StochasticNode const *> const &schildren = 
+	    vector<StochasticNode *> const &schildren = 
 		_gv->stochasticChildren();
 
 	    //Likelihoods
 	    for (unsigned int j = 0; j < schildren.size(); ++j) {
 		Node const *active = _mixparents[j]->activeParent(_chain);
-		vector<double> &param = _parmap[active];
+		vector<double> &param = _parmap.find(active)->second;
 		int index = static_cast<int>(*schildren[j]->value(_chain)) - 1;
 		if (param[index] > 0) {
 		    param[index] += 1;
@@ -143,13 +154,20 @@ namespace jags {
 		}
 
 	    }
+	}
+	
+	void DirichletCat::update(RNG *rng)
+	{
+	    updateParMap();
 
 	    /* 
 	       Draw Dirichlet sample by drawing independent gamma random
 	       variates and then normalizing
 	    */
 
+	    vector<StochasticNode*> const &snodes = _gv->nodes();
 	    vector<double> xnew(_gv->length());
+
 	    for (unsigned int i = 0; i < snodes.size(); ++i) {
 		
 		vector<double> &alpha = _parmap[snodes[i]];

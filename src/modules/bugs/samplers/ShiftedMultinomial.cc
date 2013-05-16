@@ -124,7 +124,7 @@ static vector<int> makeIndex(GraphView const *gv, unsigned int chain)
 	GraphView gv(vector<StochasticNode*>(1,snode), graph);
 
 	// Stochastic children must all be unbounded binomial
-	vector<StochasticNode const*> const &stoch_children = 
+	vector<StochasticNode *> const &stoch_children = 
 	    gv.stochasticChildren();
 	for (unsigned int i = 0; i < stoch_children.size(); ++i) {
 	    if (getDist(stoch_children[i]) != BIN)

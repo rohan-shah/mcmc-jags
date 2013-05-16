@@ -60,7 +60,7 @@ static void calCoef(double *coef, GraphView const *gv, unsigned int chain)
     //is a scale function of the sample node
 
     const double xold = *gv->nodes()[0]->value(chain);
-    vector<StochasticNode const*> const &schildren = gv->stochasticChildren();
+    vector<StochasticNode *> const &schildren = gv->stochasticChildren();
     unsigned long nchildren = schildren.size();
     
     for (unsigned int i = 0; i < nchildren; ++i) {
@@ -117,7 +117,7 @@ namespace glm {
 
 	/* Reparametrize from Y to scaled Y*/
 
-	vector<StochasticNode const*> const &Ynodes = _gv1->stochasticChildren();
+	vector<StochasticNode *> const &Ynodes = _gv1->stochasticChildren();
 	unsigned int J = Ynodes.size();
 	vector<double> scaledY(J);
 	for (unsigned int j = 0; j < J; ++j) {
@@ -172,7 +172,7 @@ namespace glm {
 	    Ymean[j] = getMean(Ynodes[j], _chain);
 	}
 
-	vector<StochasticNode const *> const &Znodes = _gv2->stochasticChildren();
+	vector<StochasticNode *> const &Znodes = _gv2->stochasticChildren();
 	unsigned int I = Znodes.size();
 
 	/* 

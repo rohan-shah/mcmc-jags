@@ -55,7 +55,7 @@ ConjugateDist getDist(StochasticNode const *snode)
 vector<ConjugateDist> getChildDist(GraphView const *gv)
 {
     vector<ConjugateDist> ans;
-    vector<StochasticNode const *> const &child = gv->stochasticChildren();
+    vector<StochasticNode *> const &child = gv->stochasticChildren();
     for (unsigned int i = 0; i < child.size(); ++i) {
 	ans.push_back(getDist(child[i]));
     }

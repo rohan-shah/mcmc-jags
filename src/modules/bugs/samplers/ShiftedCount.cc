@@ -37,7 +37,7 @@ namespace bugs {
 	    return false;
 
 	// Check stochastic children: Must have single child node ...
-	vector<StochasticNode const*> const &child_nodes = 
+	vector<StochasticNode *> const &child_nodes = 
 	    gv.stochasticChildren();
 	if (child_nodes.size() != 1) 
 	    return false;
@@ -61,7 +61,7 @@ namespace bugs {
     void ShiftedCount::update(unsigned int chain, RNG *rng) const
     {
 	StochasticNode const* snode = _gv->nodes()[0];
-	StochasticNode const* cnode = _gv->stochasticChildren().front();
+	StochasticNode * cnode = _gv->stochasticChildren().front();
 
 	double y = *cnode->value(chain); //Child value
 	// Prior rate (Poisson) or probability (Binomial)

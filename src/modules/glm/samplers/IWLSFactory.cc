@@ -31,7 +31,7 @@ namespace glm {
         bool linear = true;
         vector<Outcome*> outcomes;
 
-        for (vector<StochasticNode const*>::const_iterator p = view->stochasticChildren().begin();
+        for (vector<StochasticNode *>::const_iterator p = view->stochasticChildren().begin();
              p != view->stochasticChildren().end(); ++p)
         {
             Outcome *outcome = 0;

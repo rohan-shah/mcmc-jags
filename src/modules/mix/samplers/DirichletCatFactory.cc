@@ -26,12 +26,12 @@ using std::map;
 namespace jags {
 
     //STL syntax becomes unreadable if we don't use a typedef
-    typedef map<vector<StochasticNode const *>, vector<StochasticNode*> > DCMap;
+    typedef map<vector<StochasticNode *>, vector<StochasticNode*> > DCMap;
 
-    //static
+    static
     bool isCandidate(GraphView const &gv)
     {
-	vector<StochasticNode const*> const &schild = gv.stochasticChildren();
+	vector<StochasticNode *> const &schild = gv.stochasticChildren();
 	vector<DeterministicNode *> const &dchild = gv.deterministicChildren();
 
 	//A necessary but not sufficient condition: we do this first
@@ -49,26 +49,6 @@ namespace jags {
 	for (unsigned int j = 0; j < dchild.size(); ++j) {
 	    if (!isMixture(dchild[j])) return false;
 	}
-
-	/*
-	//Mixture nodes cannot have any deterministic children in the
-	//graph
-	for (unsigned int j = 0; j < dchild.size(); ++j) {
-	    set<DeterministicNode*> const *dj = 
-		dchild[j]->deterministicChildren();
-	    //Note: in general dj will be empty, so this is an
-	    //expensive but rarely used test
-	    for (set<DeterministicNode*>::const_iterator p = dj->begin();
-		 p != dj->end(); ++p) 
-	    {
-		//dchild is in topological order, so we only need to
-		//check for nodes with a higher index
-		for (unsigned int k = j+1, k < dchild.size(); ++k) {
-		    if (*p == dchild[k]) return false;
-		}
-	    }
-	}
-	*/
 
 	return true;
     }

@@ -31,7 +31,7 @@ static void calBeta(double *beta, GraphView const *gv, unsigned int chain)
     StochasticNode *snode = gv->nodes()[0];
 
     const double xold = *snode->value(chain);
-    vector<StochasticNode const*> const &stoch_children = 
+    vector<StochasticNode *> const &stoch_children = 
 	gv->stochasticChildren();
 
     double xnew = xold + 1;
@@ -68,7 +68,7 @@ ConjugateNormal::ConjugateNormal(GraphView const *gv)
     if (!gv->deterministicChildren().empty()) {
 
 	//Need to allocate vector of coefficients
-	vector<StochasticNode const *> const &children = 
+	vector<StochasticNode *> const &children = 
 	    gv->stochasticChildren();
 	for (unsigned int i = 0; i < children.size(); ++i) {
 	    _length_betas += children[i]->length();
@@ -104,7 +104,7 @@ bool ConjugateNormal::canSample(StochasticNode *snode, Graph const &graph)
     }
 
     GraphView gv(snode, graph);
-    vector<StochasticNode const*> const &schild = gv.stochasticChildren();
+    vector<StochasticNode *> const &schild = gv.stochasticChildren();
 
     // Check stochastic children
     for (unsigned int i = 0; i < schild.size(); ++i) {
@@ -128,7 +128,7 @@ bool ConjugateNormal::canSample(StochasticNode *snode, Graph const &graph)
 
 void ConjugateNormal::update(unsigned int chain, RNG *rng) const
 {
-    vector<StochasticNode const*> const &stoch_children = 
+    vector<StochasticNode *> const &stoch_children = 
 	_gv->stochasticChildren();
     unsigned int nchildren = stoch_children.size();
     StochasticNode *snode = _gv->nodes()[0];

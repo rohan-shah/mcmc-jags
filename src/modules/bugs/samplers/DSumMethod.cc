@@ -62,7 +62,7 @@ bool DSumMethod::canSample(vector<StochasticNode *> const &nodes,
 
     GraphView gv(nodes, graph);
     vector<DeterministicNode*> const &dchild = gv.deterministicChildren();
-    vector<StochasticNode const*> const &schild = gv.stochasticChildren();
+    vector<StochasticNode *> const &schild = gv.stochasticChildren();
 
     if (!dchild.empty())
 	return false;

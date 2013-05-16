@@ -34,20 +34,19 @@ class RNG;
  * are the children of S in the graph where all deterministic nodes
  * have been marginalized out.
  *
- * A vector of nodes in an acyclic Graph is in "forward sampling
- * order" if node B always appears after node A when there is a path
- * from A to B. Note that forward sampling order is not uniquely
- * determined.
+ * A vector of nodes in an acyclic Graph is in topological order if
+ * node B always appears after node A when there is a path from A to
+ * B. Note that topological order is not uniquely determined.
  */
 class GraphView {
   unsigned int _length;
   std::vector<StochasticNode *> _nodes;
-  std::vector<StochasticNode const *> _stoch_children;
+  std::vector<StochasticNode *> _stoch_children;
   std::vector<DeterministicNode*> _determ_children;
   bool _multilevel;
   void classifyChildren(std::vector<StochasticNode *> const &nodes,
 			Graph const &graph,
-			std::vector<StochasticNode const*> &stoch_nodes,
+			std::vector<StochasticNode *> &stoch_nodes,
 			std::vector<DeterministicNode*> &dtrm_nodes, 
 			bool allow_multilevel);
 public:
@@ -100,10 +99,10 @@ public:
   /**
    * Returns the marginal stochastic children of the sampled nodes.
    */
-  std::vector<StochasticNode const*> const &stochasticChildren() const;
+  std::vector<StochasticNode *> const &stochasticChildren() const;
   /**
    * Returns the immediate deterministic descendendants of the sampled
-   * nodes, in forward sampling order
+   * nodes, in topological order
    */
   std::vector<DeterministicNode*> const &deterministicChildren() const;
   /**

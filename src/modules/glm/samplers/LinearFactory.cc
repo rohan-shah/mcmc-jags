@@ -28,7 +28,7 @@ namespace glm {
 			     unsigned int chain) const
     {
 	vector<Outcome*> outcomes;
-	for (vector<StochasticNode const*>::const_iterator p = view->stochasticChildren().begin();
+	for (vector<StochasticNode *>::const_iterator p = view->stochasticChildren().begin();
 	     p != view->stochasticChildren().end(); ++p)
 	{
 	    outcomes.push_back(new NormalLinear(*p, chain));

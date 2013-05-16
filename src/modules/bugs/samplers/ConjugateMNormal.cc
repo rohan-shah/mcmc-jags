@@ -43,7 +43,7 @@ static void calBeta(double *betas, GraphView const *gv,
 	xnew[i] = xold[i];
     }
 
-    vector<StochasticNode const*> const &stoch_children = 
+    vector<StochasticNode *> const &stoch_children = 
         gv->stochasticChildren();
 
     unsigned long nchildren = stoch_children.size();
@@ -82,7 +82,7 @@ static void calBeta(double *betas, GraphView const *gv,
 
 static unsigned int sumChildrenLength(GraphView const *gv)
 {
-    vector<StochasticNode const *> const &children = 
+    vector<StochasticNode *> const &children = 
 	gv->stochasticChildren(); 
 
     unsigned int N = 0;
@@ -117,7 +117,7 @@ bool ConjugateMNormal::canSample(StochasticNode *snode, Graph const &graph)
 	return false;
 
     GraphView gv(snode, graph);
-    vector<StochasticNode const*> const &schild = gv.stochasticChildren();
+    vector<StochasticNode *> const &schild = gv.stochasticChildren();
 
     // Check stochastic children
     for (unsigned int i = 0; i < schild.size(); ++i) {
@@ -141,7 +141,7 @@ bool ConjugateMNormal::canSample(StochasticNode *snode, Graph const &graph)
 
 void ConjugateMNormal::update(unsigned int chain, RNG *rng) const
 {
-    vector<StochasticNode const*> const &stoch_children = 
+    vector<StochasticNode *> const &stoch_children = 
           _gv->stochasticChildren();
     unsigned int nchildren = stoch_children.size();
     

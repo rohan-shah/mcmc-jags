@@ -47,7 +47,7 @@ bool ConjugateBeta::canSample(StochasticNode *snode, Graph const &graph)
 
     GraphView gv(snode, graph);
     vector<DeterministicNode*> const &dchild = gv.deterministicChildren();
-    vector<StochasticNode const*> const &schild = gv.stochasticChildren();
+    vector<StochasticNode *> const &schild = gv.stochasticChildren();
 
     // Check deterministic descendants
     // Only Mixture nodes are allowed
@@ -89,7 +89,7 @@ ConjugateBeta::ConjugateBeta(GraphView const *gv)
 
 void ConjugateBeta::update(unsigned int chain, RNG *rng) const
 {
-    vector<StochasticNode const*> const &stoch_children = 
+    vector<StochasticNode *> const &stoch_children = 
 	_gv->stochasticChildren();
     StochasticNode const *snode = _gv->nodes()[0];
 

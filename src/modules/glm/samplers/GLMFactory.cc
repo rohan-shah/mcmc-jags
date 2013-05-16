@@ -35,7 +35,7 @@ static bool aggregateLinear(GraphView const *candidate,
     // Check that there is some overlap in stochastic children between
     // candidate node and current set.  
 
-    vector<StochasticNode const*> const &candidate_children = 
+    vector<StochasticNode *> const &candidate_children = 
 	candidate->stochasticChildren();
 
     bool overlap = false;
@@ -72,7 +72,7 @@ namespace glm {
     bool GLMFactory::checkDescendants(GraphView const *view) const
     {
 	// Check stochastic children
-	vector<StochasticNode const*> const &stoch_nodes = 
+	vector<StochasticNode *> const &stoch_nodes = 
 	    view->stochasticChildren();
 	for (unsigned int i = 0; i < stoch_nodes.size(); ++i) {
 	    if (isBounded(stoch_nodes[i])) {
@@ -191,7 +191,7 @@ namespace glm {
 	    set<StochasticNode const*> all_children;
 	    for (unsigned int j = 0; j < candidates.size(); ++j) {
 		if (keep[j]) {
-		    vector<StochasticNode const*> const &children_j =
+		    vector<StochasticNode *> const &children_j =
 			candidates[j]->stochasticChildren();
 		    all_children.insert(children_j.begin(), children_j.end());
 		}

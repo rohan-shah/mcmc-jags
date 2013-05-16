@@ -52,7 +52,7 @@ static void calCoef(double *coef, GraphView const *gv,
 		    vector<ConjugateDist> const &child_dist, unsigned int chain)
 {   
     const double xold = gv->nodes()[0]->value(chain)[0];
-    vector<StochasticNode const*> const &stoch_children =
+    vector<StochasticNode *> const &stoch_children =
         gv->stochasticChildren();
     unsigned long nchildren = stoch_children.size();
     
@@ -101,7 +101,7 @@ bool ConjugateGamma::canSample(StochasticNode *snode, Graph const &graph)
     GraphView gv(vector<StochasticNode*>(1,snode), graph);
 
     // Check stochastic children
-    vector<StochasticNode const*> const &stoch_nodes = 
+    vector<StochasticNode *> const &stoch_nodes = 
 	gv.stochasticChildren();
     for (unsigned int i = 0; i < stoch_nodes.size(); ++i) {
 	if (isBounded(stoch_nodes[i])) {
@@ -130,7 +130,7 @@ bool ConjugateGamma::canSample(StochasticNode *snode, Graph const &graph)
 
 void ConjugateGamma::update(unsigned int chain, RNG *rng) const
 {
-    vector<StochasticNode const*> const &stoch_children = 
+    vector<StochasticNode *> const &stoch_children = 
 	_gv->stochasticChildren();
     unsigned int nchildren = stoch_children.size();
 

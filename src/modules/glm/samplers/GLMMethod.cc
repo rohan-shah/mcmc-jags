@@ -29,8 +29,8 @@ extern cholmod_common *glm_wk;
 
 namespace jags {
 
-static void getIndices(set<StochasticNode const *> const &schildren,
-		       vector<StochasticNode const*> const &rows,
+static void getIndices(set<StochasticNode *> const &schildren,
+		       vector<StochasticNode *> const &rows,
 		       vector<int> &indices)
 {
     indices.clear();
@@ -51,7 +51,7 @@ namespace glm {
     void GLMMethod::calDesign() const
     {
 	vector<StochasticNode *> const &snodes = _view->nodes();
-	vector<StochasticNode const *> const &schildren = 
+	vector<StochasticNode *> const &schildren = 
 	    _view->stochasticChildren();
 
 	int *Xi = static_cast<int*>(_x->i);
@@ -109,7 +109,7 @@ namespace glm {
 	  _x(0), _factor(0), _fixed(sub_views.size(), false), 
 	  _length_max(0), _nz_prior(0), _init(true)
     {
-	vector<StochasticNode const*> const &schildren = 
+	vector<StochasticNode *> const &schildren = 
 	    view->stochasticChildren();
 
 	int nrow = schildren.size();
@@ -123,7 +123,7 @@ namespace glm {
 
 	for (unsigned int p = 0; p < _sub_views.size(); ++p) {
 
-	    set<StochasticNode const *> children_p;
+	    set<StochasticNode *> children_p;
 	    children_p.insert(sub_views[p]->stochasticChildren().begin(),
 			      sub_views[p]->stochasticChildren().end());
 	    vector<int> indices;

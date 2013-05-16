@@ -44,7 +44,7 @@ bool ConjugateWishart::canSample(StochasticNode *snode, Graph const &graph)
 	return false;
   
     GraphView gv(snode, graph);
-    vector<StochasticNode const*> const &schild = gv.stochasticChildren();
+    vector<StochasticNode *> const &schild = gv.stochasticChildren();
 
     // Check stochastic children
     for (unsigned int i = 0; i < schild.size(); ++i) {
@@ -86,7 +86,7 @@ ConjugateWishart::ConjugateWishart(GraphView const *gv)
 void 
 ConjugateWishart::update(unsigned int chain, RNG *rng) const
 {
-    vector<StochasticNode const*> const &stoch_children = 
+    vector<StochasticNode *> const &stoch_children = 
 	_gv->stochasticChildren();
     unsigned int nchildren = stoch_children.size();
 

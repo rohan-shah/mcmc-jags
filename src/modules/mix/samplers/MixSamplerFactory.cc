@@ -28,7 +28,7 @@ namespace jags {
 static GraphView * isCandidate(StochasticNode *snode, Graph const &graph)
 {
     GraphView *gv = new GraphView(snode, graph);
-    vector<StochasticNode const*> const &schildren = gv->stochasticChildren();
+    vector<StochasticNode *> const &schildren = gv->stochasticChildren();
     for (unsigned int i = 0; i < schildren.size(); ++i) {
 	if (schildren[i]->distribution()->name() == "dnormmix") {
 	    return gv;
@@ -45,7 +45,7 @@ static void aggregate(GraphView const *gv, vector<StochasticNode *> &nodes,
 		      set<StochasticNode const*> &common_children)
 {
     bool agg = nodes.empty();
-    vector<StochasticNode const *> const &schildren = gv->stochasticChildren();
+    vector<StochasticNode *> const &schildren = gv->stochasticChildren();
     for (unsigned int i = 0; i < schildren.size(); ++i) {
 	if (common_children.count(schildren[i])) {
 	    agg = true;

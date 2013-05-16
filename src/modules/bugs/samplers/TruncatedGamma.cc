@@ -109,7 +109,7 @@ bool TruncatedGamma::canSample(StochasticNode *snode, Graph const &graph)
 	return false;
 
     GraphView gv(vector<StochasticNode*>(1,snode), graph);
-    vector<StochasticNode const*> const &stoch_nodes = gv.stochasticChildren();
+    vector<StochasticNode *> const &stoch_nodes = gv.stochasticChildren();
 
     //Check that stochastic children are valid
     for (unsigned int i = 0; i < stoch_nodes.size(); ++i) {
@@ -193,7 +193,7 @@ void TruncatedGamma::update(unsigned int chain, RNG *rng) const
     const double zold = pow(xold, _exponent);
 
     //Add likelihood contributions to shape and scale parameters
-    vector<StochasticNode const*> const &schildren = _gv->stochasticChildren();
+    vector<StochasticNode *> const &schildren = _gv->stochasticChildren();
     for (unsigned int i = 0; i < schildren.size(); ++i) {
 
 	double Y = *schildren[i]->value(chain);
