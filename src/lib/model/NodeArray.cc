@@ -84,7 +84,7 @@ void NodeArray::insert(Node *node, Range const &target_range)
     }
 
   /* Add to the graph */
-  _member_graph.add(node);
+  _member_graph.insert(node);
 }
 
 Node *NodeArray::find(Range const &target_range) const
@@ -150,7 +150,7 @@ Node *NodeArray::getSubset(Range const &target_range, Model &model)
   AggNode *anode = new AggNode(target_range.dim(true), nodes, offsets);
   _generated_nodes.insert(pair<Range,Node*>(target_range, anode));
   model.addNode(anode);
-  _member_graph.add(anode);
+  _member_graph.erase(anode);
   return anode;
 }
 
