@@ -320,4 +320,9 @@ bool MixtureNode::isDiscreteValued() const
     return _discrete;
 }
 
+    MixTab const *MixtureNode::mixTab() const
+    {
+	return _table;
+    }
+
 } //namespace jags

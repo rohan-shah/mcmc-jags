@@ -32,6 +32,10 @@ namespace jags {
 	 * pointer is returned.
 	 */
 	Node const * getNode(std::vector<int> const &index) const;
+	/**
+	 * Returns the range covered by the indices
+	 */
+	Range const &range() const;
     };
 
 } /* namespace jags */

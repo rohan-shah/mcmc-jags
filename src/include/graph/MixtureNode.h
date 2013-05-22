@@ -64,6 +64,10 @@ public:
      */
     unsigned int index_size() const;
     /**
+     * Returns a pointer to the MixTab
+     */
+    MixTab const *mixTab() const;
+    /**
      * A MixtureNode is discrete valued if all of its possible
      * parents are discrete
      */
