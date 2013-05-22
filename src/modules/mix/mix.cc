@@ -3,6 +3,8 @@
 #include <distributions/DNormMix.h>
 #include <samplers/MixSamplerFactory.h>
 #include <samplers/DirichletCatFactory.h>
+#include <samplers/LDAFactory.h>
+
 using std::vector;
 
 namespace jags {
@@ -20,6 +22,7 @@ namespace mix {
 	insert(new DNormMix);
 	insert(new MixSamplerFactory);
 	insert(new DirichletCatFactory);
+	insert(new LDAFactory);
     }
 
     MIXModule::~MIXModule() {
