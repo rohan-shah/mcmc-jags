@@ -131,7 +131,7 @@ namespace jags {
 	    vector<vector<StochasticNode*> > topics(nDoc), words(nDoc);
 	    vector<StochasticNode*> snodes;
 	    for (unsigned int d = 0; d < nDoc; ++d) {
-		GraphView gvd(topics[d], graph);
+		GraphView gvd(topicPriors[d], graph);
 		topics[d] = gvd.stochasticChildren();
 		for (unsigned int i = 0; i < topics[d].size(); ++i) {
 		    if (free_nodes.count(topics[d][i]) == 0) return 0;

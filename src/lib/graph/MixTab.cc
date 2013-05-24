@@ -51,6 +51,13 @@ namespace jags {
 	return _nodes[offset];
     }
 
+    
+    Range const &MixTab::range() const
+    {
+	return _range;
+    }
+
+
 /*
     double MixTab::density() 
     {
