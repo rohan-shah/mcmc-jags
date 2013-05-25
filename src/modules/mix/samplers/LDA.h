@@ -23,7 +23,7 @@ namespace jags {
 	    GraphView const *_gv;
 	    const unsigned int _chain;	    
 	    std::vector<std::vector<int> > _topicTokens, _wordTokens;
-	    std::vector<std::vector<int> > _wordsByTopic, _topicsByDoc;
+	    std::vector<std::vector<int> > _topicsByWord, _topicsByDoc;
 	    std::vector<unsigned int> _docSums, _topicSums;
 	    bool _wordsObserved;
 	    void rebuildTable();

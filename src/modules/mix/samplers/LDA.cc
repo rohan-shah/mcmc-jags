@@ -12,39 +12,24 @@
 
 #include <set>
 #include <vector>
+#include <algorithm>
+#include <numeric>
 
 using std::vector;
 using std::set;
 using std::string;
+using std::upper_bound;
+using std::accumulate;
+using std::partial_sum;
 
 namespace jags {
 
-    static bool isCat(StochasticNode const *snode) {
+     bool isCat(StochasticNode const *snode) {
 	return snode->distribution()->name() == "dcat";
     }
 
-    static bool isDirichlet(StochasticNode const *snode) {
+     bool isDirichlet(StochasticNode const *snode) {
 	return snode->distribution()->name() == "ddirch";
-    }
-
-    static int catSample(vector<double> const &probs, RNG *rng)
-    {
-	//Sample from an unnormalized discrete probability distribution
-	double sump = 0;
-	int i = 0;
-	int N = probs.size();
-	
-	for ( ; i < N; ++i) {
-	    sump += probs[i];
-	}
-	double p = sump * rng->uniform();    
-	
-	for (i = N - 1; i > 0; --i) {
-	    sump -= probs[i];
-	    if (sump <= p) 
-		break;
-	}
-	return i;
     }
 
     namespace mix {
@@ -61,9 +46,9 @@ namespace jags {
 	      _wordHyper(word_priors[0]->parents()[0]->value(ch)),
 	      _gv(gv), 
 	      _chain(ch),
-  	    _topicTokens(_nDoc), 
+	    _topicTokens(_nDoc), 
 	    _wordTokens(_nDoc), 
-	    _wordsByTopic(_nTopic, vector<int>(_nWord, 0)),
+	    _topicsByWord(_nWord, vector<int>(_nTopic, 0)),
 	    _topicsByDoc(_nDoc, vector<int>(_nTopic, 0)),
 	    _docSums(_nDoc), _topicSums(_nTopic),
 	    _wordsObserved(true)
@@ -78,7 +63,7 @@ namespace jags {
 		    _topicSums[topic]++;
 		    int word = static_cast<int>(*words[d][i]->value(ch)) - 1;
 		    _wordTokens[d].push_back(word);
-		    _wordsByTopic[topic][word]++;
+		    _topicsByWord[word][topic]++;
 		    if (!isObserved(words[d][i])) _wordsObserved = false;
 		}
 	    }
@@ -100,7 +85,7 @@ namespace jags {
 	{
 	    for (unsigned int t = 0; t < _nTopic; ++t) {
 		for (unsigned int w = 0; w < _nWord; ++w) {
-		    _wordsByTopic[t][w] = 0;
+		    _topicsByWord[w][t] = 0;
 		}
 	    }
 
@@ -111,7 +96,7 @@ namespace jags {
 		    int topic = _topicTokens[d][i];
 		    int word = static_cast<int>(*s[offset + i]->value(_chain)) 
 			- 1;
-		    _wordsByTopic[topic][word]++;
+		    _topicsByWord[word][topic]++;
 		}
 		offset += _docSums[d];
 	    }
@@ -123,43 +108,51 @@ namespace jags {
 		rebuildTable();
 	    }
 
-	    double wordHyperSum = 0;
-	    for (unsigned int w = 0; w < _nWord; ++w) {
-		wordHyperSum += _wordHyper[w];
-	    }
-
+	    double wordHyperSum = 
+		accumulate(_wordHyper, _wordHyper + _nWord, 0.0);
+	    
+	    vector<double> sump(_nTopic);
 	    for (unsigned int doc = 0; doc < _nDoc; ++doc) {
+
+		vector<int> &thisDocTopics = _topicsByDoc[doc];
+
 		for (unsigned int i = 0; i < _docSums[doc]; ++i) {
 
 		    //Find current topic and word values
 		    int &topic = _topicTokens[doc][i];
 		    int const &word = _wordTokens[doc][i];
 
-		    //Remove current values from tables
-		    _topicsByDoc[doc][topic]--;
-		    _wordsByTopic[topic][word]--;
+		    vector<int> &thisWordTopics = _topicsByWord[word];
+
+		    //Remove current value from tables
+		    thisDocTopics[topic]--;
+		    thisWordTopics[topic]--;
 		    _topicSums[topic]--;
 
 		    //Calculate probability vector
 		    vector<double> prob(_nTopic);
 		    for (unsigned int t = 0; t < _nTopic; ++t) {
-			double prior = _topicsByDoc[doc][t] + _topicHyper[t];
+			double prior = thisDocTopics[t] + _topicHyper[t];
 			double likelihood = 
-			    (_wordsByTopic[t][word] + _wordHyper[word]) /
+			    (thisWordTopics[t] + _wordHyper[word]) /
 			    (_topicSums[t] + wordHyperSum);
 			prob[t] = prior * likelihood;
 		    }
 		    
 		    //Draw random sample from categorical distribution
-		    topic = catSample(prob, rng);
+		    partial_sum(prob.begin(), prob.end(), sump.begin());
+		    double p = rng->uniform() * sump.back();
+		    topic = upper_bound(sump.begin(), sump.end(), p) -
+			sump.begin();
+		    if (topic == _nTopic) --topic;
 
-		    //Restore current values to tables
-		    _topicsByDoc[doc][topic]++;
-		    _wordsByTopic[topic][word]++;
+		    //Restore current value to tables
+		    thisDocTopics[topic]++;
+		    thisWordTopics[topic]++;
 		    _topicSums[topic]++;
 		}
 	    }
-
+	    
 	    vector<double> value;
 	    value.reserve(_gv->length());
 	    for (unsigned int d = 0; d < _nDoc; ++d) {
@@ -169,20 +162,20 @@ namespace jags {
 	    }
 	    _gv->setValue(value, _chain);
 	}
-
+	
 	string LDA::name() const
 	{
 	    return "mix::LDA";
 	}
-	    
+	
 	bool LDA::isAdaptive() const { return false; }
 	void LDA::adaptOff() { }
 	bool LDA::checkAdaptation() const { return true; }
-
+	
 	bool LDA::canSample(vector<vector<StochasticNode*> > const &topics,
 			    vector<vector<StochasticNode*> > const &words,
 			    vector<StochasticNode*> const &topic_priors,
-			    vector<StochasticNode*> const &word_priors,
+				vector<StochasticNode*> const &word_priors,
 			    Graph const &graph)
 	{
 	    //Set up dimensions
