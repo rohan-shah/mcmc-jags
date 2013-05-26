@@ -170,14 +170,14 @@ namespace jags {
 
 	    for (unsigned int i = 0; i < snodes.size(); ++i) {
 		
-		vector<double> &alpha = _parmap[snodes[i]];
+		vector<double> const &alpha = _parmap[snodes[i]];
 
 		double xsum = 0.0;
 		unsigned int offset = i * _size;
 		for (unsigned int j = 0; j < _size; ++j) {
 		    if (alpha[j] > 0) {
 			xnew[j + offset] = rgamma(alpha[j], 1, rng);
-			xsum += xnew[j];
+			xsum += xnew[j + offset];
 		    }
 		    else {
 			xnew[j + offset] = 0;
