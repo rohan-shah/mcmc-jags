@@ -168,10 +168,6 @@ namespace jags {
 	    return "mix::LDA";
 	}
 	
-	bool LDA::isAdaptive() const { return false; }
-	void LDA::adaptOff() { }
-	bool LDA::checkAdaptation() const { return true; }
-	
 	bool LDA::canSample(vector<vector<StochasticNode*> > const &topics,
 			    vector<vector<StochasticNode*> > const &words,
 			    vector<StochasticNode*> const &topic_priors,

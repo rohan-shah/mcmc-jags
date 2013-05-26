@@ -1,7 +1,7 @@
 #ifndef LDA_H_
 #define LDA_H_
 
-#include <sampler/SampleMethod.h>
+#include <sampler/SampleMethodNoAdapt.h>
 
 #include <vector>
 
@@ -16,7 +16,7 @@ namespace jags {
 	 * @short Collapsed sampler for Latent Dirichlet Allocation
 	 * models.
 	 */
-	class LDA : public SampleMethod {
+	class LDA : public SampleMethodNoAdapt {
 	    const unsigned int _nTopic, _nWord, _nDoc;
 	    double const *_topicHyper;
 	    double const *_wordHyper;
@@ -63,12 +63,6 @@ namespace jags {
 		std::vector<StochasticNode*> const &word_priors,
 		GraphView const *gv, unsigned int chain);
 	    void update(RNG *rng);
-	    /**
-	     * LDA is not adaptive
-	     */
-	    bool isAdaptive() const;
-	    void adaptOff();
-	    bool checkAdaptation() const;
 	    std::string name() const;
 	    /**
 	     * Tests whether a set of topics can be sampled by the LDA

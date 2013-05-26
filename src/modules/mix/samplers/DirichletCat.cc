@@ -196,10 +196,7 @@ namespace jags {
 	{
 	    return "mix::DirichletCat";
 	}
-	    
-	bool DirichletCat::isAdaptive() const { return false; }
-	void DirichletCat::adaptOff() { }
-	bool DirichletCat::checkAdaptation() const { return true; }
+
     }
 }
 
