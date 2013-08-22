@@ -96,7 +96,7 @@ pnchisq_raw(double x, double f, double theta,
 
 
 #ifdef DEBUG_pnch
-    REprintf("pnchisq(x=%g, f=%g, theta=%g): ",x,f,theta);
+    JREprintf("pnchisq(x=%g, f=%g, theta=%g): ",x,f,theta);
 #endif
     lam = .5 * theta;
     lamSml = (-lam < _dbl_min_exp);
@@ -118,7 +118,7 @@ pnchisq_raw(double x, double f, double theta,
     f_x_2n = f - x;
 
 #ifdef DEBUG_pnch
-    REprintf("-- v=exp(-th/2)=%g, x/2= %g, f/2= %g\n",v,x2,f2);
+    JREprintf("-- v=exp(-th/2)=%g, x/2= %g, f/2= %g\n",v,x2,f2);
 #endif
 
     if(f2 * DBL_EPSILON > 0.125 && /* very large f and x ~= f: probably needs */
@@ -128,7 +128,7 @@ pnchisq_raw(double x, double f, double theta,
 	/* t = exp((1 - t)*(2 - t/(f2 + 1))) / sqrt(2*M_PI*(f2 + 1));*/
         lt = (1 - t)*(2 - t/(f2 + 1)) - 0.5 * log(2*M_PI*(f2 + 1));
 #ifdef DEBUG_pnch
-	REprintf(" (case I) ==> ");
+	JREprintf(" (case I) ==> ");
 #endif
     }
     else {
@@ -136,7 +136,7 @@ pnchisq_raw(double x, double f, double theta,
 	lt = f2*log(x2) -x2 - lgammafn(f2 + 1);
     }
 #ifdef DEBUG_pnch
-    REprintf(" lt= %g", lt);
+    JREprintf(" lt= %g", lt);
 #endif
 
     tSml = (lt < _dbl_min_exp);
@@ -151,14 +151,14 @@ pnchisq_raw(double x, double f, double theta,
     else {
 	t = exp(lt);
 #ifdef DEBUG_pnch
- 	REprintf(", t=exp(lt)= %g\n", t);
+ 	JREprintf(", t=exp(lt)= %g\n", t);
 #endif
 	ans = term = v * t;
     }
 
     for (n = 1, f_2n = f + 2., f_x_2n += 2.;  ; n++, f_2n += 2, f_x_2n += 2) {
 #ifdef DEBUG_pnch
-	REprintf("\n _OL_: n=%d",n);
+	JREprintf("\n _OL_: n=%d",n);
 #endif
 #ifndef MATHLIB_STANDALONE
 	if(n % 1000) R_CheckUserInterrupt();
@@ -170,7 +170,7 @@ pnchisq_raw(double x, double f, double theta,
 
 	    bound = t * x / f_x_2n;
 #ifdef DEBUG_pnch
-	    REprintf("\n L10: n=%d; term= %g; bound= %g",n,term,bound);
+	    JREprintf("\n L10: n=%d; term= %g; bound= %g",n,term,bound);
 #endif
 	    is_r = is_it = FALSE;
 	    /* convergence only if BOTH absolute and relative error < 'bnd' */
@@ -178,7 +178,7 @@ pnchisq_raw(double x, double f, double theta,
                  (is_r = (term <= reltol * ans))) || (is_it = (n > itrmax)))
             {
 #ifdef DEBUG_pnch
-                REprintf("BREAK n=%d %s; bound= %g %s, rel.err= %g %s\n",
+                JREprintf("BREAK n=%d %s; bound= %g %s, rel.err= %g %s\n",
 			 n, (is_it ? "> itrmax" : ""),
 			 bound, (is_b ? "<= errmax" : ""),
 			 term/ans, (is_r ? "<= reltol" : ""));
@@ -196,7 +196,7 @@ pnchisq_raw(double x, double f, double theta,
             if(lu >= _dbl_min_exp) {
 		/* no underflow anymore ==> change regime */
 #ifdef DEBUG_pnch
-                REprintf(" n=%d; nomore underflow in u = exp(lu) ==> change\n",
+                JREprintf(" n=%d; nomore underflow in u = exp(lu) ==> change\n",
 			 n);
 #endif
                 v = u = exp(lu); /* the first non-0 'u' */
@@ -211,7 +211,7 @@ pnchisq_raw(double x, double f, double theta,
             if(lt >= _dbl_min_exp) {
 		/* no underflow anymore ==> change regime */
 #ifdef DEBUG_pnch
-                REprintf("  n=%d; nomore underflow in t = exp(lt) ==> change\n",
+                JREprintf("  n=%d; nomore underflow in t = exp(lt) ==> change\n",
 			 n);
 #endif
                 t = exp(lt); /* the first non-0 't' */
@@ -232,7 +232,7 @@ pnchisq_raw(double x, double f, double theta,
 			 x, itrmax);
     }
 #ifdef DEBUG_pnch
-    REprintf("\n == L_End: n=%d; term= %g; bound=%g\n",n,term,bound);
+    JREprintf("\n == L_End: n=%d; term= %g; bound=%g\n",n,term,bound);
 #endif
     return lower_tail ? ans : 1 - ans;
 }

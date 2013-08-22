@@ -253,7 +253,7 @@ static double
 dpois_wrap (double x_plus_1, double lambda, int give_log)
 {
 #ifdef DEBUG_p
-    REprintf (" dpois_wrap(x+1=%.14g, lambda=%.14g, log=%d)\n",
+    JREprintf (" dpois_wrap(x+1=%.14g, lambda=%.14g, log=%d)\n",
 	      x_plus_1, lambda, give_log);
 #endif
     if (!R_FINITE(lambda))
@@ -265,7 +265,7 @@ dpois_wrap (double x_plus_1, double lambda, int give_log)
     else {
 	double d = dpois_raw (x_plus_1, lambda, give_log);
 #ifdef DEBUG_p
-	REprintf ("  -> d=dpois_raw(..)=%.14g\n", d);
+	JREprintf ("  -> d=dpois_raw(..)=%.14g\n", d);
 #endif
 	return give_log
 	    ? d + log (x_plus_1 / lambda)
@@ -282,7 +282,7 @@ pgamma_smallx (double x, double alph, int lower_tail, int log_p)
     double sum = 0, c = alph, n = 0, term;
 
 #ifdef DEBUG_p
-    REprintf (" pg_smallx(x=%.12g, alph=%.12g): ", x, alph);
+    JREprintf (" pg_smallx(x=%.12g, alph=%.12g): ", x, alph);
 #endif
 
     /*
@@ -298,7 +298,7 @@ pgamma_smallx (double x, double alph, int lower_tail, int log_p)
     } while (fabs (term) > DBL_EPSILON * fabs (sum));
 
 #ifdef DEBUG_p
-    REprintf (" %d terms --> conv.sum=%g;", n, sum);
+    JREprintf (" %d terms --> conv.sum=%g;", n, sum);
 #endif
     if (lower_tail) {
 	double f1 = log_p ? log1p (sum) : 1 + sum;
@@ -311,14 +311,14 @@ pgamma_smallx (double x, double alph, int lower_tail, int log_p)
 	else
 	    f2 = pow (x, alph) / exp (lgamma1p (alph));
 #ifdef DEBUG_p
-    REprintf (" (f1,f2)= (%g,%g)\n", f1,f2);
+    JREprintf (" (f1,f2)= (%g,%g)\n", f1,f2);
 #endif
 	return log_p ? f1 + f2 : f1 * f2;
     } else {
 	double lf2 = alph * log (x) - lgamma1p (alph);
 #ifdef DEBUG_p
-	REprintf (" 1:%.14g  2:%.14g\n", alph * log (x), lgamma1p (alph));
-	REprintf (" sum=%.14g  log(1+sum)=%.14g	 lf2=%.14g\n",
+	JREprintf (" 1:%.14g  2:%.14g\n", alph * log (x), lgamma1p (alph));
+	JREprintf (" sum=%.14g  log(1+sum)=%.14g	 lf2=%.14g\n",
 		  sum, log1p (sum), lf2);
 #endif
 	if (log_p)
@@ -372,14 +372,14 @@ pd_lower_cf (double y, double d)
 #define max_it 200000
 
 #ifdef DEBUG_p
-    REprintf("pd_lower_cf(y=%.14g, d=%.14g)", y, d);
+    JREprintf("pd_lower_cf(y=%.14g, d=%.14g)", y, d);
 #endif
     if (y == 0 || (R_FINITE(y) && !R_FINITE(d))) /* includes d = Inf  or y = 0 */
 	return 0;
     /* Needed, e.g. for  pgamma(10^c(100,295), shape= 1.1, log=TRUE) */
     if(fabs(y - 1) < fabs(d) * 1e-20) {
 #ifdef DEBUG_p
-	REprintf(" very small 'y' -> returning (y/d)\n");
+	JREprintf(" very small 'y' -> returning (y/d)\n");
 #endif
 	return (y/d);
     }
@@ -419,7 +419,7 @@ pd_lower_cf (double y, double d)
 	    /* convergence check */
 	    if (fabs(f - of) <= DBL_EPSILON * fabs(f)) {
 #ifdef DEBUG_p
-		REprintf(" %g iter.\n", i);
+		JREprintf(" %g iter.\n", i);
 #endif
 		return f;
 	    }
@@ -439,7 +439,7 @@ pd_lower_series (double lambda, double y)
     double term = 1, sum = 0;
 
 #ifdef DEBUG_p
-    REprintf("pd_lower_series(lam=%.14g, y=%.14g) ...", lambda, y);
+    JREprintf("pd_lower_series(lam=%.14g, y=%.14g) ...", lambda, y);
 #endif
     while (y >= 1 && term > sum * DBL_EPSILON) {
 	term *= y / lambda;
@@ -451,7 +451,7 @@ pd_lower_series (double lambda, double y)
      *	   ~  y/lambda + o(y/lambda)
      */
 #ifdef DEBUG_p
-    REprintf(" done: term=%g, sum=%g, y= %g\n", term, sum, y);
+    JREprintf(" done: term=%g, sum=%g, y= %g\n", term, sum, y);
 #endif
 
     if (y != floor (y)) {
@@ -461,13 +461,13 @@ pd_lower_series (double lambda, double y)
 	 */
 	double f;
 #ifdef DEBUG_p
-	REprintf(" y not int: add another term ");
+	JREprintf(" y not int: add another term ");
 #endif
 	/* FIXME: in quite few cases, adding  term*f  has no effect (f too small)
 	 *	  and is unnecessary e.g. for pgamma(4e12, 121.1) */
 	f = pd_lower_cf (y, lambda + 1 - y);
 #ifdef DEBUG_p
-	REprintf("  (= %.14g) * term = %.14g to sum %g\n", f, term * f, sum);
+	JREprintf("  (= %.14g) * term = %.14g to sum %g\n", f, term * f, sum);
 #endif
 	sum += term * f;
     }
@@ -587,7 +587,7 @@ ppois_asymp (double x, double lambda, int lower_tail, int log_p)
     }
     if (!lower_tail) elfb = -elfb;
 #ifdef DEBUG_p
-    REprintf ("res12 = %.14g   elfb=%.14g\n", elfb, res12);
+    JREprintf ("res12 = %.14g   elfb=%.14g\n", elfb, res12);
 #endif
 
     f = res12 / elfb;
@@ -597,7 +597,7 @@ ppois_asymp (double x, double lambda, int lower_tail, int log_p)
     if (log_p) {
 	double n_d_over_p = dpnorm (s2pt, !lower_tail, np);
 #ifdef DEBUG_p
-	REprintf ("pp*_asymp(): f=%.14g	 np=e^%.14g  nd/np=%.14g  f*nd/np=%.14g\n",
+	JREprintf ("pp*_asymp(): f=%.14g	 np=e^%.14g  nd/np=%.14g  f*nd/np=%.14g\n",
 		  f, np, n_d_over_p, f * n_d_over_p);
 #endif
 	return np + log1p (f * n_d_over_p);
@@ -605,7 +605,7 @@ ppois_asymp (double x, double lambda, int lower_tail, int log_p)
 	double nd = dnorm (s2pt, 0., 1., log_p);
 
 #ifdef DEBUG_p
-	REprintf ("pp*_asymp(): f=%.14g	 np=%.14g  nd=%.14g  f*nd=%.14g\n",
+	JREprintf ("pp*_asymp(): f=%.14g	 np=%.14g  nd=%.14g  f*nd=%.14g\n",
 		  f, np, nd, f * nd);
 #endif
 	return np + f * nd;
@@ -620,7 +620,7 @@ double pgamma_raw (double x, double alph, int lower_tail, int log_p)
     double res;
 
 #ifdef DEBUG_p
-    REprintf("pgamma_raw(x=%.14g, alph=%.14g, low=%d, log=%d)\n",
+    JREprintf("pgamma_raw(x=%.14g, alph=%.14g, low=%d, log=%d)\n",
 	     x, alph, lower_tail, log_p);
 #endif
     R_P_bounds_01(x, 0., ML_POSINF);
@@ -632,7 +632,7 @@ double pgamma_raw (double x, double alph, int lower_tail, int log_p)
 	double sum = pd_upper_series (x, alph, log_p);/* = x/alph + o(x/alph) */
 	double d = dpois_wrap (alph, x, log_p);
 #ifdef DEBUG_p
-	REprintf(" alph 'large': sum=pd_upper*()= %.12g, d=dpois_w(*)= %.12g\n",
+	JREprintf(" alph 'large': sum=pd_upper*()= %.12g, d=dpois_w(*)= %.12g\n",
 		 sum, d);
 #endif
 	if (!lower_tail)
@@ -646,7 +646,7 @@ double pgamma_raw (double x, double alph, int lower_tail, int log_p)
 	double sum;
 	double d = dpois_wrap (alph, x, log_p);
 #ifdef DEBUG_p
-	REprintf(" x 'large': d=dpois_w(*)= %.14g ", d);
+	JREprintf(" x 'large': d=dpois_w(*)= %.14g ", d);
 #endif
 	if (alph < 1) {
 	    if (x * DBL_EPSILON > 1 - alph)
@@ -661,7 +661,7 @@ double pgamma_raw (double x, double alph, int lower_tail, int log_p)
 	    sum = log_p ? log1p (sum) : 1 + sum;
 	}
 #ifdef DEBUG_p
-	REprintf(", sum= %.14g\n", sum);
+	JREprintf(", sum= %.14g\n", sum);
 #endif
 	if (!lower_tail)
 	    res = log_p ? sum + d : sum * d;
@@ -671,7 +671,7 @@ double pgamma_raw (double x, double alph, int lower_tail, int log_p)
 		: 1 - d * sum;
     } else { /* x >= 1 and x fairly near alph. */
 #ifdef DEBUG_p
-	REprintf(" using ppois_asymp()\n");
+	JREprintf(" using ppois_asymp()\n");
 #endif
 	res = ppois_asymp (alph - 1, x, !lower_tail, log_p);
     }
@@ -684,7 +684,7 @@ double pgamma_raw (double x, double alph, int lower_tail, int log_p)
     if (!log_p && res < DBL_MIN / DBL_EPSILON) {
 	/* with(.Machine, double.xmin / double.eps) #|-> 1.002084e-292 */
 #ifdef DEBUG_p
-	REprintf(" very small res=%.14g; -> recompute via log\n", res);
+	JREprintf(" very small res=%.14g; -> recompute via log\n", res);
 #endif
 	return exp (pgamma_raw (x, alph, lower_tail, 1));
     } else
@@ -776,14 +776,14 @@ double pgamma(double x, double alph, double scale, int lower_tail, int log_p)
 	return x + alph + scale;
 #endif
 #ifdef DEBUG_p
-    REprintf("pgamma(x=%4g, alph=%4g, scale=%4g): ",x,alph,scale);
+    JREprintf("pgamma(x=%4g, alph=%4g, scale=%4g): ",x,alph,scale);
 #endif
     if(alph <= 0. || scale <= 0.)
 	ML_ERR_return_NAN;
 
     x /= scale;
 #ifdef DEBUG_p
-    REprintf("-> x=%4g; ",x);
+    JREprintf("-> x=%4g; ",x);
 #endif
 #ifdef IEEE_754
     if (ISNAN(x)) /* eg. original x = scale = Inf */
@@ -815,7 +815,7 @@ double pgamma(double x, double alph, double scale, int lower_tail, int log_p)
 
 	arg = alph * log(x) - x - lgammafn(alph + 1.);
 #ifdef DEBUG_p
-	REprintf("Pearson  arg=%g ", arg);
+	JREprintf("Pearson  arg=%g ", arg);
 #endif
 	c = 1.;
 	sum = 1.;
@@ -832,7 +832,7 @@ double pgamma(double x, double alph, double scale, int lower_tail, int log_p)
 
 	arg = alph * log(x) - x - lgammafn(alph);
 #ifdef DEBUG_p
-	REprintf("Cont.Fract. arg=%g ", arg);
+	JREprintf("Cont.Fract. arg=%g ", arg);
 #endif
 	a = 1. - alph;
 	b = a + x + 1.;
@@ -860,7 +860,7 @@ double pgamma(double x, double alph, double scale, int lower_tail, int log_p)
 	    if (fabs(pn5) >= xlarge) {
 		/* re-scale the terms in continued fraction if they are large */
 #ifdef DEBUG_p
-		REprintf(" [r] ");
+		JREprintf(" [r] ");
 #endif
 		pn1 /= xlarge;
 		pn2 /= xlarge;

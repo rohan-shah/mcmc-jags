@@ -29,7 +29,7 @@
  *  used only in standalone Rmath lib.
  */
 
-int R_finite(double x)
+int JR_finite(double x)
 {
 #ifdef HAVE_WORKING_ISFINITE
     return isfinite(x);
@@ -40,7 +40,7 @@ int R_finite(double x)
 
 /* C++ math header undefines any isnan macro. This file
    doesn't get C++ headers and so is safe. */
-int R_isnancpp(double x)
+int JR_isnancpp(double x)
 {
     return (isnan(x) != 0);
 }
@@ -51,7 +51,7 @@ static double myfmod(double x1, double x2)
     return x1 - floor(q) * x2;
 }
 
-double R_pow(double x, double y) /* = x ^ y */
+double JR_pow(double x, double y) /* = x ^ y */
 {
     if(x == 1. || y == 0.)
 	return(1.);
@@ -88,13 +88,13 @@ double R_pow(double x, double y) /* = x ^ y */
 				   non-int}; (neg)^{+-Inf} */
 }
 
-double R_pow_di(double x, int n)
+double JR_pow_di(double x, int n)
 {
     double pow = 1.0;
 
     if (ISNAN(x)) return x;
     if (n != 0) {
-	if (!R_FINITE(x)) return R_pow(x, (double)n);
+	if (!R_FINITE(x)) return JR_pow(x, (double)n);
 	if (n < 0) { n = -n; x = 1/x; }
 	for(;;) {
 	    if(n & 01) pow *= x;
@@ -106,7 +106,7 @@ double R_pow_di(double x, int n)
 
 #include <stdio.h>
 #include <stdarg.h>
-void attribute_hidden REprintf(const char *format, ...)
+void attribute_hidden JREprintf(const char *format, ...)
 {
     va_list(ap);
     va_start(ap, format);

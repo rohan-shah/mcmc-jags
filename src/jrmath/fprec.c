@@ -98,22 +98,22 @@ double fprec(double x, double digits)
     if(fabs(l10) < max10e - 2) {
 	p10 = 1.0;
 	if(e10 > max10e) { /* numbers less than 10^(dig-1) * 1e-308 */
-	    p10 =  R_pow_di(10., e10-max10e);
+	    p10 =  JR_pow_di(10., e10-max10e);
 	    e10 = max10e;
 	} 
 	if(e10 > 0) { /* Try always to have pow >= 1
 			 and so exactly representable */
-	    pow10 = R_pow_di(10., e10);
+	    pow10 = JR_pow_di(10., e10);
 	    return(sgn*(R_rint((x*pow10)*p10)/pow10)/p10);
 	} else {
-	    pow10 = R_pow_di(10., -e10);
+	    pow10 = JR_pow_di(10., -e10);
 	    return(sgn*(R_rint((x/pow10))*pow10));
 	}
     } else { /* -- LARGE or small -- */
-	do_round = max10e - l10	 >= R_pow_di(10., -dig);
+	do_round = max10e - l10	 >= JR_pow_di(10., -dig);
 	e2 = dig + ((e10>0)? 1 : -1) * MAX_DIGITS;
-	p10 = R_pow_di(10., e2);	x *= p10;
-	P10 = R_pow_di(10., e10-e2);	x *= P10;
+	p10 = JR_pow_di(10., e2);	x *= p10;
+	P10 = JR_pow_di(10., e10-e2);	x *= P10;
 	/*-- p10 * P10 = 10 ^ e10 */
 	if(do_round) x += 0.5;
 	x = floor(x) / p10;

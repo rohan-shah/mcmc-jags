@@ -53,8 +53,6 @@ ACX_LAPACK([],[
 
 dnl Rmath stuff
 
-AC_DEFINE(MATHLIB_STANDALONE, 1, [Define if you have standalone R math library])
-
 dnl Relevant parts lifted from R's configure.ac, version 2.3.0
 AC_CHECK_LIB(m, sin)
 

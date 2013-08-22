@@ -94,8 +94,8 @@ void R_CheckUserInterrupt(void);
 #define MATHLIB_WARNING4(fmt,x,x2,x3,x4) printf(fmt,x,x2,x3,x4)
 
 #define ISNAN(x) (isnan(x)!=0)
-#define R_FINITE(x)    R_finite(x)
-int R_finite(double);
+#define R_FINITE(x)    JR_finite(x)
+int JR_finite(double);
 
 #define ML_POSINF	(1.0 / 0.0)
 #define ML_NEGINF	((-1.0) / 0.0)

@@ -80,7 +80,7 @@ double qchisq_appr(double p, double nu, double g/* = log Gamma(nu/2) */,
 	double lgam1pa = (alpha < 0.5) ? lgamma1p(alpha) : (log(alpha) + g);
 	ch = exp((lgam1pa + p1)/alpha + M_LN2);
 #ifdef DEBUG_qgamma
-	REprintf(" small chi-sq., ch0 = %g\n", ch);
+	JREprintf(" small chi-sq., ch0 = %g\n", ch);
 #endif
 
     } else if(nu > 0.32) {	/*  using Wilson and Hilferty estimate */
@@ -90,7 +90,7 @@ double qchisq_appr(double p, double nu, double g/* = log Gamma(nu/2) */,
 	ch = nu*pow(x*sqrt(p1) + 1-p1, 3);
 
 #ifdef DEBUG_qgamma
-	REprintf(" nu > .32: Wilson-Hilferty; x = %7g\n", x);
+	JREprintf(" nu > .32: Wilson-Hilferty; x = %7g\n", x);
 #endif
 	/* approximation for p tending to 1: */
 	if( ch > 2.2*nu + 6 )
@@ -101,7 +101,7 @@ double qchisq_appr(double p, double nu, double g/* = log Gamma(nu/2) */,
 	ch = 0.4;
 	a = R_DT_Clog(p) + g + c*M_LN2;
 #ifdef DEBUG_qgamma
-	REprintf(" nu <= .32: a = %7g\n", a);
+	JREprintf(" nu <= .32: a = %7g\n", a);
 #endif
 	do {
 	    q = ch;
@@ -160,7 +160,7 @@ double qgamma(double p, double alpha, double scale, int lower_tail, int log_p)
     p_ = R_DT_qIv(p);/* lower_tail prob (in any case) */
 
 #ifdef DEBUG_qgamma
-    REprintf("qgamma(p=%7g, alpha=%7g, scale=%7g, l.t.=%2d, log_p=%2d): ",
+    JREprintf("qgamma(p=%7g, alpha=%7g, scale=%7g, l.t.=%2d, log_p=%2d): ",
 	     p,alpha,scale, lower_tail, log_p);
 #endif
     g = lgammafn(alpha);/* log Gamma(v/2) */
@@ -186,7 +186,7 @@ double qgamma(double p, double alpha, double scale, int lower_tail, int log_p)
     }
 
 #ifdef DEBUG_qgamma
-    REprintf("\t==> ch = %10g:", ch);
+    JREprintf("\t==> ch = %10g:", ch);
 #endif
 
 /*----- Phase II: Iteration
@@ -201,8 +201,8 @@ double qgamma(double p, double alpha, double scale, int lower_tail, int log_p)
 	p1 = 0.5*ch;
 	p2 = p_ - pgamma_raw(p1, alpha, /*lower_tail*/TRUE, /*log_p*/FALSE);
 #ifdef DEBUG_qgamma
-	if(i == 1) REprintf(" Ph.II iter; ch=%g, p2=%g\n", ch, p2);
-	if(i >= 2) REprintf("     it=%d,  ch=%g, p2=%g\n", i, ch, p2);
+	if(i == 1) JREprintf(" Ph.II iter; ch=%g, p2=%g\n", ch, p2);
+	if(i >= 2) JREprintf("     it=%d,  ch=%g, p2=%g\n", i, ch, p2);
 #endif
 #ifdef IEEE_754
 	if(!R_FINITE(p2) || ch <= 0)
@@ -269,9 +269,9 @@ END:
 	for(i = 1; i <= max_it_Newton; i++) {
 	    p1 = p_ - p;
 #ifdef DEBUG_qgamma
-	    if(i == 1) REprintf("\n it=%d: p=%g, x = %g, p.=%g; p1=d{p}=%g\n",
+	    if(i == 1) JREprintf("\n it=%d: p=%g, x = %g, p.=%g; p1=d{p}=%g\n",
 				i, p, x, p_, p1);
-	    if(i >= 2) REprintf("          x{it= %d} = %g, p.=%g, p1=d{p}=%g\n",
+	    if(i >= 2) JREprintf("          x{it= %d} = %g, p.=%g, p1=d{p}=%g\n",
 				i,    x, p_, p1);
 #endif
 	    if(fabs(p1) < fabs(EPS_N * p))
@@ -279,7 +279,7 @@ END:
 	    /* else */
 	    if((g = dgamma(x, alpha, scale, log_p)) == R_D__0) {
 #ifdef DEBUG_q
-		if(i == 1) REprintf("no final Newton step because dgamma(*)== 0!\n");
+		if(i == 1) JREprintf("no final Newton step because dgamma(*)== 0!\n");
 #endif
 		break;
 	    }
@@ -296,7 +296,7 @@ END:
 		/* no improvement */
 #ifdef DEBUG_qgamma
 		if(i == 1 && max_it_Newton > 1)
-		    REprintf("no Newton step done since delta{p} >= last delta\n");
+		    JREprintf("no Newton step done since delta{p} >= last delta\n");
 #endif
 		break;
 	    } /* else : */

@@ -39,7 +39,7 @@ do_search(double y, double *z, double p, double n, double pr, double incr)
     if(*z >= p) {
 			/* search to the left */
 #ifdef DEBUG_qbinom
-	REprintf("\tnew z=%7g >= p = %7g  --> search to left (y--) ..\n", z,p);
+	JREprintf("\tnew z=%7g >= p = %7g  --> search to left (y--) ..\n", z,p);
 #endif
 	for(;;) {
 	    double newz;
@@ -52,7 +52,7 @@ do_search(double y, double *z, double p, double n, double pr, double incr)
     }
     else {		/* search to the right */
 #ifdef DEBUG_qbinom
-	REprintf("\tnew z=%7g < p = %7g  --> search to right (y++) ..\n", z,p);
+	JREprintf("\tnew z=%7g < p = %7g  --> search to right (y++) ..\n", z,p);
 #endif
 	for(;;) {
 	    y = fmin2(y + incr, n);
@@ -93,7 +93,7 @@ double qbinom(double p, double n, double pr, int lower_tail, int log_p)
     gamma = (q - pr) / sigma;
 
 #ifdef DEBUG_qbinom
-    REprintf("qbinom(p=%7g, n=%g, pr=%7g, l.t.=%d, log=%d): sigm=%g, gam=%g\n",
+    JREprintf("qbinom(p=%7g, n=%g, pr=%7g, l.t.=%d, log=%d): sigm=%g, gam=%g\n",
 	     p,n,pr, lower_tail, log_p, sigma, gamma);
 #endif
     /* Note : "same" code in qpois.c, qbinom.c, qnbinom.c --
@@ -113,7 +113,7 @@ double qbinom(double p, double n, double pr, int lower_tail, int log_p)
     if(y > n) /* way off */ y = n;
 
 #ifdef DEBUG_qbinom
-    REprintf("  new (p,1-p)=(%7g,%7g), z=qnorm(..)=%7g, y=%5g\n", p, 1-p, z, y);
+    JREprintf("  new (p,1-p)=(%7g,%7g), z=qnorm(..)=%7g, y=%5g\n", p, 1-p, z, y);
 #endif
     z = pbinom(y, n, pr, /*lower_tail*/TRUE, /*log_p*/FALSE);
 

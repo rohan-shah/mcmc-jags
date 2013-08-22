@@ -126,7 +126,7 @@ bratio(double a, double b, double x, double y, double *w, double *w1,
     if (fabs(z) > eps * 3.0) { *ierr = 5; return; }
 
 #ifdef DEBUG_bratio
-    REprintf("bratio(a=%g, b=%g, x=%g, y=%g, .., log_p=%d): ", a,b,x,y, log_p);
+    JREprintf("bratio(a=%g, b=%g, x=%g, y=%g, .., log_p=%d): ", a,b,x,y, log_p);
 #endif
 
     *ierr = 0;
@@ -169,14 +169,14 @@ bratio(double a, double b, double x, double y, double *w, double *w1,
 	/* now have  x0 <= 1/2 <= y0  (still  x0+y0 == 1) */
 
 #ifdef DEBUG_bratio
-	REprintf("  min(a,b) <= 1 : do_swap = %d; ", do_swap);
+	JREprintf("  min(a,b) <= 1 : do_swap = %d; ", do_swap);
 #endif
 
 	if (b0 < min(eps, eps * a0)) { /* L80: */
 	    *w = fpser(a0, b0, x0, eps, log_p);
 	    *w1 = log_p ? R_Log1_Exp(*w) : 0.5 - *w + 0.5;
 #ifdef DEBUG_bratio
-	    REprintf("  b0 small -> w := fpser(*) = %g\n", *w);
+	    JREprintf("  b0 small -> w := fpser(*) = %g\n", *w);
 #endif
 	    goto L_end_after_log;
 	}
@@ -184,14 +184,14 @@ bratio(double a, double b, double x, double y, double *w, double *w1,
 	if (a0 < min(eps, eps * b0) && b0 * x0 <= 1.0) { /* L90: */
 	    *w1 = apser(a0, b0, x0, eps);
 #ifdef DEBUG_bratio
-	    REprintf("  a0 small -> w1 := apser(*) = %g\n", *w1);
+	    JREprintf("  a0 small -> w1 := apser(*) = %g\n", *w1);
 #endif
 	    goto L_end_from_w1;
 	}
 
 	if (max(a0,b0) > 1.0) { /* L20:  min(a,b) <= 1 < max(a,b)  */
 #ifdef DEBUG_bratio
-	    REprintf("  L20:  min(a,b) <= 1 < max(a,b); ");
+	    JREprintf("  L20:  min(a,b) <= 1 < max(a,b); ");
 #endif
 	    if (b0 <= 1.0) goto L100;
 
@@ -208,7 +208,7 @@ bratio(double a, double b, double x, double y, double *w, double *w1,
 	    }
 	} else { /*  a, b <= 1 */
 #ifdef DEBUG_bratio
-	    REprintf("  both a,b <= 1; ");
+	    JREprintf("  both a,b <= 1; ");
 #endif
 	    if (a0 >= min(0.2, b0))	goto L100;
 
@@ -219,14 +219,14 @@ bratio(double a, double b, double x, double y, double *w, double *w1,
 	n = 20; /* goto L130; */
 	*w1 = bup(b0, a0, y0, x0, n, eps);
 #ifdef DEBUG_bratio
-	REprintf("  ... n=20 and *w1 := bup(*) = %g; ");
+	JREprintf("  ... n=20 and *w1 := bup(*) = %g; ");
 #endif
 	b0 += n;
     L131:
 	bgrat(b0, a0, y0, x0, w1, 15*eps, &ierr1);
 
 #ifdef DEBUG_bratio
-	REprintf(" L131: bgrat(*, w1) ==> w1 = %g\n", *w1);
+	JREprintf(" L131: bgrat(*, w1) ==> w1 = %g\n", *w1);
 #endif
 	goto L_end_from_w1;
     }
@@ -246,13 +246,13 @@ bratio(double a, double b, double x, double y, double *w, double *w1,
 	}
 
 #ifdef DEBUG_bratio
-	REprintf("  L30:  both  a, b > 1; |lambda| = %g, do_swap = %d\n",
+	JREprintf("  L30:  both  a, b > 1; |lambda| = %g, do_swap = %d\n",
 		 lambda, do_swap);
 #endif
 
 	if (b0 < 40.0) {
 #ifdef DEBUG_bratio
-	    REprintf("  b0 < 40; ");
+	    JREprintf("  b0 < 40; ");
 #endif
 	    if (b0 * x0 <= 0.7)
 		goto L100;
@@ -261,20 +261,20 @@ bratio(double a, double b, double x, double y, double *w, double *w1,
 	}
 	else if (a0 > b0) { /* ----  a0 > b0 >= 40  ---- */
 #ifdef DEBUG_bratio
-	    REprintf("  a0 > b0 >= 40; ");
+	    JREprintf("  a0 > b0 >= 40; ");
 #endif
 	    if (b0 <= 100.0)	goto L120;
 	    if (lambda > b0 * 0.03) goto L120;
 
 	} else if (a0 <= 100.0) {
 #ifdef DEBUG_bratio
-	    REprintf("  a0 <= 100; a0 <= b0 >= 40; ");
+	    JREprintf("  a0 <= 100; a0 <= b0 >= 40; ");
 #endif
 	    goto L120;
 	}
 	else if (lambda > a0 * 0.03) {
 #ifdef DEBUG_bratio
-	    REprintf("  b0 >= a0 > 100; lambda > a0 * 0.03 ");
+	    JREprintf("  b0 >= a0 > 100; lambda > a0 * 0.03 ");
 #endif
 	    goto L120;
 	}
@@ -283,7 +283,7 @@ bratio(double a, double b, double x, double y, double *w, double *w1,
 	*w = basym(a0, b0, lambda, eps * 100.0, log_p);
 	*w1 = log_p ? R_Log1_Exp(*w) : 0.5 - *w + 0.5;
 #ifdef DEBUG_bratio
-	REprintf("  b0 >= a0 > 100; lambda <= a0 * 0.03: *w := basym(*) = %g\n",
+	JREprintf("  b0 >= a0 > 100; lambda <= a0 * 0.03: *w := basym(*) = %g\n",
 		 *w);
 #endif
 	goto L_end_after_log;
@@ -296,7 +296,7 @@ L100:
     *w = bpser(a0, b0, x0, eps, log_p);
     *w1 = log_p ? R_Log1_Exp(*w) : 0.5 - *w + 0.5;
 #ifdef DEBUG_bratio
-    REprintf(" L100: *w := bpser(*) = %g\n", *w);
+    JREprintf(" L100: *w := bpser(*) = %g\n", *w);
 #endif
     goto L_end_after_log;
 
@@ -304,7 +304,7 @@ L110:
     *w1 = bpser(b0, a0, y0, eps, log_p);
     *w  = log_p ? R_Log1_Exp(*w1) : 0.5 - *w1 + 0.5;
 #ifdef DEBUG_bratio
-    REprintf(" L110: *w1 := bpser(*) = %g\n", *w1);
+    JREprintf(" L110: *w1 := bpser(*) = %g\n", *w1);
 #endif
     goto L_end_after_log;
 
@@ -312,7 +312,7 @@ L120:
     *w = bfrac(a0, b0, x0, y0, lambda, eps * 15.0, log_p);
     *w1 = log_p ? R_Log1_Exp(*w) : 0.5 - *w + 0.5;
 #ifdef DEBUG_bratio
-    REprintf(" L120: *w := bfrac(*) = %g\n", *w);
+    JREprintf(" L120: *w := bfrac(*) = %g\n", *w);
 #endif
     goto L_end_after_log;
 
@@ -327,13 +327,13 @@ L140:
     *w = bup(b0, a0, y0, x0, n, eps);
 
 #ifdef DEBUG_bratio
-    REprintf(" L140: *w := bup(b0=%g, *) = %g; ", b0, *w);
+    JREprintf(" L140: *w := bup(b0=%g, *) = %g; ", b0, *w);
 #endif
     if (x0 <= 0.7) {
 	/* log_p :  TODO:  w = bup(.) + bpser(.)  -- not so easy to use log-scale */
 	*w += bpser(a0, b0, x0, eps, /* log_p = */ FALSE);
 #ifdef DEBUG_bratio
-	REprintf(" x0 <= 0.7: *w := *w + bpser(*) = %g\n", *w);
+	JREprintf(" x0 <= 0.7: *w := *w + bpser(*) = %g\n", *w);
 #endif
 	goto L_end_from_w;
     }
@@ -342,13 +342,13 @@ L140:
 	n = 20;
 	*w += bup(a0, b0, x0, y0, n, eps);
 #ifdef DEBUG_bratio
-	REprintf("\n a0 <= 15: *w := *w + bup(*) = %g;", *w);
+	JREprintf("\n a0 <= 15: *w := *w + bup(*) = %g;", *w);
 #endif
 	a0 += n;
     }
     bgrat(a0, b0, x0, y0, w, 15*eps, &ierr1);
 #ifdef DEBUG_bratio
-    REprintf(" bgrat(*) ==> *w = %g\n", *w);
+    JREprintf(" bgrat(*) ==> *w = %g\n", *w);
 #endif
     goto L_end_from_w;
 
@@ -1099,7 +1099,7 @@ static void bgrat(double a, double b, double x, double y, double *w,
     u = r * exp(-u);
     if (u == 0.0) {
 #ifdef DEBUG_bratio
-	REprintf(" bgrat(*) *underflow* r = %g ", r);
+	JREprintf(" bgrat(*) *underflow* r = %g ", r);
 #endif
 	goto L_Error;
     }

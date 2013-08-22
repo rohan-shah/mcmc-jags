@@ -191,16 +191,10 @@ double  Rlog1p(double);
 #endif
 
 
-#ifdef MATHLIB_STANDALONE
- #undef FALSE
- #undef TRUE
- typedef enum { FALSE = 0, TRUE } Rboolean;
-#else
-# include <R_ext/Boolean.h>
-#endif
+#undef FALSE
+#undef TRUE
+typedef enum { FALSE = 0, TRUE } Rboolean;
 
-
-#ifndef MATHLIB_STANDALONE
 #define bessel_i	jags_bessel_i
 #define bessel_j	jags_bessel_j
 #define bessel_k	jags_bessel_k
@@ -221,6 +215,7 @@ double  Rlog1p(double);
 #define dlogis		jags_dlogis
 #define dnbeta		jags_dnbeta
 #define dnbinom		jags_dnbinom
+#define dnbinom_mu	jags_dnbinom_mu
 #define dnchisq		jags_dnchisq
 #define dnf		jags_dnf
 #define dnorm4		jags_dnorm4
@@ -265,6 +260,7 @@ double  Rlog1p(double);
 #define plogis		jags_plogis
 #define pnbeta		jags_pnbeta
 #define pnbinom		jags_pnbinom
+#define pnbinom_mu	jags_pnbinom_mu
 #define pnchisq		jags_pnchisq
 #define pnf		jags_pnf
 #define pnorm5		jags_pnorm5
@@ -293,6 +289,7 @@ double  Rlog1p(double);
 #define qlogis		jags_qlogis
 #define qnbeta		jags_qnbeta
 #define qnbinom		jags_qnbinom
+#define qnbinom_mu	jags_qnbinom_mu
 #define qnchisq		jags_qnchisq
 #define qnf		jags_qnf
 #define qnorm5		jags_qnorm5
@@ -317,6 +314,7 @@ double  Rlog1p(double);
 #define rlogis		jags_rlogis
 #define rnbeta		jags_rnbeta
 #define rnbinom		jags_rnbinom
+#define rnbinom_mu	jags_rnbinom_mu
 #define rnchisq		jags_rnchisq
 #define rnf		jags_rnf
 #define rnorm		jags_rnorm
@@ -331,7 +329,6 @@ double  Rlog1p(double);
 #define sign		jags_sign
 #define tetragamma	jags_tetragamma
 #define trigamma	jags_trigamma
-#endif
 
 #define	rround	fround
 #define	prec	fprec
@@ -344,13 +341,13 @@ double  Rlog1p(double);
 
 	/* R's versions with !R_FINITE checks */
 
-#if defined(MATHLIB_STANDALONE) && defined(HAVE_WORKING_LOG)
-#define R_log log
+#if defined(HAVE_WORKING_LOG)
+#define JR_log log
 #else
-double R_log(double x);
+double JR_log(double x);
 #endif
-double R_pow(double x, double y);
-double R_pow_di(double, int);
+double JR_pow(double x, double y);
+double JR_pow_di(double, int);
 
 	/* Random Number Generators */
 
@@ -616,22 +613,21 @@ double	gamma_cody(double); /* used in arithmetic.c */
 double  jags_d1mach(int); /* used in port.c in package stats */
 int     jags_i1mach(int); /* used in port.c in package stats */
 
-#ifdef MATHLIB_STANDALONE
 #ifndef MATHLIB_PRIVATE_H
 
 /* If isnan is a macro, as C99 specifies, the C++
    math header will undefine it. This happens on OS X */
 #ifdef __cplusplus
-  int R_isnancpp(double); /* in mlutils.c */
-#  define ISNAN(x)     R_isnancpp(x)
+  int JR_isnancpp(double); /* in mlutils.c */
+#  define ISNAN(x)     JR_isnancpp(x)
 #else
 #  define ISNAN(x)     (isnan(x)!=0)
 #endif
 
 
 /* We don't have config information available to do anything else */
-#define R_FINITE(x)    R_finite(x)
-int R_finite(double);
+#define R_FINITE(x)    JR_finite(x)
+int JR_finite(double);
 
 #ifdef WIN32  /* not Win32 as no config information */
 # define NA_REAL (*_imp__NA_REAL)
@@ -641,10 +637,9 @@ int R_finite(double);
 # endif
 
 #endif /* not MATHLIB_PRIVATE_H */
-#endif /* MATHLIB_STANDALONE */
 
 #ifndef R_EXT_PRINT_H_
-void REprintf(char const*, ...);
+void JREprintf(char const*, ...);
 #endif
 
 #ifdef  __cplusplus
