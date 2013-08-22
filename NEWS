@@ -10,6 +10,8 @@ Library changes
   of (non-const) pointers. This is necessary for collapsing in multi-level
   models.
 * The Graph interface is simplified as it now inherits from set<Node*>
+* Names of functions in libjrmath are remapped to avoid namespace clashes
+  with libR and libRmath.
 
 Internal changes in modules
 ===========================
