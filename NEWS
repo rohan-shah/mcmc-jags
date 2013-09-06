@@ -16,6 +16,8 @@ Library changes
 Internal changes in modules
 ===========================
 * All module namespaces are nested inside namespace jags
+* The FLIBS flag is now passed to modules that use LAPACK and BLAS.
+  This allows static linking to LAPACK.
 
 * bugs module
   - The ConjugateDirichlet sampler is now much faster for mixture
@@ -30,7 +32,8 @@ Internal changes in modules
   - New sampler MixDirich for conjugate Dirichlet sampling in a mixture
   model.
 
-Changes in JAGS 3.3.0 patched
+Changes in JAGS 3.4.0
+=====================
 
 New features
 ====================
