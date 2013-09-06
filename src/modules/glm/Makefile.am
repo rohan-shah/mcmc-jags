@@ -12,7 +12,7 @@ glm_la_CPPFLAGS = -I$(top_srcdir)/src/include	\
 glm_la_LIBADD = samplers/glmsampler.la CSparse/csparse.la	\
 	SSparse/ssparse.la $(top_builddir)/src/lib/libjags.la	\
 	$(top_builddir)/src/jrmath/libjrmath.la @LAPACK_LIBS@	\
-	@BLAS_LIBS@
+	@BLAS_LIBS@ @FLIBS@
 
 glm_la_LDFLAGS = -module -avoid-version
 if WINDOWS

@@ -11,7 +11,7 @@ msm_la_LIBADD = distributions/msmdist.la              \
         matrix/msmmatrix.la                            \
         $(top_builddir)/src/jrmath/libjrmath.la		\
         $(top_builddir)/src/lib/libjags.la 		\
-        @LAPACK_LIBS@ @BLAS_LIBS@ 
+        @LAPACK_LIBS@ @BLAS_LIBS@ @FLIBS@ 
 
 msm_la_LDFLAGS = -module -avoid-version
 if WINDOWS
