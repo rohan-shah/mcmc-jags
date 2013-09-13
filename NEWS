@@ -1,5 +1,9 @@
 Changes in JAGS 4.0.0
 
+Bug fixes
+=========
+* The qpar function in the bugs module was inverted.
+
 Library changes
 ===============
 * All C++ objects and functions are in the namespace jags
