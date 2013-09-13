@@ -69,7 +69,7 @@ DPar::q(double p, vector<double const *> const &par, bool lower,
     
     double logp;
 
-    if (lower) {
+    if (!lower) {
 	if (log_p)
 	    logp = p;
 	else
