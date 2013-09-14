@@ -91,11 +91,11 @@ double fround(double x, double digits) {
     if (dig == 0) {
 	return sgn * R_rint(x);
     } else if (dig > 0) {
-        pow10 = R_pow_di(10., dig);
+        pow10 = JR_pow_di(10., dig);
 	intx = floor(x);
 	return sgn * (intx + R_rint((x-intx) * pow10) / pow10);
     } else {
-        pow10 = R_pow_di(10., -dig);
+        pow10 = JR_pow_di(10., -dig);
         return sgn * R_rint(x/pow10) * pow10;
     }
 }
