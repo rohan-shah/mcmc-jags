@@ -3,6 +3,7 @@ Changes in JAGS 4.0.0
 Bug fixes
 =========
 * The qpar function in the bugs module was inverted.
+* The not function in the base module was inverted.
 
 Library changes
 ===============
