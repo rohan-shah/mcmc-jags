@@ -13,6 +13,7 @@
 
 #include <algorithm>
 #include <vector>
+#include <stdexcept>
 
 #include <JRmath.h>
 
@@ -20,6 +21,7 @@ using std::vector;
 using std::max;
 using std::min;
 using std::vector;
+using std::logic_error;
 
 namespace jags {
 namespace bugs {
@@ -103,14 +105,9 @@ static vector<double> density(int n1, int n2, int m1, double psi)
     int ll = max((int) 0, m1 - n2);
     int uu = min(n1, m1);
     int N = uu - ll + 1;
-    vector<double> p(N);
+    vector<double> p(N, 1);
 
     int mode = modeCompute(n1, n2, m1, psi);
-
-    // Set elements of p to 1 
-    for (int i = 0; i < N; ++i) {
-	p[i] = 1;
-    }
 
     // Calculate density above the mode
     if (mode < uu) {
@@ -141,61 +138,55 @@ static vector<double> density(int n1, int n2, int m1, double psi)
 }
 
 static int 
-sampleLowToHigh(int lower_end, double ran, double const *pi, int N)
+sampleLowToHigh(int lower_end, double ran, vector<double> const &pi)
 {
-    //fixme: check lower_end > 0 <= N
-
-    for (int i = lower_end; i < N; ++i) {
-	if (ran <= pi[i]) 
-	    return i;
-	ran -= pi[i];
+    int upper = pi.size() - 1;
+    if (lower_end < 0 || lower_end > upper) {
+	throw logic_error("Internal error in Hypergeometric distribution");
     }
-    return N - 1;
+    for (int i = lower_end; i < upper; ++i) {
+	ran -= pi[i];
+	if (ran <= 0) return i;
+    }
+    return upper;
 }
 
 static int 
-sampleHighToLow(int upper_end, double ran, double const *pi, int N)
+sampleHighToLow(int upper_end, double ran, vector<double> const &pi)
 {
-    //fixme: check upper_end > 0 <= N
+    if (upper_end < 0 || upper_end >= pi.size()) {
+	throw logic_error("Internal error in Hypergeometric distribution");
+    }
 
-    for (int i = upper_end; i >= 0; --i) {
-	if (ran <= pi[i]) {
-	    return i;
-	}
+    for (int i = upper_end; i > 0; --i) {
 	ran -= pi[i];
+	if (ran <= 0) return i;
     }
     return 0;
 }
 
-static int singleDraw(int n1, int n2, int m1, double psi, 
-		       int mode, double const *pi, int N, double ran) 
+static int singleDraw(int mode, vector<double> const &pi, double ran) 
 {
-    if (mode == 0) 
-	return sampleLowToHigh(0, ran, pi, N);
-    if (mode == N - 1)
-	return sampleHighToLow(N - 1, ran, pi, N);
-
-    if (ran < pi[mode]) 
-	return mode;
+    if (mode == 0) return sampleLowToHigh(0, ran, pi);
+    int max = pi.size() - 1;
+    if (mode == max) return sampleHighToLow(max, ran, pi);
 
     ran -= pi[mode];
+    if (ran < 0) return mode;
+
     int lower = mode - 1;
     int upper = mode + 1;
     while (true) {
 	if (pi[upper] >= pi[lower]) {
-	    if (ran < pi[upper]) 
-		return upper;
 	    ran -= pi[upper];
-	    if (upper == N - 1) 
-		return sampleHighToLow(lower, ran, pi, N);
+	    if (ran < 0) return upper;
+	    else if (upper == max) return sampleHighToLow(lower, ran, pi);
 	    ++upper;
 	}
 	else {
-	    if (ran < pi[lower]) 
-		return lower;
 	    ran -= pi[lower];
-	    if (lower == 0) 
-		return sampleLowToHigh(upper, ran, pi, N);
+	    if (ran < 0) return lower;
+	    else if (lower == 0) return sampleLowToHigh(upper, ran, pi);
 	    --lower;
 	}
     }
@@ -294,15 +285,8 @@ double DHyper::r(vector<double const *> const &parameters, RNG *rng) const
     getParameters(n1, n2, m1, psi, parameters);
 
     int mode = modeCompute(n1, n2, m1, psi);
-
-    int ll = max((int) 0, m1 - n2);
-    int uu = min(n1, m1);
-    int N = uu - ll + 1;
-
-    double *pi = new double[N];
-    int y =  singleDraw(n1, n2, m1, psi, mode, pi, N, rng->uniform());
-    delete [] pi;
-    return y;
+    vector<double> pi = density(n1, n2, m1, psi);
+    return singleDraw(mode, pi, rng->uniform());
 }
 
 double DHyper::l(vector<double const *> const &parameters) const
