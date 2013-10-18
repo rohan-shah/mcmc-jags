@@ -24,9 +24,5 @@ endif
 ### Test library 
 
 check_LTLIBRARIES = libbasetest.la
-
-libbasetest_la_SOURCES = test.cc
-
-noinst_HEADERS = test.h
-
+libbasetest_la_SOURCES = test.cc test.h
 libbasetest_la_LIBADD = functions/libbasefuntest.la

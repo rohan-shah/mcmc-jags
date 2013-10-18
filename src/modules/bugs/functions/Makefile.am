@@ -27,6 +27,6 @@ Order.h
 ### Test library 
 
 check_LTLIBRARIES = libbugsfuntest.la
-libbugsfuntest_la_SOURCES = test.cc
+libbugsfuntest_la_SOURCES = test.cc test.h
 libbugsfuntest_la_CPPFLAGS = -I$(top_srcdir)/src/include
 libbugsfuntest_la_CXXFLAGS = $(CPPUNIT_CFLAGS)

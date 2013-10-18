@@ -22,6 +22,5 @@ endif
 ### Test library 
 
 check_LTLIBRARIES = libbugstest.la
-libbugstest_la_SOURCES = test.cc
-noinst_HEADERS = test.h
+libbugstest_la_SOURCES = test.cc test.h
 libbugstest_la_LIBADD = functions/libbugsfuntest.la

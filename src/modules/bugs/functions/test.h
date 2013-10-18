@@ -19,7 +19,7 @@ class BugsFunTest : public CppUnit::TestFixture
     CPPUNIT_TEST_SUITE( BugsFunTest );
     CPPUNIT_TEST( name );
     CPPUNIT_TEST( alias );
-    CPPUNIT_TEST( trig );
+//    CPPUNIT_TEST( trig );
     CPPUNIT_TEST_SUITE_END();
 
     jags::ScalarFunction *_abs;

@@ -384,7 +384,7 @@ void BugsFunTest::trig()
 }
 */
 
-BU
+/*
     //Link functions and their inverses
     delete _cloglog;
     delete _log;
@@ -394,3 +394,4 @@ BU
     delete _exp;
     delete _ilogit;
     delete _phi;
+*/
