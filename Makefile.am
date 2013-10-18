@@ -1,5 +1,5 @@
 ACLOCAL_AMFLAGS = -I m4
-SUBDIRS = m4 libltdl src etc win doc
+SUBDIRS = m4 libltdl src etc win doc test
 EXTRA_DIST = Doxyfile
 
 .PHONY: win32-install win64-install installer docs

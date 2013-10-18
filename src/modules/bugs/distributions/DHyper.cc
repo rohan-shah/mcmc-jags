@@ -73,6 +73,16 @@ bool DHyper::checkParameterValue (vector<double const *> const &params) const
 	return true;
 }
 
+/* Calculates the mode of the hypergeometric distribution
+
+   We solve the equation p(x) = p(x-1) for continuous x and then take
+   the floor of x.
+
+   This reduces to solving a quadratic equation in x, by the
+   recurrence relation embodied in the function "rfunction", i.e.
+   
+   p(x) = p(x - 1) * rfunction(n1, n2, m1, psi, x)
+ */
 static int modeCompute(int n1, int n2, int m1, double psi)
 {
     double a =  psi - 1;
@@ -95,21 +105,38 @@ static int modeCompute(int n1, int n2, int m1, double psi)
     }
 }
 
+/* 
+   The recurrence relation
+   
+   p(x) = p(x - 1) * rfunction(n1, n2, m1, psi, x)
+   
+   allows us to calculate the hypergeometric probabilities 
+   recursively, avoiding combinatoric problems.
+ */
 double rfunction(int n1, int n2, int m1, double psi, int i) 
 {
     return psi * (n1 - i + 1) * (m1 - i + 1)/(i * (n2 - m1 + i));
 }  
 
+/**
+ * Returns a vector of normalized probabilities for a hypergeometric
+ * distribution. If the returned vector p is of length N, then p[0]
+ * represents the probability of the lowest possible value ll = max(0,
+ * m1 - n2) and p[N - 1] represents the probability of the largest
+ * possible value uu = min(n1, m1)
+ */
 static vector<double> density(int n1, int n2, int m1, double psi)
 {
-    int ll = max((int) 0, m1 - n2);
+    int ll = max(0U, m1 - n2);
     int uu = min(n1, m1);
     int N = uu - ll + 1;
-    vector<double> p(N, 1);
+    vector<double> p(N);
 
+    // Density at mode has reference value 1
     int mode = modeCompute(n1, n2, m1, psi);
+    p[mode - ll] = 1;
 
-    // Calculate density above the mode
+    // Calculate relative density above the mode
     if (mode < uu) {
 	double r = 1;
 	for (int i = mode + 1; i <= uu; ++i) {
@@ -117,12 +144,12 @@ static vector<double> density(int n1, int n2, int m1, double psi)
 	    p[i - ll] = r;
 	}
     }
-    // Calculate density below the node
+    // Calculate relative density below the node
     if (mode > ll) {
 	double r = 1;
-	for (int i = mode; i > ll; --i) {
-	    r /= rfunction(n1, n2, m1, psi, i);
-	    p[i - ll - 1] = r;
+	for (int i = mode - 1; i >= ll; --i) {
+	    r /= rfunction(n1, n2, m1, psi, i + 1);
+	    p[i - ll] = r;
 	}
     }
   
@@ -137,59 +164,49 @@ static vector<double> density(int n1, int n2, int m1, double psi)
     return p;
 }
 
-static int 
-sampleLowToHigh(int lower_end, double ran, vector<double> const &pi)
+/*
+ * Sample from a unimodal discrete distribution given a vector of normalized
+ * probabilities pi[] and an estimate of the mode. U should be drawn from a
+ * uniform(0,1) distribution.
+ */
+static int sampleWithMode(int mode, vector<double> const &pi, double U) 
 {
-    int upper = pi.size() - 1;
-    if (lower_end < 0 || lower_end > upper) {
-	throw logic_error("Internal error in Hypergeometric distribution");
-    }
-    for (int i = lower_end; i < upper; ++i) {
-	ran -= pi[i];
-	if (ran <= 0) return i;
-    }
-    return upper;
-}
+    //We try to spend our probability allocation U as quickly as
+    //possible, starting with the mode.
+    U -= pi[mode];
+    if (U <= 0) return mode;
 
-static int 
-sampleHighToLow(int upper_end, double ran, vector<double> const &pi)
-{
-    if (upper_end < 0 || upper_end >= pi.size()) {
-	throw logic_error("Internal error in Hypergeometric distribution");
-    }
-
-    for (int i = upper_end; i > 0; --i) {
-	ran -= pi[i];
-	if (ran <= 0) return i;
-    }
-    return 0;
-}
-
-static int singleDraw(int mode, vector<double> const &pi, double ran) 
-{
-    if (mode == 0) return sampleLowToHigh(0, ran, pi);
-    int max = pi.size() - 1;
-    if (mode == max) return sampleHighToLow(max, ran, pi);
-
-    ran -= pi[mode];
-    if (ran < 0) return mode;
-
+    //Then we work our way outwards from the mode, one step at a time.
     int lower = mode - 1;
     int upper = mode + 1;
     while (true) {
-	if (pi[upper] >= pi[lower]) {
-	    ran -= pi[upper];
-	    if (ran < 0) return upper;
-	    else if (upper == max) return sampleHighToLow(lower, ran, pi);
-	    ++upper;
+	if (lower < 0) {
+	    for ( ; upper < pi.size() - 1; ++upper) {
+		U -= p[upper];
+		if (U <= 0) break;
+	    }
+	    return upper;
+	}
+	else if (upper >= pi.size()) {
+	    for ( ; lower > 0; --lower) {
+		U -= p[lower];
+		if (U <= 0) break;
+	    }
+	    return lower;
+	}
+	else if (p[upper] > p[lower]) {
+	    U -= p[upper];
+	    if (U <= 0) return upper;
+	    else ++upper;
 	}
 	else {
-	    ran -= pi[lower];
-	    if (ran < 0) return lower;
-	    else if (lower == 0) return sampleLowToHigh(upper, ran, pi);
-	    --lower;
+	    U -= p[lower];
+	    if (U <= 0) return lower;
+	    else --lower;
 	}
     }
+
+    return mode; //-Wall
 }
 
 double DHyper::d(double z, PDFType type,
@@ -201,7 +218,7 @@ double DHyper::d(double z, PDFType type,
     getParameters(n1, n2, m1, psi, parameters);
 
     int x = static_cast<int>(z);
-    int ll = max((int) 0, m1 - n2);
+    int ll = max(0U, m1 - n2);
     int uu = min(n1, m1);
 
     double den = 0;
@@ -284,9 +301,10 @@ double DHyper::r(vector<double const *> const &parameters, RNG *rng) const
     double psi;
     getParameters(n1, n2, m1, psi, parameters);
 
+    int ll = max(0U, m1 - n2);
     int mode = modeCompute(n1, n2, m1, psi);
     vector<double> pi = density(n1, n2, m1, psi);
-    return singleDraw(mode, pi, rng->uniform());
+    return sampleWithMode(mode - ll, pi, rng->uniform()) + ll;
 }
 
 double DHyper::l(vector<double const *> const &parameters) const
@@ -295,7 +313,7 @@ double DHyper::l(vector<double const *> const &parameters) const
     double psi;
     getParameters(n1, n2, m1, psi, parameters);
   
-    return max((int) 0, m1 - n2);
+    return max(0U, m1 - n2);
 }
 
 double DHyper::u(vector<double const *> const &parameters) const
@@ -319,14 +337,14 @@ double DHyper::KL(vector<double const *> const &para,
     double psia;
     getParameters(n1a, n2a, m1a, psia, para);
 
-    int lla = max((int) 0, m1a - n2a);
+    int lla = max(0U, m1a - n2a);
     int uua = min(n1a, m1a);
 
     int n1b,n2b,m1b;
     double psib;
     getParameters(n1b, n2b, m1b, psib, para);
 
-    int llb = max((int) 0, m1b - n2b);
+    int llb = max(0U, m1b - n2b);
     int uub = min(n1b, m1b);
 
     if (lla < llb || uua > uub)

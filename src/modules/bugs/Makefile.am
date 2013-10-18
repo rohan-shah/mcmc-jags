@@ -18,3 +18,10 @@ bugs_la_LDFLAGS = -module -avoid-version
 if WINDOWS
 bugs_la_LDFLAGS += -no-undefined
 endif
+
+### Test library 
+
+check_LTLIBRARIES = libbugstest.la
+libbugstest_la_SOURCES = test.cc
+noinst_HEADERS = test.h
+libbugstest_la_LIBADD = functions/libbugsfuntest.la

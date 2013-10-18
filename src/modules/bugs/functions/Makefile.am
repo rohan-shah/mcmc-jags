@@ -23,3 +23,10 @@ ArcSinh.h ArcTanh.h InterpLin.h Round.h Trunc.h Equals.h Prod.h	\
 MatMult.h Transpose.h DSumFunc.h DIntervalFunc.h \
 DPQFunction.h DFunction.h PFunction.h QFunction.h DRoundFunc.h IfElse.h \
 Order.h
+
+### Test library 
+
+check_LTLIBRARIES = libbugsfuntest.la
+libbugsfuntest_la_SOURCES = test.cc
+libbugsfuntest_la_CPPFLAGS = -I$(top_srcdir)/src/include
+libbugsfuntest_la_CXXFLAGS = $(CPPUNIT_CFLAGS)

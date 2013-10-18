@@ -13,6 +13,7 @@ AC_CONFIG_SRCDIR([src/lib/Console.cc])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE(1.12.0)
+AM_PATH_CPPUNIT(1.12.1)
 
 dnl libtool and ltdl configuration
 LT_PREREQ(2.2.6)
@@ -159,5 +160,6 @@ AC_CONFIG_FILES([
   win/runtime64/Makefile
   doc/Makefile
   doc/manual/Makefile
+  test/Makefile
 ])
 AC_OUTPUT
