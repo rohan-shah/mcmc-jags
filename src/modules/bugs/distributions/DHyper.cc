@@ -76,10 +76,11 @@ bool DHyper::checkParameterValue (vector<double const *> const &params) const
 /* 
  * Calculates the mode of the hypergeometric distribution
  *
- * We solve the equation p(x) = p(x-1) for continuous x. Using the
- * recurrence relation given in rfunction (see below) this reduces to
- * a quadratic equation. We then take the floor of x to find the mode
- * of the distribution.
+ * Extending the unnormalized density function to continuous x, We
+ * solve the equation p(x) = p(x-1). Using the recurrence relation
+ * given in rfunction (see below) this reduces to a quadratic
+ * equation. The maximum value for integer values must lie between x-1
+ * and x, so to find the mode we take the floor of x.
  */
 static int modeCompute(int n1, int n2, int m1, double psi)
 {
@@ -120,7 +121,7 @@ static inline double rfunction(int n1, int n2, int m1, double psi, int i)
  */
 static double density_unnormalized(int x, int n1, int n2, int m1, double psi)
 {
-    int ll = max(0U, m1 - n2);
+    int ll = max(0, m1 - n2);
     int uu = min(n1, m1);
 
     if (x < ll || x > uu) return 0;
@@ -148,7 +149,7 @@ static double density_unnormalized(int x, int n1, int n2, int m1, double psi)
  */
 static double density_normalized(int x, int n1, int n2, int m1, double psi)
 {
-    int ll = max(0U, m1 - n2);
+    int ll = max(0, m1 - n2);
     int uu = min(n1, m1);
 
     if (x < ll || x > uu) return 0;
@@ -189,7 +190,7 @@ static double density_normalized(int x, int n1, int n2, int m1, double psi)
  */
 static vector<double> density_full(int n1, int n2, int m1, double psi)
 {
-    int ll = max(0U, m1 - n2);
+    int ll = max(0, m1 - n2);
     int uu = min(n1, m1);
     int N = uu - ll + 1;
     vector<double> p(N);
@@ -243,7 +244,7 @@ static int sampleWithMode(int mode, vector<double> const &pi, double U)
     int left = mode - 1;
     int right = mode;
     while (left >= 0 || right < N) {
-	if (right < N && (left < 0 || p[right] > p[left])) {
+	if (right < N && (left < 0 || pi[right] > pi[left])) {
 	    U -= pi[right];
 	    if (U <= 0) return right;
 	    else ++right;
@@ -269,7 +270,7 @@ double DHyper::d(double z, PDFType type,
 
     int x = static_cast<int>(z);
     double den = 0;
-    if (PDFType == PDF_PRIOR) {
+    if (type == PDF_PRIOR) {
 	den = density_unnormalized(x, n1, n2, m1, psi);
     }
     else {
@@ -291,7 +292,7 @@ double DHyper::p(double x, vector<double const *> const &parameters, bool lower,
     double psi;
     getParameters(n1, n2, m1, psi, parameters);
 
-    int ll = max(0U, m1 - n2);
+    int ll = max(0, m1 - n2);
     int uu = min(n1, m1);
 
     double sumpi = 0;
@@ -351,7 +352,7 @@ double DHyper::r(vector<double const *> const &parameters, RNG *rng) const
     double psi;
     getParameters(n1, n2, m1, psi, parameters);
 
-    int ll = max(0U, m1 - n2);
+    int ll = max(0, m1 - n2);
     int mode = modeCompute(n1, n2, m1, psi);
     vector<double> pi = density_full(n1, n2, m1, psi);
     return sampleWithMode(mode - ll, pi, rng->uniform()) + ll;
@@ -363,7 +364,7 @@ double DHyper::l(vector<double const *> const &parameters) const
     double psi;
     getParameters(n1, n2, m1, psi, parameters);
   
-    return max(0U, m1 - n2);
+    return max(0, m1 - n2);
 }
 
 double DHyper::u(vector<double const *> const &parameters) const
@@ -387,14 +388,14 @@ double DHyper::KL(vector<double const *> const &para,
     double psia;
     getParameters(n1a, n2a, m1a, psia, para);
 
-    int lla = max(0U, m1a - n2a);
+    int lla = max(0, m1a - n2a);
     int uua = min(n1a, m1a);
 
     int n1b,n2b,m1b;
     double psib;
     getParameters(n1b, n2b, m1b, psib, para);
 
-    int llb = max(0U, m1b - n2b);
+    int llb = max(0, m1b - n2b);
     int uub = min(n1b, m1b);
 
     if (lla < llb || uua > uub)
