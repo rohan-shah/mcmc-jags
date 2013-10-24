@@ -302,12 +302,18 @@ bool Console::initialize()
 {
     if (_model == 0) {
 	_err << "Can't initialize. No model!" << endl;
-	return true;
+	return false;
     }
     if (_model->graph().size() == 0) {
-	_err << "Can't initialize. No nodes in graph (Have you compiled the model?)" 	 << endl;
+	_err << "Can't initialize. No nodes in graph." << endl;
+	_err << "Have you compiled the model?" << endl;
+	return false;
+    }
+    if (_model->isInitialized()) {
+	_err << "Model is already initialized" << endl;
 	return true;
     }
+    
     try {
 	_out << "Initializing model" << endl;
 	_model->initialize(false);
