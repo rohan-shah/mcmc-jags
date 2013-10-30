@@ -20,4 +20,37 @@ namespace bugs {
 	return mask[1] && mask[2];
     }
 
+    bool IfElse::isScale(vector<bool> const &mask, 
+			 vector<bool> const &fixed) const
+    {
+	//Don't even bother with the case where the predicate is a
+	//scale function. False negatives are allowed and this is a
+	//silly case
+	if (mask[0]) return false;
+	
+	if (fixed.empty()) {
+	    //result is a scale function if both arguments are
+	    return mask[1] && mask[2];
+	}
+	else {
+	    //..but is never a fixed scale function
+	    return false;
+	}
+    }
+
+    bool IfElse::isLinear(vector<bool> const &mask, 
+			  vector<bool> const &fixed) const
+    {
+	if (mask[0]) return false;
+	
+	if (fixed.empty()) {
+	    //result is a linear function if either argument is
+	    return mask[1] || mask[2];
+	}
+	else {
+	    //..but is never a fixed scale function
+	    return false;
+	}
+    }
+
 }}

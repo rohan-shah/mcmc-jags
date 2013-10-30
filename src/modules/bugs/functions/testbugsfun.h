@@ -19,7 +19,21 @@ class BugsFunTest : public CppUnit::TestFixture
     CPPUNIT_TEST_SUITE( BugsFunTest );
     CPPUNIT_TEST( name );
     CPPUNIT_TEST( alias );
-//    CPPUNIT_TEST( trig );
+    CPPUNIT_TEST( trig );
+    CPPUNIT_TEST( hyper );
+    CPPUNIT_TEST( link );
+    CPPUNIT_TEST( summary );
+    CPPUNIT_TEST( math );
+    CPPUNIT_TEST( lossy );
+    CPPUNIT_TEST( slp );
+    CPPUNIT_TEST( linear );
+    CPPUNIT_TEST( scale );
+    CPPUNIT_TEST( sort );
+    CPPUNIT_TEST( matrix );
+    CPPUNIT_TEST( inprod );
+    CPPUNIT_TEST( ifelse );
+    CPPUNIT_TEST( interplin );
+    CPPUNIT_TEST( discrete );
     CPPUNIT_TEST_SUITE_END();
 
     jags::ScalarFunction *_abs;
@@ -69,14 +83,35 @@ class BugsFunTest : public CppUnit::TestFixture
     jags::ArrayFunction  *_transpose;
     jags::ScalarFunction *_trunc;
     jags::ScalarFunction *_yytrunc;
-    
+
+    void link(jags::ScalarFunction const *f, jags::LinkFunction const *link,
+	      double lower, double upper, int N);
+    void summary(double const *v, unsigned int N);
+    void trig(double v);
+    void hyper(double v);
+
   public:
     void setUp();
     void tearDown();
     
     void name();
     void alias();
+    void link();
+    void summary();
     void trig();
+    void hyper();
+    void math();
+    void lossy();
+    void slp();
+    void linear();
+    void scale();
+    void sort();
+    void power();
+    void matrix();
+    void inprod();
+    void ifelse();
+    void discrete();
+    void interplin();
 };
 
 #endif  // BUGS_FUN_TEST_H

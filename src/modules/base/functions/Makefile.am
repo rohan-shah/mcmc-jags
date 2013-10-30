@@ -15,6 +15,7 @@ GreaterOrEqual.h LessThan.h LessOrEqual.h
 ### Test library 
 
 check_LTLIBRARIES = libbasefuntest.la
-libbasefuntest_la_SOURCES = test.cc test.h
+libbasefuntest_la_SOURCES = testbasefun.cc testbasefun.h
 libbasefuntest_la_CPPFLAGS = -I$(top_srcdir)/src/include
 libbasefuntest_la_CXXFLAGS = $(CPPUNIT_CFLAGS)
+libbasefuntest_la_LIBADD = $(top_builddir)/src/lib/function/libfuntest.la

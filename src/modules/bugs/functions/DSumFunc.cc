@@ -1,6 +1,7 @@
 #include <config.h>
 #include <util/logical.h>
 #include <util/dim.h>
+#include <util/logical.h>
 #include "DSumFunc.h"
 
 using std::vector;
@@ -45,6 +46,18 @@ namespace bugs {
     DSumFunc::dim(vector<vector<unsigned int> > const &dims) const
     {
 	return dims[0];
+    }
+
+    bool DSumFunc::isLinear(vector<bool> const &mask, 
+			    vector<bool> const &fixed) const
+    {
+	return true;
+    }
+
+    bool DSumFunc::isScale(vector<bool> const &mask, 
+			   vector<bool> const &fixed) const
+    {
+	return allTrue(mask);
     }
 
 }}

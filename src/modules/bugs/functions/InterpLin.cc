@@ -55,12 +55,9 @@ namespace bugs {
     {
         unsigned int N = lengths[1];
 	for (unsigned int i = 1; i < N; ++i) {
-	    if (args[1][i] < args[1][i-1])
+	    if (args[1][i] <= args[1][i-1])
 		return false;
 	}
-	if (args[0][0] < args[1][0] || args[0][0] > args[1][N-1])
-	    return false;
-
 	return true;
     }
 

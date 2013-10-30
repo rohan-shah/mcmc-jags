@@ -61,7 +61,7 @@ public:
     virtual bool isDiscreteValued(std::vector<bool> const &mask) const;
     /**
      * Tests whether the function preserves scale transformations, i.e.
-     * it can be represented in the form f(x) = B %*% x.
+     * it can be represented element-wise in the form f(x)[i] = B[i] * x[i].
      *
      * It is permitted for the isScale function to return false
      * negatives, i.e. to return false when the function does preserve
@@ -70,16 +70,17 @@ public:
      * 
      * @param mask boolean vector of length equal to the number of
      * parameters.  The mask indicates a subset of parameters (those
-     * with value true) that are themselves scale transformations of x
-     * (the others are not functions of x). At least one element of
+     * with value true) that are themselves scale transformations of
+     * x.  The others are not functions of x. At least one element of
      * mask must be true.
      *
      * @param isfixed boolean vector. This may be empty, in which case
      * it is ignored.  A non-empty vector must have length equal to
      * mask, and denotes the parameters whose values are fixed. In
      * this case the test is more restrictive, and returns true only
-     * if the coefficient B is fixed, assuming that the parameters for
-     * which mask is true are themselves fixed scale transformations.
+     * if the coefficient B[i] is fixed for all i, assuming that the
+     * parameters for which mask is true are themselves fixed scale
+     * transformations.
      *
      * @see DeterministicNode#isClosed
      */

@@ -18,10 +18,10 @@ namespace bugs {
 	return qnorm (*args[0], 0, 1, 1, 0);
     }
 
-    bool Probit::checkScalarValue (vector <double const *> const &args) const
+    bool Probit::checkParameterValue (vector <double const *> const &args) const
     {
 	double p = *args[0];
-	return (p > 0 && p < 1);
+	return (p >= 0 && p <= 1);
     }
 
 }}

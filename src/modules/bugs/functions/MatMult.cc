@@ -90,4 +90,8 @@ namespace bugs {
 	}
     }
 
+    bool MatMult::isDiscreteValued(vector<bool> const &mask) const
+    {
+	return mask[0] && mask[1];
+    }
 }}

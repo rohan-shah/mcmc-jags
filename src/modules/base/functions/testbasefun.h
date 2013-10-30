@@ -10,10 +10,16 @@ namespace jags {
 class BaseFunTest : public CppUnit::TestFixture
 {
     CPPUNIT_TEST_SUITE( BaseFunTest );
-    CPPUNIT_TEST( testName );
-    CPPUNIT_TEST( testLogical );
-    CPPUNIT_TEST( testArithmetic );
-    CPPUNIT_TEST( testComparison );
+    CPPUNIT_TEST( name );
+    CPPUNIT_TEST( alias );
+    CPPUNIT_TEST( logical );
+    CPPUNIT_TEST( arithmetic );
+    CPPUNIT_TEST( comparison );
+    CPPUNIT_TEST( discrete );
+    CPPUNIT_TEST( slp );
+    CPPUNIT_TEST( linear );
+    CPPUNIT_TEST( power );
+    CPPUNIT_TEST( scale );
     CPPUNIT_TEST_SUITE_END();
 	    
     jags::ScalarFunction *_add;
@@ -44,16 +50,20 @@ class BaseFunTest : public CppUnit::TestFixture
     void comparison2(double, double);
     void comparison3();
 
-    void discrete1();
-
   public:
     void setUp();
     void tearDown();
     
-    void testName();
-    void testLogical();
-    void testArithmetic();
-    void testComparison();
+    void name();
+    void alias();
+    void logical();
+    void arithmetic();
+    void comparison();
+    void discrete();
+    void slp();
+    void linear();
+    void power();
+    void scale();
 };
 
 #endif  // BASE_FUN_TEST_H

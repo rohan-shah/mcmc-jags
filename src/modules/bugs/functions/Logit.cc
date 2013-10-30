@@ -19,7 +19,7 @@ namespace bugs {
 	return log(arg) - log(1 - arg);
     }
 
-    bool Logit::checkScalarValue (vector <double const *> const &args) const
+    bool Logit::checkParameterValue (vector <double const *> const &args) const
     {
 	double arg = *args[0];
 	return (arg >= 0 && arg <= 1);

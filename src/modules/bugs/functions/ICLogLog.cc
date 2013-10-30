@@ -28,5 +28,4 @@ namespace bugs {
     {
 	return exp(eta) * exp(-exp(eta));
     }
-
 }}

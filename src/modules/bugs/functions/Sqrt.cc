@@ -18,7 +18,7 @@ namespace bugs {
 	return sqrt(*args[0]);
     }
 
-    bool Sqrt::checkScalarValue(vector<double const *> const &args) const
+    bool Sqrt::checkParameterValue(vector<double const *> const &args) const
     {
 	return *args[0] >= 0;
     }

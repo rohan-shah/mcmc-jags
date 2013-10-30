@@ -45,5 +45,9 @@ namespace bugs {
     {
 	return true;
     }
-    
+
+    bool Transpose::isDiscreteValued(std::vector<bool> const &mask) const
+    {
+	return mask[0];
+    }
 }}

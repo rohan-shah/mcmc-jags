@@ -18,10 +18,10 @@ namespace bugs {
 	return log(-log(1 - *args[0]));
     }
 
-    bool CLogLog::checkScalarValue(vector<double const *> const &args) const
+    bool CLogLog::checkParameterValue(vector<double const *> const &args) const
     {
-	double arg = *args[0];
-	return (arg > 0 && arg < 1);
+	double p = *args[0];
+	return (p >= 0 && p <= 1);
     }
 
 }}
