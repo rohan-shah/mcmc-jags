@@ -1,3 +1,6 @@
+SUBDIRS = util sarray distribution function sampler graph model	\
+	compiler rng module
+
 extra_dist = version.cc.in
 
 lib_LTLIBRARIES = libjags.la
@@ -22,5 +25,9 @@ if WINDOWS
 libjags_la_LDFLAGS += -no-undefined
 endif
 
-SUBDIRS = util sarray distribution function sampler graph model	\
-	compiler rng module
+### Test library 
+
+check_LTLIBRARIES = libtest.la
+libtest_la_SOURCES = testlib.cc 
+libtest_la_LIBADD = function/libfuntest.la
+libtest_la_CPPFLAGS = -I$(top_srcdir)/src/include

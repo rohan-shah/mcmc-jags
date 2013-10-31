@@ -2,12 +2,13 @@
 #define BASE_FUN_TEST_H
 
 #include <cppunit/extensions/HelperMacros.h>
+#include <testlib.h>
 
 namespace jags {
     class ScalarFunction;
 }
 
-class BaseFunTest : public CppUnit::TestFixture
+class BaseFunTest : public CppUnit::TestFixture, public JAGSFixture
 {
     CPPUNIT_TEST_SUITE( BaseFunTest );
     CPPUNIT_TEST( name );

@@ -21,20 +21,15 @@
 //does not accept any other value from 0 to 4n.
 bool checknpar(jags::Function const *f, unsigned int n);
 
-//Check whether function produces a discrete value
-bool isdiscrete(jags::Function const *f, bool mask1);
-bool isdiscrete(jags::Function const *f, bool mask1, bool mask2);
-bool isdiscrete(jags::Function const *f, bool mask1, bool mask2, bool mask3);
-
-//Check all possible values of mask and use a predicate
+//Check all possible values of mask using a predicate (see below)
 bool isdiscrete(jags::Function const *f, unsigned int npar,
 		bool (*predicate) (std::vector<bool> const &));
 
 //suitable predicates for isdiscrete
-bool always(std::vector<bool> const &);
-bool never(std::vector<bool> const &);
-bool all(std::vector<bool> const &);
-bool any(std::vector<bool> const &);
+bool always(std::vector<bool> const &); //returns true
+bool never(std::vector<bool> const &); //returns false
+bool all(std::vector<bool> const &); //returns true if all arguments are true
+bool any(std::vector<bool> const &); //returns true if any argyments are true
 
 //Returns true if f is never a scale function
 bool neverscale(jags::Function const *f, unsigned int npar);

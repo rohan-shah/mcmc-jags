@@ -30,4 +30,5 @@ check_LTLIBRARIES = libbugsfuntest.la
 libbugsfuntest_la_SOURCES = testbugsfun.cc testbugsfun.h
 libbugsfuntest_la_CPPFLAGS = -I$(top_srcdir)/src/include
 libbugsfuntest_la_CXXFLAGS = $(CPPUNIT_CFLAGS)
-libbugsfuntest_la_LIBADD = $(top_builddir)/src/lib/function/libfuntest.la
+libbugsfuntest_la_LIBADD = $(top_builddir)/src/lib/function/libfuntest.la \
+	$(top_builddir)/src/lib/libtest.la

@@ -70,25 +70,6 @@ using std::string;
 #include <climits>
 #include <cmath>
 
-static double tol = std::sqrt(DBL_EPSILON);
-
-static vector<bool> F(1); 
-static vector<bool> T(1); 
-
-static vector<bool> FF(2); 
-static vector<bool> FT(2); 
-static vector<bool> TF(2); 
-static vector<bool> TT(2); 
-
-static vector<bool> FFF(3); 
-static vector<bool> FFT(3); 
-static vector<bool> FTF(3); 
-static vector<bool> FTT(3); 
-static vector<bool> TFF(3); 
-static vector<bool> TFT(3); 
-static vector<bool> TTF(3); 
-static vector<bool> TTT(3); 
-
 void BugsFunTest::setUp()
 {
     //Trigonometric functions and their inverses
@@ -158,27 +139,7 @@ void BugsFunTest::setUp()
     _ifelse = new jags::bugs::IfElse;
     _inprod = new jags::bugs::InProd;
     _interplin = new jags::bugs::InterpLin;
-
-    //Set up boolean arguments
-    //FIXME: obviously we need this everywhere!
-    F[0] = false;
-    T[0] = true;
-
-    FF[0] = false; FF[1] = false;
-    FT[0] = false; FT[1] = true;
-    TF[0] = true; TF[1] = false;
-    TT[0] = true; TT[1] = true;
-
-    FFF[0] = false; FFF[1] = false; FFT[2] = false;
-    FFT[0] = false; FFT[1] = false; FFT[2] = true;
-    FTF[0] = false; FTF[1] = true; FTF[2] = false;
-    FTT[0] = false; FTT[1] = true; FTT[2] = true;
-    TFF[0] = true; TFF[1] = false; TFT[2] = false;
-    TFT[0] = true; TFT[1] = false; TFT[2] = true;
-    TTF[0] = true; TTF[1] = true; TTF[2] = false;
-    TTT[0] = true; TTT[1] = true; TTT[2] = true;
 }
-
 
 void BugsFunTest::tearDown()
 {
@@ -889,14 +850,11 @@ void BugsFunTest::inprod()
 				 tol);
 }
 
-#include <sstream>
-
 void BugsFunTest::interplin()
 {
     double c;
     double x[6] = {-10, -0.5, 0, 1.2, 3.8, 77};
     double y[6] = {-2, 3, -6.5, 8, 2.14, 7};
-
 
     vector<double const *> arg(3);
     arg[0] = &c;

@@ -22,5 +22,9 @@ endif
 ### Test library 
 
 check_LTLIBRARIES = libbugstest.la
-libbugstest_la_SOURCES = test.cc test.h
-libbugstest_la_LIBADD = functions/libbugsfuntest.la
+libbugstest_la_SOURCES = testbugs.cc testbugs.h
+libbugstest_la_LIBADD = functions/libbugsfuntest.la \
+	$(top_builddir)/src/lib/libtest.la \
+	$(top_builddir)/src/lib/function/libfuntest.la
+libbugstest_la_CPPFLAGS = -I$(top_srcdir)/src/include
+

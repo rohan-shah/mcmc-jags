@@ -24,5 +24,8 @@ endif
 ### Test library 
 
 check_LTLIBRARIES = libbasetest.la
-libbasetest_la_SOURCES = test.cc test.h
-libbasetest_la_LIBADD = functions/libbasefuntest.la
+libbasetest_la_SOURCES = testbase.cc testbase.h
+libbasetest_la_LIBADD = functions/libbasefuntest.la \
+	$(top_builddir)/src/lib/libtest.la \
+	$(top_builddir)/src/lib/function/libfuntest.la
+libbasetest_la_CPPFLAGS = -I$(top_srcdir)/src/include

@@ -5,8 +5,8 @@
 #include <cppunit/extensions/TestFactoryRegistry.h>
 #include <cppunit/ui/text/TestRunner.h>
 
-#include <base/test.h>
-#include <bugs/test.h>
+#include <base/testbase.h>
+#include <bugs/testbugs.h>
 
 int main(int argc, char* argv[])
 {

@@ -1,5 +1,5 @@
-#include "test.h"
-#include <functions/testbugsfun.h>
+#include "testbugs.h"
+#include "functions/testbugsfun.h"
 #include <cppunit/extensions/HelperMacros.h>
 
 void init_bugs_test() {

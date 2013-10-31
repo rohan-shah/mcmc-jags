@@ -334,11 +334,6 @@ void BaseFunTest::linear()
 
 void BaseFunTest::scale()
 {
-    vector<bool> FF(2); FF[0] = false; FF[1] = false;
-    vector<bool> FT(2); FT[0] = false; FT[1] = true;
-    vector<bool> TF(2); TF[0] = true; TF[1] = false;
-    vector<bool> TT(2); TT[0] = true; TT[1] = true;
-
     CPPUNIT_ASSERT(_add->isScale(TT, vector<bool>()));
     CPPUNIT_ASSERT(!_add->isScale(TF, vector<bool>()));
     CPPUNIT_ASSERT(!_add->isScale(FT, vector<bool>()));
@@ -363,11 +358,6 @@ void BaseFunTest::scale()
 
 void BaseFunTest::power()
 {
-    vector<bool> FF(2); FF[0] = false; FF[1] = false;
-    vector<bool> FT(2); FT[0] = false; FT[1] = true;
-    vector<bool> TF(2); TF[0] = true; TF[1] = false;
-    vector<bool> TT(2); TT[0] = true; TT[1] = true;
-
     CPPUNIT_ASSERT(neverpow(_add, 2));
     CPPUNIT_ASSERT(neverpow(_add, 3));
     CPPUNIT_ASSERT(neverpow(_subtract, 2));
