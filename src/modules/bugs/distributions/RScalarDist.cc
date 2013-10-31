@@ -20,12 +20,8 @@ double RScalarDist::calPlower(double lower,
 			      vector<double const*> const &parameters) const
 {
     //P(X < lower)
-    if (_discrete) {
-	return p(lower - 1, parameters, true, false);
-    }
-    else {
-	return p(lower, parameters, true, false);
-    }
+    if (_discrete) lower -= 1;
+    return p(lower, parameters, true, false);
 }
 
 double RScalarDist::calPupper(double upper,
@@ -99,11 +95,9 @@ RScalarDist::logDensity(double x, PDFType type,
     if (type != PDF_PRIOR && (lower || upper)) {
 	//Normalize truncated distributions
 
-	//Make adjustment for discrete-valued distributions
-	double ll = 0;
-	if (lower) {
-	    ll = _discrete ? *lower - 1 : *lower;
-	}
+	double ll = l(parameters);
+	if (lower && *lower < ll) ll = *lower;
+	if (_discrete) ll -= 1; //Adjustment for discrete valued distributions
 
 	/* In theory, we just have to subtract log[P(lower <= X <=
            upper)] from the log likelihood. But we need to work around
@@ -141,23 +135,27 @@ RScalarDist::randomSample(vector<double const *> const &parameters,
 			  double const *lower, double const *upper,
 			  RNG *rng) const
 {
-    if (lower || upper) {
-
-	double plower = 0, pupper = 1;
-	if (lower) {
-	    plower = calPlower(*lower, parameters);
-	}
-	if (upper) {
-	    pupper = calPupper(*upper, parameters);
-	}
-	
-	double u = plower + rng->uniform() * (pupper - plower);
-	return q(u, parameters, true, false);
-    }
-    else {
+    if (!lower && !upper) {
 	return r(parameters, rng);
     }
 
+    double plower = lower ? calPlower(*lower, parameters) : 0;
+    double pupper = upper ? calPupper(*upper, parameters) : 1;
+
+    if (pupper - plower > 0.25) {
+	//Rejection sampling if expected number of samples is 4 or less
+	while (true) {
+	    double y = r(parameters, rng);
+	    if (lower && y < *lower) continue;
+	    if (upper && y > *upper) continue;
+	    return y;
+	}
+    }
+
+    //Inversion
+    //FIXME: We probably need to take care of tail behaviour here
+    double u = plower + rng->uniform() * (pupper - plower);
+    return q(u, parameters, true, false);
 }
 
 bool RScalarDist::canBound() const
