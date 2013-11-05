@@ -607,8 +607,8 @@ void BugsFunTest::lossy()
     CPPUNIT_ASSERT_EQUAL(0.0, eval(_abs, 0.0));
 }
 
-
 /*
+
 void BUGSFunTest::observable()
 {
     const double c1[1] = {1};
@@ -621,8 +621,8 @@ void BUGSFunTest::observable()
     vector<double const *> cutbad1 = mkVec(badc1, 3);
     vector<double const *> cutbad1 = mkVec(badc2, 2);
 
-    CPPUNIT_ASSERT_EQUAL(0, eval(_interval, vector<double>(1, -1), cut1));
-    CPPUNIT_ASSERT_EQUAL(0, eval(_interval, vector<double>(1, -0.1), cut1));
+    CPPUNIT_ASSERT_EQUAL(0, eval(_interval, -1, 1));
+    CPPUNIT_ASSERT_EQUAL(0, eval(_interval, -0.1, 1);
     CPPUNIT_ASSERT_EQUAL(1, eval(_interval, vector<double>(1, 0.1),  cut1));
     CPPUNIT_ASSERT_EQUAL(1, eval(_interval, vector<double>(1, -1), cut1));
 
@@ -635,6 +635,7 @@ void BUGSFunTest::observable()
     _dinterval = new jags::bugs::DIntervalFunc;
     _dround = new jags::bugs::DRoundFunc;
     _dsum = new jags::bugs::DSumFunc;
+}
 */
 
 void BugsFunTest::slp()
@@ -760,13 +761,6 @@ void BugsFunTest::power()
     CPPUNIT_ASSERT(neverpow(_transpose, 1));
     CPPUNIT_ASSERT(neverpow(_dsum, 3));
     CPPUNIT_ASSERT(neverpow(_inprod, 2));
-
-    /*
-      CPPUNIT_ASSERT(_ifelse->isScale(FTT,  vector<bool>()));
-      CPPUNIT_ASSERT(!_ifelse->isScale(FTF, vector<bool>()));
-      CPPUNIT_ASSERT(!_ifelse->isScale(FFT, vector<bool>()));
-    */
-    
 }
 
 void BugsFunTest::sort()

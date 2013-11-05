@@ -18,6 +18,3 @@ check_LTLIBRARIES = libbasefuntest.la
 libbasefuntest_la_SOURCES = testbasefun.cc testbasefun.h
 libbasefuntest_la_CPPFLAGS = -I$(top_srcdir)/src/include
 libbasefuntest_la_CXXFLAGS = $(CPPUNIT_CFLAGS)
-libbasefuntest_la_LIBADD = $(top_builddir)/src/lib/function/libfuntest.la \
-		$(top_builddir)/src/lib/libtest.la
-

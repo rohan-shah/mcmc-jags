@@ -10,11 +10,7 @@ modules_LDADD = $(LIBLTDL) ${top_builddir}/src/lib/libjags.la \
 	-dlpreopen ${top_builddir}/src/modules/base/basemod.la \
 	-dlpreopen ${top_builddir}/src/modules/bugs/bugs.la \
 	$(top_builddir)/src/modules/base/libbasetest.la \
-	$(top_builddir)/src/modules/bugs/libbugstest.la \
-	$(top_builddir)/src/lib/libtest.la \
-        $(top_builddir)/src/lib/function/libfuntest.la
+	$(top_builddir)/src/modules/bugs/libbugstest.la 
 
-
-modules_CPPFLAGS = -I$(top_srcdir)/src/include \
-	-I$(top_srcdir)/src/modules
+modules_CPPFLAGS = -I$(top_srcdir)/src/include $(LTDLINCL)
 
