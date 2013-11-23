@@ -12,5 +12,7 @@ modules_LDADD = $(LIBLTDL) ${top_builddir}/src/lib/libjags.la \
 	$(top_builddir)/src/modules/base/libbasetest.la \
 	$(top_builddir)/src/modules/bugs/libbugstest.la 
 
-modules_CPPFLAGS = -I$(top_srcdir)/src/include $(LTDLINCL)
+modules_CPPFLAGS = -I$(top_srcdir)/src/include	\
+	-I$(top_srcdir)/src/modules \
+	$(LTDLINCL)
 
