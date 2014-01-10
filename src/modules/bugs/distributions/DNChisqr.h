@@ -1,7 +1,7 @@
 #ifndef DNCHISQ_H_
 #define DNCHISQ_H_
 
-#include "RScalarDist.h"
+#include <distribution/RScalarDist.h>
 
 namespace jags {
 namespace bugs {

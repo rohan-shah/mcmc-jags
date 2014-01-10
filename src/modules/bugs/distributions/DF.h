@@ -1,7 +1,7 @@
 #ifndef DF_H_
 #define DF_H_
 
-#include "RScalarDist.h"
+#include <distribution/RScalarDist.h>
 
 namespace jags {
 namespace bugs {

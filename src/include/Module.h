@@ -19,6 +19,7 @@ class ScalarFunction;
 class VectorFunction;
 class ArrayFunction;
 class ScalarDist;
+class RScalarDist;
 class VectorDist;
 class ArrayDist;
 
@@ -55,6 +56,7 @@ public:
     void insert(ArrayFunction*);
     void insert(Distribution*);
 
+    void insert(RScalarDist*);
     void insert(ScalarDist*);
     void insert(VectorDist*);
     void insert(ArrayDist*);

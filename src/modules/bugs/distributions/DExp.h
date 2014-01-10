@@ -1,7 +1,7 @@
 #ifndef DEXP_H_
 #define DEXP_H_
 
-#include "RScalarDist.h"
+#include <distribution/RScalarDist.h>
 
 namespace jags {
 namespace bugs {

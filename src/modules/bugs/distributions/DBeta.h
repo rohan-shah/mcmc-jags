@@ -1,7 +1,7 @@
 #ifndef DBETA_H_
 #define DBETA_H_
 
-#include "RScalarDist.h"
+#include <distribution/RScalarDist.h>
 
 namespace jags {
 namespace bugs {

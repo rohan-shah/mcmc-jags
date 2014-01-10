@@ -1,5 +1,5 @@
 #include <config.h>
-#include "RScalarDist.h"
+#include <distribution/RScalarDist.h>
 #include <rng/RNG.h>
 #include <util/nainf.h>
 #include <util/dim.h>
@@ -14,7 +14,6 @@ using std::min;
 using std::max;
 
 namespace jags {
-namespace bugs {
 
 double RScalarDist::calPlower(double lower, 
 			      vector<double const*> const &parameters) const
@@ -184,4 +183,4 @@ unsigned int RScalarDist::npar() const
 	else return give_log ? 0 : 1;
     }
 
-}}
+}

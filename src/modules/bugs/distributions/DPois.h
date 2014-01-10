@@ -1,7 +1,7 @@
 #ifndef DPOIS_H_
 #define DPOIS_H_
 
-#include "RScalarDist.h"
+#include <distribution/RScalarDist.h>
 
 namespace jags {
 namespace bugs {

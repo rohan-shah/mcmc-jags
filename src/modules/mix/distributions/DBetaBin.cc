@@ -27,7 +27,7 @@ static double ldbb(double x, double a, double b, double n)
 }
 
 namespace jags {
-namespace bugs {
+namespace mix {
 
 DBetaBin::DBetaBin()
     : RScalarDist("dbetabin", 3, DIST_SPECIAL, true)

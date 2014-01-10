@@ -1,7 +1,7 @@
 #ifndef DBIN_H_
 #define DBIN_H_
 
-#include "RScalarDist.h"
+#include <distribution/RScalarDist.h>
 
 namespace jags {
 namespace bugs {

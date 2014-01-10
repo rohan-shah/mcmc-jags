@@ -2,6 +2,11 @@
 #include <Module.h>
 #include <compiler/Compiler.h>
 #include <model/Model.h>
+#include <function/DFunction.h>
+#include <function/PFunction.h>
+#include <function/QFunction.h>
+#include <distribution/RScalarDist.h>
+
 #include <algorithm>
 
 using std::vector;
@@ -28,6 +33,7 @@ Module::~Module()
     }
 }
 
+
 void Module::insert(ScalarFunction *func)
 {
     _functions.push_back(func);
@@ -53,6 +59,16 @@ void Module::insert(ArrayFunction *func)
     _functions.push_back(func);
     _fp_list.push_back(FunctionPtr(func));
 
+}
+
+void Module::insert(RScalarDist *dist)
+{
+    _distributions.push_back(dist);
+    _dp_list.push_back(DistPtr(dist));
+	
+    insert(new DFunction(dist));
+    insert(new PFunction(dist));
+    insert(new QFunction(dist));
 }
 
 void Module::insert(ScalarDist *dist)

@@ -1,7 +1,7 @@
 #ifndef DWEIB_H_
 #define DWEIB_H_
 
-#include "RScalarDist.h"
+#include <distribution/RScalarDist.h>
 
 namespace jags {
 namespace bugs {

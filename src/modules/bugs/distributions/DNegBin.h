@@ -1,7 +1,7 @@
 #ifndef DNEGBIN_H_
 #define DNEGBIN_H_
 
-#include "RScalarDist.h"
+#include <distribution/RScalarDist.h>
 
 namespace jags {
 namespace bugs {

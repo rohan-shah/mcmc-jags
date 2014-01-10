@@ -1,7 +1,7 @@
 #ifndef DGAMMA_H_
 #define DGAMMA_H_
 
-#include "RScalarDist.h"
+#include <distribution/RScalarDist.h>
 
 namespace jags {
 namespace bugs {

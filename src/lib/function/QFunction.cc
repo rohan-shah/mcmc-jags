@@ -1,12 +1,11 @@
 #include <config.h>
-#include "QFunction.h"
-#include "RScalarDist.h"
+#include <function/QFunction.h>
+#include <distribution/RScalarDist.h>
 
 using std::vector;
 using std::string;
 
 namespace jags {
-namespace bugs {
 
     QFunction::QFunction(RScalarDist const *dist)
 	: DPQFunction(string("q") + dist->name().substr(1), dist)
@@ -28,4 +27,4 @@ namespace bugs {
 	return checkArgs(args);
     }
 
-}}
+}

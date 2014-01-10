@@ -109,14 +109,15 @@ void DMNorm::randomsample(double *x, double const *mu, double const *T,
 
 bool DMNorm::checkParameterDim(vector<vector<unsigned int> > const &dims) const
 {
-  if (!isVector(dims[0]))
-    return false;
-  if (!isSquareMatrix(dims[1]))
-    return false;
-  if (dims[0][0] != dims[1][0])
-    return false;
- 
-  return true;
+    //Allow scalar mean and precision. 
+    if (isScalar(dims[0]) && isScalar(dims[1])) return true;
+
+    //Vector mean and matrix precision
+    if (!isVector(dims[0])) return false;
+    if (!isSquareMatrix(dims[1])) return false;
+    if (dims[0][0] != dims[1][0]) return false;
+    
+    return true;
 }
 
 vector<unsigned int> DMNorm::dim(vector<vector<unsigned int> > const &dims) const

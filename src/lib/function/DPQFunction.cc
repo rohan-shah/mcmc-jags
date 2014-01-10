@@ -1,12 +1,11 @@
 #include <config.h>
-#include "DPQFunction.h"
-#include "RScalarDist.h"
+#include <function/DPQFunction.h>
+#include <distribution/RScalarDist.h>
 
 using std::vector;
 using std::string;
 
 namespace jags {
-namespace bugs {
 
     DPQFunction::DPQFunction(string const &name, RScalarDist const *dist) 
 	: ScalarFunction(name, dist->npar() + 1), _dist(dist)
@@ -27,4 +26,4 @@ namespace bugs {
 	return _dist->checkParameterValue(param);
     }
 
-}}
+}

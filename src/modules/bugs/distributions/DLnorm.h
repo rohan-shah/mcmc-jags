@@ -1,7 +1,7 @@
 #ifndef DLNORM_H_
 #define DLNORM_H_
 
-#include "RScalarDist.h"
+#include <distribution/RScalarDist.h>
 
 namespace jags {
 namespace bugs {

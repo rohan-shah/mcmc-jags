@@ -7,8 +7,6 @@ namespace jags {
 
 struct RNG;
 
-namespace bugs {
-
 /**
  * @short Scalar Distribution using R math library infrastructure.
  *
@@ -119,7 +117,7 @@ public:
      */
     double xlog0(double x, bool give_log);
 
-}}
+}
 
 #endif /* SCALAR_DIST_RMATH_H_ */
 

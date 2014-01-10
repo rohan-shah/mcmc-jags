@@ -1,18 +1,17 @@
 #include <config.h>
-#include "RScalarDist.h"
-#include "DFunction.h"
+#include <function/PFunction.h>
+#include <distribution/RScalarDist.h>
 
 using std::vector;
 using std::string;
 
 namespace jags {
-namespace bugs {
 
-    DFunction::DFunction(RScalarDist const *dist)
-	: DPQFunction(dist->name(), dist)
+    PFunction::PFunction(RScalarDist const *dist)
+	: DPQFunction(string("p") + dist->name().substr(1), dist)
     {}
     
-    double DFunction::evaluate(vector<double const *> const &args) const
+    double PFunction::evaluate(vector<double const *> const &args) const
     {
 	double x = *args[0];
 	vector<double const *> param(args.size() - 1);
@@ -20,19 +19,19 @@ namespace bugs {
 	    param[i-1] = args[i];
 	}
 	
-	return dist()->d(x, PDF_FULL, param, false);
+	return dist()->p(x, param, true, false);
     }
 
     bool 
-    DFunction::checkParameterValue(vector<double const *> const &args) const
+    PFunction::checkParameterValue(vector<double const *> const &args) const
     {
 	if (dist()->discrete()) {
 	    double x = *args[0];
 	    if (x != static_cast<int>(x))
 		return false;
 	}
-	
+
 	return checkArgs(args);
     }
 
-}}
+}

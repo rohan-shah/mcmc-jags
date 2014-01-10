@@ -1,7 +1,7 @@
 #ifndef DLOGIS_H_
 #define DLOGIS_H_
 
-#include "RScalarDist.h"
+#include <distribution/RScalarDist.h>
 
 namespace jags {
 namespace bugs {

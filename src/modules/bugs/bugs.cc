@@ -3,7 +3,6 @@
 
 #include <distributions/DBern.h>
 #include <distributions/DBeta.h>
-#include <distributions/DBetaBin.h>
 #include <distributions/DBin.h>
 #include <distributions/DCat.h>
 #include <distributions/DChisqr.h>
@@ -80,9 +79,9 @@
 #include <functions/Transpose.h>
 #include <functions/Trunc.h>
 
-#include <functions/DFunction.h>
-#include <functions/PFunction.h>
-#include <functions/QFunction.h>
+#include <function/DFunction.h>
+#include <function/PFunction.h>
+#include <function/QFunction.h>
 
 #include <samplers/ConjugateFactory.h>
 #include <samplers/DSumFactory.h>
@@ -108,7 +107,6 @@ namespace bugs {
 	//Load distributions
 	insert(new DBern);
 	Rinsert(new DBeta);
-	Rinsert(new DBetaBin);
 	Rinsert(new DBin);
 	insert(new DCat);
 	Rinsert(new DChisqr);
@@ -211,13 +209,7 @@ namespace bugs {
 	}
     }
 
-    void BUGSModule::Rinsert(RScalarDist *dist)
-    {
-	insert(dist);    
-	insert(new DFunction(dist));
-	insert(new PFunction(dist));
-	insert(new QFunction(dist));
-    }
+
 
 }}
 

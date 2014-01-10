@@ -1,10 +1,10 @@
 #ifndef DBETA_BIN_H_
 #define DBETA_BIN_H_
 
-#include "RScalarDist.h"
+#include <distribution/RScalarDist.h>
 
 namespace jags {
-namespace bugs {
+namespace mix {
 
 /**
  * @short Beta-Binomial distribution

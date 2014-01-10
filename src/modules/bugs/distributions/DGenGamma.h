@@ -1,7 +1,7 @@
 #ifndef DGEN_GAMMA_H_
 #define DGEN_GAMMA_H_
 
-#include "RScalarDist.h"
+#include <distribution/RScalarDist.h>
 
 namespace jags {
 namespace bugs {
