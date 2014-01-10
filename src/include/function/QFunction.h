@@ -5,6 +5,9 @@
 
 namespace jags {
 
+    /**
+     * @short Quantile function for an R Scalar Distribution
+     */
     class QFunction : public DPQFunction
     {
     public:

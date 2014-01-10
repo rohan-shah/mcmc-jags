@@ -30,7 +30,7 @@
 #include <errno.h>
 
 #include <Console.h>
-#include <Module.h>
+#include <module/Module.h>
 #include <compiler/ParseTree.h>
 #include <util/nainf.h>
 #include <cstring>

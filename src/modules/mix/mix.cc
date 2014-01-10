@@ -1,4 +1,4 @@
-#include <Module.h>
+#include <module/Module.h>
 
 #include <distributions/DNormMix.h>
 #include <distributions/DBetaBin.h>

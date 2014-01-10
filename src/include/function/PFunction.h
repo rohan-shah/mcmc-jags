@@ -5,6 +5,9 @@
 
 namespace jags {
 
+    /**
+     * @short Cumulative distribution function for an R Scalar distribution
+     */
     class PFunction : public DPQFunction
     {
     public:

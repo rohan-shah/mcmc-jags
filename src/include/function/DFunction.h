@@ -5,6 +5,9 @@
 
 namespace jags {
 
+    /**
+     * @short Density function for an R Scalar Distribution
+     */
     class DFunction : public DPQFunction
     {
     public:

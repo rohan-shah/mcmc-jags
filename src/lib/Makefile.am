@@ -5,7 +5,7 @@ extra_dist = version.cc.in
 
 lib_LTLIBRARIES = libjags.la
 
-libjags_la_SOURCES = version.cc Console.cc Module.cc
+libjags_la_SOURCES = version.cc Console.cc
 
 libjags_la_CPPFLAGS = -I$(top_srcdir)/src/include
 

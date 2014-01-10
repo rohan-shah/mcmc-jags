@@ -1,5 +1,4 @@
-#include <Module.h>
-#include <distribution/DistTab.h>
+#include <module/Module.h>
 
 #include <distributions/DMState.h>
 

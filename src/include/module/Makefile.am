@@ -1,4 +1,4 @@
 moduleincludedir = $(pkgincludedir)/module
 
-moduleinclude_HEADERS = ModuleError.h 
+moduleinclude_HEADERS = Module.h ModuleError.h 
 

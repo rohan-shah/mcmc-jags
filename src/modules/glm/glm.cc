@@ -1,4 +1,4 @@
-#include <Module.h>
+#include <module/Module.h>
 
 #include "samplers/LinearFactory.h"
 #include "samplers/LinearGibbsFactory.h"

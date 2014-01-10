@@ -1,4 +1,4 @@
-#include <Module.h>
+#include <module/Module.h>
 #include <RngStreamFactory.h>
 
 using std::vector;

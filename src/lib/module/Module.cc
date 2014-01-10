@@ -1,5 +1,5 @@
 #include <config.h>
-#include <Module.h>
+#include <module/Module.h>
 #include <compiler/Compiler.h>
 #include <model/Model.h>
 #include <function/DFunction.h>

@@ -1,4 +1,4 @@
-#include <Module.h>
+#include <module/Module.h>
 #include <distribution/DistTab.h>
 
 #include <distributions/DBern.h>
