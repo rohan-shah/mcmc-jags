@@ -97,7 +97,6 @@ namespace bugs {
     public:
 	BUGSModule();
 	~BUGSModule();
-	void Rinsert(RScalarDist *dist);
     };
 
     BUGSModule::BUGSModule() 
@@ -106,31 +105,31 @@ namespace bugs {
 
 	//Load distributions
 	insert(new DBern);
-	Rinsert(new DBeta);
-	Rinsert(new DBin);
+	insert(new DBeta);
+	insert(new DBin);
 	insert(new DCat);
-	Rinsert(new DChisqr);
-	Rinsert(new DDexp);
+	insert(new DChisqr);
+	insert(new DDexp);
 	insert(new DDirch);
-	Rinsert(new DExp);
-	Rinsert(new DF);
-	Rinsert(new DGamma);
-	Rinsert(new DGenGamma);
-	Rinsert(new DLnorm);
-	Rinsert(new DLogis);
+	insert(new DExp);
+	insert(new DF);
+	insert(new DGamma);
+	insert(new DGenGamma);
+	insert(new DLnorm);
+	insert(new DLogis);
 	insert(new DMNorm);
 	insert(new DMT);
 	insert(new DMulti);
-	Rinsert(new DNChisqr);
-	Rinsert(new DNegBin);
-	Rinsert(new DNorm);
-	Rinsert(new DPar);
-	Rinsert(new DPois);
-	Rinsert(new DT);
+	insert(new DNChisqr);
+	insert(new DNegBin);
+	insert(new DNorm);
+	insert(new DPar);
+	insert(new DPois);
+	insert(new DT);
 	insert(new DUnif);
-	Rinsert(new DWeib);
+	insert(new DWeib);
 	insert(new DWish);
-	Rinsert(new DHyper);
+	insert(new DHyper);
 
 	//Load functions
 	insert(new Abs);
