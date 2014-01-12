@@ -7,7 +7,7 @@
 #include <graph/LogicalNode.h>
 #include <graph/StochasticNode.h>
 #include <graph/MixtureNode.h>
-#include <sampler/GraphView.h>
+#include <sampler/SingletonGraphView.h>
 #include <sampler/Linear.h>
 #include <module/ModuleError.h>
 
@@ -45,7 +45,7 @@ bool ConjugateBeta::canSample(StochasticNode *snode, Graph const &graph)
 	return false;
     }
 
-    GraphView gv(snode, graph);
+    SingletonGraphView gv(snode, graph);
     vector<DeterministicNode*> const &dchild = gv.deterministicChildren();
     vector<StochasticNode *> const &schild = gv.stochasticChildren();
 
@@ -82,7 +82,7 @@ bool ConjugateBeta::canSample(StochasticNode *snode, Graph const &graph)
 }
 
 
-ConjugateBeta::ConjugateBeta(GraphView const *gv)
+ConjugateBeta::ConjugateBeta(SingletonGraphView const *gv)
     : ConjugateMethod(gv)
 {
 }
@@ -91,7 +91,7 @@ void ConjugateBeta::update(unsigned int chain, RNG *rng) const
 {
     vector<StochasticNode *> const &stoch_children = 
 	_gv->stochasticChildren();
-    StochasticNode const *snode = _gv->nodes()[0];
+    StochasticNode const *snode = _gv->node();
 
     double a, b;
     switch (_target_dist) {

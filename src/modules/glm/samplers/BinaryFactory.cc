@@ -13,6 +13,7 @@
 #include <graph/LinkNode.h>
 #include <distribution/Distribution.h>
 #include <module/ModuleError.h>
+#include <sampler/SingletonGraphView.h>
 
 using std::string;
 using std::vector;
@@ -33,7 +34,7 @@ namespace glm {
 
     GLMMethod *
     BinaryFactory::newMethod(GraphView const *view,
-			     vector<GraphView const *> const &sub_views,
+			     vector<SingletonGraphView const *> const &subviews,
 			     unsigned int chain) const
     {
 	bool linear = true;
@@ -61,10 +62,10 @@ namespace glm {
 	}
 
 	if (linear) {
-	    return new Linear(view, sub_views, outcomes, chain, _gibbs);
+	    return new Linear(view, subviews, outcomes, chain, _gibbs);
 	}
 	else {
-	    return newBinary(view, sub_views, outcomes, chain);
+	    return newBinary(view, subviews, outcomes, chain);
 	}
     }
 

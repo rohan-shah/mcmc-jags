@@ -30,7 +30,7 @@ namespace glm {
 	 * Returns a newly allocated object of class Linear
 	 */
 	GLMMethod *newMethod(GraphView const *view, 
-			     std::vector<GraphView const *> const &sub_views,
+			     std::vector<SingletonGraphView const *> const &sub_views,
 			     unsigned int chain) const;
 	/**
 	 * Checks that the candidate node is scalar

@@ -2,7 +2,7 @@
 #include <graph/StochasticNode.h>
 #include <graph/NodeError.h>
 #include <distribution/Distribution.h>
-#include <sampler/GraphView.h>
+#include <sampler/SingletonGraphView.h>
 #include <module/ModuleError.h>
 
 #include "DiscreteSlicer.h"
@@ -16,15 +16,16 @@ using std::string;
 namespace jags {
 namespace base {
 
-    DiscreteSlicer::DiscreteSlicer(GraphView const *gv, unsigned int chain, 
+    DiscreteSlicer::DiscreteSlicer(SingletonGraphView const *gv, 
+				   unsigned int chain, 
 				   double width, long ndoubles)
 	: Slicer(width, ndoubles), _gv(gv), _chain(chain), _x(0)
     {
-	if (gv->nodes().size() != 1 || !canSample(gv->nodes()[0])) {
+	if (!canSample(gv->node())) {
 	    throwLogicError("Invalid DiscreteSlicer");
 	}
 	
-	_x = _gv->nodes()[0]->value(chain)[0];
+	_x = _gv->node()->value(chain)[0];
     }
 
     bool DiscreteSlicer::canSample(StochasticNode const *node)
@@ -49,8 +50,7 @@ namespace base {
 
     void DiscreteSlicer::getLimits(double *lower, double *upper) const
     {
-	StochasticNode const *snode = _gv->nodes()[0];
-        snode->support(lower, upper, 1, _chain);
+        _gv->node()->support(lower, upper, 1, _chain);
 	*upper += 1;
     }
     
@@ -59,11 +59,11 @@ namespace base {
 	if (!updateDouble(rng)) {
 	    switch(state()) {
 	    case SLICER_POSINF:
-		throwNodeError(_gv->nodes().front(),
+		throwNodeError(_gv->node(),
 			       "Slicer stuck at value with infinite density");
 		break;
 	    case SLICER_NEGINF:
-		throwNodeError(_gv->nodes().front(),
+		throwNodeError(_gv->node(),
 			       "Current value is inconsistent with data");
 		break;
 	    case SLICER_OK:

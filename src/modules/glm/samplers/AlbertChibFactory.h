@@ -20,7 +20,7 @@ namespace glm {
 	 * sampling binary GLMs with probit or logistic link.
 	 */
 	GLMMethod *newBinary(GraphView const *view, 
-			     std::vector<GraphView const *> const &sub_views,
+			     std::vector<SingletonGraphView const *> const &sub_views,
 			     std::vector<Outcome *> const &outcomes,
 			     unsigned int chain) const;
     };

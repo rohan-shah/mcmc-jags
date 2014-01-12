@@ -8,7 +8,7 @@
 #include <graph/StochasticNode.h>
 #include <graph/MixtureNode.h>
 #include <sampler/Linear.h>
-#include <sampler/GraphView.h>
+#include <sampler/SingletonGraphView.h>
 
 #include <set>
 #include <vector>
@@ -43,7 +43,7 @@ bool ConjugateWishart::canSample(StochasticNode *snode, Graph const &graph)
     if (isBounded(snode))
 	return false;
   
-    GraphView gv(snode, graph);
+    SingletonGraphView gv(snode, graph);
     vector<StochasticNode *> const &schild = gv.stochasticChildren();
 
     // Check stochastic children
@@ -79,7 +79,7 @@ bool ConjugateWishart::canSample(StochasticNode *snode, Graph const &graph)
     return true;
 }
 
-ConjugateWishart::ConjugateWishart(GraphView const *gv)
+ConjugateWishart::ConjugateWishart(SingletonGraphView const *gv)
     : ConjugateMethod(gv)
 {}
 
@@ -90,7 +90,7 @@ ConjugateWishart::update(unsigned int chain, RNG *rng) const
 	_gv->stochasticChildren();
     unsigned int nchildren = stoch_children.size();
 
-    vector<Node const *> const &param = _gv->nodes()[0]->parents();  
+    vector<Node const *> const &param = _gv->node()->parents();  
 
     double df = *param[1]->value(chain);
     double const *Rprior = param[0]->value(chain);
@@ -112,7 +112,7 @@ ConjugateWishart::update(unsigned int chain, RNG *rng) const
 	    precision0[i] = getPrecision0(stoch_children[i], chain);
 	}
 	//Double the current value
-	double const *x = _gv->nodes()[0]->value(chain);
+	double const *x = _gv->node()->value(chain);
 	vector<double> x2(N);
 	for (int j = 0; j < N; ++j) {
 	    x2[j] = 2 * x[j];

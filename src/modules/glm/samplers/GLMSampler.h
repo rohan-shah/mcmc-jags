@@ -7,7 +7,8 @@
 
 namespace jags {
 
-class GraphView;
+    class GraphView;
+    class SingletonGraphView;
 
 namespace glm {
 
@@ -16,10 +17,30 @@ namespace glm {
      */
     class GLMSampler : public ParallelSampler
     {
-	std::vector<GraphView*> _sub_views;
+	std::vector<SingletonGraphView*> _sub_views;
+	std::vector<SampleMethod*> _methods;
     public:
-	GLMSampler(GraphView *view, std::vector<GraphView*> const &sub_views,
+	/**
+	 * Constructor.
+	 *
+	 * @param view Pointer to a GraphView object for all sampled nodes.
+	 *
+	 * @param sub_views Vector of pointers to SingletonGraphView
+	 * objects with length equal to the number of sampled
+	 * nodes. Each sub-view corresponds to a single sampled node.
+	 * The GLMSampler object takes ownership of these sub-views
+	 * and deletes them when its destructor is called.
+	 *
+	 * @param methods Vector of sampling methods
+	 */
+	GLMSampler(GraphView *view, 
+		   std::vector<SingletonGraphView*> const &sub_views,
 		   std::vector<SampleMethod*> const &methods);
+	/**
+	 * Destructor
+	 * 
+	 * Deletes the sub-views passed to the constructor.
+	 */
 	~GLMSampler();
     }; 
 

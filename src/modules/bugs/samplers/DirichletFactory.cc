@@ -5,7 +5,7 @@
 #include <graph/StochasticNode.h>
 #include <distribution/Distribution.h>
 #include <sampler/ParallelSampler.h>
-#include <sampler/GraphView.h>
+#include <sampler/SingletonGraphView.h>
 
 #include <string>
 #include <vector>
@@ -28,7 +28,7 @@ DirichletFactory::makeSampler(StochasticNode *snode, Graph const &graph) const
     unsigned int nchain = snode->nchain();
     vector<SampleMethod*> methods(nchain, 0);
     vector<StochasticNode*> nodes(1, snode);
-    GraphView *gv = new GraphView(snode, graph);
+    SingletonGraphView *gv = new SingletonGraphView(snode, graph);
     for (unsigned int ch = 0; ch < nchain; ++ch) {
         methods[ch] = new DirchMetropolis(gv, ch);
     }

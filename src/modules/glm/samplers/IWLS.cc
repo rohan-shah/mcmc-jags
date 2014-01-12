@@ -4,6 +4,7 @@
 #include <graph/StochasticNode.h>
 //#include <function/LinkFunction.h>
 #include <distribution/Distribution.h>
+#include <sampler/GraphView.h>
 #include <rng/RNG.h>
 #include <module/ModuleError.h>
 
@@ -43,7 +44,7 @@ namespace glm {
 
 
     IWLS::IWLS(GraphView const *view, 
-	       vector<GraphView const *> const &sub_views,
+	       vector<SingletonGraphView const *> const &sub_views,
 	       vector<Outcome *> const &outcomes,
 	       unsigned int chain)
 	: GLMMethod(view, sub_views, outcomes, chain, true), _init(true)

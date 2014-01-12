@@ -15,7 +15,7 @@
 
 #include <graph/StochasticNode.h>
 #include <distribution/Distribution.h>
-#include <sampler/GraphView.h>
+#include <sampler/SingletonGraphView.h>
 #include <module/ModuleError.h>
 
 #include <string>
@@ -79,7 +79,7 @@ bool ConjugateFactory::canSample(StochasticNode * snode,
 Sampler *ConjugateFactory::makeSampler(StochasticNode *snode, 
 				       Graph const &graph) const
 {
-    GraphView *gv = new GraphView(snode, graph);
+    SingletonGraphView *gv = new SingletonGraphView(snode, graph);
     ConjugateMethod* method = 0;
     
 /*

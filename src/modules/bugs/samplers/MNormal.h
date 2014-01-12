@@ -5,13 +5,13 @@
 
 namespace jags {
 
-class GraphView;
+    class SingletonGraphView;
 
 namespace bugs {
 
 class MNormMetropolis : public Metropolis
 {
-    GraphView const *_gv;
+    SingletonGraphView const *_gv;
     unsigned int _chain;
     double *_mean;
     double *_var;
@@ -23,7 +23,7 @@ class MNormMetropolis : public Metropolis
     unsigned int _nstep;
     unsigned int _p_over_target;
 public:
-    MNormMetropolis(GraphView const *gv, unsigned int chain);
+    MNormMetropolis(SingletonGraphView const *gv, unsigned int chain);
     ~MNormMetropolis();
     void rescale(double p);
     void update(RNG *rng);

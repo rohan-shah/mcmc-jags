@@ -27,7 +27,7 @@ namespace glm {
 	 * Returns a newly allocated object of class IWLS
 	 */
 	GLMMethod *newMethod(GraphView const *view, 
-			     std::vector<GraphView const *> const &sub_views,
+			     std::vector<SingletonGraphView const *> const &sub_views,
 			     unsigned int chain) const;
 	/**
 	 * Returns false if any parents of the candidate node are

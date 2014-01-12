@@ -1,6 +1,7 @@
 #include <config.h>
 #include "GLMSampler.h"
 #include <sampler/GraphView.h>
+#include <sampler/SingletonGraphView.h>
 
 using std::vector;
 
@@ -8,7 +9,7 @@ namespace jags {
 namespace glm {
 
     GLMSampler::GLMSampler(GraphView *view, 
-			   vector<GraphView*> const &sub_views,
+			   vector<SingletonGraphView*> const &sub_views,
 			   vector<SampleMethod*> const &methods)
 	: ParallelSampler(view, methods), _sub_views(sub_views)
     {

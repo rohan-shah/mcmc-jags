@@ -7,6 +7,7 @@
 #include "IWLSOutcome.h"
 
 #include <graph/StochasticNode.h>
+#include <sampler/GraphView.h>
 
 using std::vector;
 using std::string;
@@ -20,12 +21,13 @@ namespace glm {
 
     bool IWLSFactory::checkOutcome(StochasticNode const *snode) const
     {
-	return NormalLinear::canRepresent(snode) || IWLSOutcome::canRepresent(snode);
+	return NormalLinear::canRepresent(snode) || 
+	    IWLSOutcome::canRepresent(snode);
     }
     
     GLMMethod *
     IWLSFactory::newMethod(GraphView const *view,
-			   vector<GraphView const *> const &sub_views,
+			   vector<SingletonGraphView const *> const &sub_views,
 			   unsigned int chain) const
     {
         bool linear = true;

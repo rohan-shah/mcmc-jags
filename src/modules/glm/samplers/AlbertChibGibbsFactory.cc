@@ -14,7 +14,7 @@ namespace glm {
 
     GLMMethod *
     AlbertChibGibbsFactory::newBinary(GraphView const *view,
-				      vector<GraphView const *> const &sub_views,
+				      vector<SingletonGraphView const *> const &sub_views,
 				      vector<Outcome *> const &outcomes,
 				      unsigned int chain) const
     {

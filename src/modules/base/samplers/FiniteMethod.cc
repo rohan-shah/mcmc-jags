@@ -5,7 +5,7 @@
 #include <rng/RNG.h>
 #include <util/nainf.h>
 #include <graph/NodeError.h>
-#include <sampler/GraphView.h>
+#include <sampler/SingletonGraphView.h>
 #include <module/ModuleError.h>
 
 #include "FiniteMethod.h"
@@ -22,23 +22,30 @@ using std::string;
 using std::max;
 
 namespace jags {
+
+    static int mkLower(SingletonGraphView const *gv)
+    {
+	double lower=0, upper=0;
+	gv->node()->support(&lower, &upper, 1, 0);
+	return static_cast<int>(lower);
+    }
+    
+    static int mkUpper(SingletonGraphView const *gv)
+    {
+	double lower=0, upper=0;
+	gv->node()->support(&lower, &upper, 1, 0);
+	return static_cast<int>(upper);
+    }
+
 namespace base {
 
-    FiniteMethod::FiniteMethod(GraphView const *gv, unsigned int chain)
-	: _gv(gv), _chain(chain)
+    FiniteMethod::FiniteMethod(SingletonGraphView const *gv, unsigned int chain)
+	: _gv(gv), _chain(chain), _lower(mkLower(gv)), _upper(mkUpper(gv))
     {
-	if (gv->nodes().size() != 1)
-	    throwLogicError("Invalid FiniteMethod");
-	StochasticNode const *snode = gv->nodes().front();
-	if (!canSample(snode)) {
+	StochasticNode const *snode = gv->node();
+	if (!canSample(gv->node())) {
 	    throwLogicError("Invalid FiniteMethod");
 	}
-
-	double lower = 0, upper = 0;
-	snode->support(&lower, &upper, 1, 0);
-
-	_lower = static_cast<int>(lower);
-	_upper = static_cast<int>(upper);
     }
     
     void FiniteMethod::update(RNG *rng)
@@ -63,7 +70,7 @@ namespace base {
 	}
 	
 	if (!jags_finite(liksum)) {
-	    throwNodeError(_gv->nodes()[0], "Cannot normalize density");
+	    throwNodeError(_gv->node(), "Cannot normalize density");
 	}
 
 	/* Sample */

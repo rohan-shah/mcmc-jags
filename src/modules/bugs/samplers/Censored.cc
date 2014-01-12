@@ -3,9 +3,10 @@
 #include "Censored.h"
 #include "DInterval.h"
 
-#include <sampler/GraphView.h>
+#include <sampler/SingletonGraphView.h>
 #include <graph/NodeError.h>
 #include <graph/StochasticNode.h>
+#include <graph/Graph.h>
 #include <module/ModuleError.h>
 
 #include <vector>
@@ -17,19 +18,19 @@ using std::string;
 namespace jags {
 namespace bugs {
 
-static int indicator(GraphView const *gv, unsigned int ch)
+static int indicator(SingletonGraphView const *gv, unsigned int ch)
 {
     return static_cast<int>(gv->stochasticChildren()[0]->value(ch)[0]);
 }
 
-static Node const *breaks(GraphView const *gv)
+static Node const *breaks(SingletonGraphView const *gv)
 {
     return gv->stochasticChildren()[0]->parents()[1];
 }
 
-Censored::Censored(GraphView const *gv)
+Censored::Censored(SingletonGraphView const *gv)
     : ConjugateMethod(gv), 
-      _snode(dynamic_cast<StochasticNode*>(gv->nodes()[0]))
+      _snode(dynamic_cast<StochasticNode*>(gv->node()))
 {
     int nbreaks = breaks(gv)->length();
     for (unsigned int ch = 0; ch < _snode->nchain(); ++ch) {
@@ -61,7 +62,7 @@ bool Censored::canSample(StochasticNode *snode, Graph const &graph)
   
     //Check that we have a single stochastic child, which is a direct
     //child of the sampled node which has distribution "dinterval"
-    GraphView gv(snode, graph);
+    SingletonGraphView gv(snode, graph);
     vector<StochasticNode *> const &schild = gv.stochasticChildren();
     vector<DeterministicNode*> const &dchild = gv.deterministicChildren();
 

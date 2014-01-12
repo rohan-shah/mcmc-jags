@@ -4,6 +4,9 @@
 #include "ConjugateMethod.h"
 
 namespace jags {
+    
+    class Graph;
+
 namespace bugs {
 
 /**
@@ -23,7 +26,7 @@ class ConjugateMNormal : public ConjugateMethod {
   double *_betas;
   const unsigned int _length_betas;
  public:
-  ConjugateMNormal(GraphView const *gv);
+  ConjugateMNormal(SingletonGraphView const *gv);
   ~ConjugateMNormal();
   void update(unsigned int chain, RNG *rng) const;
   static bool canSample(StochasticNode *snode, Graph const &graph);

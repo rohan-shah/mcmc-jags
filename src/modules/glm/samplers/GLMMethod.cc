@@ -9,7 +9,7 @@
 #include "GLMMethod.h"
 #include "Outcome.h"
 
-#include <sampler/GraphView.h>
+#include <sampler/SingletonGraphView.h>
 #include <sampler/Linear.h>
 #include <graph/Graph.h>
 #include <graph/StochasticNode.h>
@@ -102,7 +102,7 @@ namespace glm {
     }
     
     GLMMethod::GLMMethod(GraphView const *view, 
-			 vector<GraphView const *> const &sub_views,
+			 vector<SingletonGraphView const *> const &sub_views,
 			 vector<Outcome *> const &outcomes,
 			 unsigned int chain, bool link)
 	: _view(view), _chain(chain), _sub_views(sub_views), _outcomes(outcomes),

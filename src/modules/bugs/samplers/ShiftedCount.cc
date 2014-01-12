@@ -3,7 +3,7 @@
 #include "ShiftedCount.h"
 
 #include <graph/StochasticNode.h>
-#include <sampler/GraphView.h>
+#include <sampler/SingletonGraphView.h>
 #include <module/ModuleError.h>
 
 #include <JRmath.h>
@@ -14,7 +14,7 @@ using std::string;
 namespace jags {
 namespace bugs {
 
-    ShiftedCount::ShiftedCount(GraphView const *gv)
+    ShiftedCount::ShiftedCount(SingletonGraphView const *gv)
 	: ConjugateMethod(gv)
     {
     }
@@ -30,7 +30,7 @@ namespace bugs {
 	if (isBounded(snode))
 	    return false;
 
-	GraphView gv(vector<StochasticNode*>(1,snode), graph);
+	SingletonGraphView gv(snode, graph);
 
 	// There should be no deterministic children
 	if (!gv.deterministicChildren().empty())
@@ -60,7 +60,7 @@ namespace bugs {
 
     void ShiftedCount::update(unsigned int chain, RNG *rng) const
     {
-	StochasticNode const* snode = _gv->nodes()[0];
+	StochasticNode const* snode = _gv->node();
 	StochasticNode * cnode = _gv->stochasticChildren().front();
 
 	double y = *cnode->value(chain); //Child value

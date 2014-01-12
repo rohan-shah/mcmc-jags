@@ -6,7 +6,8 @@
 
 namespace jags {
 
-class LinkNode;
+    class LinkNode;
+    class SingletonGraphView;
 
 namespace glm {
 
@@ -22,8 +23,9 @@ namespace glm {
     class GLMFactory : public SamplerFactory
     {
 	std::string _name;
-	GraphView * makeView(StochasticNode *snode, Graph const &graph) const;
-	bool checkDescendants(GraphView const *view) const;
+	SingletonGraphView * makeView(StochasticNode *snode, 
+				      Graph const &graph) const;
+	bool checkDescendants(SingletonGraphView const *view) const;
     public:
 	GLMFactory(std::string const &name);
 	virtual ~GLMFactory();
@@ -54,16 +56,16 @@ namespace glm {
 	 *
 	 * @param view Pointer to a GraphView object for all sampled nodes.
 	 *
-	 * @param sub_views Vector of pointers to GraphView objects with
-	 * length equal to the number of sampled nodes. Each sub-view
-	 * corresponds to a single sampled node.
+	 * @param sub_views Vector of pointers to SingletonGraphView
+	 * objects with length equal to the number of sampled
+	 * nodes. Each sub-view corresponds to a single sampled node.
 	 *
 	 * @param chain Number of the chain (starting from 0) to which
 	 * the sampling method will be applied.
 	 */
 	virtual GLMMethod *
 	    newMethod(GraphView const *view,
-		      std::vector<GraphView const *> const &sub_views, 
+		      std::vector<SingletonGraphView const *> const &sub_views, 
 		      unsigned int chain) const = 0;
 	/**
 	 * Virtual function for checking that that a candidate

@@ -6,6 +6,7 @@
 
 #include <graph/StochasticNode.h>
 #include <distribution/Distribution.h>
+#include <sampler/SingletonGraphView.h>
 
 using std::vector;
 
@@ -24,7 +25,7 @@ namespace glm {
     
     GLMMethod*
     LinearFactory::newMethod(GraphView const *view,
-			     vector<GraphView const *> const &sub_views,
+			     vector<SingletonGraphView const *> const &subviews,
 			     unsigned int chain) const
     {
 	vector<Outcome*> outcomes;
@@ -33,7 +34,7 @@ namespace glm {
 	{
 	    outcomes.push_back(new NormalLinear(*p, chain));
 	}
-	return new Linear(view, sub_views, outcomes, chain, false);
+	return new Linear(view, subviews, outcomes, chain, false);
     }
 
     bool LinearFactory::canSample(StochasticNode const *snode) const

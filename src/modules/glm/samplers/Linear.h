@@ -22,7 +22,7 @@ namespace glm {
 	 * joint posterior
 	 */
 	Linear(GraphView const *view,
-	       std::vector<GraphView const *> const &sub_views,
+	       std::vector<SingletonGraphView const *> const &sub_views,
 	       std::vector<Outcome *> const &outcomes,
 	       unsigned int chain, bool gibbs);
 	/**

@@ -5,8 +5,8 @@
 
 namespace jags {
 
-class StochasticNode;
-class GraphView;
+    class StochasticNode;
+    class SingletonGraphView;
 
 namespace base {
 
@@ -15,7 +15,7 @@ namespace base {
  */
     class RealSlicer : public Slicer 
     {
-	GraphView const *_gv;
+	SingletonGraphView const *_gv;
 	unsigned int _chain;
     public:
 	/**
@@ -27,7 +27,7 @@ namespace base {
 	 * parameter
 	 * @param nburn Length of burnin
 	 */
-	RealSlicer(GraphView const *gv, unsigned int chain,
+	RealSlicer(SingletonGraphView const *gv, unsigned int chain,
 		   double width = 1, long maxwidth = 10);
 	double value() const;
 	void setValue(double value);

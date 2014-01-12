@@ -7,7 +7,7 @@
 #include <graph/StochasticNode.h>
 #include <graph/AggNode.h>
 #include <graph/NodeError.h>
-#include <sampler/GraphView.h>
+#include <sampler/SingletonGraphView.h>
 #include <module/ModuleError.h>
 
 #include <set>
@@ -113,7 +113,7 @@ namespace jags {
 	return findUniqueParent(mnode, nodeset) != 0;
     }
 
-    bool isMix(GraphView const *gv)
+    bool isMix(SingletonGraphView const *gv)
     {
 	/* 
 	   Utility function called by constructor. It returns true if
@@ -132,7 +132,7 @@ namespace jags {
 	return false;
     }
 
-    vector<int> makeTree(GraphView const *gv)
+    vector<int> makeTree(SingletonGraphView const *gv)
     {
 	/* 
 	   If canSample is true then the nodes in the GraphView gv
@@ -149,7 +149,7 @@ namespace jags {
 	   result is stored in the variable _tree;
 	*/
 	vector<DeterministicNode*> const &dchild = gv->deterministicChildren();
-	StochasticNode *snode = gv->nodes()[0];
+	StochasticNode *snode = gv->node();
 
 	vector<int> tree(dchild.size(), -1);
 	    
@@ -178,12 +178,12 @@ namespace jags {
 	return tree;
     }
 
-    vector<vector<unsigned int> > makeOffsets(GraphView const *gv,
+    vector<vector<unsigned int> > makeOffsets(SingletonGraphView const *gv,
 					      vector<int> const &tree)
     {
 	vector<DeterministicNode *> const &dchild = gv->deterministicChildren();
 	vector<vector<unsigned int> > offsets(dchild.size());
-	StochasticNode const *snode = gv->nodes()[0];
+	StochasticNode const *snode = gv->node();
 
 	for (unsigned int i = 0; i < dchild.size(); ++i) {
 	
@@ -280,7 +280,7 @@ namespace jags {
 	    if (isBounded(snode))
 		return false;
     
-	    GraphView gv(snode, graph);
+	    SingletonGraphView gv(snode, graph);
 	    vector<DeterministicNode*> const &dchild = gv.deterministicChildren();
 	    vector<StochasticNode *> const &schild = gv.stochasticChildren();
     
@@ -323,7 +323,7 @@ namespace jags {
 	    return true;
 	}
 	
-	ConjugateDirichlet::ConjugateDirichlet(GraphView const *gv)
+	ConjugateDirichlet::ConjugateDirichlet(SingletonGraphView const *gv)
 	    : ConjugateMethod(gv), _mix(isMix(gv)), _tree(makeTree(gv)),
 	      _offsets(gv->stochasticChildren().size()),
 	      _leaves(gv->stochasticChildren().size(), -1)
@@ -384,7 +384,7 @@ namespace jags {
     
 	    if (MixtureNode const *m = asMixture(dchild[i])) {
 		if (_tree[i] == -1) {
-		    if (m->activeParent(chain) != _gv->nodes()[0])
+		    if (m->activeParent(chain) != _gv->node())
 			return false;
 		}
 		else {
@@ -398,7 +398,7 @@ namespace jags {
 
 void ConjugateDirichlet::update(unsigned int chain, RNG *rng) const
 {
-    StochasticNode *snode = _gv->nodes()[0];
+    StochasticNode *snode = _gv->node();
     unsigned int size = snode->length();
     double *alpha = new double[size];
     double *xnew = new double[size];

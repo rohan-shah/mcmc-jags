@@ -1,5 +1,5 @@
 #include <config.h>
-#include <sampler/GraphView.h>
+#include <sampler/SingletonGraphView.h>
 #include <graph/StochasticNode.h>
 #include <distribution/Distribution.h>
 #include <module/ModuleError.h>
@@ -14,12 +14,11 @@ using std::string;
 namespace jags {
 namespace base {
 
-    RealSlicer::RealSlicer(GraphView const *gv, unsigned int chain,
+    RealSlicer::RealSlicer(SingletonGraphView const *gv, unsigned int chain,
 			   double width, long maxwidth)
 	: Slicer(width, maxwidth), _gv(gv), _chain(chain)
     {
-	if (gv->nodes().size() != 1 || 
-	    !canSample(gv->nodes().front()))
+	if (!canSample(gv->node()))
 	{
 	    throwLogicError("Invalid RealSlicer");
 	}
@@ -39,7 +38,7 @@ namespace base {
 
     double RealSlicer::value() const
     {
-	return _gv->nodes().front()->value(_chain)[0];
+	return _gv->node()->value(_chain)[0];
     }
  
     void RealSlicer::setValue(double value)
@@ -49,7 +48,7 @@ namespace base {
 
     void RealSlicer::getLimits(double *lower, double *upper) const
     {
-	_gv->nodes().front()->support(lower, upper, 1, _chain);
+	_gv->node()->support(lower, upper, 1, _chain);
     }
 
     void RealSlicer::update(RNG *rng)
@@ -57,11 +56,11 @@ namespace base {
 	if (!updateStep(rng)) {
 	    switch(state()) {
 	    case SLICER_POSINF:
-		throwNodeError(_gv->nodes().front(),
+		throwNodeError(_gv->node(),
 			       "Slicer stuck at value with infinite density");
 		break;
 	    case SLICER_NEGINF:
-		throwNodeError(_gv->nodes().front(),
+		throwNodeError(_gv->node(),
 			       "Current value is inconsistent with data");
 		break;
 	    case SLICER_OK:

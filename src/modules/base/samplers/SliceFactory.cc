@@ -5,7 +5,7 @@
 #include "SliceFactory.h"
 
 #include <sampler/ParallelSampler.h>
-#include <sampler/GraphView.h>
+#include <sampler/SingletonGraphView.h>
 #include <graph/StochasticNode.h>
 
 #include <vector>
@@ -32,8 +32,8 @@ namespace base {
     {
 	unsigned int nchain = snode->nchain();
 	vector<SampleMethod*> methods(nchain, 0);
-	//Fixme: use snode and graph in constructor...
-	GraphView *gv = new GraphView(snode, graph);
+
+	SingletonGraphView *gv = new SingletonGraphView(snode, graph);
 
 	bool discrete = snode->isDiscreteValued();
 	for (unsigned int ch = 0; ch < nchain; ++ch) {

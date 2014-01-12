@@ -10,7 +10,7 @@ namespace jags {
 namespace glm {
 
     AMMethod::AMMethod(GraphView const *view,
-		       vector<GraphView const *> const &sub_views,
+		       vector<SingletonGraphView const *> const &sub_views,
 		       vector<Outcome *> const &outcomes,
 		       unsigned int chain)
 	: GLMMethod(view, sub_views, outcomes, chain, true)

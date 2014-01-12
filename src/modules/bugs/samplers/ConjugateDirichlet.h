@@ -4,6 +4,9 @@
 #include "ConjugateMethod.h"
 
 namespace jags {
+
+    class Graph;
+
 namespace bugs {
 
 /**
@@ -25,7 +28,7 @@ class ConjugateDirichlet : public ConjugateMethod {
     bool isActiveLeaf(int index, unsigned int chain) const;
     bool isActiveTree(int index, unsigned int chain) const;
 public:
-    ConjugateDirichlet(GraphView const *gv);
+    ConjugateDirichlet(SingletonGraphView const *gv);
     void update(unsigned int chain, RNG *rng) const;
     static bool canSample(StochasticNode *snode, Graph const &graph);
     std::string name() const;

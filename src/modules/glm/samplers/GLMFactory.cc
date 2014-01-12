@@ -11,6 +11,7 @@
 #include <distribution/Distribution.h>
 #include <sampler/Linear.h>
 #include <sampler/GraphView.h>
+#include <sampler/SingletonGraphView.h>
 
 #include <set>
 #include <map>
@@ -27,7 +28,7 @@ namespace jags {
 /*
   Aggregates candidate Nodes into a joint linear model. 
 */
-static bool aggregateLinear(GraphView const *candidate,
+static bool aggregateLinear(SingletonGraphView const *candidate,
 			    set<StochasticNode const *> &stochastic_children,
 			    Graph const &graph)
 {
@@ -69,7 +70,7 @@ namespace glm {
 	: _name(name)
     {}
 
-    bool GLMFactory::checkDescendants(GraphView const *view) const
+    bool GLMFactory::checkDescendants(SingletonGraphView const *view) const
     {
 	// Check stochastic children
 	vector<StochasticNode *> const &stoch_nodes = 
@@ -101,7 +102,7 @@ namespace glm {
     }
 
 
-    GraphView * 
+    SingletonGraphView * 
     GLMFactory::makeView(StochasticNode *snode, Graph const &graph) const
     {
 	/*
@@ -116,7 +117,7 @@ namespace glm {
 	if (!canSample(snode))
 	    return 0;
 
-	GraphView *view = new GraphView(snode, graph);
+	SingletonGraphView *view = new SingletonGraphView(snode, graph);
 	if (!checkDescendants(view)) {
 	    delete view;
 	    return 0;
@@ -137,11 +138,11 @@ namespace glm {
 	   Find candidate nodes that could be in a linear model.
 	   Keep track of the number of stochastic children
 	*/
-	vector<GraphView*> candidates;
+	vector<SingletonGraphView*> candidates;
 	for (set<StochasticNode*>::const_iterator p = nodes.begin();
 	     p != nodes.end(); ++p)
 	{
-	    GraphView *up = makeView(*p, graph);
+	    SingletonGraphView *up = makeView(*p, graph);
 	    if (up) {
 		candidates.push_back(up);
 	    }
@@ -225,7 +226,7 @@ namespace glm {
 	    }
 	}
 
-	vector<GraphView*> sub_views;
+	vector<SingletonGraphView*> sub_views;
 	for (unsigned int i = 0; i < Nc; ++i) {
 	    if (keep[i]) {
 		sub_views.push_back(candidates[i]);
@@ -240,7 +241,8 @@ namespace glm {
 	    unsigned int Nch = nchain(view);
 	    vector<SampleMethod*> methods(Nch, 0);
 		
-	    vector<GraphView const*> const_sub_views(sub_views.size());
+	    vector<SingletonGraphView const*> const_sub_views(sub_views.size());
+	    //FIXME: std::copy
 	    for (unsigned int i = 0; i < sub_views.size(); ++i) {
 		const_sub_views[i] = sub_views[i];
 	    }
@@ -279,6 +281,6 @@ namespace glm {
     {
 	return false;
     }
-
+    
 }}
 

@@ -6,7 +6,7 @@
 #include <graph/MixtureNode.h>
 #include <graph/MixTab.h>
 #include <graph/StochasticNode.h>
-#include <sampler/GraphView.h>
+#include <sampler/SingletonGraphView.h>
 #include <module/ModuleError.h>
 #include <sarray/RangeIterator.h>
 
@@ -233,7 +233,7 @@ namespace jags {
 	    //There are no intermediate deterministic nodes.
 	    for (unsigned int d = 0; d < nDoc; ++d) {
 		
-		GraphView tp_gv(topic_priors[d], graph);
+		SingletonGraphView tp_gv(topic_priors[d], graph);
 
 		if (!tp_gv.deterministicChildren().empty()) return false;
 
@@ -294,7 +294,7 @@ namespace jags {
 	    for (unsigned int d = 0; d < nDoc; ++d) {
 		for (unsigned int i = 0; i < topics[d].size(); ++i) {
 		    
-		    GraphView topic_gv(topics[d][i], graph);
+		    SingletonGraphView topic_gv(topics[d][i], graph);
 
 		    vector<DeterministicNode*> topic_dchild = 
 			topic_gv.deterministicChildren();

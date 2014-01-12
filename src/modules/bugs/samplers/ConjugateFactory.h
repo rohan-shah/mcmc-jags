@@ -4,6 +4,9 @@
 #include <sampler/SingletonFactory.h>
 
 namespace jags {
+
+    class Graph;
+
 namespace bugs {
 
 /**

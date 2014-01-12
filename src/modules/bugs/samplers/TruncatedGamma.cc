@@ -8,7 +8,7 @@
 #include <graph/NodeError.h>
 #include <sarray/SArray.h>
 #include <sampler/Linear.h>
-#include <sampler/GraphView.h>
+#include <sampler/SingletonGraphView.h>
 #include <util/nainf.h>
 #include <module/ModuleError.h>
 
@@ -54,7 +54,8 @@ static Node const * getParent(StochasticNode const *snode)
     } 
 }
 
-static double calExponent(GraphView const *gv, int i, unsigned int chain)
+static double calExponent(SingletonGraphView const *gv, int i, 
+			  unsigned int chain)
 {   
     /*        
        All stochastic children depend on the sampled node "x" via a
@@ -67,7 +68,7 @@ static double calExponent(GraphView const *gv, int i, unsigned int chain)
     }
 
     //Save original value
-    const double xold = *gv->nodes()[0]->value(chain);
+    const double xold = *gv->node()->value(chain);
 
     double x0 = xold;
     if (x0 <= 0) {
@@ -88,7 +89,7 @@ static double calExponent(GraphView const *gv, int i, unsigned int chain)
     return (log(y1) - log(y0))/log(2.0);
 }
 
-TruncatedGamma::TruncatedGamma(GraphView const *gv)
+TruncatedGamma::TruncatedGamma(SingletonGraphView const *gv)
     : ConjugateMethod(gv), _exponent(calExponent(gv, 0, 0))
 {
 }
@@ -108,7 +109,7 @@ bool TruncatedGamma::canSample(StochasticNode *snode, Graph const &graph)
     if (snode->parents()[0]->value(0)[0] < 0)
 	return false;
 
-    GraphView gv(vector<StochasticNode*>(1,snode), graph);
+    SingletonGraphView gv(snode, graph);
     vector<StochasticNode *> const &stoch_nodes = gv.stochasticChildren();
 
     //Check that stochastic children are valid
@@ -188,7 +189,7 @@ void TruncatedGamma::update(unsigned int chain, RNG *rng) const
     double mu = 0; // 1/scale
 
     //Save current value
-    StochasticNode *snode = _gv->nodes()[0];
+    StochasticNode *snode = _gv->node();
     const double xold = snode->value(chain)[0];
     const double zold = pow(xold, _exponent);
 

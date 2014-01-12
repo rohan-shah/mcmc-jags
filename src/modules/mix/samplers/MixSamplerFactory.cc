@@ -6,7 +6,7 @@
 #include <graph/StochasticNode.h>
 #include <distribution/Distribution.h>
 #include <sampler/ParallelSampler.h>
-#include <sampler/GraphView.h>
+#include <sampler/SingletonGraphView.h>
 
 #include <set>
 
@@ -21,13 +21,14 @@ using std::string;
 namespace jags {
 
 /* 
- * Returns a pointer to a newly allocated GraphView if snode has a
- * stochastic child with distribution "dnormmix", otherwise a null
- * pointer.
+ * Returns a pointer to a newly allocated SingletonGraphView if snode
+ * has a stochastic child with distribution "dnormmix", otherwise a
+ * null pointer.
  */
-static GraphView * isCandidate(StochasticNode *snode, Graph const &graph)
+static SingletonGraphView * isCandidate(StochasticNode *snode, 
+					Graph const &graph)
 {
-    GraphView *gv = new GraphView(snode, graph);
+    SingletonGraphView *gv = new SingletonGraphView(snode, graph);
     vector<StochasticNode *> const &schildren = gv->stochasticChildren();
     for (unsigned int i = 0; i < schildren.size(); ++i) {
 	if (schildren[i]->distribution()->name() == "dnormmix") {
@@ -41,7 +42,8 @@ static GraphView * isCandidate(StochasticNode *snode, Graph const &graph)
 /*
  * Used to aggregate nodes with common stochastic children.
  */
-static void aggregate(GraphView const *gv, vector<StochasticNode *> &nodes,
+static void aggregate(SingletonGraphView const *gv, 
+		      vector<StochasticNode *> &nodes,
 		      set<StochasticNode const*> &common_children)
 {
     bool agg = nodes.empty();
@@ -56,7 +58,7 @@ static void aggregate(GraphView const *gv, vector<StochasticNode *> &nodes,
 	for (unsigned int i = 0; i < schildren.size(); ++i) {
 	    common_children.insert(schildren[i]);
 	}
-	nodes.push_back(gv->nodes()[0]);
+	nodes.push_back(gv->node());
     }
     
 }
@@ -66,11 +68,11 @@ namespace mix {
     Sampler * MixSamplerFactory::makeSampler(set<StochasticNode*> const &nodes, 
 					     Graph const &graph) const
     {
-	vector<GraphView*> gvec;
+	vector<SingletonGraphView*> gvec;
 	for (set<StochasticNode*>::const_iterator p = nodes.begin();
 	     p != nodes.end(); ++p)
 	{
-	    GraphView *gv = isCandidate(*p, graph);
+	    SingletonGraphView *gv = isCandidate(*p, graph);
 	    if (gv) {
 		gvec.push_back(gv);
 	    }

@@ -6,6 +6,7 @@
 
 #include <graph/StochasticNode.h>
 #include <distribution/Distribution.h>
+#include <sampler/SingletonGraphView.h>
 
 using std::vector;
 
@@ -24,8 +25,8 @@ namespace glm {
     
     GLMMethod*
     LinearGibbsFactory::newMethod(GraphView const *view,
-			     vector<GraphView const *> const &sub_views,
-			     unsigned int chain) const
+				  vector<SingletonGraphView const *> const &sub_views,
+				  unsigned int chain) const
     {
 	vector<Outcome*> outcomes;
 	for (vector<StochasticNode *>::const_iterator p = view->stochasticChildren().begin();

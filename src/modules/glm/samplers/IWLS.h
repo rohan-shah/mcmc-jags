@@ -30,7 +30,7 @@ namespace glm {
                               double *b, cholmod_sparse *A);
     public:
 	IWLS(GraphView const *view, 
-	     std::vector<GraphView const *> const &sub_views,
+	     std::vector<SingletonGraphView const *> const &sub_views,
 	     std::vector<Outcome *> const &outcomes,
 	     unsigned int chain);
 	/**

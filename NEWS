@@ -20,6 +20,8 @@ Library changes
 * The Module.h header is moved into the module sub-directory
 * The classes RScalarDist, DFunction, PFunction, QFunction are moved
   from the bugs module into the main library.
+* SingletonGraphView is a new subclass of GraphView to be used when
+  a single node is being sampled.
 
 Internal changes in modules
 ===========================

@@ -2,7 +2,6 @@
 #define GLM_METHOD_H_
 
 #include <sampler/SampleMethod.h>
-#include <sampler/GraphView.h>
 
 #include <string>
 #include <vector>
@@ -13,8 +12,9 @@ extern "C" {
 
 namespace jags {
 
-//class Graph;
-class RNG;
+    class RNG;
+    class GraphView;
+    class SingletonGraphView;
 
 namespace glm {
 
@@ -40,7 +40,7 @@ namespace glm {
     protected:
 	GraphView const *_view;
 	unsigned int _chain;
-	std::vector<GraphView const *> _sub_views;
+	std::vector<SingletonGraphView const *> _sub_views;
 	std::vector<Outcome *> _outcomes;
 	cholmod_sparse *_x;
 	cholmod_factor *_factor;
@@ -57,9 +57,9 @@ namespace glm {
 	 *
 	 * @param view Pointer to a GraphView object for all sampled nodes.
 	 *
-	 * @param sub_views Vector of pointers to GraphView objects with
-	 * length equal to the number of sampled nodes. Each sub-view
-	 * corresponds to a single sampled node. 
+	 * @param sub_views Vector of pointers to SingletonGraphView
+	 * objects with length equal to the number of sampled
+	 * nodes. Each sub-view corresponds to a single sampled node.
 	 *
 	 * @param outcomes Vector of pointers to Outcome objects with length
 	 * equal to the number of stochastic children of the sampled nodes.
@@ -76,7 +76,7 @@ namespace glm {
 	 * descendants) may be link nodes.
 	 */
 	GLMMethod(GraphView const *view, 
-		  std::vector<GraphView const *> const &sub_views,
+		  std::vector<SingletonGraphView const *> const &sub_views,
 		  std::vector<Outcome *> const &outcomes,
 		  unsigned int chain, bool link);
 	/**

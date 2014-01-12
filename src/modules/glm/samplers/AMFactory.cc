@@ -14,6 +14,7 @@
 #include <graph/StochasticNode.h>
 #include <graph/LinkNode.h>
 #include <distribution/Distribution.h>
+#include <sampler/GraphView.h>
 #include <module/ModuleError.h>
 
 using std::string;
@@ -35,13 +36,14 @@ namespace glm {
     
     GLMMethod *
     AMFactory::newMethod(GraphView const *view,
-			 vector<GraphView const *> const &sub_views,
+			 vector<SingletonGraphView const *> const &sub_views,
 			 unsigned int chain) const
     {
 	bool linear = true;
 	vector<Outcome*> outcomes;
 
-	for (vector<StochasticNode *>::const_iterator p = view->stochasticChildren().begin();
+	for (vector<StochasticNode *>::const_iterator 
+		 p = view->stochasticChildren().begin();
 	     p != view->stochasticChildren().end(); ++p)
 	{
 	    Outcome *outcome = 0;

@@ -7,6 +7,7 @@
 #include <graph/StochasticNode.h>
 #include <graph/LinkNode.h>
 #include <sampler/GraphView.h>
+#include <sampler/SingletonGraphView.h>
 #include <rng/TruncatedNormal.h>
 #include <rng/RNG.h>
 #include <cmath>
@@ -22,7 +23,7 @@ namespace jags {
 namespace glm {
 
     AlbertChib::AlbertChib(GraphView const *view,
-			   vector<GraphView const *> const &sub_views,
+			   vector<SingletonGraphView const *> const &sub_views,
 			   vector<Outcome *> const &outcomes,
 			   unsigned int chain, bool gibbs)
 	: GLMMethod(view, sub_views, outcomes, chain, true), _gibbs(gibbs)

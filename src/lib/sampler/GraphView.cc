@@ -41,13 +41,6 @@ GraphView::GraphView(vector<StochasticNode *> const &nodes, Graph const &graph,
 		     multilevel);
 }
 
-GraphView::GraphView(StochasticNode * node, Graph const &graph)
-    : _length(node->length()), _nodes(vector<StochasticNode*>(1,node)), 
-      _stoch_children(0), _determ_children(0), _multilevel(false)
-{
-    classifyChildren(_nodes, graph, _stoch_children, _determ_children, false);
-}
-
 vector<StochasticNode *> const &GraphView::nodes() const
 {
   return _nodes;

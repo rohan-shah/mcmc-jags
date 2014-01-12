@@ -23,7 +23,7 @@ namespace glm {
 	 * element-wise by Gibbs sampling.
 	 */
 	GLMMethod *newBinary(GraphView const *view, 
-			     std::vector<GraphView const *> const &sub_views,
+			     std::vector<SingletonGraphView const *> const &sub_views,
 			     std::vector<Outcome *> const &outcomes,
 			     unsigned int chain) const;
     };

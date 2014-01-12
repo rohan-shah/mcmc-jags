@@ -29,7 +29,7 @@ namespace glm {
 	 * This function is called by GLMFactory#makeSampler
 	 */
 	GLMMethod *newMethod(GraphView const *view,
-			     std::vector<GraphView const *> const &sub_views,
+			     std::vector<SingletonGraphView const *> const &sub_views,
 			     unsigned int chain) const;
 	/**
 	 * If the factory was constructed with parameter "gibbs" set
@@ -43,7 +43,7 @@ namespace glm {
 	 * Returns a newly allocated GLMMethod object.
 	 */
 	virtual GLMMethod *newBinary(GraphView const *view,
-				     std::vector<GraphView const *> const &sub_views,
+				     std::vector<SingletonGraphView const *> const &sub_views,
 				     std::vector<Outcome *> const &outcomes,
 				     unsigned int chain) const = 0;
     };

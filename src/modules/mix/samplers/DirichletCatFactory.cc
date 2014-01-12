@@ -4,7 +4,7 @@
 
 #include <sampler/ParallelSampler.h>
 #include <sampler/SampleMethod.h>
-#include <sampler/GraphView.h>
+#include <sampler/SingletonGraphView.h>
 //#include <graph/GraphMarks.h>
 #include <graph/Graph.h>
 #include <graph/StochasticNode.h>
@@ -29,7 +29,7 @@ namespace jags {
     typedef map<vector<StochasticNode *>, vector<StochasticNode*> > DCMap;
 
     static
-    bool isCandidate(GraphView const &gv)
+    bool isCandidate(SingletonGraphView const &gv)
     {
 	vector<StochasticNode *> const &schild = gv.stochasticChildren();
 	vector<DeterministicNode *> const &dchild = gv.deterministicChildren();
@@ -93,7 +93,7 @@ namespace jags {
 		 p != nodes.end(); ++p)
 	    {
 		if ((*p)->distribution()->name() != "ddirch") continue;
-		GraphView gv(*p, graph);
+		SingletonGraphView gv(*p, graph);
 		if (isCandidate(gv)) {
 		    cmap[gv.stochasticChildren()].push_back(*p);
 		}

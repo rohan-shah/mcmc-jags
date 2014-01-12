@@ -5,6 +5,10 @@
 #include <graph/Graph.h>
 
 namespace jags {
+    
+    class StochasticNode;
+    class SingletonGraphView;
+
 namespace base {
     
 /**
@@ -18,8 +22,8 @@ namespace base {
  * on the real line.  We sample Y and then set X = floor(Y).
  */
     class DiscreteSlicer : public Slicer {
-	GraphView const *_gv;
-	unsigned int _chain;
+	SingletonGraphView const *_gv;
+	const unsigned int _chain;
 	double _x;
     public:
 	/**
@@ -27,7 +31,7 @@ namespace base {
 	 * @param width Initial width of slice
 	 * @param ndoubles Maximum number of doublings of slice 
 	 */
-	DiscreteSlicer(GraphView const *gv, unsigned int chain,
+	DiscreteSlicer(SingletonGraphView const *gv, unsigned int chain,
                        double width=2, long ndoubles = 10);
 	void setValue(double x);
 	double value() const;

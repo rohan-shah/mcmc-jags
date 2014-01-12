@@ -24,7 +24,7 @@ namespace glm {
     class AMMethod : public GLMMethod {
       public:
 	AMMethod(GraphView const *view, 
-		 std::vector<GraphView const *> const &sub_views,
+		 std::vector<SingletonGraphView const *> const &sub_views,
 		 std::vector<Outcome *> const &outcomes,
 		 unsigned int chain);
 	/**

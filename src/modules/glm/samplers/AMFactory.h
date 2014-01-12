@@ -31,7 +31,7 @@ namespace glm {
 	 * with logistic link.
 	 */
 	GLMMethod * newMethod(GraphView const *view,
-			      std::vector<GraphView const *> const &sub_views, 
+			      std::vector<SingletonGraphView const *> const &sub_views, 
 			      unsigned int chain) const;
     };
 

@@ -5,14 +5,14 @@
 
 namespace jags {
 
-class Node;
+    class Graph;
 
 namespace bugs {
 
 class TruncatedGamma : public ConjugateMethod {
     const double _exponent;
 public:
-    TruncatedGamma(GraphView const *gv);
+    TruncatedGamma(SingletonGraphView const *gv);
     ~TruncatedGamma();
     static bool canSample(StochasticNode *snode, Graph const &graph);
     void update(unsigned int chain, RNG *rng) const;

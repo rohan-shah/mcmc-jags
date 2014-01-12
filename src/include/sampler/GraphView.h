@@ -69,10 +69,6 @@ public:
   GraphView(std::vector<StochasticNode *> const &nodes, Graph const &graph,
 	    bool allow_multilevel=false);
   /**
-   * Constructs a GraphView for a single node
-   */
-  GraphView(StochasticNode * node, Graph const &graph);
-  /**
    * Returns the vector of sampled nodes.
    */
   std::vector<StochasticNode *> const &nodes() const;

@@ -1,6 +1,6 @@
 #include <config.h>
 #include <sampler/ParallelSampler.h>
-#include <sampler/GraphView.h>
+#include <sampler/SingletonGraphView.h>
 #include <sampler/SampleMethod.h>
 
 #include "FiniteMethod.h"
@@ -23,7 +23,7 @@ namespace base {
     Sampler *  FiniteFactory::makeSampler(StochasticNode *snode,
 					  Graph const &graph) const
     {
-	GraphView *gv = new GraphView(snode, graph);
+	SingletonGraphView *gv = new SingletonGraphView(snode, graph);
 	unsigned int N = nchain(gv);
 	vector<SampleMethod*> methods(N, 0);
 	for (unsigned int ch = 0; ch < N; ++ch) {

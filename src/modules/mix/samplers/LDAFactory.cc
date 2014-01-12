@@ -4,7 +4,7 @@
 
 #include <sampler/ParallelSampler.h>
 #include <sampler/SampleMethod.h>
-#include <sampler/GraphView.h>
+#include <sampler/SingletonGraphView.h>
 #include <graph/Graph.h>
 #include <graph/StochasticNode.h>
 #include <graph/MixtureNode.h>
@@ -59,7 +59,7 @@ namespace jags {
 	MixTab const *mtab = 0; 
 	for (unsigned int i = 0; i < schild.size(); ++i) {
 
-	    GraphView gvi(schild[i], graph);
+	    SingletonGraphView gvi(schild[i], graph);
 
 	    vector<StochasticNode *> const &si = gvi.stochasticChildren();
 	    if (si.size() != 1) return 0;
@@ -131,11 +131,11 @@ namespace jags {
 	    vector<vector<StochasticNode*> > topics(nDoc), words(nDoc);
 	    vector<StochasticNode*> snodes;
 	    for (unsigned int d = 0; d < nDoc; ++d) {
-		GraphView gvd(topicPriors[d], graph);
+		SingletonGraphView gvd(topicPriors[d], graph);
 		topics[d] = gvd.stochasticChildren();
 		for (unsigned int i = 0; i < topics[d].size(); ++i) {
 		    if (free_nodes.count(topics[d][i]) == 0) return 0;
-		    GraphView gvi(topics[d][i], graph);
+		    SingletonGraphView gvi(topics[d][i], graph);
 		    words[d].push_back(gvi.stochasticChildren()[0]);
 		    snodes.push_back(topics[d][i]);
 		}
@@ -187,7 +187,7 @@ namespace jags {
 	    for (set<StochasticNode*>::iterator p = dirichlet_nodes.begin();
 		 p != dirichlet_nodes.end(); ++p)
 	    {
-		GraphView gv(*p, graph);
+		SingletonGraphView gv(*p, graph);
 		if (MixTab const *mtab = checkWordPrior(gv, graph)) {
 		    dirichlet_map[mtab].words.push_back(*p);
 		}
