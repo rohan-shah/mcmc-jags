@@ -171,11 +171,15 @@ counter: FOR '(' NAME IN range_element ')' {
 }
 ;
 
-determ_relation: var ARROW expression {
+assignment: ARROW 
+| '='
+;
+
+determ_relation: var assignment expression {
     $$ = new ParseTree(jags::P_DETRMREL, yylineno);
     setParameters($$, $1, $3);
 } 
-| FUNC '(' var ')' ARROW expression {
+| FUNC '(' var ')' assignment expression {
 
   /* 
      The link function is given using an S-style replacement function

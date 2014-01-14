@@ -1,5 +1,10 @@
 Changes in JAGS 4.0.0
 
+New features
+============
+* Deterministic relations can be defined with the equals sign `=`
+  as well as the left arrow `<-` (Thanks to Merlise Clyde for the suggestion).
+
 Bug fixes
 =========
 * The qpar function in the bugs module was inverted.
@@ -35,7 +40,7 @@ Internal changes in modules
   eventually be folded into the GraphView class.
   - The classes RScalarDist, DFunction, PFunction, QFunction are
   moved into the main library
-  - The beta binomial distribution (DBetaBin) is moved to the mix m
+  - The beta binomial distribution (DBetaBin) is moved to the mix 
   module.
 
 * glm module
@@ -45,6 +50,7 @@ Internal changes in modules
 * mix module
   - New sampler MixDirich for conjugate Dirichlet sampling in a mixture
   model.
+  - New sampler LDA for Latent Dirichlet Allocation models.
   - The beta binomial distribution (DBetaBin) is moved from the 
   bugs module.
 
