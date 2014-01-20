@@ -18,7 +18,6 @@ namespace glm {
     class GLMSampler : public ParallelSampler
     {
 	std::vector<SingletonGraphView*> _sub_views;
-	std::vector<SampleMethod*> _methods;
     public:
 	/**
 	 * Constructor.

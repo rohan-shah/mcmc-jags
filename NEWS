@@ -30,6 +30,13 @@ Library changes
 * Subclasses of Monitor no longer need to implement the reserve function.
   They should instead re-allocate memory during each update as necessary,
   ensuring that an update remains an amortized constant time operation.
+* The ParallelSampler class is renamed MutableParallelSampler. Similarly,
+  the SamplerMethod class is renamed Mutable SampleMethod. For the moment,
+  the old names persist as typedefs.
+* A new class ImmutableParallelSampler and corresponding class
+  ImmutableSampleMethod are added to the library for samplers that have
+  no internal state (e.g. base::FiniteSampler or bugs::ConjugateSampler).
+  class are intro
 
 Internal changes in modules
 ===========================

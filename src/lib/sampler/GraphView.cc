@@ -37,6 +37,13 @@ GraphView::GraphView(vector<StochasticNode *> const &nodes, Graph const &graph,
     : _length(sumLength(nodes)), _nodes(nodes), _stoch_children(0),
       _determ_children(0), _multilevel(false)
 {
+    //Sanity check on node
+    //FIXME: Could use a templated version of countChains here
+    for (unsigned int i = 1; i < nodes.size(); ++i) {
+	if (nodes[i]->nchain() != nodes[0]->nchain()) {
+	    throw logic_error("Chain mismatch in GraphView");
+	}
+    }
     classifyChildren(nodes, graph, _stoch_children, _determ_children,
 		     multilevel);
 }

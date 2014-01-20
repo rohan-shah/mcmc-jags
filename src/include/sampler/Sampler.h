@@ -23,8 +23,9 @@ public:
      * Constructor
      *
      * @param gv GraphView providing a view of the sampling graph for
-     * the sampler. The Sampler takes ownership of the GraphView and
-     * deletes it when the destructor is called.
+     * the sampler. This should be dynamically allocated by the
+     * SamplerFactory: the Sampler takes ownership of the GraphView
+     * and deletes it when the destructor is called.
      */
     Sampler(GraphView *gv);
     virtual ~Sampler();
@@ -48,7 +49,7 @@ public:
      * sampler.
      */
     virtual void adaptOff() = 0;
-    /*
+    /**
      * The adaptOff function may be called at any time. Premature
      * ending of adaptive mode may result in an extremely inefficient
      * sampler.  Therefore the checkAdaptation function implements an
