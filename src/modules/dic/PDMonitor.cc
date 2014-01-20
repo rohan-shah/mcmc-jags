@@ -50,10 +50,6 @@ namespace dic {
 	return _values;
     }
 
-    void PDMonitor::reserve(unsigned int niter)
-    {
-    }
-
     bool PDMonitor::poolChains() const
     {
 	return true;

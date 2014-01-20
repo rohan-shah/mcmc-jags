@@ -378,11 +378,6 @@ void Model::update(unsigned int niter)
 	throw logic_error("Attempt to update uninitialized model");
     }
 
-    list<MonitorControl>::iterator p;
-    for (p = _monitors.begin(); p != _monitors.end(); ++p) {
-	p->reserve(niter);
-    }
-
     for (unsigned int iter = 0; iter < niter; ++iter) {    
 	
 	for (vector<Sampler*>::iterator i = _samplers.begin(); 

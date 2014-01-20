@@ -52,11 +52,6 @@ namespace dic {
 	return _values;
     }
 
-    void PDTrace::reserve(unsigned int niter)
-    {
-	_values.reserve(_values.size() + niter);
-    }
-
     bool PDTrace::poolChains() const
     {
 	return true;

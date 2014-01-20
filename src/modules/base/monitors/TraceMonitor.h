@@ -18,7 +18,6 @@ namespace base {
 	void update();
 	std::vector<double> const &value(unsigned int chain) const;
 	std::vector<unsigned int> dim() const;
-	void reserve(unsigned int niter);
 	bool poolChains() const;
 	bool poolIterations() const;
     };

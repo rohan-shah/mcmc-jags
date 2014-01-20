@@ -26,19 +26,23 @@ public:
     Monitor(std::string const &type, Node const *node);
     virtual ~Monitor();
     /**
-     * Updates the monitor. If the iteration number coincides with
-     * the thinning interval, then the doUpdate function is called.
+     * Updates the monitor. 
+     *
+     * Updating should be an ammortized constant time operation.
+     * Failure to guarantee this may cause long MCMC runs to slow down
+     * dramatically.  This is particularly important if the monitor
+     * needs to allocate new memory for stored samples.
      */
     virtual void update() = 0;
     /**
-     * Returns the vector of nodes from which the monitors value is
+     * Returns the vector of nodes from which the monitor's value is
      * derived.
      */
     std::vector<Node const *> const &nodes() const;
     /**
-     * The type of monitor. Each subclass must define have a unique
-     * type, which is common to all Monitors of that class. The type
-     * is used by the user-interface to identify the subclass of Monitor.
+     * The type of monitor. Each subclass must have a unique type,
+     * which is common to all Monitors of that class. The type is used
+     * by the user-interface to identify the subclass of Monitor.
      */
     std::string const &type() const;
     /**
@@ -58,14 +62,6 @@ public:
      * The vector of monitored values for the given chain
      */
     virtual std::vector<double> const &value(unsigned int chain) const = 0;
-    /**
-     * Reserves memory for future updates. Sufficient memory is
-     * reserved for storage of future samples to avoid re-allocation
-     * of memory for the next niter iterations.
-     *
-     * @param niter number of future iterations to reserve. 
-     */
-    virtual void reserve(unsigned int niter) = 0;
      /**
       * Dumps the monitored values to an SArray. 
       *

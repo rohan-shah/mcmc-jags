@@ -27,6 +27,9 @@ Library changes
   from the bugs module into the main library.
 * SingletonGraphView is a new subclass of GraphView to be used when
   a single node is being sampled.
+* Subclasses of Monitor no longer need to implement the reserve function.
+  They should instead re-allocate memory during each update as necessary,
+  ensuring that an update remains an amortized constant time operation.
 
 Internal changes in modules
 ===========================

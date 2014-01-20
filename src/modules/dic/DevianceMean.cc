@@ -57,8 +57,4 @@ namespace dic {
 	}
     }
 
-    void DevianceMean::reserve(unsigned int niter)
-    {
-    }
-    
 }}

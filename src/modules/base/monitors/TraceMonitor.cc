@@ -39,14 +39,6 @@ namespace base {
 	return nodes()[0]->dim();
     }
 
-    void TraceMonitor::reserve(unsigned int niter)
-    {
-	unsigned int N = niter * nodes()[0]->length();
-	for (unsigned int ch = 0; ch < _values.size(); ++ch) {
-	    _values[ch].reserve(_values[ch].size() + N);
-	}
-    }
-
     bool TraceMonitor::poolChains() const
     {
 	return false;

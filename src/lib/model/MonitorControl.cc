@@ -62,9 +62,4 @@ bool MonitorControl::operator==(MonitorControl const &rhs) const
 	    _niter == rhs._niter);
 }
 
-void MonitorControl::reserve(unsigned int niter)
-{
-    _monitor->reserve(niter/_thin + 1);
-}
-
 } //namespace jags

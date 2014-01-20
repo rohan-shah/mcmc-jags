@@ -50,13 +50,6 @@ namespace dic {
 	}
     }
 
-    void DevianceTrace::reserve(unsigned int niter)
-    {
-	for (unsigned int ch = 0; ch < _values.size(); ++ch) {
-	    _values[ch].reserve(_values[ch].size() + niter);
-	}
-    }
-
     bool DevianceTrace::poolChains() const
     {
 	return false;

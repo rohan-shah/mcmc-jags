@@ -44,10 +44,6 @@ namespace base {
 	return nodes()[0]->dim();
     }
 
-    void MeanMonitor::reserve(unsigned int niter)
-    {
-    }
-
     bool MeanMonitor::poolChains() const
     {
 	return false;
