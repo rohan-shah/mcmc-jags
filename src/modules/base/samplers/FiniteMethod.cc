@@ -46,7 +46,7 @@ namespace base {
 	}
     }
     
-    void FiniteMethod::update(unsigned int chain, RNG *rng)
+    void FiniteMethod::update(unsigned int chain, RNG *rng) const
     {
 	int size = _upper - _lower + 1;
 	vector<double> lik(size);

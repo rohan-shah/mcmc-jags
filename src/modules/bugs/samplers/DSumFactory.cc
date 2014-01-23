@@ -3,7 +3,7 @@
 #include <graph/Graph.h>
 #include <graph/StochasticNode.h>
 #include <graph/NodeError.h>
-#include <sampler/ParallelSampler.h>
+#include <sampler/MutableParallelSampler.h>
 #include <sampler/GraphView.h>
 
 #include "DSumFactory.h"
@@ -84,7 +84,7 @@ Sampler * DSumFactory::makeSampler(set<StochasticNode*> const &nodes,
     
     GraphView *gv = new GraphView(parameters, graph, true);
     unsigned int nchain = parameters[0]->nchain();
-    vector<SampleMethod*> methods(nchain, 0);
+    vector<MutableSampleMethod*> methods(nchain, 0);
     for (unsigned int ch = 0; ch < nchain; ++ch) {
 	if (discrete) {
 	    if (multinom)
@@ -96,7 +96,7 @@ Sampler * DSumFactory::makeSampler(set<StochasticNode*> const &nodes,
 	    methods[ch] = new RealDSum(gv, ch);
 	}
     }
-    return new ParallelSampler(gv, methods);
+    return new MutableParallelSampler(gv, methods);
 
 }
 

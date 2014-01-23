@@ -1,7 +1,6 @@
 #include <config.h>
-#include <sampler/ParallelSampler.h>
+#include <sampler/ImmutableParallelSampler.h>
 #include <sampler/SingletonGraphView.h>
-#include <sampler/SampleMethod.h>
 
 #include "FiniteMethod.h"
 #include "FiniteFactory.h"
@@ -20,16 +19,12 @@ namespace base {
 	return FiniteMethod::canSample(snode);
     }
 
-    Sampler *  FiniteFactory::makeSampler(StochasticNode *snode,
-					  Graph const &graph) const
+    Sampler * FiniteFactory::makeSampler(StochasticNode *snode,
+					 Graph const &graph) const
     {
 	SingletonGraphView *gv = new SingletonGraphView(snode, graph);
-	unsigned int N = nchain(gv);
-	vector<SampleMethod*> methods(N, 0);
-	for (unsigned int ch = 0; ch < N; ++ch) {
-	    methods[ch] = new FiniteMethod(gv, ch);
-	}
-	return new ParallelSampler(gv, methods);
+	FiniteMethod *method = new FiniteMethod(gv);
+	return new ImmutableParallelSampler(gv, method);
     }
 
     string FiniteFactory::name() const
