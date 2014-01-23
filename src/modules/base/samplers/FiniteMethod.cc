@@ -1,7 +1,6 @@
 #include <config.h>
 #include <distribution/Distribution.h>
 #include <graph/StochasticNode.h>
-#include <sampler/ParallelSampler.h>
 #include <rng/RNG.h>
 #include <util/nainf.h>
 #include <graph/NodeError.h>
@@ -39,16 +38,15 @@ namespace jags {
 
 namespace base {
 
-    FiniteMethod::FiniteMethod(SingletonGraphView const *gv, unsigned int chain)
-	: _gv(gv), _chain(chain), _lower(mkLower(gv)), _upper(mkUpper(gv))
+    FiniteMethod::FiniteMethod(SingletonGraphView const *gv)
+	: _gv(gv), _lower(mkLower(gv)), _upper(mkUpper(gv))
     {
-	StochasticNode const *snode = gv->node();
 	if (!canSample(gv->node())) {
 	    throwLogicError("Invalid FiniteMethod");
 	}
     }
     
-    void FiniteMethod::update(RNG *rng)
+    void FiniteMethod::update(unsigned int chain, RNG *rng)
     {
 	int size = _upper - _lower + 1;
 	vector<double> lik(size);
@@ -57,11 +55,11 @@ namespace base {
 	double lik_max = JAGS_NEGINF;
 	for (int i = 0; i < size; i++) {
 	    double ivalue = _lower + i;
-	    _gv->setValue(&ivalue, 1, _chain);
-	    lik[i] = _gv->logFullConditional(_chain);
+	    _gv->setValue(&ivalue, 1, chain);
+	    lik[i] = _gv->logFullConditional(chain);
 	    lik_max = max(lik_max, lik[i]);
 	}
-
+	
 	//Transform log-likelihood to likelihood, avoiding overflow
 	double liksum = 0;
 	for (int i = 0; i < size; ++i) {
@@ -84,23 +82,9 @@ namespace base {
 	    }
 	}
 	double ivalue = _lower + i;
-	_gv->setValue(&ivalue, 1, _chain);
+	_gv->setValue(&ivalue, 1, chain);
     }
 
-    bool FiniteMethod::isAdaptive() const
-    {
-	return false;
-    }
-
-    void FiniteMethod::adaptOff()
-    {
-    }
-
-    bool FiniteMethod::checkAdaptation() const
-    {
-	return true;
-    }
-    
     bool FiniteMethod::canSample(StochasticNode const * node)
     {
 	//Node must be scalar with discrete-valued distribution of full rank

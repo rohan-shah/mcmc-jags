@@ -1,7 +1,7 @@
 #ifndef SLICER_H_
 #define SLICER_H_
 
-#include <sampler/SampleMethod.h>
+#include <sampler/MutableSampleMethod.h>
 
 namespace jags {
 
@@ -18,8 +18,16 @@ enum SlicerState {SLICER_OK, SLICER_POSINF, SLICER_NEGINF};
  * 
  * The slice sampler is defined by Neal R (2003) Slice Sampling,
  * Ann. Statist.  31; 3: 705-767.
+ *
+ * This class provides basic infrastructure for slice sampling. 
+ *
+ * The Slicer class provides no update method. A subclass must provide
+ * an update method that calls either updateStep or updateDouble,
+ * depending on whether the "stepping out" or "doubling" method is
+ * used. The subclass must also provide member functions value,
+ * setValue, getLimits and logDensity.
  */
-class Slicer : public SampleMethod 
+class Slicer : public MutableSampleMethod 
 {
     double _width;
     bool _adapt;
@@ -41,8 +49,8 @@ public:
     Slicer(double width, unsigned int max);
     /**
      * Update the current value using the "stepping" method. A Sampler
-     * that uses the Slicer DensityMethod can implement Sampler#update
-     * by calling this function.
+     * that uses a Slicer can implement Sampler#update by calling this
+     * function.
      *
      * @return Success indicator. If the return value is false, then
      * the slicer state is set to show the error that occurred.
@@ -50,11 +58,11 @@ public:
     bool updateStep(RNG *rng);
     /**
      * Update the current value using the "doubling" method. A Sampler
-     * that uses the Slicer DensityMethod can implement Sampler#update
-     * by calling this function.
+     * that uses a Slicer can implement Sampler#update by calling this
+     * function.
      *
      * @return Success indicator. If the return value is false, then
-     * the slicer state is set to show the error that occurred.
+     * the Slicer state is set to show the error that occurred.
      */
     bool updateDouble(RNG *rng);
     /**

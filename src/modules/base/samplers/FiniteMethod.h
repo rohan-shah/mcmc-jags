@@ -4,28 +4,22 @@
 #include <sampler/SampleMethod.h>
 
 namespace jags {
-namespace base {
+    namespace base {
 
-/**
- * Sampler for discrete distributions with support on a finite set.
- */
-    class FiniteMethod : public SampleMethod {
-	SingletonGraphView const *_gv;
-	const unsigned int _chain;
-	const int _lower, _upper;
-    public:
-	FiniteMethod(SingletonGraphView const *gv, unsigned int chain);
-	void update(RNG *rng);
 	/**
-	 * FiniteMethod is not adaptive. This function returns false.
+	 * Sampler for discrete distributions with support on a finite set.
 	 */
-	bool isAdaptive() const;
-	void adaptOff();
-	bool checkAdaptation() const;
-	std::string name() const;
-	static bool canSample(StochasticNode const *snode);
-    };
-
-}}
+	class FiniteMethod : public ImmutableSampleMethod {
+	    SingletonGraphView const *_gv;
+	    const int _lower, _upper;
+	  public:
+	    FiniteMethod(SingletonGraphView const *gv);
+	    void update(unsigned int chain, RNG *rng);
+	    std::string name() const;
+	    static bool canSample(StochasticNode const *snode);
+	};
+	
+    }
+}
 
 #endif /* FINITE_METHOD_H_ */

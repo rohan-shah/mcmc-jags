@@ -11,16 +11,16 @@ namespace jags {
 
 namespace base {
     
-/**
- * @short Discrete slice sampler
- *
- * Slice sampler for discrete valued distributions.
- *
- * To sample a discrete valued random variable X, we create an
- * auxiliary variable Y which is real valued, and for which p_[Y](y) =
- * p_[X](floor(y)).  Hence Y has a piecewise-constant density function
- * on the real line.  We sample Y and then set X = floor(Y).
- */
+    /**
+     * @short Discrete slice sampler
+     *
+     * Slice sampler for discrete valued distributions.
+     *
+     * To sample a discrete valued random variable X, we create an
+     * auxiliary variable Y which is real valued, and for which p_[Y](y) =
+     * p_[X](floor(y)).  Hence Y has a piecewise-constant density function
+     * on the real line.  We sample Y and then set X = floor(Y).
+     */
     class DiscreteSlicer : public Slicer {
 	SingletonGraphView const *_gv;
 	const unsigned int _chain;

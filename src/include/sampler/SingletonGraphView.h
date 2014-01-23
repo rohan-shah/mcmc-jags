@@ -5,21 +5,22 @@
 
 namespace jags {
 
-    class StochasticNode;
-    class Graph;
-
     /**
      * @short GraphView for a single stochastic node.
      *
      * The SingletonGraphView class provides a simplified interface to
-     * the GraphView class there is only a single node to be sampled.
-     * It should be used in preference to GraphView by any SampleMethod
-     * that acts on a single node.
+     * the GraphView class when there is only a single node to be
+     * sampled.  It should be used in preference to GraphView by any
+     * Sampler that acts on a single node.
+     *
+     * Note that this class is not just syntactic sugar: it provides a
+     * compile-time guarantee that only one StochasticNode is being
+     * sampled.
      */
     class SingletonGraphView : public GraphView {
       public:
 	/**
-	 * Constructs a SingletonGraphView for the given node.  
+	 * Constructor
 	 *
 	 * @param node Node to be sampled 
 	 *

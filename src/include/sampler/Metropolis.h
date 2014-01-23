@@ -1,7 +1,7 @@
 #ifndef METROPOLIS_H_
 #define METROPOLIS_H_
 
-#include <sampler/SampleMethod.h>
+#include <sampler/MutableSampleMethod.h>
 #include <vector>
 
 namespace jags {
@@ -19,7 +19,7 @@ class StochasticNode;
  * calls to Metropolis#setValue, calculate the acceptance probability,
  * and then call the function Metropolis#accept.
  */
-class Metropolis : public SampleMethod
+class Metropolis : public MutableSampleMethod
 {
     std::vector<double> _last_value;
     bool _adapt;
@@ -35,18 +35,13 @@ public:
     /**
      * Sets the value of the Metropolis object. 
      *
-     * @param value Pointer to the beginning of an array of values
-     *
-     * @param length Length of the supplied value array
+     * @param value Vector of values 
      */
     virtual void setValue(std::vector<double> const &value) = 0;
     /**
-     * Accept current value with probabilty p. If the current value is
-     * not accepted, the Metropolis object reverts to the value at the
-     * last successful call to accept. The first call to accept is
-     * always successful and neither rng nor prob is referenced. A
-     * subclass of Metropolis may therefore call accept in the
-     * constructor in order to store the initial value.
+     * Accept current value with probabilty prob. If the current value
+     * is not accepted, the Metropolis object reverts to the value at
+     * the last successful call to accept.
      *
      * @param rng Random number generator.
      *  
