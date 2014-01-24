@@ -18,7 +18,7 @@ using std::string;
 using std::vector;
 using std::exp;
 using std::string;
-using std::max;
+using std::binary_search;
 
 namespace jags {
 
@@ -57,30 +57,24 @@ namespace base {
 	    double ivalue = _lower + i;
 	    _gv->setValue(&ivalue, 1, chain);
 	    lik[i] = _gv->logFullConditional(chain);
-	    lik_max = max(lik_max, lik[i]);
+	    if (lik[i] > lik_max) lik_max = lik[i];
 	}
 	
 	//Transform log-likelihood to likelihood, avoiding overflow
+	//and calculate partial sums
 	double liksum = 0;
 	for (int i = 0; i < size; ++i) {
-	    lik[i] = exp(lik[i] - lik_max);
-	    liksum += lik[i];
+	    liksum += exp(lik[i] - lik_max);
+	    lik[i] = liksum;
 	}
 	
 	if (!jags_finite(liksum)) {
 	    throwNodeError(_gv->node(), "Cannot normalize density");
 	}
 
-	/* Sample */
+	// Sample
 	double urand = rng->uniform() * liksum;
-	int i;
-	liksum = 0.0;
-	for (i = 0; i < size - 1; i++) {
-	    liksum += lik[i];
-	    if (liksum > urand) {
-		break;
-	    }
-	}
+	int i = upper_bound(lik.begin(), lik.end(), urand) - lik.begin();
 	double ivalue = _lower + i;
 	_gv->setValue(&ivalue, 1, chain);
     }
