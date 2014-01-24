@@ -34,13 +34,30 @@ static vector<Node const *> mkParents(vector<Node const *> const &parameters,
     return parents;
 }
 
+    static bool mkDiscrete(Distribution const *dist,
+			   vector<Node const *> const &parameters)
+    {
+	//Determine whether node is discrete-valued
+	vector<bool> mask(parameters.size());
+	for (unsigned int i = 0; i < parameters.size(); ++i) {
+	    mask[i] = parameters[i]->isDiscreteValued();
+	}
+	if (!dist->checkParameterDiscrete(mask)) {
+	    throw DistError(dist, 
+			    "Failed check for discrete-valued parameters");
+	}
+	return(dist->isDiscreteValued(mask));
+    }
+
 StochasticNode::StochasticNode(vector<unsigned int> const &dim,
 			       Distribution const *dist,
 			       vector<Node const *> const &parameters,
-			       Node const *lower=0, Node const *upper=0)
+			       Node const *lower, Node const *upper,
+			       double const *data, unsigned int length)
     : Node(dim, mkParents(parameters, lower, upper)), 
-      _dist(dist), _lower(lower), _upper(upper), _observed(false), 
-      _discrete(false), _parameters(nchain())
+      _dist(dist), _lower(lower), _upper(upper), 
+      _observed(data != 0 && length > 0), 
+      _discrete(mkDiscrete(dist, parameters)), _parameters(nchain())
 {
     if (!_dist->checkNPar(parameters.size())) {
 	throw DistError(_dist, "Incorrect number of parameters");
@@ -56,21 +73,18 @@ StochasticNode::StochasticNode(vector<unsigned int> const &dim,
 	throw DistError(_dist, "Distribution cannot be bounded");
     }
 
-    //check discreteness of parents
-    vector<bool> mask(parameters.size());
-    for (unsigned int i = 0; i < parameters.size(); ++i) {
-	mask[i] = parameters[i]->isDiscreteValued();
-    }
-    if (!_dist->checkParameterDiscrete(mask)) {
-	throw DistError(_dist, "Failed check for discrete-valued parameters");
-    }
-    _discrete = _dist->isDiscreteValued(mask);
-
     //Set up parameter vectors 
     for (unsigned int n = 0; n < nchain(); ++n) {
 	_parameters[n].reserve(parameters.size());
 	for (unsigned int i = 0; i < parameters.size(); ++i) {
 	    _parameters[n].push_back(parameters[i]->value(n));
+	}
+    }
+
+    //Set value if supplied
+    if (data) {
+	for (unsigned int n = 0; n < _nchain; ++n) {
+	    setValue(data, length, n);
 	}
     }
 
@@ -106,11 +120,6 @@ RVStatus StochasticNode::randomVariableStatus() const
 {
     return _observed ? RV_TRUE_OBSERVED : RV_TRUE_UNOBSERVED;    
 }	
-
-void StochasticNode::setObserved() 
-{
-    _observed = true;
-} 
 
 string StochasticNode::deparse(vector<string> const &parnames) const
 {

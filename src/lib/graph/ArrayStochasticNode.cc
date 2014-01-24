@@ -49,8 +49,11 @@ mkParameterDims(vector<Node const *> const &parameters) {
 
 ArrayStochasticNode::ArrayStochasticNode(ArrayDist const *dist, 
 					 vector<Node const *> const &params,
-					 Node const *lower, Node const *upper)
-    : StochasticNode(mkDim(dist, params), dist, params, lower, upper),
+					 Node const *lower, Node const *upper,
+					 double const *data,
+					 unsigned int length)
+    : StochasticNode(mkDim(dist, params), dist, params, lower, upper, 
+		     data, length),
       _dist(dist), _dims(mkParameterDims(params))
 {
     if (!dist->checkParameterDim(_dims)) {

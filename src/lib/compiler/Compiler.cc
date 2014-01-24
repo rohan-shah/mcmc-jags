@@ -725,27 +725,25 @@ Node * Compiler::allocateStochastic(ParseTree const *stoch_relation)
     StochasticNode *snode = 0;
     if (SCALAR(dist)) {
 	snode =  new ScalarStochasticNode(SCALAR(dist), parameters, 
-					  lBound, uBound);
+					  lBound, uBound, 
+					  this_data, data_length);
     }
     else if (VECTOR(dist)) {
 	snode = new VectorStochasticNode(VECTOR(dist), parameters,
-					 lBound, uBound);
+					 lBound, uBound, 
+					 this_data, data_length);
     }
     else if (ARRAY(dist)) {
 	snode = new ArrayStochasticNode(ARRAY(dist), parameters,
-					lBound, uBound);
+					lBound, uBound, 
+					this_data, data_length);
     }
     else {
 	throw logic_error("Unable to classify distribution");
     }
     _model.addNode(snode);
     
-    // If Node is observed, set the data
     if (this_data) {
-	for (unsigned int n = 0; n < snode->nchain(); ++n) {
-	    snode->setValue(this_data, data_length, n);
-	}
-	snode->setObserved();
 	delete [] this_data;
     }
     

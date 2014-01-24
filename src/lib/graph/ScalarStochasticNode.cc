@@ -14,9 +14,11 @@ namespace jags {
 
 ScalarStochasticNode::ScalarStochasticNode(ScalarDist const *dist, 
 					   vector<Node const *> const &params,
-					   Node const *lower, Node const *upper)
-    : StochasticNode(vector<unsigned int>(1,1), dist, params, lower, upper), 
-      _dist(dist)
+					   Node const *lower, Node const *upper,
+					   double const *data,
+					   unsigned int length)
+    : StochasticNode(vector<unsigned int>(1,1), dist, params, lower, upper,
+		     data, length), _dist(dist)
 {
     for (unsigned int i = 0; i < params.size(); ++i) {
 	if (params[i]->length() != 1) {

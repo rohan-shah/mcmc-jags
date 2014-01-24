@@ -39,7 +39,7 @@ namespace jags {
 enum ClosedFuncClass {DNODE_LINEAR, DNODE_SCALE, DNODE_SCALE_MIX, DNODE_POWER};
 
 /**
- * @short Base class for deterministic Node objects
+ * @short Base class for deterministic Nodes
  *
  * The value of a deterministic node is determined exactly by the
  * values of its parents.

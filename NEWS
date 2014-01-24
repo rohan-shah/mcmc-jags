@@ -37,6 +37,13 @@ Library changes
   ImmutableSampleMethod are added to the library for samplers that have
   no internal state (e.g. base::FiniteSampler or bugs::ConjugateSampler).
   class are intro
+* StochasticNode and its subclasses now have two optional arguments in
+  their constructors: data and length. These are used to set the value
+  of observed nodes on construction. The setObserved member function
+  is defunct, so it is now no longer possible to set a StochasticNode
+  to be observed after construction. The change guarentees that
+  observed StochasticNodes have the same value across all chains. The
+  Compiler has been modified to use the new StochasticNode API.
 
 Internal changes in modules
 ===========================
