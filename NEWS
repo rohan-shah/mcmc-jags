@@ -44,6 +44,10 @@ Internal changes in modules
 * The FLIBS flag is now passed to modules that use LAPACK and BLAS.
   This allows static linking to LAPACK.
 
+* base module
+  - FiniteMethod no longer has a restriction on the length of the 
+    nodes that it can sample.
+
 * bugs module
   - The ConjugateDirichlet sampler is now much faster for mixture
   models. This sampler contains some experimental features that may

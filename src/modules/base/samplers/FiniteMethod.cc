@@ -96,19 +96,12 @@ namespace base {
 	    return false;
 	}
 	
-	//FIXME: If support is fixed it is the same for all chains
-	for (unsigned int ch = 0; ch < node->nchain(); ++ch) {
-	    //Distribution cannot be unbounded
-	    double ulimit = JAGS_NEGINF, llimit = JAGS_POSINF;
-	    node->support(&llimit, &ulimit, 1, ch);
-	    if (!jags_finite(ulimit) || !jags_finite(llimit))
-		return false;
+	//Distribution cannot be unbounded
+	double ulimit = JAGS_NEGINF, llimit = JAGS_POSINF;
+	node->support(&llimit, &ulimit, 1, 0);
+	if (!jags_finite(ulimit) || !jags_finite(llimit))
+	    return false;
 
-	    //We don't want too many possibilities
-	    double n = ulimit - llimit + 1;
-	    if (n <= 1 || n > 20) //fixme: totally arbitrary
-		return false;
-	}
 	return true;
     }
 
