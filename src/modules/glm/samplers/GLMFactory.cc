@@ -239,7 +239,7 @@ namespace glm {
 	if (!sub_views.empty()) {
 		
 	    unsigned int Nch = nchain(view);
-	    vector<SampleMethod*> methods(Nch, 0);
+	    vector<MutableSampleMethod*> methods(Nch, 0);
 		
 	    vector<SingletonGraphView const*> const_sub_views(sub_views.size());
 	    //FIXME: std::copy

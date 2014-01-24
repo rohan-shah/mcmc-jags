@@ -7,7 +7,6 @@
 #include "ConjugateDirichlet.h"
 #include "ConjugateMNormal.h"
 #include "ConjugateWishart.h"
-#include "ConjugateSampler.h"
 //#include "Censored.h"
 //#include "TruncatedGamma.h"
 #include "ShiftedCount.h"
@@ -17,6 +16,7 @@
 #include <distribution/Distribution.h>
 #include <sampler/SingletonGraphView.h>
 #include <module/ModuleError.h>
+#include <sampler/ImmutableParallelSampler.h>
 
 #include <string>
 
@@ -145,7 +145,7 @@ Sampler *ConjugateFactory::makeSampler(StochasticNode *snode,
    }
 */  
     
-    return new ConjugateSampler(gv, method);
+    return new ImmutableParallelSampler(gv, method);
 }
 
 string ConjugateFactory::name() const

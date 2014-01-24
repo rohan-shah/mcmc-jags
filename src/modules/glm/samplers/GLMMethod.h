@@ -1,7 +1,7 @@
 #ifndef GLM_METHOD_H_
 #define GLM_METHOD_H_
 
-#include <sampler/SampleMethod.h>
+#include <sampler/MutableSampleMethod.h>
 
 #include <string>
 #include <vector>
@@ -36,7 +36,7 @@ namespace glm {
      * consistent way without needing to distinguish between them or
      * relying on asymptotic approximations.
      */
-    class GLMMethod : public SampleMethod {
+    class GLMMethod : public MutableSampleMethod {
     protected:
 	GraphView const *_view;
 	unsigned int _chain;

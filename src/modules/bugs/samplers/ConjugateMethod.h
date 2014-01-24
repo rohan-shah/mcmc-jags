@@ -1,7 +1,8 @@
 #ifndef CONJUGATE_METHOD_H_
 #define CONJUGATE_METHOD_H_
 
-#include <string>
+#include <sampler/ImmutableSampleMethod.h>
+
 #include <vector>
 
 namespace jags {
@@ -25,17 +26,14 @@ enum ConjugateDist {
  */
 ConjugateDist getDist(StochasticNode const *snode);
 
-class ConjugateMethod
+class ConjugateMethod : public ImmutableSampleMethod
 {
 protected:
     const ConjugateDist _target_dist;
     const std::vector<ConjugateDist> _child_dist;
-    SingletonGraphView const *_gv;
+    SingletonGraphView const * const _gv;
 public:
     ConjugateMethod(SingletonGraphView const *gv);
-    virtual ~ConjugateMethod();
-    virtual void update(unsigned int chain, RNG *rng) const = 0;
-    virtual std::string name() const = 0;
 };
 
 }}

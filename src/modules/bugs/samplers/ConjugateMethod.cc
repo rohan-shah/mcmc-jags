@@ -69,7 +69,4 @@ ConjugateMethod::ConjugateMethod(SingletonGraphView const *gv)
 {
 }
 
-ConjugateMethod::~ConjugateMethod()
-{}
-
 }}

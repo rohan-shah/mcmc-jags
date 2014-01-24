@@ -2,10 +2,9 @@
 #include "DirichletCatFactory.h"
 #include "DirichletCat.h"
 
-#include <sampler/ParallelSampler.h>
-#include <sampler/SampleMethod.h>
+#include <sampler/MutableParallelSampler.h>
+#include <sampler/MutableSampleMethod.h>
 #include <sampler/SingletonGraphView.h>
-//#include <graph/GraphMarks.h>
 #include <graph/Graph.h>
 #include <graph/StochasticNode.h>
 #include <graph/MixtureNode.h>
@@ -64,11 +63,11 @@ namespace jags {
 	    unsigned int nchain = snodes[0]->nchain();
 
 	    if (DirichletCat::canSample(gv)) {
-		vector<SampleMethod*> methods(nchain);	    
+		vector<MutableSampleMethod*> methods(nchain);	    
 		for (unsigned int ch = 0; ch < nchain; ++ch) {
 		    methods[ch] = new DirichletCat(gv, ch);
 		}
-		sampler = new ParallelSampler(gv, methods);		
+		sampler = new MutableParallelSampler(gv, methods);		
 	    }
 	    else {
 		delete gv;

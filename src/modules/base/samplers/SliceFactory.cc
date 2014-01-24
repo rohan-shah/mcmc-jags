@@ -4,7 +4,7 @@
 #include "DiscreteSlicer.h"
 #include "SliceFactory.h"
 
-#include <sampler/ParallelSampler.h>
+#include <sampler/MutableParallelSampler.h>
 #include <sampler/SingletonGraphView.h>
 #include <graph/StochasticNode.h>
 
@@ -31,7 +31,7 @@ namespace base {
 				       Graph const &graph) const
     {
 	unsigned int nchain = snode->nchain();
-	vector<SampleMethod*> methods(nchain, 0);
+	vector<MutableSampleMethod*> methods(nchain, 0);
 
 	SingletonGraphView *gv = new SingletonGraphView(snode, graph);
 
@@ -45,7 +45,7 @@ namespace base {
 	    }
 	}
 
-	return new ParallelSampler(gv, methods);
+	return new MutableParallelSampler(gv, methods);
     }
 
     string SliceFactory::name() const

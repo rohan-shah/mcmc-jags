@@ -5,7 +5,7 @@
 #include <graph/Graph.h>
 #include <graph/StochasticNode.h>
 #include <distribution/Distribution.h>
-#include <sampler/ParallelSampler.h>
+#include <sampler/MutableParallelSampler.h>
 #include <sampler/SingletonGraphView.h>
 
 #include <set>
@@ -90,11 +90,11 @@ namespace mix {
 	if (NormMix::canSample(sample_nodes)) {
 	    GraphView *gv = new GraphView(sample_nodes, graph, true);
 	    unsigned int nchain = sample_nodes[0]->nchain();
-	    vector<SampleMethod*> methods(nchain,0);	    
+	    vector<MutableSampleMethod*> methods(nchain,0);	    
 	    for (unsigned int ch = 0; ch < nchain; ++ch) {
 		methods[ch] = new NormMix(gv, ch, NLEVEL, MAX_TEMP, NREP);
 	    }
-	    return new ParallelSampler(gv, methods);		
+	    return new MutableParallelSampler(gv, methods);		
 	}
 	else {
 	    return 0;

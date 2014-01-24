@@ -2,8 +2,8 @@
 #include "LDAFactory.h"
 #include "LDA.h"
 
-#include <sampler/ParallelSampler.h>
-#include <sampler/SampleMethod.h>
+#include <sampler/MutableParallelSampler.h>
+#include <sampler/MutableSampleMethod.h>
 #include <sampler/SingletonGraphView.h>
 #include <graph/Graph.h>
 #include <graph/StochasticNode.h>
@@ -145,12 +145,12 @@ namespace jags {
 		
 		GraphView *view = new GraphView(snodes, graph);
 		unsigned int N = nchain(view);
-		vector<SampleMethod*> methods(N);
+		vector<MutableSampleMethod*> methods(N);
 		for (unsigned int ch = 0; ch < N; ++ch) {
 		    methods[ch] = new LDA(topics, words, topicPriors,
 					  wordPriors, view, ch);
 		}
-		return new ParallelSampler(view, methods);
+		return new MutableParallelSampler(view, methods);
 	    }
 	    else return 0;
 	}
