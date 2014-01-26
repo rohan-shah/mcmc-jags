@@ -1,5 +1,5 @@
 #include <sampler/MutableParallelSampler.h>
-#include <sampler/SampleMethod.h>
+#include <sampler/MutableSampleMethod.h>
 #include <graph/StochasticNode.h>
 #include <sampler/GraphView.h>
 

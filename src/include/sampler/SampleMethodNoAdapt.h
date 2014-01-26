@@ -1,7 +1,7 @@
 #ifndef SAMPLE_METHOD_NO_ADAPT_H_
 #define SAMPLE_METHOD_NO_ADAPT_H_
 
-#include <sampler/SampleMethod.h>
+#include <sampler/MutableSampleMethod.h>
 
 namespace jags {
 
@@ -11,7 +11,7 @@ namespace jags {
      * Provides trivial implementations of member functions concerned
      * with adaptation for sample methods that have no adaptive phase.
      */
-    class SampleMethodNoAdapt : public SampleMethod
+    class SampleMethodNoAdapt : public MutableSampleMethod
     {
       public:
 	bool isAdaptive() const { return false; };
