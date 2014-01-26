@@ -3,7 +3,7 @@
 #include <graph/Graph.h>
 #include <graph/StochasticNode.h>
 #include <graph/NodeError.h>
-#include <sampler/MutableParallelSampler.h>
+#include <sampler/MutableSampler.h>
 #include <sampler/GraphView.h>
 
 #include "DSumFactory.h"
@@ -96,7 +96,7 @@ Sampler * DSumFactory::makeSampler(set<StochasticNode*> const &nodes,
 	    methods[ch] = new RealDSum(gv, ch);
 	}
     }
-    return new MutableParallelSampler(gv, methods);
+    return new MutableSampler(gv, methods);
 
 }
 

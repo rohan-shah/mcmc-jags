@@ -4,7 +4,7 @@
 #include "DiscreteSlicer.h"
 #include "SliceFactory.h"
 
-#include <sampler/MutableParallelSampler.h>
+#include <sampler/MutableSampler.h>
 #include <sampler/SingletonGraphView.h>
 #include <graph/StochasticNode.h>
 
@@ -45,7 +45,7 @@ namespace base {
 	    }
 	}
 
-	return new MutableParallelSampler(gv, methods);
+	return new MutableSampler(gv, methods);
     }
 
     string SliceFactory::name() const

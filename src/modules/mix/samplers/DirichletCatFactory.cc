@@ -2,7 +2,7 @@
 #include "DirichletCatFactory.h"
 #include "DirichletCat.h"
 
-#include <sampler/MutableParallelSampler.h>
+#include <sampler/MutableSampler.h>
 #include <sampler/MutableSampleMethod.h>
 #include <sampler/SingletonGraphView.h>
 #include <graph/Graph.h>
@@ -67,7 +67,7 @@ namespace jags {
 		for (unsigned int ch = 0; ch < nchain; ++ch) {
 		    methods[ch] = new DirichletCat(gv, ch);
 		}
-		sampler = new MutableParallelSampler(gv, methods);		
+		sampler = new MutableSampler(gv, methods);		
 	    }
 	    else {
 		delete gv;

@@ -2,7 +2,7 @@
 #include "LDAFactory.h"
 #include "LDA.h"
 
-#include <sampler/MutableParallelSampler.h>
+#include <sampler/MutableSampler.h>
 #include <sampler/MutableSampleMethod.h>
 #include <sampler/SingletonGraphView.h>
 #include <graph/Graph.h>
@@ -150,7 +150,7 @@ namespace jags {
 		    methods[ch] = new LDA(topics, words, topicPriors,
 					  wordPriors, view, ch);
 		}
-		return new MutableParallelSampler(view, methods);
+		return new MutableSampler(view, methods);
 	    }
 	    else return 0;
 	}

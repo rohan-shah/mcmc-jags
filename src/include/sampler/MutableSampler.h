@@ -1,5 +1,5 @@
-#ifndef MUTABLE_PARALLEL_SAMPLER_H_
-#define MUTABLE_PARALLEL_SAMPLER_H_
+#ifndef MUTABLE_SAMPLER_H_
+#define MUTABLE_SAMPLER_H_
 
 #include <sampler/Sampler.h>
 
@@ -11,10 +11,10 @@ namespace jags {
     /**
      * @short Samples multiple chains in parallel 
      *
-     * Uses uses a vector of MutableSampleMethod objects to update
-     * each chain without interaction (hence parallel).
+     * A vector of MutableSampleMethod objects is used to update each
+     * chain in parallel.
      */
-    class MutableParallelSampler : public Sampler
+    class MutableSampler : public Sampler
     {
 	std::vector<MutableSampleMethod*> _methods;
       public:
@@ -27,12 +27,12 @@ namespace jags {
 	 * @param methods Vector of pointers to MutableSampleMethod
 	 * objects, of length equal to the number of chains.  These
 	 * must be dynamically allocated, as the
-	 * MutableParallelSampler will take ownership of them, and
+	 * MutableSampler will take ownership of them, and
 	 * will delete them when its destructor is called
 	 */
-	MutableParallelSampler(GraphView *gv, 
+	MutableSampler(GraphView *gv, 
 			      std::vector<MutableSampleMethod*> const &methods);
-	~MutableParallelSampler();
+	~MutableSampler();
 	void update(std::vector<RNG*> const &rngs);
 	bool isAdaptive() const;
 	void adaptOff();
@@ -42,4 +42,4 @@ namespace jags {
 
 } /* namespace jags */
 
-#endif /* MUTABLE_PARALLEL_SAMPLER_H_ */
+#endif /* MUTABLE_SAMPLER_H_ */

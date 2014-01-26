@@ -4,7 +4,7 @@
 #include "DirichletFactory.h"
 #include <graph/StochasticNode.h>
 #include <distribution/Distribution.h>
-#include <sampler/MutableParallelSampler.h>
+#include <sampler/MutableSampler.h>
 #include <sampler/SingletonGraphView.h>
 
 #include <string>
@@ -32,7 +32,7 @@ DirichletFactory::makeSampler(StochasticNode *snode, Graph const &graph) const
     for (unsigned int ch = 0; ch < nchain; ++ch) {
         methods[ch] = new DirchMetropolis(gv, ch);
     }
-    return new MutableParallelSampler(gv, methods);
+    return new MutableSampler(gv, methods);
 }
 
 string DirichletFactory::name() const

@@ -4,7 +4,7 @@
 #include "MNormalFactory.h"
 #include <graph/StochasticNode.h>
 #include <distribution/Distribution.h>
-#include <sampler/MutableParallelSampler.h>
+#include <sampler/MutableSampler.h>
 #include <sampler/SingletonGraphView.h>
 
 #include <string>
@@ -32,7 +32,7 @@ MNormalFactory::makeSampler(StochasticNode *snode, Graph const &graph) const
     for (unsigned int ch = 0; ch < N; ++ch) {
         methods[ch] = new MNormMetropolis(gv, ch);
     }
-    return new MutableParallelSampler(gv, methods);
+    return new MutableSampler(gv, methods);
 }
 
 string MNormalFactory::name() const 

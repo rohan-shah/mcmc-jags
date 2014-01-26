@@ -1,5 +1,5 @@
 #include <config.h>
-#include <sampler/ImmutableParallelSampler.h>
+#include <sampler/ImmutableSampler.h>
 #include <sampler/SingletonGraphView.h>
 
 #include "FiniteMethod.h"
@@ -24,7 +24,7 @@ namespace base {
     {
 	SingletonGraphView *gv = new SingletonGraphView(snode, graph);
 	FiniteMethod *method = new FiniteMethod(gv);
-	return new ImmutableParallelSampler(gv, method);
+	return new ImmutableSampler(gv, method);
     }
 
     string FiniteFactory::name() const

@@ -16,7 +16,7 @@
 #include <distribution/Distribution.h>
 #include <sampler/SingletonGraphView.h>
 #include <module/ModuleError.h>
-#include <sampler/ImmutableParallelSampler.h>
+#include <sampler/ImmutableSampler.h>
 
 #include <string>
 
@@ -145,7 +145,7 @@ Sampler *ConjugateFactory::makeSampler(StochasticNode *snode,
    }
 */  
     
-    return new ImmutableParallelSampler(gv, method);
+    return new ImmutableSampler(gv, method);
 }
 
 string ConjugateFactory::name() const

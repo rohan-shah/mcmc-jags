@@ -14,7 +14,16 @@ class GraphView;
 /**
  * @short Updates a set of stochastic nodes
  *
- * A sampler updates a set of stochastic nodes.  
+ * A sampler updates a set of stochastic nodes at each iteration.
+ * In addition, the sampler is responsible for updating the immediate
+ * deterministic descendants of the sampled nodes.
+ *
+ * The Sampler class is designed to be as abstract as possible to give
+ * maximum freedom in implementing samplers.  In practice, all the
+ * Samplers in the modules distributed with JAGS are implementations
+ * of one of two subclasses -- MutableSampler or ImmutableSampler --
+ * depending on whether the Sampler does or does not have a state that
+ * it must preserve between iterations.
  */
 class Sampler {
     GraphView *_gv;

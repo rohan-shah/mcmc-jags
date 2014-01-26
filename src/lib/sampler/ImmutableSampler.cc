@@ -1,5 +1,5 @@
 #include <config.h>
-#include <sampler/ImmutableParallelSampler.h>
+#include <sampler/ImmutableSampler.h>
 //Needed for name
 #include <sampler/ImmutableSampleMethod.h>
 //Needed for nchain
@@ -10,39 +10,39 @@ using std::string;
 
 namespace jags {
 
-    ImmutableParallelSampler::ImmutableParallelSampler(GraphView *gv, 
+    ImmutableSampler::ImmutableSampler(GraphView *gv, 
 	       ImmutableSampleMethod *method)
 	: Sampler(gv), _method(method), _nchain(nchain(gv))
     {
     }
 
-    ImmutableParallelSampler::~ImmutableParallelSampler()
+    ImmutableSampler::~ImmutableSampler()
     {
 	delete _method;
     }
 
-    void ImmutableParallelSampler::update(vector<RNG*> const &rngs)
+    void ImmutableSampler::update(vector<RNG*> const &rngs)
     {
 	for (unsigned int ch = 0; ch < _nchain; ++ch) {
 	    _method->update(ch, rngs[ch]);
 	}
     }
 
-    bool ImmutableParallelSampler::isAdaptive() const
+    bool ImmutableSampler::isAdaptive() const
     {
 	return false;
     }
 
-    void ImmutableParallelSampler::adaptOff()
+    void ImmutableSampler::adaptOff()
     {
     }
 
-    bool ImmutableParallelSampler::checkAdaptation() const
+    bool ImmutableSampler::checkAdaptation() const
     {
 	return true;
     }
 
-    string ImmutableParallelSampler::name() const
+    string ImmutableSampler::name() const
     {
 	return _method->name();
     }

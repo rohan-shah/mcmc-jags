@@ -1,7 +1,7 @@
 #ifndef GLM_SAMPLER_H_
 #define GLM_SAMPLER_H_
 
-#include <sampler/MutableParallelSampler.h>
+#include <sampler/MutableSampler.h>
 
 #include <vector>
 
@@ -15,7 +15,7 @@ namespace glm {
     /**
      * @short Base class for GLM samplers.
      */
-    class GLMSampler : public MutableParallelSampler
+    class GLMSampler : public MutableSampler
     {
 	std::vector<SingletonGraphView*> _sub_views;
     public:
