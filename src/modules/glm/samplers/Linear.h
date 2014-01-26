@@ -38,11 +38,6 @@ namespace glm {
 	 * on the value of the parameter "gibbs" in the constructor.
 	 */
 	void update(RNG *rng);
-	/**
-	 * Returns "Linear" or "LinearGibbs" depending on the value of the
-	 * parameter "gibbs" in the constructor
-	 */
-	std::string name() const;
     };
     
 }}

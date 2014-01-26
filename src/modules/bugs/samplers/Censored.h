@@ -18,7 +18,6 @@ public:
     Censored(SingletonGraphView const *gv);
     static bool canSample(StochasticNode *snode, Graph const &graph);
     void update(unsigned int chain, RNG * rng) const;
-    std::string name() const;
 };
 
 }}

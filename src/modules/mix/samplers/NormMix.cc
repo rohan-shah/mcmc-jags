@@ -185,11 +185,6 @@ namespace mix {
 	return true;
     }
 
-    string NormMix::name() const
-    {
-	return "NormMix";
-    }
-
     void NormMix::getValue(vector<double> &x) const 
     {
 	_gv->getValue(x, _chain);

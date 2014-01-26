@@ -15,7 +15,6 @@ namespace jags {
 	  public:
 	    FiniteMethod(SingletonGraphView const *gv);
 	    void update(unsigned int chain, RNG *rng) const;
-	    std::string name() const;
 	    static bool canSample(StochasticNode const *snode);
 	};
 	

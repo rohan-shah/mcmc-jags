@@ -249,7 +249,7 @@ namespace glm {
 	    for (unsigned int ch = 0; ch < Nch; ++ch) {
 		methods[ch] = newMethod(view, const_sub_views, ch);
 	    }
-	    return new GLMSampler(view, sub_views, methods);
+	    return new GLMSampler(view, sub_views, methods, _name);
 	}
 	else {
 	    return 0;

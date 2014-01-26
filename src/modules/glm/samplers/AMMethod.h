@@ -28,10 +28,6 @@ namespace glm {
 		 std::vector<Outcome *> const &outcomes,
 		 unsigned int chain);
 	/**
-	 * Returns "AuxiliaryMixture"
-	 */
-	std::string name() const;
-	/**
 	 * Updates the auxiliary variables and then calls updateLM
 	 */
 	void update(RNG *rng);

@@ -72,11 +72,6 @@ namespace base {
 	}
     }
 
-    string DiscreteSlicer::name() const
-    {
-	return "DiscreteSlicer";
-    }
-    
     double DiscreteSlicer::logDensity() const
     {
 	return _gv->logFullConditional(_chain);

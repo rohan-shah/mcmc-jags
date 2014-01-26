@@ -191,12 +191,6 @@ namespace jags {
 	    _gv->setValue(xnew, _chain);
 	}
 
-
-	string DirichletCat::name() const
-	{
-	    return "mix::DirichletCat";
-	}
-
     }
 }
 

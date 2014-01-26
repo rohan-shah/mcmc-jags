@@ -163,11 +163,6 @@ bool MNormMetropolis::checkAdaptation() const
     return (_n_isotonic > 0) && (_meanp >= 0.15) && (_meanp <= 0.35);
 }
 
-string MNormMetropolis::name() const
-{
-    return "MNormMetropolis";
-}
-
 void MNormMetropolis::getValue(vector<double> &value) const
 {
     double const *v = _gv->node()->value(_chain);

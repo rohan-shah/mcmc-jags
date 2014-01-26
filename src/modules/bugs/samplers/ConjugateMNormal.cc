@@ -17,7 +17,6 @@
 #include <string>
 
 #include "ConjugateMNormal.h"
-#include "ConjugateSampler.h"
 #include "DMNorm.h"
 
 #include <JRmath.h>
@@ -315,11 +314,6 @@ void ConjugateMNormal::update(unsigned int chain, RNG *rng) const
     delete [] Acopy;
     delete [] b;
     delete [] xnew;
-}
-
-string ConjugateMNormal::name() const
-{
-    return "ConjugateMNormal";
 }
 
 }}

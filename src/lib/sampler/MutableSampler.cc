@@ -12,8 +12,9 @@ using std::string;
 namespace jags {
 
     MutableSampler::MutableSampler(GraphView *gv,
-			   vector<MutableSampleMethod *> const &methods)
-	: Sampler(gv), _methods(methods)
+				   vector<MutableSampleMethod *> const &methods,
+				   std::string const &name)
+	: Sampler(gv), _methods(methods), _name(name)
     {
     }
 
@@ -58,7 +59,7 @@ namespace jags {
 
     string MutableSampler::name() const
     {
-	return _methods[0]->name();
+	return _name;
     }
 
 } //namespace jags

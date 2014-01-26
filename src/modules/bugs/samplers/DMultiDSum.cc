@@ -58,9 +58,4 @@ void DMultiDSum::step(vector<double> &value,
     value[nrow * c2 + r2] += inteps;
 }
 
-string DMultiDSum::name() const
-{
-    return "DMultiDSum";
-}
-
 }}

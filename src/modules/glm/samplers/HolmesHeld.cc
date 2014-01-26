@@ -214,10 +214,5 @@ namespace glm {
 	updateLM(rng);
     }
 
-    string HolmesHeld::name() const
-    {
-	return "Holmes-Held";
-    }
-
 }}
     

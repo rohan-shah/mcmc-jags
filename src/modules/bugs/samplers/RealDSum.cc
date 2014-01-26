@@ -47,9 +47,4 @@ void RealDSum::step(vector<double> &value, unsigned int nrow,
     value[c2 * nrow + r] -= eps;
 }
 
-string RealDSum::name() const
-{
-    return "RealDSum";
-}
-
 }}

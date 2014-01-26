@@ -24,7 +24,7 @@ namespace base {
     {
 	SingletonGraphView *gv = new SingletonGraphView(snode, graph);
 	FiniteMethod *method = new FiniteMethod(gv);
-	return new ImmutableSampler(gv, method);
+	return new ImmutableSampler(gv, method, name());
     }
 
     string FiniteFactory::name() const

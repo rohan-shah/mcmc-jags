@@ -32,7 +32,7 @@ MNormalFactory::makeSampler(StochasticNode *snode, Graph const &graph) const
     for (unsigned int ch = 0; ch < N; ++ch) {
         methods[ch] = new MNormMetropolis(gv, ch);
     }
-    return new MutableSampler(gv, methods);
+    return new MutableSampler(gv, methods, "MNormalMetropolis");
 }
 
 string MNormalFactory::name() const 

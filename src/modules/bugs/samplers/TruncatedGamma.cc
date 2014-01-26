@@ -280,9 +280,4 @@ void TruncatedGamma::update(unsigned int chain, RNG *rng) const
     _gv->setValue(&xnew, 1, chain);  
 }
 
-string TruncatedGamma::name() const
-{
-    return "TruncatedGamma";
-}
-
 }}

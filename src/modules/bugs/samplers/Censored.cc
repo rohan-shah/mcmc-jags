@@ -90,9 +90,4 @@ void Censored::update(unsigned int chain, RNG * rng) const
     _snode->truncatedSample(rng, chain, lower, upper);
 }
 
-string Censored::name() const
-{
-    return "Censored";
-}
-
 }}

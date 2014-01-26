@@ -206,9 +206,4 @@ static vector<int> makeIndex(SingletonGraphView const *gv, unsigned int chain)
 
     }
 
-    string ShiftedMultinomial::name() const
-    {
-	return "ShiftedMultinomial";
-    }
-
 }}

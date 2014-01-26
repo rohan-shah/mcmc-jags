@@ -24,7 +24,6 @@ namespace jags {
 	    CatDirichlet(GraphView const *gv, DirichletCat *dc, 
 			 unsigned int chain);
 	    void update(RNG *rng);
-	    std::string name() const;
 	};
     } 
 }

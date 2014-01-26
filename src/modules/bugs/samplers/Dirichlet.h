@@ -21,7 +21,6 @@ public:
     void step(std::vector<double> &x, double size, RNG *rng) const;
     double logJacobian(std::vector<double> const &x) const;
     double logDensity() const;
-    std::string name() const;
 };
 
 }}

@@ -27,7 +27,6 @@ namespace jags {
 	  public:
 	    DirichletCat(GraphView const *gv, unsigned int chain);
 	    void update(RNG *rng);
-	    std::string name() const;
 	    static bool canSample(GraphView const *gv);
 	    /**
 	     * Returns the active parameter for the stochastic child

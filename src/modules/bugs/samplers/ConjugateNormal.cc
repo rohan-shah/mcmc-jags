@@ -21,7 +21,6 @@
 using std::vector;
 using std::set;
 using std::sqrt;
-using std::string;
 
 namespace jags {
 namespace bugs {
@@ -260,11 +259,6 @@ void ConjugateNormal::update(unsigned int chain, RNG *rng) const
 	throwLogicError("Invalid distribution in conjugate normal method");
     }
     _gv->setValue(&xnew, 1, chain);
-}
-
-string ConjugateNormal::name() const
-{
-    return "ConjugateNormal";
 }
 
 }}

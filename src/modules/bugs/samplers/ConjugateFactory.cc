@@ -81,26 +81,31 @@ Sampler *ConjugateFactory::makeSampler(StochasticNode *snode,
 {
     SingletonGraphView *gv = new SingletonGraphView(snode, graph);
     ConjugateMethod* method = 0;
-    
+    string name;
 /*
     if (Censored::canSample(snode, graph)) {
 	method = new Censored(gv);
+	name = "Censored";
     }
     else {
 */
 	switch (getDist(snode)) {
 	case NORM:
 	    method = new ConjugateNormal(gv);
+	    name = "ConjugateNormal";
 	    break;
 	case GAMMA: case CHISQ:
 	    method = new ConjugateGamma(gv);
+	    name = "ConjugateGamma";
 	    break;
 	case EXP:
 	    if (ConjugateGamma::canSample(snode, graph)) {
 		method = new ConjugateGamma(gv);
+		name = "ConjugateGamma";
 	    }
 	    else if (ConjugateNormal::canSample(snode, graph)) {
 		method = new ConjugateNormal(gv);
+		name = "ConjugateNormal";
 	    }
 	    else {
 		throwLogicError("Cannot find conjugate sampler for exponential");
@@ -108,25 +113,31 @@ Sampler *ConjugateFactory::makeSampler(StochasticNode *snode,
 	    break;
 	case BETA:
 	    method = new ConjugateBeta(gv);
+	    name = "ConjugateBeta";
 	    break;
 	case DIRCH:
 	    method = new ConjugateDirichlet(gv);
+	    name = "ConjugateDirichlet";
 	    break;
 	case MNORM:
 	    method = new ConjugateMNormal(gv);
+	    name = "ConjugateMNormal";
 	    break;
 	case WISH:
 	    method = new ConjugateWishart(gv);
+	    name = "ConjugateWishart";
 	    break;
 	case UNIF:
 	  /*
 	    if (TruncatedGamma::canSample(snode, graph)) {
 		method = new TruncatedGamma(gv);
+		name = "TruncatedGamma";
 	    }
 	    else 
 	  */
 	    if (ConjugateBeta::canSample(snode, graph)) {
 		method = new ConjugateBeta(gv);
+		name = "ConjugateBeta";
 	    }
 	    else {
 		throwLogicError("Cannot find conjugate sampler for uniform");
@@ -134,9 +145,11 @@ Sampler *ConjugateFactory::makeSampler(StochasticNode *snode,
 	    break;
 	case POIS: case BIN: case NEGBIN:
 	    method = new ShiftedCount(gv);
+	    name = "ShiftedCount";
 	    break;
 	case MULTI:
 	    method = new ShiftedMultinomial(gv);
+	    name = "ShiftedMultiNomial";
 	    break;
 	default:
 	    throwLogicError("Unable to create conjugate sampler");
@@ -145,7 +158,7 @@ Sampler *ConjugateFactory::makeSampler(StochasticNode *snode,
    }
 */  
     
-    return new ImmutableSampler(gv, method);
+	return new ImmutableSampler(gv, method, name);
 }
 
 string ConjugateFactory::name() const

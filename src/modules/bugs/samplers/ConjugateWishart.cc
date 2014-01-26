@@ -146,9 +146,4 @@ ConjugateWishart::update(unsigned int chain, RNG *rng) const
     _gv->setValue(xnew, chain);
 }
 
-string ConjugateWishart::name() const
-{
-    return "ConjugateWishart";
-}
-
 }}

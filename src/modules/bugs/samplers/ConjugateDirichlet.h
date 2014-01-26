@@ -31,7 +31,6 @@ public:
     ConjugateDirichlet(SingletonGraphView const *gv);
     void update(unsigned int chain, RNG *rng) const;
     static bool canSample(StochasticNode *snode, Graph const &graph);
-    std::string name() const;
 };
 
 }}

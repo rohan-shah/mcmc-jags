@@ -52,9 +52,4 @@ void DiscreteDSum::step(vector<double> &value,
     value[c2 * nrow + r] -= inteps;
 }
 
-string DiscreteDSum::name() const
-{
-    return "DiscreteDSum";
-}
-
 }}

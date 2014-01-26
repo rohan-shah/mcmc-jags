@@ -17,6 +17,7 @@ namespace jags {
     class MutableSampler : public Sampler
     {
 	std::vector<MutableSampleMethod*> _methods;
+	const std::string _name;
       public:
 	/**
 	 * Constructor.
@@ -29,14 +30,21 @@ namespace jags {
 	 * must be dynamically allocated, as the
 	 * MutableSampler will take ownership of them, and
 	 * will delete them when its destructor is called
+	 *
+	 * @param name The name of the sampler, which will be returned
+	 * by the member function name.
 	 */
 	MutableSampler(GraphView *gv, 
-			      std::vector<MutableSampleMethod*> const &methods);
+		       std::vector<MutableSampleMethod*> const &methods,
+		       std::string const &name);
 	~MutableSampler();
 	void update(std::vector<RNG*> const &rngs);
 	bool isAdaptive() const;
 	void adaptOff();
 	bool checkAdaptation() const;
+	/**
+	 * Returns the name of the sampler, as given to the constructor
+	 */
 	std::string name() const;
     };
 

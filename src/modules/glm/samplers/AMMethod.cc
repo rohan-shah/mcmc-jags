@@ -34,10 +34,5 @@ namespace glm {
 	updateLM(rng);
     }
 
-    string AMMethod::name() const
-    {
-	return "AuxiliaryMixture";
-    }
-
 }}
     

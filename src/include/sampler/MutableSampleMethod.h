@@ -1,8 +1,6 @@
 #ifndef MUTABLE_SAMPLE_METHOD_H_
 #define MUTABLE_SAMPLE_METHOD_H_
 
-#include <string>
-
 namespace jags {
 
 class RNG;
@@ -30,10 +28,6 @@ public:
      * Checks adaptation 
      */
     virtual bool checkAdaptation() const = 0;
-    /**
-     * Returns an informative name for the sample method.
-     */
-    virtual std::string name() const = 0;
 };
 
 } /* namespace jags */

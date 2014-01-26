@@ -238,9 +238,4 @@ void ConjugateGamma::update(unsigned int chain, RNG *rng) const
     _gv->setValue(&xnew, 1, chain);  
 }
 
-string ConjugateGamma::name() const
-{
-    return "ConjugateGamma";
-}
-
 }}

@@ -61,12 +61,6 @@ namespace jags {
 		alpha[j] += 1;
 	    }
 	}
-
-	string CatDirichlet::name() const
-	{
-	    return "mix::CatDirichlet";
-	}
-	    
     }
 }
 

@@ -28,7 +28,6 @@ public:
     void rescale(double p);
     void update(RNG *rng);
     bool checkAdaptation() const;
-    std::string name() const;
     void getValue(std::vector<double> &value) const;
     void setValue(std::vector<double> const &value);
 };

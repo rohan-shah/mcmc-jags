@@ -60,10 +60,6 @@ namespace glm {
 	 */
 	void updateAuxiliary(cholmod_dense *b, cholmod_factor *N, RNG *rng);
 	/**
-	 * Returns "Holmes-Held"
-	 */
-	std::string name() const;
-	/**
 	 * The update takes place in two steps. Firstly, for logistic
 	 * regression, the auxiliary variables tau[i] (representing
 	 * the precision of the latent variable z[i]) are updated

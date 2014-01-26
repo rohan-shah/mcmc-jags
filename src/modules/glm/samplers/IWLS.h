@@ -34,10 +34,6 @@ namespace glm {
 	     std::vector<Outcome *> const &outcomes,
 	     unsigned int chain);
 	/**
-	 * Returns "IWLS"
-	 */
-	std::string name() const;
-	/**
 	 * Generates a new proposal from an approximation to the posterior
 	 * distribution derived by a single IWLS step, then carries out
 	 * a Metropolis-Hastings acceptance step.

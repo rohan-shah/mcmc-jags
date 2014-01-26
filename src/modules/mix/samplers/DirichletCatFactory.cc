@@ -67,7 +67,7 @@ namespace jags {
 		for (unsigned int ch = 0; ch < nchain; ++ch) {
 		    methods[ch] = new DirichletCat(gv, ch);
 		}
-		sampler = new MutableSampler(gv, methods);		
+		sampler = new MutableSampler(gv, methods, "DirichletCat");		
 	    }
 	    else {
 		delete gv;

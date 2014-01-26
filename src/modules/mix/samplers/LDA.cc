@@ -163,11 +163,6 @@ namespace jags {
 	    _gv->setValue(value, _chain);
 	}
 	
-	string LDA::name() const
-	{
-	    return "mix::LDA";
-	}
-	
 	bool LDA::canSample(vector<vector<StochasticNode*> > const &topics,
 			    vector<vector<StochasticNode*> > const &words,
 			    vector<StochasticNode*> const &topic_priors,

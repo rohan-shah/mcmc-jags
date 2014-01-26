@@ -69,11 +69,6 @@ namespace base {
 	}
     }
 
-    string RealSlicer::name() const
-    {
-	return "RealSlicer";
-    }
-
     double RealSlicer::logDensity() const
     {
 	return _gv->logFullConditional(_chain);

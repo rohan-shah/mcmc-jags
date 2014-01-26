@@ -1,7 +1,6 @@
 #include <config.h>
 
 #include "ConjugateBeta.h"
-#include "ConjugateSampler.h"
 
 #include <rng/RNG.h>
 #include <graph/LogicalNode.h>
@@ -189,11 +188,6 @@ void ConjugateBeta::update(unsigned int chain, RNG *rng) const
     if (is_mix) {
 	delete [] C;
     }
-}
-
-string ConjugateBeta::name() const
-{
-    return "ConjugateBeta";
 }
 
 }}

@@ -42,11 +42,6 @@ namespace glm {
 		   std::vector<Outcome *> const &outcomes,
 		   unsigned int chain, bool gibbs);
 	/**
-	 * Returns "Albert-Chib" or "Albert-Chib-Gibbs" depending on
-	 * whether Gibbs sampling is being used.
-	 */
-	std::string name() const;
-	/**
 	 * The update takes place in two steps. First the auxiliary
 	 * variables provided by the Outcome class are updated.  Then
 	 * the parameters of the model are updated by calling either

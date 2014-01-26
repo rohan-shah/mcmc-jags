@@ -31,7 +31,12 @@ Library changes
   They should instead re-allocate memory during each update as necessary,
   ensuring that an update remains an amortized constant time operation.
 * The ParallelSampler class is renamed MutableSampler. Similarly,
-  the SamplerMethod class is renamed MutableSampleMethod.
+  the SamplerMethod class is renamed MutableSampleMethod. The API of 
+  both classes is also modified as described below.
+* The MutableSampleMethod class does not need to implement the name method.
+  The name of a MutableSampler is now defined in the constructor. (In many
+  cases the SamplerFactory can pass its own name to the Samplers it constructs:
+  this allows us to get rid of a redundant level of names).
 * A new class ImmutableSampler and corresponding class
   ImmutableSampleMethod are added to the library for samplers that have
   no internal state (e.g. base::FiniteSampler or bugs::ConjugateSampler).

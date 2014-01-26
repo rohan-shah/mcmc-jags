@@ -10,8 +10,9 @@ namespace glm {
 
     GLMSampler::GLMSampler(GraphView *view, 
 			   vector<SingletonGraphView*> const &sub_views,
-			   vector<MutableSampleMethod*> const &methods)
-	: MutableSampler(view, methods), _sub_views(sub_views)
+			   vector<MutableSampleMethod*> const &methods,
+			   std::string const &name)
+	: MutableSampler(view, methods, name), _sub_views(sub_views)
     {
     }
     

@@ -52,14 +52,6 @@ namespace glm {
 	}
     }
 	
-    string AlbertChib::name() const
-    {
-	if (_gibbs)
-	    return "Albert-Chib-Gibbs";
-	else
-	    return "Albert-Chib";
-    }
-
 }}
 
     

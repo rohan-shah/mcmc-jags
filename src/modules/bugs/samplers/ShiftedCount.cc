@@ -92,9 +92,4 @@ namespace bugs {
 	_gv->setValue(&xnew, 1, chain);
     }
 
-    string ShiftedCount::name() const
-    {
-	return "ShiftedCount";
-    }
-
 }}

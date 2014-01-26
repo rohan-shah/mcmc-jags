@@ -508,11 +508,6 @@ void ConjugateDirichlet::update(unsigned int chain, RNG *rng) const
 }
 
 
-	string ConjugateDirichlet::name() const
-	{
-	    return "ConjugateDirichlet";
-	}
-
     } //namespace jags
 } //namespace bugs
 

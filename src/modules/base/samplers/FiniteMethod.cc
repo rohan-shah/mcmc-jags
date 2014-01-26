@@ -105,9 +105,4 @@ namespace base {
 	return true;
     }
 
-    string FiniteMethod::name() const
-    {
-	return "FiniteMethod";
-    }
-
 }}

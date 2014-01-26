@@ -34,7 +34,8 @@ namespace glm {
 	 */
 	GLMSampler(GraphView *view, 
 		   std::vector<SingletonGraphView*> const &sub_views,
-		   std::vector<MutableSampleMethod*> const &methods);
+		   std::vector<MutableSampleMethod*> const &methods,
+		   std::string const &name);
 	/**
 	 * Destructor
 	 * 

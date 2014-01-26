@@ -90,9 +90,4 @@ double DirchMetropolis::logJacobian(vector<double> const &value) const
     return lj;
 }
 
-string DirchMetropolis::name() const
-{
-    return "DirchMetropolis";
-}
-
 }}

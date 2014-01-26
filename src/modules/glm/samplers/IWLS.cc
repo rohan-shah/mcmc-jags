@@ -51,11 +51,6 @@ namespace glm {
     {
     }
     
-    string IWLS::name() const
-    {
-	return "IWLS";
-    }
-
     double IWLS::logPTransition(vector<double> const &xold, 
 				vector<double> const &xnew,
 				double *b, cholmod_sparse *A)

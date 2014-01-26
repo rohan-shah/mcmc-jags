@@ -28,14 +28,6 @@ namespace glm {
 	return _view->stochasticChildren()[i]->value(_chain)[0];
     }
     
-    string Linear::name() const
-    {
-	if (_gibbs)
-	    return "LinearGibbs";
-	else
-	    return "Linear";
-    }
-
     void Linear::update(RNG *rng)
     {
 	if (_gibbs) 

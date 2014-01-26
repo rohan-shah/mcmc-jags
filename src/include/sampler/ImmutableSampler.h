@@ -19,8 +19,9 @@ namespace jags {
      */
     class ImmutableSampler : public Sampler
     {
-	ImmutableSampleMethod* _method;
-	unsigned int _nchain;
+	ImmutableSampleMethod const * const _method;
+	const unsigned int _nchain;
+	const std::string _name;
       public:
 	/**
 	 * Constructor.
@@ -32,8 +33,12 @@ namespace jags {
 	 * must be dynamically allocated, as the
 	 * ImmutableSampler will take ownership of it, and
 	 * will delete it when the destructor is called.
+	 *
+	 * @param name Name of the sampler, which will be returned
+	 * by the member function name.
 	 */
-	ImmutableSampler(GraphView *gv, ImmutableSampleMethod* method);
+	ImmutableSampler(GraphView *gv, ImmutableSampleMethod* method,
+			 std::string const &name);
 	~ImmutableSampler();
 	/**
 	 * Updates all chains in parallel using the update method
@@ -53,7 +58,7 @@ namespace jags {
 	 */
 	bool checkAdaptation() const;
 	/**
-	 * 
+	 * Returns the name of the sampler, as given to the constructor.b
 	 */
 	std::string name() const;
     };

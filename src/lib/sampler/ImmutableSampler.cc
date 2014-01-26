@@ -11,8 +11,9 @@ using std::string;
 namespace jags {
 
     ImmutableSampler::ImmutableSampler(GraphView *gv, 
-	       ImmutableSampleMethod *method)
-	: Sampler(gv), _method(method), _nchain(nchain(gv))
+				       ImmutableSampleMethod *method,
+				       std::string const &name)
+	: Sampler(gv), _method(method), _nchain(nchain(gv)), _name(name)
     {
     }
 
@@ -44,7 +45,7 @@ namespace jags {
 
     string ImmutableSampler::name() const
     {
-	return _method->name();
+	return _name;
     }
 
 }
