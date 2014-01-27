@@ -71,16 +71,16 @@ Sampler * DSumFactory::makeSampler(set<StochasticNode*> const &nodes,
     string name;
     if (RWDSum::canSample(parameters, graph, false, false)) {
 	discrete = false;
-	name = "RealDSum";
+	name = "bugs::RealDSum";
     }
     else if (RWDSum::canSample(parameters, graph, true, false)) {
 	discrete = true;
-	name = "DiscreteDSum";
+	name = "bugs::DiscreteDSum";
     }
     else if (RWDSum::canSample(parameters, graph, true, true)) {
 	discrete = true;
 	multinom = true;
-	name = "DMultiDSum";
+	name = "bugs::DMultiDSum";
     }
     else {
 	return 0;

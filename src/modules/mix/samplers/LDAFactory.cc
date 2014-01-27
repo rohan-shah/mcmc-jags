@@ -150,7 +150,7 @@ namespace jags {
 		    methods[ch] = new LDA(topics, words, topicPriors,
 					  wordPriors, view, ch);
 		}
-		return new MutableSampler(view, methods, "LDA");
+		return new MutableSampler(view, methods, "mix::LDA");
 	    }
 	    else return 0;
 	}

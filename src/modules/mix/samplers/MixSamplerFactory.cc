@@ -94,7 +94,7 @@ namespace mix {
 	    for (unsigned int ch = 0; ch < nchain; ++ch) {
 		methods[ch] = new NormMix(gv, ch, NLEVEL, MAX_TEMP, NREP);
 	    }
-	    return new MutableSampler(gv, methods, "NormMix");		
+	    return new MutableSampler(gv, methods, "mix::NormMix");		
 	}
 	else {
 	    return 0;

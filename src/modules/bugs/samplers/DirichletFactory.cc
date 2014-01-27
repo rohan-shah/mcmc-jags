@@ -32,7 +32,7 @@ DirichletFactory::makeSampler(StochasticNode *snode, Graph const &graph) const
     for (unsigned int ch = 0; ch < nchain; ++ch) {
         methods[ch] = new DirchMetropolis(gv, ch);
     }
-    return new MutableSampler(gv, methods, "DirichletMetropolis");
+    return new MutableSampler(gv, methods, "bugs::DirichletMetropolis");
 }
 
 string DirichletFactory::name() const

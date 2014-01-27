@@ -45,9 +45,8 @@ namespace base {
 	    }
 	}
 
-
-	return new MutableSampler(gv, methods,
-				  discrete ? "DiscreteSlicer" : "RealSlicer");
+	string name = discrete ? "base::DiscreteSlicer" : "base::RealSlicer";
+	return new MutableSampler(gv, methods, name);
     }
 
     string SliceFactory::name() const

@@ -92,20 +92,20 @@ Sampler *ConjugateFactory::makeSampler(StochasticNode *snode,
 	switch (getDist(snode)) {
 	case NORM:
 	    method = new ConjugateNormal(gv);
-	    name = "ConjugateNormal";
+	    name = "bugs::ConjugateNormal";
 	    break;
 	case GAMMA: case CHISQ:
 	    method = new ConjugateGamma(gv);
-	    name = "ConjugateGamma";
+	    name = "bugs::ConjugateGamma";
 	    break;
 	case EXP:
 	    if (ConjugateGamma::canSample(snode, graph)) {
 		method = new ConjugateGamma(gv);
-		name = "ConjugateGamma";
+		name = "bugs::ConjugateGamma";
 	    }
 	    else if (ConjugateNormal::canSample(snode, graph)) {
 		method = new ConjugateNormal(gv);
-		name = "ConjugateNormal";
+		name = "bugs::ConjugateNormal";
 	    }
 	    else {
 		throwLogicError("Cannot find conjugate sampler for exponential");
@@ -113,19 +113,19 @@ Sampler *ConjugateFactory::makeSampler(StochasticNode *snode,
 	    break;
 	case BETA:
 	    method = new ConjugateBeta(gv);
-	    name = "ConjugateBeta";
+	    name = "bugs::ConjugateBeta";
 	    break;
 	case DIRCH:
 	    method = new ConjugateDirichlet(gv);
-	    name = "ConjugateDirichlet";
+	    name = "bugs::ConjugateDirichlet";
 	    break;
 	case MNORM:
 	    method = new ConjugateMNormal(gv);
-	    name = "ConjugateMNormal";
+	    name = "bugs::ConjugateMNormal";
 	    break;
 	case WISH:
 	    method = new ConjugateWishart(gv);
-	    name = "ConjugateWishart";
+	    name = "bugs::ConjugateWishart";
 	    break;
 	case UNIF:
 	  /*
@@ -137,7 +137,7 @@ Sampler *ConjugateFactory::makeSampler(StochasticNode *snode,
 	  */
 	    if (ConjugateBeta::canSample(snode, graph)) {
 		method = new ConjugateBeta(gv);
-		name = "ConjugateBeta";
+		name = "bugs::ConjugateBeta";
 	    }
 	    else {
 		throwLogicError("Cannot find conjugate sampler for uniform");
@@ -145,11 +145,11 @@ Sampler *ConjugateFactory::makeSampler(StochasticNode *snode,
 	    break;
 	case POIS: case BIN: case NEGBIN:
 	    method = new ShiftedCount(gv);
-	    name = "ShiftedCount";
+	    name = "bugs::ShiftedCount";
 	    break;
 	case MULTI:
 	    method = new ShiftedMultinomial(gv);
-	    name = "ShiftedMultiNomial";
+	    name = "bugs::ShiftedMultiNomial";
 	    break;
 	default:
 	    throwLogicError("Unable to create conjugate sampler");
