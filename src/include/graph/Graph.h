@@ -4,9 +4,9 @@
 #include <set>
 #include <vector>
 
-namespace jags {
+#include <graph/Node.h>
 
-class Node;
+namespace jags {
 
 /**
  * A graph is a container class for (pointers to) Nodes. A Node may
@@ -15,7 +15,7 @@ class Node;
  *
  * @short Container class for nodes
  */
-class Graph : public std::set<Node*> {
+class Graph : public std::set<Node*, ltNode> {
   /* forbid copying */
   Graph(Graph const &orig);
   Graph &operator=(Graph const &rhs);
@@ -49,7 +49,8 @@ public:
    * Static version of the getSortedNodes function which works with
    * a set instead of a graph.  
    */
-  static void getSortedNodes(std::set<Node*> &nodes, std::vector<Node*> &sorted);
+  static void getSortedNodes(std::set<Node*, ltNode> &nodes, 
+			     std::vector<Node*> &sorted);
 };
 
 } /* namespace jags */

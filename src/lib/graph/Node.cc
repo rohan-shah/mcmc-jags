@@ -21,7 +21,8 @@ class StochasticNode;
 
 Node::Node(vector<unsigned int> const &dim, unsigned int nchain)
     : _parents(0), _stoch_children(0), _dtrm_children(0), 
-      _dim(getUnique(dim)), _length(product(dim)), _nchain(nchain), _data(0)
+      _dim(getUnique(dim)), _length(product(dim)), _nchain(nchain), _data(0),
+      _index(0)
       
 {
     if (nchain==0)
@@ -41,7 +42,7 @@ Node::Node(vector<unsigned int> const &dim,
 	   vector<Node const *> const &parents)
     : _parents(parents), _stoch_children(0), _dtrm_children(0), 
       _dim(getUnique(dim)), _length(product(dim)),
-      _nchain(countChains(parents)), _data(0)
+      _nchain(countChains(parents)), _data(0), _index(0)
 {
     if (nchain() == 0) {
 	throw logic_error("Cannot calculate number of chains in Node constructor");
@@ -193,5 +194,34 @@ void Node::removeChild(StochasticNode *node) const
 {
     _stoch_children->erase(node);
 }
+
+    void Node::setIndex(unsigned int index) 
+    {
+	if (_index != 0) {
+	    throw logic_error("Attempt to reset Node index");
+	}
+	_index = index;
+    }
+    
+    unsigned int Node::index() const
+    {
+	return _index;
+
+    }
+
+    bool lt(Node const *node1, Node const *node2)
+    {
+	const unsigned int index1 = node1->index();
+	const unsigned int index2 = node2->index();
+
+	if (index1 == 0 || index2 == 0) {
+	    throw logic_error("Attempt to compare non-indexed Node");
+	}
+	if (index1 == index2 && node1 != node2)
+	{
+	    throw logic_error("Node index is not unique");
+	}
+	return index1 < index2;
+    }
     
 } //namespace jags

@@ -39,6 +39,7 @@ bool lt(vector<double> const &value1, vector<double> const &value2)
 
 //FIXME: Need node indexing
 /* Comparison function for Nodes */
+/*
 bool lt(Node const *node1, Node const *node2)
 {
     if (node1 == node2) {
@@ -71,6 +72,7 @@ bool lt(Node const *node1, Node const *node2)
 	return (node1 < node2);
     }
 }
+*/
 
 /* Comparison operator for vectors of parameters */
 bool lt(vector<Node const *> const &par1, vector<Node const *> const &par2)

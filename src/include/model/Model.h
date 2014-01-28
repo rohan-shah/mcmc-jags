@@ -41,6 +41,7 @@ private:
   bool _is_initialized;
   bool _adapt;
   bool _data_gen;
+  unsigned int _node_index;
   void initializeNodes();
   void chooseRNGs();
   void chooseSamplers();
@@ -111,6 +112,10 @@ public:
    * dynamically allocated.  The model is responsible for memory
    * management of the added node and will delete the node when it is
    * destroyed.
+   *
+   * The Model will also set the index of the inserted Node.
+   *
+   * @see Node#setIndex
    */
   void addNode(StochasticNode *node);
   /**
@@ -118,12 +123,20 @@ public:
    * dynamically allocated.  The model is responsible for memory
    * management of the added node and will delete the node when it is
    * destroyed.
+   *
+   * The Model will also set the index of the inserted Node.
+   *
+   * @see Node#setIndex
    */
   void addNode(DeterministicNode *node);
   /**
    * Adds a constant node to the model.  The node must be dynamically
    * allocated.  The model is responsible for memory management of the
    * added node and will delete the node when it is destroyed.
+   *
+   * The Model will also set the index of the inserted Node.
+   *
+   * @see Node#setIndex
    */
   void addNode(ConstantNode *node);
   /**
@@ -134,6 +147,10 @@ public:
    * The extra node cannot be observed, it must not already be in the
    * model graph, it may not have any children, and all of its parents
    * must be in the graph.
+   *
+   * The Model will also set the index of the Node.
+   *
+   * @seealso Node#setIndex
    */
   void addExtraNode(Node *node);
   /**

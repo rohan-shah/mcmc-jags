@@ -47,6 +47,9 @@ Library changes
   to be observed after construction. The change guarentees that
   observed StochasticNodes have the same value across all chains. The
   Compiler has been modified to use the new StochasticNode API.
+* Nodes now have a unique index which is defined when they are inserted
+  into a model. The indices define a unique and reproducible ordering
+  which is also a topological ordering. 
 
 Internal changes in modules
 ===========================

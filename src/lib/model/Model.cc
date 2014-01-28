@@ -45,7 +45,7 @@ namespace jags {
 
 Model::Model(unsigned int nchain)
     : _samplers(0), _nchain(nchain), _rng(nchain, 0), _iteration(0),
-      _is_initialized(false), _adapt(false), _data_gen(false)
+      _is_initialized(false), _adapt(false), _data_gen(false), _node_index(1)
 {
 }
 
@@ -71,7 +71,6 @@ Model::~Model()
 	delete node;
 	managed_nodes.pop_back();
     }
-
 }
 
 Graph const &Model::graph() 
@@ -537,6 +536,7 @@ void Model::addExtraNode(Node *node)
     }
 
     if (!_graph.contains(node)) {
+	node->setIndex(_node_index++);
 	_graph.insert(node);
     }
 
@@ -673,17 +673,20 @@ void Model::clearDefaultMonitors(string const &type)
 
 void Model::addNode(StochasticNode *node)
 {
+    node->setIndex(_node_index++);
     _graph.insert(node);
     _stochastic_nodes.push_back(node);
 }
 
 void Model::addNode(DeterministicNode *node)
 {
+    node->setIndex(_node_index++);
     _graph.insert(node);
 }
 
 void Model::addNode(ConstantNode *node)
 {
+    node->setIndex(_node_index++);
     _graph.insert(node);
 }
 

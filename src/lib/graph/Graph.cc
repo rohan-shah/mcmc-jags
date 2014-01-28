@@ -22,7 +22,10 @@ namespace jags {
 
     bool Graph::contains(Node const *node) const
     {
-	return find(const_cast<Node*>(node)) != end();
+	Graph::iterator p = find(const_cast<Node*>(node));
+	if (p != end() && *p != node) throw logic_error("Node not uniquely defined by its index in Graph");
+	return p != end();
+	//return find(const_cast<Node*>(node)) != end();
     }
 
     bool Graph::isClosed() const
@@ -58,7 +61,9 @@ namespace jags {
 
 /* Helper function for Graph::getSortedNodes. Returns true
    if node has any children in set S */
-static bool childInSet(Node *node, set<Node*> const &S)
+
+
+static bool childInSet(Node *node, set<Node*, ltNode> const &S)
 {
     for (set<StochasticNode *>::const_iterator j = node->stochasticChildren()->begin(); 
 	 j != node->stochasticChildren()->end(); ++j) 
@@ -78,13 +83,11 @@ static bool childInSet(Node *node, set<Node*> const &S)
 }
 
 
-void Graph::getSortedNodes(set<Node*> &S, vector<Node*> &sortednodes) 
+void Graph::getSortedNodes(set<Node*, ltNode> &S, vector<Node*> &sortednodes) 
 {
-    /* 
-       Return a vector of nodes whose ordering follows the partial
-       ordering of the set.  If a is after b then there is never a
-       path from a to b.
-    */
+    //Return a vector of nodes whose ordering follows the partial
+    //ordering of the set.  If a is after b then there is never a
+    //path from a to b.
 
     if (!sortednodes.empty()) {
 	throw logic_error("vector not empty in getSortedNodes");
@@ -96,7 +99,7 @@ void Graph::getSortedNodes(set<Node*> &S, vector<Node*> &sortednodes)
 
 	bool loopcheck = false;
 
-	set<Node*>::iterator i = S.begin();
+	set<Node*, ltNode>::iterator i = S.begin();
 	while (i != S.end()) {
 	    if (childInSet(*i, S)) {
 		++i;
@@ -104,7 +107,7 @@ void Graph::getSortedNodes(set<Node*> &S, vector<Node*> &sortednodes)
 	    else {
 		loopcheck = true;
 		sortednodes.push_back(*i);
-		set<Node*>::iterator j = i;
+		set<Node*, ltNode>::iterator j = i;
 		++i;
 		S.erase(j);
 	    }
@@ -119,10 +122,61 @@ void Graph::getSortedNodes(set<Node*> &S, vector<Node*> &sortednodes)
     reverse(sortednodes.begin(), sortednodes.end());
 }
 
+/*
+//Recursively search for path between two nodes in a set
+static bool pathTo(Node *node1, Node *node2, set<Node*, ltNode> const &S)
+{
+    if (node1 == node2)
+	return true;
+
+    for (set<StochasticNode *>::const_iterator j = node1->stochasticChildren()->begin(); 
+	 j != node1->stochasticChildren()->end(); ++j) 
+    {
+	set<Node*, ltNode>::const_iterator p = S.find(*j);
+	if (p != S.end()) {
+	    if (pathTo(*p, node2, S)) return true;
+	}
+    }
+
+    for (set<DeterministicNode *>::const_iterator j = node1->deterministicChildren()->begin(); 
+	 j != node1->deterministicChildren()->end(); ++j) 
+    {
+	set<Node*, ltNode>::const_iterator p = S.find(*j);
+	if (p != S.end()) {
+	    if (pathTo(*p, node2, S)) return true;
+	}
+    }
+    return false;
+}
+*/
+
+//FIXME: This should be redundant now
 void Graph::getSortedNodes(vector<Node*> &sortednodes) const
 {
-    set<Node*> S = *this;
+    set<Node*, ltNode> S = *this;
     getSortedNodes(S, sortednodes);
+    /*
+    //Yes this is slow but its for debugging purposes
+    for(unsigned int i = 0; i < sortednodes.size(); ++i) {
+	for (unsigned int j = i+1; j < sortednodes.size(); ++j) {
+	    if (sortednodes[j]->index() == sortednodes[i]->index()) {
+		// This should never happen
+		throw logic_error("Non-unique index in Graph::getSortedNodes");
+	    }
+	    if (sortednodes[j]->index() < sortednodes[i]->index()) {
+		// We can have two nodes out of order, but only if there is no path between them 
+		if (pathTo(sortednodes[i], sortednodes[j], *this)) {
+		    throw logic_error("Graph::getSortedNodes out of order");
+		}
+		if (pathTo(sortednodes[j], sortednodes[i], *this)) {
+		    throw logic_error("Graph::getSortedNodes out of order");
+		}
+	    }
+	}
+    }
+    */
+
 }
+
 
 }
