@@ -536,7 +536,6 @@ void Model::addExtraNode(Node *node)
     }
 
     if (!_graph.contains(node)) {
-	node->setIndex(_node_index++);
 	_graph.insert(node);
     }
 
@@ -673,20 +672,17 @@ void Model::clearDefaultMonitors(string const &type)
 
 void Model::addNode(StochasticNode *node)
 {
-    node->setIndex(_node_index++);
     _graph.insert(node);
     _stochastic_nodes.push_back(node);
 }
 
 void Model::addNode(DeterministicNode *node)
 {
-    node->setIndex(_node_index++);
     _graph.insert(node);
 }
 
 void Model::addNode(ConstantNode *node)
 {
-    node->setIndex(_node_index++);
     _graph.insert(node);
 }
 

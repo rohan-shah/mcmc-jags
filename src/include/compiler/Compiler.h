@@ -2,7 +2,6 @@
 #define COMPILER_H_
 
 #include <compiler/LogicalFactory.h>
-#include <compiler/ConstantFactory.h>
 #include <compiler/MixtureFactory.h>
 #include <compiler/CounterTab.h>
 #include <compiler/ObsFuncTab.h>
@@ -40,7 +39,6 @@ class Compiler {
   bool _strict_resolution;
   int _index_expression;
   std::vector<Node*> _index_nodes;
-  ConstantFactory _constantfactory;
   LogicalFactory _logicalfactory;
   MixtureFactory _mixfactory1;
   MixtureFactory _mixfactory2;
@@ -66,6 +64,10 @@ class Compiler {
 			  std::vector<Node const *> &parents);
   Node * constFromTable(ParseTree const *p);
   void addDevianceNode();
+  Node *getConstant(double value, unsigned int nchain);
+  Node *getConstant(std::vector<unsigned int> const &dim, 
+		    std::vector<double> const &value,
+		    unsigned int nchain);
 public:
   bool indexExpression(ParseTree const *t, int &value);
   BUGSModel &model() const;

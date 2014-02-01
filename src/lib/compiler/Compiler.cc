@@ -88,43 +88,38 @@ Node * Compiler::constFromTable(ParseTree const *p)
 
     Range subset_range = getRange(p, sarray.range());
     if (isNULL(subset_range)) {
+	//Range expression not evaluated
 	return 0;
     }
-    else {
-	// Range expression successfully evaluated
-	Node *cnode = 0;
-	if (subset_range.length() > 1) {
-            
-	    RangeIterator i(subset_range);
-	    unsigned int n = subset_range.length();
-	    //double const *v = sarray.value();
-	    vector<double> const &v = sarray.value();
-            vector<double> value(n);
-	    for (unsigned int j = 0; j < n; ++j, i.nextLeft()) {
-		unsigned int offset = sarray.range().leftOffset(i);
-		value[j] = v[offset];
-		if (value[j] == JAGS_NA) {
-                    return 0;
-                }
-            }
-            cnode = new ConstantParameterNode(subset_range.dim(false), value, 
-					      _model.nchain());
-
-	}
-	else {
-	    unsigned int offset = 
-		sarray.range().leftOffset(subset_range.lower());  
-	    double value = sarray.value()[offset];
-	    if (value == JAGS_NA) {
+    else if (subset_range.length() > 1) {
+	//Multivariate constant
+	RangeIterator i(subset_range);
+	unsigned int n = subset_range.length();
+	//double const *v = sarray.value();
+	vector<double> const &v = sarray.value();
+	vector<double> value(n);
+	for (unsigned int j = 0; j < n; ++j, i.nextLeft()) {
+	    unsigned int offset = sarray.range().leftOffset(i);
+	    value[j] = v[offset];
+	    if (value[j] == JAGS_NA) {
 		return 0;
 	    }
-	    else {
-		cnode = new ConstantParameterNode(value, _model.nchain());
-	    }
-	    return cnode;
 	}
-	_index_nodes.push_back(cnode);
-	return cnode;
+	return getConstant(subset_range.dim(false), value, 
+			   _model.nchain());
+	
+    }
+    else {
+	//Scalar constant
+	unsigned int offset = 
+	    sarray.range().leftOffset(subset_range.lower());  
+	double value = sarray.value()[offset];
+	if (value == JAGS_NA) {
+	    return 0;
+	}
+	else {
+	    return getConstant(value, _model.nchain());
+	}
     }
 }
 
@@ -361,6 +356,36 @@ Range Compiler::CounterRange(ParseTree const *var)
   }
 }
 
+    Node * Compiler::getConstant(double value, unsigned int nchain) 
+    {
+	ConstantParameterNode * cnode = 
+	    new ConstantParameterNode(value, nchain);
+	if (_index_expression) {
+	    _index_nodes.push_back(cnode);
+	}
+	else {
+	    _model.addNode(cnode);
+	}
+	return cnode;
+	
+    }
+
+    Node * Compiler::getConstant(vector<unsigned int> const &dim, 
+				 vector<double> const &value,
+				 unsigned int nchain)
+    {
+	ConstantParameterNode * cnode = 
+	    new ConstantParameterNode(dim, value, nchain);
+	if (_index_expression) {
+	    _index_nodes.push_back(cnode);
+	}
+	else {
+	    _model.addNode(cnode);
+	}
+	return cnode;
+	
+    }
+
 Node *Compiler::getArraySubset(ParseTree const *p)
 {
     Node *node = 0;
@@ -371,13 +396,7 @@ Node *Compiler::getArraySubset(ParseTree const *p)
 
     Counter *counter = _countertab.getCounter(p->name()); //A counter
     if (counter) {
-	if (_index_expression) {
-	    node = new ConstantParameterNode((*counter)[0], _model.nchain());
-	    _index_nodes.push_back(node);
-	}
-	else {
-	    node = _constantfactory.getConstantNode((*counter)[0], _model);
-	}
+	node = getConstant((*counter)[0], _model.nchain());
     }
     else {
 	NodeArray *array = _model.symtab().getVariable(p->name());
@@ -449,14 +468,7 @@ Node *Compiler::getLength(ParseTree const *p, SymTab const &symtab)
 	}
 	else {
 	    double length = product(subset_range.dim(true));
-	    if (_index_expression) {
-		Node *node = new ConstantParameterNode(length, _model.nchain());
-		_index_nodes.push_back(node);
-		return node;
-	    }
-	    else {
-		return _constantfactory.getConstantNode(length, _model);
-	    }
+	    return getConstant(length, _model.nchain());
 	}
     }
     else {
@@ -488,15 +500,7 @@ Node *Compiler::getDim(ParseTree const *p, SymTab const &symtab)
 	    }
 
 	    vector<unsigned int> d(1, idim.size());
-
-	    if (_index_expression) {
-		Node *node = new ConstantParameterNode(d, ddim, _model.nchain());
-		_index_nodes.push_back(node);
-		return node;
-	    }
-	    else {
-		return _constantfactory.getConstantNode(d, ddim, _model);
-	    }
+	    return getConstant(d, ddim, _model.nchain());
 	}
     }
     else {
@@ -517,13 +521,7 @@ Node * Compiler::getParameter(ParseTree const *t)
 
     switch (t->treeClass()) {
     case P_VALUE:
-	if (_index_expression) {
-	    node = new ConstantParameterNode(t->value(), _model.nchain());
-	    _index_nodes.push_back(node);
-	}
-	else {
-	    node =  _constantfactory.getConstantNode(t->value(), _model);
-	}
+	node = getConstant(t->value(), _model.nchain());
 	break;
     case P_VAR:
 	node = getArraySubset(t);
@@ -759,11 +757,7 @@ Node * Compiler::allocateLogical(ParseTree const *rel)
 
     switch (expression->treeClass()) {
     case P_VALUE: 
-	cnode = new ConstantParameterNode(expression->value(), _model.nchain());
-	_model.addNode(cnode);
-	node = cnode;
-	/* The reason we aren't using a ConstantFactory here is to ensure
-	   that the nodes are correctly named */
+	node = getConstant(expression->value(), _model.nchain());
 	break;
     case P_VAR: case P_FUNCTION: case P_LINK: case P_LENGTH: case P_DIM:
 	node = getParameter(expression);
@@ -1016,8 +1010,7 @@ Compiler::Compiler(BUGSModel &model, map<string, SArray> const &data_table)
     : _model(model), _countertab(), 
       _data_table(data_table), _n_resolved(0), 
       _n_relations(0), _is_resolved(0), _strict_resolution(false),
-      _index_expression(0), _index_nodes(),
-      _constantfactory(model.nchain())
+      _index_expression(0), _index_nodes()
 {
   if (_model.graph().size() != 0)
     throw invalid_argument("Non empty graph in Compiler constructor");

@@ -23,7 +23,8 @@ bool lt(double const *value1, double const *value2, unsigned int length)
     return false;
 }
 
-/* Comparison function for STL vectors of equal length */
+/* Comparison function for STL vectors */
+/*
 bool lt(vector<double> const &value1, vector<double> const &value2)
 {
     for (unsigned long i = 0; i < value1.size(); ++i) {
@@ -36,10 +37,9 @@ bool lt(vector<double> const &value1, vector<double> const &value2)
     }
     return false;
 }
+*/
 
-//FIXME: Need node indexing
 /* Comparison function for Nodes */
-/*
 bool lt(Node const *node1, Node const *node2)
 {
     if (node1 == node2) {
@@ -50,29 +50,25 @@ bool lt(Node const *node1, Node const *node2)
     bool fix1 = node1->isFixed();
     bool fix2 = node2->isFixed();
 
-    if (fix1 && !fix2) {
-	//Fixed nodes come before non-fixed nodes
-	return true;
-    }
-    else if (!fix1 && fix2) {
-	return false;
-    }
-    else if (fix1 && fix2) {
+    if (fix1 && fix2) {
 	//Fixed nodes are sorted by dimension, then value
 	if (node1->dim() == node2->dim()) {
 	    return lt(node1->value(0), node2->value(0), node1->length());
 	}
 	else {
-	    return (node1->dim() < node2->dim());
+	    return node1->dim() < node2->dim();
 	}
     }
-    else {
+    else if (!fix1 && !fix2) {
 	//Non-fixed nodes are sorted by address. The ordering is
 	//arbitrary, but unique.
 	return (node1 < node2);
     }
+    else {
+	//Fixed nodes come before non-fixed nodes
+	return fix1 > fix2;
+    }
 }
-*/
 
 /* Comparison operator for vectors of parameters */
 bool lt(vector<Node const *> const &par1, vector<Node const *> const &par2)

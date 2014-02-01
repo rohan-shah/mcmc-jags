@@ -7,6 +7,7 @@
 #include <cfloat>
 
 #include <function/FunctionPtr.h>
+#include <compiler/NodeFactory.h>
 
 namespace jags {
 
@@ -22,7 +23,7 @@ class LogicalNode;
 typedef std::pair<FunctionPtr,std::vector<Node const *> > LogicalPair;
 
 /**
- * @short "Less than" operator for LogicalPair objects. 
+ * @short "Less than" function for LogicalPair objects. 
  *
  * Two LogicalPairs A and B are considered to be equivalent
  * (i.e. lt(A,B) and lt(B,A) are both false) if they have the same
@@ -37,17 +38,6 @@ typedef std::pair<FunctionPtr,std::vector<Node const *> > LogicalPair;
 bool lt(LogicalPair const &arg1, LogicalPair const &arg2);
 
 /**
- * @short STL function object for the map class using LogicalPair as a key
- */
-struct ltlogical
-{
-  bool operator()(LogicalPair const &arg1, LogicalPair const &arg2) const
-  {
-    return lt(arg1, arg2);
-  }
-};
-
-/**
  * @short Factory object for logical nodes 
  *
  * The value of a logical node is determined uniquely by its function
@@ -58,7 +48,7 @@ struct ltlogical
  */
 class LogicalFactory 
 { 
-    std::map<LogicalPair, Node*, ltlogical> _logicalmap;
+    std::map<LogicalPair, Node*, fuzzy_less<LogicalPair> > _logicalmap;
 	
 public:
     /**

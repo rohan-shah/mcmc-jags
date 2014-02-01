@@ -162,26 +162,6 @@ public:
     void removeChild(StochasticNode *node) const;
     void addChild(DeterministicNode *node) const;
     void removeChild(DeterministicNode *node) const;
-    /**
-     * Sets the index of the node. A Node index should be unique so
-     * that it can be used in sorting operations.  A newly created
-     * Node has an index of zero.
-     *
-     * It is only permitted to set the index if the current index is
-     * zero. If an attempt to reset the index is made, a logic_error
-     * is thrown. This provides a runtime guarantee that the index is
-     * constant.
-     *
-     * @param index Value to be used as the Node's index.
-     *
-     * @see Graph, Model#insert
-     */
-    void setIndex(unsigned int index);
-    /**
-     * Returns the index of a Node. If setIndex has not been called
-     * then the index is zero.
-     */
-    unsigned int index() const;
 };
 
 /**
@@ -189,28 +169,6 @@ public:
  * if the parameters are inconsistent
  */
 unsigned int countChains(std::vector<Node const *> const &parameters);
-
-/**
- * Comparison function for nodes using the indices of the two nodes.
- *
- * @return true if node1 has a lower index than node2
- *
- * A logic_error is thrown if either node has an index of zero, or if
- * two distinct nodes have the same index.
- */
-bool lt(Node const *node1, Node const *node2);
-
-/**
- * @short STL function object for comparing two indexed Nodes
- */
-struct ltNode
-{
-    bool operator()(Node const *arg1, Node const *arg2) const
-    {
-	return lt(arg1, arg2);
-    }
-};
-
 
 } /* namespace jags */
 

@@ -195,33 +195,4 @@ void Node::removeChild(StochasticNode *node) const
     _stoch_children->erase(node);
 }
 
-    void Node::setIndex(unsigned int index) 
-    {
-	if (_index != 0) {
-	    throw logic_error("Attempt to reset Node index");
-	}
-	_index = index;
-    }
-    
-    unsigned int Node::index() const
-    {
-	return _index;
-
-    }
-
-    bool lt(Node const *node1, Node const *node2)
-    {
-	const unsigned int index1 = node1->index();
-	const unsigned int index2 = node2->index();
-
-	if (index1 == 0 || index2 == 0) {
-	    throw logic_error("Attempt to compare non-indexed Node");
-	}
-	if (index1 == index2 && node1 != node2)
-	{
-	    throw logic_error("Node index is not unique");
-	}
-	return index1 < index2;
-    }
-    
 } //namespace jags

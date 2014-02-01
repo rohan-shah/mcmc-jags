@@ -97,7 +97,7 @@ Node* LogicalFactory::getNode(FunctionPtr const &func,
     }
     
     LogicalPair lpair(func, parents);
-    map<LogicalPair, Node*, ltlogical>::iterator i = _logicalmap.find(lpair);
+    map<LogicalPair, Node*, fuzzy_less<LogicalPair> >::iterator i = _logicalmap.find(lpair);
 
     if (i != _logicalmap.end()) {
 	return i->second;
