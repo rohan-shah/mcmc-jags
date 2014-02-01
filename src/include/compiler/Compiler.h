@@ -64,10 +64,10 @@ class Compiler {
 			  std::vector<Node const *> &parents);
   Node * constFromTable(ParseTree const *p);
   void addDevianceNode();
-  Node *getConstant(double value, unsigned int nchain);
+  Node *getConstant(double value, unsigned int nchain, bool observed);
   Node *getConstant(std::vector<unsigned int> const &dim, 
 		    std::vector<double> const &value,
-		    unsigned int nchain);
+		    unsigned int nchain, bool observed);
 public:
   bool indexExpression(ParseTree const *t, int &value);
   BUGSModel &model() const;

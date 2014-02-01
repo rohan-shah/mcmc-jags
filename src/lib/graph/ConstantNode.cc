@@ -13,8 +13,9 @@ using std::logic_error;
 
 namespace jags {
 
-    ConstantNode::ConstantNode(double value, unsigned int nchain)
-	: Node(vector<unsigned int>(1,1), nchain)
+    ConstantNode::ConstantNode(double value, unsigned int nchain,
+			       bool observed)
+	: Node(vector<unsigned int>(1,1), nchain), _observed(observed)
     {
 	for (unsigned int n = 0; n < nchain; ++n) {
 	    setValue(&value, 1, n);
@@ -23,8 +24,8 @@ namespace jags {
 
     ConstantNode::ConstantNode(vector<unsigned int> const &dim, 
 			       vector<double> const &value,
-			       unsigned int nchain)
-	: Node(dim, nchain)
+			       unsigned int nchain, bool observed)
+	: Node(dim, nchain), _observed(observed)
     {
 	if (value.size() != _length) {
 	    throw logic_error("Invalid value in ConstantNode");
@@ -69,6 +70,11 @@ namespace jags {
     bool ConstantNode::isFixed() const
     {
 	return true;
+    }
+
+    RVStatus ConstantNode::randomVariableStatus() const
+    {
+	return _observed ? RV_TRUE_OBSERVED :  RV_FALSE;
     }
 
 } //namespace jags

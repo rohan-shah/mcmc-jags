@@ -6,7 +6,7 @@
 #include <graph/VectorLogicalNode.h>
 #include <graph/ArrayLogicalNode.h>
 #include <graph/LinkNode.h>
-#include <graph/ConstantParameterNode.h>
+#include <graph/ConstantNode.h>
 #include <graph/ScalarStochasticNode.h>
 #include <graph/VectorStochasticNode.h>
 #include <graph/ArrayStochasticNode.h>
@@ -106,7 +106,7 @@ Node * Compiler::constFromTable(ParseTree const *p)
 	    }
 	}
 	return getConstant(subset_range.dim(false), value, 
-			   _model.nchain());
+			   _model.nchain(), true);
 	
     }
     else {
@@ -118,7 +118,7 @@ Node * Compiler::constFromTable(ParseTree const *p)
 	    return 0;
 	}
 	else {
-	    return getConstant(value, _model.nchain());
+	    return getConstant(value, _model.nchain(), true);
 	}
     }
 }
@@ -356,10 +356,10 @@ Range Compiler::CounterRange(ParseTree const *var)
   }
 }
 
-    Node * Compiler::getConstant(double value, unsigned int nchain) 
+    Node * 
+    Compiler::getConstant(double value, unsigned int nchain, bool observed) 
     {
-	ConstantParameterNode * cnode = 
-	    new ConstantParameterNode(value, nchain);
+	ConstantNode * cnode = new ConstantNode(value, nchain, observed);
 	if (_index_expression) {
 	    _index_nodes.push_back(cnode);
 	}
@@ -370,12 +370,12 @@ Range Compiler::CounterRange(ParseTree const *var)
 	
     }
 
-    Node * Compiler::getConstant(vector<unsigned int> const &dim, 
-				 vector<double> const &value,
-				 unsigned int nchain)
+    Node * 
+    Compiler::getConstant(vector<unsigned int> const &dim, 
+			  vector<double> const &value,
+			  unsigned int nchain, bool observed)
     {
-	ConstantParameterNode * cnode = 
-	    new ConstantParameterNode(dim, value, nchain);
+	ConstantNode * cnode = new ConstantNode(dim, value, nchain, observed);
 	if (_index_expression) {
 	    _index_nodes.push_back(cnode);
 	}
@@ -396,7 +396,7 @@ Node *Compiler::getArraySubset(ParseTree const *p)
 
     Counter *counter = _countertab.getCounter(p->name()); //A counter
     if (counter) {
-	node = getConstant((*counter)[0], _model.nchain());
+	node = getConstant((*counter)[0], _model.nchain(), false);
     }
     else {
 	NodeArray *array = _model.symtab().getVariable(p->name());
@@ -468,7 +468,7 @@ Node *Compiler::getLength(ParseTree const *p, SymTab const &symtab)
 	}
 	else {
 	    double length = product(subset_range.dim(true));
-	    return getConstant(length, _model.nchain());
+	    return getConstant(length, _model.nchain(), false);
 	}
     }
     else {
@@ -500,7 +500,7 @@ Node *Compiler::getDim(ParseTree const *p, SymTab const &symtab)
 	    }
 
 	    vector<unsigned int> d(1, idim.size());
-	    return getConstant(d, ddim, _model.nchain());
+	    return getConstant(d, ddim, _model.nchain(), false);
 	}
     }
     else {
@@ -521,7 +521,7 @@ Node * Compiler::getParameter(ParseTree const *t)
 
     switch (t->treeClass()) {
     case P_VALUE:
-	node = getConstant(t->value(), _model.nchain());
+	node = getConstant(t->value(), _model.nchain(), false);
 	break;
     case P_VAR:
 	node = getArraySubset(t);
@@ -757,7 +757,7 @@ Node * Compiler::allocateLogical(ParseTree const *rel)
 
     switch (expression->treeClass()) {
     case P_VALUE: 
-	node = getConstant(expression->value(), _model.nchain());
+	node = getConstant(expression->value(), _model.nchain(), false);
 	break;
     case P_VAR: case P_FUNCTION: case P_LINK: case P_LENGTH: case P_DIM:
 	node = getParameter(expression);

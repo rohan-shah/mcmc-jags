@@ -1,7 +1,7 @@
 #include <config.h>
 #include <model/NodeArray.h>
 #include <model/Model.h>
-#include <graph/ConstantDataNode.h>
+#include <graph/ConstantNode.h>
 #include <graph/StochasticNode.h>
 #include <graph/AggNode.h>
 #include <sarray/RangeIterator.h>
@@ -258,7 +258,7 @@ void NodeArray::setData(SArray const &value, Model *model)
 	if (x[i] != JAGS_NA) {
 	    if (_node_pointers[i] == 0) {
 		//Insert a new constant data node
-		ConstantNode *cnode = new ConstantDataNode(x[i], _nchain);
+		ConstantNode *cnode = new ConstantNode(x[i], _nchain, true);
 		model->addNode(cnode);
 		insert(cnode, _range.leftIndex(i));
 	    }
