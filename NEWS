@@ -66,6 +66,9 @@ Internal changes in modules
   moved into the main library
   - The beta binomial distribution (DBetaBin) is moved to the mix 
   module.
+  - The logDensity function for the multivariate normal distribution
+  (DMNorm) now includes the correct normalizing constant for PDF_FULL.
+  This affects deviance statistics for multivariate normal nodes.
 
 * glm module
   - Refactorization of samplers. The new Outcome class presents an

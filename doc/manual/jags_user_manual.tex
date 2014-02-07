@@ -1608,8 +1608,8 @@ their distribution.
       & \\
       Multivariate & \verb+x ~ dmnorm(mu,Omega)+ &
       \multirow{2}{*}{
-        $\left(\frac{|\Omega|}{2\pi}\right)^{\frac{1}{2}} exp\{-(x-\mu)^T \Omega (x-\mu) / 2\}$} \\
-      normal & $\Omega$ positive definite \\
+        $|\Omega|^{\frac{1}{2}} \left(2\pi\right)^{-\frac{p}{2}} \exp\{-(x-\mu)^T \Omega (x-\mu) / 2\}$} \\
+      normal & $\Omega \; p \times p$ positive definite \\
       Wishart & \verb+Omega ~ dwish(R,k)+ &
       \multirow{2}{*}{
         $\frac{\textstyle |\Omega|^{(k-p-1)/2} |R|^{k/2} \exp\{-\text{Tr}(R\Omega/2)\}}

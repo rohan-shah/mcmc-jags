@@ -38,12 +38,18 @@ double DMNorm::logDensity(double const *x, unsigned int m, PDFType type,
 	}
     }
 
-    if (type == PDF_PRIOR) {
-	return loglik; //No need to calculate normalizing constant
+    switch(type) {
+    case PDF_PRIOR:
+	break;
+    case PDF_LIKELIHOOD:
+	loglik += logdet(T, m)/2;
+	break;
+    case PDF_FULL:
+	loglik += logdet(T, m)/2 - m * M_LN_SQRT_2PI;
+	break;
     }
-    else {
-	return loglik + logdet(T, m)/2;
-    }
+    
+    return loglik;
 }
 
 void DMNorm::randomSample(double *x, unsigned int m,
