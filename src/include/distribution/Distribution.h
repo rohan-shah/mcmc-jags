@@ -80,6 +80,10 @@ public:
      */
     bool checkNPar(unsigned int npar) const;
     /**
+     * Returns the number of parameters of the distribution
+     */
+    unsigned int npar() const;
+    /**
      * Some distributions require some of the parameters to be discrete
      * valued. As most distributions do not require discrete valued paremeters,
      * a default implementation is provided which always returns true.

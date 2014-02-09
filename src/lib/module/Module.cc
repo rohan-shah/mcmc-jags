@@ -5,6 +5,9 @@
 #include <function/DFunction.h>
 #include <function/PFunction.h>
 #include <function/QFunction.h>
+#include <function/ScalarLogDensity.h>
+#include <function/VectorLogDensity.h>
+#include <function/ArrayLogDensity.h>
 #include <distribution/RScalarDist.h>
 
 #include <algorithm>
@@ -66,6 +69,8 @@ void Module::insert(RScalarDist *dist)
     _distributions.push_back(dist);
     _dp_list.push_back(DistPtr(dist));
 	
+    insert(new ScalarLogDensity(dist));
+    
     insert(new DFunction(dist));
     insert(new PFunction(dist));
     insert(new QFunction(dist));
@@ -75,6 +80,8 @@ void Module::insert(ScalarDist *dist)
 {
     _distributions.push_back(dist);
     _dp_list.push_back(DistPtr(dist));
+
+    insert(new ScalarLogDensity(dist));
 }
 
 void Module::insert(VectorDist *dist)
@@ -82,6 +89,7 @@ void Module::insert(VectorDist *dist)
     _distributions.push_back(dist);
     _dp_list.push_back(DistPtr(dist));
 
+    insert(new VectorLogDensity(dist));
 }
 
 void Module::insert(ArrayDist *dist)
@@ -89,6 +97,7 @@ void Module::insert(ArrayDist *dist)
     _distributions.push_back(dist);
     _dp_list.push_back(DistPtr(dist));
 
+    insert(new ArrayLogDensity(dist));
 }
 
 void Module::insert(ScalarDist *dist, ScalarFunction *func)

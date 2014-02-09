@@ -4,6 +4,12 @@ New features
 ============
 * Deterministic relations can be defined with the equals sign `=`
   as well as the left arrow `<-` (Thanks to Merlise Clyde for the suggestion).
+* All distributions now have an associated function that calculates
+  their normalized log density. If the name of the distribution is
+  "dfoo" then the corresponding log density function is called
+  "logdensity.foo". The first argument of the log density function is
+  the value at which the density is to be evaluated, and the remaining
+  arguments are the parameters of the distribution.
 
 Bug fixes
 =========

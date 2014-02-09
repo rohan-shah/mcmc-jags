@@ -26,9 +26,15 @@ string Distribution::alias() const
     return "";
 }
 
+//FIXE: Make this an external function
 bool Distribution::checkNPar (unsigned int npar) const
 {
   return _npar == 0 ||  npar == _npar;
+}
+
+unsigned int Distribution::npar () const
+{
+  return _npar;
 }
 
 bool Distribution::isLocationParameter(unsigned int i) const
