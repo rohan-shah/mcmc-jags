@@ -46,10 +46,9 @@ public:
      */
     virtual std::string alias() const;
     /**
-     * Checks that a vector of parameters of length npar is consistent
-     * with the function.
+     * Returns the number of parameters. A variadic function returns 0. 
      */
-    bool checkNPar(unsigned int npar) const;
+    unsigned int npar() const;
     /**
      * Returns true if the function returns integer values. The
      * default implementation returns false. A function that returns
@@ -117,6 +116,15 @@ public:
      */
     virtual std::string deparse(std::vector<std::string> const &par) const;
 };
+
+/**
+ * Checks that a vector of parameters of length npar is consistent
+ * with the function.
+ */
+inline bool checkNPar(Function const *func, unsigned int npar)
+{
+    return (func->npar() == 0 && npar > 0) || func->npar() == npar;
+}
 
 } /* namespace jags */
 

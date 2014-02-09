@@ -38,7 +38,7 @@ LogicalNode::LogicalNode(vector<unsigned int> const &dim,
     : DeterministicNode(dim, parameters), _func(function), _discrete(false), 
       _parameters(mkParams(parameters, nchain()))
 {
-    if (!function->checkNPar(parameters.size())) {
+    if (!checkNPar(function, parameters.size())) {
 	throw FuncError(function, "Incorrect number of parameters");
     }
     vector<bool> mask(parents().size());

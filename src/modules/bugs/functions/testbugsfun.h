@@ -18,6 +18,7 @@ namespace jags {
 class BugsFunTest : public CppUnit::TestFixture, public JAGSFixture
 {
     CPPUNIT_TEST_SUITE( BugsFunTest );
+    CPPUNIT_TEST( npar );
     CPPUNIT_TEST( name );
     CPPUNIT_TEST( alias );
     CPPUNIT_TEST( trig );
@@ -88,13 +89,16 @@ class BugsFunTest : public CppUnit::TestFixture, public JAGSFixture
     void link(jags::ScalarFunction const *f, jags::LinkFunction const *link,
 	      double lower, double upper, int N);
     void summary(double const *v, unsigned int N);
+    void summary(double const *v1, unsigned int N1,
+		 double const *v2, unsigned int N2);
     void trig(double v);
     void hyper(double v);
 
   public:
     void setUp();
     void tearDown();
-    
+
+    void npar();
     void name();
     void alias();
     void link();

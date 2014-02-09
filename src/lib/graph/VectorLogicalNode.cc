@@ -34,7 +34,7 @@ static unsigned int valueLength(VectorFunction const *func,
     if (!func) {
 	throw logic_error("NULL function in VectorLogicalNode constructor");
     }
-    if (!func->checkNPar(parents.size())) {
+    if (!checkNPar(func, parents.size())) {
 	throw FuncError(func, "Incorrect number of parameters");
     }
     if (!func->checkParameterLength(parameter_lengths)) {

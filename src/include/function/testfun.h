@@ -17,10 +17,6 @@
 
 /* All functions */
 
-//Check that function f accepts exactly n arguments.  We check that it
-//does not accept any other value from 0 to 4n.
-bool checknpar(jags::Function const *f, unsigned int n);
-
 //Check all possible values of mask using a predicate (see below)
 bool isdiscrete(jags::Function const *f, unsigned int npar,
 		bool (*predicate) (std::vector<bool> const &));

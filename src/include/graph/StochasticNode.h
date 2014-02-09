@@ -194,7 +194,6 @@ bool isBounded(StochasticNode const *node);
  */
 inline bool isObserved(StochasticNode const *s) { return s->isFixed(); }
 
-
 } /* namespace jags */
 
 #endif /* STOCHASTIC_NODE_H_ */

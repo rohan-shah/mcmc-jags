@@ -7,16 +7,18 @@ using std::vector;
 namespace jags {
 namespace bugs {
 
-    Prod::Prod () : VectorFunction("prod", 1)
+    Prod::Prod () : VectorFunction("prod", 0)
     {
     }
 
     void Prod::evaluate(double *x, vector <double const *> const &args,
 			vector<unsigned int> const &lengths) const
     {
-	double value = args[0][0];
-	for (unsigned int i = 1; i < lengths[0]; ++i) {
-	    value *= args[0][i];
+	double value = 1;
+	for (unsigned int j = 0; j < args.size(); ++j) {
+	    for (unsigned int i = 0; i < lengths[j]; ++i) {
+		value *= args[j][i];
+	    }
 	}
 	*x = value;
     }

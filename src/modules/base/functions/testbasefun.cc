@@ -112,9 +112,9 @@ void BaseFunTest::alias()
 void BaseFunTest::arithmetic1(double v)
 {
     //Arithmetic functions taking a single argument
-    CPPUNIT_ASSERT(checknpar(_neg, 1));
-    CPPUNIT_ASSERT(_add->checkNPar(1));
-    CPPUNIT_ASSERT(_multiply->checkNPar(1));
+    CPPUNIT_ASSERT_EQUAL(_neg->npar(), 1U);
+    CPPUNIT_ASSERT(checkNPar(_add, 1));
+    CPPUNIT_ASSERT(checkNPar(_multiply, 1));
 
     CPPUNIT_ASSERT_EQUAL(-v, eval(_neg, v));
     CPPUNIT_ASSERT_EQUAL(v, eval(_add, v));
@@ -124,11 +124,11 @@ void BaseFunTest::arithmetic1(double v)
 void BaseFunTest::arithmetic2(double v1, double v2)
 {
     //Arithmetic functions taking two arguments
-    CPPUNIT_ASSERT(_add->checkNPar(2));
-    CPPUNIT_ASSERT(_multiply->checkNPar(2));
-    CPPUNIT_ASSERT(checknpar(_subtract, 2));
-    CPPUNIT_ASSERT(checknpar(_divide, 2));
-    CPPUNIT_ASSERT(checknpar(_pow, 2));
+    CPPUNIT_ASSERT(checkNPar(_add, 2));
+    CPPUNIT_ASSERT(checkNPar(_multiply, 2));
+    CPPUNIT_ASSERT_EQUAL(_subtract->npar(), 2U);
+    CPPUNIT_ASSERT_EQUAL(_divide->npar(), 2U);
+    CPPUNIT_ASSERT_EQUAL(_pow->npar(), 2U);
 
     CPPUNIT_ASSERT_EQUAL(v1 + v2, eval(_add, v1, v2));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(v1 - v2, eval(_subtract,  v1, v2), tol);
@@ -145,8 +145,8 @@ void BaseFunTest::arithmetic2(double v1, double v2)
 void BaseFunTest::arithmetic3(double v1, double v2, double v3)
 {
     //Arithmetic functions taking 3 arguments
-    CPPUNIT_ASSERT(_add->checkNPar(3));
-    CPPUNIT_ASSERT(_multiply->checkNPar(3));
+    CPPUNIT_ASSERT(checkNPar(_add, 3));
+    CPPUNIT_ASSERT(checkNPar(_multiply, 3));
 
     vector<double const *> args(3);
     args[0] = &v1;
@@ -178,7 +178,7 @@ void BaseFunTest::arithmetic()
 void BaseFunTest::logical1()
 {
     //Logical Not takes one argument
-    CPPUNIT_ASSERT(checknpar(_not, 1));
+    CPPUNIT_ASSERT_EQUAL(_not->npar(), 1U);
 
     CPPUNIT_ASSERT_EQUAL(1.0, eval(_not, 0));
     CPPUNIT_ASSERT_EQUAL(0.0, eval(_not, 1));
@@ -189,8 +189,8 @@ void BaseFunTest::logical1()
 void BaseFunTest::logical2()
 {
     //Logical And and Logical Or take two arguments
-    CPPUNIT_ASSERT(checknpar(_and, 2));
-    CPPUNIT_ASSERT(checknpar(_or, 2));
+    CPPUNIT_ASSERT_EQUAL(_and->npar(), 2U);
+    CPPUNIT_ASSERT_EQUAL(_or->npar(), 2U);
 
     double TRUE=1, FALSE=0;
 
@@ -239,12 +239,12 @@ void BaseFunTest::comparison2(double v1, double v2)
 void BaseFunTest::comparison()
 {
     //All of the comparison functions take 2 arguments
-    CPPUNIT_ASSERT(checknpar(_equal, 2));
-    CPPUNIT_ASSERT(checknpar(_geq, 2));
-    CPPUNIT_ASSERT(checknpar(_gt, 2));
-    CPPUNIT_ASSERT(checknpar(_leq, 2));
-    CPPUNIT_ASSERT(checknpar(_lt, 2));
-    CPPUNIT_ASSERT(checknpar(_neq, 2));
+    CPPUNIT_ASSERT_EQUAL(_equal->npar(), 2U);
+    CPPUNIT_ASSERT_EQUAL(_geq->npar(), 2U);
+    CPPUNIT_ASSERT_EQUAL(_gt->npar(), 2U);
+    CPPUNIT_ASSERT_EQUAL(_leq->npar(), 2U);
+    CPPUNIT_ASSERT_EQUAL(_lt->npar(), 2U);
+    CPPUNIT_ASSERT_EQUAL(_neq->npar(), 2U);
 
     comparison2( 0.0,  0.0);
     comparison2( 1.0,  2.0);

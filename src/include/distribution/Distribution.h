@@ -75,11 +75,6 @@ public:
      */
     virtual bool isSupportFixed(std::vector<bool> const &fixmask) const = 0;
     /**
-     * Checks that a vector of parameters of length npar is consistent
-     * with the distribution.
-     */
-    bool checkNPar(unsigned int npar) const;
-    /**
      * Returns the number of parameters of the distribution
      */
     unsigned int npar() const;
@@ -145,6 +140,14 @@ public:
      */
     virtual bool canBound() const;
 };
+
+/**
+ * Checks that the distribution accepts npar parameters
+ */
+inline bool checkNPar(Distribution const *dist, unsigned int npar)
+{
+    return (dist->npar() == 0 && npar > 0) ||  dist->npar() == npar;
+}
 
 } /* namespace jags */
 

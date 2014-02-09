@@ -208,6 +208,74 @@ void BugsFunTest::tearDown()
     delete _interplin;
 }
 
+void BugsFunTest::npar()
+{
+    //Trigonometric functions and their inverses
+    CPPUNIT_ASSERT_EQUAL(_sin->npar(), 1U);
+    CPPUNIT_ASSERT_EQUAL(_cos->npar(), 1U);
+    CPPUNIT_ASSERT_EQUAL(_tan->npar(), 1U);
+    CPPUNIT_ASSERT_EQUAL(_arccos->npar(), 1U);
+    CPPUNIT_ASSERT_EQUAL(_arcsin->npar(), 1U);
+    CPPUNIT_ASSERT_EQUAL(_arctan->npar(), 1U);
+
+    //Hyperbolic functions and their inverses
+    CPPUNIT_ASSERT_EQUAL(_sinh->npar(), 1U);
+    CPPUNIT_ASSERT_EQUAL(_cosh->npar(), 1U);
+    CPPUNIT_ASSERT_EQUAL(_tanh->npar(), 1U);
+    CPPUNIT_ASSERT_EQUAL(_arcsinh->npar(), 1U);
+    CPPUNIT_ASSERT_EQUAL(_arccosh->npar(), 1U);
+    CPPUNIT_ASSERT_EQUAL(_arctanh->npar(), 1U);
+
+    //Link functions and their inverses
+    CPPUNIT_ASSERT_EQUAL(_cloglog->npar(), 1U);
+    CPPUNIT_ASSERT_EQUAL(_log->npar(), 1U);
+    CPPUNIT_ASSERT_EQUAL(_logit->npar(), 1U);
+    CPPUNIT_ASSERT_EQUAL(_probit->npar(), 1U);
+    CPPUNIT_ASSERT_EQUAL(_icloglog->npar(), 1U);
+    CPPUNIT_ASSERT_EQUAL(_exp->npar(), 1U);
+    CPPUNIT_ASSERT_EQUAL(_ilogit->npar(), 1U);
+    CPPUNIT_ASSERT_EQUAL(_phi->npar(), 1U);
+
+    //Scalar summaries of vectors
+    CPPUNIT_ASSERT_EQUAL(_max->npar(), 0U);
+    CPPUNIT_ASSERT_EQUAL(_min->npar(), 0U);
+    CPPUNIT_ASSERT_EQUAL(_sum->npar(), 0U);
+    CPPUNIT_ASSERT_EQUAL(_prod->npar(), 0U);
+    CPPUNIT_ASSERT_EQUAL(_sd->npar(), 1U);
+
+    //Mathematical functions
+    CPPUNIT_ASSERT_EQUAL(_logfact->npar(), 1U);
+    CPPUNIT_ASSERT_EQUAL(_loggam->npar(), 1U);
+    CPPUNIT_ASSERT_EQUAL(_sqrt->npar(), 1U);
+
+    //Lossy scalar functions
+    CPPUNIT_ASSERT_EQUAL(_round->npar(), 1U);
+    CPPUNIT_ASSERT_EQUAL(_step->npar(), 1U);
+    CPPUNIT_ASSERT_EQUAL(_trunc->npar(), 1U);
+    CPPUNIT_ASSERT_EQUAL(_abs->npar(), 1U);
+
+    //Observable functions
+    CPPUNIT_ASSERT_EQUAL(_dinterval->npar(), 2U);
+    CPPUNIT_ASSERT_EQUAL(_dround->npar(), 2U);
+    CPPUNIT_ASSERT(checkNPar(_dsum, 1));
+
+    //Sorting functions
+    CPPUNIT_ASSERT_EQUAL(_order->npar(), 1U);
+    CPPUNIT_ASSERT_EQUAL(_rank->npar(), 1U);
+    CPPUNIT_ASSERT_EQUAL(_sort->npar(), 1U);
+
+    //Matrix functions
+    CPPUNIT_ASSERT_EQUAL(_inverse->npar(), 1U);
+    CPPUNIT_ASSERT_EQUAL(_logdet->npar(), 1U);
+    CPPUNIT_ASSERT_EQUAL(_matmult->npar(), 2U);
+    CPPUNIT_ASSERT_EQUAL(_transpose->npar(), 1U);
+    CPPUNIT_ASSERT_EQUAL(_inprod->npar(), 2U);
+
+    //Odds and sods
+    CPPUNIT_ASSERT_EQUAL(_ifelse->npar(), 3U);
+    CPPUNIT_ASSERT_EQUAL(_interplin->npar(), 3U);
+}
+
 void BugsFunTest::name()
 {
     //Trigonometric functions
@@ -435,7 +503,7 @@ void BugsFunTest::link(ScalarFunction const *f, LinkFunction const *l,
     CPPUNIT_ASSERT_EQUAL(f->name(), l->linkName());
 
     //f only takes one argument (no need to check l)
-    checknpar(f, 1);
+    CPPUNIT_ASSERT_EQUAL(f->npar(), 1U);
 
     //Test link function over a range of values
     double delta = (upper - lower)/(N - 1);
@@ -493,19 +561,35 @@ void BugsFunTest::link()
 void BugsFunTest::summary(double const *v, unsigned int N)
 {
     //Test scalar summaries of vector values;
-    vector<double const*> arg(1, v);
-    vector<unsigned int> arglen(1, N);
-    
+    vector<double> arg = mkVec(v, N);
+
     //Calculate summaries
-    double vmax = eval(_max, mkVec(v, N));
-    double vmin = eval(_min, mkVec(v, N));
-    double vmean = eval(_mean, mkVec(v, N));
-    double vsum = eval(_sum, mkVec(v, N));
+    double vmax = eval(_max, arg);
+    double vmin = eval(_min, arg);
+    double vmean = eval(_mean, arg);
+    double vsum = eval(_sum, arg);
 
     //Check consistency of min, max, mean, sum
     CPPUNIT_ASSERT(vmax >= vmean);
     CPPUNIT_ASSERT(vmean >= vmin);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(vsum, vmean * N, tol);
+
+    //Negate argument and recalculate
+    vector<double> negarg(N);
+    for (unsigned int i = 0; i < N; ++i) {
+	negarg[i] = -v[i];
+    }
+
+    double negvmax = eval(_max, negarg);
+    double negvmin = eval(_min, negarg);
+    double negvmean = eval(_mean, negarg);
+    double negvsum = eval(_sum, negarg);
+
+    //Check consistency of results for positive and negative args
+    CPPUNIT_ASSERT_EQUAL(negvmax, -vmin);
+    CPPUNIT_ASSERT_EQUAL(negvmin, -vmax);
+    CPPUNIT_ASSERT_EQUAL(negvmean, -vmean);
+    CPPUNIT_ASSERT_EQUAL(negvsum, -vsum);
 
     //Check consistency of sd, sum, mean
     if (N == 1) {
@@ -528,6 +612,38 @@ void BugsFunTest::summary(double const *v, unsigned int N)
     CPPUNIT_ASSERT_DOUBLES_EQUAL(vsum, log(eval(_prod, vexp)), tol);
 
 }
+
+void BugsFunTest::summary(double const *v1, unsigned int N1,
+			  double const *v2, unsigned int N2)
+{
+    //Test variadic summary functions giving two arguments;
+    vector<double> arg1 = mkVec(v1, N1);
+    vector<double> arg2 = mkVec(v2, N2);
+
+    CPPUNIT_ASSERT_EQUAL(veval(_max, arg1, arg2).size(), 1UL);
+    CPPUNIT_ASSERT_EQUAL(veval(_min, arg1, arg2).size(), 1UL);
+    CPPUNIT_ASSERT_EQUAL(veval(_sum, arg1, arg2).size(), 1UL);
+
+    //Calculate summaries
+    double vmax = veval(_max, arg1, arg2)[0];
+    double vmin = veval(_min, arg1, arg2)[0];
+    double vsum = veval(_sum, arg1, arg2)[0];
+
+    //Check consistency of min, max, mean, sum
+    CPPUNIT_ASSERT(vmax >= vmin);
+
+    //Check consistency of prod and sum on log scale
+    vector<double> v1exp(N1);
+    for (unsigned int i = 0; i < N1; ++i) {
+	v1exp[i] = exp(v1[i]);
+    }
+    vector<double> v2exp(N2);
+    for (unsigned int i = 0; i < N2; ++i) {
+	v2exp[i] = exp(v2[i]);
+    }
+
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(vsum, log(veval(_prod, v1exp, v2exp)[0]), tol);
+}
     
 void BugsFunTest::summary()
 {
@@ -542,6 +658,20 @@ void BugsFunTest::summary()
     summary(v2, 5);
     summary(v3, 2);
     summary(v4, 6);
+
+    summary(v1, 9, v1, 9);
+    summary(v1, 9, v2, 5);
+    summary(v1, 9, v3, 2);
+    summary(v1, 9, v4, 6);
+
+    summary(v2, 5, v2, 5);
+    summary(v2, 5, v3, 2);
+    summary(v2, 5, v4, 6);
+
+    summary(v3, 2, v3, 2);
+    summary(v3, 2, v4, 6);
+
+    summary(v4, 6, v4, 6);
 }
 
 void BugsFunTest::math()

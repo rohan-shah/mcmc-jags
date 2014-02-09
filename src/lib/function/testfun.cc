@@ -18,28 +18,15 @@ using std::copy;
 
 /* All functions */
 
-/* 
-   Check that function f accepts exactly n arguments.  We check that
-   it does not accept any other value from 0 to 4n.
-*/
-bool checknpar(Function const *f, unsigned int n)
-{
-    CPPUNIT_ASSERT(n > 0);
-    for (unsigned int i = 0; i <= 4*n; ++i) {
-	if (f->checkNPar(i) != (i == n)) return false;
-    }
-    return true;
-}
-
 bool isdiscrete(Function const *f, bool mask1)
 {
-    CPPUNIT_ASSERT(f->checkNPar(1));
+    CPPUNIT_ASSERT(checkNPar(f, 1));
     return f->isDiscreteValued(vector<bool>(1, mask1));
 }
 
 bool isdiscrete(Function const *f, bool mask1, bool mask2)
 {
-    CPPUNIT_ASSERT(f->checkNPar(2));
+    CPPUNIT_ASSERT(checkNPar(f, 2));
     vector<bool> arg(2);
     arg[0] = mask1;
     arg[1] = mask2;
@@ -48,7 +35,7 @@ bool isdiscrete(Function const *f, bool mask1, bool mask2)
 
 bool isdiscrete(Function const *f, bool mask1, bool mask2, bool mask3)
 {
-    CPPUNIT_ASSERT(f->checkNPar(1));
+    CPPUNIT_ASSERT(checkNPar(f, 3));
     vector<bool> arg(3);
     arg[0] = mask1;
     arg[1] = mask2;
@@ -80,7 +67,7 @@ public:
 bool isdiscrete(Function const *f, unsigned int npar,
 		bool (*predicate) (vector<bool> const &))
 {
-    CPPUNIT_ASSERT(f->checkNPar(npar));
+    CPPUNIT_ASSERT(checkNPar(f, npar));
     BoolIterator mask(npar);
     
     for(BoolIterator mask(npar); !mask.atEnd; mask.next()) {
@@ -98,7 +85,7 @@ bool any(vector<bool> const &mask) { return anyTrue(mask); }
 
 bool neverlinear(Function const *f, unsigned int npar)
 {
-    CPPUNIT_ASSERT_MESSAGE(f->name(), f->checkNPar(npar));
+    CPPUNIT_ASSERT_MESSAGE(f->name(), checkNPar(f, npar));
 
     for(BoolIterator mask(npar); !mask.atEnd; mask.next()) {
 	if (f->isLinear(mask, vector<bool>())) return false;
@@ -111,7 +98,7 @@ bool neverlinear(Function const *f, unsigned int npar)
 
 bool neverscale(Function const *f, unsigned int npar)
 {
-    CPPUNIT_ASSERT_MESSAGE(f->name(), f->checkNPar(npar));
+    CPPUNIT_ASSERT_MESSAGE(f->name(), checkNPar(f, npar));
 
     for(BoolIterator mask(npar); !mask.atEnd; mask.next()) {
 	if (f->isScale(mask, vector<bool>())) return false;
@@ -124,7 +111,7 @@ bool neverscale(Function const *f, unsigned int npar)
 
 bool neverpow(Function const *f, unsigned int npar)
 {
-    CPPUNIT_ASSERT_MESSAGE(f->name(), f->checkNPar(npar));
+    CPPUNIT_ASSERT_MESSAGE(f->name(), checkNPar(f, npar));
 
     for(BoolIterator mask(npar); !mask.atEnd; mask.next()) {
 	if (f->isPower(mask, vector<bool>())) return false;
@@ -182,7 +169,7 @@ void checkLimits(ScalarFunction const *f, double lower, double upper)
 */
 double eval(ScalarFunction const *f, double x)
 {
-    CPPUNIT_ASSERT_MESSAGE(f->name(), f->checkNPar(1));
+    CPPUNIT_ASSERT_MESSAGE(f->name(), checkNPar(f, 1));
     vector<double const *> arg(1, &x);
     CPPUNIT_ASSERT_MESSAGE(f->name(), f->checkParameterValue(arg));
     return f->evaluate(arg);
@@ -193,7 +180,7 @@ double eval(ScalarFunction const *f, double x)
 */
 double eval(ScalarFunction const *f, double x, double y)
 {
-    CPPUNIT_ASSERT_MESSAGE(f->name(), f->checkNPar(2));
+    CPPUNIT_ASSERT_MESSAGE(f->name(), checkNPar(f, 2));
     vector<double const *> args(2);
     args[0] = &x;
     args[1] = &y;
@@ -206,7 +193,7 @@ double eval(ScalarFunction const *f, double x, double y)
 */
 double eval(ScalarFunction const *f, double x, double y, double z)
 {
-    CPPUNIT_ASSERT_MESSAGE(f->name(), f->checkNPar(3));
+    CPPUNIT_ASSERT_MESSAGE(f->name(), checkNPar(f, 3));
     vector<double const *> args(3);
     args[0] = &x;
     args[1] = &y;
@@ -221,14 +208,14 @@ double eval(ScalarFunction const *f, double x, double y, double z)
 */
 bool checkval(ScalarFunction const *f, double x)
 {
-    CPPUNIT_ASSERT_MESSAGE(f->name(), f->checkNPar(1));
+    CPPUNIT_ASSERT_MESSAGE(f->name(), checkNPar(f, 1));
     vector<double const *> arg(1, &x);
     return f->checkParameterValue(arg);
 }
 
 bool checkval(ScalarFunction const *f, double x, double y)
 {
-    CPPUNIT_ASSERT_MESSAGE(f->name(), f->checkNPar(2));
+    CPPUNIT_ASSERT_MESSAGE(f->name(), checkNPar(f, 2));
     vector<double const *> args(2);
     args[0] = &x;
     args[1] = &y;
@@ -237,7 +224,7 @@ bool checkval(ScalarFunction const *f, double x, double y)
 
 bool checkval(ScalarFunction const *f, double x, double y, double z)
 {
-    CPPUNIT_ASSERT_MESSAGE(f->name(), f->checkNPar(3));
+    CPPUNIT_ASSERT_MESSAGE(f->name(), checkNPar(f, 3));
     vector<double const *> args(3);
     args[0] = &x;
     args[1] = &y;
@@ -261,7 +248,7 @@ static vector<double> mkVec(double x)
 vector<double>
 veval(VectorFunction const *f, vector<double> const &x)
 {
-    CPPUNIT_ASSERT_MESSAGE(f->name(), f->checkNPar(1));
+    CPPUNIT_ASSERT_MESSAGE(f->name(), checkNPar(f, 1));
     vector<double const *> arg(1, &x[0]);
     vector<unsigned int> arglen(1, x.size());
     CPPUNIT_ASSERT_MESSAGE(f->name(), f->checkParameterLength(arglen));
@@ -275,7 +262,7 @@ veval(VectorFunction const *f, vector<double> const &x)
 vector<double>
 veval(VectorFunction const *f, vector<double> const &x, vector<double> const &y)
 {
-    CPPUNIT_ASSERT_MESSAGE(f->name(), f->checkNPar(2));
+    CPPUNIT_ASSERT_MESSAGE(f->name(), checkNPar(f, 2));
     vector<double const *> arg(2);
     arg[0] = &x[0];
     arg[1] = &y[0];
@@ -333,7 +320,7 @@ double eval(VectorFunction const *f, vector<double> const &x, double y)
 bool checkparlen(VectorFunction const *f, unsigned int n)
 {
     vector<unsigned int> arglen(1, n);
-    CPPUNIT_ASSERT(f->checkNPar(1));
+    CPPUNIT_ASSERT(checkNPar(f, 1));
     return f->checkParameterLength(arglen);
 }
 
@@ -346,6 +333,6 @@ bool checkparlen(VectorFunction const *f, unsigned int n1, unsigned int n2)
     vector<unsigned int> arglen(2);
     arglen[0] = n1;
     arglen[1] = n2;
-    CPPUNIT_ASSERT(f->checkNPar(2));
+    CPPUNIT_ASSERT(checkNPar(f, 2));
     return f->checkParameterLength(arglen);
 }

@@ -59,7 +59,7 @@ StochasticNode::StochasticNode(vector<unsigned int> const &dim,
       _observed(data != 0 && length > 0), 
       _discrete(mkDiscrete(dist, parameters)), _parameters(nchain())
 {
-    if (!_dist->checkNPar(parameters.size())) {
+    if (checkNPar(dist, parameters.size())) {
 	throw DistError(_dist, "Incorrect number of parameters");
     }
 
@@ -126,7 +126,7 @@ string StochasticNode::deparse(vector<string> const &parnames) const
     unsigned int npar = parnames.size();
     if (_upper) --npar;
     if (_lower) --npar;
-    if (!_dist->checkNPar(npar)) {
+    if (!checkNPar(_dist, npar)) {
 	//We might be deparsing after throwing a NodeError, so we 
 	//don't want to throw another exception.
 	return _dist->name() + "(deparse error)";

@@ -26,10 +26,11 @@ string Function::alias() const
     return "";
 }
 
-bool Function::checkNPar (unsigned int npar) const
-{
-  return _npar == 0 ||  npar == _npar;
-}
+    unsigned int Function::npar() const
+    {
+	return _npar;
+    }
+
 
 bool Function::isDiscreteValued(vector<bool> const &mask) const
 {

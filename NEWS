@@ -10,6 +10,8 @@ New features
   "logdensity.foo". The first argument of the log density function is
   the value at which the density is to be evaluated, and the remaining
   arguments are the parameters of the distribution.
+* The sum and prod functions are now variadic, like their R equivalents
+  and return respectively the sum and product over all arguments.
 
 Bug fixes
 =========

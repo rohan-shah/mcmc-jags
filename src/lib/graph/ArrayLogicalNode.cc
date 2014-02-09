@@ -29,7 +29,7 @@ static vector<unsigned int> mkDim(ArrayFunction const *func,
     if (!func) {
 	throw logic_error("NULL function in ArrayLogicalNode constructor");
     }
-    if (!func->checkNPar(parameter_dims.size())) {
+    if (!checkNPar(func, parameter_dims.size())) {
 	throw FuncError(func, "Incorrect number of parameters");
     }
     if (!func->checkParameterDim(parameter_dims)) {
