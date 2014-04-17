@@ -59,7 +59,7 @@ StochasticNode::StochasticNode(vector<unsigned int> const &dim,
       _observed(data != 0 && length > 0), 
       _discrete(mkDiscrete(dist, parameters)), _parameters(nchain())
 {
-    if (checkNPar(dist, parameters.size())) {
+    if (!checkNPar(dist, parameters.size())) {
 	throw DistError(_dist, "Incorrect number of parameters");
     }
 
