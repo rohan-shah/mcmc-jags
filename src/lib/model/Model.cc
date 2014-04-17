@@ -40,6 +40,7 @@ using std::copy;
 using std::min;
 using std::max;
 using std::reverse;
+using std::find;
 
 namespace jags {
 
@@ -280,17 +281,17 @@ void Model::chooseSamplers()
     //Triage on marked nodes. We do this twice: once for stochastic
     //nodes and once for all nodes.
 
-    set<StochasticNode*> sset;
+    list<StochasticNode*> slist; //List of nodes to be sampled
     for(p = _stochastic_nodes.begin(); p != _stochastic_nodes.end(); ++p) {
 	switch(marks.mark(*p)) {
-	case 0:
+	case 0: //Uninformative
 	    _extra_nodes.insert(*p);
 	    break;
-	case 1:
-	    sset.insert(*p); 
+	case 1: //Unobserved stochastic nodes, to be sampled
+	    slist.push_back(*p); 
 	    sample_graph.insert(*p);
 	    break;
-	case 2:
+	case 2: //Observed stochastic nodes, not sampled
 	    sample_graph.insert(*p);
 	    break;
 	default:
@@ -315,24 +316,32 @@ void Model::chooseSamplers()
     for(list<pair<SamplerFactory *, bool> >::const_iterator q = sf.begin();
 	q != sf.end(); ++q) 
     {
-	if (q->second) {
-	    vector<Sampler*> svec = q->first->makeSamplers(sset, sample_graph);
-	    while (!svec.empty()) {
-		for (unsigned int i = 0; i < svec.size(); ++i) {
-		    vector<StochasticNode*> const &nodes = svec[i]->nodes();
-		    for (unsigned int j = 0; j < nodes.size(); ++j) {
-			sset.erase(nodes[j]);
+	if (!q->second) continue;
+
+	vector<Sampler*> svec = q->first->makeSamplers(slist, sample_graph);
+	while (!svec.empty()) {
+	    for (unsigned int i = 0; i < svec.size(); ++i) {
+
+		vector<StochasticNode*> const &nodes = svec[i]->nodes();
+		for (unsigned int j = 0; j < nodes.size(); ++j) {
+		    /* FIXME: This is a potential bottleneck if slist
+		       is large */
+		    list<StochasticNode*>::iterator p = 
+			find(slist.begin(), slist.end(), nodes[j]);
+		    if (p == slist.end()) {
+			throw logic_error("Unable to find sampled node");
 		    }
-		    _samplers.push_back(svec[i]);
+		    slist.erase(p);
 		}
-		svec = q->first->makeSamplers(sset, sample_graph);
+		_samplers.push_back(svec[i]);
 	    }
+	    svec = q->first->makeSamplers(slist, sample_graph);
 	}
     }
   
     // Make sure we found a sampler for all the nodes
-    if (!sset.empty()) {
-	throw NodeError(*sset.begin(),
+    if (!slist.empty()) {
+	throw NodeError(*slist.begin(),
 			"Unable to find appropriate sampler");
     }
   

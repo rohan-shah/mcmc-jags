@@ -3,16 +3,17 @@
 #include <sampler/Sampler.h>
 
 using std::vector;
-using std::set;
+using std::list;
 
 namespace jags {
 
 vector<Sampler *>
-SingletonFactory::makeSamplers(set<StochasticNode*> const &nodes, 
+SingletonFactory::makeSamplers(list<StochasticNode*> const &nodes, 
 			       Graph const &graph) const
 {
     vector<Sampler *> samplers;
-    for (set<StochasticNode*>::iterator p = nodes.begin();p != nodes.end(); ++p)
+    for (list<StochasticNode*>::const_iterator p = nodes.begin();
+	 p != nodes.end(); ++p)
     {
 	if (canSample(*p, graph)) {
 	    samplers.push_back(makeSampler(*p, graph));

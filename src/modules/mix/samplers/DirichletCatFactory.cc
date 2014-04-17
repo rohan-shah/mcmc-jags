@@ -13,6 +13,7 @@
 #include <set>
 #include <map>
 
+using std::list;
 using std::set;
 using std::vector;
 using std::string;
@@ -44,51 +45,52 @@ namespace jags {
 	    if (schild[i]->distribution() != dist0) return false;
 	}
 	
-	//Deterministic descendants must all be mixture nodes
-	for (unsigned int j = 0; j < dchild.size(); ++j) {
-	    if (!isMixture(dchild[j])) return false;
-	}
+	 //Deterministic descendants must all be mixture nodes
+	 for (unsigned int j = 0; j < dchild.size(); ++j) {
+	     if (!isMixture(dchild[j])) return false;
+	 }
 
-	return true;
-    }
+	 return true;
+     }
 
-    namespace mix {
-	
-	Sampler * 
-	DirichletCatFactory::makeSampler(vector<StochasticNode*> const &snodes, 
-					 Graph const &graph) const
-	{
-	    GraphView *gv = new GraphView(snodes, graph);
-	    Sampler * sampler = 0;
-	    unsigned int nchain = snodes[0]->nchain();
+     namespace mix {
 
-	    if (DirichletCat::canSample(gv)) {
-		vector<MutableSampleMethod*> methods(nchain);	    
-		for (unsigned int ch = 0; ch < nchain; ++ch) {
-		    methods[ch] = new DirichletCat(gv, ch);
-		}
-		sampler = new MutableSampler(gv, methods, "mix::DirichletCat");		
-	    }
-	    else {
-		delete gv;
-	    }
-	    return sampler;
-	}
+	 Sampler * 
+	 DirichletCatFactory::makeSampler(vector<StochasticNode*> const &snodes, 
+					  Graph const &graph) const
+	 {
+	     GraphView *gv = new GraphView(snodes, graph);
+	     Sampler * sampler = 0;
+	     unsigned int nchain = snodes[0]->nchain();
 
-	string DirichletCatFactory::name() const
-	{
-	    return "mix::DirichletCat";
-	}
+	     if (DirichletCat::canSample(gv)) {
+		 vector<MutableSampleMethod*> methods(nchain);	    
+		 for (unsigned int ch = 0; ch < nchain; ++ch) {
+		     methods[ch] = new DirichletCat(gv, ch);
+		 }
+		 sampler = new MutableSampler(gv, methods, "mix::DirichletCat");		
+	     }
+	     else {
+		 delete gv;
+	     }
+	     return sampler;
+	 }
+
+	 string DirichletCatFactory::name() const
+	 {
+	     return "mix::DirichletCat";
+	 }
+
 
 	vector<Sampler*>  
-	DirichletCatFactory::makeSamplers(set<StochasticNode*> const &nodes, 
+	DirichletCatFactory::makeSamplers(list<StochasticNode*> const &nodes, 
 					  Graph const &graph) const
 	{
 	    //Assemble candidates from available nodes and classify
 	    //them by their stochastic children
 	    DCMap cmap;
 
-	    for (set<StochasticNode*>::const_iterator p = nodes.begin();
+	    for (list<StochasticNode*>::const_iterator p = nodes.begin();
 		 p != nodes.end(); ++p)
 	    {
 		if ((*p)->distribution()->name() != "ddirch") continue;

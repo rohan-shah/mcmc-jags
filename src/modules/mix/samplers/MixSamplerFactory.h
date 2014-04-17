@@ -12,10 +12,10 @@ namespace mix {
     class MixSamplerFactory : public SamplerFactory
     {
     public:
-	Sampler * makeSampler(std::set<StochasticNode*> const &nodes, 
+	Sampler * makeSampler(std::list<StochasticNode*> const &nodes, 
 			      Graph const &graph) const;
 	std::vector<Sampler*>  
-	    makeSamplers(std::set<StochasticNode*> const &nodes, 
+	    makeSamplers(std::list<StochasticNode*> const &nodes, 
 			 Graph const &graph) const;
 	std::string name() const;
     };

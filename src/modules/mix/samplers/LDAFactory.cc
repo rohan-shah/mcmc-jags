@@ -15,11 +15,14 @@
 
 #include <set>
 #include <map>
+#include <algorithm>
 
 using std::set;
 using std::vector;
 using std::string;
 using std::map;
+using std::list;
+using std::find;
 
 namespace jags {
 
@@ -122,7 +125,7 @@ namespace jags {
 	Sampler * 
 	LDAFactory::makeSampler(vector<StochasticNode*> const &topicPriors,
 				vector<StochasticNode*> const &wordPriors,
-				set<StochasticNode*> const &free_nodes,
+				list<StochasticNode*> const &free_nodes,
 				Graph const &graph) const
 	{
 	    if (topicPriors.empty() || wordPriors.empty()) return 0;
@@ -134,7 +137,11 @@ namespace jags {
 		SingletonGraphView gvd(topicPriors[d], graph);
 		topics[d] = gvd.stochasticChildren();
 		for (unsigned int i = 0; i < topics[d].size(); ++i) {
-		    if (free_nodes.count(topics[d][i]) == 0) return 0;
+		    if (find(free_nodes.begin(), free_nodes.end(), topics[d][i])
+			== free_nodes.end()) 
+		    {
+			return 0;
+		    }
 		    SingletonGraphView gvi(topics[d][i], graph);
 		    words[d].push_back(gvi.stochasticChildren()[0]);
 		    snodes.push_back(topics[d][i]);
@@ -161,14 +168,13 @@ namespace jags {
 	}
 
 	vector<Sampler*>  
-	LDAFactory::makeSamplers(set<StochasticNode*> const &free_nodes, 
+	LDAFactory::makeSamplers(list<StochasticNode*> const &free_nodes, 
 				 Graph const &graph) const
 	{
 	    //First we need to traverse the graph looking for
 	    //Dirichlet nodes.  We are not interested in sampling
 	    //them, but they are the basis for finding the categorical
 	    //nodes that we do want to sample
-
 	    
 	    set<StochasticNode*> dirichlet_nodes;
 
@@ -177,7 +183,7 @@ namespace jags {
 		VectorStochasticNode *vsnode = 
 		    dynamic_cast<VectorStochasticNode *>(*p);
 		if (vsnode && vsnode->distribution()->name() == "ddirch") {
-		    dirichlet_nodes.insert(vsnode);
+	    dirichlet_nodes.insert(vsnode);
 		}
 	    }
 

@@ -16,10 +16,10 @@ namespace jags {
 	    Sampler *
 		makeSampler(std::vector<StochasticNode*> const &topicPriors,
 			    std::vector<StochasticNode*> const &wordPriors,
-			    std::set<StochasticNode*> const &free_nodes,
+			    std::list<StochasticNode*> const &free_nodes,
 			    Graph const &graph) const;
 	    std::vector<Sampler*> 
-		makeSamplers(std::set<StochasticNode*> const &nodes, 
+		makeSamplers(std::list<StochasticNode*> const &nodes, 
 			     Graph const &graph) const;
 	    std::string name() const;
 	};

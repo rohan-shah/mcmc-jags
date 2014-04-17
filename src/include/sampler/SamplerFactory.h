@@ -2,7 +2,7 @@
 #define SAMPLER_FACTORY_H_
 
 #include <vector>
-#include <set>
+#include <list>
 #include <string>
 
 namespace jags {
@@ -19,13 +19,13 @@ class SamplerFactory
 public:
     virtual ~SamplerFactory();
     /**
-     * Finds nodes in the set of stochastic nodes that can be sampled
+     * Finds nodes in the list of stochastic nodes that can be sampled
      * within the given graph, and returns a vector of newly allocated
      * samplers for them.  If no sampler can be created, an empty
      * vector is returned.
      */
     virtual std::vector<Sampler*> 
-	makeSamplers(std::set<StochasticNode*> const &nodes, 
+	makeSamplers(std::list<StochasticNode*> const &nodes, 
 		     Graph const &graph) const = 0;
     /**
       * Returns the name of the sampler factory

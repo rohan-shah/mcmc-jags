@@ -34,14 +34,14 @@ namespace glm {
 	 * or a NULL pointer. Sub-classes of GLMFactory only have to
 	 * implement the abstract member function newMethod.
 	 */
-	Sampler * makeSampler(std::set<StochasticNode*> const &nodes, 
+	Sampler * makeSampler(std::list<StochasticNode*> const &free_nodes, 
 			      Graph const &graph) const;
 	/**
 	 * Wraps GLMFactory#makeSampler and returns a single
 	 * newly-allocated sampler in a vector.
 	 */
 	std::vector<Sampler*> 
-	    makeSamplers(std::set<StochasticNode*> const &nodes, 
+	    makeSamplers(std::list<StochasticNode*> const &free_nodes, 
 			 Graph const &graph) const;
 	/**
 	 * Checks that an outcome variable in a GLM has the correct

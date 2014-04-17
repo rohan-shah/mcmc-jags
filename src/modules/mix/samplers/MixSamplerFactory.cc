@@ -8,9 +8,8 @@
 #include <sampler/MutableSampler.h>
 #include <sampler/SingletonGraphView.h>
 
-#include <set>
-
 using std::set;
+using std::list;
 using std::vector;
 using std::string;
 
@@ -65,11 +64,12 @@ static void aggregate(SingletonGraphView const *gv,
 
 namespace mix {
 
-    Sampler * MixSamplerFactory::makeSampler(set<StochasticNode*> const &nodes, 
-					     Graph const &graph) const
+    Sampler * 
+    MixSamplerFactory::makeSampler(list<StochasticNode*> const &nodes, 
+				   Graph const &graph) const
     {
 	vector<SingletonGraphView*> gvec;
-	for (set<StochasticNode*>::const_iterator p = nodes.begin();
+	for (list<StochasticNode*>::const_iterator p = nodes.begin();
 	     p != nodes.end(); ++p)
 	{
 	    SingletonGraphView *gv = isCandidate(*p, graph);
@@ -107,7 +107,7 @@ namespace mix {
     }
 
     vector<Sampler*>  
-    MixSamplerFactory::makeSamplers(set<StochasticNode*> const &nodes, 
+    MixSamplerFactory::makeSamplers(list<StochasticNode*> const &nodes, 
 				    Graph const &graph) const
     {
 	Sampler *s = makeSampler(nodes, graph);

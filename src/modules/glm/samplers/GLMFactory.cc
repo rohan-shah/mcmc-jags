@@ -22,6 +22,7 @@ using std::vector;
 using std::map;
 using std::stable_sort;
 using std::string;
+using std::list;
 
 namespace jags {
 
@@ -131,7 +132,7 @@ namespace glm {
     {}
     
     Sampler * 
-    GLMFactory::makeSampler(set<StochasticNode*> const &nodes, 
+    GLMFactory::makeSampler(list<StochasticNode*> const &free_nodes, 
 			    Graph const &graph) const
     {
 	/* 
@@ -139,8 +140,8 @@ namespace glm {
 	   Keep track of the number of stochastic children
 	*/
 	vector<SingletonGraphView*> candidates;
-	for (set<StochasticNode*>::const_iterator p = nodes.begin();
-	     p != nodes.end(); ++p)
+	for (list<StochasticNode*>::const_iterator p = free_nodes.begin();
+	     p != free_nodes.end(); ++p)
 	{
 	    SingletonGraphView *up = makeView(*p, graph);
 	    if (up) {
@@ -262,7 +263,7 @@ namespace glm {
     }
 
     vector<Sampler*>  
-    GLMFactory::makeSamplers(set<StochasticNode*> const &nodes, 
+    GLMFactory::makeSamplers(list<StochasticNode*> const &nodes, 
 			     Graph const &graph) const
     {
 	Sampler *s = makeSampler(nodes, graph);
