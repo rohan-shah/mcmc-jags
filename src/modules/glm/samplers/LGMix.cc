@@ -23,9 +23,12 @@
 
 #include <cmath>
 #include <vector>
+#include <algorithm>
 
 using std::sqrt;
 using std::vector;
+using std::max_element;
+using std::upper_bound;
 
 /*
  * Exact mixture parameters are stored for integer n in the range 1 ... 19.
@@ -277,7 +280,7 @@ static const double Coef_v5[2][4] = {
 };
 
 /*
- * n from 1600 to 10000 
+ * n from 1600 to 9999 
  */
 static const double Coef_p6[2][4] = {
     {-1.586037487404490e-13, 3.575996226727867e-09, 
@@ -323,16 +326,16 @@ static const double Coef_v7[2][4] = {
 /*
  * Approximate mixture parameters using a rational function that is
  * quadratic in the numerator and linear in the denominator.  The
- * coefficients are in an nrow x 4 array. If the elements of a row
+ * coefficients are in an ncomp x 4 array. If the elements of a row
  * are a,b,c,d then the rational approximation is:
  *
  * (a * n^2 + b * n + 1)/(c * n + d)
  *
  */
-static void rational_approx(double n, const double (*coef)[4], int nrow, 
+static void rational_approx(double n, const double (*coef)[4], int ncomp, 
 			    double *out)
 {
-    for (int i = 0; i < nrow; i++) {
+    for (int i = 0; i < ncomp; i++) {
 	double num = coef[i][0] * n * n + coef[i][1] * n + 1;
 	double denom = coef[i][2] * n + coef[i][3];
 	out[i] = num / denom;
@@ -343,7 +346,7 @@ namespace jags {
 namespace glm {
 
     LGMix::LGMix(double n)
-	: _nlast(n), _r(0), _ncomp(0)
+	: _n(n), _r(0), _ncomp(0)
     {
 	if (n > 0) 
 	    updateN(n);
@@ -352,7 +355,7 @@ namespace glm {
     /*
      * Exact mixture parameters for all integer n less than 20
      */
-    void LGMix::updateNExact(int n)
+    void LGMix::updateShapeExact(int n)
     {
 	if (n < 5) {
 	    _ncomp = 10;
@@ -373,7 +376,7 @@ namespace glm {
     /*
      * Approximate mixture parameters for n >= 20 using rational functions
      */
-    void LGMix::updateNApprox(double n)
+    void LGMix::updateShapeApprox(double n)
     {
 	//Upper limit of range of n supported by each approximation
 	const int upper[5] = {50, 440, 1600, 10000, 30000};
@@ -404,15 +407,15 @@ namespace glm {
 	_ncomp = 1;
     }
 
-    void LGMix::updateN(double n)
+    void LGMix::updateShape(double n)
     {
 	if (n <= 0) {
-	    throwLogicError("n out of range in LGMix::updateN");
+	    throwLogicError("shape out of range in LGMix::updateShape");
 	}
 	else if (n < 20) {
 	    int nr = static_cast<int>(n);
 	    if (nr != n) {
-		throwLogicError("Invalid in in LGMix::updateN");
+		throwLogicError("Invalid shape in LGMix::updateShape");
 	    }
 	    updateNExact(nr);
 	}
@@ -430,41 +433,33 @@ namespace glm {
 	    _means[i] = _means[i] * sigma + mu;
 	    _variances[i] *= sigma2;
 	}
-	_nlast = n;
+	_n = n;
 
     }
 
     void LGMix::update(double z, double n, RNG *rng)
     {
 	// Check whether value of n has changed since last update
-	if (n != _nlast) {
-	    updateN(n);
-	}
+	if (n != _n) updateN(n);
 
-	vector<double> p(_ncomp);
 	//Log probabilities
-	double maxp = 0;
+	vector<double> p(_ncomp);
 	for (int i = 0; i < _ncomp; i++) {
 	    p[i] = dnorm(z, _means[i], sqrt(_variances[i]), true) + 
 		log(_weights[i]);
-	    if (i == 0 || p[i] > maxp)
-		maxp = p[i];
 	}
+	double maxp = *max_element(p.begin(), p.end());
 
-	//Cumulative probabilities
-	double sump = 0;
+	//Cumulative probabilities (unnormalized)
+	double sump = 0.0;
 	for (int i = 0; i < _ncomp; i++) {
-	    p[i] = sump + exp(p[i] - maxp);
-	    sump = p[i];
+	    sump += exp(p[i] - maxp);
+	    p[i] = sump;
 	}
     
 	//Sample _r from cumulative probabilities
 	double u = rng->uniform() * sump;
-	for (_r = 0; _r < _ncomp - 1; _r++) {
-	    if (u < p[_r]) {
-		break;
-	    }
-	}
+	_r = upper_bound(p.begin(), p.end(), u) - p.begin();
     }
 
     double LGMix::mean() const
@@ -475,6 +470,21 @@ namespace glm {
     double LGMix::precision() const
     {
 	return 1/_variances[_r];
+    }
+
+    void LGMix::getParameters(vector<double> &weights,
+			      vector<double> &means,
+			      vector<double> &variances)
+    {
+	weights.clear();
+	means.clear();
+	variances.clear();
+
+	for (int i = 0; i < _ncomp; ++i) {
+	    weights.push_back(_weights[i]);
+	    means.push_back(_means[i]);
+	    variances.push_back(_variances[i]);
+	}
     }
 
 }}

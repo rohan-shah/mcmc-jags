@@ -18,3 +18,12 @@ glm_la_LDFLAGS = -module -avoid-version
 if WINDOWS
 glm_la_LDFLAGS += -no-undefined
 endif
+
+### Test library 
+
+check_LTLIBRARIES = libglmtest.la
+libglmtest_la_SOURCES = testglm.cc testglm.h
+libglmtest_la_LIBADD = samplers/libglmsamptest.la \
+	$(top_builddir)/src/lib/libtest.la \
+	$(top_builddir)/src/lib/libjags.la
+libglmtest_la_CPPFLAGS = -I$(top_srcdir)/src/include

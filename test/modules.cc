@@ -7,11 +7,13 @@
 
 #include <base/testbase.h>
 #include <bugs/testbugs.h>
+#include <glm/testglm.h>
 
 int main(int argc, char* argv[])
 {
     init_base_test();
     init_bugs_test();
+    init_glm_test();
 
     // Get the top level suite from the registry
     CppUnit::Test *suite = 

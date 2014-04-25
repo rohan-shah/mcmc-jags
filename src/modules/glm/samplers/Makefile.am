@@ -21,3 +21,7 @@ noinst_HEADERS = GLMFactory.h GLMSampler.h GLMMethod.h			\
   AMMethod.h AMFactory.h Outcome.h NormalLinear.h BinaryProbit.h	\
   BinaryLogit.h Classify.h IWLSOutcome.h
 
+check_LTLIBRARIES = libglmsamptest.la
+libglmsamptest_la_SOURCES = testglmsamp.cc testglmsamp.h
+libglmsamptest_la_CPPFLAGS = -I$(top_srcdir)/src/include
+libglmsamptest_la_CXXFLAGS = $(CPPUNIT_CFLAGS)
