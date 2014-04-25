@@ -23,8 +23,8 @@ endif
 
 check_LTLIBRARIES = libbugstest.la
 libbugstest_la_SOURCES = testbugs.cc testbugs.h
-libbugstest_la_LIBADD = functions/libbugsfuntest.la \
-	$(top_builddir)/src/lib/libtest.la 
+libbugstest_la_LIBADD = functions/libbugsfuntest.la	\
+	$(top_builddir)/src/lib/libtest.la		\
 	$(top_builddir)/src/lib/libjags.la
 libbugstest_la_CPPFLAGS = -I$(top_srcdir)/src/include
 

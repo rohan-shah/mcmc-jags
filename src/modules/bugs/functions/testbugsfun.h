@@ -11,10 +11,6 @@ namespace jags {
 #include <cppunit/extensions/HelperMacros.h>
 #include <testlib.h>
 
-namespace jags {
-    class ScalarFunction;
-}
-
 class BugsFunTest : public CppUnit::TestFixture, public JAGSFixture
 {
     CPPUNIT_TEST_SUITE( BugsFunTest );

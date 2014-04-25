@@ -29,18 +29,17 @@ namespace glm {
         /**
 	 * Constructor
 	 *
-	 * @param snode Stochastic node representing the true outcome
-	 * variable of a GLM
+	 * @param snode Stochastic node representing a Poisson outcome
+	 * variable of a GLM with log link.
 	 * 
-	 * @param chain Index number of the chain (starting from zero)
-	 * to use
+	 * @param chain Index number of the chain (starting from zero).
 	 */
 	AuxMixPoisson(StochasticNode const *snode, unsigned int chain);
 	~AuxMixPoisson();
 	/**
-	 * Samples the auxiliary variable from its posterior distribution
-	 * given the outcome (y in the constructor) and then calculates
-	 * a new normal approximation
+	 * Samples the auxiliary variables from their posterior
+	 * distribution given the outcome and then calculates a new
+	 * normal approximation
 	 */
 	void update(RNG *rng);
 	/**
