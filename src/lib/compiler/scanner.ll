@@ -72,9 +72,11 @@ BRACKET		[ \t]*\(
 }
 
 "/*"           BEGIN(COMMENT);
-<COMMENT>[^*]*          /* Eat up anything that's not a '*'   */
-<COMMENT>"*"+[^*/n]*    /* Eat up '*'s not followed by a '/'  */
-<COMMENT>"*"+"/"        BEGIN(INITIAL);
+<COMMENT> {
+    [^*]*          /* Eat up anything that's not a '*' */
+    "*"+[^*/]*     /* Eat up '*'s not followed by a '/'  */
+    "*"+"/"        BEGIN(INITIAL);
+}
 
 [ \t\r\n]+              /* Eat whitespace */
 "#".*\n                 /* Eat comments */
