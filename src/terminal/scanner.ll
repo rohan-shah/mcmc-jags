@@ -81,13 +81,11 @@ run                     zzlval.intval=RUN; return RUN;
 "`"                     return '`';
 
 "/*"                    BEGIN(COMMENT);
-<COMMENT> {
-    [^*]*          /* Eat up anything that's not a '*' */
-    "*"+[^*/]*     /* Eat up '*'s not followed by a '/'  */
-    "*"+"/"        BEGIN(INITIAL);
-}
+<COMMENT>[^*]*          /* Eat up anything that's not a '*' */
+<COMMENT>"*"+[^*/]*     /* Eat up '*'s not followed by a '/'  */
+<COMMENT>"*"+"/"        BEGIN(INITIAL);
 
-<RDATA,INITIAL>[ \t\r]+ /* Eat whitespace */
+<RDATA,INITIAL>[ \t\r\f]+ /* Eat whitespace */
 <RDATA,INITIAL>"#".*\n  /* Eat single-line comments */
 <RDATA>[\n]+            /* Eat newlines */
 <INITIAL>[\n]           return ENDCMD;
