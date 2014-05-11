@@ -1,5 +1,4 @@
 #include <config.h>
-
 #include "ConjugateGamma.h"
 
 #include <graph/LogicalNode.h>
@@ -135,8 +134,9 @@ void ConjugateGamma::update(unsigned int chain, RNG *rng) const
 	_gv->stochasticChildren();
     unsigned int nchildren = stoch_children.size();
 
-    double r; // shape
-    double mu; // 1/scale
+    //Need to initialize these for -Wall
+    double r=0; // shape
+    double mu=0; // 1/scale
 
     //Prior
     vector<Node const *> const &param = _gv->node()->parents();
@@ -151,7 +151,7 @@ void ConjugateGamma::update(unsigned int chain, RNG *rng) const
 	break;
     case CHISQ:
 	r = *param[0]->value(chain)/2;
-	mu = 1/2;
+	mu = 0.5; //FIXME: This was wrong in 3.x.y. Needs testing
 	break;
     default:
 	throwLogicError("invalid distribution in ConjugateGamma method");
