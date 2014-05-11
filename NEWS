@@ -17,6 +17,9 @@ Bug fixes
 =========
 * The qpar function in the bugs module was inverted.
 * The not function in the base module was inverted.
+* The ConjugateGamma sampler did not work correctly for the Chi Squared 
+  distribution
+* The parser accepts form feed as a white space character
 
 Library changes
 ===============

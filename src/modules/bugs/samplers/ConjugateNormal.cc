@@ -137,7 +137,7 @@ void ConjugateNormal::update(unsigned int chain, RNG *rng) const
        origin to xold, the previous value of the node */
 
     const double xold = *snode->value(chain);
-    double A, B;
+    double A=0, B=0; //-Wall
     if (_target_dist == NORM) {
 	const double priormean = *snode->parents()[0]->value(chain) - xold; 
 	const double priorprec = *snode->parents()[1]->value(chain); 

@@ -752,7 +752,6 @@ Node * Compiler::allocateLogical(ParseTree const *rel)
 {
     ParseTree *expression = rel->parameters()[1];
     Node *node = 0;
-    ConstantNode *cnode = 0;
     vector <Node const *> parents;
 
     switch (expression->treeClass()) {
