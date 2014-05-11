@@ -349,7 +349,7 @@ namespace glm {
 	: _n(n), _r(0), _ncomp(0)
     {
 	if (n > 0) 
-	    updateN(n);
+	    updateShape(n);
     }
 
     /*
@@ -417,10 +417,10 @@ namespace glm {
 	    if (nr != n) {
 		throwLogicError("Invalid shape in LGMix::updateShape");
 	    }
-	    updateNExact(nr);
+	    updateShapeExact(nr);
 	}
 	else {
-	    updateNApprox(n);
+	    updateShapeApprox(n);
 	}
 	
 	// Rescale by mean and standard deviation of the negative
@@ -440,7 +440,7 @@ namespace glm {
     void LGMix::update(double z, double n, RNG *rng)
     {
 	// Check whether value of n has changed since last update
-	if (n != _n) updateN(n);
+	if (n != _n) updateShape(n);
 
 	//Log probabilities
 	vector<double> p(_ncomp);
