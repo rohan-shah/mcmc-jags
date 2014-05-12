@@ -52,11 +52,10 @@ static vector<Node const *> mkParents(vector<Node const *> const &parameters,
 StochasticNode::StochasticNode(vector<unsigned int> const &dim,
 			       Distribution const *dist,
 			       vector<Node const *> const &parameters,
-			       Node const *lower, Node const *upper,
-			       double const *data, unsigned int length)
+			       Node const *lower, Node const *upper)
     : Node(dim, mkParents(parameters, lower, upper)), 
       _dist(dist), _lower(lower), _upper(upper), 
-      _observed(data != 0 && length > 0), 
+      _observed(false), 
       _discrete(mkDiscrete(dist, parameters)), _parameters(nchain())
 {
     if (!checkNPar(dist, parameters.size())) {
@@ -81,12 +80,6 @@ StochasticNode::StochasticNode(vector<unsigned int> const &dim,
 	}
     }
 
-    //Set value if supplied
-    if (data) {
-	for (unsigned int n = 0; n < _nchain; ++n) {
-	    setValue(data, length, n);
-	}
-    }
 
     for (unsigned int i = 0; i < parents().size(); ++i) {
 	parents()[i]->addChild(this);
@@ -257,5 +250,13 @@ bool isBounded(StochasticNode const *node)
 {
     return node->lowerBound() || node->upperBound();
 }
+
+    void StochasticNode::setData(double const *value, unsigned int length)
+    {
+	for (unsigned int n = 0; n < _nchain; ++n) {
+	    setValue(value, length, n);
+	}
+	_observed = true;
+    }
 
 } //namespace jags

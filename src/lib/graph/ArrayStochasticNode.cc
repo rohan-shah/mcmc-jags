@@ -52,8 +52,7 @@ ArrayStochasticNode::ArrayStochasticNode(ArrayDist const *dist,
 					 Node const *lower, Node const *upper,
 					 double const *data,
 					 unsigned int length)
-    : StochasticNode(mkDim(dist, params), dist, params, lower, upper, 
-		     data, length),
+    : StochasticNode(mkDim(dist, params), dist, params, lower, upper),
       _dist(dist), _dims(mkParameterDims(params))
 {
     if (!dist->checkParameterDim(_dims)) {

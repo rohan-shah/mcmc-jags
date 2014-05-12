@@ -46,7 +46,7 @@ class StochasticNode : public Node {
     Distribution const * const _dist;
     Node const * const _lower;
     Node const * const _upper;
-    const bool _observed;
+    bool _observed;
     const bool _discrete;
     virtual void sp(double *lower, double *upper, unsigned int length,
 		    unsigned int chain) const = 0;
@@ -63,57 +63,51 @@ public:
      * pointer denotes no lower bound.
      * @param upper Pointer to node defining the lower bound. A NULL
      * pointer denotes no upper bound.
-     * @param data Optional pointer to an array of data values. If
-     * this is supplied then each chain is given the same value and
-     * the node is considered observed.
-     * @param length Optional length of the array containing the data
-     * values.
      */
     StochasticNode(std::vector<unsigned int> const &dim,
 		   Distribution const *dist,
                    std::vector<Node const *> const &parameters,
-		   Node const *lower, Node const *upper, 
-		   double const *data=0, unsigned int length=0);
+		   Node const *lower, Node const *upper);
     ~StochasticNode();
-     /**
-      * Returns a pointer to the Distribution.
-      */
-     Distribution const *distribution() const;
-     /**
-      * Returns the log of the prior density of the StochasticNode
-      * given the current parameter values.
-      *
-      * @param chain Number of chain (starting from zero) for which
-      * to evaluate log density.
-      *
-      * @param type Indicates whether the full probability density
-      * function is required (PDF_FULL) or whether partial calculations
-      * are permitted (PDF_PRIOR, PDF_LIKELIHOOD). See PDFType for
-      * details.
-      */
-     virtual double logDensity(unsigned int chain, PDFType type) const = 0;
-     /**
-      * Draws a random sample from the prior distribution of the node
-      * given the current values of it's parents, and sets the Node
-      * to that value.
-      *
-      * @param rng Random Number Generator object
-      * @param chain Index umber of chain to modify
-      */
-     virtual void randomSample(RNG *rng, unsigned int chain) = 0;
-     /**
-      * Draws a truncated random sample from the prior distribution of
-      * the node. The lower and upper parameters are pointers to arrays
-      * that are assumed to be of the correct size, or NULL pointers if
-      * there is no bound
-      *
-      * @param lower Optional lower bound
-      * @param upper Optional upper bound
-      */
-     virtual void truncatedSample(RNG *rng, unsigned int chain,
-				  double const *lower=0, 
-				  double const *upper=0) = 0;
-     /**
+    /**
+     * Returns a pointer to the Distribution.
+     */
+    Distribution const *distribution() const;
+    /**
+     * Returns the log of the prior density of the StochasticNode
+     * given the current parameter values.
+     *
+     * @param chain Number of chain (starting from zero) for which
+     * to evaluate log density.
+     *
+     * @param type Indicates whether the full probability density
+     * function is required (PDF_FULL) or whether partial calculations
+     * are permitted (PDF_PRIOR, PDF_LIKELIHOOD). See PDFType for
+     * details.
+     */
+    virtual double logDensity(unsigned int chain, PDFType type) const = 0;
+    /**
+     * Draws a random sample from the prior distribution of the node
+     * given the current values of it's parents, and sets the Node
+     * to that value.
+     *
+     * @param rng Random Number Generator object
+     * @param chain Index umber of chain to modify
+     */
+    virtual void randomSample(RNG *rng, unsigned int chain) = 0;
+    /**
+     * Draws a truncated random sample from the prior distribution of
+     * the node. The lower and upper parameters are pointers to arrays
+     * that are assumed to be of the correct size, or NULL pointers if
+     * there is no bound
+     *
+     * @param lower Optional lower bound
+     * @param upper Optional upper bound
+     */
+    virtual void truncatedSample(RNG *rng, unsigned int chain,
+				 double const *lower=0, 
+				 double const *upper=0) = 0;
+    /**
      * A deterministic sample for a stochastic node sets it to a
      * "typical" value of the prior distribution, given the current
      * values of its parents. The exact behaviour depends on the
@@ -148,13 +142,25 @@ public:
     std::string deparse(std::vector<std::string> const &parameters) const;
     bool isDiscreteValued() const;
     /**
-     * A stochastic node is fixed if a non-NULL data argument was supplied
-     * to the constructor.
+     * A stochastic node is fixed if the setData member function
+     * has been called.
      */
     bool isFixed() const;
     /**
+     * Sets the value of the node to be the same in all chains.
+     * After setData is called, the stochastic node is considered
+     * observed.
+     *
+     * @param data Pointer to an array of data values.  
+     *
+     * @param length Length of the array containing the data values.
+     *
+     * @see Node#setValue
+     */
+    void setData(double const *value, unsigned int length);
+    /**
      * A stochastic node is always a random variable, and is observed
-     * if it was constructed with a non-NULL data argument.
+     * if its value has been set with setData.
      */
     RVStatus randomVariableStatus() const;
     Node const *lowerBound() const;
@@ -173,8 +179,6 @@ public:
     //Required for KL in dic
     std::vector<double const*> const &parameters(unsigned int chain) const;
 };
-
-
 
 /**
  * Returns true if the upper and lower limits of the support of
