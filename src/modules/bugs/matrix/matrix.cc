@@ -2,6 +2,8 @@
 
 #include <string>
 #include <cmath>
+#include <algorithm>
+#include <vector>
 
 #include <module/ModuleError.h>
 
@@ -10,6 +12,8 @@
 
 using std::log;
 using std::fabs;
+using std::copy;
+using std::vector;
 
 namespace jags {
 namespace bugs {
@@ -55,6 +59,38 @@ double logdet(double const *a, int n)
   delete [] w;
 
   return logdet;
+}
+
+bool check_symmetric_ispd(double const *a, int n)
+{
+    /* Checks that an n x n symmetric matrix is positive definite.
+       The code is essentially the same as logdet, but we return
+       false if the smallest eigenvalue is less than zero.
+    */
+  
+    int N = n*n;
+    vector<double> acopy(N);
+    copy(a, a+N, acopy.begin());
+
+    //Workspace query to get optimal workspace
+    vector<double> w(n);
+    int lwork = -1;
+    double worktest = 0;
+    int info = 0;
+    F77_DSYEV("N","U", &n, &acopy[0], &n, &w[0], &worktest, &lwork, &info);
+    if (info != 0) {
+	throwRuntimeError("unable to calculate workspace size for dsyev");
+    }
+    lwork = static_cast<int>(worktest);
+    vector<double> work(lwork);
+
+    //Calculate eigenvalues
+    F77_DSYEV("N","U", &n, &acopy[0], &n, &w[0], &work[0], &lwork, &info);
+    if (info != 0) {
+	throwRuntimeError("unable to calculate eigenvalues in dsyev");
+    }
+
+    return w[0] > 0;
 }
 
 /*

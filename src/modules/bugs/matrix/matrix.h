@@ -31,6 +31,16 @@ bool inverse (double *X, double const *A, int n);
 bool inverse_spd (double *X, double const *A, int n);
 
 /**
+ * Checks whether a symmetric matrix is positive definite
+ *
+ * @param A pointer to array containing the values of the matrix. Only
+ * the lower triangle (in column-major order) is used.
+ *
+ * @param n number or rows or columns in the matrix
+ */
+bool check_symmetric_ispd(double const *a, int n);
+
+/**
  * Log determinant of a symmetric positive definite matrix
  *
  * @param A pointer to array containing the values of the matrix. Only

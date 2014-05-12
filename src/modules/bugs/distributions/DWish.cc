@@ -169,9 +169,11 @@ DWish::checkParameterValue(vector<double const *> const &par,
 {
     // Check that we have sufficient degrees of freedom
     if (DF(par) < NROW(dims)) return false;
-    // Check symmetry of scale matrix
-    // NB Skipping check of positive definiteness
-    return check_symmetry(SCALE(par), NROW(dims));
+    // Check scale matrix
+
+    double const *scale = SCALE(par);
+    unsigned int n = NROW(dims);
+    return check_symmetry(scale, n) && check_symmetric_ispd(scale, n);
 }
 
 

@@ -135,7 +135,10 @@ bool
 DMNorm::checkParameterValue(vector<double const *> const &parameters,
 			    vector<vector<unsigned int> > const &dims) const
 {
-    return check_symmetry(parameters[1], dims[0][0]);
+    double const *precision = parameters[1];
+    unsigned int n = dims[0][0];
+
+    return check_symmetry(precision, n) && check_symmetric_ispd(precision, n);
 }
 
 
