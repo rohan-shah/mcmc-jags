@@ -50,11 +50,9 @@ mkParameterLengths(vector<Node const *> const &parameters) {
 
 VectorStochasticNode::VectorStochasticNode(VectorDist const *dist, 
 					   vector<Node const *> const &params,
-					   Node const *lower, Node const *upper,
-					   double const *data,
-					   unsigned int length)
+					   Node const *lower, Node const *upper)
     : StochasticNode(vector<unsigned int>(1,mkLength(dist, params)), 
-		     dist, params, lower, upper, data, length),
+		     dist, params, lower, upper),
       _dist(dist), _lengths(mkParameterLengths(params))
 {
     if (!dist->checkParameterLength(_lengths)) {
