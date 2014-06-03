@@ -37,8 +37,10 @@ namespace dic {
 		observed_snodes.push_back(snodes[i]);
 	    }
 	}
-	if (observed_snodes.empty())
+	if (observed_snodes.empty()) {
+	    msg = "There are no observed stochastic nodes";
 	    return 0;
+	}
 
 	Monitor *m = 0;
 	if (type == "mean") {

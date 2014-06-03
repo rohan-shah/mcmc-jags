@@ -36,11 +36,11 @@ namespace dic {
 	    return 0;
 
 	if (!isNULL(range)) {
-	    msg = string("cannot monitor a subset of ") + name;
+	    msg = string("Cannot monitor a subset of ") + name;
 	}
 	
 	if (model->nchain() < 2) {
-	    msg = string("at least two parallel chains needed to monitor ")
+	    msg = string("At least two parallel chains needed to monitor ")
 		+ name;
 	    return 0;
 	}
@@ -59,7 +59,7 @@ namespace dic {
 	    }
 	}
 	if (observed_nodes.empty()) {
-	    msg = "There are no observed nodes";
+	    msg = "There are no observed stochastic nodes";
 	    return 0;
 	}
 
