@@ -6,6 +6,7 @@
 #include <model/BUGSModel.h>
 #include <model/Monitor.h>
 #include <graph/NodeError.h>
+#include <graph/ParentError.h>
 #include <sampler/SamplerFactory.h>
 #include <model/MonitorFactory.h>
 #include <rng/RNGFactory.h>
@@ -34,10 +35,13 @@ using std::pair;
 using std::FILE;
 
 #define CATCH_ERRORS							\
+    catch (ParentError except) {					\
+        except.printMessage(_err, _model->symtab());			\
+	clearModel();							\
+	return false;							\
+    }									\
     catch (NodeError except) {						\
-	_err << "Error in node " <<					\
-	    _model->symtab().getName(except.node) << "\n";		\
-	_err << except.what() << endl;					\
+        except.printMessage(_err, _model->symtab());			\
 	clearModel();							\
 	return false;							\
     }									\
