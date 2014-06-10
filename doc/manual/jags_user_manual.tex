@@ -1639,17 +1639,21 @@ their distribution.
 
 A distribution may optionally have an alias, which can be used in the
 model definition in place of the canonical name. Aliases are used to
-to avoid confusion with other statistical software in which
-distributions may have different names. Table
-\ref{table:bugs:distributions:alias} shows the distributions in the
-\texttt{bugs} module with an alias.
+avoid confusion with other statistical software in which distributions
+may have slightly different names. Note however that the alias does
+not change the parameterization. For example, the Weibull distribution
+is parameterized differently in BUGS and R, and using the alias
+``dweibull'' does not change this.
+
+Table \ref{table:bugs:distributions:alias} shows the distributions in
+the \texttt{bugs} module with an alias.
 
 \begin{table}
 \begin{center}
 \begin{tabular}{llll}
 \hline
-Distribution & Canonical & Alias & Compatibile  \\
-             & name      &       & with         \\
+Distribution & Canonical & Alias & Same \\
+             & name      &       & name as \\
 \hline
 Binomial           & dbin      & dbinom   & R   \\
 Chi-square         & dchisqr   & dchisq   & R   \\ 
