@@ -50,6 +50,10 @@ namespace glm {
 	 */
 	virtual double value() const = 0;
 	/**
+	 *
+	 */
+	virtual double logMHRatio const;
+	/**
 	 * Updates the auxiliary variables using the current value of
 	 * the linear predictor. The default implementation does
 	 * nothing.
@@ -57,7 +61,7 @@ namespace glm {
 	 * @param rng Random number generator
 	 */
 	virtual void update(RNG *rng); 
-	/**
+        /**
 	 * Updates the auxiliary variables marginalizing over the
 	 * distribution of the linear predictor. The default
 	 * implementation does nothing.

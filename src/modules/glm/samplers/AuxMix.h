@@ -37,6 +37,13 @@ namespace glm {
 	 * distribution and updates the normal approximation..
 	 */
 	virtual void update(RNG *rng) = 0;
+	/**
+	 * Returns the contribution to the log of the
+	 * Metropolis-Hastings acceptance ratio, based on the
+	 * difference between the true log-density and the finite
+	 * normal mixture approximation.
+	 */
+	double logAccept() const;
     };
 
 }}
