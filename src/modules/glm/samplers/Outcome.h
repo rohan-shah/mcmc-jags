@@ -50,9 +50,9 @@ namespace glm {
 	 */
 	virtual double value() const = 0;
 	/**
-	 *
+	 * FIXME
 	 */
-	virtual double logMHRatio const;
+	virtual double logMHRatio() const;
 	/**
 	 * Updates the auxiliary variables using the current value of
 	 * the linear predictor. The default implementation does

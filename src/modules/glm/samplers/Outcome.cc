@@ -52,6 +52,11 @@ namespace glm {
     {
     }
 */
+
+    double Outcome::logMHRatio() const
+    {
+	return 0;
+    }
 }}
     
 
