@@ -1159,6 +1159,7 @@ static void adaptstar(long niter, long refresh, int width)
 	}
 	if (!status) {
 	    std::cerr << "Adaptation incomplete\n";
+	    return;
 	}
 	else {
 	    std::cerr << "Adaptation successful\n";
