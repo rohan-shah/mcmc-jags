@@ -263,12 +263,6 @@ static string makeMixtureName(MixtureNode const *mnode,
 string SymTab::getName(Node const *node) const
 {
     //Special rules for mixture nodes
-    /*
-      if (isMixture(node)) {
-      return makeMixtureName(asMixture(node), *this);
-      }
-    */
-
     map<string, NodeArray*>::const_iterator p;
     for (p = _varTable.begin(); p != _varTable.end(); ++p) {
 	NodeArray *array = p->second;
@@ -292,10 +286,4 @@ string SymTab::getName(Node const *node) const
     return node->deparse(parnames);
 }
 
-//FIXME: Necessary?
-unsigned int SymTab::nchain() const
-{
-    return _model->nchain();
-}
-    
 } //namespace jags
