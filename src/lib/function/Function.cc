@@ -70,4 +70,14 @@ string Function::deparse(vector<string> const &par) const
     return name;
 }
 
+    bool Function::checkParameterDiscrete(vector<bool> const &mask) const
+    {
+	return true;
+    }
+
+    bool Function::checkParameterFixed(std::vector<bool> const &mask) const
+    {
+	return true;
+    }
+
 } //namespace jags

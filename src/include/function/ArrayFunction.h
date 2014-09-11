@@ -12,8 +12,8 @@ namespace jags {
  * @short Matrix- or array-valued function
  *
  * Array-valued functions are the most general class of function. The
- * arguments of an array-valued function, and the value, may be
- * scalars, vector, matrices or arrays.
+ * arguments of an array-valued function, and the value may be a
+ * scalar, vector, or array.
  *
  */
 class ArrayFunction : public Function
@@ -54,16 +54,17 @@ public:
         const;
     /**
      * Calculates what the dimension of the return value should be,
-     * based on the dimensions of the arguments. The dimension of the
-     * return value cannot depend on the value of any of the arguments,
-     * only their dimensions.
+     * based on the arguments. 
      *
      * @param dims Vector of Indices denoting the dimensions of the
      * parameters. This vector must return true when passed to
      * checkParameterDim.
+     *
+     * @param values Vector of pointers to parameter values.
      */
     virtual std::vector<unsigned int> 
-	dim(std::vector <std::vector<unsigned int> > const &dims) const = 0;
+	dim(std::vector <std::vector<unsigned int> > const &dims,
+	    std::vector <double const *> const &values) const = 0;
 };
 
 } /* namespace jags */

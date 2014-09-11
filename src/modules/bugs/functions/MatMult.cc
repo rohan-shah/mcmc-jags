@@ -44,7 +44,8 @@ namespace bugs {
     }
 
     vector<unsigned int> 
-    MatMult::dim (vector <vector<unsigned int> > const &dims) const
+    MatMult::dim (vector <vector<unsigned int> > const &dims,
+		  vector<double const *> const &values) const
     {
 	vector<unsigned int> ans(2,1);
 

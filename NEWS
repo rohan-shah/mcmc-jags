@@ -57,10 +57,28 @@ Library changes
   function is defunct.  The change guarentees that observed
   StochasticNodes have the same value across all chains. The Compiler
   has been modified to use the new StochasticNode API.
+* The VectorFunction class has a new subclass ScalarVectorFunction for
+  scalar-valued functions that take vector-valued arguments.
+* The length of the return value of a VectorFunction and the dimension
+  of the value of an ArrayFunction may now depend on the values of
+  the arguments and not just the lengths/dimensions of the arguments.
+  This paves the way for the sequence operator ':' to be implemented as a
+  Function.
+* A new checkParameterDiscrete member function in the Function class
+  allows Functions to check that some of the parameters are discrete.
+  As above, this will be necessary for the sequence operator ':'.
+* A new checkParameterFixed member function in the Function class
+  allows Functions to check that some of the parameters have fixed
+  values. This check is necessary when creating a LogicalNode from
+  a Function that has a variable-sized return value depending on the
+  values of the arguments (and not just the dimensions of the arguments).
+  We can only permit this if the node has fixed length, and hence if
+  the relevant arguments are fixed.
 
 Internal changes in modules
 ===========================
 * All module namespaces are nested inside namespace jags
+
 * The FLIBS flag is now passed to modules that use LAPACK and BLAS.
   This allows static linking to LAPACK.
 
@@ -79,6 +97,8 @@ Internal changes in modules
   - The logDensity function for the multivariate normal distribution
   (DMNorm) now includes the correct normalizing constant for PDF_FULL.
   This affects deviance statistics for multivariate normal nodes.
+  - All VectorFunctions with scalar return values now inherit from
+  the new ScalarVectorFunction class.
 
 * glm module
   - Refactorization of samplers. The new Outcome class presents an

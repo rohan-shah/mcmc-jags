@@ -1,7 +1,7 @@
 #ifndef FUNC_SD_H_
 #define FUNC_SD_H_
 
-#include <function/VectorFunction.h>
+#include <function/ScalarVectorFunction.h>
 
 namespace jags {
 namespace bugs {
@@ -15,12 +15,12 @@ namespace bugs {
      * y <- sd(x[])
      * </pre>
      */
-    class SD : public VectorFunction
+    class SD : public ScalarVectorFunction
     {
     public:
 	SD ();
-	void evaluate (double *x, std::vector<double const *> const &args,
-		       std::vector<unsigned int> const &lengths) const;
+	double evaluate (std::vector<double const *> const &args,
+			 std::vector<unsigned int> const &lengths) const;
 	bool checkParameterLength (std::vector<unsigned int> const &len) const;
     };
 

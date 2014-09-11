@@ -1,7 +1,7 @@
 #ifndef FUNC_SUM_H_
 #define FUNC_SUM_H_
 
-#include <function/VectorFunction.h>
+#include <function/ScalarVectorFunction.h>
 
 namespace jags {
 namespace bugs {
@@ -14,12 +14,12 @@ namespace bugs {
      * y <- sum(x[])
      * </pre>
      */
-    class Sum : public VectorFunction
+    class Sum : public ScalarVectorFunction
     {
     public:
 	Sum ();
-	void evaluate(double *x, std::vector <double const *> const &args,
-		      std::vector<unsigned int> const &lengths) const;
+	double evaluate(std::vector <double const *> const &args,
+			std::vector<unsigned int> const &lengths) const;
 	bool checkParameterLength(std::vector<unsigned int> const &args) const;
 	bool isDiscreteValued(std::vector<bool> const &mask) const;
 	bool isScale(std::vector<bool> const &mask,

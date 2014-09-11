@@ -38,7 +38,8 @@ namespace bugs {
 	delete [] argptrs;
     }
 
-    unsigned int Order::length (vector<unsigned int> const &lengths) const
+    unsigned int Order::length (vector<unsigned int> const &lengths,
+				vector<double const *> const &parvalues) const
     {
 	return lengths[0];
     }

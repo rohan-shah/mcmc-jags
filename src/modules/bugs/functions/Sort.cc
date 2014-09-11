@@ -25,7 +25,8 @@ namespace bugs {
 	sort(value, value + lengths[0]);
     }
 
-    unsigned int Sort::length (vector<unsigned int> const &parlengths) const
+    unsigned int Sort::length (vector<unsigned int> const &parlengths,
+			       vector<double const *> const &parvalues) const
     {
 	return parlengths[0];
     }

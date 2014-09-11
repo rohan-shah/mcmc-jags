@@ -33,7 +33,8 @@ namespace bugs {
     }
 
     vector<unsigned int> 
-    Inverse::dim (vector<vector<unsigned int> > const &dims) const
+    Inverse::dim (vector<vector<unsigned int> > const &dims,
+		  vector<double const *> const &values) const
     {
 	return dims[0];
     }

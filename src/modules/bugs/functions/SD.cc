@@ -10,12 +10,12 @@ namespace jags {
 namespace bugs {
 
     SD::SD ()
-	: VectorFunction ("sd", 1)
+	: ScalarVectorFunction ("sd", 1)
     {
     }
 
-    void SD::evaluate (double *x, vector<double const *>const &args,
-		       vector<unsigned int> const &lengths) const
+    double SD::evaluate (vector<double const *>const &args,
+			 vector<unsigned int> const &lengths) const
     {
 	double svalue = 0;
 	if (lengths[0] > 1) {
@@ -32,7 +32,7 @@ namespace bugs {
 	    }
 	    svalue = sqrt (var / (lengths[0] - 1));
 	}
-	*x = svalue;
+	return svalue;
     }
 
     bool SD::checkParameterLength (vector<unsigned int> const &lengths) const

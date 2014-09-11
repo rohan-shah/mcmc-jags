@@ -15,7 +15,8 @@ namespace jags {
     {}
     
     vector<unsigned int> ArrayLogDensity::dim(
-	vector<vector<unsigned int> > const &dims) const
+	vector<vector<unsigned int> > const &dims,
+	vector<double const *> const &values) const
     {
 	return vector<unsigned int>(1, 1);
     }

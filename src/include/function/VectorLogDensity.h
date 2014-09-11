@@ -15,7 +15,8 @@ namespace jags {
 	VectorDist const *_dist;
     public:
 	VectorLogDensity(VectorDist const *dist);
-	unsigned int length(std::vector<unsigned int> const &lengths) const;
+	unsigned int length(std::vector<unsigned int> const &lengths,
+			    std::vector<double const *> const &values) const;
 	bool checkParameterLength(std::vector<unsigned int> const &lens) const;
 	bool checkParameterValue(std::vector<double const *> const &args,
 				 std::vector<unsigned int> const &lens) const;

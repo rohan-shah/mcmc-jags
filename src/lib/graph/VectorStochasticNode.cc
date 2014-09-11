@@ -34,7 +34,7 @@ static unsigned int mkLength(VectorDist const *dist,
 	parameter_lengths[j] = parents[j]->length();
     }
     if (!dist->checkParameterLength(parameter_lengths)) {
-	throw DistError(dist, "Non-conforming parameters");
+	throw DistError(dist, "Invalid parameter lengths");
     }
     return dist->length(parameter_lengths);
 }

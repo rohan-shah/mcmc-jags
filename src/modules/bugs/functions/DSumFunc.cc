@@ -43,7 +43,8 @@ namespace bugs {
     }
 
     vector<unsigned int>  
-    DSumFunc::dim(vector<vector<unsigned int> > const &dims) const
+    DSumFunc::dim(vector<vector<unsigned int> > const &dims,
+		  vector<double const *> const &values) const
     {
 	return dims[0];
     }

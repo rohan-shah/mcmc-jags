@@ -7,12 +7,12 @@ using std::vector;
 namespace jags {
 namespace bugs {
 
-    Sum::Sum () : VectorFunction("sum", 0)
+    Sum::Sum () : ScalarVectorFunction("sum", 0)
     {
     }
 
-    void Sum::evaluate(double *x, vector <double const *> const &args,
-		       vector<unsigned int> const &lengths) const
+    double Sum::evaluate(vector <double const *> const &args,
+			 vector<unsigned int> const &lengths) const
     {
 	double value = 0;
 	for (unsigned int j = 0; j < args.size(); ++j) {
@@ -20,7 +20,7 @@ namespace bugs {
 		value += args[j][i];
 	    }
 	}
-	*x = value;
+	return value;
     }
 
     bool Sum::checkParameterLength (vector<unsigned int> const &args) const

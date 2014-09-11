@@ -1,7 +1,7 @@
 #ifndef FUNC_PROD_H_
 #define FUNC_PROD_H_
 
-#include <function/VectorFunction.h>
+#include <function/ScalarVectorFunction.h>
 
 namespace jags {
 namespace bugs {
@@ -14,12 +14,12 @@ namespace bugs {
      * y <- prod(x[])
      * </pre>
      */
-    class Prod : public VectorFunction
+    class Prod : public ScalarVectorFunction
     {
     public:
 	Prod ();
-	void evaluate(double *x, std::vector <double const *> const &args,
-		      std::vector<unsigned int> const &lengths) const;
+	double evaluate(std::vector <double const *> const &args,
+			std::vector<unsigned int> const &lengths) const;
 	bool checkParameterLength(std::vector<unsigned int> const &len) const;
 	bool isDiscreteValued(std::vector<bool> const &mask) const;
     };

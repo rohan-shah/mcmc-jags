@@ -18,14 +18,8 @@ VectorFunction::checkParameterValue(vector<double const *> const &args,
     return true;
 }
 
-unsigned int 
-VectorFunction::length(vector <unsigned int> const &arglengths) const
-{
-    return 1;
-}
-
 bool 
-VectorFunction::checkParameterLength(vector<unsigned int> const &args) const
+VectorFunction::checkParameterLength(vector<unsigned int> const &arglen) const
 {
     return true;
 }

@@ -253,7 +253,7 @@ veval(VectorFunction const *f, vector<double> const &x)
     vector<unsigned int> arglen(1, x.size());
     CPPUNIT_ASSERT_MESSAGE(f->name(), f->checkParameterLength(arglen));
     CPPUNIT_ASSERT_MESSAGE(f->name(), f->checkParameterValue(arg, arglen));
-    vector<double> ans(f->length(arglen));
+    vector<double> ans(f->length(arglen, arg));
     f->evaluate(&ans[0], arg, arglen);
     return ans;
 }
@@ -269,7 +269,7 @@ veval(VectorFunction const *f, vector<double> const &x, vector<double> const &y)
     vector<unsigned int> arglen(2);
     arglen[0] = x.size();
     arglen[1] = y.size();
-    vector<double>  ans(f->length(arglen));
+    vector<double>  ans(f->length(arglen, arg));
     f->evaluate(&ans[0], arg, arglen);
     return ans;
 }

@@ -7,12 +7,12 @@ using std::vector;
 namespace jags {
 namespace bugs {
 
-    Prod::Prod () : VectorFunction("prod", 0)
+    Prod::Prod () : ScalarVectorFunction("prod", 0)
     {
     }
 
-    void Prod::evaluate(double *x, vector <double const *> const &args,
-			vector<unsigned int> const &lengths) const
+    double Prod::evaluate(vector <double const *> const &args,
+			  vector<unsigned int> const &lengths) const
     {
 	double value = 1;
 	for (unsigned int j = 0; j < args.size(); ++j) {
@@ -20,7 +20,7 @@ namespace bugs {
 		value *= args[j][i];
 	    }
 	}
-	*x = value;
+	return value;
     }
 
     bool Prod::checkParameterLength (vector<unsigned int> const &args) const

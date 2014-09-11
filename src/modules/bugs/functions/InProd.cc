@@ -9,15 +9,15 @@ using std::vector;
 namespace jags {
 namespace bugs {
 
-    InProd::InProd () : VectorFunction ("inprod", 2)
+    InProd::InProd () : ScalarVectorFunction ("inprod", 2)
     {
     }
 
-    void InProd::evaluate(double *x, vector<double const *> const &args,
-			  vector<unsigned int> const &lengths) const
+    double InProd::evaluate(vector<double const *> const &args,
+			    vector<unsigned int> const &lengths) const
     {
         int one = 1, N = lengths[0];
-        *x = F77_DDOT(&N, args[0], &one, args[1], &one);
+        return F77_DDOT(&N, args[0], &one, args[1], &one);
     }
 
     bool 

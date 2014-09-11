@@ -8,7 +8,7 @@ namespace jags {
 /**
  * @short Scalar-valued Function with scalar arguments
  *
- * ScalarFunc represents scalar-valued functions whose parameters are
+ * ScalarFunction represents scalar-valued functions whose parameters are
  * also scalars. 
  */
 class ScalarFunction : public Function

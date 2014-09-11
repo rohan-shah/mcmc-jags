@@ -1,7 +1,7 @@
 #ifndef FUNC_MEAN_H_
 #define FUNC_MEAN_H_
 
-#include <function/VectorFunction.h>
+#include <function/ScalarVectorFunction.h>
 
 namespace jags {
 namespace bugs {
@@ -14,12 +14,12 @@ namespace bugs {
      * y <- mean(x[])
      * </pre>
      */
-    class Mean : public VectorFunction
+    class Mean : public ScalarVectorFunction
     {
     public:
 	Mean ();
-	void evaluate(double *x, std::vector<double const *> const &args,
-		      std::vector<unsigned int> const &dims) const;
+	double evaluate(std::vector<double const *> const &args,
+			std::vector<unsigned int> const &dims) const;
 	bool checkParameterLength (std::vector<unsigned int> const &len) const;
 	bool isScale(std::vector<bool> const &mask,
 		     std::vector<bool> const &fix) const;

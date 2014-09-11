@@ -14,7 +14,8 @@ namespace jags {
     {}
 
     unsigned int 
-    VectorLogDensity::length(vector<unsigned int> const &lengths) const
+    VectorLogDensity::length(vector<unsigned int> const &lengths,
+			     vector<double const *> const &values) const
     {
 	return 1;
     }

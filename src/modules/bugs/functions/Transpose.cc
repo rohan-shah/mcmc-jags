@@ -25,7 +25,8 @@ namespace bugs {
     }
 
     vector<unsigned int> 
-    Transpose::dim (vector <vector<unsigned int> > const &dims) const
+    Transpose::dim (vector <vector<unsigned int> > const &dims,
+		    vector <double const *> const &values) const
     {
 	vector<unsigned int> ans(2);
 	ans[0] = dims[0].size() == 2 ? dims[0][1] : 1;

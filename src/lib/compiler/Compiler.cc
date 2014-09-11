@@ -810,7 +810,7 @@ void Compiler::allocate(ParseTree const *rel)
 	ParseTree *var = rel->parameters()[0];
 	NodeArray *array = symtab.getVariable(var->name());
 	if (!array) {
-	    //Undeclared array. It's size is inferred from the dimensions of
+	    //Undeclared array. Its size is inferred from the dimensions of
 	    //the newly created node
 	    symtab.addVariable(var->name(), node->dim());
 	    array = symtab.getVariable(var->name());

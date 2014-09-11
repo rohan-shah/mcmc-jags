@@ -59,6 +59,15 @@ public:
      */
     virtual bool isDiscreteValued(std::vector<bool> const &mask) const;
     /**
+     * Checks whether the required arguments are discrete-valued.
+     * Most functions do not require discrete-valued arguments, so
+     * a default implementation is provided which always returns true.
+     *
+     * @param mask Boolean vector indicating which parameters are
+     * discrete valued.
+     */
+    virtual bool checkParameterDiscrete(std::vector<bool> const &mask) const;
+    /**
      * Tests whether the function preserves scale transformations, i.e.
      * it can be represented element-wise in the form f(x)[i] = B[i] * x[i].
      *
@@ -115,6 +124,21 @@ public:
      * @param par Vector of parameter names for the function
      */
     virtual std::string deparse(std::vector<std::string> const &par) const;
+    /**
+     * Checks that the required parameters are fixed. Most functions
+     * do not require any fixed parameters, so the default
+     * implementation returns true. However, for some ArrayFunctions
+     * the dimension of the return value depends on the values of some of
+     * the parameters. These parameters must be fixed so that the
+     * dimension can be determined at compile time. Hence the default
+     * function must be overridden for any function with a return
+     * value whose dimension cannot be determined purely from the 
+     * dimensions of its arguments.
+     *
+     * @param mask Boolean vector indicating which parameters have
+     * fixed values
+     */
+    virtual bool checkParameterFixed(std::vector<bool> const &mask) const;
 };
 
 /**

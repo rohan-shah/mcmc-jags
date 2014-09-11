@@ -16,7 +16,8 @@ namespace jags {
     public:
 	ArrayLogDensity(ArrayDist const *dist);
 	std::vector<unsigned int> dim(
-	    std::vector<std::vector<unsigned int> > const &dims) const;
+	    std::vector<std::vector<unsigned int> > const &dims,
+	    std::vector<double const *> const &values) const;
 	bool checkParameterDim(
 	    std::vector<std::vector<unsigned int> > const &dims) const;
 	bool checkParameterValue(

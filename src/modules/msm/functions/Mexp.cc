@@ -21,7 +21,8 @@ void Mexp::evaluate (double *value, vector<double const *> const &args,
     MatrixExpPade(value, args[0], dims[0][0], 1);
 }
 
-vector<unsigned int> Mexp::dim (vector <vector<unsigned int> > const &dims) const
+vector<unsigned int> Mexp::dim (vector <vector<unsigned int> > const &dims,
+				vector<double const *> const &values) const
 {
     return dims[0];
 }

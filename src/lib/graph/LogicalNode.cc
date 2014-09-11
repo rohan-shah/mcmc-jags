@@ -32,6 +32,7 @@ mkParams(vector<Node const*> const &parents, unsigned int nchain)
     return ans;
 }
 
+
 LogicalNode::LogicalNode(vector<unsigned int> const &dim, 
 			 vector<Node const *> const &parameters,
 			 Function const *function)
@@ -39,18 +40,21 @@ LogicalNode::LogicalNode(vector<unsigned int> const &dim,
       _parameters(mkParams(parameters, nchain()))
 {
     if (!checkNPar(function, parameters.size())) {
-	throw FuncError(function, "Incorrect number of parameters");
+	throw FuncError(function, "Incorrect number of arguments");
     }
     vector<bool> mask(parents().size());
     for (unsigned long j = 0; j < parents().size(); ++j) {
         mask[j] = parents()[j]->isDiscreteValued();
+    }
+    if (!_func->checkParameterDiscrete(mask)) {
+	throw FuncError(function, "Failed check for discrete-valued arguments");
     }
     _discrete = _func->isDiscreteValued(mask);
 }
 
 string LogicalNode::deparse(vector<string> const &parents) const
 {
-    string name = "(";
+    string name = "(a";
     name.append(_func->deparse(parents));
     name.append(")");
 	      

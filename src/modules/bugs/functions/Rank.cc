@@ -37,7 +37,8 @@ namespace bugs {
 	}
     }
 
-    unsigned int Rank::length (vector<unsigned int> const &lengths) const
+    unsigned int Rank::length (vector<unsigned int> const &lengths,
+			       vector<double const *> const &parvalues) const
     {
 	return lengths[0];
     }
