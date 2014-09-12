@@ -85,6 +85,8 @@ Internal changes in modules
 * base module
   - FiniteMethod no longer has a restriction on the length of the 
     nodes that it can sample.
+  - The sequence operator ":" is now defined as a function in the
+    base module. Previously it was handled by the compiler.
 
 * bugs module
   - The ConjugateDirichlet sampler is now much faster for mixture

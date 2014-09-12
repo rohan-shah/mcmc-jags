@@ -15,6 +15,7 @@
 #include <functions/NotEqual.h>
 #include <functions/Or.h>
 #include <functions/Pow.h>
+#include <functions/Seq.h>
 #include <functions/Subtract.h>
 //Samplers
 #include <samplers/SliceFactory.h>
@@ -55,6 +56,7 @@ namespace base {
 	insert(new NotEqual);
 	insert(new Or);
 	insert(new Pow);
+	insert(new Seq);
 	insert(new Subtract);
 
 	insert(new SliceFactory);
