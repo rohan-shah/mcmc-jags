@@ -231,8 +231,8 @@ bool Console::compile(map<string, SArray> &data_table, unsigned int nchain,
 	    compiler.writeRelations(_pdata);
       
 	    /* Check validity of data generating model */
-	    for (Graph::const_iterator r = _model->graph().begin();
-		 r != _model->graph().end(); ++r)
+	    for (vector<Node*>::const_iterator r = _model->nodes().begin();
+		 r != _model->nodes().end(); ++r)
 	    {
 		if ((*r)->randomVariableStatus() == RV_TRUE_OBSERVED) {
 		    vector<Node const*> const &parents = (*r)->parents();
@@ -286,7 +286,7 @@ bool Console::compile(map<string, SArray> &data_table, unsigned int nchain,
 	    return true;
 	}
 	if (_model) {
-	    _out << "   Graph Size: " << _model->graph().size() << endl;
+	    _out << "   Graph Size: " << _model->nodes().size() << endl;
 	    if (datagen_rng) {
 		// Reuse the data-generation RNG, if there is one, for chain 0 
 		_model->setRNG(datagen_rng, 0);
@@ -308,7 +308,7 @@ bool Console::initialize()
 	_err << "Can't initialize. No model!" << endl;
 	return false;
     }
-    if (_model->graph().size() == 0) {
+    if (_model->nodes().size() == 0) {
 	_err << "Can't initialize. No nodes in graph." << endl;
 	_err << "Have you compiled the model?" << endl;
 	return false;

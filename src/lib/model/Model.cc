@@ -7,6 +7,7 @@
 #include <rng/RNGFactory.h>
 #include <rng/RNG.h>
 #include <graph/GraphMarks.h>
+#include <graph/Graph.h>
 #include <graph/StochasticNode.h>
 #include <graph/DeterministicNode.h>
 #include <graph/ConstantNode.h>
@@ -46,7 +47,7 @@ namespace jags {
 
 Model::Model(unsigned int nchain)
     : _samplers(0), _nchain(nchain), _rng(nchain, 0), _iteration(0),
-      _is_initialized(false), _adapt(false), _data_gen(false), _node_index(1)
+      _is_initialized(false), _adapt(false), _data_gen(false)
 {
 }
 
@@ -57,26 +58,14 @@ Model::~Model()
 	delete sampler0;
 	_samplers.pop_back();
     }
-    for (list<Monitor*>::const_iterator p = _default_monitors.begin();
-	 p != _default_monitors.end(); ++p)
-    {
-	delete *p;
-    }
 
     //Delete nodes in reverse sampling order
-    vector<Node*> managed_nodes;
-    _graph.getSortedNodes(managed_nodes);
-    while(!managed_nodes.empty())
+    while(!_nodes.empty())
     {
-	Node *node = managed_nodes.back();
+	Node *node = _nodes.back();
 	delete node;
-	managed_nodes.pop_back();
+	_nodes.pop_back();
     }
-}
-
-Graph const &Model::graph() 
-{
-    return _graph;
 }
 
 bool Model::isInitialized()
@@ -133,8 +122,15 @@ void Model::initialize(bool datagen)
     if (_is_initialized)
 	throw logic_error("Model already initialized");
 
+    /*
+      FIXME This is the only place Graph::isClosed is called. It
+      would be better to check validity of nodes as they are inserted
+      into the model, i.e. no children and all its parents are in 
+      the model
+
     if (!_graph.isClosed())
 	throw runtime_error("Graph not closed");
+    */
 
     // Choose random number generators
     chooseRNGs();
@@ -187,14 +183,8 @@ void Model::initialize(bool datagen)
     chooseSamplers();
     
     if (datagen) {
-	Graph egraph;
-	for (set<Node *>::const_iterator p = _extra_nodes.begin(); 
-	     p != _extra_nodes.end(); ++p)
-	{
-	    egraph.insert(*p);
-	}
-	_sampled_extra.clear();
-	egraph.getSortedNodes(_sampled_extra);
+	//All extra nodes are sampled
+	_sampled_extra = _extra_nodes;
 	_data_gen = true;
     }
 
@@ -211,12 +201,8 @@ void Model::initialize(bool datagen)
 
 void Model::initializeNodes()
 {
-    //Get nodes in forward-sampling order
-    vector<Node*> sorted_nodes;
-    _graph.getSortedNodes(sorted_nodes);
-
     vector<Node*>::const_iterator i;
-    for (i = sorted_nodes.begin(); i != sorted_nodes.end(); ++i) {
+    for (i = _nodes.begin(); i != _nodes.end(); ++i) {
 	Node *node = *i;
 	for (unsigned int n = 0; n < _nchain; ++n) {
 	    if (!node->checkParentValues(n)) {
@@ -255,8 +241,13 @@ void Model::chooseSamplers()
      *
      * @see Model#samplerFactories
      */
+    
+    Graph full_graph;
+    for (unsigned int i = 0; i < _nodes.size(); ++i) {
+	full_graph.insert(_nodes[i]);
+    }
 
-    GraphMarks marks(_graph);
+    GraphMarks marks(full_graph);
     Graph sample_graph;
 
     // Add observed stochastic nodes to the sample graph and mark
@@ -283,27 +274,18 @@ void Model::chooseSamplers()
 
     list<StochasticNode*> slist; //List of nodes to be sampled
     for(p = _stochastic_nodes.begin(); p != _stochastic_nodes.end(); ++p) {
-	switch(marks.mark(*p)) {
-	case 0: //Uninformative
-	    _extra_nodes.insert(*p);
-	    break;
-	case 1: //Unobserved stochastic nodes, to be sampled
+	if (marks.mark(*p) == 1) {
+	    //Unobserved stochastic nodes: to be sampled
 	    slist.push_back(*p); 
-	    sample_graph.insert(*p);
-	    break;
-	case 2: //Observed stochastic nodes, not sampled
-	    sample_graph.insert(*p);
-	    break;
-	default:
-	    throw logic_error("Invalid mark");
 	}
     }
 
-    set<Node*>::const_iterator j;
-    for (j = _graph.begin(); j != _graph.end(); ++j) {
+    for (vector<Node*>::const_iterator j = _nodes.begin();
+	 j != _nodes.end(); ++j) 
+    {
 	switch(marks.mark(*j)) {
 	case 0:
-	    _extra_nodes.insert(*j);
+	    _extra_nodes.push_back(*j);
 	    break;
 	case 1: case 2:
 	    sample_graph.insert(*j);
@@ -412,6 +394,7 @@ void Model::update(unsigned int niter)
 	    k->update(_iteration);
 	}
     }
+
 }
 
 unsigned int Model::iteration() const
@@ -463,7 +446,7 @@ void Model::setSampledExtra()
 	
     //Insert extra nodes into a new graph
     Graph egraph;
-    for (set<Node *>::const_iterator p = _extra_nodes.begin(); 
+    for (vector<Node *>::const_iterator p = _extra_nodes.begin(); 
 	 p != _extra_nodes.end(); ++p)
     {
 	egraph.insert(*p);
@@ -482,16 +465,16 @@ void Model::setSampledExtra()
 	    }
 	}
     }
-    //Remove unmarked nodes from graph
-    for (set<Node *>::const_iterator p = _extra_nodes.begin(); 
-	 p != _extra_nodes.end(); ++p)
-    {
-	if (emarks.mark(*p) == 0)
-	    egraph.erase(*p);
-    }
-    //Replace vector of sampled extra nodes
+
+    //Add marked nodes to the vector of sampled extra nodes
     _sampled_extra.clear();
-    egraph.getSortedNodes(_sampled_extra);
+    for(vector<Node *>::const_iterator p = _extra_nodes.begin();
+	p != _extra_nodes.end(); ++p)
+    {
+	if (emarks.mark(*p)) {
+	    _sampled_extra.push_back(*p);
+	}
+    }
 }
 
 void Model::addMonitor(Monitor *monitor, unsigned int thin)
@@ -517,6 +500,9 @@ void Model::removeMonitor(Monitor *monitor)
     setSampledExtra();
 }
 
+//FIXME The only reason we need this is because Monitors can
+//define a new node. We should forbid adding nodes to an initialized
+//model
 void Model::addExtraNode(Node *node)
 {
     if (!_is_initialized) {
@@ -532,23 +518,21 @@ void Model::addExtraNode(Node *node)
 	throw logic_error("Cannot add extra node with children");
     }
 
-    if (_extra_nodes.count(node)) {
+/*
+    if (find(_nodes.begin(), _nodes.end(), node) != _nodes.end())
+    {
 	throw logic_error("Extra node already in model");
     }
-    
+*/  
     for (vector<Node const *>::const_iterator p = node->parents().begin(); 
 	 p != node->parents().end(); ++p)
     {
-	if (!_graph.contains(*p)) {
-	throw logic_error("Extra node has parents not in model");
+	if (find(_nodes.rbegin(), _nodes.rend(), *p) == _nodes.rend()) {
+	    throw logic_error("Extra node has parents not in model");
 	}
     }
 
-    if (!_graph.contains(node)) {
-	_graph.insert(node);
-    }
-
-    _extra_nodes.insert(node);
+    _extra_nodes.push_back(node);
     if (_data_gen) {
 	//Extra nodes are automatically sampled
 	_sampled_extra.push_back(node);
@@ -635,69 +619,30 @@ list<MonitorControl> const &Model::monitors() const
   return _monitors;
 }
 
-/*
-bool Model::setDefaultMonitors(string const &type, unsigned int thin)
-{
-    list<MonitorFactory*> const &faclist = monitorFactories();
-
-    for(list<MonitorFactory*>::const_iterator j = faclist.begin();
-	j != faclist.end(); ++j)
-    {
-	vector <Node const *> default_nodes = (*j)->defaultNodes(this, type);
-	if (!default_nodes.empty()) {
-	    unsigned int start = iteration() + 1;
-	    for (unsigned int i = 0; i < default_nodes.size(); ++i) {
-		Monitor *monitor = (*j)->getMonitor(default_nodes[i], this,
-						    type);
-		if (!monitor) {
-		    throw logic_error("Invalid default monitor");
-		}
-		addMonitor(monitor, thin);
-		// Model takes ownership of default monitors
-		_default_monitors.push_back(monitor);
-	    }
-	    return true;
-	}
-    }
-    return false;
-}
-
-void Model::clearDefaultMonitors(string const &type)
-{
-    list<Monitor*> dmonitors = _default_monitors;
-    for (list<Monitor*>::const_iterator p = dmonitors.begin();
-	 p != dmonitors.end(); ++p) 
-    {
-	Monitor *monitor = *p;
-	if (monitor->type() == type) {
-	    _default_monitors.remove(monitor);
-	    removeMonitor(monitor);
-	    delete monitor;
-	}
-    }
-    setSampledExtra();
-}
-*/
-
 void Model::addNode(StochasticNode *node)
 {
-    _graph.insert(node);
+    _nodes.push_back(node);
     _stochastic_nodes.push_back(node);
 }
 
 void Model::addNode(DeterministicNode *node)
 {
-    _graph.insert(node);
+    _nodes.push_back(node);
 }
 
 void Model::addNode(ConstantNode *node)
 {
-    _graph.insert(node);
+    _nodes.push_back(node);
 }
 
 vector<StochasticNode*> const &Model::stochasticNodes() const
 {
     return _stochastic_nodes;
 }
+
+    vector<Node*> const &Model::nodes() const
+    {
+	return _nodes;
+    }
 
 } //namespace jags

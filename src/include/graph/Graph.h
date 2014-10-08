@@ -33,24 +33,6 @@ public:
    * graph are also contained in the graph.
    */
   bool isClosed() const;
-  /**
-   * Adds all nodes in the graph to the given vector with partial
-   * ordering, so that if A is an ancestor of B, then B never appears
-   * before A in the vector (Note that if there is a path from A to B
-   * outside of the graph, then this is ignored).
-   *
-   * The graph must be acyclic.
-   *
-   * @param sorted Empty vector of Node pointers.  On exit
-   * this vector will contain the sorted nodes.
-   */
-  void getSortedNodes(std::vector<Node*> &sorted) const; 
-  /**
-   * Static version of the getSortedNodes function which works with
-   * a set instead of a graph.  
-   */
-  static void getSortedNodes(std::set<Node*> &nodes, 
-			     std::vector<Node*> &sorted);
 };
 
 } /* namespace jags */

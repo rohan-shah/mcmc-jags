@@ -72,9 +72,9 @@ Node *BUGSModel::getNode(string const &name, Range const &target_range)
     else if (!array->range().contains(target_range)) {
 	return 0; //Indices out of range
     }
-    unsigned int NNode = graph().size();
+    unsigned int NNode = nodes().size();
     Node *node = array->getSubset(range, *this);
-    if (graph().size() != NNode) {
+    if (nodes().size() != NNode) {
 	addExtraNode(node); // Node was newly allocated
     }
     return node;

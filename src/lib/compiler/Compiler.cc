@@ -1009,10 +1009,10 @@ Compiler::Compiler(BUGSModel &model, map<string, SArray> const &data_table)
       _n_relations(0), _is_resolved(0), _strict_resolution(false),
       _index_expression(0), _index_nodes()
 {
-  if (_model.graph().size() != 0)
-    throw invalid_argument("Non empty graph in Compiler constructor");
-  if (_model.symtab().size() != 0)
-    throw invalid_argument("Non empty symtab in Compiler constructor");
+    if (_model.nodes().size() != 0)
+	throw invalid_argument("Non empty graph in Compiler constructor");
+    if (_model.symtab().size() != 0)
+	throw invalid_argument("Non empty symtab in Compiler constructor");
 }
 
 void Compiler::declareVariables(vector<ParseTree*> const &dec_list)

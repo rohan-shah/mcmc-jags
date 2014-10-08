@@ -22,10 +22,7 @@ namespace jags {
 
     bool Graph::contains(Node const *node) const
     {
-	Graph::iterator p = find(const_cast<Node*>(node));
-	if (p != end() && *p != node) throw logic_error("Node not uniquely defined by its index in Graph");
-	return p != end();
-	//return find(const_cast<Node*>(node)) != end();
+	return find(const_cast<Node*>(node)) != end();
     }
 
     bool Graph::isClosed() const
@@ -58,104 +55,5 @@ namespace jags {
 	}
 	return true;
     }
-
-/* Helper function for Graph::getSortedNodes. Returns true
-   if node has any children in set S */
-
-
-static bool childInSet(Node *node, set<Node*> const &S)
-{
-    for (set<StochasticNode *>::const_iterator j = node->stochasticChildren()->begin(); 
-	 j != node->stochasticChildren()->end(); ++j) 
-    {
-	if (S.count(*j)) {
-	    return true;
-	}
-    }
-    for (set<DeterministicNode *>::const_iterator j = node->deterministicChildren()->begin(); 
-	 j != node->deterministicChildren()->end(); ++j) 
-    {
-	if (S.count(*j)) {
-	    return true;
-	}
-    }
-    return false;
-}
-
-
-void Graph::getSortedNodes(set<Node*> &S, vector<Node*> &sortednodes) 
-{
-    //Return a vector of nodes whose ordering follows the partial
-    //ordering of the set.  If a is after b then there is never a
-    //path from a to b.
-
-    if (!sortednodes.empty()) {
-	throw logic_error("vector not empty in getSortedNodes");
-    }
-
-    sortednodes.reserve(S.size());
-
-    while (!S.empty()) {
-
-	bool loopcheck = false;
-
-	set<Node*>::iterator i = S.begin();
-	while (i != S.end()) {
-	    if (childInSet(*i, S)) {
-		++i;
-	    }
-	    else {
-		loopcheck = true;
-		sortednodes.push_back(*i);
-		set<Node*>::iterator j = i;
-		++i;
-		S.erase(j);
-	    }
-	}
-	
-	if (!loopcheck) {
-	    //We did not add any nodes to sortednodes on this pass
-	    throw logic_error("Failure in Graph::getSortedNodes. Directed cycle in graph");
-	}
-    }
-
-    reverse(sortednodes.begin(), sortednodes.end());
-}
-
-/*
-//Recursively search for path between two nodes in a set
-static bool pathTo(Node *node1, Node *node2, set<Node*, ltNode> const &S)
-{
-    if (node1 == node2)
-	return true;
-
-    for (set<StochasticNode *>::const_iterator j = node1->stochasticChildren()->begin(); 
-	 j != node1->stochasticChildren()->end(); ++j) 
-    {
-	set<Node*, ltNode>::const_iterator p = S.find(*j);
-	if (p != S.end()) {
-	    if (pathTo(*p, node2, S)) return true;
-	}
-    }
-
-    for (set<DeterministicNode *>::const_iterator j = node1->deterministicChildren()->begin(); 
-	 j != node1->deterministicChildren()->end(); ++j) 
-    {
-	set<Node*, ltNode>::const_iterator p = S.find(*j);
-	if (p != S.end()) {
-	    if (pathTo(*p, node2, S)) return true;
-	}
-    }
-    return false;
-}
-*/
-
-//FIXME: This should be redundant now
-void Graph::getSortedNodes(vector<Node*> &sortednodes) const
-{
-    set<Node*> S = *this;
-    getSortedNodes(S, sortednodes);
-}
-
 
 }
