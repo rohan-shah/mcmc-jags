@@ -16,6 +16,7 @@
 #include <rng/RNG.h>
 #include <util/dim.h>
 #include <module/Module.h>
+#include <graph/StochasticNode.h>
 
 #include <map>
 #include <list>
@@ -286,7 +287,20 @@ bool Console::compile(map<string, SArray> &data_table, unsigned int nchain,
 	    return true;
 	}
 	if (_model) {
-	    _out << "   Graph Size: " << _model->nodes().size() << endl;
+	    unsigned int nobs = 0, nparam = 0;
+	    vector<StochasticNode*> const &snodes =  _model->stochasticNodes();
+	    for (unsigned int i = 0; i < snodes.size(); ++i) {
+		if (isObserved(snodes[i])) {
+		    ++nobs;
+		}
+		else {
+		    ++nparam;
+		}
+	    }
+            _out << "Graph information:\n";
+	    _out << "   Observed stochastic nodes: " << nobs << "\n";
+	    _out << "   Unobserved stochastic nodes: " << nparam << "\n";
+	    _out << "   Total graph size: " << _model->nodes().size() << endl;
 	    if (datagen_rng) {
 		// Reuse the data-generation RNG, if there is one, for chain 0 
 		_model->setRNG(datagen_rng, 0);
