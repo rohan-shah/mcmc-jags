@@ -820,7 +820,7 @@ void Compiler::allocate(ParseTree const *rel)
 	else {
 	    // Check if a node is already inserted into this range
 	    Range range = VariableSubsetRange(var);
-	    if (array->find(range)) {
+	    if (array->getSubset(range, _model)) {
 		CompileError(var, "Attempt to redefine node",
 			     var->name() + print(range));
 	    }

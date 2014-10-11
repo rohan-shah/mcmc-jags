@@ -54,18 +54,6 @@ namespace jags {
     {
     }
 
-    bool NodeArray::isEmpty(Range const &target_range) const
-    {
-	if (!_range.contains(target_range))
-	    throw logic_error("Range error in NodeArray::isEmpty");
-	
-	for (RangeIterator i(target_range); !i.atEnd(); i.nextLeft()) {
-	    if (_node_pointers[_range.leftOffset(i)] != 0)
-		return false;
-	}
-	return true;
-    }
-    
     void NodeArray::insert(Node *node, Range const &target_range)
     {
 	if (!node) {
@@ -80,23 +68,28 @@ namespace jags {
 	    throw runtime_error(string("Cannot insert node into ") + name() + 
 				print(target_range) + ". Range out of bounds");
 	}
-	if (!isEmpty(target_range)) {
-	    throw runtime_error(string("Node ") + name() + print(target_range)
-				+ " overlaps previously defined nodes");
-	}
 	if (hasRepeats(target_range)) {
 	    throw runtime_error(string("Cannot insert node into ") + name() +
 				print(target_range) + 
 				". Range has repeat indices");
 	}
+
+	/* Check that the range is not already occupied, even partially */
+	for (RangeIterator p(target_range); !p.atEnd(); p.nextLeft()) {
+	    if (_node_pointers[_range.leftOffset(p)] != 0) {
+		throw runtime_error(string("Node ") + name() 
+				    + print(target_range)
+				    + " overlaps previously defined nodes");
+	    }
+	}
 	
 	/* Set the _node_pointers array and the offset array */
-	RangeIterator j(target_range);
-	for (unsigned int k = 0; !j.atEnd(); j.nextLeft(), ++k)
+	unsigned int k = 0;
+	for (RangeIterator p(target_range); !p.atEnd(); p.nextLeft())
 	{
-	    unsigned int offset = _range.leftOffset(j);
-	    _node_pointers[offset] = node;
-	    _offsets[offset] = k;
+	    unsigned int i = _range.leftOffset(p);
+	    _node_pointers[i] = node;
+	    _offsets[i] = k++;
 	}
 	
 	/* Add multivariate nodes to range map */
@@ -108,39 +101,6 @@ namespace jags {
 	_member_graph.insert(node);
     }
     
-    Node *NodeArray::find(Range const &target_range) const
-    {
-	if (!_range.contains(target_range)) {
-	    return 0;
-	}
-	
-	if (target_range.length() == 1) {
-	    unsigned int start = _range.leftOffset(target_range.lower());
-	    Node *node = _node_pointers[start];
-	    if (!node) {
-		return 0;
-	    }
-	    if (node->length() != 1) {
-		/* 
-		   target_range is a scalar subset of a multivariate
-		   node.
-		*/
-		return 0;
-	    }
-	    if (_offsets[start] != 0) {
-		throw logic_error("Invalid scalar node in NodeArray");
-	    }
-	    return node;
-	}
-	else {
-	    map<Range, Node *>::const_iterator p = _mv_nodes.find(target_range);
-	    if (p != _mv_nodes.end()) {
-		return p->second;
-	    }
-	}
-	return 0;
-    }
-
     Node *NodeArray::getSubset(Range const &target_range, Model &model)
     {
 	//Check validity of target range
@@ -149,14 +109,26 @@ namespace jags {
 				print(target_range) + ". Range out of bounds");
 	}
 	
-	/* If range corresponds to a set node, then return this */
-	Node *node = find(target_range);
-	if (node)
-	    return node;
+	if (target_range.length() == 1) {
+	    unsigned int start = _range.leftOffset(target_range.lower());
+	    Node *node = _node_pointers[start];
+	    if (node && node->length() == 1) {
+		if (_offsets[start] != 0) {
+		    throw logic_error("Invalid scalar node in NodeArray");
+		}
+		return node;
+	    }
+	}
+	else {
+	    map<Range, Node *>::const_iterator p = _mv_nodes.find(target_range);
+	    if (p != _mv_nodes.end()) {
+		return p->second;
+	    }
+	}
 	
 	/* If range corresponds to a previously created subset, then
 	 * return this */
-	map<Range, Node *>::iterator p = _generated_nodes.find(target_range);
+	map<Range, AggNode *>::iterator p = _generated_nodes.find(target_range);
 	if (p != _generated_nodes.end()) {
 	    return p->second;
 	}
@@ -165,16 +137,16 @@ namespace jags {
 	
 	vector<Node const *> nodes;
 	vector<unsigned int> offsets;
-	for (RangeIterator i(target_range); !i.atEnd(); i.nextLeft()) {
-	    unsigned int offset = _range.leftOffset(i);
-	    if (_node_pointers[offset] == 0) {
+	for (RangeIterator p(target_range); !p.atEnd(); p.nextLeft()) {
+	    unsigned int i = _range.leftOffset(p);
+	    if (_node_pointers[i] == 0) {
 		return 0;
 	    }
-	    nodes.push_back(_node_pointers[offset]);
-	    offsets.push_back(_offsets[offset]);
+	    nodes.push_back(_node_pointers[i]);
+	    offsets.push_back(_offsets[i]);
 	}
 	AggNode *anode = new AggNode(target_range.dim(true), nodes, offsets);
-	_generated_nodes.insert(pair<Range,Node*>(target_range, anode));
+	_generated_nodes[target_range] = anode;
 	model.addNode(anode);
 	_member_graph.insert(anode);
 	return anode;
@@ -310,11 +282,9 @@ void NodeArray::setData(SArray const &value, Model *model)
 
     Range NodeArray::getRange(Node const *node) const
     {
-	/*
 	if (!_member_graph.contains(node)) {
 	    return Range();
 	}
-	*/
 	
 	//Look among inserted nodes first
 	if (node->length() == 1) {
@@ -335,18 +305,15 @@ void NodeArray::setData(SArray const &value, Model *model)
 	}
 
 	//Then among generated nodes
-	for (map<Range, Node *>::const_iterator p = _generated_nodes.begin();
+	for (map<Range, AggNode *>::const_iterator p = _generated_nodes.begin();
 	     p != _generated_nodes.end(); ++p) 
 	{ 
 	    if (node == p->second) {
 		return p->first;
 	    }
 	}
-
-	if (_member_graph.contains(node)) {
-	    throw logic_error("Oh no!");
-	}
 	
+	throw logic_error("Failed to find Node range");
 	return Range(); //Wall
     }
 

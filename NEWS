@@ -78,6 +78,8 @@ Library changes
   (e.g. indices that are not contiguous, nor increasing, or include
    repeats). This change is in support of vector indexing. The old Range
   class is now represented by a sub-class SimpleRange.
+* The interface of the NodeArray class is simplified. Member functions
+  find and isEmpty are defunct.
 
 Internal changes in modules
 ===========================

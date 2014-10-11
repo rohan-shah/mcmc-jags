@@ -11,15 +11,16 @@ namespace jags {
 
 class SArray;
 class Model;
+class AggNode;
 
 /**
  * @short Multi-dimensional array that can be tiled with Node objects
  * 
- * A NodeArray is a container class for nodes with a dimension
- * attribute.  The array can be tiled with nodes using the insert
- * function.  Inserted nodes can be retrieved using the find
- * function.  Arbitrary subsets of the NodeArray can be returned with
- * the getSubSet function.
+ * A NodeArray is a container class for nodes. A NodeArray may
+ * represent a scalar, vector, matrix or multi-dimensional container
+ * that can be tiled with Nodes using the insert member function.
+ * Subsets of the NodeArray can be retrieved with the getSubset
+ * function.
  */
 class NodeArray {
   std::string _name;
@@ -29,14 +30,12 @@ class NodeArray {
   std::vector<Node *> _node_pointers;
   std::vector<unsigned int> _offsets;
   std::map<Range, Node *> _mv_nodes;
-  std::map<Range, Node *> _generated_nodes;
+  std::map<Range, AggNode *> _generated_nodes;
 
   /* Forbid copying */
   NodeArray(NodeArray const &orig);
   NodeArray &operator=(NodeArray const &rhs);
 
-  bool findActiveIndices(std::vector<unsigned int> &ind, unsigned int k,
-                         std::vector<int> const &lower, std::vector<unsigned int> const &dim) const;
 public:
   /**
    * Constructor. Creates a NodeArray with the given name and dimension
@@ -54,23 +53,15 @@ public:
    * @exception runtime_error
    */
   void insert(Node *node, Range const &range);
+
   /**
-   * Determines whether the given range is empty of inserted nodes,
-   * and hence whether it can be used as an argument to insert
-   */
-  bool isEmpty(Range const &range) const;
-  /**
-   * Returns a node corresponding to the given range.  The range must
-   * have been used in a previous call to insert.
-   */
-  //FIXME KILL THIS
-  Node* find(Range const &range) const;
-  /**
-   * Returns an arbitrary subset of the NodeArray. If the range
-   * corresponds to a previously inserted node, this will be
-   * returned. Otherwise, an aggregate node will be created, and it
-   * will be added to the given model.  If the range is not completely
-   * covered by inserted nodes, a NULL pointer will be returned.
+   * Returns a subset of the NodeArray. If the range corresponds to a
+   * previously inserted node, this will be returned. Otherwise, an
+   * aggregate node will be generated, and it will be added to the
+   * given model.  Generated nodes are cached so a future call to
+   * getSubset will return the same node. If the range is not
+   * completely covered by inserted nodes, a NULL pointer will be
+   * returned.
    */
   Node* getSubset(Range const &range, Model &model);
   /**
