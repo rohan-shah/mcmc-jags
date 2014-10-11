@@ -25,7 +25,7 @@ SArray::SArray(SArray const &orig)
 {
 }
 
-Range const &SArray::range() const
+SimpleRange const &SArray::range() const
 {
     return _range;
 }

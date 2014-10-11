@@ -9,12 +9,12 @@ using std::logic_error;
 
 namespace jags {
 
-    static Range mkRange(map<vector<int>, Node const *> const &mixmap)
+    static SimpleRange mkRange(map<vector<int>, Node const *> const &mixmap)
     {
 	/* 
-	   Calculates the smallest Range enclosing the index values in
-	   the MixMap.  Also checks for consistency in the lengths of
-	   the index values.
+	   Calculates the smallest SimpleRange enclosing the index
+	   values in the MixMap.  Also checks for consistency in the
+	   lengths of the index values.
 	*/
 	map<vector<int>, Node const *>::const_iterator p = mixmap.begin();
 
@@ -32,7 +32,7 @@ namespace jags {
 	    }
 	}
 	
-	return Range(lower, upper);
+	return SimpleRange(lower, upper);
     }
 
     MixTab::MixTab(map<vector<int>, Node const *> const &mixmap)

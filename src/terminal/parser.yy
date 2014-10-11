@@ -755,7 +755,7 @@ static jags::Range getRange(jags::ParseTree const *var)
       break;
     }
   }
-  return jags::Range(ind_lower, ind_upper);
+  return jags::SimpleRange(ind_lower, ind_upper);
 }
 
 void setMonitor(jags::ParseTree const *var, int thin, std::string const &type)

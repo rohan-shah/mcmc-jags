@@ -12,6 +12,7 @@
 #include <graph/ArrayStochasticNode.h>
 #include <graph/AggNode.h>
 #include <graph/NodeError.h>
+#include <sarray/SimpleRange.h>
 #include <sarray/RangeIterator.h>
 #include <function/FunctionPtr.h>
 #include <distribution/DistPtr.h>
@@ -175,7 +176,7 @@ bool Compiler::indexExpression(ParseTree const *p, int &value)
     return true;
 }
 
-Range Compiler::getRange(ParseTree const *p, Range const &default_range)
+Range Compiler::getRange(ParseTree const *p, SimpleRange const &default_range)
 {
   /* 
      Evaluate a range expression. If successful, it returns the range
@@ -184,17 +185,17 @@ Range Compiler::getRange(ParseTree const *p, Range const &default_range)
      
      The default_range argument provides default values if the range
      expression is blank: e.g. foo[] or bar[,1].  The default range 
-     may be a null range, in which case, missing indices will result in
+     may a NULL range, in which case, missing indices will result in
      failure.
   */
   
     vector<ParseTree*> const &range_list = p->parameters();
     string const &name = p->name();
 
-  if (range_list.empty()) {
-      //An empty range expression implies the default range
-      return default_range;
-  }
+    if (range_list.empty()) {
+	//An empty range expression implies the default range
+	return default_range;
+    }
 
   // Check size and integrity of range expression
   unsigned int size = range_list.size();
@@ -261,7 +262,7 @@ Range Compiler::getRange(ParseTree const *p, Range const &default_range)
       }
   }
   
-  return Range(lower, upper);
+  return SimpleRange(lower, upper);
 }
 
 Range Compiler::VariableSubsetRange(ParseTree const *var)
@@ -298,7 +299,7 @@ Range Compiler::VariableSubsetRange(ParseTree const *var)
   }
   else {
       // Undeclared node
-      Range range = getRange(var, Range());
+      Range range = getRange(var, SimpleRange());
       if (isNULL(range)) {
 	  CompileError(var, "Cannot evaluate subset expression for", name);
       }
@@ -352,7 +353,7 @@ Range Compiler::CounterRange(ParseTree const *var)
     return Range();
   }
   else {
-    return Range(vector<int>(1, lower), vector<int>(1, upper));
+    return SimpleRange(vector<int>(1, lower), vector<int>(1, upper));
   }
 }
 
@@ -654,7 +655,7 @@ Node * Compiler::allocateStochastic(ParseTree const *stoch_relation)
     if (q != _data_table.end()) {
 
 	vector<double> const &data_value = q->second.value();
-	Range const &data_range = q->second.range();
+	SimpleRange const &data_range = q->second.range();
 
 	Range target_range = VariableSubsetRange(var);
 	data_length = target_range.length();
@@ -771,7 +772,7 @@ Node * Compiler::allocateLogical(ParseTree const *rel)
     map<string,SArray>::const_iterator q = _data_table.find(var->name());
     if (q != _data_table.end()) {
 	vector<double> const &data_value = q->second.value();
-	Range const &data_range = q->second.range();
+	SimpleRange const &data_range = q->second.range();
 	Range target_range = VariableSubsetRange(var);
 
 	for (RangeIterator p(target_range); !p.atEnd(); p.nextLeft()) {
@@ -843,7 +844,7 @@ void Compiler::setConstantMask(ParseTree const *rel)
 	throw logic_error ("Error in Compiler::setConstantMask");
     }
     Range range = VariableSubsetRange(var);
-    Range const &var_range = q->second.range();
+    SimpleRange const &var_range = q->second.range();
     if (!var_range.contains(range)) {
         throw logic_error("Invalid range in Compiler::setConstantMask.");
     }

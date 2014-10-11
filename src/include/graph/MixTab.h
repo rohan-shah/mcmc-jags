@@ -1,7 +1,7 @@
 #ifndef MIX_MAP_H_
 #define MIX_MAP_H_
 
-#include <sarray/Range.h>
+#include <sarray/SimpleRange.h>
 
 #include <vector>
 #include <map>
@@ -19,7 +19,7 @@ namespace jags {
      * current value.
      */
     class MixTab {
-	const Range _range;
+	const SimpleRange _range;
 	std::vector<Node const *> _nodes;
       public:
 	/**

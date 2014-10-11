@@ -5,6 +5,7 @@
 #include <model/SymTab.h>
 #include <util/dim.h>
 #include <sarray/RangeIterator.h>
+#include <sarray/SimpleRange.h>
 
 using std::vector;
 using std::string;
@@ -43,7 +44,7 @@ static void printArray(ostream &out, double const *value,
 {
     if (dim.size() <= 2) return;
 
-    jags::Range range(dim);
+    jags::SimpleRange range(dim);
     jags::RangeIterator r(range); 
     while(!r.atEnd()) {
 	//Header for each slice

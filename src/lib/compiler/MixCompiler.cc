@@ -104,13 +104,14 @@ static void getSubsetRanges(vector<pair<vector<int>, Range> > &subsets,
     }
   }
   
-  for (RangeIterator i(Range(variable_lower, variable_upper)); !i.atEnd(); 
-       i.nextLeft()) {
+  for (RangeIterator i(SimpleRange(variable_lower, variable_upper)); 
+       !i.atEnd(); i.nextLeft()) 
+  {
     for (int k = 0; k < nvi; ++k) {
       lower_index[variable_offset[k]] = i[k];
       upper_index[variable_offset[k]] = i[k];
     }
-    subsets.push_back(pair<vector<int>, Range>(i, Range(lower_index, upper_index)));
+    subsets.push_back(pair<vector<int>, Range>(i, SimpleRange(lower_index, upper_index)));
   }
 }
 
@@ -294,7 +295,7 @@ getMixtureNode1(NodeArray *array, vector<SSI> const &limits, Compiler *compiler)
 
     set<vector<int> > index_values;
     vector<int>  this_index(indices.size(),1);
-    Range stoch_node_range(lower, upper);
+    SimpleRange stoch_node_range(lower, upper);
 
     for (RangeIterator i(stoch_node_range); !i.atEnd(); i.nextLeft()) {
 
@@ -349,7 +350,7 @@ getMixtureNode1(NodeArray *array, vector<SSI> const &limits, Compiler *compiler)
 	    lower_index[variable_offset[k]] = i[k];
 	    upper_index[variable_offset[k]] = i[k];
 	}
-	ranges.push_back(pair<vector<int>, Range>(i, Range(lower_index, upper_index)));
+	ranges.push_back(pair<vector<int>, Range>(i, SimpleRange(lower_index, upper_index)));
     }
 
     //Look out for trivial mixture nodes in which all subsets are the same.

@@ -7,52 +7,54 @@
 namespace jags {
 
 /**
- * @short Represents a range of array indices 
+ * @short Represents a collection of array indices 
  *
- * A Range object represents a range of indices used to take a subset
- * of a multi-dimensional array. For example, A[1:2,4,4:5] is a subset
- * of the array A defined by a range with lower boundary (1,4,4) and
- * upper boundary (2,4,5).
+ * A Range object represents a subset of indices in a multi
+ * dimensional array. For example, A[1:2,4,4:6] is a subset of the
+ * 3-dimensional array A defined by the range [1:2,4,4:6]. This range
+ * is itself defined as the outer product of 3 integer vectors:
+ * c(1,2), 4, and c(4,5,6) in the first, second, and third dimensions,
+ * respectively.
+ *
+ * A Range may contain indices in any order and may include repeat
+ * indices. A Range is "simple" if its component vectors consist of
+ * contiguous elements in increasing order. For example, the Range
+ * given above is Simple.  However, the Range [c(2,1,1,3,4)] is not
+ * simple. The SimpleRange class is used for a more efficient
+ * calculations on simple Ranges.
+ *
+ * @see SimpleRange
+ * 
  */
 class Range {
-    std::vector<int> _lower, _upper;
+    std::vector<std::vector<int> > _scope;
+  protected:
     std::vector<unsigned int> _dim, _dim_dropped;
+    std::vector<int>_first, _last;
     unsigned int _length;
-public:
+  public:
     /**
-     * Default constructor which constructs a NULL range, with zero-length
-     * upper and lower limits.
+     * Default constructor which creates a NULL range of zero length.
      */
     Range();
     /**
-     * Constructs a range based on given lower and upper limits
-     * A logic_error is thrown if these are of different lengths
+     * Constructs a Range.
      *
-     * @param lower Lower limits. 
+     * @param scope Vector of index vectors. The scope parameter is of
+     * length equal to the number of dimensions. Element i of the
+     * scope vector is the vector of indices for dimension i. Each
+     * element of scope must be non-empty (i.e. must contain at least
+     * one index) or a logic_error is thrown.
      *
-     * @param upper Upper limits. A range_error is thrown if any
-     *              element of upper is smaller than the corresponding
-     *              element of lower.
-     *
-     * @exception range_error
+     * @exception logic_error
      */
-    Range(std::vector<int> const &lower, std::vector<int> const &upper);
+    Range(std::vector<std::vector<int> > const &scope);
     /**
-     * Constructs a scalar range from an index. The upper and lower
-     * bounds are both equal to the supplied index.  
+     * Virtual destructor
      */
-    Range(std::vector<int> const &index);
+    virtual ~Range();
     /**
-     * Constructs a range from a dimension. For each index, the lower
-     * limit is 1 and  the upper limit is the corresponding element of
-     * dim (cast to a signed int).
-     *
-     * This constructor should not be confused with the constructor
-     * that creates a scalar range from a vector of signed integers.
-     */
-    Range(std::vector<unsigned int> const &dim);
-    /**
-     *Equality operator
+     * Equality operator
      */
     bool operator==(Range const &range) const;
     /**
@@ -66,49 +68,21 @@ public:
      */
     unsigned int length() const;
     /**
-     * Indicates whether the test range is completely contained inside this
-     * range.
-     *
-     * @param test_range Test range, which must have the correct number of
-     * dimensions, or an invalid_argument exception is thrown.  
-     *
-     * @exception invalid_argument
-     */
-    bool contains(Range const &test_range) const;
-    /**
-     * Returns the value of a RangeIterator constructed from this range,
-     * after n iterations of RangeIterator#nextLeft 
+     * Returns the index in position n when the indices in the Range
+     * are put in column-major order (i.e. with the left hand index
+     * moving fastest).
      *
      * @see RangeIterator
      */
     std::vector<int> leftIndex(unsigned int n) const;
     /**
-     * The inverse of leftIndex. Returns the number of iterations of 
-     * RangeIterator#nextLeft required to reach the given index.
-     *
-     * @param index Index vector to convert to offset. An out_of_range
-     * exception is thrown if the index is not contained in the range.
-     * @see RangeIterator
-     * @exception out_of_range
-     */
-    unsigned int leftOffset(std::vector<int> const &index) const;
-    /**
-     * Returns the value of a RangeIterator after n iterations of
-     * RangeIterator#nextRight 
+     * Returns the index in position n when the indices in the Raneg
+     * are put in row-major order (i.e. with the right hand index
+     * moving fastest).
      *
      * @see RangeIterator
      */
     std::vector<int> rightIndex(unsigned int n) const;
-    /**
-     * The inverse of rightIndex. Returns the number of iterations of 
-     * RangeIterator#nextRight required to reach index.
-     *
-     * @param index Index vector to convert to offset. An out_of_range
-     * exception is thrown if the index is not contained in the range.  
-     * @see RangeIterator
-     * @exception out_of_range
-     */
-    unsigned int rightOffset(std::vector<int> const &index) const;
     /**
      * Dimension of the range. The range [1:4,2,3:5] has dimension
      * (4,1,3) if drop==false and (4,3) if drop==true. Dropping of
@@ -118,24 +92,34 @@ public:
      */
     std::vector<unsigned int> const &dim(bool drop) const;
     /**
-     * Number of dimensions covered by the Range
+     * Number of dimensions covered by the Range. The range [1:4, 2,
+     * 3:5] has 3 dimensions if drop==false and 2 dimensions if
+     * drop==true.
      *
      * @param drop Should dimensions of size 1 be counted?
      */
     unsigned int ndim(bool drop) const;
     /**
-     * lower limit of range
+     * The first element of the Range (in either row-major or
+     * column-major order).
      */
     std::vector<int> const & lower() const;
     /**
-     * upper limit of range
+     * The last element of the Range (in either row-major or 
+     * column-major order).
      */
     std::vector<int> const & upper() const;
     /**
-     * Less than operator based on lexicographic ordering of the
-     * upper bound, then the lower bound.
+     * Less than operator that gives a unique ordering of ranges
+     * Ranges are first sorted by the first element, then the last
+     * element and, if they are still equivalent by these criteria, a
+     * lexicographic ordering of the scope.
      */
     bool operator<(Range const &rhs) const;
+    /**
+     * Returns the scope vector used to construct the Range. 
+     */
+    std::vector<std::vector<int> > const &scope() const;
 };
 
 /**
@@ -143,12 +127,22 @@ public:
  */
 inline bool isNULL(Range const &range) { return range.length() == 0; }
 
-/**
- * Returns a string containing a BUGS language representation of the
- * given range: e.g. a range with lower limit (1,2,3) and upper limit
- * (3,3,3) will be printed as "[1:3,2:3,3]"
- */
-std::string print(Range const &range);
+    /**
+     * Returns a string containing a BUGS language representation of
+     * the given range.
+     *
+     * Simple ranges, consisting of contiguous elements in increasing
+     * order, are represented as in R: e.g. a range with lower limit
+     * (1,2,3) and upper limit (3,3,3) will be printed as
+     * "[1:3,2:3,3].
+     *
+     * Complex ranges, consisting of elements that are not contiguous
+     * or not in order, are not represented exactly when printed. The
+     * first and last indices in the range are given separated by
+     * ellipses, e.g. the range c(3,7,4,2,2,5) is represented as
+     * "[3...5]"
+     */
+    std::string print(Range const &range);
 
 } /* namespace jags */
 

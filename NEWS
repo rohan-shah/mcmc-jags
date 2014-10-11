@@ -74,6 +74,10 @@ Library changes
   values of the arguments (and not just the dimensions of the arguments).
   We can only permit this if the node has fixed length, and hence if
   the relevant arguments are fixed.
+* The Range class now allows representation of arbitrary index ranges
+  (e.g. indices that are not contiguous, nor increasing, or include
+   repeats). This change is in support of vector indexing. The old Range
+  class is now represented by a sub-class SimpleRange.
 
 Internal changes in modules
 ===========================

@@ -2,7 +2,7 @@
 #define NODE_ARRAY_H_
 
 #include <graph/Graph.h>
-#include <sarray/Range.h>
+#include <sarray/SimpleRange.h>
 
 #include <string>
 #include <map>
@@ -23,11 +23,12 @@ class Model;
  */
 class NodeArray {
   std::string _name;
-  Range _range;
+  SimpleRange _range;
   Graph _member_graph;
   unsigned int _nchain;
-  Node **_node_pointers;
-  unsigned int *_offsets;
+  std::vector<Node *> _node_pointers;
+  std::vector<unsigned int> _offsets;
+  std::map<Range, Node *> _mv_nodes;
   std::map<Range, Node *> _generated_nodes;
 
   /* Forbid copying */
@@ -42,11 +43,11 @@ public:
    */
   NodeArray(std::string const &name, std::vector<unsigned int> const &dim, 
 	    unsigned int nchain);
-  ~NodeArray();
   /**
    * Inserts a node into the subset of the NodeArray defined by range.
    * The dimension of the node must conform with the given range.
    * The given range must not overlap any previously inserted node.
+   * Repeated indices in the given range are not allowed.
    *
    * The node is added to an internal graph. 
    *
@@ -60,9 +61,9 @@ public:
   bool isEmpty(Range const &range) const;
   /**
    * Returns a node corresponding to the given range.  The range must
-   * have been used in a previous call to insert, otherwise a NULL
-   * pointer is returned.
+   * have been used in a previous call to insert.
    */
+  //FIXME KILL THIS
   Node* find(Range const &range) const;
   /**
    * Returns an arbitrary subset of the NodeArray. If the range
@@ -113,7 +114,7 @@ public:
   /**
    * Returns the range of indices covered by the NodeArray
    */
-  Range const &range() const;
+  SimpleRange const &range() const;
   /**
    * Returns the range corresponding to the given node, if it
    * belongs to the graph associated with the NodeArray. If it is

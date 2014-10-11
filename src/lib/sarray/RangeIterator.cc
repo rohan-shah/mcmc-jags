@@ -1,58 +1,56 @@
 #include <config.h>
 #include <sarray/RangeIterator.h>
-#include <stdexcept>
 
 using std::vector;
 
 namespace jags {
 
-RangeIterator::RangeIterator(Range const &range)
-    : vector<int>(range.lower()), _lower(range.lower()), _upper(range.upper()),
-      _atend(0)
-{}
+    RangeIterator::RangeIterator(Range const &range)
+	: vector<int>(range.lower()), 
+	  _scope(range.scope()),
+	  _dim(range.dim(false)),
+	  _index(_dim.size(), 0),
+	  _atend(0)
+    {}
 
-unsigned int RangeIterator::atEnd() const
-{
-    return _atend;
-}
+    unsigned int RangeIterator::atEnd() const
+    {
+	return _atend;
+    }
 
-RangeIterator &RangeIterator::nextLeft()
-{
-    int n = _lower.size();
-    int i = 0;
-    for (; i < n; ++i) {
-        int &ind = operator[](i);
-        if (ind < _upper[i]) {
-            ++ind;
-            break;
-        }
-        else {
-            ind = _lower[i];
-        }
-    }
-    if (i == n) {
-        _atend++;
-    }
-    return *this;
-}
+    RangeIterator &RangeIterator::nextLeft()
+    {
+	unsigned int i = 0;
+	for (; i < _index.size(); ++i) {
+	    unsigned int &ind = _index[i];
+	    int &val = operator[](i);
 
-RangeIterator &RangeIterator::nextRight()
-{
-    int i = _lower.size() - 1;
-    for ( ; i >= 0; --i) {
-        int &ind = operator[](i);
-        if (ind < _upper[i]) {
-            ++ind;
-            break;
-        }
-        else {
-            ind = _lower[i];
-        }
+	    if (++ind >= _dim[i]) ind = 0;
+	    val = _scope[i][ind];
+	    if (ind > 0) break;
+	}
+	if (i == _index.size()) {
+	    _atend++;
+	}
+	return *this;
     }
-    if (i < 0) {
-        _atend++;
+
+    RangeIterator &RangeIterator::nextRight()
+    {
+	unsigned int j = _index.size();
+	for ( ; j > 0; --j) {
+	    int i = j - 1;
+	    unsigned int &ind = _index[i];
+	    int &val = operator[](i);
+
+	    if (++ind >= _dim[i]) ind = 0;
+	    val = _scope[i][ind];
+	    if (ind > 0) break;
+	}
+	if (j == 0) {
+	    _atend++;
+	}
+	return *this;
     }
-    return *this;
-}
 
 } //namespace jags

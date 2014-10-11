@@ -1,4 +1,4 @@
 sarrayincludedir = $(pkgincludedir)/sarray
 
-sarrayinclude_HEADERS = RangeIterator.h SArray.h Range.h
+sarrayinclude_HEADERS = RangeIterator.h SArray.h Range.h SimpleRange.h 
 

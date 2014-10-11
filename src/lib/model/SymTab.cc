@@ -262,7 +262,6 @@ static string makeMixtureName(MixtureNode const *mnode,
 
 string SymTab::getName(Node const *node) const
 {
-    //Special rules for mixture nodes
     map<string, NodeArray*>::const_iterator p;
     for (p = _varTable.begin(); p != _varTable.end(); ++p) {
 	NodeArray *array = p->second;
