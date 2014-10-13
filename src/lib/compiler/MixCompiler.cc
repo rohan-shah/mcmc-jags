@@ -60,9 +60,8 @@ namespace jags {
 //Structure to hold subset indices
 struct SSI {
   Node const *node;
-  int lower;
-  int upper;
-  SSI() : node(0), lower(0), upper(0) {};
+  vector<int> indices;
+  SSI() : node(0) {};
 };
 
 
@@ -77,42 +76,31 @@ struct SSI {
 */
 static void getSubsetRanges(vector<pair<vector<int>, Range> > &subsets,  
 			    vector<SSI> const &limits,
-			    Range const &default_range)
+			    SimpleRange const &default_range)
 {
-  unsigned int ndim = limits.size();
-  //Count number of variable indices (nvi)
-  int nvi = 0;
-  for (unsigned int j = 0; j < ndim; ++j) {
-    if (limits[j].node != 0)
-      ++nvi;
-  }
+    unsigned int ndim = limits.size();
 
-  // Create upper and lower bounds
-  vector<int> variable_offset(nvi,1), variable_lower(nvi,1), variable_upper(nvi,1);
-  vector<int> lower_index(ndim,1), upper_index(ndim,1);
-  int k = 0;
-  for (unsigned int j = 0; j < ndim; ++j) {
-    if (limits[j].node != 0) {
-      variable_offset[k] = j;
-      variable_lower[k] = default_range.lower()[j];
-      variable_upper[k] = default_range.upper()[j];
-      ++k;
+    // Create upper and lower bounds
+    vector<int> var_offset, var_lower, var_upper;
+    vector<vector<int> > scope(ndim);
+    for (unsigned int j = 0; j < ndim; ++j) {
+	if (limits[j].node) {
+	    var_offset.push_back(j);
+	    var_lower.push_back(default_range.lower()[j]);
+	    var_upper.push_back(default_range.upper()[j]);
+	}
+	else {
+	    scope[j] = limits[j].indices;
+	}
     }
-    else {
-      lower_index[j] = limits[j].lower;
-      upper_index[j] = limits[j].upper;
+
+    SimpleRange var_range(var_lower, var_upper); //range of variable indices
+    for (RangeIterator p(var_range); !p.atEnd(); p.nextLeft()) {
+	for (unsigned int k = 0; k < var_offset.size(); ++k) {
+	    scope[var_offset[k]] = vector<int>(1, p[k]);
+	}
+	subsets.push_back(pair<vector<int>, Range>(p, Range(scope)));
     }
-  }
-  
-  for (RangeIterator i(SimpleRange(variable_lower, variable_upper)); 
-       !i.atEnd(); i.nextLeft()) 
-  {
-    for (int k = 0; k < nvi; ++k) {
-      lower_index[variable_offset[k]] = i[k];
-      upper_index[variable_offset[k]] = i[k];
-    }
-    subsets.push_back(pair<vector<int>, Range>(i, SimpleRange(lower_index, upper_index)));
-  }
 }
 
 //  Returns true if node, or one of its deterministic descendants, is
@@ -246,13 +234,12 @@ getMixtureNode1(NodeArray *array, vector<SSI> const &limits, Compiler *compiler)
     unsigned int ndim = limits.size();
 
     vector<Node const*> indices;
-    unsigned int nvi = 0;
     for (unsigned int i = 0; i < ndim; ++i) {
 	if (limits[i].node) {
 	    indices.push_back(limits[i].node);
-	    ++nvi;
 	}
     }
+    unsigned int nvi = indices.size();
 
     vector<StochasticNode *> sparents;
     vector<DeterministicNode *> dparents;
@@ -328,16 +315,14 @@ getMixtureNode1(NodeArray *array, vector<SSI> const &limits, Compiler *compiler)
 
     // Now set up the possible subsets defined by the stochastic indices
 
-    vector<int> variable_offset(nvi, 1);
-    vector<int> lower_index(ndim, 1), upper_index(ndim, 1);
-    int k = 0;
+    vector<int> variable_offset;
+    vector<vector<int> > scope(ndim);
     for (unsigned int j = 0; j < ndim; ++j) {
-	if (limits[j].node != 0) {
-	    variable_offset[k++] = j;
+	if (limits[j].node) {
+	    variable_offset.push_back(j);
 	}
 	else {
-	    lower_index[j] = limits[j].lower;
-	    upper_index[j] = limits[j].upper;
+	    scope[j] = limits[j].indices;
 	}
     }
 
@@ -347,10 +332,9 @@ getMixtureNode1(NodeArray *array, vector<SSI> const &limits, Compiler *compiler)
 
 	vector<int> const &i = *p;
 	for (unsigned int k = 0; k < nvi; ++k) {
-	    lower_index[variable_offset[k]] = i[k];
-	    upper_index[variable_offset[k]] = i[k];
+	    scope[variable_offset[k]] = vector<int>(1, i[k]);
 	}
-	ranges.push_back(pair<vector<int>, Range>(i, SimpleRange(lower_index, upper_index)));
+	ranges.push_back(pair<vector<int>, Range>(i, Range(scope)));
     }
 
     //Look out for trivial mixture nodes in which all subsets are the same.
@@ -430,40 +414,17 @@ Node * getMixtureNode(ParseTree const * var, Compiler *compiler)
 	    throw runtime_error("Malformed range expression");
 	}
 	SSI ssi;
-	ssi.node = 0;
-	ParseTree const *p0, *p1;
+	ParseTree const *p0;
 	switch(range_element->parameters().size()) {
 	case 0:
 	    // Index is empty, implying the whole range 
-	    ssi.lower = array->range().lower()[i];
-	    ssi.upper = array->range().upper()[i];
+	    ssi.indices = array->range().scope()[i];
 	    break;
 	case 1:
-	    // Single index: upper = lower
 	    p0 = range_element->parameters()[0];
-	    if(compiler->indexExpression(p0, ssi.lower)) {
-		ssi.upper = ssi.lower;
-	    }
-	    else {
+	    if(!compiler->indexExpression(p0, ssi.indices)) {
 		ssi.node = compiler->getParameter(p0);
 		if (ssi.node == 0)
-		    return 0;
-		else
-		    ++nvi;
-	    }
-	    break;
-	case 2:
-	    // Upper and lower indices
-	    p0 = range_element->parameters()[0];
-	    p1 = range_element->parameters()[1];
-	    if(compiler->indexExpression(p0, ssi.lower)) {
-		if (!compiler->indexExpression(p1, ssi.upper)) {
-		    return 0;
-		}
-	    }
-	    else {
-		ssi.node = compiler->getParameter(p0);
-		if (compiler->getParameter(p1) != ssi.node)
 		    return 0;
 		else
 		    ++nvi;
@@ -482,27 +443,32 @@ Node * getMixtureNode(ParseTree const * var, Compiler *compiler)
 	    }
 	}
 	else {
-	    if (ssi.lower < array->range().lower()[i] ||
-		ssi.upper > array->range().upper()[i] ||
-		ssi.upper < ssi.lower)
-	    {
-		throw runtime_error("Requested invalid variable subset of " + 
+	    if (ssi.indices.empty()) {
+		throw runtime_error("Requested invalid variable subset of " +
 				    var->name());
 	    }
-    }
+	    for (unsigned int j = 0; j < ssi.indices.size(); ++j) {
+		if (ssi.indices[j] < array->range().lower()[i] ||
+		    ssi.indices[j] > array->range().upper()[i])
+		{
+		    throw runtime_error("Requested invalid variable subset of "
+					+ var->name());
+		}
+	    }
+	}
 	limits.push_back(ssi);
-}
-  
+    }
+    
     //Check number of variable indices (nvi)
     if (nvi == 0) {
 	throw logic_error("Trivial mixture node");
     }
 
-Node *mnode = getMixtureNode1(array, limits, compiler);
-if (mnode)
-    return mnode;
-else
-    return getMixtureNode2(array, limits, compiler);
-}
-
+    Node *mnode = getMixtureNode1(array, limits, compiler);
+    if (mnode)
+	return mnode;
+    else
+	return getMixtureNode2(array, limits, compiler);
+    }
+    
 } //namespace jags

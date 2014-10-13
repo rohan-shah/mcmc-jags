@@ -124,7 +124,7 @@ Node * Compiler::constFromTable(ParseTree const *p)
     }
 }
 
-bool Compiler::indexExpression(ParseTree const *p, int &value)
+bool Compiler::indexExpression(ParseTree const *p, vector<int> &value)
 {
     /* 
        Evaluates an index expression.
@@ -157,14 +157,14 @@ bool Compiler::indexExpression(ParseTree const *p, int &value)
 	return false;
     }
 
-    if (node->length() != 1) {
-	throw NodeError(node, "Vector value in index expression"); 
+    for (unsigned int i = 0; i < node->length(); ++i) {
+	double v = node->value(0)[i];
+	if (!checkInteger(v)) {
+	    throw NodeError(node, 
+			    "Index expression evaluates to non-integer value");
+	}
+	value.push_back(asInteger(v));
     }
-    if (!checkInteger(node->value(0)[0])) {
-	throw NodeError(node, 
-			"Index expression evaluates to non-integer value");
-    }
-    value = asInteger(node->value(0)[0]);
 	
     if (_index_expression == 0) {
 	while(!_index_nodes.empty()) {
@@ -176,7 +176,8 @@ bool Compiler::indexExpression(ParseTree const *p, int &value)
     return true;
 }
 
-Range Compiler::getRange(ParseTree const *p, SimpleRange const &default_range)
+Range Compiler::getRange(ParseTree const *p, 
+			 SimpleRange const &default_range)
 {
   /* 
      Evaluate a range expression. If successful, it returns the range
@@ -209,30 +210,22 @@ Range Compiler::getRange(ParseTree const *p, SimpleRange const &default_range)
   }
   
   // Now step through and evaluate lower and upper index expressions
-  vector<int> lower(size), upper(size);
+  vector<vector<int> > scope(size);
   for (unsigned int i = 0; i < size; i++) {
     switch (range_list[i]->parameters().size()) {
     case 0:
       // Empty index implies default range
       if (isNULL(default_range)) {
-	return default_range;
+	  return Range();
       }
-      lower[i] = default_range.lower()[i];
-      upper[i] = default_range.upper()[i];
+      scope[i] = default_range.scope()[i];
       break;
     case 1:
-      // Single index implies lower == upper
-      if (!indexExpression(range_list[i]->parameters()[0], lower[i])) {
-	return Range();
+      if (!indexExpression(range_list[i]->parameters()[0], scope[i])) {
+	  return Range();
       }
-      else {
-	upper[i] = lower[i];
-      }
-      break;
-    case 2:
-      if (!indexExpression(range_list[i]->parameters()[0], lower[i]) ||
-	  !indexExpression(range_list[i]->parameters()[1], upper[i])) {
-	return Range();
+      if (scope[i].empty()) {
+	  CompileError(p, "Invalid range");
       }
       break;
     default:
@@ -240,29 +233,7 @@ Range Compiler::getRange(ParseTree const *p, SimpleRange const &default_range)
     }
   }
   
-  for (unsigned int i = 0; i < size; ++i) {
-      if (lower[i] > upper[i]) {
-	  //Invalid range. We can't use the print method for Range
-	  //objects to print it as we can't construct a Range object.
-	  //So do it by hand
-	  ostringstream ostr;
-	  ostr << "[";
-	  for (unsigned int j = 0; j < size; ++j) {
-	      if (j > 0)
-		  ostr << ",";
-	      if (lower[j] == upper[j]) {
-		  ostr << lower[j];
-	      }
-	      else {
-		  ostr << lower[j] << ":" << upper[j];
-	      }
-	  }
-	  ostr << "]";
-	  CompileError(p, "Invalid range:", ostr.str());
-      }
-  }
-  
-  return SimpleRange(lower, upper);
+  return Range(scope);
 }
 
 Range Compiler::VariableSubsetRange(ParseTree const *var)
@@ -330,30 +301,20 @@ Range Compiler::CounterRange(ParseTree const *var)
   }
 
   unsigned int size = prange->parameters().size();
-  if (size < 1 || size > 2) {
+  if (size != 1) {
     throw logic_error(string("Invalid range expression for counter ")
 		      + var->name());
   }
-  int lower;
-  if(!indexExpression(prange->parameters()[0], lower)) {
-      CompileError(var, "Cannot evaluate lower index of counter", var->name());
-  }
-  int upper;
-  if (prange->parameters().size() == 2) {
-    if (!indexExpression(prange->parameters()[1], upper)) {
-	CompileError(var, "Cannot evaluate upper index of counter", 
-		     var->name());
-    }
-  }
-  else {
-    upper = lower;
+  vector<int> indices;
+  if(!indexExpression(prange->parameters()[0], indices)) {
+      CompileError(var, "Cannot evaluate lower range of counter", var->name());
   }
   
-  if (lower > upper) {
+  if (indices.empty()) {
     return Range();
   }
   else {
-    return SimpleRange(vector<int>(1, lower), vector<int>(1, upper));
+      return Range(vector<vector<int> >(1, indices));
   }
 }
 
@@ -1037,15 +998,24 @@ void Compiler::declareVariables(vector<ParseTree*> const &dec_list)
       // Variable is an array
 	vector<unsigned int> dim(ndim);
 	for (unsigned int i = 0; i < ndim; ++i) {
-	    int dim_i;
+	    vector<int> dim_i;
 	    if (!indexExpression(node_dec->parameters()[i], dim_i)) {
-		CompileError(node_dec, "Unable to calculate dimensions of node",
+		CompileError(node_dec, "Unable to calculate dimensions of ",
 			     name);
 	    }
-	    if (dim_i <= 0) {
+	    if (dim_i.empty()) {
+		CompileError(node_dec, "NULL dimension in declaration of ",
+			     name);
+	    }
+	    if (dim_i.size() != 1) {
+		CompileError(node_dec, 
+			     "Vector-valued dimension in declaration of ", 
+			     name);
+	    }
+	    if (dim_i[0] <= 0) {
 		CompileError(node_dec, "Non-positive dimension for node", name);
 	    }
-	    dim[i] = static_cast<unsigned int>(dim_i);
+	    dim[i] = static_cast<unsigned int>(dim_i[0]);
 	}
 	_model.symtab().addVariable(name, dim);
     }

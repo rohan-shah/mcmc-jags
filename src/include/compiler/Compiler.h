@@ -70,7 +70,7 @@ class Compiler {
 		    std::vector<double> const &value,
 		    unsigned int nchain, bool observed);
 public:
-  bool indexExpression(ParseTree const *t, int &value);
+  bool indexExpression(ParseTree const *t, std::vector<int> &value);
   BUGSModel &model() const;
   Node * getParameter(ParseTree const *t);
   /**

@@ -80,8 +80,10 @@ using jags::ParseTree;
 %left '+' '-'
 %left '*' '/'
 %left SPECIAL
+%nonassoc ':'
 %left NEG
 %right '^'
+
 
 %token ENDL
 
@@ -272,6 +274,10 @@ expression: var
     $$ = new ParseTree(jags::P_FUNCTION, yylineno); $$->setName("NEG");
     setParameters($$, $2);
 }
+| expression ':' expression {
+    $$ = new ParseTree(jags::P_FUNCTION, yylineno); $$->setName(":");
+    setParameters($$, $1, $3);
+}
 | expression GT expression {
     $$ = new ParseTree(jags::P_FUNCTION, yylineno); $$->setName(">");
     setParameters($$, $1, $3);
@@ -324,9 +330,9 @@ range_list: range_element { $$ = new std::vector<ParseTree*>(1, $1); }
 ;
 
 range_element: {$$ = new ParseTree(jags::P_RANGE, yylineno);}
-| expression {$$ = new ParseTree(jags::P_RANGE, yylineno); setParameters($$,$1);}
-| expression ':' expression {
-  $$ = new ParseTree(jags::P_RANGE, yylineno); setParameters($$, $1, $3);
+| expression {
+    $$ = new ParseTree(jags::P_RANGE, yylineno); 
+    setParameters($$,$1);
 }
 ;
 
