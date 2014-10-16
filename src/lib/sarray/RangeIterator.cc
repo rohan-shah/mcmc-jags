@@ -6,7 +6,7 @@ using std::vector;
 namespace jags {
 
     RangeIterator::RangeIterator(Range const &range)
-	: vector<int>(range.lower()), 
+	: vector<int>(range.first()), 
 	  _scope(range.scope()),
 	  _dim(range.dim(false)),
 	  _index(_dim.size(), 0),

@@ -103,12 +103,12 @@ class Range {
      * The first element of the Range (in either row-major or
      * column-major order).
      */
-    std::vector<int> const & lower() const;
+    std::vector<int> const & first() const;
     /**
      * The last element of the Range (in either row-major or 
      * column-major order).
      */
-    std::vector<int> const & upper() const;
+    std::vector<int> const & last() const;
     /**
      * Less than operator that gives a unique ordering of ranges
      * Ranges are first sorted by the first element, then the last

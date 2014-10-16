@@ -111,12 +111,12 @@ namespace jags {
 	return index;
     }
 
-    vector<int> const &Range::lower() const
+    vector<int> const &Range::first() const
     {
 	return _first;
     }
 
-    vector<int> const &Range::upper() const
+    vector<int> const &Range::last() const
     {
 	return _last;
     }

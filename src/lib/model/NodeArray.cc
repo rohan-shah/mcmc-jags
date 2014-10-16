@@ -110,7 +110,7 @@ namespace jags {
 	}
 	
 	if (target_range.length() == 1) {
-	    unsigned int start = _range.leftOffset(target_range.lower());
+	    unsigned int start = _range.leftOffset(target_range.first());
 	    Node *node = _node_pointers[start];
 	    if (node && node->length() == 1) {
 		if (_offsets[start] != 0) {

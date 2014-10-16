@@ -45,6 +45,8 @@ using std::min;
 using std::max;
 using std::set;
 using std::fabs;
+using std::min_element;
+using std::max_element;
 
 namespace jags {
 
@@ -112,8 +114,7 @@ Node * Compiler::constFromTable(ParseTree const *p)
     }
     else {
 	//Scalar constant
-	unsigned int offset = 
-	    sarray.range().leftOffset(subset_range.lower());  
+	unsigned int offset = sarray.range().leftOffset(subset_range.first());  
 	double value = sarray.value()[offset];
 	if (value == JAGS_NA) {
 	    return 0;
@@ -817,44 +818,60 @@ void Compiler::setConstantMask(ParseTree const *rel)
 
 void Compiler::getArrayDim(ParseTree const *p)
 {
-  /* 
-     Called by traverseTree, this function calculates the size
-     of all arrays from the left-hand side of all 
-     relations, and stores the results in the map _node_array_ranges.
-  */
+    /* 
+       Called by traverseTree.
 
-  ParseTree const *var = p->parameters()[0];
-  string const &name = var->name();
+       For each node array, calculates the lower and upper bounds of
+       the subset expressions on the left-and side of all
+       relations. The results are stored in the map _node_array_bounds
+       which is then used to calculate the dimensions of the node
+       arrays.
+    */
 
-  if(var->parameters().empty()) {
-      //No index expession => No info on array size
-      return;
-  }
+    ParseTree const *var = p->parameters()[0];
+    string const &name = var->name();
 
-  Range new_range = VariableSubsetRange(var);
+    if(var->parameters().empty()) {
+	//No index expession => No info on array size
+	return;
+    }
 
-  map<string, vector<vector<int> > >::iterator i = 
-      _node_array_ranges.find(name);
-  if (i == _node_array_ranges.end()) {
-    //Create a new entry
-    vector<vector<int> > ivec;
-    ivec.push_back(new_range.lower());
-    ivec.push_back(new_range.upper());
-    _node_array_ranges.insert(pair<const string, vector<vector<int> > >(name,ivec));
-  }
-  else {
-    //Check against the existing entry, and modify if necessary
-    unsigned int ndim = i->second[0].size();
-    if (new_range.ndim(false) != ndim) {
-	CompileError(var, "Inconsistent dimensiosn for array", name);
+    Range new_range = VariableSubsetRange(var);
+    vector<vector<int> > const new_scope = new_range.scope();
+    vector<int> lower, upper;
+    for (unsigned int i = 0; i < new_scope.size(); ++i) {
+	lower.push_back(*min_element(new_scope[i].begin(), new_scope[i].end()));
+	upper.push_back(*max_element(new_scope[i].begin(), new_scope[i].end()));
+    }
+    
+    //Sanity check for lower bound
+    for (unsigned int i = 0; i < lower.size(); ++i) {
+	if (lower[i] <= 0) {
+	    CompileError(var, "Non-positive index in subset of", name);
+	}
+    }
+
+    map<string, pair<vector<int>, vector<int> > >::iterator i = 
+	_node_array_bounds.find(name);
+    if (i == _node_array_bounds.end()) {
+	//Create a new entry
+	pair<vector<int>,vector<int> > ivec(lower, upper);
+	_node_array_bounds[name] = ivec;
     }
     else {
-	for (unsigned int j = 0; j < ndim; ++j) {
-	    i->second[0][j] = min(i->second[0][j], new_range.lower()[j]);
-	    i->second[1][j] = max(i->second[1][j], new_range.upper()[j]);
-      }
+	//Check against the existing entry, and modify if necessary
+	vector<int> & lbound = i->second.first;
+	vector<int> & ubound = i->second.second;
+	if (new_range.ndim(false) != lbound.size()) {
+	    CompileError(var, "Inconsistent dimensions for array", name);
+	}
+	else {
+	    for (unsigned int j = 0; j < lbound.size(); ++j) {
+		lbound[j] = min(lbound[j], lower[j]);
+		ubound[j] = max(ubound[j], upper[j]);
+	    }
+	}
     }
-  }
 }
 
 void Compiler::writeConstantData(ParseTree const *relations)
@@ -1000,17 +1017,16 @@ void Compiler::declareVariables(vector<ParseTree*> const &dec_list)
 	for (unsigned int i = 0; i < ndim; ++i) {
 	    vector<int> dim_i;
 	    if (!indexExpression(node_dec->parameters()[i], dim_i)) {
-		CompileError(node_dec, "Unable to calculate dimensions of ",
+		CompileError(node_dec, "Unable to calculate dimensions of",
 			     name);
 	    }
 	    if (dim_i.empty()) {
-		CompileError(node_dec, "NULL dimension in declaration of ",
+		CompileError(node_dec, "NULL dimension in declaration of", 
 			     name);
 	    }
 	    if (dim_i.size() != 1) {
 		CompileError(node_dec, 
-			     "Vector-valued dimension in declaration of ", 
-			     name);
+			     "Vector-valued dimension in declaration of", name);
 	    }
 	    if (dim_i[0] <= 0) {
 		CompileError(node_dec, "Non-positive dimension for node", name);
@@ -1046,20 +1062,21 @@ void Compiler::undeclaredVariables(ParseTree const *prelations)
   
     // Infer the dimension of remaining nodes from the relations
     traverseTree(prelations, &Compiler::getArrayDim);
-    map<string, vector<vector<int> > >::const_iterator i = 
-	_node_array_ranges.begin(); 
-    for (; i != _node_array_ranges.end(); ++i) {
+    map<string, pair<vector<int>, vector<int> > >::const_iterator i = 
+	_node_array_bounds.begin(); 
+    for (; i != _node_array_bounds.end(); ++i) {
 	if (_model.symtab().getVariable(i->first)) {
 	    //Node already declared. Check consistency 
 	    NodeArray const * array = _model.symtab().getVariable(i->first);
 	    vector<int> const &upper = array->range().upper();
-	    if (upper.size() != i->second[1].size()) {
+	    //FIXME: How about checking that we don't have any negative indices?
+	    if (upper.size() != i->second.second.size()) {
 		string msg = "Dimension mismatch between data and model for node ";
 		msg.append(i->first);
 		throw runtime_error(msg);
 	    }
 	    for (unsigned int j = 0; j < upper.size(); ++j) {
-		if (i->second[1][j] > upper[j]) {
+		if (i->second.second[j] > upper[j]) {
 		    string msg =  string("Index out of range for node ") + i->first;
 		    throw runtime_error(msg);
 		}
@@ -1067,7 +1084,7 @@ void Compiler::undeclaredVariables(ParseTree const *prelations)
 	}
 	else {
 	    //Node not declared. Use inferred size
-	    vector<int> const &upper = i->second[1];
+	    vector<int> const &upper = i->second.second;
 	    unsigned int ndim = upper.size();
 	    vector<unsigned int> dim(ndim);
 	    for (unsigned int j = 0; j < ndim; ++j) {

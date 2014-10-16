@@ -105,6 +105,14 @@ namespace jags {
 	 * uniquely defined by its first and last elements.
 	 */
 	bool operator<(SimpleRange const &rhs) const;
+	/**
+	 * The lower bound of the Range (an alias for Range#first)
+	 */
+	inline std::vector<int> const & lower() const { return first(); };
+	/**
+	 * The upper bound of the Range (an alias for Range#last)
+	 */
+	inline std::vector<int> const & upper() const { return last(); };
     };
 
     /**
