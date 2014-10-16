@@ -12,6 +12,13 @@ New features
   arguments are the parameters of the distribution.
 * The sum and prod functions are now variadic, like their R equivalents
   and return respectively the sum and product over all arguments.
+* The sequence operator ":" can be used in any expression. If b < a then
+  a:b returns a zero-length vector.
+* The compiler gives more detailed information about the graph. In 
+  addition to printing the total number of nodes, it gives the numbers
+  of observed and unobserved stochastic nodes.
+* Vector indexing is now possible for Node arrays and arbitrary integer
+  vectors are allowed for the counter in a for loop.
 
 Bug fixes
 =========
@@ -20,6 +27,12 @@ Bug fixes
 * The ConjugateGamma sampler did not work correctly for the Chi Squared 
   distribution
 * The parser accepts form feed as a white space character
+* Fixes for lack of reproducibility (due to arbitrary ordering of
+  Nodes in a Graph) have been put in place.
+* The log-density functions for the multivariate normal (DMNorm) and
+  Wishart (DWish) distributions now return zero for non-positive
+  definite precision matrices, instead of throwing an exception. This
+  allows flexible modelling of the precision matrix.
 
 Library changes
 ===============
@@ -62,11 +75,8 @@ Library changes
 * The length of the return value of a VectorFunction and the dimension
   of the value of an ArrayFunction may now depend on the values of
   the arguments and not just the lengths/dimensions of the arguments.
-  This paves the way for the sequence operator ':' to be implemented as a
-  Function.
 * A new checkParameterDiscrete member function in the Function class
   allows Functions to check that some of the parameters are discrete.
-  As above, this will be necessary for the sequence operator ':'.
 * A new checkParameterFixed member function in the Function class
   allows Functions to check that some of the parameters have fixed
   values. This check is necessary when creating a LogicalNode from
@@ -74,12 +84,14 @@ Library changes
   values of the arguments (and not just the dimensions of the arguments).
   We can only permit this if the node has fixed length, and hence if
   the relevant arguments are fixed.
+* The Graph class has been greatly simplified.
 * The Range class now allows representation of arbitrary index ranges
   (e.g. indices that are not contiguous, nor increasing, or include
    repeats). This change is in support of vector indexing. The old Range
   class is now represented by a sub-class SimpleRange.
 * The interface of the NodeArray class is simplified. Member functions
   find and isEmpty are defunct.
+
 
 Internal changes in modules
 ===========================
