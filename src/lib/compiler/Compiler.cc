@@ -45,7 +45,6 @@ using std::min;
 using std::max;
 using std::set;
 using std::fabs;
-using std::min_element;
 using std::max_element;
 
 namespace jags {
@@ -821,15 +820,13 @@ void Compiler::getArrayDim(ParseTree const *p)
     /* 
        Called by traverseTree.
 
-       For each node array, calculates the lower and upper bounds of
-       the subset expressions on the left-and side of all
-       relations. The results are stored in the map _node_array_bounds
-       which is then used to calculate the dimensions of the node
-       arrays.
+       For each node array, calculates the upper bounds of the subset
+       expressions on the left-and side of all relations. The results
+       are stored in the map _node_array_bounds which is then used to
+       calculate the dimensions of the node arrays.
     */
 
     ParseTree const *var = p->parameters()[0];
-    string const &name = var->name();
 
     if(var->parameters().empty()) {
 	//No index expession => No info on array size
@@ -838,37 +835,27 @@ void Compiler::getArrayDim(ParseTree const *p)
 
     Range new_range = VariableSubsetRange(var);
     vector<vector<int> > const new_scope = new_range.scope();
-    vector<int> lower, upper;
+    vector<int> new_upper;
     for (unsigned int i = 0; i < new_scope.size(); ++i) {
-	lower.push_back(*min_element(new_scope[i].begin(), new_scope[i].end()));
-	upper.push_back(*max_element(new_scope[i].begin(), new_scope[i].end()));
-    }
-    
-    //Sanity check for lower bound
-    for (unsigned int i = 0; i < lower.size(); ++i) {
-	if (lower[i] <= 0) {
-	    CompileError(var, "Non-positive index in subset of", name);
-	}
+	new_upper.push_back(*max_element(new_scope[i].begin(), 
+					 new_scope[i].end()));
     }
 
-    map<string, pair<vector<int>, vector<int> > >::iterator i = 
-	_node_array_bounds.find(name);
+    string const &name = var->name();
+    map<string, vector<int> >::iterator i = _node_array_bounds.find(name);
     if (i == _node_array_bounds.end()) {
 	//Create a new entry
-	pair<vector<int>,vector<int> > ivec(lower, upper);
-	_node_array_bounds[name] = ivec;
+	_node_array_bounds[name] = new_upper;
     }
     else {
 	//Check against the existing entry, and modify if necessary
-	vector<int> & lbound = i->second.first;
-	vector<int> & ubound = i->second.second;
-	if (new_range.ndim(false) != lbound.size()) {
+	vector<int> & ubound = i->second;
+	if (new_upper.size() != ubound.size()) {
 	    CompileError(var, "Inconsistent dimensions for array", name);
 	}
 	else {
-	    for (unsigned int j = 0; j < lbound.size(); ++j) {
-		lbound[j] = min(lbound[j], lower[j]);
-		ubound[j] = max(ubound[j], upper[j]);
+	    for (unsigned int j = 0; j < ubound.size(); ++j) {
+		ubound[j] = max(ubound[j], new_upper[j]);
 	    }
 	}
     }
@@ -1041,8 +1028,9 @@ void Compiler::declareVariables(vector<ParseTree*> const &dec_list)
 void Compiler::undeclaredVariables(ParseTree const *prelations)
 {
     // Get undeclared variables from data table
-    map<string, SArray>::const_iterator p = _data_table.begin();
-    for (; p != _data_table.end(); ++p) {
+    for (map<string, SArray>::const_iterator p = _data_table.begin();
+	 p != _data_table.end(); ++p) 
+    {
 	string const &name = p->first;
 	NodeArray const *array = _model.symtab().getVariable(name);
 	if (array) {
@@ -1062,29 +1050,29 @@ void Compiler::undeclaredVariables(ParseTree const *prelations)
   
     // Infer the dimension of remaining nodes from the relations
     traverseTree(prelations, &Compiler::getArrayDim);
-    map<string, pair<vector<int>, vector<int> > >::const_iterator i = 
-	_node_array_bounds.begin(); 
+
+    map<string, vector<int> >::const_iterator i = _node_array_bounds.begin(); 
     for (; i != _node_array_bounds.end(); ++i) {
 	if (_model.symtab().getVariable(i->first)) {
-	    //Node already declared. Check consistency 
+	    //Node already declared or defined by data. Check consistency 
 	    NodeArray const * array = _model.symtab().getVariable(i->first);
 	    vector<int> const &upper = array->range().upper();
-	    //FIXME: How about checking that we don't have any negative indices?
-	    if (upper.size() != i->second.second.size()) {
-		string msg = "Dimension mismatch between data and model for node ";
+	    if (upper.size() != i->second.size()) {
+		string msg = "Dimension mismatch for node ";
 		msg.append(i->first);
 		throw runtime_error(msg);
 	    }
 	    for (unsigned int j = 0; j < upper.size(); ++j) {
-		if (i->second.second[j] > upper[j]) {
-		    string msg =  string("Index out of range for node ") + i->first;
+		if (i->second[j] <= 0 || i->second[j] > upper[j]) {
+		    string msg =  string("Index out of range for node ") + 
+			i->first;
 		    throw runtime_error(msg);
 		}
 	    } 
 	}
 	else {
 	    //Node not declared. Use inferred size
-	    vector<int> const &upper = i->second.second;
+	    vector<int> const &upper = i->second;
 	    unsigned int ndim = upper.size();
 	    vector<unsigned int> dim(ndim);
 	    for (unsigned int j = 0; j < ndim; ++j) {

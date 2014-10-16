@@ -44,7 +44,7 @@ class Compiler {
   LogicalFactory _logicalfactory;
   MixtureFactory _mixfactory1;
   MixtureFactory _mixfactory2;
-  std::map<std::string, std::pair<std::vector<int>, std::vector<int> > > _node_array_bounds;
+  std::map<std::string, std::vector<int> > _node_array_bounds;
 
   Node *getArraySubset(ParseTree const *t);
   Range VariableSubsetRange(ParseTree const *var);
