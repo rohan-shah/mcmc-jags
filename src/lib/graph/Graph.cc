@@ -24,36 +24,5 @@ namespace jags {
     {
 	return find(const_cast<Node*>(node)) != end();
     }
-
-    bool Graph::isClosed() const
-    {
-	//Determine whether any nodes in the graph have children or
-	//parents outside the graph 
-
-	for (iterator i = begin(); i != end(); i++) {
-    
-	    // Check parents
-	    vector<Node const *> const &parents = (*i)->parents();
-	    for (vector<Node const *>::const_iterator j = parents.begin(); 
-		 j != parents.end(); j++) 
-	    {
-		if (!contains(*j)) return false;
-	    }
-
-	    // Check children
-	    set<StochasticNode*> const *sch = (*i)->stochasticChildren();
-	    for (set<StochasticNode*>::iterator k = sch->begin(); k != sch->end(); k++)
-	    {
-		if (!contains(*k)) return false;
-	    }
-
-	    set<DeterministicNode*> const *dch = (*i)->deterministicChildren();
-	    for (set<DeterministicNode*>::iterator k = dch->begin(); k != dch->end(); k++)
-	    {
-		if (!contains(*k)) return false;
-	    }
-	}
-	return true;
-    }
-
+ 
 }

@@ -28,11 +28,6 @@ public:
    * Checks to see whether the node is contained in the Graph.
    */
   bool contains(Node const *node) const;
-  /**
-   * Checks if the parents and children of every node in the
-   * graph are also contained in the graph.
-   */
-  bool isClosed() const;
 };
 
 } /* namespace jags */

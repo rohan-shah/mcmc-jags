@@ -45,6 +45,45 @@ using std::find;
 
 namespace jags {
 
+static bool checkClosure(vector<Node*> const &nodes) 
+{
+    // Determine whether a model is closed, i.e. that the nodes in
+    // the model do not have any parents or children outside the model.
+
+    set<Node const *> graph;
+    for (unsigned int i = 0; i < nodes.size(); ++i) {
+	graph.insert(nodes[i]);
+    }
+
+    for (vector<Node*>::const_iterator i = nodes.begin(); i != nodes.end(); 
+	 i++) 
+    {
+	// Check parents
+	vector<Node const *> const &parents = (*i)->parents();
+	for (vector<Node const *>::const_iterator j = parents.begin(); 
+	     j != parents.end(); j++) 
+	{
+	    if (graph.find(*j) == graph.end()) return false;
+	}
+
+	// Check children
+	set<StochasticNode*> const *sch = (*i)->stochasticChildren();
+	for (set<StochasticNode*>::iterator k = sch->begin(); 
+	     k != sch->end(); k++)
+	{
+	    if (graph.find(*k) == graph.end()) return false;
+	}
+	
+	set<DeterministicNode*> const *dch = (*i)->deterministicChildren();
+	for (set<DeterministicNode*>::iterator k = dch->begin(); 
+	     k != dch->end(); k++)
+	{
+	    if (graph.find(*k) == graph.end()) return false;
+	}
+    }
+    return true;
+}
+
 Model::Model(unsigned int nchain)
     : _samplers(0), _nchain(nchain), _rng(nchain, 0), _iteration(0),
       _is_initialized(false), _adapt(false), _data_gen(false)
@@ -122,15 +161,8 @@ void Model::initialize(bool datagen)
     if (_is_initialized)
 	throw logic_error("Model already initialized");
 
-    /*
-      FIXME This is the only place Graph::isClosed is called. It
-      would be better to check validity of nodes as they are inserted
-      into the model, i.e. no children and all its parents are in 
-      the model
-
-    if (!_graph.isClosed())
+    if (!checkClosure(_nodes))
 	throw runtime_error("Graph not closed");
-    */
 
     // Choose random number generators
     chooseRNGs();
