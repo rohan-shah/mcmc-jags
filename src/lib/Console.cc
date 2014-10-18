@@ -98,24 +98,21 @@ Console::~Console()
     }
 }
 
-static void getVariableNames(ParseTree const *ptree, set<string> &names,
-			     vector<string> &counterstack)
+static void getVariableNames(ParseTree const *ptree, set<string> &nameset,
+			     vector<string> &namelist, 
+			     vector<string> &counters)
 {
     /* 
        Get variables from model, ensuring that we ignore counters.
-       
     */
 
     if (ptree->treeClass() == P_VAR) {
-	bool is_counter = false;
-	for (unsigned int i = 0; i < counterstack.size(); ++i) {
-	    if (ptree->name() == counterstack[i]) {
-		is_counter = true;
-		break;
+	string const &var = ptree->name();
+	if (find(counters.begin(), counters.end(), var) == counters.end()) {
+	    if (nameset.count(var) == 0) {
+		nameset.insert(var);
+		namelist.push_back(var);
 	    }
-	}
-	if (!is_counter) {
-	    names.insert(ptree->name());
 	}
     }
 
@@ -123,26 +120,22 @@ static void getVariableNames(ParseTree const *ptree, set<string> &names,
     for (vector<ParseTree*>::const_iterator p = param.begin(); 
 	 p != param.end(); ++p) 
     {  
-	ParseTree *counter;
+	//ParseTree objects of type P_BOUND can have null parameters
+	if (*p == 0) continue;
       
-	if (*p) {
-	    //ParseTree objects of type P_BOUND can have null parameters
-	    switch ((*p)->treeClass()) {
-	    case P_FOR:
-		counter = (*p)->parameters()[0];
-                for (unsigned int i = 0; i < counter->parameters().size(); ++i)
-                {
-                    getVariableNames(counter->parameters()[i], names,
-                                     counterstack);
-                }
-		counterstack.push_back(counter->name());
-		getVariableNames((*p)->parameters()[1], names, counterstack);
-		counterstack.pop_back();
-		break;
-	    default:
-		getVariableNames(*p, names, counterstack);
-		break;
+	if ((*p)->treeClass() == P_FOR) {
+	    ParseTree *counter = (*p)->parameters()[0];
+	    for (unsigned int i = 0; i < counter->parameters().size(); ++i) {
+		getVariableNames(counter->parameters()[i], nameset,
+				 namelist, counters);
 	    }
+	    counters.push_back(counter->name());
+	    getVariableNames((*p)->parameters()[1], nameset, 
+			     namelist, counters);
+	    counters.pop_back();
+	}
+	else {
+	    getVariableNames(*p, nameset, namelist, counters);
 	}
     }
 }
@@ -177,26 +170,19 @@ bool Console::checkModel(FILE *file)
     //Get names of all variables in the model
     set<string> nameset;
     vector<string> counterstack;
+    _array_names.clear();
     if (_pvariables) {
 	for (vector<ParseTree*>::const_iterator p = _pvariables->begin();
 	     p != _pvariables->end(); ++p) 
 	{
-	    getVariableNames(*p, nameset, counterstack);
+	    getVariableNames(*p, nameset, _array_names, counterstack);
 	}
     }
     if (_pdata) {
-	getVariableNames(_pdata, nameset, counterstack);
+	getVariableNames(_pdata, nameset, _array_names, counterstack);
     }
     if (_prelations) {
-	getVariableNames(_prelations, nameset, counterstack);
-    }
-
-    _array_names.clear();
-    _array_names.reserve(nameset.size());
-    for (set<string>::const_iterator p = nameset.begin(); p != nameset.end();
-	 ++p)
-    {
-	_array_names.push_back(*p);
+	getVariableNames(_prelations, nameset, _array_names, counterstack);
     }
 
     return true;

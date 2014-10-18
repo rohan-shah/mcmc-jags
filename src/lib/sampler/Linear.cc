@@ -44,8 +44,11 @@ bool checkLinear(GraphView const *gv, bool fixed, bool link)
 	else if (link && isLink(dn[j])) {
 	    // A link function is allowed if no other deterministic
 	    // nodes in the GraphView depend on it.
+	    set<DeterministicNode*> dset;
+	    dset.insert(dn[j]->deterministicChildren()->begin(),
+			dn[j]->deterministicChildren()->end());
 	    for (unsigned int k = j + 1; k < dn.size(); ++k) {
-		if (dn[j]->deterministicChildren()->count(dn[k])) {
+		if (dset.count(dn[k])) {
 		    return false;
 		}
 	    }

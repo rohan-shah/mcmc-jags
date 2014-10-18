@@ -12,11 +12,13 @@
 #include <string>
 #include <stdexcept>
 #include <cmath>
+#include <set>
 
 using std::vector;
 using std::string;
 using std::runtime_error;
 using std::logic_error;
+using std::set;
 
 namespace jags {
 
@@ -80,9 +82,14 @@ StochasticNode::StochasticNode(vector<unsigned int> const &dim,
 	}
     }
 
-
+    //Insert the current node as a child in all its parents
+    //taking care to avoid repeats
+    set<Node const*> pset;
     for (unsigned int i = 0; i < parents().size(); ++i) {
-	parents()[i]->addChild(this);
+	Node const *p = parents()[i];
+	if (pset.insert(p).second) {
+	    p->addChild(this);
+	}
     }
 
 }

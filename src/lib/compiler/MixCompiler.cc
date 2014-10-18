@@ -44,6 +44,7 @@
 #include <set>
 #include <climits>
 #include <algorithm>
+#include <list>
 
 using std::vector;
 using std::pair;
@@ -54,6 +55,7 @@ using std::set;
 using std::map;
 using std::copy;
 using std::reverse;
+using std::list;
 
 namespace jags {
 
@@ -118,10 +120,10 @@ static bool hasDescendant(DeterministicNode *node,
 	dnodes.push_back(node);
 	return true;
     }
-
+    
     bool ans = false;
-    set<DeterministicNode*> const *dc = node->deterministicChildren();
-    for(set<DeterministicNode*>::const_iterator p = dc->begin();
+    list<DeterministicNode*> const *dc = node->deterministicChildren();
+    for(list<DeterministicNode*>::const_iterator p = dc->begin();
 	p != dc->end(); ++p)
     {
 	if (hasDescendant(*p, target_nodes, dnodes, known_dnodes)) {
@@ -166,9 +168,9 @@ static bool findStochasticIndices(vector<Node const *> const &tgt_nodes,
 	    }
 
 	    bool ans = false;
-	    set<DeterministicNode*> const *dc = 
+	    list<DeterministicNode*> const *dc = 
 		snodes[i]->deterministicChildren();
-	    for(set<DeterministicNode*>::const_iterator p = dc->begin();
+	    for(list<DeterministicNode*>::const_iterator p = dc->begin();
 		p != dc->end(); ++p)
 	    {
 		if (hasDescendant(*p, tgt_set, dtrm_parents, known_dnodes)) {

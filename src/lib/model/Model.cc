@@ -67,15 +67,15 @@ static bool checkClosure(vector<Node*> const &nodes)
 	}
 
 	// Check children
-	set<StochasticNode*> const *sch = (*i)->stochasticChildren();
-	for (set<StochasticNode*>::iterator k = sch->begin(); 
+	list<StochasticNode*> const *sch = (*i)->stochasticChildren();
+	for (list<StochasticNode*>::const_iterator k = sch->begin(); 
 	     k != sch->end(); k++)
 	{
 	    if (graph.find(*k) == graph.end()) return false;
 	}
 	
-	set<DeterministicNode*> const *dch = (*i)->deterministicChildren();
-	for (set<DeterministicNode*>::iterator k = dch->begin(); 
+	list<DeterministicNode*> const *dch = (*i)->deterministicChildren();
+	for (list<DeterministicNode*>::const_iterator k = dch->begin(); 
 	     k != dch->end(); k++)
 	{
 	    if (graph.find(*k) == graph.end()) return false;

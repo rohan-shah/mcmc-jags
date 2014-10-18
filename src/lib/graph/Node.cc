@@ -7,12 +7,12 @@
 #include <stdexcept>
 #include <algorithm>
 
-using std::set;
 using std::string;
 using std::vector;
 using std::logic_error;
 using std::copy;
 using std::find;
+using std::list;
 
 namespace jags {
 
@@ -34,8 +34,8 @@ Node::Node(vector<unsigned int> const &dim, unsigned int nchain)
 	_data[i] = JAGS_NA;
     }
 
-    _dtrm_children = new set<DeterministicNode*>;
-    _stoch_children = new set<StochasticNode*>;
+    _dtrm_children = new list<DeterministicNode*>;
+    _stoch_children = new list<StochasticNode*>;
 }
 
 Node::Node(vector<unsigned int> const &dim, 
@@ -54,8 +54,8 @@ Node::Node(vector<unsigned int> const &dim,
 	_data[i] = JAGS_NA;
     }
   
-    _stoch_children = new set<StochasticNode*>;
-    _dtrm_children = new set<DeterministicNode*>;
+    _stoch_children = new list<StochasticNode*>;
+    _dtrm_children = new list<DeterministicNode*>;
 }
 
 Node::~Node()
@@ -70,12 +70,12 @@ vector <Node const *> const &Node::parents() const
     return _parents;
 }
 
-set<StochasticNode*> const *Node::stochasticChildren() 
+list<StochasticNode*> const *Node::stochasticChildren() 
 {
     return _stoch_children;
 }
 
-set<DeterministicNode*> const *Node::deterministicChildren() 
+list<DeterministicNode*> const *Node::deterministicChildren() 
 {
     return _dtrm_children;
 }
@@ -148,18 +148,6 @@ void Node::swapValue(unsigned int chain1, unsigned int chain2)
     }
 }
 
-/*
-bool Node::isDiscreteValued() const
-{
-    return _isdiscrete;
-}
-
-void Node::setDiscreteValued()
-{
-    _isdiscrete = true;
-}
-*/
-
 double const *Node::value(unsigned int chain) const
 {
     return _data + chain * _length;
@@ -177,22 +165,30 @@ unsigned int Node::length() const
 
 void Node::addChild(DeterministicNode *node) const
 {
-    _dtrm_children->insert(node);
+    _dtrm_children->push_back(node);
 }
 
 void Node::addChild(StochasticNode *node) const
 {
-    _stoch_children->insert(node);
+    _stoch_children->push_back(node);
 }
 
 void Node::removeChild(DeterministicNode *node) const
 {
-    _dtrm_children->erase(node);
+    list<DeterministicNode*>::iterator p = 
+	find(_dtrm_children->begin(), _dtrm_children->end(), node);
+    if (p != _dtrm_children->end()) {
+	_dtrm_children->erase(p);
+    }
 }
 
 void Node::removeChild(StochasticNode *node) const
 {
-    _stoch_children->erase(node);
+    list<StochasticNode*>::iterator p = 
+	find(_stoch_children->begin(), _stoch_children->end(), node);
+    if (p != _stoch_children->end()) {
+	_stoch_children->erase(p);
+    }
 }
 
 } //namespace jags

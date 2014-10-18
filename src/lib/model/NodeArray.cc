@@ -23,22 +23,22 @@ using std::logic_error;
 using std::set;
 using std::numeric_limits;
 
-/* Returns true if the target range has any repeated indices */
 
 static bool hasRepeats(jags::Range const &target_range) 
 {
+    /* Returns true if the target range has any repeated indices 
+
+       We choose the vectorized version of set::insert as it is
+       amortized linear time in the length of the index vector
+       scope[i] if the indices are in increasing order, which should
+       be true most of the time.
+    */
+    
     vector<vector<int> > const &scope = target_range.scope();
     for (unsigned int i = 0; i < scope.size(); ++i) {
-	if (scope[i].size() > 1) {
-	    set<int> seen;
-	    set<int>::iterator p = seen.insert(scope[i][0]).first;
-	    for (unsigned int j = 1; j < scope[i].size(); ++j) {
-		p = seen.insert(p, scope[i][j]);
-	    }
-	    if (seen.size() < scope[i].size()) {
-		return true;
-	    }
-	}
+	set<int> seen;
+	seen.insert(scope[i].begin(), scope[i].end());
+	if (seen.size() != scope[i].size()) return true;
     }
     return false;
 }

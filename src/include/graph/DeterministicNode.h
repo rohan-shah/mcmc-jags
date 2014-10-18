@@ -3,6 +3,8 @@
 
 #include <graph/Node.h>
 
+#include <set>
+
 namespace jags {
 
 /**

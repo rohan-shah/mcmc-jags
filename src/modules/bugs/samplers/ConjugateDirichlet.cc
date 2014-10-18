@@ -24,6 +24,7 @@ using std::string;
 using std::copy;
 using std::map;
 using std::pair;
+using std::list;
 
 namespace jags {
 
@@ -294,8 +295,7 @@ namespace jags {
 		case CAT:
 		    break;
 		case MULTI:
-		    if (gv.isDependent(param[1]))
-			return false;
+		    if (gv.isDependent(param[1])) return false;
 		    break;
 		default:
 		    return false;
@@ -343,10 +343,10 @@ namespace jags {
 		gv->deterministicChildren();
 	    for (unsigned int d = 0; d < dchild.size(); ++d) {
 	
-		set<StochasticNode *> const *dc = 
+		list<StochasticNode *> const *dc = 
 		    dchild[d]->stochasticChildren();
 
-		for (set<StochasticNode *>::const_iterator q = dc->begin(); 
+		for (list<StochasticNode *>::const_iterator q = dc->begin(); 
 		     q != dc->end(); ++q) 
 		{
 		    map<StochasticNode const *,int>::iterator r = smap.find(*q);

@@ -1,7 +1,7 @@
 #ifndef NODE_H_
 #define NODE_H_
 
-#include <set>
+#include <list>
 #include <vector>
 #include <string>
 
@@ -29,8 +29,8 @@ enum RVStatus {RV_FALSE, RV_TRUE_UNOBSERVED, RV_TRUE_OBSERVED};
  */
 class Node {
     std::vector<Node const *> _parents;
-    std::set<StochasticNode*> *_stoch_children;
-    std::set<DeterministicNode *> *_dtrm_children;
+    std::list<StochasticNode*> *_stoch_children;
+    std::list<DeterministicNode *> *_dtrm_children;
 
     /* Forbid copying of Node objects */
     Node(Node const &orig);
@@ -42,6 +42,8 @@ protected:
     const unsigned int _nchain;
     double *_data;
     unsigned int _index;
+
+
 public:
     /**
      * Constucts a Node with no parents.
@@ -91,11 +93,11 @@ public:
     /**
      * Returns the stochastic children of the node
      */
-    std::set<StochasticNode*> const *stochasticChildren();
+    std::list<StochasticNode*> const *stochasticChildren();
     /**
      * Returns the deterministic children of the node
      */
-    std::set<DeterministicNode*> const *deterministicChildren();
+    std::list<DeterministicNode*> const *deterministicChildren();
     /**
      * Initializes the node for the given chain. The value array of a
      * newly constructed Node consists of missing values (denoted by
@@ -158,6 +160,7 @@ public:
      * Swaps the values in the given chains
      */
     void swapValue(unsigned int chain1, unsigned int chain2);
+
     void addChild(StochasticNode *node) const;
     void removeChild(StochasticNode *node) const;
     void addChild(DeterministicNode *node) const;

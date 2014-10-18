@@ -14,7 +14,6 @@
 #include <algorithm>
 
 using std::list;
-using std::set;
 using std::vector;
 using std::string;
 
@@ -23,7 +22,7 @@ namespace bugs {
 
 static StochasticNode const *getDSumChild(StochasticNode *node)
 {
-    set<StochasticNode*>::const_iterator p;
+    list<StochasticNode*>::const_iterator p;
     for (p = node->stochasticChildren()->begin(); 
 	 p != node->stochasticChildren()->end(); ++p) 
     {

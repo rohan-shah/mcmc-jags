@@ -2,6 +2,7 @@
 #include <graph/DeterministicNode.h>
 
 using std::vector;
+using std::set;
 
 namespace jags {
 
@@ -10,8 +11,13 @@ DeterministicNode::DeterministicNode(vector<unsigned int> const &dim,
     : Node(dim, parents), _fixed(true)
 {
     //Add this node as a deterministic child of its parents
+    //taking care to avoid repeats
+    set<Node const*> pset;
     for (unsigned int i = 0; i < parents.size(); ++i) {
-	parents[i]->addChild(this);
+	Node const *p = parents[i];
+	if (pset.insert(p).second) {
+	    p->addChild(this);
+	}
     }
 
     //Deterministic nodes are not fixed if any parents are not fixed
