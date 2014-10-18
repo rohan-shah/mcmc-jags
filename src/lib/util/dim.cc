@@ -8,30 +8,18 @@ using std::set;
 
 namespace jags {
 
-vector<unsigned int> const &getUnique(vector<unsigned int> const &dim)
-{
-    static set<vector<unsigned int> > _dimset;
-    set<vector<unsigned int> >::const_iterator p = _dimset.find(dim);
-    if (p == _dimset.end()) {
-	_dimset.insert(dim);
-	p = _dimset.find(dim);
+    vector<unsigned int> const &getUnique(vector<unsigned int> const &dim)
+    {
+	static set<vector<unsigned int> > _dimset;
+	return *(_dimset.insert(dim).first);
     }
-    return *p;
-}
 
-vector<vector<unsigned int> > const &
-getUnique(vector<vector<unsigned int> > const &dimvec)
-{
-    static set<vector<vector<unsigned int> > > _dimvecset;
-    set<vector<vector<unsigned int> > >::const_iterator p = 
-       _dimvecset.find(dimvec);
-    if (p == _dimvecset.end()) {
-	_dimvecset.insert(dimvec);
-	p = _dimvecset.find(dimvec);
+    vector<vector<unsigned int> > const &
+    getUnique(vector<vector<unsigned int> > const &dimvec)
+    {
+	static set<vector<vector<unsigned int> > > _dimvecset;
+	return *(_dimvecset.insert(dimvec).first);
     }
-    return *p;
-    
-}
 
 unsigned int product(vector<unsigned int> const &x)
 {

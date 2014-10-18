@@ -23,7 +23,7 @@ inline bool isScalar(std::vector<unsigned int> const &dim)
 /**
  * Tests whether the dimension represented by the vector "dim"
  * corresponds to a vector quantity.
-
+ *
  * Note that isScalar, isVector, and isArray are mutually exclusive.
  */
 inline bool isVector(std::vector<unsigned int> const &dim)
@@ -33,7 +33,7 @@ inline bool isVector(std::vector<unsigned int> const &dim)
 
 /**
  * Tests whether the dimension represented by the vector "dim"
- * corresponds to an array.
+ * corresponds to a matrix or higher-dimensional array.
  *
  * Note that isScalar, isVector, and isArray are mutually exclusive.
  */
@@ -62,8 +62,8 @@ inline bool isSquareMatrix(std::vector<unsigned int> const &dim)
 
 /**
  * Returns the product of the elements of a vector. The most common
- * usage of this function in the JAGS library is to calculate the
- * number of elements in an array, given its dimensions.
+ * usage of this function is to calculate the number of elements in an
+ * array, given its dimensions.
  */
 unsigned int product(std::vector<unsigned int> const &arg);
 
