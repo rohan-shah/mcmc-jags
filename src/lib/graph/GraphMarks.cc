@@ -18,6 +18,28 @@ using std::list;
 
 namespace jags {
 
+
+    /* 
+       This is a helper class for the markAncestors member function. A
+       GMIterator moves across a vector of Nodes. A dereferencing
+       operator and a prefix increment operator are provided so that
+       it behaves like an STL iterator.
+
+       Unlike an STL iterator, however, a GMIterator stores its end
+       position.  The atEnd member function can be used to test
+       whether the iterator has moved beyond the last element of the
+       vector.
+    */
+    class GMIterator {
+	vector<Node const*>::const_iterator _begin, _end;
+    public:
+	GMIterator(vector<Node const*> const &v)
+	    : _begin(v.begin()), _end(v.end()) {}
+	inline Node const * operator*() const { return *_begin; }
+	inline bool atEnd() const { return _begin == _end; }
+	inline void operator++() { ++_begin; }
+    };
+
 GraphMarks::GraphMarks(Graph const &graph)
     : _graph(graph)
 {
@@ -110,45 +132,51 @@ GraphMarks::markParents(Node const *node, bool (*test)(Node const *), int m)
 void GraphMarks::markAncestors(vector<Node const *> const &nodes, int m)
 {
     set<Node const*> visited; //visited nodes
-    list<Node const*> marked; //marked nodes
+    vector<Node const*> ancestors; //ancestor nodes
+    
+    /* 
+       Do a depth-first search of the graph to find all the ancestors
+       of the given Nodes in the graph. The set "visited" keeps track
+       of previously visited nodes for efficiency. Ancestors are
+       pushed back on to the vector "ancestors" in the order they are
+       found.
 
-    vector<vector<Node const*>::const_iterator> begin(1, nodes.begin());
-    vector<vector<Node const*>::const_iterator> end(1, nodes.end());
+       We could do this with a recursive helper function, but it is
+       safer to iterate. So we keep our own stack of GMIterators to
+       record the current position on the graph.
 
-    while (!begin.empty()) {
+       The GMIterator class is defined above.
+    */
+  
+    vector<GMIterator> stack;
+    stack.push_back(GMIterator(nodes));
 
-	for (vector<Node const*>::const_iterator &i = begin.back();
-	     i != end.back(); ++i) 
-	    {
-	    
-		Node const *inode = *i;
-		if (visited.count(inode) == 0 && _graph.contains(inode)) {
-		    visited.insert(inode);
-		    marked.push_back(inode);
-		    begin.push_back(inode->parents().begin());
-		    end.push_back(inode->parents().end());
-		    break;
-		}
+    while (!stack.empty()) {
+
+	for (GMIterator &p = stack.back(); !p.atEnd(); ++p) {
+	    if (visited.count(*p) == 0 && _graph.contains(*p)) {
+		visited.insert(*p);
+		ancestors.push_back(*p);
+		stack.push_back(GMIterator((*p)->parents()));
+		break;
 	    }
-
-	if (begin.back() == end.back()) {
-	    begin.pop_back();
-	    end.pop_back();
+	}
+	
+	if (stack.back().atEnd()) {
+	    stack.pop_back();
 	}
     }
 
-    /* 
-       When inserting a large number of nodes into the map, it is
-       more efficient to insert them in order, as we get a hint
-       about the correct placement from the last insertion
-    */
-    marked.sort();
-    list<Node const*>::const_iterator p = marked.begin();
-    map<Node const*,int>::iterator q = 
-	_marks.insert(pair<Node const*const,int>(*p,m)).first;
-    
-    for(++p; p != marked.end(); ++p) {
-	q = _marks.insert(q, pair<Node const*const,int>(*p,m));
+    /* Now set the marks of all ancestors */
+    for(vector<Node const*>::const_iterator p = ancestors.begin();
+	p != ancestors.end(); ++p)
+    {
+	if (m == 0) {
+	    _marks.erase(*p);
+	}
+	else {
+	    _marks[*p] = m;
+	}
     }
 
 }
