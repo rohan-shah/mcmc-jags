@@ -4,7 +4,7 @@
 \usepackage{url}
 \usepackage{multirow}
 \usepackage{amsfonts}
-\newcommand{\release}{3.3.0}
+\newcommand{\release}{3.4.0}
 \newcommand{\JAGS}{\textsf{JAGS}}
 \newcommand{\BUGS}{\textsf{BUGS}}
 \newcommand{\WinBUGS}{\textsf{WinBUGS}}
@@ -352,22 +352,23 @@ years.  Two major transitions in compiler tools have been made between
 OS 10.6 and 10.9: firstly a change from gcc to clang compilers, and
 secondly a move from the libstdc++ to libc++ standard library.  As of
 Mac OS 10.7, Apple has provided a free Xcode application from the Mac
-App Store, which is a fairly large download but contains a full set of
-compilers and other development tools.  A command line utility
-\code{xcode-select} is also available for installation of compilers, but
-this does not install some of the libraries necessary to build \JAGS.
-The instructions that follow assume you are running OS 10.9 or later,
-and have the free Xcode application from the Mac App Store.
+App Store, which is a fairly large download but contains libraries
+necessary to install \JAGS. The command line compilers are installed
+separately using the \code{xcode-select} command line utility.  The 
+instructions that follow assume you are running OS 10.9 or later, and 
+have the free Xcode application from the Mac App Store.
 
 \subsection{Required tools}
 
 If you wish to build from a released source package i.e.
-\file{JAGS-\release.tar.gz}, you will need Xcode.  You will also need to
-agree to the Xcode agreement before using the compilers (if you have not
+\file{JAGS-\release.tar.gz}, you will need Xcode from the Mac App Store
+as described above.  You will also need to install command line compilers
+and agree to the Xcode agreement before using them (if you have not
 done so already). The easiest way to do this is using the Terminal
 application from \file{/Applications/Utilities} - opening the
 application gives you a terminal with a UNIX shell known as bash.  Run
-the command \code{sudo xcodebuild -license} (or simply \code{sudo clang -v}) 
+the command \code{xcode-select --install} on the terminal and follow the
+instructions.  Then run the command \code{sudo xcodebuild -license} 
 on the terminal, and follow the instructions to agree to the Apple
 license terms (an administrators password is required).  You will then
 need to install the gfortran package which you can find by following the
@@ -384,11 +385,11 @@ included within Xcode.
 Move the downloaded \file{JAGS-X.X.X.tar.gz} package to some suitable
 working space on your disk and double click the file.  This will
 decompress the package to give a folder called \file{JAGS-X.X.X}, where
-`X.X.X' is the version number.  You now need to open the Terminal and
+`X.X.X' is the version number.  You now need to re-open the Terminal and
 change the working directory to the \JAGS\ source code. In the Terminal
-window after the \$ prompt type 'cd' followed by a space.  In the Finder
+window after the \$ prompt type \code{cd} followed by a space.  In the Finder
 drag JAGS-X.X.X folder into the Terminal window and hit return.  If this
-worked for you, typing 'ls' followed by a return will list the contents
+worked for you, typing \code{ls} followed by a return will list the contents
 of the JAGS folder.
 
 
