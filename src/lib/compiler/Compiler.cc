@@ -774,7 +774,14 @@ void Compiler::allocate(ParseTree const *rel)
 	if (!array) {
 	    //Undeclared array. Its size is inferred from the dimensions of
 	    //the newly created node
-	    symtab.addVariable(var->name(), node->dim());
+	    vector<unsigned int> const &dim = node->dim();
+	    for (unsigned int i = 0; i < dim.size(); ++i) {
+		if (dim[i] == 0) {
+		    CompileError(var, "Zero dimension for variable " +
+				 var->name());
+		}
+	    }
+	    symtab.addVariable(var->name(), dim);
 	    array = symtab.getVariable(var->name());
 	    array->insert(node, array->range());
 	}
@@ -1058,26 +1065,26 @@ void Compiler::undeclaredVariables(ParseTree const *prelations)
 	    NodeArray const * array = _model.symtab().getVariable(i->first);
 	    vector<int> const &upper = array->range().upper();
 	    if (upper.size() != i->second.size()) {
-		string msg = "Dimension mismatch for node ";
+		string msg = "Dimension mismatch for variable ";
 		msg.append(i->first);
 		throw runtime_error(msg);
 	    }
 	    for (unsigned int j = 0; j < upper.size(); ++j) {
 		if (i->second[j] <= 0 || i->second[j] > upper[j]) {
-		    string msg =  string("Index out of range for node ") + 
+		    string msg =  string("Index out of range for variable ") + 
 			i->first;
 		    throw runtime_error(msg);
 		}
 	    } 
 	}
 	else {
-	    //Node not declared. Use inferred size
+	    //Variable not declared. Use inferred size
 	    vector<int> const &upper = i->second;
 	    unsigned int ndim = upper.size();
 	    vector<unsigned int> dim(ndim);
 	    for (unsigned int j = 0; j < ndim; ++j) {
 		if (upper[j] <= 0) {
-		    string msg = string("Invalid index for node ") + i->first;
+		    string msg = string("Invalid dimension for ") + i->first;
 		    throw runtime_error(msg);
 		}
 		else {

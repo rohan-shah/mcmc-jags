@@ -36,17 +36,17 @@ unsigned int product(vector<unsigned int> const &x)
 vector<unsigned int> drop(vector<unsigned int> const &dims)
 {
     vector<unsigned int> ans;
-    bool nonempty = false;
+    bool empty = true;
     for (unsigned int i = 0; i < dims.size(); ++i) {
 	if (dims[i] != 0) {
-	    nonempty = true;
+	    empty = false;
 	}
-	if (dims[i] > 1) {
+	if (dims[i] != 1) {
 	    ans.push_back(dims[i]);
 	}
     }
-    if (ans.empty() && nonempty) {
-	ans.push_back(1);
+    if (ans.empty() && !empty) {
+	ans.push_back(1U);
     }
 
     return ans;

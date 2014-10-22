@@ -1,6 +1,6 @@
 #include <config.h>
 #include <graph/ScalarLogicalNode.h>
-#include <function/FuncError.h>
+#include <graph/NodeError.h>
 #include <function/ScalarFunction.h>
 #include <graph/GraphMarks.h>
 #include <graph/Graph.h>
@@ -27,8 +27,15 @@ ScalarLogicalNode::ScalarLogicalNode(ScalarFunction const *function,
 	throw logic_error("NULL function in ScalarLogicalNode constructor");
     }
     for (unsigned int j = 0; j < parameters.size(); ++j) {
-	if (!isScalar(parameters[j]->dim())) {
-	    throw FuncError(function, "Invalid parameter dims");
+	if (isFlat(parameters[j]->dim())) {
+	    string msg("Invalid zero-length parameter to function ");
+	    msg.append(function->name());
+	    throw NodeError(parameters[j], msg);
+	}
+	else if (!isScalar(parameters[j]->dim())) {
+	    string msg("Invalid non-scalar parameter to function ");
+	    msg.append(function->name());
+	    throw NodeError(parameters[j], msg);
 	}
     }
 

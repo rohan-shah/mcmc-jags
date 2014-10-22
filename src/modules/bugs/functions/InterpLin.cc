@@ -46,7 +46,7 @@ namespace bugs {
     bool InterpLin::checkParameterLength(vector<unsigned int> const &lengths)
 	const
     {
-	return (lengths[0] == 1) && (lengths[1] == lengths[2]);
+	return lengths[0] == 1 && lengths[1] == 1 && lengths[1] == lengths[2];
     }
 
     bool 

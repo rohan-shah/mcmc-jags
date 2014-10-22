@@ -39,7 +39,7 @@ bool DInterval::isDiscreteValued(vector<bool> const &mask) const
 
 bool DInterval::checkParameterLength(vector<unsigned int> const &lengths) const
 {
-    return lengths[0] == 1;
+    return lengths[0] == 1 && lengths[1] >= 1;
 }
 
 bool DInterval::checkParameterValue(vector<double const *> const &par,

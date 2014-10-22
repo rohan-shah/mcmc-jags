@@ -29,7 +29,7 @@ namespace bugs {
     bool DIntervalFunc::checkParameterLength (vector<unsigned int> const &args)
 	const
     {
-	return args[0] == 1;
+	return args[0] == 1 && args[1] >= 1;
     }
     
     bool DIntervalFunc::isDiscreteValued(vector<bool> const &mask) const

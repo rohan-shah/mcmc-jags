@@ -118,7 +118,7 @@ bool DCat::isSupportFixed(vector<bool> const &fixmask) const
 
 bool DCat::checkParameterLength(vector<unsigned int> const &lengths) const
 {
-    return true;
+    return NCAT(lengths) > 0;
 }
 
 unsigned int DCat::length(vector<unsigned int> const &lengths) const

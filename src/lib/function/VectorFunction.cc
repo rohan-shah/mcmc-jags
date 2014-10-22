@@ -21,6 +21,9 @@ VectorFunction::checkParameterValue(vector<double const *> const &args,
 bool 
 VectorFunction::checkParameterLength(vector<unsigned int> const &arglen) const
 {
+    for (unsigned int i = 0; i < arglen.size(); ++i) {
+	if (arglen[i] == 0) return false;
+    }
     return true;
 }
 

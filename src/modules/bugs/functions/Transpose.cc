@@ -1,4 +1,5 @@
 #include <config.h>
+#include <util/dim.h>
 
 #include "Transpose.h"
 
@@ -38,7 +39,7 @@ namespace bugs {
     Transpose::checkParameterDim (vector <vector<unsigned int> > const &dims) 
 	const
     {
-	return dims[0].size() == 1 || dims[0].size() == 2;
+	return isScalar(dims[0]) || isVector(dims[0]) || isMatrix(dims[0]);
     }
 
     bool Transpose::isScale(vector<bool> const &mask,

@@ -1,7 +1,9 @@
 #include <config.h>
 #include <util/logical.h>
 #include <util/nainf.h>
+#include <util/dim.h>
 #include <module/ModuleError.h>
+
 #include "DSum.h"
 
 #include <cfloat>
@@ -87,6 +89,8 @@ bool DSum::checkParameterValue(vector<double const *> const &params,
 
 bool DSum::checkParameterDim (vector<vector<unsigned int> > const &dims) const
 {
+    if (dims.empty()) return false;
+    if (isFlat(dims[0])) return false;
     for (unsigned int i = 1; i < dims.size(); ++i) {
 	if (dims[i] != dims[0])
 	    return false;

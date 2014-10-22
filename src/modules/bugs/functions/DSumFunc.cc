@@ -35,9 +35,10 @@ namespace bugs {
     bool 
     DSumFunc::checkParameterDim(vector<vector<unsigned int> > const &dims) const
     {
-	for (unsigned int i = 1; i < dims.size(); ++i) {
-	    if (dims[i] != dims[0])
-		return false;
+	if (dims.empty()) return false;
+	if (isFlat(dims[0])) return false;
+	for (unsigned int j = 1; j < dims.size(); ++j) {
+	    if (dims[j] != dims[0]) return false;
 	}
 	return true;
     }

@@ -20,7 +20,6 @@ namespace bugs {
 	Mean ();
 	double evaluate(std::vector<double const *> const &args,
 			std::vector<unsigned int> const &dims) const;
-	bool checkParameterLength (std::vector<unsigned int> const &len) const;
 	bool isScale(std::vector<bool> const &mask,
 		     std::vector<bool> const &fix) const;
     };

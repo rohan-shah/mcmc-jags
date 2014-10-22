@@ -3,6 +3,7 @@
 #include <model/Model.h>
 #include <graph/Node.h>
 #include <util/nainf.h>
+#include <util/dim.h>
 
 #include <string>
 #include <stdexcept>
@@ -34,15 +35,20 @@ SymTab::~SymTab() {
 
 void SymTab::addVariable(string const &name, vector<unsigned int> const &dim)
 {
-  if (_varTable.find(name) != _varTable.end()) {
-    string msg("Name ");
-    msg.append(name);
-    msg.append(" already in use in symbol table");
-    throw runtime_error(msg);
-  }
+    if (_varTable.find(name) != _varTable.end()) {
+	string msg("Name ");
+	msg.append(name);
+	msg.append(" already in use in symbol table");
+	throw runtime_error(msg);
+    }
 
-  NodeArray *array = new NodeArray(name, dim, _model->nchain());
-  _varTable[name] = array;
+    if (isFlat(dim)) {
+	string msg = string("Cannot create variable ") + name + 
+	    " with zero dimension";
+	throw runtime_error(msg);
+    }
+    NodeArray *array = new NodeArray(name, dim, _model->nchain());
+    _varTable[name] = array;
 }
 
 NodeArray* SymTab::getVariable(string const &name) const

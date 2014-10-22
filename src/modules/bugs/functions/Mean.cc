@@ -22,11 +22,6 @@ namespace bugs {
 	return svalue;
     }
 
-    bool Mean::checkParameterLength (vector<unsigned int> const &lengths) const
-    {
-	return true;
-    }
-
     bool Mean::isScale(vector<bool> const &mask, vector<bool> const &fix) const
     {
 	return true;
