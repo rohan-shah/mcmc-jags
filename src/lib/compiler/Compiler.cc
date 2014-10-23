@@ -639,7 +639,7 @@ Node * Compiler::allocateStochastic(ParseTree const *stoch_relation)
 	else if (nmissing != 0) {
 	    delete [] this_data;
 	    CompileError(var, var->name() + print(target_range),
-			 "has missing values");
+			 "is partly observed and partly missing");
 	}
     }
 
