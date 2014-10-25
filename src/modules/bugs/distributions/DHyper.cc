@@ -14,6 +14,7 @@
 #include <algorithm>
 #include <vector>
 #include <stdexcept>
+#include <cfloat>
 
 #include <JRmath.h>
 
@@ -322,6 +323,7 @@ double DHyper::p(double x, vector<double const *> const &parameters, bool lower,
 double DHyper::q(double p, vector<double const *> const &parameters, bool lower,
                bool log_p) const
 {
+    double tol = 64 * DBL_EPSILON;
     int n1,n2,m1;
     double psi;
     getParameters(n1, n2, m1, psi, parameters);
@@ -339,7 +341,7 @@ double DHyper::q(double p, vector<double const *> const &parameters, bool lower,
     double sumpi = 0;
     for (int i = ll; i < uu; ++i) {
 	sumpi += pi[i - ll];
-	if (sumpi >= p) {
+	if (sumpi > p - tol) {
 	    return i;
 	}
     }
