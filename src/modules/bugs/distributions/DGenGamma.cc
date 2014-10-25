@@ -34,7 +34,7 @@ DGenGamma::DGenGamma()
 
 string DGenGamma::alias() const
 {
-    return "gengamma";
+    return "dggamma";
 }
 
 bool DGenGamma::checkParameterValue (vector<double const *> const &par) const

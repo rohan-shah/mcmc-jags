@@ -19,6 +19,8 @@ New features
   of observed and unobserved stochastic nodes.
 * Vector indexing is now possible for Node arrays and arbitrary integer
   vectors are allowed for the counter in a for loop.
+* The generalized gamma distribution dgen.gamma now has alias "dggamma"
+  for compatibility with OpenBUGS.
 
 Bug fixes
 =========
