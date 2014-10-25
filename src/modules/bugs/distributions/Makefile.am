@@ -16,3 +16,9 @@ DSum.h DWeib.h DBeta.h DChisqr.h DExp.h DInterval.h DMNorm.h		\
 DNegBin.h DPar.h DT.h DWish.h DBin.h DDexp.h DGamma.h DLnorm.h		\
 DNorm.h DPois.h DUnif.h DMT.h DGenGamma.h DF.h DNChisqr.h DRound.h
 
+### Test library 
+
+check_LTLIBRARIES = libbugsdisttest.la
+libbugsdisttest_la_SOURCES = testbugsdist.cc testbugsdist.h
+libbugsdisttest_la_CPPFLAGS = -I$(top_srcdir)/src/include
+libbugsdisttest_la_CXXFLAGS = $(CPPUNIT_CFLAGS)

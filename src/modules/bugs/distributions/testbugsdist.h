@@ -1,0 +1,60 @@
+#ifndef BUGS_DIST_TEST_H
+#define BUGS_DIST_TEST_H
+
+namespace jags {
+    class RScalarDist;
+    class ScalarDist;
+    class VectorDist;
+    class ArrayDist;
+    class Distribution;
+}
+
+#include <cppunit/extensions/HelperMacros.h>
+#include <testlib.h>
+
+class BugsDistTest : public CppUnit::TestFixture, public JAGSFixture
+{
+
+    CPPUNIT_TEST_SUITE( BugsDistTest );
+    CPPUNIT_TEST( npar );
+    CPPUNIT_TEST_SUITE_END(  );
+
+    jags::ScalarDist *_dbern;
+    jags::RScalarDist *_dbeta;
+    jags::RScalarDist *_dbin;
+    jags::VectorDist *_dcat;
+    jags::RScalarDist *_dchisqr;
+    jags::VectorDist *_ddirch;
+    jags::RScalarDist *_dexp;
+    jags::RScalarDist *_df;
+    jags::RScalarDist *_dgamma;
+    jags::RScalarDist *_dgengamma;
+    jags::RScalarDist *_dhyper;
+    jags::VectorDist *_dnterval;    
+    jags::RScalarDist *_dlnorm;
+    jags::RScalarDist *_dlogis;
+    jags::ArrayDist *_dmnorm;
+    jags::ArrayDist *_dmt;
+    jags::VectorDist *_dmulti;
+    jags::RScalarDist *_dnchisqr;
+    jags::RScalarDist *_dnegbin;
+    jags::RScalarDist *_dnorm;
+    jags::RScalarDist *_dpar;
+    jags::RScalarDist *_dpois;
+    jags::ScalarDist *_dround;
+    jags::ArrayDist *_dsum;
+    jags::RScalarDist *_dt;
+    jags::ScalarDist *_dunif;
+    jags::RScalarDist *_dweib;
+    jags::ArrayDist *_dwish;
+
+  public:
+    void setUp();
+    void tearDown();
+
+    void npar();
+    void name();
+    void alias();
+};
+
+#endif /* BUGS_DIST_TEST_H */
