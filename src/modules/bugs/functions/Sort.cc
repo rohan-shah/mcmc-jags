@@ -4,6 +4,7 @@
 #include <algorithm>
 
 #include <util/dim.h>
+#include <util/logical.h>
 
 using std::vector;
 using std::sort;
@@ -33,14 +34,7 @@ namespace bugs {
 
     bool Sort::isDiscreteValued(vector<bool> const &mask) const
     {
-#ifdef _RWSTD_NO_CLASS_PARTIAL_SPEC
-//workaround for Solaris libCstd
-        int n = 0; 
-        count(mask.begin(), mask.end(), false, n);
-        return n == 0;
-#else
-	return count(mask.begin(), mask.end(), false) == 0;
-#endif
+	return allTrue(mask);
     }
 
 }}

@@ -14,6 +14,7 @@
 #include "Not.h"
 #include "Or.h"
 #include "Pow.h"
+#include "Seq.h"
 #include "Subtract.h"
 
 #include <function/testfun.h>
@@ -45,9 +46,9 @@ void BaseFunTest::setUp()
     _not = new jags::base::Not;
     _or = new jags::base::Or;
     _pow = new jags::base::Pow;
+    _seq = new jags::base::Seq;
     _subtract = new jags::base::Subtract;
 }
-
 
 void BaseFunTest::tearDown()
 {
@@ -65,6 +66,7 @@ void BaseFunTest::tearDown()
     delete _not;
     delete _or;
     delete _pow;
+    delete _seq;
     delete _subtract;
 }
 
@@ -87,6 +89,7 @@ void BaseFunTest::name()
     CPPUNIT_ASSERT_EQUAL(string("||"), _or->name());
     CPPUNIT_ASSERT_EQUAL(string("^"), _pow->name());
     CPPUNIT_ASSERT_EQUAL(string("-"), _subtract->name());
+    CPPUNIT_ASSERT_EQUAL(string(":"), _seq->name());
 }
 
 void BaseFunTest::alias()
@@ -106,6 +109,7 @@ void BaseFunTest::alias()
     CPPUNIT_ASSERT_EQUAL(string(""), _not->alias());
     CPPUNIT_ASSERT_EQUAL(string(""), _or->alias());
     CPPUNIT_ASSERT_EQUAL(string(""), _subtract->alias());
+    CPPUNIT_ASSERT_EQUAL(string(""), _seq->alias());
     CPPUNIT_ASSERT_EQUAL(string("pow"), _pow->alias());
 }
 
@@ -182,6 +186,7 @@ void BaseFunTest::logical1()
 
     CPPUNIT_ASSERT_EQUAL(1.0, eval(_not, 0));
     CPPUNIT_ASSERT_EQUAL(0.0, eval(_not, 1));
+    //Any non-zero value should be interpreted as TRUE
     CPPUNIT_ASSERT_EQUAL(0.0, eval(_not, 2));
     CPPUNIT_ASSERT_EQUAL(0.0, eval(_not, -0.5));
 }
@@ -276,7 +281,9 @@ void BaseFunTest::discrete()
     CPPUNIT_ASSERT(isdiscrete(_divide, 2, never));
     CPPUNIT_ASSERT(isdiscrete(_subtract, 2, all));
 
+    CPPUNIT_ASSERT(isdiscrete(_seq, 2, always));
     CPPUNIT_ASSERT(isdiscrete(_pow, 2, never));
+
 }
 
 void BaseFunTest::slp()
@@ -293,15 +300,11 @@ void BaseFunTest::slp()
     CPPUNIT_ASSERT(neverslp(_neq, 2));
     CPPUNIT_ASSERT(neverslp(_not, 1));
     CPPUNIT_ASSERT(neverslp(_or, 2));
+    CPPUNIT_ASSERT(neverslp(_seq, 2));
 }
 
 void BaseFunTest::linear()
 {
-    vector<bool> FF(2); FF[0] = false; FF[1] = false;
-    vector<bool> FT(2); FT[0] = false; FT[1] = true;
-    vector<bool> TF(2); TF[0] = true; TF[1] = false;
-    vector<bool> TT(2); TT[0] = true; TT[1] = true;
-
     CPPUNIT_ASSERT(_add->isLinear(TT, vector<bool>()));
     CPPUNIT_ASSERT(_add->isLinear(TF, vector<bool>()));
     CPPUNIT_ASSERT(_add->isLinear(FT, vector<bool>()));
@@ -328,7 +331,7 @@ void BaseFunTest::linear()
     CPPUNIT_ASSERT(_multiply->isLinear(TF, vector<bool>()));
     CPPUNIT_ASSERT(_multiply->isLinear(TF, FT));
     CPPUNIT_ASSERT(_multiply->isLinear(FT, TF));
-
+    
     CPPUNIT_ASSERT(neverlinear(_pow, 2));
 }
 
@@ -377,4 +380,21 @@ void BaseFunTest::power()
     CPPUNIT_ASSERT(_pow->isPower(TF, vector<bool>()));
     CPPUNIT_ASSERT(_pow->isPower(TF, FT));
     CPPUNIT_ASSERT(!_pow->isPower(FT, vector<bool>()));
+}
+
+void BaseFunTest::seq()
+{
+    CPPUNIT_ASSERT(checkparlen(_seq, 1, 1));
+
+    for (int i = -5; i < 6; ++i) {
+	for (int j = -6; j < 5; ++j) {
+	    int len = (j < i) ? 0 : j - i + 1;
+	    vector<double> out = veval(_seq, i, j);
+	    CPPUNIT_ASSERT(out.size() == len);
+	    for (int k = 0; k < len; ++k) {
+		CPPUNIT_ASSERT_EQUAL(out[k], static_cast<double>(i + k));
+	    }
+	}
+    }
+				     
 }

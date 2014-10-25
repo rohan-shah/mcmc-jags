@@ -42,8 +42,8 @@ bool neverslp(jags::Function const *f, unsigned int npar);
 void checkLimits(jags::ScalarFunction const *f, double lower, double upper);
 
 //Single argument
-double eval(jags::ScalarFunction const *f, double x);
-bool checkval(jags::ScalarFunction const *f, double x);
+double eval(jags::ScalarFunction const *f, const double x);
+bool checkval(jags::ScalarFunction const *f, const double x);
 
 //Two arguments
 double eval(jags::ScalarFunction const *f, double x, double y);
@@ -68,10 +68,17 @@ bool checkparlen(jags::VectorFunction const *f, unsigned int n);
 std::vector<double> veval(jags::VectorFunction const *f, 
 			  std::vector<double> const &x, 
 			  std::vector<double> const &y);
+std::vector<double> veval(jags::VectorFunction const *f,
+			  double x, double y);
+			  
 bool checkval(jags::VectorFunction const *f, std::vector<double> const &x,
 	      std::vector<double> const &y);
 bool checkparlen(jags::VectorFunction const *f, unsigned int n1, 
 		 unsigned int n2);
+
+/* Vector functions */
+
+
 
 /* Vector functions returning a scalar */
 
@@ -85,5 +92,6 @@ double eval(jags::VectorFunction const *f, double x,
 	    std::vector<double> const &y);
 double eval(jags::VectorFunction const *f, std::vector<double> const &x, 
 	    double y);
+double eval(jags::VectorFunction const *f, double x, double y);
 
 #endif /* FUNC_TEST_H_ */

@@ -8,12 +8,12 @@
 #include "ArcTan.h"
 #include "ArcTanh.h"
 #include "CLogLog.h"
+#include "Combine.h"
 #include "Cos.h"
 #include "Cosh.h"
 #include "DIntervalFunc.h"
 #include "DRoundFunc.h"
 #include "DSumFunc.h"
-#include "Equals.h"
 #include "Exp.h"
 #include "ICLogLog.h"
 #include "IfElse.h"
@@ -118,8 +118,6 @@ void BugsFunTest::setUp()
     _dround = new jags::bugs::DRoundFunc;
     _dsum = new jags::bugs::DSumFunc;
 
-//_equals = new jags::bugs::Equals;
-
     //Sorting functions
     _order = new jags::bugs::Order;
     _rank = new jags::bugs::Rank;
@@ -130,11 +128,12 @@ void BugsFunTest::setUp()
     _logdet = new jags::bugs::LogDet;
     _matmult = new jags::bugs::MatMult;
     _transpose = new jags::bugs::Transpose;
+    _inprod = new jags::bugs::InProd;
 
     //Odds and sods
     _ifelse = new jags::bugs::IfElse;
-    _inprod = new jags::bugs::InProd;
     _interplin = new jags::bugs::InterpLin;
+    _combine = new jags::bugs::Combine;
 }
 
 void BugsFunTest::tearDown()
@@ -189,8 +188,6 @@ void BugsFunTest::tearDown()
     delete _dround;
     delete _dsum;
 
-//delete _equals 
-
     //Sorting functions
     delete _order;
     delete _rank;
@@ -206,6 +203,7 @@ void BugsFunTest::tearDown()
     //Odds and sods
     delete _ifelse;
     delete _interplin;
+    delete _combine;
 }
 
 void BugsFunTest::npar()
@@ -274,6 +272,9 @@ void BugsFunTest::npar()
     //Odds and sods
     CPPUNIT_ASSERT_EQUAL(_ifelse->npar(), 3U);
     CPPUNIT_ASSERT_EQUAL(_interplin->npar(), 3U);
+    CPPUNIT_ASSERT(checkNPar(_combine, 1));
+    CPPUNIT_ASSERT(checkNPar(_combine, 2));
+    CPPUNIT_ASSERT(checkNPar(_combine, 3));
 }
 
 void BugsFunTest::name()
@@ -342,6 +343,7 @@ void BugsFunTest::name()
     CPPUNIT_ASSERT_EQUAL(string("ifelse"), _ifelse->name());
     CPPUNIT_ASSERT_EQUAL(string("inprod"), _inprod->name());
     CPPUNIT_ASSERT_EQUAL(string("interp.lin"), _interplin->name());
+    CPPUNIT_ASSERT_EQUAL(string("c"), _combine->name());
 }
 
 void BugsFunTest::alias()
@@ -410,6 +412,7 @@ void BugsFunTest::alias()
     CPPUNIT_ASSERT_EQUAL(string(""), _ifelse->alias());
     CPPUNIT_ASSERT_EQUAL(string(""), _inprod->alias());
     CPPUNIT_ASSERT_EQUAL(string(""), _interplin->alias());
+    CPPUNIT_ASSERT_EQUAL(string(""), _combine->alias());
 }
 
 void BugsFunTest::trig(double const v)
@@ -849,6 +852,14 @@ void BugsFunTest::linear()
     CPPUNIT_ASSERT(!_ifelse->isLinear(FFT, FTF));
     CPPUNIT_ASSERT(!_ifelse->isLinear(FFT, TFF));
     CPPUNIT_ASSERT(!_ifelse->isLinear(FFT, TTF));
+
+    CPPUNIT_ASSERT(_combine->isLinear(FFT, vector<bool>()));
+    CPPUNIT_ASSERT(_combine->isLinear(FTF, vector<bool>()));
+    CPPUNIT_ASSERT(_combine->isLinear(FTT, vector<bool>()));
+    CPPUNIT_ASSERT(_combine->isLinear(TFF, vector<bool>()));
+    CPPUNIT_ASSERT(_combine->isLinear(TFT, vector<bool>()));
+    CPPUNIT_ASSERT(_combine->isLinear(TTF, vector<bool>()));
+    CPPUNIT_ASSERT(_combine->isLinear(TTT, vector<bool>()));
 }
 
 void BugsFunTest::scale()
@@ -874,6 +885,11 @@ void BugsFunTest::scale()
     CPPUNIT_ASSERT(_ifelse->isScale(FTT,  vector<bool>()));
     CPPUNIT_ASSERT(!_ifelse->isScale(FTF, vector<bool>()));
     CPPUNIT_ASSERT(!_ifelse->isScale(FFT, vector<bool>()));
+
+    CPPUNIT_ASSERT(_combine->isScale(TTT, vector<bool>()));
+    CPPUNIT_ASSERT(!_combine->isScale(TTF, vector<bool>()));
+    CPPUNIT_ASSERT(!_combine->isScale(TFT, vector<bool>()));
+    CPPUNIT_ASSERT(!_combine->isScale(FTT, vector<bool>()));
 }
 
 void BugsFunTest::power()
@@ -1084,8 +1100,6 @@ void BugsFunTest::discrete()
     CPPUNIT_ASSERT(isdiscrete(_dround, 2, never));
     CPPUNIT_ASSERT(isdiscrete(_dsum, 1, all));
 
-//CPPUNIT_ASSERT(isdiscrete(_equals 
-
     //Sorting functions
     CPPUNIT_ASSERT(isdiscrete(_order, 1, always));
     CPPUNIT_ASSERT(isdiscrete(_rank, 1, always));
@@ -1107,3 +1121,51 @@ void BugsFunTest::discrete()
 
     CPPUNIT_ASSERT(isdiscrete(_interplin, 3, never));
 }
+
+void BugsFunTest::combine() {
+
+    double x1[1] = {0};
+    double x3[3] = {7, 8, 9};
+    double x6[6] = {-10, -0.5, 0, 1.2, 3.8, 77};
+
+    vector<unsigned int> arglen1;
+    arglen1.push_back(6);
+    vector<double const*> args1(1, x6);
+    CPPUNIT_ASSERT(_combine->checkParameterLength(arglen1));
+    CPPUNIT_ASSERT_EQUAL(_combine->length(arglen1, args1), 6U);
+    vector<double> out1(6);
+    _combine->evaluate(&out1[0], args1, arglen1);
+    for (unsigned int i = 0; i < 6; ++i) {
+	CPPUNIT_ASSERT_EQUAL(out1[i], x6[i]);
+    }
+
+    vector<unsigned int> arglen2;
+    arglen2.push_back(1);
+    arglen2.push_back(3);
+    arglen2.push_back(0);
+    arglen2.push_back(3);
+    vector<double const*> args2;
+    args2.push_back(x1);
+    args2.push_back(x3);
+    args2.push_back(0);
+    args2.push_back(x3);
+    CPPUNIT_ASSERT(_combine->checkParameterLength(arglen2));
+    CPPUNIT_ASSERT_EQUAL(_combine->length(arglen2, args2), 7U);
+    vector<double> out2(7);
+    _combine->evaluate(&out2[0], args2, arglen2);
+    CPPUNIT_ASSERT_EQUAL(out2[0], x1[0]);
+    for (unsigned int i = 0; i < 3; ++i) {
+	CPPUNIT_ASSERT_EQUAL(out2[i + 1], x3[i]);
+	CPPUNIT_ASSERT_EQUAL(out2[i + 4], x3[i]);
+    }
+
+    vector<unsigned int> arglen3(1, 0);
+    vector<double const*> args3;
+    CPPUNIT_ASSERT(_combine->checkParameterLength(arglen3));
+    CPPUNIT_ASSERT_EQUAL(_combine->length(arglen3, args3), 0U);
+    double checkval = 888;
+    vector<double> out3(1,checkval);
+    _combine->evaluate(&out3[0], args3, arglen3);
+    CPPUNIT_ASSERT_EQUAL(out3[0], checkval);
+}
+

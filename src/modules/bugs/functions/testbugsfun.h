@@ -32,6 +32,7 @@ class BugsFunTest : public CppUnit::TestFixture, public JAGSFixture
     CPPUNIT_TEST( ifelse );
     CPPUNIT_TEST( interplin );
     CPPUNIT_TEST( discrete );
+    CPPUNIT_TEST( combine );
     CPPUNIT_TEST_SUITE_END();
 
     jags::ScalarFunction *_abs;
@@ -42,6 +43,7 @@ class BugsFunTest : public CppUnit::TestFixture, public JAGSFixture
     jags::ScalarFunction *_arctan;
     jags::ScalarFunction *_arctanh;
     jags::ScalarFunction *_cloglog;
+    jags::VectorFunction *_combine;
     jags::ScalarFunction *_cos;
     jags::ScalarFunction *_cosh;
     jags::VectorFunction *_dinterval;
@@ -113,6 +115,7 @@ class BugsFunTest : public CppUnit::TestFixture, public JAGSFixture
     void ifelse();
     void discrete();
     void interplin();
+    void combine();
 };
 
 #endif  // BUGS_FUN_TEST_H

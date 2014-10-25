@@ -39,6 +39,7 @@
 #include <functions/ArcTan.h>
 #include <functions/ArcTanh.h>
 #include <functions/CLogLog.h>
+#include <functions/Combine.h>
 #include <functions/Cos.h>
 #include <functions/Cosh.h>
 #include <functions/DIntervalFunc.h>
@@ -139,6 +140,7 @@ namespace bugs {
 	insert(new ArcSinh);
 	insert(new ArcTan);
 	insert(new ArcTanh);
+	insert(new Combine);
 	insert(new Cos);
 	insert(new Cosh);
 	insert(new CLogLog);

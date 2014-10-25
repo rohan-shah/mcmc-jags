@@ -6,6 +6,7 @@
 
 namespace jags {
     class ScalarFunction;
+    class VectorFunction;
 }
 
 class BaseFunTest : public CppUnit::TestFixture, public JAGSFixture
@@ -21,6 +22,7 @@ class BaseFunTest : public CppUnit::TestFixture, public JAGSFixture
     CPPUNIT_TEST( linear );
     CPPUNIT_TEST( power );
     CPPUNIT_TEST( scale );
+    CPPUNIT_TEST( seq );
     CPPUNIT_TEST_SUITE_END();
 	    
     jags::ScalarFunction *_add;
@@ -37,6 +39,7 @@ class BaseFunTest : public CppUnit::TestFixture, public JAGSFixture
     jags::ScalarFunction *_not;
     jags::ScalarFunction *_or;
     jags::ScalarFunction *_pow;
+    jags::VectorFunction *_seq;
     jags::ScalarFunction *_subtract;
 
     void arithmetic1(double);
@@ -65,6 +68,7 @@ class BaseFunTest : public CppUnit::TestFixture, public JAGSFixture
     void linear();
     void power();
     void scale();
+    void seq();
 };
 
 #endif  // BASE_FUN_TEST_H
