@@ -20,5 +20,6 @@ DNorm.h DPois.h DUnif.h DMT.h DGenGamma.h DF.h DNChisqr.h DRound.h
 
 check_LTLIBRARIES = libbugsdisttest.la
 libbugsdisttest_la_SOURCES = testbugsdist.cc testbugsdist.h
-libbugsdisttest_la_CPPFLAGS = -I$(top_srcdir)/src/include
+libbugsdisttest_la_CPPFLAGS = -I$(top_srcdir)/src/include \
+	-I$(top_srcdir)/src/modules/base/rngs
 libbugsdisttest_la_CXXFLAGS = $(CPPUNIT_CFLAGS)

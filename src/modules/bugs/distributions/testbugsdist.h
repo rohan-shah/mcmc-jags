@@ -6,7 +6,7 @@ namespace jags {
     class ScalarDist;
     class VectorDist;
     class ArrayDist;
-    class Distribution;
+    class RNG;
 }
 
 #include <cppunit/extensions/HelperMacros.h>
@@ -17,7 +17,11 @@ class BugsDistTest : public CppUnit::TestFixture, public JAGSFixture
 
     CPPUNIT_TEST_SUITE( BugsDistTest );
     CPPUNIT_TEST( npar );
+    CPPUNIT_TEST( name );
+    CPPUNIT_TEST( rscalar );
     CPPUNIT_TEST_SUITE_END(  );
+
+    jags::RNG *_rng;
 
     jags::ScalarDist *_dbern;
     jags::RScalarDist *_dbeta;
@@ -48,6 +52,9 @@ class BugsDistTest : public CppUnit::TestFixture, public JAGSFixture
     jags::RScalarDist *_dweib;
     jags::ArrayDist *_dwish;
 
+    void rscalar_rpq(jags::RScalarDist const *dist, 
+		     std::vector<double const *> const &par);
+
   public:
     void setUp();
     void tearDown();
@@ -55,6 +62,7 @@ class BugsDistTest : public CppUnit::TestFixture, public JAGSFixture
     void npar();
     void name();
     void alias();
+    void rscalar();
 };
 
 #endif /* BUGS_DIST_TEST_H */

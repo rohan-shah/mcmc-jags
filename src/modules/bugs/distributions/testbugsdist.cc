@@ -30,7 +30,17 @@
 #include "DWeib.h"
 #include "DWish.h"
 
+#include <MersenneTwisterRNG.h>
+
+using std::string;
+using std::vector;
+
+using jags::RScalarDist;
+
 void BugsDistTest::setUp() {
+
+    _rng = new jags::base::MersenneTwisterRNG(1234567, 
+					      jags::KINDERMAN_RAMAGE);
 
     _dbern = new jags::bugs::DBern();
     _dbeta = new jags::bugs::DBeta();
@@ -64,6 +74,8 @@ void BugsDistTest::setUp() {
 }
 
 void BugsDistTest::tearDown() {
+
+    delete _rng;
 
     delete _dbern;
     delete _dbeta;
@@ -133,10 +145,188 @@ void BugsDistTest::npar()
 
 void BugsDistTest::name()
 {
+    CPPUNIT_ASSERT_EQUAL(string("dbern"), _dbern->name());
+    CPPUNIT_ASSERT_EQUAL(string("dbeta"), _dbeta->name());
+    CPPUNIT_ASSERT_EQUAL(string("dbin"), _dbin->name());
+    CPPUNIT_ASSERT_EQUAL(string("dcat"), _dcat->name());
+    CPPUNIT_ASSERT_EQUAL(string("dchisqr"), _dchisqr->name());
+    CPPUNIT_ASSERT_EQUAL(string("ddirch"), _ddirch->name());
+    CPPUNIT_ASSERT_EQUAL(string("dexp"), _dexp->name());
+    CPPUNIT_ASSERT_EQUAL(string("df"), _df->name());
+    CPPUNIT_ASSERT_EQUAL(string("dgamma"), _dgamma->name());
+    CPPUNIT_ASSERT_EQUAL(string("dgen.gamma"), _dgengamma->name());
+    CPPUNIT_ASSERT_EQUAL(string("dhyper"), _dhyper->name());
+    CPPUNIT_ASSERT_EQUAL(string("dinterval"), _dnterval->name());    
+    CPPUNIT_ASSERT_EQUAL(string("dlnorm"), _dlnorm->name());
+    CPPUNIT_ASSERT_EQUAL(string("dlogis"), _dlogis->name());
+    CPPUNIT_ASSERT_EQUAL(string("dmnorm"), _dmnorm->name());
+    CPPUNIT_ASSERT_EQUAL(string("dmt"), _dmt->name());
+    CPPUNIT_ASSERT_EQUAL(string("dmulti"), _dmulti->name());
+    CPPUNIT_ASSERT_EQUAL(string("dnchisqr"), _dnchisqr->name());
+    CPPUNIT_ASSERT_EQUAL(string("dnegbin"), _dnegbin->name());
+    CPPUNIT_ASSERT_EQUAL(string("dnorm"), _dnorm->name());
+    CPPUNIT_ASSERT_EQUAL(string("dpar"), _dpar->name());
+    CPPUNIT_ASSERT_EQUAL(string("dpois"), _dpois->name());
+    CPPUNIT_ASSERT_EQUAL(string("dround"), _dround->name());
+    CPPUNIT_ASSERT_EQUAL(string("dsum"), _dsum->name());
+    CPPUNIT_ASSERT_EQUAL(string("dt"), _dt->name());
+    CPPUNIT_ASSERT_EQUAL(string("dunif"), _dunif->name());
+    CPPUNIT_ASSERT_EQUAL(string("dweib"), _dweib->name());
+    CPPUNIT_ASSERT_EQUAL(string("dwish"), _dwish->name());
 
 }
 
 void BugsDistTest::alias()
 {
+    CPPUNIT_ASSERT_EQUAL(string(""), _dbern->name());
+    CPPUNIT_ASSERT_EQUAL(string(""), _dbeta->name());
+    CPPUNIT_ASSERT_EQUAL(string("dbinom"), _dbin->name());
+    CPPUNIT_ASSERT_EQUAL(string(""), _dcat->name());
+    CPPUNIT_ASSERT_EQUAL(string("dchisq"), _dchisqr->name());
+    CPPUNIT_ASSERT_EQUAL(string("ddirich"), _ddirch->name());
+    CPPUNIT_ASSERT_EQUAL(string(""), _dexp->name());
+    CPPUNIT_ASSERT_EQUAL(string(""), _df->name());
+    CPPUNIT_ASSERT_EQUAL(string(""), _dgamma->name());
+    CPPUNIT_ASSERT_EQUAL(string("dggamma"), _dgengamma->name());
+    CPPUNIT_ASSERT_EQUAL(string(""), _dhyper->name());
+    CPPUNIT_ASSERT_EQUAL(string(""), _dnterval->name());    
+    CPPUNIT_ASSERT_EQUAL(string(""), _dlnorm->name());
+    CPPUNIT_ASSERT_EQUAL(string(""), _dlogis->name());
+    CPPUNIT_ASSERT_EQUAL(string(""), _dmnorm->name());
+    CPPUNIT_ASSERT_EQUAL(string(""), _dmt->name());
+    CPPUNIT_ASSERT_EQUAL(string("dmultinom"), _dmulti->name());
+    CPPUNIT_ASSERT_EQUAL(string("dnchisq"), _dnchisqr->name());
+    CPPUNIT_ASSERT_EQUAL(string("dnbinom"), _dnegbin->name());
+    CPPUNIT_ASSERT_EQUAL(string(""), _dnorm->name());
+    CPPUNIT_ASSERT_EQUAL(string(""), _dpar->name());
+    CPPUNIT_ASSERT_EQUAL(string(""), _dpois->name());
+    CPPUNIT_ASSERT_EQUAL(string(""), _dround->name());
+    CPPUNIT_ASSERT_EQUAL(string(""), _dsum->name());
+    CPPUNIT_ASSERT_EQUAL(string(""), _dt->name());
+    CPPUNIT_ASSERT_EQUAL(string(""), _dunif->name());
+    CPPUNIT_ASSERT_EQUAL(string(""), _dweib->name());
+    CPPUNIT_ASSERT_EQUAL(string(""), _dwish->name());
+}
+
+void BugsDistTest::rscalar_rpq(RScalarDist const *dist, 
+			       vector<double const *> const &par)
+{
+    /*
+      Simultaneous test of r, p, and q functions for distributions
+      inheriting from RScalarDist.
+    */
+    unsigned int nsim = 100;
+
+    CPPUNIT_ASSERT_MESSAGE(dist->name(), checkNPar(dist, par.size()));
+    CPPUNIT_ASSERT_MESSAGE(dist->name(), dist->checkParameterValue(par));
+
+    for (unsigned int i = 0; i < nsim; ++i) {
+	//Generate random variable from distribution
+	double y = dist->r(par, _rng);
+	//Pass to distribution function and then to distribution function
+	double p = dist->p(y, par, true, false);
+	CPPUNIT_ASSERT_MESSAGE(dist->name(), p >= 0 && p <= 1);
+	double z = dist->q(p, par, true, false);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(dist->name(), y, z, tol);
+	//Now do the same on a log scale
+	double logp = dist->p(y, par, true, true);
+	CPPUNIT_ASSERT_MESSAGE(dist->name(), logp <= 0);
+	z = dist->q(logp, par, true, true);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(dist->name(), y, z, tol);
+	//Using upper tail
+	p = dist->p(y, par, false, false);
+	CPPUNIT_ASSERT_MESSAGE(dist->name(), p >= 0 && p <= 1);
+	z = dist->q(p, par, false, false);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(dist->name(), y, z, tol);
+	//Upper tail on log scale
+	logp = dist->p(y, par, false, true);
+	CPPUNIT_ASSERT_MESSAGE(dist->name(), logp <= 0);
+	z = dist->q(logp, par, false, true);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(dist->name(), y, z, tol);
+    }
+}
+
+static vector<double const *> mkPar(double const &v1)
+{
+    vector<double const *> par;
+    par.push_back(&v1);
+    return par;
+}
+
+static vector<double const *> mkPar(double const &v1, double const &v2)
+{
+    vector<double const *> par;
+    par.push_back(&v1);
+    par.push_back(&v2);
+    return par;
+}
+
+static vector<double const *> mkPar(double const &v1, double const &v2,
+				    double const &v3)
+{
+    vector<double const *> par;
+    par.push_back(&v1);
+    par.push_back(&v2);
+    par.push_back(&v3);
+    return par;
+}
+
+static vector<double const *> mkPar(double const &v1, double const &v2,
+				    double const &v3, double const &v4)
+{
+    vector<double const *> par;
+    par.push_back(&v1);
+    par.push_back(&v2);
+    par.push_back(&v3);
+    par.push_back(&v4);
+    return par;
+}
+
+void BugsDistTest::rscalar()
+{
+    rscalar_rpq(_dbeta, mkPar(0.3, 0.5));
+    rscalar_rpq(_dbeta, mkPar(2, 6));
+    
+    rscalar_rpq(_dbin, mkPar(0.1, 10));
+    rscalar_rpq(_dbin, mkPar(0.9, 1));
+    
+    rscalar_rpq(_dchisqr, mkPar(1));
+    rscalar_rpq(_dchisqr, mkPar(2));
+    rscalar_rpq(_dchisqr, mkPar(3));
+    rscalar_rpq(_dchisqr, mkPar(10));
+
+    rscalar_rpq(_dexp, mkPar(0.1));
+    rscalar_rpq(_dexp, mkPar(7));
+
+    rscalar_rpq(_df, mkPar(1, 1));
+    rscalar_rpq(_df, mkPar(3, 7));
+
+    rscalar_rpq(_dgamma, mkPar(1, 0.1));
+    rscalar_rpq(_dgamma, mkPar(0.1, 3));
+
+    rscalar_rpq(_dgengamma, mkPar(1, 0.1, 3));
+    rscalar_rpq(_dgengamma, mkPar(0.1, 3, 0.5));
+
+    for (int i = 1; i <= 10; ++i) {
+	for (int j = 0; j <= i; ++j ) {
+	    rscalar_rpq(_dhyper, mkPar(i, i, j, 1));
+	    rscalar_rpq(_dhyper, mkPar(i, i, j, 0.5));
+	    rscalar_rpq(_dhyper, mkPar(i, i, j, 3));
+	}
+    }
+    rscalar_rpq(_dhyper, mkPar(10, 8, 7, 0.5));
+
+    rscalar_rpq(_dlnorm, mkPar(-0.5, 33));
+    rscalar_rpq(_dlogis, mkPar(-7, 0.3));
+    rscalar_rpq(_dnchisqr, mkPar(5, 1.5));
+    rscalar_rpq(_dnorm, mkPar(3, 10));
+    rscalar_rpq(_dpar, mkPar(1.3, 1));
+
+    rscalar_rpq(_dpois, mkPar(0.12));
+    rscalar_rpq(_dpois, mkPar(10.7));
+    rscalar_rpq(_dt, mkPar(18, 1.7, 1));
+    rscalar_rpq(_dt, mkPar(0, 1, 4));
+    rscalar_rpq(_dweib, mkPar(3, 10));
+    rscalar_rpq(_dweib, mkPar(0.9, 0.9));
 
 }
