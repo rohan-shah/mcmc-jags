@@ -21,6 +21,8 @@ New features
   vectors are allowed for the counter in a for loop.
 * The generalized gamma distribution dgen.gamma now has alias "dggamma"
   for compatibility with OpenBUGS.
+* The function c() has been added to the bugs module. Like the R function c()
+  it combines its arguments into a single vector.
 
 Bug fixes
 =========

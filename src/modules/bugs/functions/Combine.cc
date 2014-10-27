@@ -1,0 +1,65 @@
+#include <config.h>
+#include "Combine.h"
+
+#include <algorithm>
+#include <numeric>
+
+#include <util/dim.h>
+#include <util/logical.h>
+
+using std::vector;
+using std::copy;
+using std::accumulate;
+
+namespace jags {
+    namespace bugs {
+
+	Combine::Combine ()
+	    : VectorFunction ("c", 0)
+	{
+	}
+
+	void Combine::evaluate (double *value, 
+				vector <double const *> const &args,
+				vector<unsigned int> const &lengths) const
+	{
+	    for (unsigned int i = 0; i < args.size(); ++i) {
+		value = copy(args[i], args[i] + lengths[i], value);
+	    }
+	}
+
+	unsigned int Combine::length (vector<unsigned int> const &lens,
+				      vector<double const *> const &vals) const
+	{
+	    return accumulate(lens.begin(), lens.end(), 0U);
+	}
+
+	bool Combine::isDiscreteValued(vector<bool> const &mask) const
+	{
+	    return allTrue(mask);
+	}
+
+	bool Combine::isScale(vector<bool> const &mask, 
+			      vector<bool> const &fixed) const
+	{
+	    //The Combine function behaves like an aggregate node
+	    //and so has the same rules for preserving scale functions
+	    return allTrue(mask);
+	}
+
+	bool Combine::isLinear(vector<bool> const &mask, 
+			       vector<bool> const &fixed) const
+	{
+	    //The Combine function behaves like an aggregate node
+	    //and so has the same rules for preserving linear functions
+	    return true;
+	}
+
+	bool Combine::checkParameterLength(vector<unsigned int> const &args)
+	    const
+	{
+	    return true;
+	}
+    }
+
+}
