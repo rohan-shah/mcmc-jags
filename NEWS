@@ -37,6 +37,8 @@ Bug fixes
   Wishart (DWish) distributions now return zero for non-positive
   definite precision matrices, instead of throwing an exception. This
   allows flexible modelling of the precision matrix.
+* The Windows installer no longer allows the same version of JAGS to
+  be installed in two different locations (leading to registry problems)
 
 Library changes
 ===============
