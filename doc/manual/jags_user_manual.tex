@@ -89,6 +89,8 @@ model {
 }
 \end{verbatim}
 
+\subsubsection{Relations}
+
 Each relation defines a node in the model in terms of other nodes that
 appear on the right hand side. These are referred to as the parent
 nodes. Taken together, the nodes in the model (together with the
@@ -104,6 +106,16 @@ model. A {\em deterministic relation} (\verb+<-+) defines a
 deterministic node, the value of which is determined exactly by the
 values of its parents.
 
+\subsubsection{Parameters and arguments}
+
+Deterministic nodes do not need to be embedded in node arrays. The
+node \verb+Y[i]+ could equivalently be defined as
+\begin{verbatim}
+Y[i] ~ dnorm(alpha + beta * (x[i] - x.bar), tau)
+\end{verbatim}
+
+\subsubsection{Arrays and subsetting}
+
 Nodes defined by a relation are embedded in named arrays. Array names may
 contain letters, numbers, decimal points and underscores, but they must
 start with a letter.  The node array \verb+mu+ is a vector of length
@@ -112,19 +124,65 @@ node array \verb+alpha+ is a scalar.  \JAGS\ follows the S language
 convention that scalars are considered as vectors of length 1. Hence
 the array \verb+alpha+ contains a single node \verb+alpha[1]+.
 
-Deterministic nodes do not need to be embedded in node arrays. The
-node \verb+Y[i]+ could equivalently be defined as
+Subsets of node arrays may be obtained with expressions of the form
+\verb+alpha[e]+ where \verb+e+ is any expression that evaluates to an
+integer vector. Typically expressions of the form \verb+L:U+ are used,
+where $L$ and $U$ are integer arguments to the operator $:$. This
+creates an integer vector of length $U - L + 1$ with elements $L, L+1,
+\ldots R-1, R$.\footnote{If $L > U$ then the operator $:$ returns a
+vector of length zero, which may not be used to take array subsets}
+
+Multi-dimensional node arrays are also possible. For a two-dimensional
+array \verb+B+, the element in row $r$ and column $c$ is accessed as
+\verb+B[r,c]+. Complex subsets may be obtained with expressions of the
+form \verb+B[rows, cols]+ where \verb+rows+ is an integer vector of
+row indices and \verb+cols+ is an integer vector of column indices.
+An index expression in any dimension may be omitted, and this implies
+taking the whole range of possible indices. So if \verb+B+ is an
+$M \times N$ matrix then \verb+B[r,]+ is the whole of row $r$, and is
+equivalent to \verb+B[r,1:N]+. Likewise \verb+B[,c]+ is the whole of
+column $c$ and is equivalent to \verb+B[1:M,c]+. Finally, \verb+B[,]+
+is the whole matrix, equivalent to \verb+B[1:M,1:N]+. In this case,
+one may also simply write \verb+B+ without any square brackets. Note
+that writing \verb+B[]+ for a 2-dimensional array will result in a
+compilation error: the number of indices separated by commas within
+the square brackets must match the dimensions of the array.
+
+There are some restrictions on index expressions that are allowed on
+the left hand side of a relation. Firstly, they must be fixed, meaning
+that they must be expressed in terms of data, or constants defined in
+the model, or the index of an enclosing for loop (see below).  As
+a counter-example, the following code snippet is illegal:
 \begin{verbatim}
-Y[i] ~ dnorm(alpha + beta * (x[i] - x.bar), tau)
+   x[i] ~ dnorm(0, 1)
+     i ~ dcat(p)
 \end{verbatim}
-In this version of the model definition, the node previously defined
-as \verb+mu[i]+ still exists, but is not accessible to the user as it
-does not have a name.  This ability to hide deterministic nodes by
-embedding them in other expressions underscores an important fact:
-only the stochastic nodes in a model are really
-important. Deterministic nodes are merely a syntactically convenient
-way of describing the relations between stochastic nodes, or
-transformations of them.
+unless $i$ is observed and is supplied with the data. This restriction
+ensures that the node \verb+x[i]+ can be unambiguously referred to
+elsewhere in the model -- e.g. as a function argument or the parameter
+for a distribution -- and does not change from one iteration to
+another. Secondly, for vector-valued subsets, the same index must not
+be repeated. For example, supposed $\mu$ is a 2-vector and $T$ is a
+$2 \times 2$ matrix. Then \verb+dmnorm(mu, T)+ defines a bivariate
+normal random variable.  However, this code snippet is illegal:
+\begin{verbatim}
+   indices <- c(1,1)
+   x[indices] ~ dmnorm(mu, T)
+\end{verbatim}
+as it implies writing two different values to the same element \verb+x[1]+.
+
+\subsubsection{For loops}
+
+Node arrays can be traversed with for loops. In the linear regression
+example above, a for loop is used to define nodes \verb+Y[i]+ and
+\verb+mu[i]+ for values of $i$ ranging from $1$ to $M$.
+
+A general expression for a for loop takes the form
+\begin{verbatim}
+for (ind in exp) {
+}
+\end{verbatim}
+where 
 
 \subsection{Data}
 \label{section:data}
@@ -1657,7 +1715,7 @@ Distribution & Canonical & Alias & Same \\
 \hline
 Binomial           & dbin       & dbinom   & R   \\
 Chi-square         & dchisqr    & dchisq   & R   \\ 
-Generalized gamma  & dgen.gamma & dggamma  & OpenBUGS
+Generalized gamma  & dgen.gamma & dggamma  & OpenBUGS \\
 Negative binomial  & dnegbin    & dnbinom  & R   \\
 Weibull            & dweib      & dweibull & R   \\ 
 Dirichlet          & ddirch     & ddirich  & OpenBUGS \\
