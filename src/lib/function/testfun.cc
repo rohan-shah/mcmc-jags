@@ -292,11 +292,21 @@ veval(VectorFunction const *f, vector<double> const &x, vector<double> const &y)
 vector<double>
 veval(VectorFunction const *f, double x, double y)
 {
-    vector<double const *> arg(2);
-    arg[0] = &x;
-    arg[1] = &y;
-    vector<unsigned int> arglen(2, 1);
-    return checkVEval(f, arg, arglen);
+    return veval(f, mkVec(x), mkVec(y));
+}
+
+//Evaluate a VectorFunction that takes two arguments, the first is a scalar
+vector<double>
+veval(VectorFunction const *f, double x, vector<double> const &y)
+{
+    return veval(f, mkVec(x), y);
+}
+
+//Evaluate a VectorFunction that takes two arguments, the second is a scalar
+vector<double>
+veval(VectorFunction const *f, vector<double> const &x, double y)
+{
+    return veval(f, x, mkVec(y));
 }
 
 /*
@@ -331,7 +341,7 @@ double eval(VectorFunction const *f, double x, vector<double> const &y)
 
 /*
   Evaluate a VectorFunction that takes two arguments and returns a
-  scalar. The first argument is also a scalar
+  scalar. The second argument is also a scalar
 */
 double eval(VectorFunction const *f, vector<double> const &x, double y)
 {

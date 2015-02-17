@@ -61,6 +61,14 @@ std::vector<double> mkVec(double const *x, unsigned int N);
 //Single argument
 std::vector<double> veval(jags::VectorFunction const *f, 
 			  std::vector<double> const &x);
+
+//Template version that takes static array as argument
+template<size_t N>
+std::vector<double> veval(jags::VectorFunction const *f, double (&x)[N])
+{
+    return veval(f, mkVec(x, N));
+}
+
 bool checkval(jags::VectorFunction const *f, std::vector<double> const &x);
 bool checkparlen(jags::VectorFunction const *f, unsigned int n);
 
@@ -70,14 +78,39 @@ std::vector<double> veval(jags::VectorFunction const *f,
 			  std::vector<double> const &y);
 std::vector<double> veval(jags::VectorFunction const *f,
 			  double x, double y);
-			  
+std::vector<double> veval(jags::VectorFunction const *f, 
+			  std::vector<double> const &x, 
+			  double y);
+std::vector<double> veval(jags::VectorFunction const *f, 
+			  double x, 
+			  std::vector<double> const &y);
+
+//Template versions that take static arrays as arguments
+template <size_t N>
+std::vector<double> veval(jags::VectorFunction const *f,
+			  double (&x)[N], double y)
+{
+    return veval(f, mkVec(x, N), y);
+}
+
+template <size_t N>
+std::vector<double> veval(jags::VectorFunction const *f,
+			  double x, double (&y)[N])
+{
+    return veval(f, x, mkVec(y, N));
+}
+
+template <size_t N, size_t M >
+    std::vector<double> veval(jags::VectorFunction const *f,
+			      double (&x)[N], double (&y)[M])
+{
+    return veval(f, mkVec(x, N), mkVec(y, M));
+}
+
 bool checkval(jags::VectorFunction const *f, std::vector<double> const &x,
 	      std::vector<double> const &y);
 bool checkparlen(jags::VectorFunction const *f, unsigned int n1, 
 		 unsigned int n2);
-
-/* Vector functions */
-
 
 
 /* Vector functions returning a scalar */
