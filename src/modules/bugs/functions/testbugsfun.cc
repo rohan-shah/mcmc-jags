@@ -35,6 +35,7 @@
 #include "Probit.h"
 #include "Prod.h"
 #include "Rank.h"
+#include "Rep.h"
 #include "Round.h"
 #include "SD.h"
 #include "Sin.h"
@@ -54,6 +55,8 @@
 #include <util/nainf.h>
 #include <util/integer.h>
 
+#include <algorithm>
+
 using jags::checkInteger;
 using jags::LinkFunction;
 using jags::ScalarFunction;
@@ -62,6 +65,7 @@ using jags::Function;
 
 using std::vector;
 using std::string;
+using std::equal;
 
 #include <climits>
 #include <cmath>
@@ -134,6 +138,7 @@ void BugsFunTest::setUp()
     _ifelse = new jags::bugs::IfElse;
     _interplin = new jags::bugs::InterpLin;
     _combine = new jags::bugs::Combine;
+    _rep = new jags::bugs::Rep;
 }
 
 void BugsFunTest::tearDown()
@@ -204,6 +209,7 @@ void BugsFunTest::tearDown()
     delete _ifelse;
     delete _interplin;
     delete _combine;
+    delete _rep;
 }
 
 void BugsFunTest::npar()
@@ -275,6 +281,7 @@ void BugsFunTest::npar()
     CPPUNIT_ASSERT(checkNPar(_combine, 1));
     CPPUNIT_ASSERT(checkNPar(_combine, 2));
     CPPUNIT_ASSERT(checkNPar(_combine, 3));
+    CPPUNIT_ASSERT_EQUAL(_rep->npar(), 2U);
 }
 
 void BugsFunTest::name()
@@ -344,6 +351,7 @@ void BugsFunTest::name()
     CPPUNIT_ASSERT_EQUAL(string("inprod"), _inprod->name());
     CPPUNIT_ASSERT_EQUAL(string("interp.lin"), _interplin->name());
     CPPUNIT_ASSERT_EQUAL(string("c"), _combine->name());
+    CPPUNIT_ASSERT_EQUAL(string("rep"), _rep->name());
 }
 
 void BugsFunTest::alias()
@@ -413,6 +421,7 @@ void BugsFunTest::alias()
     CPPUNIT_ASSERT_EQUAL(string(""), _inprod->alias());
     CPPUNIT_ASSERT_EQUAL(string(""), _interplin->alias());
     CPPUNIT_ASSERT_EQUAL(string(""), _combine->alias());
+    CPPUNIT_ASSERT_EQUAL(string(""), _rep->alias());
 }
 
 void BugsFunTest::trig(double const v)
@@ -561,6 +570,7 @@ void BugsFunTest::link()
     link(_probit, _phi, -5.0, 5.0, 13);
 }
 
+//FIXME: turn this into a template member function
 void BugsFunTest::summary(double const *v, unsigned int N)
 {
     //Test scalar summaries of vector values;
@@ -616,23 +626,20 @@ void BugsFunTest::summary(double const *v, unsigned int N)
 
 }
 
+//FIXME: turn this into a template member function
 void BugsFunTest::summary(double const *v1, unsigned int N1,
 			  double const *v2, unsigned int N2)
 {
-    //Test variadic summary functions giving two arguments;
+    //Test variadic summary functions taking two arguments;
     vector<double> arg1 = mkVec(v1, N1);
     vector<double> arg2 = mkVec(v2, N2);
 
-    CPPUNIT_ASSERT_EQUAL(veval(_max, arg1, arg2).size(), 1UL);
-    CPPUNIT_ASSERT_EQUAL(veval(_min, arg1, arg2).size(), 1UL);
-    CPPUNIT_ASSERT_EQUAL(veval(_sum, arg1, arg2).size(), 1UL);
-
     //Calculate summaries
-    double vmax = veval(_max, arg1, arg2)[0];
-    double vmin = veval(_min, arg1, arg2)[0];
-    double vsum = veval(_sum, arg1, arg2)[0];
+    double vmax = eval(_max, arg1, arg2);
+    double vmin = eval(_min, arg1, arg2);
+    double vsum = eval(_sum, arg1, arg2);
 
-    //Check consistency of min, max, mean, sum
+    //Check consistency of min, max
     CPPUNIT_ASSERT(vmax >= vmin);
 
     //Check consistency of prod and sum on log scale
@@ -645,7 +652,7 @@ void BugsFunTest::summary(double const *v1, unsigned int N1,
 	v2exp[i] = exp(v2[i]);
     }
 
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(vsum, log(veval(_prod, v1exp, v2exp)[0]), tol);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(vsum, log(eval(_prod, v1exp, v2exp)), tol);
 }
     
 void BugsFunTest::summary()
@@ -815,6 +822,7 @@ void BugsFunTest::slp()
     CPPUNIT_ASSERT(neverslp(_logdet, 1));
 
     CPPUNIT_ASSERT(neverslp(_interplin, 3));
+    CPPUNIT_ASSERT(neverslp(_rep, 2));
 }
 
 void BugsFunTest::linear()
@@ -908,11 +916,10 @@ void BugsFunTest::power()
 void BugsFunTest::sort()
 {
     double x[8] = {-1.7, 3, 18, 2, -25, 8, 7, 0.5};
-    vector<double> arg = mkVec(&x[0], 8);
 
-    vector<double> xord = veval(_order, arg);
-    vector<double> xrank = veval(_rank, arg);
-    vector<double> xsort = veval(_sort, arg);
+    vector<double> xord = veval(_order, x);
+    vector<double> xrank = veval(_rank, x);
+    vector<double> xsort = veval(_sort, x);
     
     for (unsigned int i = 0; i < 8; ++i) {
 	unsigned int j = static_cast<unsigned int>(xord[i] - 1);
@@ -923,6 +930,8 @@ void BugsFunTest::sort()
 	CPPUNIT_ASSERT_EQUAL(x[j], xsort[i]);
 	CPPUNIT_ASSERT_EQUAL(x[i], xsort[k]);
     }
+
+    //CPPUNIT_FAIL("sort");
 }
 
 void BugsFunTest::matrix()
@@ -1120,10 +1129,17 @@ void BugsFunTest::discrete()
     CPPUNIT_ASSERT(!_ifelse->isDiscreteValued(TFF));
 
     CPPUNIT_ASSERT(isdiscrete(_interplin, 3, never));
+
+    CPPUNIT_ASSERT(_rep->isDiscreteValued(TT));
+    CPPUNIT_ASSERT(_rep->isDiscreteValued(TF));
+    CPPUNIT_ASSERT(!_rep->isDiscreteValued(FT));
+    CPPUNIT_ASSERT(!_rep->isDiscreteValued(FF));
 }
 
 void BugsFunTest::combine() {
 
+    //FIXME: Use utility functions in testfun.cc
+    
     double x1[1] = {0};
     double x3[3] = {7, 8, 9};
     double x6[6] = {-10, -0.5, 0, 1.2, 3.8, 77};
@@ -1169,3 +1185,43 @@ void BugsFunTest::combine() {
     CPPUNIT_ASSERT_EQUAL(out3[0], checkval);
 }
 
+void BugsFunTest::rep() {
+
+    double x3[3] = {7, 8, 9};
+    double x6[6] = {-10, -0.5, 0, 1.2, 3.8, 77};
+
+    double l3[3] = {1,2,3};
+    double l6[6] = {1,1,0,0,0,2};
+
+    // rep(0, 3) == c(0, 0, 0)
+    double y1[3] = {0, 0, 0};
+    vector<double> out1 = veval(_rep, 0, 3);
+    CPPUNIT_ASSERT_EQUAL(out1.size(), 3UL);
+    CPPUNIT_ASSERT(equal(out1.begin(), out1.end(), y1));
+
+    // rep(x3, 4) == c(7, 8, 9, 7, 8, 9, 7, 8, 9, 7, 8, 9)
+    double y2[12] = {7, 8, 9, 7, 8, 9, 7, 8, 9, 7, 8, 9};
+    vector<double> out2 = veval(_rep, x3, 4);
+    CPPUNIT_ASSERT_EQUAL(out2.size(), 12UL);
+    CPPUNIT_ASSERT(equal(out2.begin(), out2.end(), y2));
+    
+    // rep(x3, l3) == c(7, 8, 8, 9, 9, 9)
+    double y3[6] = {7, 8, 8, 9, 9, 9};
+    vector<double> out3 = veval(_rep, x3, l3);
+    CPPUNIT_ASSERT_EQUAL(out3.size(), 6UL);
+    CPPUNIT_ASSERT(equal(out3.begin(), out3.end(), y3));
+    
+    // rep(x6, l6) == c(-10, -0.5, 77, 77)
+    double y4[4] = {-10, -0.5, 77, 77};
+    vector<double> out4 = veval(_rep, x6, l6);
+    CPPUNIT_ASSERT_EQUAL(out4.size(), 4UL);
+    CPPUNIT_ASSERT(equal(out4.begin(), out4.end(), y4));
+
+    // rep(x3, 0) == numeric(0)
+    vector<double> out5 = veval(_rep, x3, 0);
+    CPPUNIT_ASSERT_EQUAL(out5.size(), 0UL);
+
+    //FIXME: check paramater lengths, negative times
+
+    //CPPUNIT_FAIL("rep");
+}
