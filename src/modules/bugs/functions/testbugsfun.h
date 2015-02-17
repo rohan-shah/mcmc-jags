@@ -91,6 +91,17 @@ class BugsFunTest : public CppUnit::TestFixture, public JAGSFixture
     void summary(double const *v, unsigned int N);
     void summary(double const *v1, unsigned int N1,
 		 double const *v2, unsigned int N2);
+
+    template<size_t N>
+    void summary(double const (&x)[N]) {
+	summary(x, N);
+    }
+
+    template<size_t N1, size_t N2>
+    void summary(double const (&x)[N1], double const (&y)[N2]) {
+	summary(x, N1, y, N2);
+    }
+
     void trig(double v);
     void hyper(double v);
 

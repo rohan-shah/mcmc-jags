@@ -118,6 +118,12 @@ bool checkparlen(jags::VectorFunction const *f, unsigned int n1,
 //Single argument
 double eval(jags::VectorFunction const *f, std::vector<double> const &x);
 
+template <size_t N>
+double eval(jags::VectorFunction const *f, double (&x)[N])
+{
+    return eval(f, mkVec(x, N));
+}
+
 //Two arguments
 double eval(jags::VectorFunction const *f, std::vector<double> const &x, 
 	    std::vector<double> const &y);
@@ -126,5 +132,24 @@ double eval(jags::VectorFunction const *f, double x,
 double eval(jags::VectorFunction const *f, std::vector<double> const &x, 
 	    double y);
 double eval(jags::VectorFunction const *f, double x, double y);
+
+//Template versions that take static arrays as arguments
+template <size_t N>
+double eval(jags::VectorFunction const *f, double (&x)[N], double y)
+{
+    return eval(f, mkVec(x, N), y);
+}
+
+template <size_t N>
+double eval(jags::VectorFunction const *f, double x, double (&y)[N])
+{
+    return eval(f, x, mkVec(y, N));
+}
+
+template <size_t N1, size_t N2>
+double eval(jags::VectorFunction const *f, double (&x)[N1], double (&y)[N2])
+{
+    return eval(f, mkVec(x, N1), mkVec(y, N2));
+}
 
 #endif /* FUNC_TEST_H_ */

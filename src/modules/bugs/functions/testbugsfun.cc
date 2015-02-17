@@ -570,12 +570,11 @@ void BugsFunTest::link()
     link(_probit, _phi, -5.0, 5.0, 13);
 }
 
-//FIXME: turn this into a template member function
 void BugsFunTest::summary(double const *v, unsigned int N)
 {
     //Test scalar summaries of vector values;
-    vector<double> arg = mkVec(v, N);
-
+    vector<double> const &arg = mkVec(v, N);
+    
     //Calculate summaries
     double vmax = eval(_max, arg);
     double vmin = eval(_min, arg);
@@ -590,7 +589,7 @@ void BugsFunTest::summary(double const *v, unsigned int N)
     //Negate argument and recalculate
     vector<double> negarg(N);
     for (unsigned int i = 0; i < N; ++i) {
-	negarg[i] = -v[i];
+	negarg[i] = -arg[i];
     }
 
     double negvmax = eval(_max, negarg);
@@ -609,7 +608,7 @@ void BugsFunTest::summary(double const *v, unsigned int N)
 	CPPUNIT_ASSERT(!checkparlen(_sd, N));
     }
     else {
-	double vsd = eval(_sd, mkVec(v, N));
+	double vsd = eval(_sd, arg);
 	vector<double> v2(N);
 	for (unsigned int i = 0; i < N; ++i) v2[i] = v[i]*v[i];
 	
@@ -626,14 +625,13 @@ void BugsFunTest::summary(double const *v, unsigned int N)
 
 }
 
-//FIXME: turn this into a template member function
 void BugsFunTest::summary(double const *v1, unsigned int N1,
 			  double const *v2, unsigned int N2)
 {
-    //Test variadic summary functions taking two arguments;
+    //Test variadic summary functions taking two vuments;
     vector<double> arg1 = mkVec(v1, N1);
     vector<double> arg2 = mkVec(v2, N2);
-
+    
     //Calculate summaries
     double vmax = eval(_max, arg1, arg2);
     double vmin = eval(_min, arg1, arg2);
@@ -663,25 +661,25 @@ void BugsFunTest::summary()
     double v3[2] = {-M_PI, M_PI};
     double v4[6] = {-1, 1, 2, 2, -3, -2.5};
 
-    summary(v0, 1);
-    summary(v1, 9);
-    summary(v2, 5);
-    summary(v3, 2);
-    summary(v4, 6);
+    summary(v0);
+    summary(v1);
+    summary(v2);
+    summary(v3);
+    summary(v4);
 
-    summary(v1, 9, v1, 9);
-    summary(v1, 9, v2, 5);
-    summary(v1, 9, v3, 2);
-    summary(v1, 9, v4, 6);
+    summary(v1, v1);
+    summary(v1, v2);
+    summary(v1, v3);
+    summary(v1, v4);
 
-    summary(v2, 5, v2, 5);
-    summary(v2, 5, v3, 2);
-    summary(v2, 5, v4, 6);
+    summary(v2, v2);
+    summary(v2, v3);
+    summary(v2, v4);
 
-    summary(v3, 2, v3, 2);
-    summary(v3, 2, v4, 6);
+    summary(v3, v3);
+    summary(v3, v4);
 
-    summary(v4, 6, v4, 6);
+    summary(v4, v4);
 }
 
 void BugsFunTest::math()
@@ -985,14 +983,11 @@ void BugsFunTest::inprod()
 
     CPPUNIT_ASSERT(checkparlen(_inprod, 3, 3));
     CPPUNIT_ASSERT(!checkparlen(_inprod, 3, 4));
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(-4, eval(_inprod, mkVec(x3, 3), mkVec(y3, 3)),
-				 tol);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(-4, eval(_inprod, x3, y3), tol);
 
     double x4[4] = {-1, 0, 2.7, 3};
     double y4[4] = {1, -1, 1, -1};
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(-1.3,
-				 eval(_inprod, mkVec(x4, 4), mkVec(y4, 4)),
-				 tol);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(-1.3, eval(_inprod, x4, y4), tol);
 }
 
 void BugsFunTest::interplin()
@@ -1221,7 +1216,7 @@ void BugsFunTest::rep() {
     vector<double> out5 = veval(_rep, x3, 0);
     CPPUNIT_ASSERT_EQUAL(out5.size(), 0UL);
 
-    //FIXME: check paramater lengths, negative times
-
+    //FIXME: check parameter lengths, negative times
+    
     //CPPUNIT_FAIL("rep");
 }
