@@ -10,6 +10,7 @@ namespace jags {
 
 #include <cppunit/extensions/HelperMacros.h>
 #include <testlib.h>
+#include <function/testfun.h>
 
 class BugsFunTest : public CppUnit::TestFixture, public JAGSFixture
 {
@@ -88,10 +89,19 @@ class BugsFunTest : public CppUnit::TestFixture, public JAGSFixture
 
     void link(jags::ScalarFunction const *f, jags::LinkFunction const *link,
 	      double lower, double upper, int N);
+
+
+    /*
     void summary(double const *v, unsigned int N);
     void summary(double const *v1, unsigned int N1,
 		 double const *v2, unsigned int N2);
+    */
 
+    void summary(std::vector<double> const &v);
+    void summary(std::vector<double> const &v1, std::vector<double> const &v2);
+
+
+    /*
     template<size_t N>
     void summary(double const (&x)[N]) {
 	summary(x, N);
@@ -101,7 +111,18 @@ class BugsFunTest : public CppUnit::TestFixture, public JAGSFixture
     void summary(double const (&x)[N1], double const (&y)[N2]) {
 	summary(x, N1, y, N2);
     }
+    */
+    
+    template<size_t N>
+    void summary(double const (&x)[N]) {
+	summary(mkVec(x));
+    }
 
+    template<size_t N1, size_t N2>
+    void summary(double const (&x)[N1], double const (&y)[N2]) {
+	summary(mkVec(x), mkVec(y));
+    }
+    
     void trig(double v);
     void hyper(double v);
 

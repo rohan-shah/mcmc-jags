@@ -240,17 +240,12 @@ bool checkval(ScalarFunction const *f, double x, double y, double z)
     return f->checkParameterValue(args);
 }
 
-vector<double> mkVec(double const *x, unsigned int N)
-{
-    vector<double> y(N);
-    copy(x, x + N, y.begin());
-    return y;
-}
-
+/*
 static vector<double> mkVec(double x)
 {
     return vector<double>(1, x);
 }
+*/
 
 static vector<double> checkVEval(VectorFunction const *f,
 				 vector<double const *> const &args,
@@ -288,6 +283,7 @@ veval(VectorFunction const *f, vector<double> const &x, vector<double> const &y)
     return checkVEval(f, arg, arglen);
 }
 
+/*
 //Evaluate a VectorFunction that takes two arguments, both scalars
 vector<double>
 veval(VectorFunction const *f, double x, double y)
@@ -308,6 +304,7 @@ veval(VectorFunction const *f, vector<double> const &x, double y)
 {
     return veval(f, x, mkVec(y));
 }
+*/
 
 /*
   Evaluate a VectorFunction that takes a single argument and returns a
@@ -321,6 +318,9 @@ double eval(VectorFunction const *f, vector<double> const &x)
     return y[0];
 }
 
+/*
+  Evaluate a VectorFunction that takes two arguments and returns a scalar
+*/
 double eval(VectorFunction const *f, vector<double> const &x, 
 	    vector<double> const &y)
 {
@@ -334,19 +334,23 @@ double eval(VectorFunction const *f, vector<double> const &x,
   Evaluate a VectorFunction that takes two arguments and returns a
   scalar. The first argument is also a scalar
 */
+/*
 double eval(VectorFunction const *f, double x, vector<double> const &y)
 {
     return eval(f, mkVec(x), y);
 }
+*/
 
 /*
   Evaluate a VectorFunction that takes two arguments and returns a
   scalar. The second argument is also a scalar
 */
+/*
 double eval(VectorFunction const *f, vector<double> const &x, double y)
 {
     return eval(f, x, mkVec(y));
 }
+*/
 
 /*
   Check that VectorFunction taking a single argument has valid 

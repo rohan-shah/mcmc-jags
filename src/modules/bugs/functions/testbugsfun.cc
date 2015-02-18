@@ -570,10 +570,25 @@ void BugsFunTest::link()
     link(_probit, _phi, -5.0, 5.0, 13);
 }
 
+/*
+static vector<double> mkVec(double const *v, unsigned int N)
+{
+    vector<double> y(N);
+    copy(v, v + N, y);
+    return y;
+}
+*/
+
+
+void BugsFunTest::summary(vector<double> const &arg)
+/*
 void BugsFunTest::summary(double const *v, unsigned int N)
+*/
 {
     //Test scalar summaries of vector values;
-    vector<double> const &arg = mkVec(v, N);
+    //vector<double> const &arg = mkVec(v, N);
+    vector<double> const &v = arg; //FIXME
+    unsigned int N = arg.size();
     
     //Calculate summaries
     double vmax = eval(_max, arg);
@@ -610,7 +625,7 @@ void BugsFunTest::summary(double const *v, unsigned int N)
     else {
 	double vsd = eval(_sd, arg);
 	vector<double> v2(N);
-	for (unsigned int i = 0; i < N; ++i) v2[i] = v[i]*v[i];
+	for (unsigned int i = 0; i < N; ++i) v2[i] = arg[i]*arg[i];
 	
 	double v2sum = eval(_sum, v2);
 	CPPUNIT_ASSERT_DOUBLES_EQUAL((v2sum - vsum*vmean)/(N-1), vsd*vsd, tol);
@@ -619,18 +634,28 @@ void BugsFunTest::summary(double const *v, unsigned int N)
     //Check consistency of prod and sum on log scale
     vector<double> vexp(N);
     for (unsigned int i = 0; i < N; ++i) {
-	vexp[i] = exp(v[i]);
+	vexp[i] = exp(arg[i]);
     }
     CPPUNIT_ASSERT_DOUBLES_EQUAL(vsum, log(eval(_prod, vexp)), tol);
 
 }
 
+
+void BugsFunTest::summary(vector<double> const &v1,
+			  vector<double> const &v2)
+/*
 void BugsFunTest::summary(double const *v1, unsigned int N1,
 			  double const *v2, unsigned int N2)
+*/
 {
     //Test variadic summary functions taking two vuments;
-    vector<double> arg1 = mkVec(v1, N1);
-    vector<double> arg2 = mkVec(v2, N2);
+    //vector<double> arg1 = mkVec(v1, N1);
+    //vector<double> arg2 = mkVec(v2, N2);
+
+    vector<double> const &arg1 = v1;
+    vector<double> const &arg2 = v2; //FIXME
+    unsigned int N1 = arg1.size();
+    unsigned int N2 = arg2.size();
     
     //Calculate summaries
     double vmax = eval(_max, arg1, arg2);
@@ -652,7 +677,7 @@ void BugsFunTest::summary(double const *v1, unsigned int N1,
 
     CPPUNIT_ASSERT_DOUBLES_EQUAL(vsum, log(eval(_prod, v1exp, v2exp)), tol);
 }
-    
+
 void BugsFunTest::summary()
 {
     double v0[1] = {0};
@@ -1139,17 +1164,10 @@ void BugsFunTest::combine() {
     double x3[3] = {7, 8, 9};
     double x6[6] = {-10, -0.5, 0, 1.2, 3.8, 77};
 
-    vector<unsigned int> arglen1;
-    arglen1.push_back(6);
-    vector<double const*> args1(1, x6);
-    CPPUNIT_ASSERT(_combine->checkParameterLength(arglen1));
-    CPPUNIT_ASSERT_EQUAL(_combine->length(arglen1, args1), 6U);
-    vector<double> out1(6);
-    _combine->evaluate(&out1[0], args1, arglen1);
-    for (unsigned int i = 0; i < 6; ++i) {
-	CPPUNIT_ASSERT_EQUAL(out1[i], x6[i]);
-    }
-
+    vector<double> out1 = veval(_combine, x6);
+    CPPUNIT_ASSERT_EQUAL(out1.size(), 6UL);
+    CPPUNIT_ASSERT(equal(out1.begin(), out1.end(), x6));
+    
     vector<unsigned int> arglen2;
     arglen2.push_back(1);
     arglen2.push_back(3);
@@ -1174,6 +1192,7 @@ void BugsFunTest::combine() {
     vector<double const*> args3;
     CPPUNIT_ASSERT(_combine->checkParameterLength(arglen3));
     CPPUNIT_ASSERT_EQUAL(_combine->length(arglen3, args3), 0U);
+
     double checkval = 888;
     vector<double> out3(1,checkval);
     _combine->evaluate(&out3[0], args3, arglen3);

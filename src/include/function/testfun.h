@@ -55,19 +55,81 @@ bool checkval(jags::ScalarFunction const *f, double x, double y, double z);
 
 /* Vector functions */
 
+/*
+template<typename T>
+std::vector<double> mkVec(T const &x);
+*/
+
+//template<>
+inline std::vector<double> mkVec(double const &x)
+{
+    return std::vector<double>(1, x);
+}
+
+/*
+//template<>
+std::vector<double> mkVec(int const &x)
+{
+    return std::vector<double>(1, x);
+}
+*/
+
+//template<>
+inline std::vector<double> mkVec(std::vector<double> const &x)
+{
+    return x;
+}
+
+template<size_t N>
+std::vector<double> mkVec(double const (&x)[N])
+{
+    std::vector<double> y(N);
+    copy(x, x + N, y.begin());
+    return y;
+}
+
+/*
 //Construct an STL vector from an array and the array length
-std::vector<double> mkVec(double const *x, unsigned int N);
+template<typename T>
+std::vector<T> mkVec(T const *x, unsigned int N)
+{
+    std::vector<T> y(N);
+    copy(x, x + N, y.begin());
+    return y;
+}
+
+template<typename T>
+std::vector<T> mkVec(T const &x)
+{
+    return std::vector<T>(1, x);
+}
+
+template<typename T, size_t N>
+std::vector<T> mkVec(T (&x)[N]) {
+    std::vector<T> y(N);
+    copy(x, x + N, y.begin());
+    return y;
+}
+*/
 
 //Single argument
 std::vector<double> veval(jags::VectorFunction const *f, 
 			  std::vector<double> const &x);
 
+template<typename T>
+std::vector<double> veval(jags::VectorFunction const *f, T const &x)
+{
+    return veval(f, mkVec(x));
+}
+
+/*
 //Template version that takes static array as argument
 template<size_t N>
 std::vector<double> veval(jags::VectorFunction const *f, double (&x)[N])
 {
-    return veval(f, mkVec(x, N));
+    return veval(f, mkVec(x));
 }
+*/
 
 bool checkval(jags::VectorFunction const *f, std::vector<double> const &x);
 bool checkparlen(jags::VectorFunction const *f, unsigned int n);
@@ -76,6 +138,19 @@ bool checkparlen(jags::VectorFunction const *f, unsigned int n);
 std::vector<double> veval(jags::VectorFunction const *f, 
 			  std::vector<double> const &x, 
 			  std::vector<double> const &y);
+
+/*
+FIXME: Why doesn't this work? Too demanding on the compiler?
+*/
+
+template<typename T, typename U>
+std::vector<double> veval(jags::VectorFunction const *f,
+			  T const &x, U const &y)
+{
+    return veval(f, mkVec(x), mkVec(y));
+}
+
+/*
 std::vector<double> veval(jags::VectorFunction const *f,
 			  double x, double y);
 std::vector<double> veval(jags::VectorFunction const *f, 
@@ -84,28 +159,31 @@ std::vector<double> veval(jags::VectorFunction const *f,
 std::vector<double> veval(jags::VectorFunction const *f, 
 			  double x, 
 			  std::vector<double> const &y);
+*/
 
+/*
 //Template versions that take static arrays as arguments
 template <size_t N>
 std::vector<double> veval(jags::VectorFunction const *f,
 			  double (&x)[N], double y)
 {
-    return veval(f, mkVec(x, N), y);
+    return veval(f, mkVec(x), mkVec(y));
 }
 
 template <size_t N>
 std::vector<double> veval(jags::VectorFunction const *f,
 			  double x, double (&y)[N])
 {
-    return veval(f, x, mkVec(y, N));
+    return veval(f, mkVec(x), mkVec(y));
 }
 
-template <size_t N, size_t M >
-    std::vector<double> veval(jags::VectorFunction const *f,
-			      double (&x)[N], double (&y)[M])
+template <size_t N1, size_t N2 >
+std::vector<double> veval(jags::VectorFunction const *f,
+			      double (&x)[N1], double (&y)[N2])
 {
-    return veval(f, mkVec(x, N), mkVec(y, M));
+    return veval(f, mkVec(x), mkVec(y));
 }
+*/
 
 bool checkval(jags::VectorFunction const *f, std::vector<double> const &x,
 	      std::vector<double> const &y);
@@ -118,15 +196,23 @@ bool checkparlen(jags::VectorFunction const *f, unsigned int n1,
 //Single argument
 double eval(jags::VectorFunction const *f, std::vector<double> const &x);
 
-template <size_t N>
-double eval(jags::VectorFunction const *f, double (&x)[N])
+template <typename T>
+double eval(jags::VectorFunction const *f, T const &x)
 {
-    return eval(f, mkVec(x, N));
+    return eval(f, mkVec(x));
 }
 
 //Two arguments
 double eval(jags::VectorFunction const *f, std::vector<double> const &x, 
 	    std::vector<double> const &y);
+
+template<typename T, typename U>
+double eval(jags::VectorFunction const *f, T const &x, U const &y)
+{
+    return eval(f, mkVec(x), mkVec(y));
+}
+
+/*
 double eval(jags::VectorFunction const *f, double x, 
 	    std::vector<double> const &y);
 double eval(jags::VectorFunction const *f, std::vector<double> const &x, 
@@ -137,19 +223,20 @@ double eval(jags::VectorFunction const *f, double x, double y);
 template <size_t N>
 double eval(jags::VectorFunction const *f, double (&x)[N], double y)
 {
-    return eval(f, mkVec(x, N), y);
+    return eval(f, mkVec(x), y);
 }
 
 template <size_t N>
 double eval(jags::VectorFunction const *f, double x, double (&y)[N])
 {
-    return eval(f, x, mkVec(y, N));
+    return eval(f, x, mkVec(y));
 }
 
 template <size_t N1, size_t N2>
 double eval(jags::VectorFunction const *f, double (&x)[N1], double (&y)[N2])
 {
-    return eval(f, mkVec(x, N1), mkVec(y, N2));
+    return eval(f, mkVec(x), mkVec(y));
 }
+*/
 
 #endif /* FUNC_TEST_H_ */
