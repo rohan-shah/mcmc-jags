@@ -41,13 +41,19 @@ public:
 	       std::vector <double const *> const &argvalues) const = 0;
     /**
      * Checks that the lengths of all the arguments are consistent. 
-     * The default implementation returns true.
+     * The default implementation returns true if all the arguments
+     * have non-zero length.
+     *
+     * This should be overridden by any sub-class that either has
+     * additional restrictions on the lengths of the arguments, or may
+     * allow zero-length arguments.
      */
     virtual bool 
 	checkParameterLength(std::vector<unsigned int> const &args) const;
     /**
      * Checks that the values of the arguments are in the domain of
-     * the function. The default implementation returns true.
+     * the function. The default implementation always returns true
+     * (i.e. assumes there are no restrictions on parameters).
      */
     virtual bool 
 	checkParameterValue(std::vector<double const *> const &args,

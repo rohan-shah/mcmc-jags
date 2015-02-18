@@ -129,6 +129,13 @@ bool neverslp(Function const *f, unsigned int npar)
 
 /* Scalar functions */
 
+static bool checkval(ScalarFunction const *f, double x)
+{
+    CPPUNIT_ASSERT_MESSAGE(f->name(), checkNPar(f, 1));
+    vector<double const *> arg(1, &x);
+    return f->checkParameterValue(arg);
+}
+
 void checkLimits(ScalarFunction const *f, double lower, double upper)
 {
     CPPUNIT_ASSERT(lower < upper);
@@ -164,12 +171,27 @@ void checkLimits(ScalarFunction const *f, double lower, double upper)
     }
 }
 
+static vector<bool> discreteMask(vector<double const *> const &args)
+{
+    vector<bool> out(args.size(), true);
+    
+    for (unsigned int i = 0; i < args.size(); ++i) {
+	double v = *args[i];
+	if (v != floor(v + 0.5)) {
+	    out[i] = false;
+	}
+    }
+
+    return out;
+}
+
 static double checkEval(ScalarFunction const *f,
 			vector<double const *> const &args)
 {
     //Evaluate scalar function with checks
     CPPUNIT_ASSERT_MESSAGE(f->name(), checkNPar(f, args.size()));
-    vector<unsigned int> len(args.size(), 1);
+    vector<bool> mask = discreteMask(args);
+    CPPUNIT_ASSERT_MESSAGE(f->name(), f->checkParameterDiscrete(mask));
     CPPUNIT_ASSERT_MESSAGE(f->name(), f->checkParameterValue(args));
     return f->evaluate(args);
 }
@@ -180,7 +202,7 @@ static double checkEval(ScalarFunction const *f,
 double eval(ScalarFunction const *f, const double x)
 {
     vector<double const *> arg(1, &x);
-    return f->evaluate(arg);
+    return checkEval(f, arg);
 }
 
 /* 
@@ -193,7 +215,7 @@ double eval(ScalarFunction const *f, double x, double y)
     args[0] = &x;
     args[1] = &y;
     CPPUNIT_ASSERT_MESSAGE(f->name(), f->checkParameterValue(args));
-    return f->evaluate(args);
+    return checkEval(f, args);
 }
 
 /* 
@@ -207,45 +229,26 @@ double eval(ScalarFunction const *f, double x, double y, double z)
     args[1] = &y;
     args[2] = &z;
     CPPUNIT_ASSERT_MESSAGE(f->name(), f->checkParameterValue(args));
-    return f->evaluate(args);
+    return checkEval(f, args);
 }
 
-/*
-  Check validity of argument to a scalar function that takes a single
-  scalar argument
-*/
-bool checkval(ScalarFunction const *f, double x)
+static vector<bool> discreteMask(vector<double const *> const &args,
+				 vector<unsigned int> const &arglen)
 {
-    CPPUNIT_ASSERT_MESSAGE(f->name(), checkNPar(f, 1));
-    vector<double const *> arg(1, &x);
-    return f->checkParameterValue(arg);
-}
+    vector<bool> out(args.size(), true);
+    
+    for (unsigned int i = 0; i < args.size(); ++i) {
+	double const *v = args[i];
+	for (unsigned int j = 0; j < arglen[i]; ++j) {
+	    if (v[j] != floor(v[j] + 0.5)) {
+		out[i] = false;
+		break;
+	    }
+	}
+    }
 
-bool checkval(ScalarFunction const *f, double x, double y)
-{
-    CPPUNIT_ASSERT_MESSAGE(f->name(), checkNPar(f, 2));
-    vector<double const *> args(2);
-    args[0] = &x;
-    args[1] = &y;
-    return f->checkParameterValue(args);
+    return out;
 }
-
-bool checkval(ScalarFunction const *f, double x, double y, double z)
-{
-    CPPUNIT_ASSERT_MESSAGE(f->name(), checkNPar(f, 3));
-    vector<double const *> args(3);
-    args[0] = &x;
-    args[1] = &y;
-    args[2] = &z;
-    return f->checkParameterValue(args);
-}
-
-/*
-static vector<double> mkVec(double x)
-{
-    return vector<double>(1, x);
-}
-*/
 
 static vector<double> checkVEval(VectorFunction const *f,
 				 vector<double const *> const &args,
@@ -255,6 +258,8 @@ static vector<double> checkVEval(VectorFunction const *f,
     CPPUNIT_ASSERT_EQUAL_MESSAGE(f->name(), args.size(), arglen.size());
     CPPUNIT_ASSERT_MESSAGE(f->name(), checkNPar(f, args.size()));
     CPPUNIT_ASSERT_MESSAGE(f->name(), f->checkParameterLength(arglen));
+    vector<bool> mask = discreteMask(args, arglen);
+    CPPUNIT_ASSERT_MESSAGE(f->name(), f->checkParameterDiscrete(mask));
     CPPUNIT_ASSERT_MESSAGE(f->name(), f->checkParameterValue(args, arglen));
     vector<double> ans(f->length(arglen, args));
     f->evaluate(&ans[0], args, arglen);
@@ -283,28 +288,41 @@ veval(VectorFunction const *f, vector<double> const &x, vector<double> const &y)
     return checkVEval(f, arg, arglen);
 }
 
-/*
-//Evaluate a VectorFunction that takes two arguments, both scalars
+//Evaluate a VectorFunction that takes three arguments
 vector<double>
-veval(VectorFunction const *f, double x, double y)
+veval(VectorFunction const *f, vector<double> const &x,
+      vector<double> const &y, vector<double> const &z)
 {
-    return veval(f, mkVec(x), mkVec(y));
+    vector<double const *> arg(3);
+    arg[0] = &x[0];
+    arg[1] = &y[0];
+    arg[2] = &z[0];
+    vector<unsigned int> arglen(3);
+    arglen[0] = x.size();
+    arglen[1] = y.size();
+    arglen[2] = z.size();
+    return checkVEval(f, arg, arglen);
 }
 
-//Evaluate a VectorFunction that takes two arguments, the first is a scalar
+//Evaluate a VectorFunction that takes four arguments
 vector<double>
-veval(VectorFunction const *f, double x, vector<double> const &y)
+veval(VectorFunction const *f,
+      vector<double> const &x, vector<double> const &y,
+      vector<double> const &z, vector<double> const &w)
 {
-    return veval(f, mkVec(x), y);
+    vector<double const *> arg(4);
+    arg[0] = &x[0];
+    arg[1] = &y[0];
+    arg[2] = &z[0];
+    arg[3] = &w[0];
+    vector<unsigned int> arglen(4);
+    arglen[0] = x.size();
+    arglen[1] = y.size();
+    arglen[2] = z.size();
+    arglen[3] = w.size();
+    return checkVEval(f, arg, arglen);
 }
 
-//Evaluate a VectorFunction that takes two arguments, the second is a scalar
-vector<double>
-veval(VectorFunction const *f, vector<double> const &x, double y)
-{
-    return veval(f, x, mkVec(y));
-}
-*/
 
 /*
   Evaluate a VectorFunction that takes a single argument and returns a
@@ -313,8 +331,7 @@ veval(VectorFunction const *f, vector<double> const &x, double y)
 double eval(VectorFunction const *f, vector<double> const &x)
 {
     vector<double> y = veval(f, x);
-    unsigned int N = y.size();
-    CPPUNIT_ASSERT_EQUAL(1U, N);
+    CPPUNIT_ASSERT_EQUAL(1UL, y.size());
     return y[0];
 }
 
@@ -325,53 +342,18 @@ double eval(VectorFunction const *f, vector<double> const &x,
 	    vector<double> const &y)
 {
     vector<double> z = veval(f, x, y);
-    unsigned int N = z.size();
-    CPPUNIT_ASSERT_EQUAL(1U, N);
+    CPPUNIT_ASSERT_EQUAL(1UL, z.size());
     return z[0];
 }
 
 /*
-  Evaluate a VectorFunction that takes two arguments and returns a
-  scalar. The first argument is also a scalar
+  Evaluate a VectorFunction that takes three arguments and returns a scalar
 */
-/*
-double eval(VectorFunction const *f, double x, vector<double> const &y)
+double eval(VectorFunction const *f, vector<double> const &x, 
+	    vector<double> const &y, vector<double> const &z)
 {
-    return eval(f, mkVec(x), y);
-}
-*/
-
-/*
-  Evaluate a VectorFunction that takes two arguments and returns a
-  scalar. The second argument is also a scalar
-*/
-/*
-double eval(VectorFunction const *f, vector<double> const &x, double y)
-{
-    return eval(f, x, mkVec(y));
-}
-*/
-
-/*
-  Check that VectorFunction taking a single argument has valid 
-  parameter length
-*/
-bool checkparlen(VectorFunction const *f, unsigned int n)
-{
-    vector<unsigned int> arglen(1, n);
-    CPPUNIT_ASSERT(checkNPar(f, 1));
-    return f->checkParameterLength(arglen);
+    vector<double> ans = veval(f, x, y, z);
+    CPPUNIT_ASSERT_EQUAL(1UL, ans.size());
+    return ans[0];
 }
 
-/*
-  Check that VectorFunction taking two arguments has valid 
-  parameter length
-*/
-bool checkparlen(VectorFunction const *f, unsigned int n1, unsigned int n2)
-{
-    vector<unsigned int> arglen(2);
-    arglen[0] = n1;
-    arglen[1] = n2;
-    CPPUNIT_ASSERT(checkNPar(f, 2));
-    return f->checkParameterLength(arglen);
-}

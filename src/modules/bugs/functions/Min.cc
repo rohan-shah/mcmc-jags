@@ -27,11 +27,6 @@ namespace bugs {
 	return ans;
     }
 
-    bool Min::checkParameterLength (vector<unsigned int> const &args) const
-    {
-	return true;
-    }
-
     bool Min::isDiscreteValued(vector<bool> const &mask) const
     {
 	return allTrue(mask);

@@ -139,7 +139,7 @@ void BaseFunTest::arithmetic2(double v1, double v2)
     CPPUNIT_ASSERT_DOUBLES_EQUAL(v1 * v2, eval(_multiply, v1, v2), tol);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(v1 / v2, eval(_divide, v1, v2), tol);
     if (v1 < 0 && !checkInteger(v2)) {
-	CPPUNIT_ASSERT(!checkval(_pow, v1, v2));
+	CPPUNIT_ASSERT_ASSERTION_FAIL(eval(_pow, v1, v2));
     }
     else {
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(pow(v1, v2), eval(_pow, v1, v2), tol);
@@ -384,8 +384,6 @@ void BaseFunTest::power()
 
 void BaseFunTest::seq()
 {
-    CPPUNIT_ASSERT(checkparlen(_seq, 1, 1));
-
     for (int i = -5; i < 6; ++i) {
 	for (int j = -6; j < 5; ++j) {
 	    int len = (j < i) ? 0 : j - i + 1;

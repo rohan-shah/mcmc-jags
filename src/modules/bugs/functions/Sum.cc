@@ -23,11 +23,6 @@ namespace bugs {
 	return value;
     }
 
-    bool Sum::checkParameterLength (vector<unsigned int> const &args) const
-    {
-	return true;
-    }
-
     bool Sum::isDiscreteValued(vector<bool> const &mask) const
     {
 	return allTrue(mask);

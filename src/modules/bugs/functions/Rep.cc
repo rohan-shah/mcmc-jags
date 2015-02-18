@@ -49,12 +49,16 @@ namespace jags {
 	{
 	    double const *times = args[1];
 	    unsigned int len_times  = lengths[1];
-
+	    unsigned int len_x = lengths[0];
+	    
 	    double y = 0;
-	    if (len_times == 1) {
-		y = lengths[0] * times[0];
+	    if (len_x == 0) {
+		y = 0;
 	    }
-	    else {
+	    else if (len_times == 1) {
+		y = len_x * times[0];
+	    }
+	    else if (len_x > 0){
 		y = accumulate(times, times + len_times, 0);
 	    }
 	    
@@ -63,7 +67,7 @@ namespace jags {
 
 	bool Rep::checkParameterLength(vector<unsigned int> const &len) const
 	{
-	    return (len[1] == 1) || (len[1] == len[0]);
+	    return (len[0] == 0) || (len[1] == 1) || (len[1] == len[0]);
 	}
 
         bool Rep::isDiscreteValued(vector<bool> const &mask) const

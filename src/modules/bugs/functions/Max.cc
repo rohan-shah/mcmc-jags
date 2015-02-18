@@ -27,11 +27,6 @@ namespace bugs {
 	return ans;
     }
 
-    bool Max::checkParameterLength (vector<unsigned int> const &lengths) const
-    {
-	return true;
-    }
-
     bool Max::isDiscreteValued(vector<bool> const &mask) const
     {
 	return allTrue(mask);

@@ -16,7 +16,6 @@ namespace bugs {
 	Max ();
 	double evaluate(std::vector <double const *> const &args,
 			std::vector<unsigned int> const &lengths) const;
-	bool checkParameterLength (std::vector<unsigned int> const &len) const;
 	/** Returns true if all arguments are true */
 	bool isDiscreteValued(std::vector<bool> const &mask) const;
     };

@@ -20,7 +20,6 @@ namespace bugs {
 	Sum ();
 	double evaluate(std::vector <double const *> const &args,
 			std::vector<unsigned int> const &lengths) const;
-	bool checkParameterLength(std::vector<unsigned int> const &args) const;
 	bool isDiscreteValued(std::vector<bool> const &mask) const;
 	bool isScale(std::vector<bool> const &mask,
 		     std::vector<bool> const &isfixed) const;

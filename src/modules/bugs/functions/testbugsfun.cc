@@ -570,31 +570,16 @@ void BugsFunTest::link()
     link(_probit, _phi, -5.0, 5.0, 13);
 }
 
-/*
-static vector<double> mkVec(double const *v, unsigned int N)
-{
-    vector<double> y(N);
-    copy(v, v + N, y);
-    return y;
-}
-*/
-
-
-void BugsFunTest::summary(vector<double> const &arg)
-/*
-void BugsFunTest::summary(double const *v, unsigned int N)
-*/
+void BugsFunTest::summary(vector<double> const &v)
 {
     //Test scalar summaries of vector values;
-    //vector<double> const &arg = mkVec(v, N);
-    vector<double> const &v = arg; //FIXME
-    unsigned int N = arg.size();
+    unsigned int N = v.size();
     
     //Calculate summaries
-    double vmax = eval(_max, arg);
-    double vmin = eval(_min, arg);
-    double vmean = eval(_mean, arg);
-    double vsum = eval(_sum, arg);
+    double vmax = eval(_max, v);
+    double vmin = eval(_min, v);
+    double vmean = eval(_mean, v);
+    double vsum = eval(_sum, v);
 
     //Check consistency of min, max, mean, sum
     CPPUNIT_ASSERT(vmax >= vmean);
@@ -602,15 +587,15 @@ void BugsFunTest::summary(double const *v, unsigned int N)
     CPPUNIT_ASSERT_DOUBLES_EQUAL(vsum, vmean * N, tol);
 
     //Negate argument and recalculate
-    vector<double> negarg(N);
+    vector<double> negv(N);
     for (unsigned int i = 0; i < N; ++i) {
-	negarg[i] = -arg[i];
+	negv[i] = -v[i];
     }
 
-    double negvmax = eval(_max, negarg);
-    double negvmin = eval(_min, negarg);
-    double negvmean = eval(_mean, negarg);
-    double negvsum = eval(_sum, negarg);
+    double negvmax = eval(_max, negv);
+    double negvmin = eval(_min, negv);
+    double negvmean = eval(_mean, negv);
+    double negvsum = eval(_sum, negv);
 
     //Check consistency of results for positive and negative args
     CPPUNIT_ASSERT_EQUAL(negvmax, -vmin);
@@ -619,22 +604,20 @@ void BugsFunTest::summary(double const *v, unsigned int N)
     CPPUNIT_ASSERT_EQUAL(negvsum, -vsum);
 
     //Check consistency of sd, sum, mean
-    if (N == 1) {
-	CPPUNIT_ASSERT(!checkparlen(_sd, N));
-    }
-    else {
-	double vsd = eval(_sd, arg);
+    if (N > 1) {
+	double vsd = eval(_sd, v);
 	vector<double> v2(N);
-	for (unsigned int i = 0; i < N; ++i) v2[i] = arg[i]*arg[i];
+	for (unsigned int i = 0; i < N; ++i) v2[i] = v[i]*v[i];
 	
 	double v2sum = eval(_sum, v2);
-	CPPUNIT_ASSERT_DOUBLES_EQUAL((v2sum - vsum*vmean)/(N-1), vsd*vsd, tol);
+	double sd = sqrt((v2sum - vsum*vmean)/(N-1));
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(sd, vsd, tol);
     }
 
     //Check consistency of prod and sum on log scale
     vector<double> vexp(N);
     for (unsigned int i = 0; i < N; ++i) {
-	vexp[i] = exp(arg[i]);
+	vexp[i] = exp(v[i]);
     }
     CPPUNIT_ASSERT_DOUBLES_EQUAL(vsum, log(eval(_prod, vexp)), tol);
 
@@ -643,24 +626,16 @@ void BugsFunTest::summary(double const *v, unsigned int N)
 
 void BugsFunTest::summary(vector<double> const &v1,
 			  vector<double> const &v2)
-/*
-void BugsFunTest::summary(double const *v1, unsigned int N1,
-			  double const *v2, unsigned int N2)
-*/
 {
-    //Test variadic summary functions taking two vuments;
-    //vector<double> arg1 = mkVec(v1, N1);
-    //vector<double> arg2 = mkVec(v2, N2);
+    //Test variadic summary functions taking two arguments;
 
-    vector<double> const &arg1 = v1;
-    vector<double> const &arg2 = v2; //FIXME
-    unsigned int N1 = arg1.size();
-    unsigned int N2 = arg2.size();
+    unsigned int N1 = v1.size();
+    unsigned int N2 = v2.size();
     
     //Calculate summaries
-    double vmax = eval(_max, arg1, arg2);
-    double vmin = eval(_min, arg1, arg2);
-    double vsum = eval(_sum, arg1, arg2);
+    double vmax = eval(_max, v1, v2);
+    double vmin = eval(_min, v1, v2);
+    double vsum = eval(_sum, v1, v2);
 
     //Check consistency of min, max
     CPPUNIT_ASSERT(vmax >= vmin);
@@ -686,6 +661,17 @@ void BugsFunTest::summary()
     double v3[2] = {-M_PI, M_PI};
     double v4[6] = {-1, 1, 2, 2, -3, -2.5};
 
+    //All summary functions should fail when given an empty vector
+    vector<double> x0(0);
+    CPPUNIT_ASSERT_ASSERTION_FAIL(eval(_max, x0));
+    CPPUNIT_ASSERT_ASSERTION_FAIL(eval(_min, x0));
+    CPPUNIT_ASSERT_ASSERTION_FAIL(eval(_mean, x0));
+    CPPUNIT_ASSERT_ASSERTION_FAIL(eval(_sd, x0));
+    CPPUNIT_ASSERT_ASSERTION_FAIL(eval(_sum, x0));
+    CPPUNIT_ASSERT_ASSERTION_FAIL(eval(_prod, x0));
+    //Standard deviation requires at least two elements
+    CPPUNIT_ASSERT_ASSERTION_FAIL(eval(_sd, v0));
+    
     summary(v0);
     summary(v1);
     summary(v2);
@@ -709,10 +695,12 @@ void BugsFunTest::summary()
 
 void BugsFunTest::math()
 {
-    CPPUNIT_ASSERT(!checkval(_logfact, -1));
-    CPPUNIT_ASSERT(!checkval(_loggam, -1));
-    CPPUNIT_ASSERT(!checkval(_sqrt, -1));
-    CPPUNIT_ASSERT(!checkval(_loggam, 0));
+    //Check that bad arguments are caught
+    CPPUNIT_ASSERT_ASSERTION_FAIL(eval(_logfact, -1));
+    CPPUNIT_ASSERT_ASSERTION_FAIL(eval(_logfact, -1));
+    CPPUNIT_ASSERT_ASSERTION_FAIL(eval(_loggam, -1));
+    CPPUNIT_ASSERT_ASSERTION_FAIL(eval(_sqrt, -1));
+    CPPUNIT_ASSERT_ASSERTION_FAIL(eval(_loggam, 0));
 
     CPPUNIT_ASSERT_EQUAL(0.0, eval(_logfact, 0));
     CPPUNIT_ASSERT_EQUAL(0.0, eval(_sqrt, 0));
@@ -954,6 +942,11 @@ void BugsFunTest::sort()
 	CPPUNIT_ASSERT_EQUAL(x[i], xsort[k]);
     }
 
+    vector<double> x0(0);
+    CPPUNIT_ASSERT_ASSERTION_FAIL(veval(_order, x0));
+    CPPUNIT_ASSERT_ASSERTION_FAIL(veval(_rank, x0));
+    CPPUNIT_ASSERT_ASSERTION_FAIL(veval(_sort, x0));
+    
     //CPPUNIT_FAIL("sort");
 }
 
@@ -1003,41 +996,28 @@ void BugsFunTest::matrix()
 
 void BugsFunTest::inprod()
 {
-    double x3[4] = {7, 8, 9};
-    double y3[4] = {1, 2, -3};
+    double x3[3] = {7, 8, 9};
+    double y3[3] = {1, 2, -3};
 
-    CPPUNIT_ASSERT(checkparlen(_inprod, 3, 3));
-    CPPUNIT_ASSERT(!checkparlen(_inprod, 3, 4));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(-4, eval(_inprod, x3, y3), tol);
 
     double x4[4] = {-1, 0, 2.7, 3};
     double y4[4] = {1, -1, 1, -1};
+
     CPPUNIT_ASSERT_DOUBLES_EQUAL(-1.3, eval(_inprod, x4, y4), tol);
+
+    CPPUNIT_ASSERT_ASSERTION_FAIL(eval(_inprod, x3, y4));
+    CPPUNIT_ASSERT_ASSERTION_FAIL(eval(_inprod, x4, y3));
 }
 
 void BugsFunTest::interplin()
 {
-    double c;
     double x[6] = {-10, -0.5, 0, 1.2, 3.8, 77};
     double y[6] = {-2, 3, -6.5, 8, 2.14, 7};
 
-    vector<double const *> arg(3);
-    arg[0] = &c;
-    arg[1] = x;
-    arg[2] = y;
-
-    vector<unsigned int> arglen(3);
-    arglen[0] = 1;
-    arglen[1] = 6;
-    arglen[2] = 6;
-
-    double ans;
-    CPPUNIT_ASSERT(_interplin->checkParameterLength(arglen));
-
     //Exact agreement at break points
     for (unsigned int i = 0; i < 6; ++i) {
-	c = x[i];
-	_interplin->evaluate(&ans, arg, arglen);
+	double ans = eval(_interplin, x[i], x, y);
 	CPPUNIT_ASSERT_EQUAL(y[i], ans);
     }
 
@@ -1045,26 +1025,16 @@ void BugsFunTest::interplin()
     unsigned int N = 100;
     for (unsigned int i = 0; i < 5; ++i) {
 	for (unsigned int j = 0; j <= N; ++j) {
-	    c = ((N - j) * x[i] + j * x[i + 1])/ N;
-	    CPPUNIT_ASSERT(_interplin->checkParameterValue(arg, arglen));
-	    _interplin->evaluate(&ans, arg, arglen);
+	    double c = ((N - j) * x[i] + j * x[i + 1])/ N;
+	    double ans = eval(_interplin, c, x, y);
 	    double w = ((N - j) * y[i] + j * y[i + 1])/ N;
 	    CPPUNIT_ASSERT_DOUBLES_EQUAL(w, ans, tol);
 	}
     }
 
     //Extrapolation beyond break points
-    c = JAGS_POSINF;
-    CPPUNIT_ASSERT(_interplin->checkParameterValue(arg, arglen));
-    _interplin->evaluate(&ans, arg, arglen);
-    CPPUNIT_ASSERT_EQUAL(y[5], ans);
- 
-    c = JAGS_NEGINF;
-    CPPUNIT_ASSERT(_interplin->checkParameterValue(arg, arglen));
-    _interplin->evaluate(&ans, arg, arglen);
-    CPPUNIT_ASSERT_EQUAL(y[0], ans);
-    
-    //CPPUNIT_FAIL("interplin");
+    CPPUNIT_ASSERT_EQUAL(y[5], eval(_interplin, JAGS_POSINF, x, y));
+    CPPUNIT_ASSERT_EQUAL(y[0], eval(_interplin, JAGS_NEGINF, x, y));
 }
 
 void BugsFunTest::ifelse()
@@ -1158,45 +1128,25 @@ void BugsFunTest::discrete()
 
 void BugsFunTest::combine() {
 
-    //FIXME: Use utility functions in testfun.cc
-    
-    double x1[1] = {0};
+    vector<double> x0(0);
+    double x1[1] = {-1};
     double x3[3] = {7, 8, 9};
     double x6[6] = {-10, -0.5, 0, 1.2, 3.8, 77};
 
+    //c(x6) == x6
     vector<double> out1 = veval(_combine, x6);
-    CPPUNIT_ASSERT_EQUAL(out1.size(), 6UL);
+    CPPUNIT_ASSERT_EQUAL(6UL, out1.size());
     CPPUNIT_ASSERT(equal(out1.begin(), out1.end(), x6));
-    
-    vector<unsigned int> arglen2;
-    arglen2.push_back(1);
-    arglen2.push_back(3);
-    arglen2.push_back(0);
-    arglen2.push_back(3);
-    vector<double const*> args2;
-    args2.push_back(x1);
-    args2.push_back(x3);
-    args2.push_back(0);
-    args2.push_back(x3);
-    CPPUNIT_ASSERT(_combine->checkParameterLength(arglen2));
-    CPPUNIT_ASSERT_EQUAL(_combine->length(arglen2, args2), 7U);
-    vector<double> out2(7);
-    _combine->evaluate(&out2[0], args2, arglen2);
-    CPPUNIT_ASSERT_EQUAL(out2[0], x1[0]);
-    for (unsigned int i = 0; i < 3; ++i) {
-	CPPUNIT_ASSERT_EQUAL(out2[i + 1], x3[i]);
-	CPPUNIT_ASSERT_EQUAL(out2[i + 4], x3[i]);
-    }
 
-    vector<unsigned int> arglen3(1, 0);
-    vector<double const*> args3;
-    CPPUNIT_ASSERT(_combine->checkParameterLength(arglen3));
-    CPPUNIT_ASSERT_EQUAL(_combine->length(arglen3, args3), 0U);
+    //c(x0) has size 0
+    vector<double> out2 = veval(_combine, x0);
+    CPPUNIT_ASSERT_EQUAL(0UL, out2.size());
 
-    double checkval = 888;
-    vector<double> out3(1,checkval);
-    _combine->evaluate(&out3[0], args3, arglen3);
-    CPPUNIT_ASSERT_EQUAL(out3[0], checkval);
+    //c(x1, x3, x0, x3) == c(-1, 7, 8, 9, 7, 8, 9)
+    double y3[7] = {-1, 7, 8, 9, 7, 8, 9};
+    vector<double> out3 = veval(_combine, x1, x3, x0, x3);
+    CPPUNIT_ASSERT_EQUAL(7UL, out3.size());
+    CPPUNIT_ASSERT(equal(out3.begin(), out3.end(), y3));
 }
 
 void BugsFunTest::rep() {
@@ -1233,9 +1183,31 @@ void BugsFunTest::rep() {
 
     // rep(x3, 0) == numeric(0)
     vector<double> out5 = veval(_rep, x3, 0);
-    CPPUNIT_ASSERT_EQUAL(out5.size(), 0UL);
+    CPPUNIT_ASSERT_EQUAL(0UL, out5.size());
 
-    //FIXME: check parameter lengths, negative times
+    // rep(numeric(0), numeric(0)) == numeric(0)
+    vector<double> x0(0), l0(0);
+    vector<double> out6 = veval(_rep, x0, l0);
+    CPPUNIT_ASSERT_EQUAL(0UL, out6.size());
+
+    // rep(numeric(0), 7) == numeric(0)
+    vector<double> out7 = veval(_rep, x0, 7);
+    CPPUNIT_ASSERT_EQUAL(0UL, out7.size());
+
+    // rep(numeric(0), l3) == numeric(0)
+    vector<double> out8 = veval(_rep, x0, l3);
+    CPPUNIT_ASSERT_EQUAL(0UL, out8.size());
+
+    //Check that argument length mismatches are caught
+    CPPUNIT_ASSERT_ASSERTION_FAIL(eval(_rep, x3, l0));
+    CPPUNIT_ASSERT_ASSERTION_FAIL(eval(_rep, x3, l6));
+    CPPUNIT_ASSERT_ASSERTION_FAIL(eval(_rep, x6, l0));
+    CPPUNIT_ASSERT_ASSERTION_FAIL(eval(_rep, x6, l3));
+
+    //Forbid negative values in second argument
+    CPPUNIT_ASSERT_ASSERTION_FAIL(eval(_rep, x3, -1));
+    double badl3[3] = {1,2,-2};
+    CPPUNIT_ASSERT_ASSERTION_FAIL(eval(_rep, x3, badl3));
     
     //CPPUNIT_FAIL("rep");
 }

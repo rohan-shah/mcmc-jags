@@ -23,11 +23,6 @@ namespace bugs {
 	return value;
     }
 
-    bool Prod::checkParameterLength (vector<unsigned int> const &args) const
-    {
-	return true;
-    }
-
     bool Prod::isDiscreteValued(vector<bool> const &mask) const
     {
 	return allTrue(mask);

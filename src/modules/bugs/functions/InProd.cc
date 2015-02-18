@@ -23,7 +23,7 @@ namespace bugs {
     bool 
     InProd::checkParameterLength (vector<unsigned int> const &lengths) const
     {
-	return (lengths[0] == lengths[1]);
+	return (lengths[0] > 0) && (lengths[0] == lengths[1]);
     }
 
     bool InProd::isDiscreteValued(vector<bool> const &mask) const
