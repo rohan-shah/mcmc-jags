@@ -3,7 +3,7 @@
 
 namespace jags {
 
-class RNG;
+struct RNG;
 
 #include "Outcome.h"
 

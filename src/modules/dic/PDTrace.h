@@ -17,7 +17,6 @@ namespace dic {
 	std::vector<CalKL *> _calkl;
 	std::vector<double> _values;
 	unsigned int _nchain;
-	unsigned int _n;
     public:
 	PDTrace(std::vector<StochasticNode const *> const &snodes,
 		std::vector<CalKL *> const &calkl);

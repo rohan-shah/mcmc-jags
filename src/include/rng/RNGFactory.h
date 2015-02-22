@@ -6,7 +6,7 @@
 
 namespace jags {
 
-class RNG;
+struct RNG;
 
 /**
  * @short Factory for RNG objects

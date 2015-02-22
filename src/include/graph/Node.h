@@ -7,7 +7,7 @@
 
 namespace jags {
 
-class RNG;
+struct RNG;
 class StochasticNode;
 class DeterministicNode;
 class Graph;

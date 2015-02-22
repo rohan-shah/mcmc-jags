@@ -18,7 +18,6 @@ namespace glm {
      */
     class LinearGibbsFactory : public GLMFactory
     {
-	bool _gibbs;
     public:
 	LinearGibbsFactory();
 	/**

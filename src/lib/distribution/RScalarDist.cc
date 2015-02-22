@@ -34,8 +34,7 @@ double RScalarDist::calPupper(double upper,
 RScalarDist::RScalarDist(string const &name, unsigned int npar, 
 			 Support support, bool discrete)
   
-    : ScalarDist(name, npar, support),  _support(support), _discrete(discrete),
-      _npar(npar)
+    : ScalarDist(name, npar, support), _discrete(discrete)
 {
 }
 
@@ -172,12 +171,7 @@ bool RScalarDist::discrete() const
     return _discrete;
 }
 
-unsigned int RScalarDist::npar() const
-{
-    return _npar;
-}
-
-    double xlog0(double x, bool give_log) {
+double xlog0(double x, bool give_log) {
 	if (x < 0) return JAGS_POSINF;
 	else if (x > 0) return give_log ? JAGS_NEGINF : 0;
 	else return give_log ? 0 : 1;

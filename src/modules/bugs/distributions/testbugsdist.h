@@ -6,7 +6,7 @@ namespace jags {
     class ScalarDist;
     class VectorDist;
     class ArrayDist;
-    class RNG;
+    struct RNG;
 }
 
 #include <cppunit/extensions/HelperMacros.h>

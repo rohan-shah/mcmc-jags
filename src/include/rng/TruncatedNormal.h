@@ -3,7 +3,7 @@
 
 namespace jags {
 
-class RNG;
+struct RNG;
 
 /**
  * Draws a random sample from a left-truncated normal distribution.

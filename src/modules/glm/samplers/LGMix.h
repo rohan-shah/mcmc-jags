@@ -10,7 +10,7 @@ using std::copy;
 
 namespace jags {
 
-class RNG;
+struct RNG;
 
 namespace glm {
 

@@ -8,8 +8,8 @@
 namespace jags {
 
 class SingletonGraphView;
-class RNG;
 class StochasticNode;
+struct RNG;
 
 namespace bugs {
 

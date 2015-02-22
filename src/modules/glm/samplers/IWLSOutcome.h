@@ -1,5 +1,5 @@
 #ifndef IWLS_OUTCOME_H_
-#define IWLS_OUTCMOE_H_
+#define IWLS_OUTCOME_H_
 
 #include "Outcome.h"
 #include "Classify.h"

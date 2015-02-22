@@ -12,7 +12,7 @@ extern "C" {
 
 namespace jags {
 
-    class RNG;
+    struct RNG;
     class GraphView;
     class SingletonGraphView;
 

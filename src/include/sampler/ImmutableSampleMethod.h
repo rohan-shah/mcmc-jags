@@ -3,7 +3,7 @@
 
 namespace jags {
 
-    class RNG;
+    struct RNG;
 
     /**
      * @short Abstract class for immutable sampling methods 

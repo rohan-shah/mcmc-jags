@@ -27,7 +27,6 @@ namespace glm {
      */
     class AlbertChib : public GLMMethod {
 	bool _gibbs; //Do we update parameters individually?
-	bool _aux_init; //Do we need to initialize auxiliary variables?
     public:
 	/**
 	 * Constructor.

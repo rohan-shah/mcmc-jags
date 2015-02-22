@@ -14,7 +14,7 @@
 
  class BUGSModel;
  class ParseTree;
- class RNG;
+ struct RNG;
  class Module;
 
  /**

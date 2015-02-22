@@ -5,7 +5,7 @@
 
 namespace jags {
 
-    class RNG;
+    struct RNG;
     class MutableSampleMethod;
 
     /**

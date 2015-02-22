@@ -87,7 +87,7 @@
     %}
 
 %defines
-%name-prefix="zz"
+%name-prefix "zz"
 %union
 {
   int intval;

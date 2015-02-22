@@ -6,7 +6,7 @@
 
 namespace jags {
 
-class RNG;
+struct RNG;
 
 /**
  * @short Node defined by the BUGS-language operator ~

@@ -11,7 +11,7 @@ namespace jags {
 
 class Sampler;
 class SamplerFactory;
-class RNG;
+struct RNG;
 class RNGFactory;
 class MonitorFactory;
 class Node;

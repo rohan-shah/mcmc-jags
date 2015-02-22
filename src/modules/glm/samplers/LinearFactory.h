@@ -11,7 +11,6 @@ namespace glm {
      */
     class LinearFactory : public GLMFactory
     {
-	bool _gibbs;
     public:
 	LinearFactory();
 	/**

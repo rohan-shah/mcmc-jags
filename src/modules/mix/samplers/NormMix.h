@@ -13,7 +13,7 @@ class GraphView;
 
 namespace mix {
 
-    class DirichletInfo;
+    struct DirichletInfo;
 
 /**
  * @short Sample method for normal mixture models

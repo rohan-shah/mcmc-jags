@@ -11,10 +11,10 @@ namespace jags {
  *
  * @short Random Number Generator
  */
-class RNG
+struct RNG
 {
     const std::string _name;
-public:
+
     RNG(std::string const &name);
     virtual ~RNG();
     /**

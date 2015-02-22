@@ -20,9 +20,7 @@ struct RNG;
  */
 class RScalarDist : public ScalarDist
 {
-    const Support _support;
     const bool _discrete;
-    unsigned int _npar;
     double calPlower(double, std::vector<double const *> const &) const;
     double calPupper(double, std::vector<double const *> const &) const;
 public:
@@ -100,10 +98,6 @@ public:
      * discrete-valued.
      */
     bool discrete() const;
-    /**
-     * Returns the number of parameters of the distribution
-     */
-    unsigned int npar() const;
 };
 
     /**

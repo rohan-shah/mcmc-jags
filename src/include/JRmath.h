@@ -32,7 +32,7 @@
 
 #ifdef  __cplusplus
 namespace jags {
-    class RNG;
+    struct RNG;
 }
 typedef jags::RNG JRNG;
 extern "C" {

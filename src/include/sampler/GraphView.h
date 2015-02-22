@@ -11,7 +11,7 @@ class StochasticNode;
 class DeterministicNode;
 class Node;
 class Graph;
-class RNG;
+struct RNG;
 
 /**
  * @short Interface to a graph for Samplers.
