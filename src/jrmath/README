@@ -8,10 +8,10 @@ The file callbacks.cc is a C++ source file that translates the
 functions unif_rand, norm_rand and exp_rand into member function calls
 for the struct JRNG.
 
-The current version is based on R 3.1.2.  The original intention was
-to make as few changes as possible in order to make it easier to
-synchronise the library with R. Nevertheless, a number of other
-changes have been made:
+The current version is based on R 3.1.2 patched (revision r67885).
+The original intention was to make as few changes as possible in order
+to make it easier to synchronise the library with R. Nevertheless, a
+number of other changes have been made:
 
 The header file Rmath.h has been renamed JRmath.h. Parts of the header
 that are not included when R_MATH_STANDALONE is undefined have been
