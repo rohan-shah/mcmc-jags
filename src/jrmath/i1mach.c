@@ -1,7 +1,7 @@
 /*
  *  Mathlib - A Mathematical Function Library
  *  Copyright (C) 1998  Ross Ihaka
- *  Copyright (C) 2000-7 The R Development Core Team
+ *  Copyright (C) 2000-7 The R Core Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -49,4 +49,9 @@ attribute_hidden int jags_i1mach(int i)
 
     default: return 0;
     }
+}
+
+int F77_NAME(i1mach)(int *i)
+{
+    return jags_i1mach(*i);
 }

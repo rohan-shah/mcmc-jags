@@ -1,13 +1,39 @@
 This is a partial copy of the Rmath library that is part of R.
 
-The API has been modified for the random number generators. These
-now take, as argument, a pointer to an opaque struct RNG which
+The API has been modified for the random number generators. These now
+take, as argument, a pointer to an opaque struct JRNG which
 encapsulates the state of the random number generator.
 
-Apart from that, nothing is changed, so it should be fairly 
-straigthforward to resynchronise this library with R. The
-current version comes from R 2.10.1
-
 The file callbacks.cc is a C++ source file that translates the
-functions unif_rand, norm_rand and exp_rand into member function
-calls for the class RNG.
+functions unif_rand, norm_rand and exp_rand into member function calls
+for the struct JRNG.
+
+The current version is based on R 3.1.2.  The original intention was
+to make as few changes as possible in order to make it easier to
+synchronise the library with R. Nevertheless, a number of other
+changes have been made:
+
+The header file Rmath.h has been renamed JRmath.h. Parts of the header
+that are not included when R_MATH_STANDALONE is undefined have been
+removed.
+
+We assume that the C library provides both expm1 and log1p, and that
+log1p is working correctly, rather than testing during configuration
+and providing drop-in replacements as the R math library does. This is
+mainly done to simplify the configuration (e.g. no need to derive
+JRmath.h from JRmath.h.in). If a C library in 2015 does not conform to
+the C99 standard then there is not much hope for that platform.
+
+All functions are remapped with prefix "jags_". This is unlike the
+R math library which remaps to "Rf_" internally and does no remapping
+when built as a standalone library.
+
+Due to the remapping, there is a namespace clash with the function
+"df".  This is therefore renamed to dF. Similarly pf, qf, rf, are
+renamed pF, qF, rF respectively.
+
+In the private header file "nmath.h" we defined F77_CALL, which is
+defined in the file R_exts/RS.h in the R sources.
+
+The source file toms708.c must be compiled with the flat -std=c99.
+This is added to the Makefile variable libjrmath_la_CFLAGS.

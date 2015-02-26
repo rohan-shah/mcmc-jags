@@ -52,39 +52,6 @@ ACX_LAPACK([],[
 	AC_MSG_ERROR("You need to install the LAPACK library")
 ])
 
-dnl Rmath stuff
-
-dnl Relevant parts lifted from R's configure.ac, version 2.3.0
-AC_CHECK_LIB(m, sin)
-
-## IEEE 754. We rely on this in e.g. the working log test.
-##R_IEEE_754
-
-R_CHECK_FUNCS([expm1 log1p], [#include <math.h>])
-## Used to build src/include/Rmath.h.
-## <NOTE>
-## we don't use AC_CONFIG_HEADERS on Rmath.h.in because
-## a) that would comment out #undef statements in Rmath.h.in and
-## b) Rmath.h should be a self-contained file for standalone Rmath use.
-## </NOTE>
-if test "${ac_cv_have_decl_expm1}" = yes; then
-  RMATH_HAVE_EXPM1="# define HAVE_EXPM1 1"
-else
-  RMATH_HAVE_EXPM1="# undef HAVE_EXPM1"
-fi
-AC_SUBST(RMATH_HAVE_EXPM1)
-if test "${ac_cv_have_decl_log1p}" = yes; then
-  RMATH_HAVE_LOG1P="# define HAVE_LOG1P 1"
-else
-  RMATH_HAVE_LOG1P="# undef HAVE_LOG1P"
-fi
-AC_SUBST(RMATH_HAVE_LOG1P)
-
-R_FUNC_LOG
-R_FUNC_LOG1P
-
-dnl End Rmath stuff
-
 jagsmoddir=${libdir}/JAGS/modules-${JAGS_MAJOR}
 AC_SUBST(jagsmoddir)
 

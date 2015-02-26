@@ -1,7 +1,7 @@
 /*
  *  Mathlib : A C Library of Special Functions
  *  Copyright (C) 1998 Ross Ihaka
- *  Copyright (C) 2000-2008 The R Development Core Team
+ *  Copyright (C) 2000-2008 The R Core Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@ double rt(double df, JRNG *rng)
 	return norm_rand(rng);
     else {
 /* Some compilers (including MW6) evaluated this from right to left
-	return norm_rand(rng) / sqrt(rchisq(df) / df); */
+	return norm_rand(rng) / sqrt(rchisq(df, rng) / df); */
 	double num = norm_rand(rng);
 	return num / sqrt(rchisq(df, rng) / df);
     }

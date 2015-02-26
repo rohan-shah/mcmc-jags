@@ -1,7 +1,7 @@
 /*
  *  Mathlib : A C Library of Special Functions
  *  Copyright (C) 1998 Ross Ihaka
- *  Copyright (C) 2000-2002 The R Development Core Team
+ *  Copyright (C) 2000-2014 The R Core Team
  *  Copyright (C) 2007 The R Foundation
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -36,6 +36,7 @@
  */
 
 #include "nmath.h"
+#include "dpq.h"
 #include <stdlib.h>
 #include <limits.h>
 
@@ -54,10 +55,10 @@ double rbinom(double nin, double pp, JRNG *rng)
 
     double f, f1, f2, u, v, w, w2, x, x1, x2, z, z2;
     double p, q, np, g, r, al, alv, amaxp, ffm, ynorm;
-    int i,ix,k, n;
+    int i, ix, k, n;
 
     if (!R_FINITE(nin)) ML_ERR_return_NAN;
-    r = floor(nin + 0.5);
+    r = R_forceint(nin);
     if (r != nin) ML_ERR_return_NAN;
     if (!R_FINITE(pp) ||
 	/* n=0, p=0, p=1 are not errors <TSL>*/
@@ -70,7 +71,7 @@ double rbinom(double nin, double pp, JRNG *rng)
 			and r == INT_MAX gave only even values */
 	return qbinom(unif_rand(rng), r, pp, /*lower_tail*/ 0, /*log_p*/ 0);
     /* else */
-    n = r;
+    n = (int) r;
 
     p = fmin2(pp, 1. - pp);
     q = 1. - p;
@@ -88,11 +89,11 @@ double rbinom(double nin, double pp, JRNG *rng)
 	nsave = n;
 	if (np < 30.0) {
 	    /* inverse cdf logic for mean less than 30 */
-	    qn = pow(q, (double) n);
+	    qn = JR_pow_di(q, n);
 	    goto L_np_small;
 	} else {
 	    ffm = np + p;
-	    m = ffm;
+	    m = (int) ffm;
 	    fm = m;
 	    npq = np * q;
 	    p1 = (int)(2.195 * sqrt(npq) - 4.6 * q) + 0.5;
@@ -119,7 +120,7 @@ double rbinom(double nin, double pp, JRNG *rng)
       v = unif_rand(rng);
       /* triangular region */
       if (u <= p1) {
-	  ix = xm - p1 * v + u;
+	  ix = (int)(xm - p1 * v + u);
 	  goto finis;
       }
       /* parallelogram region */
@@ -128,15 +129,15 @@ double rbinom(double nin, double pp, JRNG *rng)
 	  v = v * c + 1.0 - fabs(xm - x) / p1;
 	  if (v > 1.0 || v <= 0.)
 	      continue;
-	  ix = x;
+	  ix = (int) x;
       } else {
 	  if (u > p3) {	/* right tail */
-	      ix = xr - log(v) / xlr;
+	      ix = (int)(xr - log(v) / xlr);
 	      if (ix > n)
 		  continue;
 	      v = v * (u - p3) * xlr;
 	  } else {/* left tail */
-	      ix = xl + log(v) / xll;
+	      ix = (int)(xl + log(v) / xll);
 	      if (ix < 0)
 		  continue;
 	      v = v * (u - p2) * xll;

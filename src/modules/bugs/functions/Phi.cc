@@ -3,6 +3,8 @@
 
 #include <JRmath.h>
 
+#include <cfloat>
+
 using std::vector;
 
 namespace jags {

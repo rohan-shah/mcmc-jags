@@ -1,7 +1,7 @@
 /*
  *  Mathlib : A C Library of Special Functions
  *  Copyright (C) 1998       Ross Ihaka
- *  Copyright (C) 2000--2005 The R Development Core Team
+ *  Copyright (C) 2000--2005 The R Core Team
  *  based on AS 111 (C) 1977 Royal Statistical Society
  *  and   on AS 241 (C) 1988 Royal Statistical Society
  *
@@ -66,7 +66,7 @@ double qnorm5(double p, double mu, double sigma, int lower_tail, int log_p)
     q = p_ - 0.5;
 
 #ifdef DEBUG_qnorm
-    JREprintf("qnorm(p=%10.7g, m=%g, s=%g, l.t.= %d, log= %d): q = %g\n",
+    REprintf("qnorm(p=%10.7g, m=%g, s=%g, l.t.= %d, log= %d): q = %g\n",
 	     p,mu,sigma, lower_tail, log_p, q);
 #endif
 
@@ -107,7 +107,7 @@ double qnorm5(double p, double mu, double sigma, int lower_tail, int log_p)
 		    p : /* else */ log(r)));
         /* r = sqrt(-log(r))  <==>  min(p, 1-p) = exp( - r^2 ) */
 #ifdef DEBUG_qnorm
-	JREprintf("\t close to 0 or 1: r = %7g\n", r);
+	REprintf("\t close to 0 or 1: r = %7g\n", r);
 #endif
 
         if (r <= 5.) { /* <==> min(p,1-p) >= exp(-25) ~= 1.3888e-11 */

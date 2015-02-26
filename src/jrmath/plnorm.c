@@ -1,7 +1,7 @@
 /*
  *  Mathlib : A C Library of Special Functions
  *  Copyright (C) 1998 Ross Ihaka
- *  Copyright (C) 2000-8 The R Development Core Team
+ *  Copyright (C) 2000-8 The R Core Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@ double plnorm(double x, double meanlog, double sdlog, int lower_tail, int log_p)
     if (ISNAN(x) || ISNAN(meanlog) || ISNAN(sdlog))
 	return x + meanlog + sdlog;
 #endif
-    if (sdlog <= 0) ML_ERR_return_NAN;
+    if (sdlog < 0) ML_ERR_return_NAN;
 
     if (x > 0)
 	return pnorm(log(x), meanlog, sdlog, lower_tail, log_p);

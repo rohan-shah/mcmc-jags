@@ -1,7 +1,7 @@
 /*
  *  Mathlib : A C Library of Special Functions
  *  Copyright (C) 1998 Ross Ihaka
- *  Copyright (C) 2000-2008 The R Development Core Team
+ *  Copyright (C) 2000-2014 The R Core Team
  *  Copyright (C) 2005 The R Foundation
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -75,9 +75,15 @@ double qnbinom(double p, double size, double prob, int lower_tail, int log_p)
     if (ISNAN(p) || ISNAN(size) || ISNAN(prob))
 	return p + size + prob;
 #endif
-    if (prob <= 0 || prob > 1 || size <= 0) ML_ERR_return_NAN;
-    /* FIXME: size = 0 is well defined ! */
-    if (prob == 1) return 0;
+
+    /* this happens if specified via mu, size, since
+       prob == size/(size+mu)
+    */
+    if (prob == 0 && size == 0) return 0;
+
+    if (prob <= 0 || prob > 1 || size < 0) ML_ERR_return_NAN;
+ 
+    if (prob == 1 || size == 0) return 0;
 
     R_Q_P01_boundaries(p, 0, ML_POSINF);
 
@@ -99,7 +105,7 @@ double qnbinom(double p, double size, double prob, int lower_tail, int log_p)
 
     /* y := approx.value (Cornish-Fisher expansion) :  */
     z = qnorm(p, 0., 1., /*lower_tail*/TRUE, /*log_p*/FALSE);
-    y = floor(mu + sigma * (z + gamma * (z*z - 1) / 6) + 0.5);
+    y = R_forceint(mu + sigma * (z + gamma * (z*z - 1) / 6));
 
     z = pnbinom(y, size, prob, /*lower_tail*/TRUE, /*log_p*/FALSE);
 

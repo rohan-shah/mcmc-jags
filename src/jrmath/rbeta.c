@@ -1,7 +1,8 @@
 /*
  *  R : A Computer Language for Statistical Data Analysis
  *  Copyright (C) 1995, 1996  Robert Gentleman and Ross Ihaka
- *  Copyright (C) 2000 The R Development Core Team
+ *  Copyright (C) 2000--2010 The R Core Team
+ *  Copyright (C) 2000, 2010 The R Foundation
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -31,24 +32,26 @@
 
 double rbeta(double aa, double bb, JRNG *rng)
 {
+    if (aa < 0. || bb < 0.)
+	ML_ERR_return_NAN;
+    if (!R_FINITE(aa) && !R_FINITE(bb)) // a = b = Inf : all mass at 1/2
+	return 0.5;
+    if (aa == 0. && bb == 0.) // point mass 1/2 at each of {0,1} :
+	return (unif_rand(rng) < 0.5) ? 0. : 1.;
+    // now, at least one of a, b is finite and positive
+    if (!R_FINITE(aa) || bb == 0.)
+    	return 1.0;
+    if (!R_FINITE(bb) || aa == 0.)
+    	return 0.0;
+
     double a, b, alpha;
     double r, s, t, u1, u2, v, w, y, z;
-
     int qsame;
     /* FIXME:  Keep Globals (properly) for threading */
     /* Uses these GLOBALS to save time when many rv's are generated : */
     static double beta, gamma, delta, k1, k2;
     static double olda = -1.0;
     static double oldb = -1.0;
-
-    if (aa <= 0. || bb <= 0. || (!R_FINITE(aa) && !R_FINITE(bb)))
-	ML_ERR_return_NAN;
-
-    if (!R_FINITE(aa))
-    	return 1.0;
-
-    if (!R_FINITE(bb))
-    	return 0.0;
 
     /* Test if we need new "initializing" */
     qsame = (olda == aa) && (oldb == bb);
@@ -58,11 +61,12 @@ double rbeta(double aa, double bb, JRNG *rng)
     b = fmax2(aa, bb); /* a <= b */
     alpha = a + b;
 
-#define v_w_from__u1_bet(AA)			\
+#define v_w_from__u1_bet(AA) 			\
 	    v = beta * log(u1 / (1.0 - u1));	\
-	    if (v <= expmax)			\
+	    if (v <= expmax) {			\
 		w = AA * exp(v);		\
-	    else				\
+		if(!R_FINITE(w)) w = DBL_MAX;	\
+	    } else				\
 		w = DBL_MAX
 
 

@@ -1,7 +1,7 @@
 /*
  *  R : A Computer Language for Statistical Data Analysis
  *  Copyright (C) 1995, 1996  Robert Gentleman and Ross Ihaka
- *  Copyright (C) 2000        The R Development Core Team
+ *  Copyright (C) 2000        The R Core Team
  *  Copyright (C) 2005        The R Foundation
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -36,9 +36,9 @@ double qlogis(double p, double location, double scale, int lower_tail, int log_p
     /* p := logit(p) = log( p / (1-p) )	 : */
     if(log_p) {
 	if(lower_tail)
-	    p = p - log1p(- exp(p));
+	    p = p - R_Log1_Exp(p);
 	else
-	    p = log1p(- exp(p)) - p;
+	    p = R_Log1_Exp(p) - p;
     }
     else
 	p = log(lower_tail ? (p / (1. - p)) : ((1. - p) / p));

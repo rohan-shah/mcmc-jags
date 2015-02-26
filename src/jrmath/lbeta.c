@@ -1,7 +1,7 @@
 /*
  *  Mathlib : A C Library of Special Functions
  *  Copyright (C) 1998 Ross Ihaka
- *  Copyright (C) 2000 The R Development Core Team
+ *  Copyright (C) 2000-12 The R Core Team
  *  Copyright (C) 2003 The R Foundation
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -39,23 +39,21 @@ double lbeta(double a, double b)
 {
     double corr, p, q;
 
-    p = q = a;
-    if(b < p) p = b;/* := min(a,b) */
-    if(b > q) q = b;/* := max(a,b) */
-
 #ifdef IEEE_754
     if(ISNAN(a) || ISNAN(b))
 	return a + b;
 #endif
+    p = q = a;
+    if(b < p) p = b;/* := min(a,b) */
+    if(b > q) q = b;/* := max(a,b) */
 
     /* both arguments must be >= 0 */
-
     if (p < 0)
 	ML_ERR_return_NAN
     else if (p == 0) {
 	return ML_POSINF;
     }
-    else if (!R_FINITE(q)) {
+    else if (!R_FINITE(q)) { /* q == +Inf */
 	return ML_NEGINF;
     }
 
@@ -73,5 +71,7 @@ double lbeta(double a, double b)
     }
     else
 	/* p and q are small: p <= q < 10. */
+	/* R change for very small args */
+	if (p < 1e-306) return lgamma(p) + (lgamma(q) - lgamma(p+q));
 	return log(gammafn(p) * (gammafn(q) / gammafn(p + q)));
 }

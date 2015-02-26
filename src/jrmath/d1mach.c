@@ -1,7 +1,7 @@
 /*
  *  Mathlib - A Mathematical Function Library
  *  Copyright (C) 1998  Ross Ihaka
- *  Copyright (C) 2000-7 The R Development Core Team
+ *  Copyright (C) 2000-2014 The R Core Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -49,3 +49,11 @@ attribute_hidden double jags_d1mach(int i)
     }
 }
 
+#ifdef __cplusplus
+extern "C" 
+#endif
+
+double F77_NAME(d1mach)(int *i)
+{
+    return jags_d1mach(*i);
+}

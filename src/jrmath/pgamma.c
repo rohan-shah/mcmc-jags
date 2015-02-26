@@ -1,8 +1,8 @@
 /*
  *  Mathlib : A C Library of Special Functions
  *  Copyright (C) 2005-6 Morten Welinder <terra@gnome.org>
- *  Copyright (C) 2005-6 The R Foundation
- *  Copyright (C) 2006	 The R Core Development Team
+ *  Copyright (C) 2005-10 The R Foundation
+ *  Copyright (C) 2006-10 The R Core Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -43,7 +43,6 @@
  *
  *	Complete redesign by Morten Welinder, originally for Gnumeric.
  *	Improvements (e.g. "while NEEDED_SCALE") by Martin Maechler
- *	The old version can be activated by compiling with -DR_USE_OLD_PGAMMA
  *
  *  REFERENCES
  *
@@ -240,11 +239,9 @@ double logspace_add (double logx, double logy)
  */
 double logspace_sub (double logx, double logy)
 {
-    return logx + log1p (-exp (logy - logx));
+    return logx + R_Log1_Exp(logy - logx);
 }
 
-
-#ifndef R_USE_OLD_PGAMMA
 
 /* dpois_wrap (x_P_1,  lambda, g_log) ==
  *   dpois (x_P_1 - 1, lambda, g_log) :=  exp(-L)  L^k / gamma(k+1) ,  k := x_P_1 - 1
@@ -253,7 +250,7 @@ static double
 dpois_wrap (double x_plus_1, double lambda, int give_log)
 {
 #ifdef DEBUG_p
-    JREprintf (" dpois_wrap(x+1=%.14g, lambda=%.14g, log=%d)\n",
+    REprintf (" dpois_wrap(x+1=%.14g, lambda=%.14g, log=%d)\n",
 	      x_plus_1, lambda, give_log);
 #endif
     if (!R_FINITE(lambda))
@@ -265,7 +262,7 @@ dpois_wrap (double x_plus_1, double lambda, int give_log)
     else {
 	double d = dpois_raw (x_plus_1, lambda, give_log);
 #ifdef DEBUG_p
-	JREprintf ("  -> d=dpois_raw(..)=%.14g\n", d);
+	REprintf ("  -> d=dpois_raw(..)=%.14g\n", d);
 #endif
 	return give_log
 	    ? d + log (x_plus_1 / lambda)
@@ -282,7 +279,7 @@ pgamma_smallx (double x, double alph, int lower_tail, int log_p)
     double sum = 0, c = alph, n = 0, term;
 
 #ifdef DEBUG_p
-    JREprintf (" pg_smallx(x=%.12g, alph=%.12g): ", x, alph);
+    REprintf (" pg_smallx(x=%.12g, alph=%.12g): ", x, alph);
 #endif
 
     /*
@@ -298,7 +295,7 @@ pgamma_smallx (double x, double alph, int lower_tail, int log_p)
     } while (fabs (term) > DBL_EPSILON * fabs (sum));
 
 #ifdef DEBUG_p
-    JREprintf (" %d terms --> conv.sum=%g;", n, sum);
+    REprintf ("%5.0f terms --> conv.sum=%g;", n, sum);
 #endif
     if (lower_tail) {
 	double f1 = log_p ? log1p (sum) : 1 + sum;
@@ -311,14 +308,14 @@ pgamma_smallx (double x, double alph, int lower_tail, int log_p)
 	else
 	    f2 = pow (x, alph) / exp (lgamma1p (alph));
 #ifdef DEBUG_p
-    JREprintf (" (f1,f2)= (%g,%g)\n", f1,f2);
+    REprintf (" (f1,f2)= (%g,%g)\n", f1,f2);
 #endif
 	return log_p ? f1 + f2 : f1 * f2;
     } else {
 	double lf2 = alph * log (x) - lgamma1p (alph);
 #ifdef DEBUG_p
-	JREprintf (" 1:%.14g  2:%.14g\n", alph * log (x), lgamma1p (alph));
-	JREprintf (" sum=%.14g  log(1+sum)=%.14g	 lf2=%.14g\n",
+	REprintf (" 1:%.14g  2:%.14g\n", alph * log (x), lgamma1p (alph));
+	REprintf (" sum=%.14g  log(1+sum)=%.14g	 lf2=%.14g\n",
 		  sum, log1p (sum), lf2);
 #endif
 	if (log_p)
@@ -352,13 +349,13 @@ pd_upper_series (double x, double y, int log_p)
 }
 
 /* Continued fraction for calculation of
- *    ???
- *  =  (y / d)	+  o(y/d)
+ *    scaled upper-tail F_{gamma}
+ *  ~=  (y / d) * [1 +  (1-y)/d +  O( ((1-y)/d)^2 ) ]
  */
 static double
 pd_lower_cf (double y, double d)
 {
-    double f = 0, of;
+    double f= 0.0 /* -Wall */, of, f0;
     double i, c2, c3, c4,  a1, b1,  a2, b2;
 
 #define	NEEDED_SCALE				\
@@ -372,18 +369,20 @@ pd_lower_cf (double y, double d)
 #define max_it 200000
 
 #ifdef DEBUG_p
-    JREprintf("pd_lower_cf(y=%.14g, d=%.14g)", y, d);
+    REprintf("pd_lower_cf(y=%.14g, d=%.14g)", y, d);
 #endif
-    if (y == 0 || (R_FINITE(y) && !R_FINITE(d))) /* includes d = Inf  or y = 0 */
-	return 0;
-    /* Needed, e.g. for  pgamma(10^c(100,295), shape= 1.1, log=TRUE) */
-    if(fabs(y - 1) < fabs(d) * 1e-20) {
+    if (y == 0) return 0;
+
+    f0 = y/d;
+    /* Needed, e.g. for  pgamma(10^c(100,295), shape= 1.1, log=TRUE): */
+    if(fabs(y - 1) < fabs(d) * DBL_EPSILON) { /* includes y < d = Inf */
 #ifdef DEBUG_p
-	JREprintf(" very small 'y' -> returning (y/d)\n");
+	REprintf(" very small 'y' -> returning (y/d)\n");
 #endif
-	return (y/d);
+	return (f0);
     }
 
+    if(f0 > 1.) f0 = 1.;
     c2 = y;
     c4 = d; /* original (y,d), *not* potentially scaled ones!*/
 
@@ -392,9 +391,7 @@ pd_lower_cf (double y, double d)
 
     while NEEDED_SCALE
 
-    /* if(a2 == 0) return 0;/\* just in case, e.g. d=y=0 *\/ */
-
-    i = 0;
+    i = 0; of = -1.; /* far away */
     while (i < max_it) {
 
 	i++;	c2--;	c3 = i * c2;	c4 += 2;
@@ -410,19 +407,15 @@ pd_lower_cf (double y, double d)
 	if NEEDED_SCALE
 
 	if (b2 != 0) {
-	    of = f;
 	    f = a2 / b2;
-#ifdef UP_TO_2009_11_07__NO_LONGER
-	    /* convergence check: relative; absolute for small f : */
-	    if (fabs (f - of) <= DBL_EPSILON * fmax2(1., fabs(f))) { .. }
-#endif
-	    /* convergence check */
-	    if (fabs(f - of) <= DBL_EPSILON * fabs(f)) {
+ 	    /* convergence check: relative; "absolute" for very small f : */
+	    if (fabs (f - of) <= DBL_EPSILON * fmax2(f0, fabs(f))) {
 #ifdef DEBUG_p
-		JREprintf(" %g iter.\n", i);
+		REprintf(" %g iter.\n", i);
 #endif
 		return f;
 	    }
+	    of = f;
 	}
     }
 
@@ -439,7 +432,7 @@ pd_lower_series (double lambda, double y)
     double term = 1, sum = 0;
 
 #ifdef DEBUG_p
-    JREprintf("pd_lower_series(lam=%.14g, y=%.14g) ...", lambda, y);
+    REprintf("pd_lower_series(lam=%.14g, y=%.14g) ...", lambda, y);
 #endif
     while (y >= 1 && term > sum * DBL_EPSILON) {
 	term *= y / lambda;
@@ -451,7 +444,7 @@ pd_lower_series (double lambda, double y)
      *	   ~  y/lambda + o(y/lambda)
      */
 #ifdef DEBUG_p
-    JREprintf(" done: term=%g, sum=%g, y= %g\n", term, sum, y);
+    REprintf(" done: term=%g, sum=%g, y= %g\n", term, sum, y);
 #endif
 
     if (y != floor (y)) {
@@ -461,13 +454,13 @@ pd_lower_series (double lambda, double y)
 	 */
 	double f;
 #ifdef DEBUG_p
-	JREprintf(" y not int: add another term ");
+	REprintf(" y not int: add another term ");
 #endif
 	/* FIXME: in quite few cases, adding  term*f  has no effect (f too small)
 	 *	  and is unnecessary e.g. for pgamma(4e12, 121.1) */
 	f = pd_lower_cf (y, lambda + 1 - y);
 #ifdef DEBUG_p
-	JREprintf("  (= %.14g) * term = %.14g to sum %g\n", f, term * f, sum);
+	REprintf("  (= %.14g) * term = %.14g to sum %g\n", f, term * f, sum);
 #endif
 	sum += term * f;
     }
@@ -516,7 +509,7 @@ dpnorm (double x, int lower_tail, double lp)
 
 	return 1 / sum;
     } else {
-	double d = dnorm (x, 0, 1, FALSE);
+	double d = dnorm (x, 0., 1., FALSE);
 	return d / exp (lp);
     }
 }
@@ -587,7 +580,7 @@ ppois_asymp (double x, double lambda, int lower_tail, int log_p)
     }
     if (!lower_tail) elfb = -elfb;
 #ifdef DEBUG_p
-    JREprintf ("res12 = %.14g   elfb=%.14g\n", elfb, res12);
+    REprintf ("res12 = %.14g   elfb=%.14g\n", elfb, res12);
 #endif
 
     f = res12 / elfb;
@@ -597,7 +590,7 @@ ppois_asymp (double x, double lambda, int lower_tail, int log_p)
     if (log_p) {
 	double n_d_over_p = dpnorm (s2pt, !lower_tail, np);
 #ifdef DEBUG_p
-	JREprintf ("pp*_asymp(): f=%.14g	 np=e^%.14g  nd/np=%.14g  f*nd/np=%.14g\n",
+	REprintf ("pp*_asymp(): f=%.14g	 np=e^%.14g  nd/np=%.14g  f*nd/np=%.14g\n",
 		  f, np, n_d_over_p, f * n_d_over_p);
 #endif
 	return np + log1p (f * n_d_over_p);
@@ -605,7 +598,7 @@ ppois_asymp (double x, double lambda, int lower_tail, int log_p)
 	double nd = dnorm (s2pt, 0., 1., log_p);
 
 #ifdef DEBUG_p
-	JREprintf ("pp*_asymp(): f=%.14g	 np=%.14g  nd=%.14g  f*nd=%.14g\n",
+	REprintf ("pp*_asymp(): f=%.14g	 np=%.14g  nd=%.14g  f*nd=%.14g\n",
 		  f, np, nd, f * nd);
 #endif
 	return np + f * nd;
@@ -620,7 +613,7 @@ double pgamma_raw (double x, double alph, int lower_tail, int log_p)
     double res;
 
 #ifdef DEBUG_p
-    JREprintf("pgamma_raw(x=%.14g, alph=%.14g, low=%d, log=%d)\n",
+    REprintf("pgamma_raw(x=%.14g, alph=%.14g, low=%d, log=%d)\n",
 	     x, alph, lower_tail, log_p);
 #endif
     R_P_bounds_01(x, 0., ML_POSINF);
@@ -632,7 +625,7 @@ double pgamma_raw (double x, double alph, int lower_tail, int log_p)
 	double sum = pd_upper_series (x, alph, log_p);/* = x/alph + o(x/alph) */
 	double d = dpois_wrap (alph, x, log_p);
 #ifdef DEBUG_p
-	JREprintf(" alph 'large': sum=pd_upper*()= %.12g, d=dpois_w(*)= %.12g\n",
+	REprintf(" alph 'large': sum=pd_upper*()= %.12g, d=dpois_w(*)= %.12g\n",
 		 sum, d);
 #endif
 	if (!lower_tail)
@@ -646,7 +639,7 @@ double pgamma_raw (double x, double alph, int lower_tail, int log_p)
 	double sum;
 	double d = dpois_wrap (alph, x, log_p);
 #ifdef DEBUG_p
-	JREprintf(" x 'large': d=dpois_w(*)= %.14g ", d);
+	REprintf(" x 'large': d=dpois_w(*)= %.14g ", d);
 #endif
 	if (alph < 1) {
 	    if (x * DBL_EPSILON > 1 - alph)
@@ -661,7 +654,7 @@ double pgamma_raw (double x, double alph, int lower_tail, int log_p)
 	    sum = log_p ? log1p (sum) : 1 + sum;
 	}
 #ifdef DEBUG_p
-	JREprintf(", sum= %.14g\n", sum);
+	REprintf(", sum= %.14g\n", sum);
 #endif
 	if (!lower_tail)
 	    res = log_p ? sum + d : sum * d;
@@ -671,7 +664,7 @@ double pgamma_raw (double x, double alph, int lower_tail, int log_p)
 		: 1 - d * sum;
     } else { /* x >= 1 and x fairly near alph. */
 #ifdef DEBUG_p
-	JREprintf(" using ppois_asymp()\n");
+	REprintf(" using ppois_asymp()\n");
 #endif
 	res = ppois_asymp (alph - 1, x, !lower_tail, log_p);
     }
@@ -684,7 +677,7 @@ double pgamma_raw (double x, double alph, int lower_tail, int log_p)
     if (!log_p && res < DBL_MIN / DBL_EPSILON) {
 	/* with(.Machine, double.xmin / double.eps) #|-> 1.002084e-292 */
 #ifdef DEBUG_p
-	JREprintf(" very small res=%.14g; -> recompute via log\n", res);
+	REprintf(" very small res=%.14g; -> recompute via log\n", res);
 #endif
 	return exp (pgamma_raw (x, alph, lower_tail, 1));
     } else
@@ -706,7 +699,7 @@ double pgamma(double x, double alph, double scale, int lower_tail, int log_p)
 	return x;
 #endif
     if(alph == 0.) /* limit case; useful e.g. in pnchisq() */
-	return (x < 0) ? R_DT_0: R_DT_1;
+	return (x <= 0) ? R_DT_0: R_DT_1; /* <= assert  pgamma(0,0) ==> 0 */
     return pgamma_raw (x, alph, lower_tail, log_p);
 }
 /* From: terra@gnome.org (Morten Welinder)
@@ -725,161 +718,3 @@ double pgamma(double x, double alph, double scale, int lower_tail, int log_p)
 
  * MM: I've not (yet?) taken  logcf(), but the other four
  */
-
-
-#else
-/* R_USE_OLD_PGAMMA */
-/*
- *  Copyright (C) 1998		Ross Ihaka
- *  Copyright (C) 1999-2000	The R Development Core Team
- *  Copyright (C) 2003-2004	The R Foundation
- *  based on AS 239 (C) 1988 Royal Statistical Society
- *
- *  ................
- *
- *  NOTES
- *
- *	This function is an adaptation of Algorithm 239 from the
- *	Applied Statistics Series.  The algorithm is faster than
- *	those by W. Fullerton in the FNLIB library and also the
- *	TOMS 542 alorithm of W. Gautschi.  It provides comparable
- *	accuracy to those algorithms and is considerably simpler.
- *
- *  REFERENCES
- *
- *	Algorithm AS 239, Incomplete Gamma Function
- *	Applied Statistics 37, 1988.
- */
-
-/* now would need this here: */
-double attribute_hidden pgamma_raw(x, alph, lower_tail, log_p) {
-    return pgamma(x, alph, 1, lower_tail, log_p);
-}
-
-double pgamma(double x, double alph, double scale, int lower_tail, int log_p)
-{
-    const static double
-	xbig = 1.0e+8,
-	xlarge = 1.0e+37,
-
-	/* normal approx. for alph > alphlimit */
-	alphlimit = 1e5;/* was 1000. till R.1.8.x */
-
-    double pn1, pn2, pn3, pn4, pn5, pn6, arg, a, b, c, an, osum, sum;
-    long n;
-    int pearson;
-
-    /* check that we have valid values for x and alph */
-
-#ifdef IEEE_754
-    if (ISNAN(x) || ISNAN(alph) || ISNAN(scale))
-	return x + alph + scale;
-#endif
-#ifdef DEBUG_p
-    JREprintf("pgamma(x=%4g, alph=%4g, scale=%4g): ",x,alph,scale);
-#endif
-    if(alph <= 0. || scale <= 0.)
-	ML_ERR_return_NAN;
-
-    x /= scale;
-#ifdef DEBUG_p
-    JREprintf("-> x=%4g; ",x);
-#endif
-#ifdef IEEE_754
-    if (ISNAN(x)) /* eg. original x = scale = Inf */
-	return x;
-#endif
-    if (x <= 0.)
-	return R_DT_0;
-
-#define USE_PNORM \
-    pn1 = sqrt(alph) * 3. * (pow(x/alph, 1./3.) + 1. / (9. * alph) - 1.); \
-    return pnorm(pn1, 0., 1., lower_tail, log_p);
-
-    if (alph > alphlimit) { /* use a normal approximation */
-	USE_PNORM;
-    }
-
-    if (x > xbig * alph) {
-	if (x > DBL_MAX * alph)
-	    /* if x is extremely large __compared to alph__ then return 1 */
-	    return R_DT_1;
-	else { /* this only "helps" when log_p = TRUE */
-	    USE_PNORM;
-	}
-    }
-
-    if (x <= 1. || x < alph) {
-
-	pearson = 1;/* use pearson's series expansion. */
-
-	arg = alph * log(x) - x - lgammafn(alph + 1.);
-#ifdef DEBUG_p
-	JREprintf("Pearson  arg=%g ", arg);
-#endif
-	c = 1.;
-	sum = 1.;
-	a = alph;
-	do {
-	    a += 1.;
-	    c *= x / a;
-	    sum += c;
-	} while (c > DBL_EPSILON * sum);
-    }
-    else { /* x >= max( 1, alph) */
-
-	pearson = 0;/* use a continued fraction expansion */
-
-	arg = alph * log(x) - x - lgammafn(alph);
-#ifdef DEBUG_p
-	JREprintf("Cont.Fract. arg=%g ", arg);
-#endif
-	a = 1. - alph;
-	b = a + x + 1.;
-	pn1 = 1.;
-	pn2 = x;
-	pn3 = x + 1.;
-	pn4 = x * b;
-	sum = pn3 / pn4;
-	for (n = 1; ; n++) {
-	    a += 1.;/* =   n+1 -alph */
-	    b += 2.;/* = 2(n+1)-alph+x */
-	    an = a * n;
-	    pn5 = b * pn3 - an * pn1;
-	    pn6 = b * pn4 - an * pn2;
-	    if (fabs(pn6) > 0.) {
-		osum = sum;
-		sum = pn5 / pn6;
-		if (fabs(osum - sum) <= DBL_EPSILON * fmin2(1., sum))
-		    break;
-	    }
-	    pn1 = pn3;
-	    pn2 = pn4;
-	    pn3 = pn5;
-	    pn4 = pn6;
-	    if (fabs(pn5) >= xlarge) {
-		/* re-scale the terms in continued fraction if they are large */
-#ifdef DEBUG_p
-		JREprintf(" [r] ");
-#endif
-		pn1 /= xlarge;
-		pn2 /= xlarge;
-		pn3 /= xlarge;
-		pn4 /= xlarge;
-	    }
-	}
-    }
-
-    arg += log(sum);
-
-    lower_tail = (lower_tail == pearson);
-
-    if (log_p && lower_tail)
-	return(arg);
-    /* else */
-    /* sum = exp(arg); and return   if(lower_tail) sum	else 1-sum : */
-    return (lower_tail) ? exp(arg) : (log_p ? R_Log1_Exp(arg) : -expm1(arg));
-}
-
-#endif
-/* R_USE_OLD_PGAMMA */

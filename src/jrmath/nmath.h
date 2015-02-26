@@ -1,6 +1,6 @@
 /*
  *  Mathlib : A C Library of Special Functions
- *  Copyright (C) 1998-2004  The R Development Core Team
+ *  Copyright (C) 1998-2013  The R Core Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,6 +17,12 @@
  *  http://www.r-project.org/Licenses/
  */
 
+/* S Like Fortran Interface */
+/* These may not be adequate everywhere. Convex had _ prepending common
+   blocks, and some compilers may need to specify Fortran linkage */
+
+
+
 /* Remap for JAGS */
 #define norm_rand jags_norm_rand
 #define unif_rand jags_unif_rand
@@ -30,6 +36,7 @@
 #  include <config.h>
 #endif
 
+/* Required by C99 but might be slow */
 #ifdef HAVE_LONG_DOUBLE
 #  define LDOUBLE long double
 #else
@@ -39,50 +46,33 @@
 #include <math.h>
 #include <float.h> /* DBL_MIN etc */
 
-#define MATHLIB_PRIVATE
 #include <JRmath.h>
-#undef MATHLIB_PRIVATE
 
+/* Used internally only */
 double  jags_d1mach(int);
-#define gamma_cody	jags_gamma_cody
-double	gamma_cody(double);
+double	jags_gamma_cody(double);
 
+/* Copied from R_ext/RS.h */
 
-#ifndef MATHLIB_STANDALONE
-
-#include <R_ext/Error.h>
-# define MATHLIB_ERROR(fmt,x)		error(fmt,x);
-# define MATHLIB_WARNING(fmt,x)		warning(fmt,x)
-# define MATHLIB_WARNING2(fmt,x,x2)	warning(fmt,x,x2)
-# define MATHLIB_WARNING3(fmt,x,x2,x3)	warning(fmt,x,x2,x3)
-# define MATHLIB_WARNING4(fmt,x,x2,x3,x4) warning(fmt,x,x2,x3,x4)
-
-#include <R_ext/Arith.h>
-#define ML_POSINF	R_PosInf
-#define ML_NEGINF	R_NegInf
-#define ML_NAN		R_NaN
-
-
-void R_CheckUserInterrupt(void);
-/* Ei-ji Nakama reported that AIX 5.2 has calloc as a macro and objected
-   to redefining it.  Tests added for 2.2.1 */
-#ifdef calloc
-# undef calloc
-#endif
-#define calloc R_chk_calloc
-#ifdef free
-# undef free
-#endif
-#define free R_chk_free
-
-#ifdef ENABLE_NLS
-#include <libintl.h>
-#define _(String) gettext (String)
+#ifdef HAVE_F77_UNDERSCORE
+# define F77_CALL(x)    x ## _
 #else
-#define _(String) (String)
+# define F77_CALL(x)    x
 #endif
+#define F77_NAME(x)    F77_CALL(x)
+#define F77_SUB(x)     F77_CALL(x)
+#define F77_COM(x)     F77_CALL(x)
+#define F77_COMDECL(x) F77_CALL(x)
 
+/* moved from dpq.h */
+#ifdef HAVE_NEARYINT
+# define R_forceint(x)   nearbyint()
 #else
+# define R_forceint(x)   round(x)
+#endif
+//R >= 3.1.0: # define R_nonint(x) 	  (fabs((x) - R_forceint(x)) > 1e-7)
+# define R_nonint(x) 	  (fabs((x) - R_forceint(x)) > 1e-7*fmax2(1., fabs(x)))
+
 /* Mathlib standalone */
 
 #include <stdio.h>
@@ -92,6 +82,7 @@ void R_CheckUserInterrupt(void);
 #define MATHLIB_WARNING2(fmt,x,x2)	printf(fmt,x,x2)
 #define MATHLIB_WARNING3(fmt,x,x2,x3)	printf(fmt,x,x2,x3)
 #define MATHLIB_WARNING4(fmt,x,x2,x3,x4) printf(fmt,x,x2,x3,x4)
+#define MATHLIB_WARNING5(fmt,x,x2,x3,x4,x5) printf(fmt,x,x2,x3,x4,x5)
 
 #define ISNAN(x) (isnan(x)!=0)
 #define R_FINITE(x)    JR_finite(x)
@@ -102,7 +93,6 @@ int JR_finite(double);
 #define ML_NAN		(0.0 / 0.0)
 
 #define _(String) String
-#endif /* standalone */
 
 #define ML_VALID(x)	(!ISNAN(x))
 
@@ -130,19 +120,19 @@ int JR_finite(double);
        char *msg = ""; \
        switch(x) { \
        case ME_DOMAIN: \
-	   msg = "argument out of domain in '%s'\n"; \
+	   msg = _("argument out of domain in '%s'\n");	\
 	   break; \
        case ME_RANGE: \
-	   msg = "value out of range in '%s'\n"; \
+	   msg = _("value out of range in '%s'\n");	\
 	   break; \
        case ME_NOCONV: \
-	   msg = "convergence failed in '%s'\n"; \
+	   msg = _("convergence failed in '%s'\n");	\
 	   break; \
        case ME_PRECISION: \
-	   msg = "full precision may not have been achieved in '%s'\n"; \
+	   msg = _("full precision may not have been achieved in '%s'\n"); \
 	   break; \
        case ME_UNDERFLOW: \
-	   msg = "underflow occurred in '%s'\n"; \
+	   msg = _("underflow occurred in '%s'\n");	\
 	   break; \
        } \
        MATHLIB_WARNING(msg, s); \
@@ -169,9 +159,6 @@ int JR_finite(double);
 #define lfastchoose	jags_lfastchoose
 #define lgammacor	jags_lgammacor
 #define stirlerr       	jags_stirlerr
-/* in Rmath.h
-#define gamma_cody      jags_gamma_cody
-*/
 
 	/* Chebyshev Series */
 
@@ -190,14 +177,15 @@ double  attribute_hidden bd0(double, double);
 
 double	attribute_hidden dbinom_raw(double, double, double, double, int);
 double	attribute_hidden dpois_raw (double, double, int);
-double  attribute_hidden pnchisq_raw(double, double, double, double, double, int, Rboolean);
+double  attribute_hidden pnchisq_raw(double, double, double, double, double, 
+				     int, Rboolean, Rboolean);
 double  attribute_hidden pgamma_raw(double, double, int, int);
 double	attribute_hidden pbeta_raw(double, double, double, int, int);
 double  attribute_hidden qchisq_appr(double, double, double, int, int, double tol);
-LDOUBLE	attribute_hidden pnbeta_raw(double, double, double, double, double);
+LDOUBLE attribute_hidden pnbeta_raw(double, double, double, double, double);
 double	attribute_hidden pnbeta2(double, double, double, double, double, int, int);
 
-int	i1mach(int);
+int	jags_i1mach(int);
 
 /* From toms708.c */
 void attribute_hidden bratio(double a, double b, double x, double y,

@@ -1,7 +1,7 @@
 /*
  *  Mathlib : A C Library of Special Functions
  *  Copyright (C) 1998 Ross Ihaka
- *  Copyright (C) 2000-2001, 2005 The R Development Core Team
+ *  Copyright (C) 2000-11 The R Core Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -28,17 +28,21 @@
  *
  */
 
-#include <config.h> /* needed for HAVE_RINT and USE_BUILTIN_RINT */
+#include <config.h> /* needed for HAVE_*, IEEE_754 */
+#include <limits.h>
 #include "nmath.h"
 
-/* USE_BUILTIN_RINT could also be defined by a configure test */
-#ifndef HAVE_RINT
-#define USE_BUILTIN_RINT
-#endif
 
-#ifdef USE_BUILTIN_RINT
-#define R_rint private_rint
+/*  nearbyint is C99, so all platforms should have it (and AFAIK, all do) */
+#ifdef HAVE_NEARBYINT
+# define R_rint nearbyint
+#elif defined(HAVE_RINT)
+# define R_rint rint
+#else
+# define R_rint private_rint
+extern double private_rint(double x);
 
+/* also used potentially in fprec.c and main/format.c */
 double attribute_hidden private_rint(double x)
 {
     double tmp, sgn = 1.0;
@@ -63,8 +67,6 @@ double attribute_hidden private_rint(double x)
     }
     return sgn * tmp;
 }
-#else
-#define R_rint rint
 #endif
 
 double fround(double x, double digits) {
@@ -74,14 +76,14 @@ double fround(double x, double digits) {
     LDOUBLE pow10, sgn, intx;
     int dig;
 
-#ifdef IEEE_754
     if (ISNAN(x) || ISNAN(digits))
 	return x + digits;
     if(!R_FINITE(x)) return x;
-#endif
 
-    if (digits > MAX_DIGITS)
-	digits = MAX_DIGITS;
+    if(digits == ML_POSINF) return x;
+    else if(digits == ML_NEGINF) return 0.0;
+
+    if (digits > MAX_DIGITS) digits = MAX_DIGITS;
     dig = (int)floor(digits + 0.5);
     if(x < 0.) {
 	sgn = -1.;
@@ -89,13 +91,13 @@ double fround(double x, double digits) {
     } else
 	sgn = 1.;
     if (dig == 0) {
-	return sgn * R_rint(x);
+	return (double)(sgn * R_rint(x));
     } else if (dig > 0) {
         pow10 = JR_pow_di(10., dig);
 	intx = floor(x);
-	return sgn * (intx + R_rint((x-intx) * pow10) / pow10);
+	return (double)(sgn * (intx + R_rint((double)((x-intx) * pow10)) / pow10));
     } else {
         pow10 = JR_pow_di(10., -dig);
-        return sgn * R_rint(x/pow10) * pow10;
+        return (double)(sgn * R_rint((double)(x/pow10)) * pow10);
     }
 }

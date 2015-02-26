@@ -2,13 +2,16 @@ lib_LTLIBRARIES = libjrmath.la
 
 libjrmath_la_CPPFLAGS = -I$(top_srcdir)/src/include -DMATHLIB_STANDALONE
 
+libjrmath_la_CFLAGS = -std=c99
+
 libjrmath_la_LDFLAGS = -no-undefined -version-info 0:0:0
 
 libjrmath_la_SOURCES = callbacks.cc \
-mlutils.c stirlerr.c bd0.c choose.c gamma.c lgamma.c toms708.c \
+beta.c gamma.c gammalims.c lgamma.c polygamma.c toms708.c \
+mlutils.c stirlerr.c bd0.c choose.c \
 d1mach.c i1mach.c fsign.c imax2.c imin2.c \
 fmin2.c fmax2.c fprec.c fround.c ftrunc.c \
-chebyshev.c lgammacor.c log1p.c lbeta.c \
+chebyshev.c lgammacor.c lbeta.c \
 rbeta.c dbeta.c pbeta.c qbeta.c \
 rbinom.c dbinom.c pbinom.c qbinom.c \
 rchisq.c dchisq.c pchisq.c qchisq.c \
@@ -26,8 +29,13 @@ rweibull.c dweibull.c pweibull.c qweibull.c \
 rnchisq.c dnchisq.c pnchisq.c qnchisq.c \
 rcauchy.c dcauchy.c pcauchy.c qcauchy.c \
 rf.c df.c pf.c qf.c \
-polygamma.c
+cospi.c gamma_cody.c bessel_i.c bessel_j.c bessel_k.c bessel_y.c \
+dgeom.c pgeom.c qgeom.c rgeom.c \
+dnbeta.c pnbeta.c qnbeta.c \
+dnf.c pnf.c qnf.c \
+dnt.c pnt.c qnt.c \
+sign.c
 
-noinst_HEADERS = nmath.h dpq.h 
+noinst_HEADERS = nmath.h dpq.h bessel.h
 
 EXTRA_DIST = README

@@ -1,7 +1,7 @@
 /*
  *  Mathlib : A C Library of Special Functions
  *  Copyright (C) 1998 Ross Ihaka
- *  Copyright (C) 2000-2006 The R Development Core Team
+ *  Copyright (C) 2000-2014 The R Core Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -33,7 +33,7 @@
 #include "nmath.h"
 #include "dpq.h"
 
-static double 
+static double
 do_search(double y, double *z, double p, double lambda, double incr)
 {
     if(*z >= p) {
@@ -64,11 +64,10 @@ double qpois(double p, double lambda, int lower_tail, int log_p)
 #endif
     if(!R_FINITE(lambda))
 	ML_ERR_return_NAN;
-
-    R_Q_P01_boundaries(p, 0, ML_POSINF);
-
     if(lambda < 0) ML_ERR_return_NAN;
     if(lambda == 0) return 0;
+
+    R_Q_P01_boundaries(p, 0, ML_POSINF);
 
     mu = lambda;
     sigma = sqrt(lambda);
@@ -87,7 +86,11 @@ double qpois(double p, double lambda, int lower_tail, int log_p)
 
     /* y := approx.value (Cornish-Fisher expansion) :  */
     z = qnorm(p, 0., 1., /*lower_tail*/TRUE, /*log_p*/FALSE);
-    y = floor(mu + sigma * (z + gamma * (z*z - 1) / 6) + 0.5);
+#ifdef HAVE_NEARBYINT
+    y = nearbyint(mu + sigma * (z + gamma * (z*z - 1) / 6));
+#else
+    y = round(mu + sigma * (z + gamma * (z*z - 1) / 6));
+#endif
 
     z = ppois(y, lambda, /*lower_tail*/TRUE, /*log_p*/FALSE);
 

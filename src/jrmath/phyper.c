@@ -1,7 +1,7 @@
 /*
  *  Mathlib : A C Library of Special Functions
  *  Copyright (C) 1998 Ross Ihaka
- *  Copyright (C) 1999-2000  The R Development Core Team
+ *  Copyright (C) 1999-2014  The R Core Team
  *  Copyright (C) 2004	     Morten Welinder
  *  Copyright (C) 2004	     The R Foundation
  *
@@ -69,8 +69,9 @@ static double pdhyper (double x, double NR, double NB, double n, int log_p)
 	sum += term;
 	x--;
     }
-
-    return log_p ? log1p(sum) : 1 + sum;
+    
+    double ss = (double) sum;
+    return log_p ? log1p(ss) : 1 + ss;
 }
 
 
@@ -90,9 +91,9 @@ double phyper (double x, double NR, double NB, double n,
 #endif
 
     x = floor (x + 1e-7);
-    NR = R_D_forceint(NR);
-    NB = R_D_forceint(NB);
-    n  = R_D_forceint(n);
+    NR = R_forceint(NR);
+    NB = R_forceint(NB);
+    n  = R_forceint(n);
 
     if (NR < 0 || NB < 0 || !R_FINITE(NR + NB) || n < 0 || n > NR + NB)
 	ML_ERR_return_NAN;

@@ -8,6 +8,7 @@
 
 #include <cmath>
 #include <vector>
+#include <cfloat>
 
 #include <JRmath.h>
 
