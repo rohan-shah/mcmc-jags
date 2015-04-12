@@ -103,6 +103,8 @@ Library changes
 * The interface of the NodeArray class is simplified. Member functions
   find and isEmpty are defunct.
 * The new NodeArraySubset class is introduced for use by Monitors.
+  The BUGSModel::getNode and Model::addExtraNode functions are defunct.
+  These functions were only needed by Monitors.
 
 
 Internal changes in modules

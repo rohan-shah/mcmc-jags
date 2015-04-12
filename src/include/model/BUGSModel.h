@@ -32,25 +32,6 @@ public:
      */
     SymTab &symtab();
     /**
-     * Returns a node given a variable name and a range of indices. The
-     * name is used to look up a NodeArray in the symbol table, and 
-     * a subset of the Nodearray corresponding to the given index range
-     * is taken. 
-     *
-     * If the requested Node cannot be returned, a NULL pointer is
-     * returned.
-     *
-     * @param name String giving the BUGS-language name of a variable
-     *
-     * @param range Range representing the lower and upper limits of the
-     * subset. A NULL range corresponds to the whole range of the
-     * NodeArray.
-     *
-     * @param message If the requested Node does not exist, an
-     * informative error message is copied to this string.
-     */
-    Node *getNode(std::string const &name, Range const &range);
-    /**
      * Writes out selected monitors in CODA format.
      *
      * @param nodes Vector of nodes to write out. Each node is

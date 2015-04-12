@@ -121,16 +121,6 @@ public:
    */
   void addNode(ConstantNode *node);
   /**
-   * After the model is initialized, extra uninformative nodes may be
-   * added to the graph.  The model takes responsibility for updating
-   * the extra node.
-   *
-   * The extra node cannot be observed, it must not already be in the
-   * model graph, it may not have any children, and all of its parents
-   * must be in the graph.
-   */
-  void addExtraNode(Node *node);
-  /**
    * Access the list of sampler factories, which is common to all
    * models. This is used during initialization to choose samplers.
    * Each sampler factory is paired with a boolean flag which is used

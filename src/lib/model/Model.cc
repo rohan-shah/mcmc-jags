@@ -532,46 +532,6 @@ void Model::removeMonitor(Monitor *monitor)
     setSampledExtra();
 }
 
-//FIXME The only reason we need this is because Monitors can
-//define a new node. We should forbid adding nodes to an initialized
-//model
-void Model::addExtraNode(Node *node)
-{
-    if (!_is_initialized) {
-	throw logic_error("Attempt to add extra node to uninitialized model");
-    }
-    if (node->randomVariableStatus() == RV_TRUE_OBSERVED) {
-	for (unsigned int i = 0; i < node->parents().size(); ++i) {
-	    if (!node->parents()[i]->isFixed())
-		throw logic_error("Cannot add observed node to initialized model");
-	}
-    }
-    if (!node->stochasticChildren()->empty() || !node->deterministicChildren()->empty()) {
-	throw logic_error("Cannot add extra node with children");
-    }
-
-/*
-    if (find(_nodes.begin(), _nodes.end(), node) != _nodes.end())
-    {
-	throw logic_error("Extra node already in model");
-    }
-*/  
-    for (vector<Node const *>::const_iterator p = node->parents().begin(); 
-	 p != node->parents().end(); ++p)
-    {
-	if (find(_nodes.rbegin(), _nodes.rend(), *p) == _nodes.rend()) {
-	    throw logic_error("Extra node has parents not in model");
-	}
-    }
-
-    _extra_nodes.push_back(node);
-    if (_data_gen) {
-	//Extra nodes are automatically sampled
-	_sampled_extra.push_back(node);
-    }
-}
-
-
 /* 
    We use construct-on-first-use for the factory lists used by model
    objects. By dynamically allocating a list, we ensure that its
