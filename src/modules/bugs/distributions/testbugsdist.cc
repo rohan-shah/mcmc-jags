@@ -21,6 +21,7 @@
 #include "DNChisqr.h"
 #include "DNegBin.h"
 #include "DNorm.h"
+#include "DNT.h"
 #include "DPar.h"
 #include "DPois.h"
 #include "DRound.h"
@@ -53,7 +54,7 @@ void BugsDistTest::setUp() {
     _dgamma = new jags::bugs::DGamma();
     _dgengamma = new jags::bugs::DGenGamma();
     _dhyper = new jags::bugs::DHyper();
-    _dnterval = new jags::bugs::DInterval();    
+    _dinterval = new jags::bugs::DInterval();    
     _dlnorm = new jags::bugs::DLnorm();
     _dlogis = new jags::bugs::DLogis();
     _dmnorm = new jags::bugs::DMNorm();
@@ -62,6 +63,7 @@ void BugsDistTest::setUp() {
     _dnchisqr = new jags::bugs::DNChisqr();
     _dnegbin = new jags::bugs::DNegBin();
     _dnorm = new jags::bugs::DNorm();
+    _dnt = new jags::bugs::DNT();
     _dpar = new jags::bugs::DPar();
     _dpois = new jags::bugs::DPois();
     _dround = new jags::bugs::DRound();
@@ -88,7 +90,7 @@ void BugsDistTest::tearDown() {
     delete _dgamma;
     delete _dgengamma;
     delete _dhyper;
-    delete _dnterval;    
+    delete _dinterval;    
     delete _dlnorm;
     delete _dlogis;
     delete _dmnorm;
@@ -97,6 +99,7 @@ void BugsDistTest::tearDown() {
     delete _dnchisqr;
     delete _dnegbin;
     delete _dnorm;
+    delete _dnt;
     delete _dpar;
     delete _dpois;
     delete _dround;
@@ -105,7 +108,6 @@ void BugsDistTest::tearDown() {
     delete _dunif;
     delete _dweib;
     delete _dwish;
-
 }
 
 void BugsDistTest::npar()
@@ -123,7 +125,7 @@ void BugsDistTest::npar()
     CPPUNIT_ASSERT_EQUAL(_dgamma->npar(), 2U);
     CPPUNIT_ASSERT_EQUAL(_dgengamma->npar(), 3U);
     CPPUNIT_ASSERT_EQUAL(_dhyper->npar(), 4U);
-    CPPUNIT_ASSERT_EQUAL(_dnterval->npar(), 2U);    
+    CPPUNIT_ASSERT_EQUAL(_dinterval->npar(), 2U);    
     CPPUNIT_ASSERT_EQUAL(_dlnorm->npar(), 2U);
     CPPUNIT_ASSERT_EQUAL(_dlogis->npar(), 2U);
     CPPUNIT_ASSERT_EQUAL(_dmnorm->npar(), 2U);
@@ -132,6 +134,7 @@ void BugsDistTest::npar()
     CPPUNIT_ASSERT_EQUAL(_dchisqr->npar(), 1U);
     CPPUNIT_ASSERT_EQUAL(_dnegbin->npar(), 2U);
     CPPUNIT_ASSERT_EQUAL(_dnorm->npar(), 2U);
+    CPPUNIT_ASSERT_EQUAL(_dnt->npar(), 3U);
     CPPUNIT_ASSERT_EQUAL(_dpar->npar(), 2U);
     CPPUNIT_ASSERT_EQUAL(_dpois->npar(), 1U);
     CPPUNIT_ASSERT_EQUAL(_dround->npar(), 2U);
@@ -156,7 +159,7 @@ void BugsDistTest::name()
     CPPUNIT_ASSERT_EQUAL(string("dgamma"), _dgamma->name());
     CPPUNIT_ASSERT_EQUAL(string("dgen.gamma"), _dgengamma->name());
     CPPUNIT_ASSERT_EQUAL(string("dhyper"), _dhyper->name());
-    CPPUNIT_ASSERT_EQUAL(string("dinterval"), _dnterval->name());    
+    CPPUNIT_ASSERT_EQUAL(string("dinterval"), _dinterval->name());    
     CPPUNIT_ASSERT_EQUAL(string("dlnorm"), _dlnorm->name());
     CPPUNIT_ASSERT_EQUAL(string("dlogis"), _dlogis->name());
     CPPUNIT_ASSERT_EQUAL(string("dmnorm"), _dmnorm->name());
@@ -165,6 +168,7 @@ void BugsDistTest::name()
     CPPUNIT_ASSERT_EQUAL(string("dnchisqr"), _dnchisqr->name());
     CPPUNIT_ASSERT_EQUAL(string("dnegbin"), _dnegbin->name());
     CPPUNIT_ASSERT_EQUAL(string("dnorm"), _dnorm->name());
+    CPPUNIT_ASSERT_EQUAL(string("dnt"), _dnt->name());
     CPPUNIT_ASSERT_EQUAL(string("dpar"), _dpar->name());
     CPPUNIT_ASSERT_EQUAL(string("dpois"), _dpois->name());
     CPPUNIT_ASSERT_EQUAL(string("dround"), _dround->name());
@@ -178,34 +182,35 @@ void BugsDistTest::name()
 
 void BugsDistTest::alias()
 {
-    CPPUNIT_ASSERT_EQUAL(string(""), _dbern->name());
-    CPPUNIT_ASSERT_EQUAL(string(""), _dbeta->name());
-    CPPUNIT_ASSERT_EQUAL(string("dbinom"), _dbin->name());
-    CPPUNIT_ASSERT_EQUAL(string(""), _dcat->name());
-    CPPUNIT_ASSERT_EQUAL(string("dchisq"), _dchisqr->name());
-    CPPUNIT_ASSERT_EQUAL(string("ddirich"), _ddirch->name());
-    CPPUNIT_ASSERT_EQUAL(string(""), _dexp->name());
-    CPPUNIT_ASSERT_EQUAL(string(""), _df->name());
-    CPPUNIT_ASSERT_EQUAL(string(""), _dgamma->name());
-    CPPUNIT_ASSERT_EQUAL(string("dggamma"), _dgengamma->name());
-    CPPUNIT_ASSERT_EQUAL(string(""), _dhyper->name());
-    CPPUNIT_ASSERT_EQUAL(string(""), _dnterval->name());    
-    CPPUNIT_ASSERT_EQUAL(string(""), _dlnorm->name());
-    CPPUNIT_ASSERT_EQUAL(string(""), _dlogis->name());
-    CPPUNIT_ASSERT_EQUAL(string(""), _dmnorm->name());
-    CPPUNIT_ASSERT_EQUAL(string(""), _dmt->name());
-    CPPUNIT_ASSERT_EQUAL(string("dmultinom"), _dmulti->name());
-    CPPUNIT_ASSERT_EQUAL(string("dnchisq"), _dnchisqr->name());
-    CPPUNIT_ASSERT_EQUAL(string("dnbinom"), _dnegbin->name());
-    CPPUNIT_ASSERT_EQUAL(string(""), _dnorm->name());
-    CPPUNIT_ASSERT_EQUAL(string(""), _dpar->name());
-    CPPUNIT_ASSERT_EQUAL(string(""), _dpois->name());
-    CPPUNIT_ASSERT_EQUAL(string(""), _dround->name());
-    CPPUNIT_ASSERT_EQUAL(string(""), _dsum->name());
-    CPPUNIT_ASSERT_EQUAL(string(""), _dt->name());
-    CPPUNIT_ASSERT_EQUAL(string(""), _dunif->name());
-    CPPUNIT_ASSERT_EQUAL(string(""), _dweib->name());
-    CPPUNIT_ASSERT_EQUAL(string(""), _dwish->name());
+    CPPUNIT_ASSERT_EQUAL(string(""), _dbern->alias());
+    CPPUNIT_ASSERT_EQUAL(string(""), _dbeta->alias());
+    CPPUNIT_ASSERT_EQUAL(string("dbinom"), _dbin->alias());
+    CPPUNIT_ASSERT_EQUAL(string(""), _dcat->alias());
+    CPPUNIT_ASSERT_EQUAL(string("dchisq"), _dchisqr->alias());
+    CPPUNIT_ASSERT_EQUAL(string("ddirich"), _ddirch->alias());
+    CPPUNIT_ASSERT_EQUAL(string(""), _dexp->alias());
+    CPPUNIT_ASSERT_EQUAL(string(""), _df->alias());
+    CPPUNIT_ASSERT_EQUAL(string(""), _dgamma->alias());
+    CPPUNIT_ASSERT_EQUAL(string("dggamma"), _dgengamma->alias());
+    CPPUNIT_ASSERT_EQUAL(string(""), _dhyper->alias());
+    CPPUNIT_ASSERT_EQUAL(string(""), _dinterval->alias());    
+    CPPUNIT_ASSERT_EQUAL(string(""), _dlnorm->alias());
+    CPPUNIT_ASSERT_EQUAL(string(""), _dlogis->alias());
+    CPPUNIT_ASSERT_EQUAL(string(""), _dmnorm->alias());
+    CPPUNIT_ASSERT_EQUAL(string(""), _dmt->alias());
+    CPPUNIT_ASSERT_EQUAL(string("dmultinom"), _dmulti->alias());
+    CPPUNIT_ASSERT_EQUAL(string("dnchisq"), _dnchisqr->alias());
+    CPPUNIT_ASSERT_EQUAL(string("dnbinom"), _dnegbin->alias());
+    CPPUNIT_ASSERT_EQUAL(string(""), _dnorm->alias());
+    CPPUNIT_ASSERT_EQUAL(string(""), _dnt->alias());
+    CPPUNIT_ASSERT_EQUAL(string(""), _dpar->alias());
+    CPPUNIT_ASSERT_EQUAL(string(""), _dpois->alias());
+    CPPUNIT_ASSERT_EQUAL(string(""), _dround->alias());
+    CPPUNIT_ASSERT_EQUAL(string(""), _dsum->alias());
+    CPPUNIT_ASSERT_EQUAL(string(""), _dt->alias());
+    CPPUNIT_ASSERT_EQUAL(string(""), _dunif->alias());
+    CPPUNIT_ASSERT_EQUAL(string("dweibull"), _dweib->alias());
+    CPPUNIT_ASSERT_EQUAL(string(""), _dwish->alias());
 }
 
 void BugsDistTest::rscalar_rpq(RScalarDist const *dist, 
@@ -320,6 +325,8 @@ void BugsDistTest::rscalar()
     rscalar_rpq(_dlogis, mkPar(-7, 0.3));
     rscalar_rpq(_dnchisqr, mkPar(5, 1.5));
     rscalar_rpq(_dnorm, mkPar(3, 10));
+    rscalar_rpq(_dnt, mkPar(0, 1, 4));
+    rscalar_rpq(_dnt, mkPar(-5, 3, 1));
     rscalar_rpq(_dpar, mkPar(1.3, 1));
 
     rscalar_rpq(_dpois, mkPar(0.12));
@@ -328,5 +335,4 @@ void BugsDistTest::rscalar()
     rscalar_rpq(_dt, mkPar(0, 1, 4));
     rscalar_rpq(_dweib, mkPar(3, 10));
     rscalar_rpq(_dweib, mkPar(0.9, 0.9));
-
 }

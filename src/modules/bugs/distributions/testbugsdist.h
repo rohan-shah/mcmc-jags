@@ -18,6 +18,7 @@ class BugsDistTest : public CppUnit::TestFixture, public JAGSFixture
     CPPUNIT_TEST_SUITE( BugsDistTest );
     CPPUNIT_TEST( npar );
     CPPUNIT_TEST( name );
+    CPPUNIT_TEST( alias );
     CPPUNIT_TEST( rscalar );
     CPPUNIT_TEST_SUITE_END(  );
 
@@ -34,7 +35,7 @@ class BugsDistTest : public CppUnit::TestFixture, public JAGSFixture
     jags::RScalarDist *_dgamma;
     jags::RScalarDist *_dgengamma;
     jags::RScalarDist *_dhyper;
-    jags::VectorDist *_dnterval;    
+    jags::VectorDist *_dinterval;    
     jags::RScalarDist *_dlnorm;
     jags::RScalarDist *_dlogis;
     jags::ArrayDist *_dmnorm;
@@ -43,6 +44,7 @@ class BugsDistTest : public CppUnit::TestFixture, public JAGSFixture
     jags::RScalarDist *_dnchisqr;
     jags::RScalarDist *_dnegbin;
     jags::RScalarDist *_dnorm;
+    jags::RScalarDist *_dnt;
     jags::RScalarDist *_dpar;
     jags::RScalarDist *_dpois;
     jags::ScalarDist *_dround;

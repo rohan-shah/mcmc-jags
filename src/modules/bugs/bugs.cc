@@ -21,6 +21,7 @@
 #include <distributions/DNegBin.h>
 #include <distributions/DNChisqr.h>
 #include <distributions/DNorm.h>
+#include <distributions/DNT.h>
 #include <distributions/DPar.h>
 #include <distributions/DPois.h>
 #include <distributions/DRound.h>
