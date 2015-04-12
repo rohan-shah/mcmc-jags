@@ -22,13 +22,13 @@ namespace base {
 	if (type != "mean")
 	    return 0;
 
-	Node *node = model->getNode(name, range);
-	if (!node) {
-	    msg = "Node not found";
+	NodeArray *array = model->symtab().getVariable(name);
+	if (!array) {
+	    msg = string("Variable ") + name + " not found";
 	    return 0;
 	}
-	
-	MeanMonitor *m = new MeanMonitor(node);
+
+	MeanMonitor *m = new MeanMonitor(NodeArraySubset(array, range));
 	
 	//Set name attributes 
 	m->setName(name + print(range));
@@ -36,7 +36,6 @@ namespace base {
 	if (isNULL(range)) {
 	    //Special syntactic rule: a null range corresponds to the whole
 	    //array
-	    NodeArray const *array = model->symtab().getVariable(name);
 	    node_range = array->range();
 	}
 	vector<string> elt_names;

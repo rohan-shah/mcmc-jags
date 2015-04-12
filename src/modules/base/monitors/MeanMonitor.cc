@@ -1,5 +1,6 @@
 #include <config.h>
 #include <graph/Node.h>
+#include <util/nainf.h>
 
 #include <algorithm>
 
@@ -11,9 +12,9 @@ using std::string;
 namespace jags {
 namespace base {
 
-    MeanMonitor::MeanMonitor(Node const *node)
-	: Monitor("mean", node), 
-	  _values(node->nchain(), vector<double>(node->length(), 0)),
+    MeanMonitor::MeanMonitor(NodeArraySubset const &subset)
+	: Monitor("mean", subset.nodes()), _subset(subset),
+	  _values(subset.nchain(), vector<double>(subset.length())),
 	  _n(0)
     {
 	
@@ -21,15 +22,17 @@ namespace base {
     
     void MeanMonitor::update()
     {
-	Node const *snode = nodes()[0];
-	unsigned int nchain = _values.size();
-
 	_n++;
-	for (unsigned int ch = 0; ch < nchain; ++ch) {
+	for (unsigned int ch = 0; ch < _values.size(); ++ch) {
+	    vector<double> value = _subset.value(ch);
 	    vector<double> &rmean  = _values[ch];
-	    double const *value = snode->value(ch);
-	    for (unsigned int i = 0; i < snode->length(); ++i) {
-		rmean[i] -= (rmean[i] - value[i])/_n;
+	    for (unsigned int i = 0; i < value.size(); ++i) {
+		if (value[i] == JAGS_NA) {
+		    rmean[i] = JAGS_NA;
+		}
+		else {
+		    rmean[i] -= (rmean[i] - value[i])/_n;
+		}
 	    }
 	}
     }
@@ -41,7 +44,7 @@ namespace base {
 
     vector<unsigned int> MeanMonitor::dim() const
     {
-	return nodes()[0]->dim();
+	return _subset.dim();
     }
 
     bool MeanMonitor::poolChains() const
@@ -51,7 +54,7 @@ namespace base {
 
     bool MeanMonitor::poolIterations() const
     {
-	return false;
+	return true;
     }
 
 }}

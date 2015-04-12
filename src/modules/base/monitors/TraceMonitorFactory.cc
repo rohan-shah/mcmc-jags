@@ -22,13 +22,13 @@ namespace base {
 	if (type != "trace")
 	    return 0;
 
-	Node *node = model->getNode(name, range);
-	if (!node) {
-	    msg = "Node not found";
+	NodeArray *array = model->symtab().getVariable(name);
+	if (!array) {
+	    msg = string("Variable ") + name + " not found";
 	    return 0;
 	}
-	
-	TraceMonitor *m = new TraceMonitor(node);
+
+	TraceMonitor *m = new TraceMonitor(NodeArraySubset(array, range));
 	
 	//Set name attributes 
 	m->setName(name + print(range));

@@ -23,6 +23,7 @@ class AggNode;
  * function.
  */
 class NodeArray {
+  friend class NodeArraySubset;
   std::string _name;
   SimpleRange _range;
   Graph _member_graph;

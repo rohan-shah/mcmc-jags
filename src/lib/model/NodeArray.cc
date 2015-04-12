@@ -321,5 +321,5 @@ void NodeArray::setData(SArray const &value, Model *model)
     {
 	return _nchain;
     }
-    
+	
 } //namespace jags

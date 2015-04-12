@@ -20,9 +20,14 @@ New features
 * Vector indexing is now possible for Node arrays and arbitrary integer
   vectors are allowed for the counter in a for loop.
 * The generalized gamma distribution dgen.gamma now has alias "dggamma"
-  for compatibility with OpenBUGS.
+  for compatibility with OpenBUGS. The multinomial distribution has alias
+  "dmultinom" for compatibility with R.
 * The function c() has been added to the bugs module. Like the R function c()
   it combines its arguments into a single vector.
+* New non-central t distribution "dnt" in the "bugs" module (from the R
+  math library)
+* Variables that are not completely defined can now be monitored. The
+  undefined elements are dropped from CODA output.
 
 Bug fixes
 =========
@@ -97,6 +102,7 @@ Library changes
   class is now represented by a sub-class SimpleRange.
 * The interface of the NodeArray class is simplified. Member functions
   find and isEmpty are defunct.
+* The new NodeArraySubset class is introduced for use by Monitors.
 
 
 Internal changes in modules
@@ -111,6 +117,9 @@ Internal changes in modules
     nodes that it can sample.
   - The sequence operator ":" is now defined as a function in the
     base module. Previously it was handled by the compiler.
+  - The TraceMonitor and MeanMonitor classes take their values from a 
+    NodeArraySubset instead of a Node, allowing them to be constructed
+    even when all elements of a NodeArray have not been defined.
 
 * bugs module
   - The ConjugateDirichlet sampler is now much faster for mixture
