@@ -9,6 +9,7 @@
 #include <JRmath.h>
 
 using std::vector;
+using std::string;
 
 #define PROB(par) (par[0])
 #define SIZE(par) (*par[1])
@@ -20,6 +21,11 @@ DMulti::DMulti()
   : VectorDist("dmulti", 2) 
 {}
 
+string DMulti::alias() const
+{
+    return "dmultinom";
+}
+    
 bool DMulti::isDiscreteValued(vector<bool> const &mask) const
 {
     return true;
