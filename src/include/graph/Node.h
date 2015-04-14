@@ -41,8 +41,6 @@ protected:
     const unsigned int _length;
     const unsigned int _nchain;
     double *_data;
-    unsigned int _index;
-
 
 public:
     /**
