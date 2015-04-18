@@ -50,6 +50,7 @@ class StochasticNode : public Node {
     const bool _discrete;
     virtual void sp(double *lower, double *upper, unsigned int length,
 		    unsigned int chain) const = 0;
+    
 protected:
     std::vector<std::vector<double const*> > _parameters;
 public:
@@ -68,7 +69,6 @@ public:
 		   Distribution const *dist,
                    std::vector<Node const *> const &parameters,
 		   Node const *lower, Node const *upper);
-    ~StochasticNode();
     /**
      * Returns a pointer to the Distribution.
      */
