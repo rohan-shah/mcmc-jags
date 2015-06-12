@@ -51,6 +51,7 @@ class DeterministicNode : public Node {
 public:
     DeterministicNode(std::vector<unsigned int> const &dim,
 		      std::vector<Node const *> const &parents);
+    ~DeterministicNode();
     /**
      * Random samples from a Deterministic node are not random.
      * This function simply calculates the value of the node from its

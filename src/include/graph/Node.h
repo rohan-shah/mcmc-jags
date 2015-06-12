@@ -28,10 +28,6 @@ enum RVStatus {RV_FALSE, RV_TRUE_UNOBSERVED, RV_TRUE_OBSERVED};
  * @short Node in a directed acyclic graph
  */
 class Node {
-
-    friend class StochasticNode;
-    friend class DeterministicNode;
-    
     std::vector<Node const *> _parents;
     std::list<StochasticNode*> *_stoch_children;
     std::list<DeterministicNode *> *_dtrm_children;
@@ -39,7 +35,7 @@ class Node {
     /* Forbid copying of Node objects */
     Node(Node const &orig);
     Node &operator=(Node const &rhs);
-    
+
 protected:
     std::vector<unsigned int> const &_dim;
     const unsigned int _length;
@@ -60,19 +56,13 @@ public:
      *
      * @param dim Dimension of new Node.
      *
-     * @param parents vector of parent nodes. 
+     * @param parents vector of parent nodes. A node may not be its own
+     * parent.
      */
     Node(std::vector<unsigned int> const &dim, 
 	 std::vector<Node const *> const &parents);
     /**
      * Destructor. 
-     * 
-     * When a node is deleted, its parents and children are
-     * invalidated as they contain pointers to the deleted Node.
-     * Therefore Nodes that are linked by parent/child relationships
-     * must be deleted at the same time. This is typically done by
-     * adding Nodes to a Model object, which becomes the owner of the
-     * Nodes and deletes them when the Model is deleted.
      */
     virtual ~Node();
     /**
@@ -168,6 +158,11 @@ public:
      * Swaps the values in the given chains
      */
     void swapValue(unsigned int chain1, unsigned int chain2);
+
+    void addChild(StochasticNode *node) const;
+    void removeChild(StochasticNode *node) const;
+    void addChild(DeterministicNode *node) const;
+    void removeChild(DeterministicNode *node) const;
 };
 
 /**

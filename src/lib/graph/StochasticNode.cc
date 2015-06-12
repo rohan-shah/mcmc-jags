@@ -85,17 +85,20 @@ StochasticNode::StochasticNode(vector<unsigned int> const &dim,
     //Insert the current node as a child in all its parents
     //taking care to avoid repeats
     set<Node const*> pset;
-    for (vector<Node const*>::const_iterator p = parents().begin();
-	 p != parents().end(); ++p)
-    {
-	if (pset.insert(*p).second) {
-	    //Note that we can do this because StochasticNode is
-	    //a friend class of Node, giving us direct access to
-	    //p->_stoch_children
-	    (*p)->_stoch_children->push_back(this);
+    for (unsigned int i = 0; i < parents().size(); ++i) {
+	Node const *p = parents()[i];
+	if (pset.insert(p).second) {
+	    p->addChild(this);
 	}
     }
 
+}
+
+StochasticNode::~StochasticNode()
+{
+    for (unsigned int i = 0; i < parents().size(); ++i) {
+	parents()[i]->removeChild(this);
+    }
 }
 
 Distribution const *StochasticNode::distribution() const

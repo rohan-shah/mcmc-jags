@@ -104,9 +104,6 @@ Library changes
 * The new NodeArraySubset class is introduced for use by Monitors.
   The BUGSModel::getNode and Model::addExtraNode functions are defunct.
   These functions were only needed by Monitors.
-* The Node interface is simplified: member functions addChild and removeChild
-  are defunct.
-* StochasticNode and DeterministicNode are now friend classes of Node
 
 
 Internal changes in modules

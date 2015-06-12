@@ -161,4 +161,48 @@ unsigned int Node::length() const
     return _length;
 }
 
+void Node::addChild(DeterministicNode *node) const
+{
+    _dtrm_children->push_back(node);
+}
+
+void Node::addChild(StochasticNode *node) const
+{
+    _stoch_children->push_back(node);
+}
+
+void Node::removeChild(DeterministicNode *node) const
+{
+    /* 
+       Removes the given node from the list of deterministic children.
+       
+       When Model::~Model is called, all nodes are deleted in reverse
+       order of construction. In this case, the element of _dtrm_node
+       to remove is the last one. For efficiency, we therefore search
+       for the element of _dtrm_node to remove starting at the
+       end. (NB Searching from the beginning results in quadratic
+       complexity in the size of _dtrm_node, which can cause real
+       efficiency problems when deleting a model)
+    */
+    
+    list<DeterministicNode*>::reverse_iterator p =
+	find(_dtrm_children->rbegin(), _dtrm_children->rend(), node);
+    if (p != _dtrm_children->rend()) {
+	//The erase function only accepts iterators. Some shennanigans
+	//are required to convert the reverse iterator correctly.
+	_dtrm_children->erase((++p).base());
+    }
+}
+
+void Node::removeChild(StochasticNode *node) const
+{
+    /* See comments in removeChild for DeterministicNodes */
+    
+    list<StochasticNode*>::reverse_iterator p = 
+	find(_stoch_children->rbegin(), _stoch_children->rend(), node);
+    if (p != _stoch_children->rend()) {
+	_stoch_children->erase((++p).base());
+    }
+}
+
 } //namespace jags
