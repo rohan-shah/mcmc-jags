@@ -57,14 +57,15 @@ public:
      * node will be returned. If a newly allocated node is returned,
      * it is also added to the given Model.
      */
-    Node *getNode(FunctionPtr const &func, 
+    Node *getNode(FunctionPtr const &func,
 		  std::vector<Node const*> const &param,
 		  Model &model);
     /**
      * Returns a newly allocated LogicalNode.
      */
     static LogicalNode* newNode(FunctionPtr const &func, 
-				std::vector<Node const *> const &parents);
+				std::vector<Node const *> const &parents,
+				unsigned int nchain);
 };
 
 } /* namespace jags */

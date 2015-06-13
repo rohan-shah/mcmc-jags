@@ -37,7 +37,8 @@ bool lt(LogicalPair const &arg1, LogicalPair const &arg2)
 }
 
 LogicalNode* LogicalFactory::newNode(FunctionPtr const &func, 
-				     vector<Node const *> const &parents)
+				     vector<Node const *> const &parents,
+				     unsigned int nchain)
 {
     LogicalNode *node = 0;
     if (SCALAR(func)) {
@@ -58,10 +59,10 @@ LogicalNode* LogicalFactory::newNode(FunctionPtr const &func,
 				func.name());
 	}
 	else if (arglength == 1) {
-	    node = new ScalarLogicalNode(SCALAR(func), parents);
+	    node = new ScalarLogicalNode(SCALAR(func), nchain, parents);
 	}
 	else {
-	    node = new VSLogicalNode(SCALAR(func), parents);
+	    node = new VSLogicalNode(SCALAR(func), nchain, parents);
 	}
     }
     else if (LINK(func)) {
@@ -73,16 +74,16 @@ LogicalNode* LogicalFactory::newNode(FunctionPtr const &func,
 	    }
 	}
 	if (ok) {
-	    node = new LinkNode(LINK(func), parents);
+	    node = new LinkNode(LINK(func), nchain, parents);
 	}
 	else {
 	    throw runtime_error("Invalid vector argument to " +	func.name());
 	}
     }
     else if (VECTOR(func))
-	node = new VectorLogicalNode(VECTOR(func), parents);
+	node = new VectorLogicalNode(VECTOR(func), nchain, parents);
     else if (ARRAY(func))
-	node = new ArrayLogicalNode(ARRAY(func), parents);
+	node = new ArrayLogicalNode(ARRAY(func), nchain, parents);
     else
 	throw invalid_argument("Invalid function in getNode");
     return node;
@@ -103,7 +104,7 @@ Node* LogicalFactory::getNode(FunctionPtr const &func,
 	return i->second;
     }
     else {
-	LogicalNode *lnode = newNode(func, parents);
+	LogicalNode *lnode = newNode(func, parents, model.nchain());
 	_logicalmap[lpair] = lnode;
 	model.addNode(lnode);
 	return lnode;

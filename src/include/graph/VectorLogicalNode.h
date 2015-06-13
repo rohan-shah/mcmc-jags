@@ -24,7 +24,7 @@ public:
      * A logical node is defined by a function (which may be an inline
      * operator in the BUGS language) and its parameters.
      */
-    VectorLogicalNode(VectorFunction const *func,
+    VectorLogicalNode(VectorFunction const *func, unsigned int nchain,
 		      std::vector<Node const*> const &parameters);
     /**
      * Calculates the value of the node based on the parameters. 
@@ -34,7 +34,7 @@ public:
      * @see VectorFunction#checkParameterValue.
      */
     bool checkParentValues(unsigned int chain) const;
-    DeterministicNode *clone(std::vector<Node const *> const &parents) const;
+    //DeterministicNode *clone(std::vector<Node const *> const &parents) const;
 };
 
 } /* namespace jags */

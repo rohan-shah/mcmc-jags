@@ -18,9 +18,10 @@ using std::logic_error;
 
 namespace jags {
 
-ScalarLogicalNode::ScalarLogicalNode(ScalarFunction const *function, 
+ScalarLogicalNode::ScalarLogicalNode(ScalarFunction const *function,
+				     unsigned int nchain,
 				     vector<Node const *> const &parameters)
-    : LogicalNode(vector<unsigned int>(1,1), parameters, function),
+    : LogicalNode(vector<unsigned int>(1,1), nchain, parameters, function),
       _func(function)
 {
     if (!function) {
@@ -40,7 +41,7 @@ ScalarLogicalNode::ScalarLogicalNode(ScalarFunction const *function,
     }
 
     if (isFixed()) {
-	for (unsigned int ch = 0; ch < _nchain; ++ch) {
+	for (unsigned int ch = 0; ch < nchain; ++ch) {
 	    deterministicSample(ch);
 	}
     }
@@ -56,10 +57,12 @@ bool ScalarLogicalNode::checkParentValues(unsigned int chain) const
     return _func->checkParameterValue(_parameters[chain]);
 }
 
+    /*
 DeterministicNode *
 ScalarLogicalNode::clone(vector<Node const*> const &parents) const
 {
     return new ScalarLogicalNode(_func, parents);
 }
-
+    */
+    
 } //namespace jags

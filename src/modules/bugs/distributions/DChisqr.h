@@ -30,8 +30,8 @@ class DChisqr : public RScalarDist {
    */
   bool checkParameterValue(std::vector<double const *> const &parameters) const;
   std::string alias() const;
-  double KL(std::vector<double const *> const &par1,
-	    std::vector<double const *> const &par2) const;
+  double KL(std::vector<double const *> const &par0,
+	    std::vector<double const *> const &par1) const;
 };
 
 }}

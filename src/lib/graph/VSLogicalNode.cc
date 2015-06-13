@@ -38,13 +38,14 @@ static vector<bool> mkIsVector(vector<Node const *> const &parameters)
     return ans;
 }
 
-VSLogicalNode::VSLogicalNode(ScalarFunction const *function, 
+VSLogicalNode::VSLogicalNode(ScalarFunction const *function,
+			     unsigned int nchain,
 			     vector<Node const *> const &parameters)
-    : LogicalNode(mkDim(parameters), parameters, function),
+    : LogicalNode(mkDim(parameters), nchain, parameters, function),
       _func(function), _isvector(mkIsVector(parameters))
 {
     if (isFixed()) {
-	for (unsigned int ch = 0; ch < _nchain; ++ch) {
+	for (unsigned int ch = 0; ch < nchain; ++ch) {
 	    deterministicSample(ch);
 	}
     }
@@ -79,11 +80,12 @@ bool VSLogicalNode::checkParentValues(unsigned int chain) const
     return true;
 }
 
+    /*
 DeterministicNode *
 VSLogicalNode::clone(vector<Node const*> const &parents) const
 {
     return new VSLogicalNode(_func, parents);
 }
-
+    */
 
 } //namespace jags

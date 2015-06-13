@@ -104,7 +104,8 @@ Library changes
 * The new NodeArraySubset class is introduced for use by Monitors.
   The BUGSModel::getNode and Model::addExtraNode functions are defunct.
   These functions were only needed by Monitors.
-
+* Calculation of Kullback-Leibler divergence is moved out of the dic
+  module and into the library.
 
 Internal changes in modules
 ===========================

@@ -18,9 +18,9 @@ namespace jags {
 
 class GraphMarks;
 
-LinkNode::LinkNode(LinkFunction const *function, 
+LinkNode::LinkNode(LinkFunction const *function, unsigned int nchain,
 		   vector<Node const *> const &parents)
-    : LogicalNode(vector<unsigned int>(1,1), parents, function), 
+    : LogicalNode(vector<unsigned int>(1,1), nchain, parents, function), 
       _func(function)
 {
     if (!isScalar(parents[0]->dim())) {
@@ -44,13 +44,15 @@ bool LinkNode::checkParentValues(unsigned int chain) const
 {
     return true;
 }
-   
+
+    /*
 DeterministicNode *
 LinkNode::clone(vector<Node const *> const &parents) const
 {
     return new LinkNode(_func, parents);
 }
-
+    */
+    
 double LinkNode::eta(unsigned int chain) const
 {
     return *_parameters[chain][0];

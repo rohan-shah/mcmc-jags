@@ -63,12 +63,13 @@ static vector<unsigned int> sub_offsets(vector<Node const *> const &parents,
     return newoffsets;
 }
 
-AggNode::AggNode(vector<unsigned int> const &dim, 
+AggNode::AggNode(vector<unsigned int> const &dim,
+		 unsigned int nchain,
 		 vector<Node const *> const &parents,
                  vector<unsigned int> const &offsets)
-    : DeterministicNode(dim, sub_parents(parents, offsets)), 
+    : DeterministicNode(dim, nchain, sub_parents(parents, offsets)), 
       _offsets(sub_offsets(parents, offsets)),
-      _parent_values(_length * _nchain), _discrete(true)
+      _parent_values(_length * nchain), _discrete(true)
 {
     // Check argument lengths
     if (_length != parents.size() || _length != offsets.size()) {
@@ -190,11 +191,13 @@ string AggNode::deparse(vector<string> const &parents) const
 	parents.back() + ")";
 }
 
+/*    
 DeterministicNode *
 AggNode::clone(vector<Node const *> const &parents) const
 {
     return new AggNode(this->dim(), parents, _offsets);
 }
+*/
 
 bool AggNode::isDiscreteValued() const
 {

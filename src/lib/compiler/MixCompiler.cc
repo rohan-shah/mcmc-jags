@@ -196,6 +196,7 @@ static bool findStochasticIndices(vector<Node const *> const &tgt_nodes,
     return true;
 }
 
+    /*
 static void cloneNodes(vector<StochasticNode*> const &nodes, 
 		       vector<StochasticNode*> &newnodes,
 		       map<Node const*, Node const*> &remap)
@@ -226,7 +227,8 @@ static void cloneNodes(vector<DeterministicNode*> const &nodes,
 	remap[nodes[i]] = newnode;
     }
 }
-
+    */
+    
 static Node* 
 getMixtureNode1(NodeArray *array, vector<SSI> const &limits, Compiler *compiler)
 // Try to simplify the mixture node by enumerating all possible values
@@ -266,19 +268,15 @@ getMixtureNode1(NodeArray *array, vector<SSI> const &limits, Compiler *compiler)
 	upper[i] = static_cast<int>(u);
     }
 
-    map<Node const*, Node const*> remap;
-    vector<StochasticNode *> rep_sparents;
-    cloneNodes(sparents, rep_sparents, remap);
-    
-    vector<DeterministicNode const*> dtrm_parents;
-    vector<DeterministicNode*> rep_dparents;
-    cloneNodes(dparents, rep_dparents, remap);
-
-    vector<Node const*> rep_indices(indices.size());
-    for (unsigned int i = 0; i < indices.size(); ++i) {
-	rep_indices[i] = remap[indices[i]];
+    //Store current value of all stochastic parents
+    vector<vector<double> > stored_parent_values;
+    for (unsigned int j = 0; j < sparents.size(); ++j) {
+	double const *pv = sparents[j]->value(0);
+	vector<double> value(sparents[j]->length());
+	copy(pv, pv + sparents[j]->length(), value.begin());
+	stored_parent_values.push_back(value);
     }
-
+    
     // Create a set containing all possible values that the stochastic
     // indices can take
 
@@ -290,29 +288,25 @@ getMixtureNode1(NodeArray *array, vector<SSI> const &limits, Compiler *compiler)
 
 	for (unsigned int j = 0; j < sparents.size(); ++j) {
 	    double v = i[j];
-	    rep_sparents[j]->setValue(&v, 1, 0);
+	    sparents[j]->setValue(&v, 1, 0);
 	}
 
 	for (unsigned int k = 0; k < dparents.size(); ++k) {
-	    rep_dparents[k]->deterministicSample(0);
+	    dparents[k]->deterministicSample(0);
 	}
     
 	for (unsigned int l = 0; l < indices.size(); ++l) {
-	    this_index[l] = static_cast<int>(*rep_indices[l]->value(0));
+	    this_index[l] = static_cast<int>(*indices[l]->value(0));
 	}
     
 	index_values.insert(this_index);
     }
-    
-    // We are done with the replicate nodes
-    rep_indices.clear();
-    while (!rep_dparents.empty()) {
-	delete rep_dparents.back();
-	rep_dparents.pop_back();
-    }
-    while (!rep_sparents.empty()) {
-	delete rep_sparents.back();
-	rep_sparents.pop_back();
+
+    //Restore value of all stochastic parents
+    vector<vector<double> > parent_values;
+    for (unsigned int j = 0; j < sparents.size(); ++j) {
+	vector<double> const &pv = stored_parent_values[j];
+	sparents[j]->setValue(&pv[0], pv.size(), 0);
     }
 
     // Now set up the possible subsets defined by the stochastic indices

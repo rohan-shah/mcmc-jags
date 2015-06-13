@@ -42,7 +42,7 @@ MixtureFactory::getMixtureNode(vector<Node const *> const &index_nodes,
             throw logic_error("Length mismatch in MixtureFactory::getMixtureNode");
         }
 	
-	MixtureNode *mix = new MixtureNode(index_nodes, mixmap);
+	MixtureNode *mix = new MixtureNode(index_nodes, model.nchain(), mixmap);
 	_mix_node_map[mpair] = mix;
 	model.addNode(mix);
 	return mix;

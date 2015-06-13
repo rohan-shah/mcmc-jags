@@ -48,11 +48,12 @@ mkParameterLengths(vector<Node const *> const &parameters) {
     return getUnique(lengths);
 }
 
-VectorStochasticNode::VectorStochasticNode(VectorDist const *dist, 
+VectorStochasticNode::VectorStochasticNode(VectorDist const *dist,
+					   unsigned int nchain,
 					   vector<Node const *> const &params,
 					   Node const *lower, Node const *upper)
     : StochasticNode(vector<unsigned int>(1,mkLength(dist, params)), 
-		     dist, params, lower, upper),
+		     nchain, dist, params, lower, upper),
       _dist(dist), _lengths(mkParameterLengths(params))
 {
     if (!dist->checkParameterLength(_lengths)) {
@@ -134,13 +135,15 @@ bool VectorStochasticNode::checkParentValues(unsigned int chain) const
     return _dist->checkParameterValue(_parameters[chain], _lengths);
 }
 
+    /*
 StochasticNode * 
 VectorStochasticNode::clone(vector<Node const *> const &parameters,
 			    Node const *lower, Node const *upper) const
 {
     return new VectorStochasticNode(_dist, parameters, lower, upper);
 }
-
+    */
+    
 unsigned int VectorStochasticNode::df() const
 {
     return _dist->df(_lengths);
@@ -152,4 +155,33 @@ void VectorStochasticNode::sp(double *lower, double *upper, unsigned int length,
     _dist->support(lower, upper, length, _parameters[chain], _lengths);
 }
 
+    
+    double VectorStochasticNode::KL(unsigned int ch1, unsigned int ch2,
+				    RNG *rng, unsigned int nrep) const
+    {
+	if (lowerBound() || upperBound()) {
+	    Node const *ll = lowerBound();
+	    Node const *uu = upperBound();
+	    if (ll && !ll->isFixed()) {
+		return JAGS_POSINF;
+	    }
+	    if (uu &&  !uu->isFixed()) {
+		return JAGS_POSINF;
+	    }
+	    return _dist->KL(_parameters[ch1], _parameters[ch2], _lengths,
+			     lowerLimit(0), upperLimit(0), rng, nrep);
+	}
+	else {
+	    double kl =  _dist->KL(_parameters[ch1], _parameters[ch2],
+				   _lengths);
+	    if (kl == JAGS_NA) {
+		return _dist->KL(_parameters[ch1], _parameters[ch2], _lengths,
+				 0, 0, rng, nrep);
+	    }
+	    else {
+		return kl;
+	    }
+	}
+    }
+    
 } //namespace jags

@@ -6,9 +6,10 @@ using std::set;
 
 namespace jags {
 
-DeterministicNode::DeterministicNode(vector<unsigned int> const &dim, 
+DeterministicNode::DeterministicNode(vector<unsigned int> const &dim,
+				     unsigned int nchain,
                                      vector<Node const *> const &parents)
-    : Node(dim, parents), _fixed(true)
+    : Node(dim, nchain, parents), _fixed(true)
 {
     //Add this node as a deterministic child of its parents
     //taking care to avoid repeats
@@ -36,7 +37,6 @@ DeterministicNode::DeterministicNode(vector<unsigned int> const &dim,
        is a virtual function. So we have to do it in whatever
        sub-class defines the deterministicSample member function.
     */
-       
 }
 
 DeterministicNode::~DeterministicNode()
@@ -46,8 +46,8 @@ DeterministicNode::~DeterministicNode()
     }
 }
 
-void DeterministicNode::randomSample(RNG*, unsigned int nchain) {
-    deterministicSample(nchain);
+void DeterministicNode::randomSample(RNG*, unsigned int chain) {
+    deterministicSample(chain);
 }
 
 RVStatus DeterministicNode::randomVariableStatus() const 

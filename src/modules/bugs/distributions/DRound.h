@@ -32,8 +32,8 @@ public:
     double u(std::vector<double const *> const &parameters) const;
     bool isSupportFixed(std::vector<bool> const &fixmask) const;
     unsigned int df() const;
-    double KL(std::vector<double const *> const &par1,
-	      std::vector<double const *> const &par2) const;
+    double KL(std::vector<double const *> const &par0,
+	      std::vector<double const *> const &par1) const;
 };
 
 }}

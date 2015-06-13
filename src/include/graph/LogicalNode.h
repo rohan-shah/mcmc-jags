@@ -25,7 +25,8 @@ public:
      * A logical node is defined by a function (which may be an inline
      * operator in the BUGS language) and its parameters.
      */
-    LogicalNode(std::vector<unsigned int> const &dim, 
+    LogicalNode(std::vector<unsigned int> const &dim,
+		unsigned int nchain,
                 std::vector<Node const*> const &parameters,
 		Function const *func);
     /**

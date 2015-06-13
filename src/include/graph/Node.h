@@ -59,7 +59,7 @@ public:
      * @param parents vector of parent nodes. A node may not be its own
      * parent.
      */
-    Node(std::vector<unsigned int> const &dim, 
+    Node(std::vector<unsigned int> const &dim, unsigned int nchain,
 	 std::vector<Node const *> const &parents);
     /**
      * Destructor. 

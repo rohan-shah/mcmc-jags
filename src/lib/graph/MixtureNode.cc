@@ -130,10 +130,11 @@ namespace jags {
     }
 
 MixtureNode::MixtureNode (vector<Node const *> const &index,
+			  unsigned int nchain,
 			  MixMap const &mixmap)
-    : DeterministicNode(mkDim(mixmap), mkParents(index, mixmap)),
+    : DeterministicNode(mkDim(mixmap), nchain, mkParents(index, mixmap)),
       _table(getTable(mixmap)), _Nindex(index.size()), _discrete(true),
-      _active_parents(nchain())
+      _active_parents(nchain)
 {
     // Check validity of index argument
 
@@ -293,6 +294,7 @@ bool MixtureNode::checkParentValues(unsigned int chain) const
     return true;
 }
 
+    /*
 DeterministicNode *MixtureNode::clone(vector<Node const *> const &parents) const
 {
     vector<Node const *> index(_Nindex);
@@ -314,7 +316,8 @@ DeterministicNode *MixtureNode::clone(vector<Node const *> const &parents) const
     
     return new MixtureNode(index, mixmap);
 }
-
+    */
+    
 bool MixtureNode::isDiscreteValued() const
 {
     return _discrete;

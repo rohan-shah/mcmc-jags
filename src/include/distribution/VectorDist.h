@@ -150,6 +150,44 @@ class VectorDist : public Distribution
      * case, the df member function must be overrideen.
      */
     virtual unsigned int df(std::vector<unsigned int> const &lengths) const;
+    /**
+     * Returns a Monte Carlo estimate of the Kullback-Leibler
+     * divergence between distributions with two different parameter
+     * values. This is done by drawing random samples from the
+     * distribution with the first set of parameters and then
+     * calculating the log-likelihood ratio with respect to the second
+     * set of parameters.
+     *
+     * Only one lower and one upper bound is required, which is
+     * assumed common to both sets of parameters. This is because the
+     * Kullback-Leibler divergence is infinite between two bounded
+     * distributions if they do not share the same bounds.
+     *
+     * @param par1 First set of parameters
+     * @param par2 Second set of parameter values
+     * @param lengths Vector of parameter lengths, common to both par1 and par2
+     * @param lower Pointer to lower bound (NULL if unbounded)
+     * @param upper Pointer to upper bound (NULL if unbounded)
+     * @param rng Random number generator
+     * @param nrep Number of replicates on which to base the estimate
+     */
+    double KL(std::vector<double const *> const &par1,
+	      std::vector<double const *> const &par2,
+	      std::vector<unsigned int> const &lengths,
+	      double const *lower, double const *upper,
+	      RNG *rng, unsigned int nrep) const;
+    /**
+   * Returns the Kullback-Leibler divergence between distributions
+   * with two different parameter values.
+   *
+   * This is a virtual function that must be overloaded for any
+   * distribution that allows exact Kullback-Leibler divergence
+   * calculations. The default method returns JAGS_NA, indicating that
+   * the method is not implemented.
+   */
+  virtual double KL(std::vector<double const *> const &par1,
+		    std::vector<double const *> const &par2,
+		    std::vector<unsigned int> const &lengths) const;
 };
 
 } /* namespace jags */

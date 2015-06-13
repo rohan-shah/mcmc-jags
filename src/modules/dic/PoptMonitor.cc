@@ -12,14 +12,15 @@ namespace jags {
 namespace dic {
 
     PoptMonitor::PoptMonitor(vector<StochasticNode const *> const &snodes,
-			     vector<CalKL *> const &calkl)
-	: PDMonitor(snodes, calkl, 2.0), _snodes(snodes)
+			     vector<RNG *> const &rngs, unsigned int nrep)
+	: PDMonitor(snodes, rngs, nrep, 2.0)
     {
     }
 
-    double PoptMonitor::weight(unsigned int k, unsigned int ch) const
+    double PoptMonitor::weight(StochasticNode const *snode,
+			       unsigned int ch) const
     {
-	return exp(-_snodes[k]->logDensity(ch, PDF_FULL));
+	return exp(-snode->logDensity(ch, PDF_FULL));
     }
 
 }}

@@ -28,8 +28,8 @@ class DExp : public RScalarDist {
    * Checks that lambda > 0
    */
   bool checkParameterValue(std::vector<double const *> const &parameters) const;
-  double KL(std::vector<double const *> const &par1,
-	    std::vector<double const *> const &par2) const;
+  double KL(std::vector<double const *> const &par0,
+	    std::vector<double const *> const &par1) const;
 };
 
 }}

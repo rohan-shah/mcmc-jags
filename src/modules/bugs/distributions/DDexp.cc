@@ -97,15 +97,13 @@ double DDexp::r(vector<double const *> const &par, RNG *rng) const
 }
 
 
-double DDexp::KL(vector<double const *> const &par1,
-		 vector<double const *> const &par2) const
-{
-    //FIXME Shouldn't fabs be in namespace std??
-
-    double r = RATE(par2) / RATE(par2); 
-    double delta = RATE(par1) * fabs(MU(par2) - MU(par1));
-    
-    return r * (delta + exp(-delta)) - 1 - log(r);
-}
+    double DDexp::KL(vector<double const *> const &par0,
+		     vector<double const *> const &par1) const
+    {
+	double r = RATE(par1) / RATE(par0); 
+	double delta = RATE(par0) * std::abs(MU(par1) - MU(par0));
+	
+	return r * (delta + exp(-delta)) - 1 - log(r);
+    }
 
 }}

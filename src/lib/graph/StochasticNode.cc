@@ -52,13 +52,14 @@ static vector<Node const *> mkParents(vector<Node const *> const &parameters,
     }
 
 StochasticNode::StochasticNode(vector<unsigned int> const &dim,
+			       unsigned int nchain,
 			       Distribution const *dist,
 			       vector<Node const *> const &parameters,
 			       Node const *lower, Node const *upper)
-    : Node(dim, mkParents(parameters, lower, upper)), 
+    : Node(dim, nchain, mkParents(parameters, lower, upper)), 
       _dist(dist), _lower(lower), _upper(upper), 
       _observed(false), 
-      _discrete(mkDiscrete(dist, parameters)), _parameters(nchain())
+      _discrete(mkDiscrete(dist, parameters)), _parameters(nchain)
 {
     if (!checkNPar(dist, parameters.size())) {
 	throw DistError(_dist, "Incorrect number of parameters");
@@ -75,7 +76,7 @@ StochasticNode::StochasticNode(vector<unsigned int> const &dim,
     }
 
     //Set up parameter vectors 
-    for (unsigned int n = 0; n < nchain(); ++n) {
+    for (unsigned int n = 0; n < nchain; ++n) {
 	_parameters[n].reserve(parameters.size());
 	for (unsigned int i = 0; i < parameters.size(); ++i) {
 	    _parameters[n].push_back(parameters[i]->value(n));
@@ -167,7 +168,7 @@ Node const *StochasticNode::upperBound() const
     return _upper;
 }
 
-
+/*
 StochasticNode * 
 StochasticNode::clone(vector<Node const *> const &parents) const
 {
@@ -185,7 +186,8 @@ StochasticNode::clone(vector<Node const *> const &parents) const
     
     return clone(param, lower, upper);
 }
-
+*/
+    
 double const *StochasticNode::lowerLimit(unsigned int chain) const
 {
     return _lower ? _lower->value(chain) : 0;
@@ -216,11 +218,13 @@ bool isSupportFixed(StochasticNode const *node)
     return node->distribution()->isSupportFixed(fixmask);
 }
 
+    /*
 vector<double const*> const &StochasticNode::parameters(unsigned int chain) const
 {
     //FIXME: only required in DIC module
     return _parameters[chain];
 }
+    */
 
 void StochasticNode::support(double *lower, double *upper, unsigned int length,
 			     unsigned int chain) const
@@ -265,5 +269,6 @@ bool isBounded(StochasticNode const *node)
 	}
 	_observed = true;
     }
+
 
 } //namespace jags

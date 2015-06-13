@@ -59,9 +59,10 @@ mkParameterDims(vector<Node const *> const &parameters) {
     return getUnique(dims);
 }
 
-ArrayLogicalNode::ArrayLogicalNode(ArrayFunction const *function, 
+ArrayLogicalNode::ArrayLogicalNode(ArrayFunction const *function,
+				   unsigned int nchain,
 				   vector<Node const *> const &parameters)
-    : LogicalNode(mkDim(function,parameters), parameters, function),
+    : LogicalNode(mkDim(function,parameters), nchain, parameters, function),
       _func(function), _dims(mkParameterDims(parameters))
 {
     if (isFixed()) {
@@ -81,10 +82,12 @@ bool ArrayLogicalNode::checkParentValues(unsigned int chain) const
     return _func->checkParameterValue(_parameters[chain], _dims);
 }
 
+    /*
 DeterministicNode *
 ArrayLogicalNode::clone(vector<Node const*> const &parents) const
 {
     return new ArrayLogicalNode(_func, parents);
 }
-
+    */
+    
 } //namespace jags

@@ -21,7 +21,7 @@ public:
      * distribution and an array of parent nodes, considered as
      * parameters to the distribution.
      */
-    ArrayStochasticNode(ArrayDist const *dist,
+    ArrayStochasticNode(ArrayDist const *dist, unsigned int nchain,
 			std::vector<Node const *> const &parameters,
 			Node const *lower, Node const *upper,
 			double const *data=0, unsigned int length=0);
@@ -31,9 +31,10 @@ public:
 			 double const *lower, double const *upper);
     void deterministicSample(unsigned int chain);
     bool checkParentValues(unsigned int chain) const;
-    StochasticNode *clone(std::vector<Node const *> const &parents,
-			  Node const *lower, Node const *upper) const;
+    //StochasticNode *clone(std::vector<Node const *> const &parents,
+    //Node const *lower, Node const *upper) const;
     unsigned int df() const;
+    double KL(unsigned int chain1, unsigned int chain2, RNG *rng, unsigned int nrep) const;
 };
 
 } /* namespace jags */

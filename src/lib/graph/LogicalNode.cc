@@ -33,11 +33,13 @@ mkParams(vector<Node const*> const &parents, unsigned int nchain)
 }
 
 
-LogicalNode::LogicalNode(vector<unsigned int> const &dim, 
+LogicalNode::LogicalNode(vector<unsigned int> const &dim,
+			 unsigned int nchain,
 			 vector<Node const *> const &parameters,
 			 Function const *function)
-    : DeterministicNode(dim, parameters), _func(function), _discrete(false), 
-      _parameters(mkParams(parameters, nchain()))
+    : DeterministicNode(dim, nchain, parameters),
+      _func(function), _discrete(false), 
+      _parameters(mkParams(parameters, nchain))
 {
     if (!checkNPar(function, parameters.size())) {
 	throw FuncError(function, "Incorrect number of arguments");

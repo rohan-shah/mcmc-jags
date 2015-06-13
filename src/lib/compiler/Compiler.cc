@@ -507,7 +507,7 @@ Node * Compiler::getParameter(ParseTree const *t)
 	if (getParameterVector(t, parents)) {
 	    FunctionPtr const &func = getFunction(t, funcTab());
 	    if (_index_expression) {
-		node = LogicalFactory::newNode(func, parents);
+		node = LogicalFactory::newNode(func, parents, _model.nchain());
 		_index_nodes.push_back(node);
 	    }
 	    else {	    
@@ -659,7 +659,8 @@ Node * Compiler::allocateStochastic(ParseTree const *stoch_relation)
 	*/
 	FunctionPtr const &func = obsFuncTab().find(dist);
 	if (!isNULL(func)) {
-	    LogicalNode *lnode = LogicalFactory::newNode(func, parameters);
+	    LogicalNode *lnode = LogicalFactory::newNode(func, parameters,
+							 _model.nchain());
 	    _model.addNode(lnode);
             return lnode;
 	}
@@ -684,15 +685,18 @@ Node * Compiler::allocateStochastic(ParseTree const *stoch_relation)
     }
     StochasticNode *snode = 0;
     if (SCALAR(dist)) {
-	snode =  new ScalarStochasticNode(SCALAR(dist), parameters, 
+	snode =  new ScalarStochasticNode(SCALAR(dist), _model.nchain(),
+					  parameters, 
 					  lBound, uBound);
     }
     else if (VECTOR(dist)) {
-	snode = new VectorStochasticNode(VECTOR(dist), parameters,
+	snode = new VectorStochasticNode(VECTOR(dist), _model.nchain(),
+					 parameters,
 					 lBound, uBound);
     }
     else if (ARRAY(dist)) {
-	snode = new ArrayStochasticNode(ARRAY(dist), parameters,
+	snode = new ArrayStochasticNode(ARRAY(dist), _model.nchain(),
+					parameters,
 					lBound, uBound);
     }
     else {

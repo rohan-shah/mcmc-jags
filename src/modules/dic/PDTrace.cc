@@ -1,7 +1,6 @@
 #include <config.h>
 
 #include "PDTrace.h"
-#include "CalKL.h"
 #include <graph/StochasticNode.h>
 #include <module/ModuleError.h>
 
@@ -23,23 +22,18 @@ static vector<Node const *> toNodeVec(vector<StochasticNode const *> const &s)
 namespace dic {
 
     PDTrace::PDTrace(vector<StochasticNode const *> const &snodes,
-		     vector<CalKL *> const &calkl)
-	: Monitor("trace", toNodeVec(snodes)), _calkl(calkl),
-	  _values(0), _nchain(snodes[0]->nchain())
+		     vector<RNG *> const &rngs, unsigned int nrep)
+	: Monitor("trace", toNodeVec(snodes)),
+	  _snodes(snodes), _rngs(rngs), _nrep(nrep),
+	  _nchain(rngs.size()),  _values()
     {
-	if (calkl.size() != snodes.size()) {
-	    throwLogicError("Length mismatch in PDTrace constructor");
-	}
-	if (snodes[0]->nchain() < 2) {
+	if (_nchain < 2) {
 	    throwLogicError("PDTrace needs at least 2 chains");
 	}
     }
 
     PDTrace::~PDTrace() 
     {
-	for (unsigned int i = 0; i < _calkl.size(); ++i) {
-	    delete _calkl[i];
-	}
     }
 
     vector<unsigned int> PDTrace::dim() const
@@ -65,10 +59,11 @@ namespace dic {
     void PDTrace::update()
     {
 	double pd = 0;
-	for (unsigned int k = 0; k < _calkl.size(); ++k) {
+	for (unsigned int k = 0; k < _snodes.size(); ++k) {
 	    for (unsigned int i = 0; i < _nchain; ++i) {
 		for (unsigned int j = 0; j < i; ++j) {
-		    pd += _calkl[k]->divergence(i, j);
+		    pd += _snodes[k]->KL(i, j, _rngs[i], _nrep);
+		    pd += _snodes[k]->KL(j, i, _rngs[j], _nrep);
 		}
 	    }
 	}

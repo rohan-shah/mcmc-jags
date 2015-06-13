@@ -76,13 +76,13 @@ double DGamma::typicalValue(vector<double const *> const &par,
     }
 }
 
-double DGamma::KL(vector<double const *> const &par1,
-		  vector<double const *> const &par2) const
+double DGamma::KL(vector<double const *> const &par0,
+		  vector<double const *> const &par1) const
 {
-    double b1 = SHAPE(par1), b2 = SHAPE(par2); 
-    double r = RATE(par2) / RATE(par1);
-    return (r - 1) * b1  - b2 * log(r)
-	+ (b1 - b2) * digamma(b1) + lgammafn(b2) - lgammafn(b1);
+    double b0 = SHAPE(par0), b1 = SHAPE(par1); 
+    double r = RATE(par1) / RATE(par0);
+    return (r - 1) * b0  - b1 * log(r)
+	+ (b0 - b1) * digamma(b0) + lgammafn(b1) - lgammafn(b0);
 }
 
 }}

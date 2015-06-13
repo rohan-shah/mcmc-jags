@@ -7,14 +7,15 @@
 
 namespace jags {
 
-class StochasticNode;
-
+    class StochasticNode;
+    class RNG;
+    
 namespace dic {
 
-    class CalKL;
-
     class PDMonitor : public Monitor {
-	std::vector<CalKL *> _calkl;
+	std::vector<StochasticNode const *> _snodes;
+	std::vector<RNG *> _rngs;
+	unsigned int _nrep;
 	std::vector<double> _values;
 	std::vector<double> _weights;
 	double _scale;
@@ -22,7 +23,8 @@ namespace dic {
 	unsigned int _n;
     public:
 	PDMonitor(std::vector<StochasticNode const *> const &snodes,
-		  std::vector<CalKL *> const &calkl, double scale=1);
+		  std::vector<RNG *> const &rngs,
+		  unsigned int nrep, double scale=1);
 	~PDMonitor();
 	std::vector<unsigned int> dim() const;
 	std::vector<double> const &value(unsigned int chain) const;
@@ -30,7 +32,8 @@ namespace dic {
 	bool poolChains() const;
 	bool poolIterations() const;
 	void update();
-	virtual double weight(unsigned int k, unsigned int ch) const;
+	virtual double weight(StochasticNode const *snode,
+			      unsigned int ch) const;
     };
 
 }}

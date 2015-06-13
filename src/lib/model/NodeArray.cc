@@ -145,7 +145,8 @@ namespace jags {
 	    nodes.push_back(_node_pointers[i]);
 	    offsets.push_back(_offsets[i]);
 	}
-	AggNode *anode = new AggNode(target_range.dim(true), nodes, offsets);
+	AggNode *anode = new AggNode(target_range.dim(true), _nchain,
+				     nodes, offsets);
 	_generated_nodes[target_range] = anode;
 	model.addNode(anode);
 	_member_graph.insert(anode);

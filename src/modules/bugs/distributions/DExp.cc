@@ -54,11 +54,11 @@ double DExp::r(vector<double const *> const &par, RNG *rng) const
 }
 
 
-double DExp::KL(vector<double const *> const &par1,
-		vector<double const *> const &par2) const
+double DExp::KL(vector<double const *> const &par0,
+		vector<double const *> const &par1) const
 {
-    double r = (*par2[0]) / (*par1[0]);
-    return (r - 1)  - log(r);
+    double r = (*par1[0]) / (*par0[0]);
+    return r - 1 - log(r);
 }
 
 }}

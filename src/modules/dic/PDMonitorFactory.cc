@@ -1,9 +1,6 @@
 #include "PDMonitorFactory.h"
 #include "PDMonitor.h"
 #include "PoptMonitor.h"
-#include "KLTab.h"
-#include "CalKLExact.h"
-#include "CalKLApprox.h"
 
 #include <model/BUGSModel.h>
 #include <graph/StochasticNode.h>
@@ -17,11 +14,6 @@ using std::vector;
 
 namespace jags {
 namespace dic {
-
-    static KL const *findKL(string const &name) {
-	static KLTab _kltab;
-	return _kltab.find(name);
-    }
 
     Monitor *PDMonitorFactory::getMonitor(string const &name,
 					  Range const &range,
@@ -69,25 +61,12 @@ namespace dic {
 	    rngs.push_back(model->rng(i));
 	}
 
-	vector<CalKL*> calkl;
-	for (unsigned int i = 0; i < observed_nodes.size(); ++i) {
-	    
-	    StochasticNode const *snode = observed_nodes[i];
-	    KL const *kl = findKL(snode->distribution()->name());
-	    if (kl) {
-		calkl.push_back(new CalKLExact(snode, kl));
-	    }
-	    else {
-		calkl.push_back(new CalKLApprox(snode, rngs, 10));
-	    }
-	}
-
 	Monitor *m = 0;
 	if (name =="pD") {
-	    m = new PDMonitor(observed_nodes, calkl);
+	    m = new PDMonitor(observed_nodes, rngs, 10);
 	}
 	else if (name == "popt") {
-	    m = new PoptMonitor(observed_nodes, calkl);
+	    m = new PoptMonitor(observed_nodes, rngs, 10);
 	}
 	if (m) {
 	    m->setName(name);

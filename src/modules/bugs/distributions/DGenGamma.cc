@@ -81,20 +81,20 @@ double DGenGamma::r(vector<double const *> const &par, RNG *rng) const
     return UNtransform(x, par);
 }
 
-double DGenGamma::KL(vector<double const *> const &par1,
-		     vector<double const *> const &par2) const
+double DGenGamma::KL(vector<double const *> const &par0,
+		     vector<double const *> const &par1) const
 {
     // Collapses to gamma distribution with beta1 = beta2 = 1;
 
-    double beta1 = POW(par1), beta2 = POW(par2);
-    double theta = URATE(par2) / URATE(par1); 
-    double phi = beta2 / beta1;
-    double r1 = SHAPE(par1), r2 = SHAPE(par2);
+    double beta0 = POW(par0), beta1 = POW(par1);
+    double theta = URATE(par1) / URATE(par0); 
+    double phi = beta1 / beta0;
+    double r0 = SHAPE(par0), r1 = SHAPE(par1);
 
-    return - log(phi) - beta2 * r2 * log(theta)
-	+ (r1 -  phi * r2) * digamma(r1)
-	+ pow(theta, beta2) * gammafn(r1 + phi) / gammafn(r1) - r1
-	+ lgammafn(r2) - lgammafn(r1);
+    return - log(phi) - beta1 * r1 * log(theta)
+	+ (r0 -  phi * r1) * digamma(r0)
+	+ pow(theta, beta1) * gammafn(r0 + phi) / gammafn(r0) - r0
+	+ lgammafn(r1) - lgammafn(r0);
 }
 
 }}

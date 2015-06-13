@@ -63,25 +63,22 @@ bool DBern::isDiscreteValued(vector<bool> const &mask) const
     return true;
 }
 
-double DBern::KL(vector<double const *> const &par1, 
-		 vector<double const *> const &par2) const
-{
-    double p1 = PROB(par1);
-    double p2 = PROB(par2);
-    
-    if (p2 == 0 && p1 != 0)
-	return JAGS_POSINF;
-    else if (p2 == 1 && p1 != 1)
-	return JAGS_POSINF;
-    else if (p1 == 0) {
-	return - log(1 - p2);
+    double DBern::KL(vector<double const *> const &par0,
+		     vector<double const *> const &par1) const
+    {
+	double p0 = PROB(par0);
+	double p1 = PROB(par1);
+	
+	if (p0 == 0) {
+	    return - log(1 - p1);
+	}
+	else if (p0 == 1) {
+	    return - log(p1);
+	}
+	else {
+	    return (p0 * (log(p0) - log(p1)) +
+		    (1 - p0) * (log(1 - p0) - log(1 - p1)));
+	}
     }
-    else if (p1 == 1) {
-	return - log(p2);
-    }
-    else {
-	return p1 * (log(p1) - log(p2)) +  (1 - p1) * (log(1-p1) - log(1-p2));
-    }
-}
 
 }}

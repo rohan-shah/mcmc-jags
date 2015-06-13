@@ -18,7 +18,7 @@ public:
      * A link node is defined by an inverse link function and a single
      * parent node, which must be scalar
      */
-    LinkNode(LinkFunction const *func, 
+    LinkNode(LinkFunction const *func, unsigned int nchain,
 	     std::vector<Node const *> const &parents);
     /**
      * Calculates the value of the node based on the parameters. 
@@ -42,7 +42,7 @@ public:
      * Returns the name of the link function
      */
     std::string const &linkName() const;
-    DeterministicNode *clone(std::vector<Node const *> const &parents) const;
+    //DeterministicNode *clone(std::vector<Node const *> const &parents) const;
 };
 
 } /* namespace jags */

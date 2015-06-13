@@ -67,13 +67,13 @@ double DPois::r(vector<double const *> const &par, RNG *rng) const
     return rpois(LAMBDA(par), rng);
 }
 
-double DPois::KL(vector<double const *> const &par1,
-		 vector<double const *> const &par2) const
-{
-    double lambda1 = LAMBDA(par1);
-    double lambda2 = LAMBDA(par2);
-
-    return lambda1 * (log(lambda1) - log(lambda2)) - lambda1 + lambda2;
-}
+    double DPois::KL(vector<double const *> const &par0,
+		     vector<double const *> const &par1) const
+    {
+	double lambda0 = LAMBDA(par0);
+	double lambda1 = LAMBDA(par1);
+	
+	return lambda0 * (log(lambda0) - log(lambda1)) - lambda0 + lambda1;
+    }
 
 }}

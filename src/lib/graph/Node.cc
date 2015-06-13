@@ -36,15 +36,14 @@ Node::Node(vector<unsigned int> const &dim, unsigned int nchain)
     _stoch_children = new list<StochasticNode*>;
 }
 
-Node::Node(vector<unsigned int> const &dim, 
+Node::Node(vector<unsigned int> const &dim, unsigned int nchain,
 	   vector<Node const *> const &parents)
     : _parents(parents), _stoch_children(0), _dtrm_children(0), 
       _dim(getUnique(dim)), _length(product(dim)),
-      _nchain(countChains(parents)), _data(0)
+      _nchain(nchain), _data(0)
 {
-    if (nchain() == 0) {
-	throw logic_error("Cannot calculate number of chains in Node constructor");
-    }
+    if (nchain==0)
+	throw logic_error("Node must have at least one chain");
 
     unsigned int N = _length * _nchain;
     _data = new double[N];

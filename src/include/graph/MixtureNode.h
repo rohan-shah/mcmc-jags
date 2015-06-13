@@ -45,10 +45,13 @@ public:
      * @param index Vector of index nodes. These must be discrete-valued,
      *  scalar, and unobserved.
      *
+     * @param nchain Number of chains
+     *
      * @param map a MixMap object which associates each possible value
      * of the index nodes with a single parent. 
      */
-    MixtureNode(std::vector<Node const *> const &index, MixMap const &mixmap);
+    MixtureNode(std::vector<Node const *> const &index,
+		unsigned int nchain, MixMap const &mixmap);
     ~MixtureNode();
     /**
      * Copies the value of the active parent
@@ -98,7 +101,7 @@ public:
      * of its BUGS-language definition.
      */
     std::string deparse(std::vector<std::string> const &parents) const;
-    DeterministicNode *clone(std::vector<Node const *> const &parents) const;
+    //DeterministicNode *clone(std::vector<Node const *> const &parents) const;
     
 };
 

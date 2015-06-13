@@ -50,6 +50,7 @@ class DeterministicNode : public Node {
     bool _fixed;
 public:
     DeterministicNode(std::vector<unsigned int> const &dim,
+		      unsigned int nchain,
 		      std::vector<Node const *> const &parents);
     ~DeterministicNode();
     /**
@@ -92,14 +93,15 @@ public:
      */
     virtual bool isClosed(std::set<Node const *> const &ancestors, 
 			  ClosedFuncClass fc, bool fixed) const = 0;
-    /**
+    /*
      * Creates a copy of the deterministic node.  Supplying the parents
      * of this node as the argument creates an identical copy.
      *
      * @param parents Parents of the cloned node. 
-     */
+     *
     virtual DeterministicNode * clone(std::vector<Node const *> const &parents)
 	const = 0;
+     */
 };
 
 } /* namespace jags */

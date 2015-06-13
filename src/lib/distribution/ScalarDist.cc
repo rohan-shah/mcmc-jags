@@ -70,13 +70,25 @@ unsigned int ScalarDist::df() const
     return 1;
 }
 
-/*
-double ScalarDist::KL(vector<double const *> const &par1,
-		      vector<double const *> const &par2) const
-{
-    double x1 = 
+    double ScalarDist::KL(vector<double const *> const &par1,
+			  vector<double const *> const &par2,
+			  double const *lower, double const *upper,
+			  RNG *rng, unsigned int nrep) const
+    {
+	double div = 0;
+	
+	for (unsigned int r = 0; r < nrep; ++r) {
+	    double v1 = randomSample(par1, lower, upper, rng);
+	    div += logDensity(v1, PDF_FULL, par1, lower, upper);
+	    div -= logDensity(v1, PDF_FULL, par2, lower, upper);
+	}
+	return div / nrep;
+    }
 
-}
-*/
-
+    double ScalarDist::KL(vector<double const *> const &par1,
+			  vector<double const *> const &par2) const
+    {
+	return JAGS_NA;
+    }
+    
 } //namespace jags

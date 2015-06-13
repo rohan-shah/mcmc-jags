@@ -57,6 +57,7 @@ public:
      * Constructs a new StochasticNode 
      * 
      * @param dim Dimensions of the node
+     * @param nchain Number of chains
      * @param dist Pointer to the distribution
      * @param parameters Vector of parameters 
      * @param lower Pointer to node defining the lower bound. A NULL
@@ -65,6 +66,7 @@ public:
      * pointer denotes no upper bound.
      */
     StochasticNode(std::vector<unsigned int> const &dim,
+		   unsigned int nchain,
 		   Distribution const *dist,
                    std::vector<Node const *> const &parameters,
 		   Node const *lower, Node const *upper);
@@ -165,19 +167,22 @@ public:
     RVStatus randomVariableStatus() const;
     Node const *lowerBound() const;
     Node const *upperBound() const;
-    /**
+    /*
      * Creates a copy of the stochastic node.  Supplying the parents
      * of this node as the argument creates an identical copy.
      *
      * @param parents Parents of the cloned node. 
-     */
+
     StochasticNode * clone(std::vector<Node const *> const &parents) const;
     virtual StochasticNode * 
 	clone(std::vector<Node const *> const &parameters,
 	      Node const *lower, Node const *upper) const = 0;
+    */
     virtual unsigned int df() const = 0;
     //Required for KL in dic
-    std::vector<double const*> const &parameters(unsigned int chain) const;
+    //std::vector<double const*> const &parameters(unsigned int chain) const;
+    virtual double KL(unsigned int chain1, unsigned int chain2, RNG *rng,
+		      unsigned int nrep) const = 0;
 };
 
 /**

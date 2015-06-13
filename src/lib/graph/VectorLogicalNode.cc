@@ -65,10 +65,11 @@ parameterLengths(vector<Node const *> const &parameters) {
     return getUnique(lengths);
 }
 
-VectorLogicalNode::VectorLogicalNode(VectorFunction const *function, 
+VectorLogicalNode::VectorLogicalNode(VectorFunction const *function,
+				     unsigned int nchain,
 				     vector<Node const *> const &parameters)
-    : LogicalNode(vector<unsigned int>(1,valueLength(function, parameters)), 
-		  parameters, function),
+    : LogicalNode(vector<unsigned int>(1,valueLength(function, parameters)),
+		  nchain, parameters, function),
       _func(function), _lengths(parameterLengths(parameters))
 {
     if (isFixed()) {
@@ -88,10 +89,12 @@ bool VectorLogicalNode::checkParentValues(unsigned int chain) const
     return _func->checkParameterValue(_parameters[chain], _lengths);
 }
 
+    /*
 DeterministicNode *
 VectorLogicalNode::clone(vector<Node const*> const &parents) const
 {
     return new VectorLogicalNode(_func, parents);
 }
-
+    */
+    
 } //namespace jags

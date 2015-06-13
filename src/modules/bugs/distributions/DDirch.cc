@@ -153,8 +153,8 @@ unsigned int DDirch::df(vector<unsigned int> const &len) const
     return LENGTH(len) - 1;
 }
 
-double DDirch::KL(vector<double const *> const &par1,
-		  vector<double const *> const &par2,
+double DDirch::KL(vector<double const *> const &par0,
+		  vector<double const *> const &par1,
 		  vector<unsigned int> const &len) const
 {
     //Generalization of the Kullback-Leibler divergence for the beta
@@ -163,24 +163,24 @@ double DDirch::KL(vector<double const *> const &par1,
 
     unsigned int N = LENGTH(len);
 
-    double S1 = 0, S2 = 0, y = 0;
+    double S0 = 0, S1 = 0, y = 0;
     for (unsigned int i = 0; i < N; ++i) {
-	double a1 = ALPHA(par1)[i];
-	double a2 = ALPHA(par2)[i];
+	double a1 = ALPHA(par0)[i];
+	double a2 = ALPHA(par1)[i];
 
 	if (a1 == 0) {
-	    S2 += a2;
+	    S1 += a2;
 	}
 	else if (a2 == 0) {
 	    return JAGS_POSINF;
 	}
 	else {
 	    y += (a1 - a2) * digamma(a1) + lgammafn(a2) - lgammafn(a1);
-	    S1 += a1;
-	    S2 += a2;
+	    S0 += a1;
+	    S1 += a2;
 	}
     }
-    y -= (S1 - S2) * digamma(S1) + lgammafn(S2) - lgammafn(S1);
+    y -= (S0 - S1) * digamma(S0) + lgammafn(S1) - lgammafn(S0);
 
     return y;
 }

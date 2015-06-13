@@ -146,6 +146,42 @@ public:
 	support(double *lower, double *upper, unsigned int length,
 		std::vector<double const *> const &support,
 		std::vector<std::vector<unsigned int> > const &dims) const = 0;
+    /**
+     * Returns a Monte Carlo estimate of the Kullback-Leibler
+     * divergence between distributions with two different parameter
+     * values. This is done by drawing random samples from the
+     * distribution with the first set of parameters and then
+     * calculating the log-likelihood ratio with respect to the second
+     * set of parameters.
+     *
+     * A subclass of ArrayDist can overload this function if the
+     * Kullback-Leibler divergence for the distribution it represents
+     * can be expressed in closed form.
+     *
+     * @param par1 First set of parameters
+     * @param par2 Second set of parameter values
+     * @param dims Vector of parameter dimensions, common to both par1 and par2
+     * @param rng Random number generator
+     * @param nrep Number of replicates on which to base the estimate
+     */
+    double KL(std::vector<double const *> const &par1,
+	      std::vector<double const *> const &par2,
+	      std::vector<std::vector<unsigned int> > const &dims,
+	      double const *lower, double const *upper,
+	      RNG *rng, unsigned int nrep) const;
+    /**
+     * Returns the Kullback-Leibler divergence between distributions
+     * with two different parameter values.
+     *
+     * This is a virtual function that must be overloaded for any
+     * distribution that allows exact Kullback-Leibler divergence
+     * calculations. The default method returns JAGS_NA, indicating that
+     * the method is not implemented.
+     */
+    virtual double KL(std::vector<double const *> const &par1,
+		      std::vector<double const *> const &par2,
+		      std::vector<std::vector<unsigned int> > const &dims)
+	const;
 };
 
 } /* namespace jags */
