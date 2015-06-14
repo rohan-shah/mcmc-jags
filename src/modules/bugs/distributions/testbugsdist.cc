@@ -32,13 +32,21 @@
 #include "DWish.h"
 
 #include <MersenneTwisterRNG.h>
+#include <util/nainf.h>
+#include <JRmath.h>
 
 #include <cmath>
+#include <set>
+#include <sstream>
 
 using std::string;
 using std::vector;
 using std::sqrt;
 using std::max;
+using std::min;
+using std::multiset;
+using std::abs;
+using std::ostringstream;
 
 using jags::ScalarDist;
 using jags::RScalarDist;
@@ -354,14 +362,25 @@ void BugsDistTest::kl_scalar(ScalarDist const *dist,
 			     vector<double const *> const &par0,
 			     vector<double const *> const &par1)
 {
-    unsigned int nrep = 10000L;
+    /* 
+       Test closed form expression for Kullback-Leibler divergence
+       against Monte Carlo estimate
+    */
+    
+    //Sanity checks
+    CPPUNIT_ASSERT_EQUAL_MESSAGE(dist->name(), par0.size(), par1.size());
+    CPPUNIT_ASSERT_MESSAGE(dist->name(), checkNPar(dist, par0.size()));
+    CPPUNIT_ASSERT_MESSAGE(dist->name(), dist->checkParameterValue(par0));
+    CPPUNIT_ASSERT_MESSAGE(dist->name(), dist->checkParameterValue(par1));
+    
+    unsigned int nrep = 1000L;
 
     //Monte Carlo estimate of Kullback-Leibler divergence
     
     vector<double> y(nrep);
     double ysum = 0;
     for (unsigned int i = 0; i < nrep; ++i) {
-	y[i] = dist->KL(par0, par1, 0, 0, _rng, 10);
+	y[i] = dist->KL(par0, par1, 0, 0, _rng, 100);
 	ysum += y[i];
     }
     double ymean = ysum/nrep;
@@ -383,6 +402,8 @@ void BugsDistTest::kl_scalar(ScalarDist const *dist,
 
 void BugsDistTest::kl()
 {
+    /* Kullback-Leibler test: see kl_scalar for details */
+    
     kl_scalar(_dbern, mkPar(0.6), mkPar(0.5));
     kl_scalar(_dbern, mkPar(0.1), mkPar(0.9));
 
@@ -431,3 +452,171 @@ void BugsDistTest::kl()
        Should implemnt DMNorm::KL
     */
 }    
+
+static double superror(RScalarDist const *dist, unsigned int N,
+		       vector<double const *> const &par, jags::RNG *rng)
+{
+    //Calculate test statistic for DKW test
+    
+    multiset<double> xmset;
+    
+    for (unsigned int i =0; i < N; ++i) {
+	double x = dist->r(par, rng);
+	x = fprec(x, 12);
+	xmset.insert(x);
+    }
+    double fhat=0, delta=0;
+    for (multiset<double>::const_iterator q = xmset.begin();
+	 q != xmset.end(); q = xmset.upper_bound(*q))
+    {
+	double f = dist->p(*q, par, true, false);
+	fhat += static_cast<double>(xmset.count(*q))/N;
+	delta = max(delta, abs(fhat - f));
+    }
+    return delta;
+}
+
+static double pdkwbound(double n, double t) {
+    return 2*exp(-2*n*t*t);
+}
+
+static double qdkwbound(double n, double p) {
+    return sqrt(log(p/2)/(-2*n));
+}
+
+void BugsDistTest::dkwtest(RScalarDist const *dist,
+			   vector<double const *> const &par,
+			   unsigned int N, double pthresh)
+{
+    /*
+      Test using the Dvoretzky-Kiefer-Wolfowitz (1956) bound on the
+      difference between the empirical distribution function and the
+      theoretical one, with a tight constant derived by Massart (1990)
+    */
+    
+    //Sanity checks
+    CPPUNIT_ASSERT_MESSAGE(dist->name(), checkNPar(dist, par.size()));
+    CPPUNIT_ASSERT_MESSAGE(dist->name(), dist->checkParameterValue(par));
+
+    double s = superror(dist, N, par, _rng);
+    string msg = dist->name();
+    if (s >= qdkwbound(N, pthresh)) {
+	ostringstream ostr;
+	ostr << "Distribution " << dist->name() << "(";
+	for (unsigned int i = 0; i < par.size(); ++i) {
+	    if (i > 0) ostr << ", ";
+	    ostr << *par[i];
+	}
+	ostr << ")\n";
+	ostr << "supremum error = " << fprec(s, 2)
+	     << " with p-value="
+	     << min(1.0, fround(pdkwbound(N,s), 4));
+	CPPUNIT_FAIL(ostr.str());
+    }
+
+	
+}
+
+void BugsDistTest::dkw()
+{
+    //DKW test of random number generation and distribution function
+    //See dkwtest for details
+    
+    //CPPUNIT_ASSERT_MESSAGE("dkw check", false);
+
+    dkwtest(_dbeta, mkPar(1,1));
+    dkwtest(_dbeta, mkPar(2,1));
+    dkwtest(_dbeta, mkPar(1,2));
+    dkwtest(_dbeta, mkPar(2,2));
+    dkwtest(_dbeta, mkPar(0.2,0.2));
+
+    dkwtest(_dbin, mkPar(0.2, 1));
+    dkwtest(_dbin, mkPar(0.2, 2));
+    dkwtest(_dbin, mkPar(0.2, 100));
+    dkwtest(_dbin, mkPar(0.2, 1e4));
+    dkwtest(_dbin, mkPar(0.8, 1));
+    dkwtest(_dbin, mkPar(0.8, 100));
+    dkwtest(_dbin, mkPar(0.999, 100));
+
+    dkwtest(_dchisqr, mkPar(1));
+    dkwtest(_dchisqr, mkPar(10));
+
+    dkwtest(_ddexp, mkPar(0, 1));
+    dkwtest(_ddexp, mkPar(0, 2));
+    dkwtest(_ddexp, mkPar(-3, 0.5));
+
+    dkwtest(_dexp, mkPar(1));
+    dkwtest(_dexp, mkPar(10));
+    dkwtest(_dexp, mkPar(0.01));
+    
+    dkwtest(_df, mkPar(1, 1));
+    dkwtest(_df, mkPar(1, 10));
+    dkwtest(_df, mkPar(10, 10));
+    dkwtest(_df, mkPar(30, 3));
+
+    dkwtest(_dgamma, mkPar(0.1, 1));
+    dkwtest(_dgamma, mkPar(0.2, 1));
+    dkwtest(_dgamma, mkPar(10, 1));
+    dkwtest(_dgamma, mkPar(20, 1));
+    
+    dkwtest(_dgengamma, mkPar(1, 0.1, 0.5));
+    dkwtest(_dgengamma, mkPar(0.1, 7, 2));
+
+    dkwtest(_dpois, mkPar(0.095));
+    dkwtest(_dpois, mkPar(0.95));
+    dkwtest(_dpois, mkPar(9.5));
+    dkwtest(_dpois, mkPar(95));
+
+    dkwtest(_dnegbin, mkPar(0.2, 1));
+    dkwtest(_dnegbin, mkPar(0.2, 2));
+    dkwtest(_dnegbin, mkPar(0.2, 100));
+    dkwtest(_dnegbin, mkPar(0.2, 1e4));
+    dkwtest(_dnegbin, mkPar(0.8, 1));
+    dkwtest(_dnegbin, mkPar(0.8, 100));
+    dkwtest(_dnegbin, mkPar(0.999, 100));
+
+    dkwtest(_dnorm, mkPar(0, 1));
+    dkwtest(_dnorm, mkPar(5, 3));
+
+    //Central hypergeometric
+    dkwtest(_dhyper, mkPar(40, 30, 10, 1));
+    dkwtest(_dhyper, mkPar(40, 3, 20, 1));
+    dkwtest(_dhyper, mkPar(40, 3, 20, 1));
+    dkwtest(_dhyper, mkPar(6, 3, 2, 1));
+    dkwtest(_dhyper, mkPar(5, 3, 2, 1));
+    dkwtest(_dhyper, mkPar(4, 3, 2, 1));
+
+    //Large sample test for central hypergeometric
+    dkwtest(_dhyper, mkPar(60,100,50, 1));
+    dkwtest(_dhyper, mkPar(600, 1000, 500, 1));
+
+    //Non-central hypergeometric
+    dkwtest(_dhyper, mkPar(40, 30, 10, 2));
+    dkwtest(_dhyper, mkPar(40, 3, 20, 0.5));
+    dkwtest(_dhyper, mkPar(40, 3, 20, 0.3));
+    dkwtest(_dhyper, mkPar(6, 3, 2, 5));
+    dkwtest(_dhyper, mkPar(5, 3, 2, 2));
+    dkwtest(_dhyper, mkPar(4, 3, 2, 2.5));
+
+    dkwtest(_dlnorm, mkPar(0, 1));
+    dkwtest(_dlnorm, mkPar(3, 3));
+    dkwtest(_dlnorm, mkPar(-8, 0.2));
+    
+    dkwtest(_dlogis, mkPar(0, 1));
+    dkwtest(_dlogis, mkPar(4, 0.5));
+
+    dkwtest(_dnt, mkPar(10, 2, 3));
+    dkwtest(_dnt, mkPar(-7, 0.5, 1.5));
+
+    dkwtest(_dpar, mkPar(5,2));
+    
+    dkwtest(_dt, mkPar(0,1,1));
+    dkwtest(_dt, mkPar(-3, 0.4, 1));
+    dkwtest(_dt, mkPar(0, 2, 10));
+    dkwtest(_dt, mkPar(5, 1, 40));
+
+    dkwtest(_dweib, mkPar(1, 1));
+    dkwtest(_dweib, mkPar(2, 2));
+    dkwtest(_dweib, mkPar(0.3, 0.5));
+}
+    
