@@ -20,6 +20,7 @@ class BugsDistTest : public CppUnit::TestFixture, public JAGSFixture
     CPPUNIT_TEST( name );
     CPPUNIT_TEST( alias );
     CPPUNIT_TEST( rscalar );
+    CPPUNIT_TEST( kl );
     CPPUNIT_TEST_SUITE_END(  );
 
     jags::RNG *_rng;
@@ -30,6 +31,7 @@ class BugsDistTest : public CppUnit::TestFixture, public JAGSFixture
     jags::VectorDist *_dcat;
     jags::RScalarDist *_dchisqr;
     jags::VectorDist *_ddirch;
+    jags::RScalarDist *_ddexp;
     jags::RScalarDist *_dexp;
     jags::RScalarDist *_df;
     jags::RScalarDist *_dgamma;
@@ -57,6 +59,10 @@ class BugsDistTest : public CppUnit::TestFixture, public JAGSFixture
     void rscalar_rpq(jags::RScalarDist const *dist, 
 		     std::vector<double const *> const &par);
 
+    void kl_scalar(jags::ScalarDist const *dist, 
+		   std::vector<double const *> const &par0,
+		   std::vector<double const *> const &par1);
+    
   public:
     void setUp();
     void tearDown();
@@ -65,6 +71,8 @@ class BugsDistTest : public CppUnit::TestFixture, public JAGSFixture
     void name();
     void alias();
     void rscalar();
+
+    void kl();
 };
 
 #endif /* BUGS_DIST_TEST_H */

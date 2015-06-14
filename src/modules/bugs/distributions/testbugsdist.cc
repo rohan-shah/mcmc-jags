@@ -33,9 +33,14 @@
 
 #include <MersenneTwisterRNG.h>
 
+#include <cmath>
+
 using std::string;
 using std::vector;
+using std::sqrt;
+using std::max;
 
+using jags::ScalarDist;
 using jags::RScalarDist;
 
 void BugsDistTest::setUp() {
@@ -49,6 +54,7 @@ void BugsDistTest::setUp() {
     _dcat = new jags::bugs::DCat();
     _dchisqr = new jags::bugs::DChisqr();
     _ddirch = new jags::bugs::DDirch();
+    _ddexp = new jags::bugs::DDexp();
     _dexp = new jags::bugs::DExp();
     _df = new jags::bugs::DF();
     _dgamma = new jags::bugs::DGamma();
@@ -85,6 +91,7 @@ void BugsDistTest::tearDown() {
     delete _dcat;
     delete _dchisqr;
     delete _ddirch;
+    delete _ddexp;
     delete _dexp;
     delete _df;
     delete _dgamma;
@@ -120,6 +127,7 @@ void BugsDistTest::npar()
     CPPUNIT_ASSERT_EQUAL(_dcat->npar(), 1U);
     CPPUNIT_ASSERT_EQUAL(_dchisqr->npar(), 1U);
     CPPUNIT_ASSERT_EQUAL(_ddirch->npar(), 1U);
+    CPPUNIT_ASSERT_EQUAL(_ddexp->npar(), 2U);
     CPPUNIT_ASSERT_EQUAL(_dexp->npar(), 1U);
     CPPUNIT_ASSERT_EQUAL(_df->npar(), 2U);
     CPPUNIT_ASSERT_EQUAL(_dgamma->npar(), 2U);
@@ -154,6 +162,7 @@ void BugsDistTest::name()
     CPPUNIT_ASSERT_EQUAL(string("dcat"), _dcat->name());
     CPPUNIT_ASSERT_EQUAL(string("dchisqr"), _dchisqr->name());
     CPPUNIT_ASSERT_EQUAL(string("ddirch"), _ddirch->name());
+    CPPUNIT_ASSERT_EQUAL(string("ddexp"), _ddexp->name());
     CPPUNIT_ASSERT_EQUAL(string("dexp"), _dexp->name());
     CPPUNIT_ASSERT_EQUAL(string("df"), _df->name());
     CPPUNIT_ASSERT_EQUAL(string("dgamma"), _dgamma->name());
@@ -188,6 +197,7 @@ void BugsDistTest::alias()
     CPPUNIT_ASSERT_EQUAL(string(""), _dcat->alias());
     CPPUNIT_ASSERT_EQUAL(string("dchisq"), _dchisqr->alias());
     CPPUNIT_ASSERT_EQUAL(string("ddirich"), _ddirch->alias());
+    CPPUNIT_ASSERT_EQUAL(string(""), _ddexp->alias());
     CPPUNIT_ASSERT_EQUAL(string(""), _dexp->alias());
     CPPUNIT_ASSERT_EQUAL(string(""), _df->alias());
     CPPUNIT_ASSERT_EQUAL(string(""), _dgamma->alias());
@@ -300,6 +310,9 @@ void BugsDistTest::rscalar()
     rscalar_rpq(_dchisqr, mkPar(3));
     rscalar_rpq(_dchisqr, mkPar(10));
 
+    rscalar_rpq(_ddexp, mkPar(2, 0.1));
+    rscalar_rpq(_ddexp, mkPar(-5, 2.8));
+    
     rscalar_rpq(_dexp, mkPar(0.1));
     rscalar_rpq(_dexp, mkPar(7));
 
@@ -336,3 +349,85 @@ void BugsDistTest::rscalar()
     rscalar_rpq(_dweib, mkPar(3, 10));
     rscalar_rpq(_dweib, mkPar(0.9, 0.9));
 }
+
+void BugsDistTest::kl_scalar(ScalarDist const *dist, 
+			     vector<double const *> const &par0,
+			     vector<double const *> const &par1)
+{
+    unsigned int nrep = 10000L;
+
+    //Monte Carlo estimate of Kullback-Leibler divergence
+    
+    vector<double> y(nrep);
+    double ysum = 0;
+    for (unsigned int i = 0; i < nrep; ++i) {
+	y[i] = dist->KL(par0, par1, 0, 0, _rng, 10);
+	ysum += y[i];
+    }
+    double ymean = ysum/nrep;
+    double ysum2 = 0;
+    for (unsigned int i = 0; i < nrep; ++i) {
+	ysum2 += (y[i] - ymean) * (y[i] - ymean);
+    }
+    double ysd = sqrt(ysum2/(nrep - 1)); //Standard deviation
+    double ysem = ysd/sqrt(nrep); //Standard error of the mean
+    
+    //Closed form expression for Kullback-Leibler divergence
+    double z = dist->KL(par0, par1);
+    CPPUNIT_ASSERT(z != JAGS_NA);
+
+    //Difference between closed-form and Monte Carlo estimates
+    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(dist->name(), z, ymean,
+					 max(5*ysem, tol));
+}
+
+void BugsDistTest::kl()
+{
+    kl_scalar(_dbern, mkPar(0.6), mkPar(0.5));
+    kl_scalar(_dbern, mkPar(0.1), mkPar(0.9));
+
+    kl_scalar(_dbin, mkPar(0.5, 10), mkPar(0.9, 10));
+    kl_scalar(_dbin, mkPar(0.1, 5), mkPar(0.2, 5));
+
+    kl_scalar(_dbeta, mkPar(2, 3), mkPar(2.5, 2.8));
+    kl_scalar(_dbeta, mkPar(0.5, 1), mkPar(0.7, 1));
+
+    kl_scalar(_dchisqr, mkPar(1), mkPar(1.5));
+    kl_scalar(_dchisqr, mkPar(5), mkPar(7));
+
+    kl_scalar(_ddexp, mkPar(0, 1), mkPar(-1, 3));
+    kl_scalar(_ddexp, mkPar(5, 0.2), mkPar(7, 0.25));
+
+    kl_scalar(_dexp, mkPar(10), mkPar(12));
+    kl_scalar(_dexp, mkPar(0.5), mkPar(0.7));
+
+    kl_scalar(_dgamma, mkPar(3,2), mkPar(3.5, 1.8));
+    kl_scalar(_dgamma, mkPar(1, 0.5), mkPar(2, 0.1));
+
+    kl_scalar(_dgengamma, mkPar(2,5,3), mkPar(2.5, 4.8, 2.8));
+    kl_scalar(_dgengamma, mkPar(1, 3, 0.5), mkPar(1.1, 2.2, 0.7));
+
+    kl_scalar(_dhyper, mkPar(5,5,6,0.2), mkPar(5,5,6,0.4));
+    kl_scalar(_dhyper, mkPar(20, 10, 12, 0.8), mkPar(20,10, 12, 0.6));
+    
+    kl_scalar(_dlnorm, mkPar(0, 1), mkPar(0.5, 1.5));
+    kl_scalar(_dlnorm, mkPar(3, 2), mkPar(5, 2.8));
+
+    //Can only calculate for negative binomial when sizes are equal
+    kl_scalar(_dnegbin, mkPar(0.3, 10), mkPar(0.6, 10));
+    kl_scalar(_dnegbin, mkPar(0.1, 3), mkPar(0.2, 3));
+    
+    kl_scalar(_dnorm, mkPar(0, 1), mkPar(-3, 2));
+    kl_scalar(_dnorm, mkPar(2, 0.3), mkPar(2.5, 0.1));
+
+    kl_scalar(_dpois, mkPar(3), mkPar(5));
+    kl_scalar(_dpois, mkPar(12), mkPar(10));
+
+    kl_scalar(_dunif, mkPar(-5,10), mkPar(-8, 12));
+    kl_scalar(_dunif, mkPar(2,3), mkPar(1,5));
+
+    /* FIXME
+       Need tests for DCat, DDirch
+       Should implemnt DMNorm::KL
+    */
+}    

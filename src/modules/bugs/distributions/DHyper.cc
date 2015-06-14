@@ -395,7 +395,7 @@ double DHyper::KL(vector<double const *> const &para,
 
     int n1b,n2b,m1b;
     double psib;
-    getParameters(n1b, n2b, m1b, psib, para);
+    getParameters(n1b, n2b, m1b, psib, parb);
 
     int llb = max(0, m1b - n2b);
     int uub = min(n1b, m1b);

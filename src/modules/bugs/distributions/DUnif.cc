@@ -67,9 +67,9 @@ bool DUnif::isSupportFixed(vector<bool> const &fixmask) const
 double DUnif::KL(vector<double const *> const &par0,
 		 vector<double const *> const &par1) const
 {
-    if (LOWER(par1) < LOWER(par0))
+    if (LOWER(par0) < LOWER(par1))
 	return JAGS_POSINF;
-    if (UPPER(par1) > UPPER(par0))
+    if (UPPER(par0) > UPPER(par1))
 	return JAGS_POSINF;
 
     return log(UPPER(par1) - LOWER(par1)) - log(UPPER(par0) - LOWER(par0));

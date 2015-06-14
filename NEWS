@@ -44,6 +44,7 @@ Bug fixes
   allows flexible modelling of the precision matrix.
 * The Windows installer no longer allows the same version of JAGS to
   be installed in two different locations (leading to registry problems)
+* The qdexp function was incorrect.
 
 Library changes
 ===============
