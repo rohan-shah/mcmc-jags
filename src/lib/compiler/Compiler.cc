@@ -170,6 +170,7 @@ bool Compiler::indexExpression(ParseTree const *p, vector<int> &value)
 	while(!_index_nodes.empty()) {
 	    Node *inode = _index_nodes.back();
 	    _index_nodes.pop_back();
+	    inode->unlinkParents();
 	    delete inode;
 	}
     }

@@ -107,6 +107,9 @@ Library changes
   These functions were only needed by Monitors.
 * Calculation of Kullback-Leibler divergence is moved out of the dic
   module and into the library.
+* The Node destructor no longer remove themselves "this" (the node
+  being destroyed) from its parents' list of children. A new member function
+  unlinkParents() is added for this purpose.
 
 Internal changes in modules
 ===========================

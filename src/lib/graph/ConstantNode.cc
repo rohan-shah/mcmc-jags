@@ -77,4 +77,9 @@ namespace jags {
 	return _observed ? RV_TRUE_OBSERVED :  RV_FALSE;
     }
 
+    void ConstantNode::unlinkParents()
+    {
+
+    }
+    
 } //namespace jags

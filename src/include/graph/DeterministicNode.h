@@ -102,6 +102,7 @@ public:
     virtual DeterministicNode * clone(std::vector<Node const *> const &parents)
 	const = 0;
      */
+    void unlinkParents();
 };
 
 } /* namespace jags */

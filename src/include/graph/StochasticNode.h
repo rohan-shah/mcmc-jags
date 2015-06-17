@@ -179,10 +179,9 @@ public:
 	      Node const *lower, Node const *upper) const = 0;
     */
     virtual unsigned int df() const = 0;
-    //Required for KL in dic
-    //std::vector<double const*> const &parameters(unsigned int chain) const;
     virtual double KL(unsigned int chain1, unsigned int chain2, RNG *rng,
 		      unsigned int nrep) const = 0;
+    void unlinkParents();
 };
 
 /**

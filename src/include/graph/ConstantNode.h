@@ -67,7 +67,7 @@ public:
      * "observed" passed to the constructor.
      */
     RVStatus randomVariableStatus() const;
-
+    void unlinkParents();
 };
 
 } /* namespace jags */

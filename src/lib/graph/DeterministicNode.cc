@@ -41,9 +41,6 @@ DeterministicNode::DeterministicNode(vector<unsigned int> const &dim,
 
 DeterministicNode::~DeterministicNode()
 {
-    for (unsigned int i = 0; i < parents().size(); ++i) {
-	parents()[i]->removeChild(this);
-    }
 }
 
 void DeterministicNode::randomSample(RNG*, unsigned int chain) {
@@ -60,4 +57,11 @@ bool DeterministicNode::isFixed() const
     return _fixed;
 }
 
+    void DeterministicNode::unlinkParents()
+    {
+	for (unsigned int i = 0; i < parents().size(); ++i) {
+	    parents()[i]->removeChild(this);
+	}
+    }
+    
 } //namespace jags

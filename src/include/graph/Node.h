@@ -163,6 +163,7 @@ public:
     void removeChild(StochasticNode *node) const;
     void addChild(DeterministicNode *node) const;
     void removeChild(DeterministicNode *node) const;
+    virtual void unlinkParents() = 0;
 };
 
 /**

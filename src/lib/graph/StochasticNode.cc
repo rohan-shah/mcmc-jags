@@ -97,9 +97,6 @@ StochasticNode::StochasticNode(vector<unsigned int> const &dim,
 
 StochasticNode::~StochasticNode()
 {
-    for (unsigned int i = 0; i < parents().size(); ++i) {
-	parents()[i]->removeChild(this);
-    }
 }
 
 Distribution const *StochasticNode::distribution() const
@@ -218,14 +215,6 @@ bool isSupportFixed(StochasticNode const *node)
     return node->distribution()->isSupportFixed(fixmask);
 }
 
-    /*
-vector<double const*> const &StochasticNode::parameters(unsigned int chain) const
-{
-    //FIXME: only required in DIC module
-    return _parameters[chain];
-}
-    */
-
 void StochasticNode::support(double *lower, double *upper, unsigned int length,
 			     unsigned int chain) const
 {
@@ -270,5 +259,11 @@ bool isBounded(StochasticNode const *node)
 	_observed = true;
     }
 
-
+    void StochasticNode::unlinkParents()
+    {
+	for (unsigned int i = 0; i < parents().size(); ++i) {
+	    parents()[i]->removeChild(this);
+	}
+    }
+    
 } //namespace jags
