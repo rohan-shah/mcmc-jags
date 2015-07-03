@@ -289,18 +289,18 @@ void BaseFunTest::discrete()
 void BaseFunTest::slp()
 {
     //Functions that are not scale, linear or power functions
-    CPPUNIT_ASSERT(neverslp(_and, 2));
-    CPPUNIT_ASSERT(neverslp(_equal, 2));
-    CPPUNIT_ASSERT(neverslp(_geq, 2));
-    CPPUNIT_ASSERT(neverslp(_gt, 2));
-    CPPUNIT_ASSERT(neverslp(_leq, 2));
-    CPPUNIT_ASSERT(neverslp(_gt, 2));
-    CPPUNIT_ASSERT(neverslp(_leq, 2));
-    CPPUNIT_ASSERT(neverslp(_lt, 2));
-    CPPUNIT_ASSERT(neverslp(_neq, 2));
-    CPPUNIT_ASSERT(neverslp(_not, 1));
-    CPPUNIT_ASSERT(neverslp(_or, 2));
-    CPPUNIT_ASSERT(neverslp(_seq, 2));
+    CPPUNIT_ASSERT(neverclosed(_and, 2));
+    CPPUNIT_ASSERT(neverclosed(_equal, 2));
+    CPPUNIT_ASSERT(neverclosed(_geq, 2));
+    CPPUNIT_ASSERT(neverclosed(_gt, 2));
+    CPPUNIT_ASSERT(neverclosed(_leq, 2));
+    CPPUNIT_ASSERT(neverclosed(_gt, 2));
+    CPPUNIT_ASSERT(neverclosed(_leq, 2));
+    CPPUNIT_ASSERT(neverclosed(_lt, 2));
+    CPPUNIT_ASSERT(neverclosed(_neq, 2));
+    CPPUNIT_ASSERT(neverclosed(_not, 1));
+    CPPUNIT_ASSERT(neverclosed(_or, 2));
+    CPPUNIT_ASSERT(neverclosed(_seq, 2));
 }
 
 void BaseFunTest::linear()

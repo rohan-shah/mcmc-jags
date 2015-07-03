@@ -31,6 +31,7 @@
 #include <distributions/DWish.h>
 #include <distributions/DHyper.h>
 #include <distributions/DSum.h>
+#include <distributions/SumDist.h>
 
 #include <functions/Abs.h>
 #include <functions/ArcCos.h>
@@ -184,7 +185,8 @@ namespace bugs {
 	insert(new DSum, new DSumFunc);
 	insert(new DInterval, new DIntervalFunc);
 	insert(new DRound, new DRoundFunc);
-
+	insert(new SumDist, new Sum);
+	
 	//Load sampler factories
 	insert(new MNormalFactory);
 	insert(new DirichletFactory);

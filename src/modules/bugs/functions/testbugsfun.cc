@@ -519,8 +519,8 @@ void BugsFunTest::link(ScalarFunction const *f, LinkFunction const *l,
 
     //Test link function over a range of values
     double delta = (upper - lower)/(N - 1);
-    double yold;
-
+    double yold = l->inverseLink(lower);
+    
     for (int i = 0; i < N; ++i) {
 
 	const double x = lower + i * delta;
@@ -785,55 +785,103 @@ void BUGSFunTest::observable()
 }
 */
 
-void BugsFunTest::slp()
+void BugsFunTest::slap()
 {
-    CPPUNIT_ASSERT(neverslp(_sin, 1));
-    CPPUNIT_ASSERT(neverslp(_cos, 1));
-    CPPUNIT_ASSERT(neverslp(_tan, 1));
-    CPPUNIT_ASSERT(neverslp(_arccos, 1));
-    CPPUNIT_ASSERT(neverslp(_arcsin, 1));
-    CPPUNIT_ASSERT(neverslp(_arctan, 1));
+    //Functions that are never Scale, Linear, Additive, or Power functions
+    
+    CPPUNIT_ASSERT(neverclosed(_sin, 1));
+    CPPUNIT_ASSERT(neverclosed(_cos, 1));
+    CPPUNIT_ASSERT(neverclosed(_tan, 1));
+    CPPUNIT_ASSERT(neverclosed(_arccos, 1));
+    CPPUNIT_ASSERT(neverclosed(_arcsin, 1));
+    CPPUNIT_ASSERT(neverclosed(_arctan, 1));
 
-    CPPUNIT_ASSERT(neverslp(_sinh, 1));
-    CPPUNIT_ASSERT(neverslp(_cosh, 1));
-    CPPUNIT_ASSERT(neverslp(_tanh, 1));
-    CPPUNIT_ASSERT(neverslp(_arccosh, 1));
-    CPPUNIT_ASSERT(neverslp(_arcsinh, 1));
-    CPPUNIT_ASSERT(neverslp(_arctanh, 1));
+    CPPUNIT_ASSERT(neverclosed(_sinh, 1));
+    CPPUNIT_ASSERT(neverclosed(_cosh, 1));
+    CPPUNIT_ASSERT(neverclosed(_tanh, 1));
+    CPPUNIT_ASSERT(neverclosed(_arccosh, 1));
+    CPPUNIT_ASSERT(neverclosed(_arcsinh, 1));
+    CPPUNIT_ASSERT(neverclosed(_arctanh, 1));
 
-    CPPUNIT_ASSERT(neverslp(_cloglog, 1));
-    CPPUNIT_ASSERT(neverslp(_log, 1));
-    CPPUNIT_ASSERT(neverslp(_logit, 1));
-    CPPUNIT_ASSERT(neverslp(_probit, 1));
-    CPPUNIT_ASSERT(neverslp(_icloglog, 1));
-    CPPUNIT_ASSERT(neverslp(_exp, 1));
-    CPPUNIT_ASSERT(neverslp(_ilogit, 1));
-    CPPUNIT_ASSERT(neverslp(_phi, 1));
+    CPPUNIT_ASSERT(neverclosed(_cloglog, 1));
+    CPPUNIT_ASSERT(neverclosed(_log, 1));
+    CPPUNIT_ASSERT(neverclosed(_logit, 1));
+    CPPUNIT_ASSERT(neverclosed(_probit, 1));
+    CPPUNIT_ASSERT(neverclosed(_icloglog, 1));
+    CPPUNIT_ASSERT(neverclosed(_exp, 1));
+    CPPUNIT_ASSERT(neverclosed(_ilogit, 1));
+    CPPUNIT_ASSERT(neverclosed(_phi, 1));
 
-    CPPUNIT_ASSERT(neverslp(_max, 1));
-    CPPUNIT_ASSERT(neverslp(_min, 1));
-    CPPUNIT_ASSERT(neverslp(_sd, 1));
+    CPPUNIT_ASSERT(neverclosed(_max, 1));
+    CPPUNIT_ASSERT(neverclosed(_min, 1));
+    CPPUNIT_ASSERT(neverclosed(_sd, 1));
 
-    CPPUNIT_ASSERT(neverslp(_logfact, 1));
-    CPPUNIT_ASSERT(neverslp(_loggam, 1));
+    CPPUNIT_ASSERT(neverclosed(_logfact, 1));
+    CPPUNIT_ASSERT(neverclosed(_loggam, 1));
 
-    CPPUNIT_ASSERT(neverslp(_round, 1));
-    CPPUNIT_ASSERT(neverslp(_step, 1));
-    CPPUNIT_ASSERT(neverslp(_trunc, 1));
-    CPPUNIT_ASSERT(neverslp(_abs, 1));
+    CPPUNIT_ASSERT(neverclosed(_round, 1));
+    CPPUNIT_ASSERT(neverclosed(_step, 1));
+    CPPUNIT_ASSERT(neverclosed(_trunc, 1));
+    CPPUNIT_ASSERT(neverclosed(_abs, 1));
 
-    CPPUNIT_ASSERT(neverslp(_dinterval, 2));
-    CPPUNIT_ASSERT(neverslp(_dround, 2));
+    CPPUNIT_ASSERT(neverclosed(_dinterval, 2));
+    CPPUNIT_ASSERT(neverclosed(_dround, 2));
 
-    CPPUNIT_ASSERT(neverslp(_order, 1));
-    CPPUNIT_ASSERT(neverslp(_rank, 1));
-    CPPUNIT_ASSERT(neverslp(_sort, 1));
+    CPPUNIT_ASSERT(neverclosed(_order, 1));
+    CPPUNIT_ASSERT(neverclosed(_rank, 1));
+    CPPUNIT_ASSERT(neverclosed(_sort, 1));
 
-    CPPUNIT_ASSERT(neverslp(_inverse, 1));
-    CPPUNIT_ASSERT(neverslp(_logdet, 1));
+    CPPUNIT_ASSERT(neverclosed(_inverse, 1));
+    CPPUNIT_ASSERT(neverclosed(_logdet, 1));
 
-    CPPUNIT_ASSERT(neverslp(_interplin, 3));
-    CPPUNIT_ASSERT(neverslp(_rep, 2));
+    CPPUNIT_ASSERT(neverclosed(_interplin, 3));
+    CPPUNIT_ASSERT(neverclosed(_rep, 2));
+}
+
+void BugsFunTest::additive()
+{
+    CPPUNIT_ASSERT(neveradditive(_mean, 1));
+    CPPUNIT_ASSERT(_sum->isAdditive(T, vector<bool>()));
+    CPPUNIT_ASSERT(neveradditive(_prod, 2));
+    CPPUNIT_ASSERT(neveradditive(_sqrt, 1));
+    CPPUNIT_ASSERT(_transpose->isAdditive(T, vector<bool>()));
+
+    //CPPUNIT_ASSERT(_dsum->isLinear(TF, vector<bool>()));
+    //CPPUNIT_ASSERT(_dsum->isLinear(FT, vector<bool>()));
+    //CPPUNIT_ASSERT(_dsum->isLinear(TT, vector<bool>()));
+
+    CPPUNIT_ASSERT(neveradditive(_matmult, 2));
+    CPPUNIT_ASSERT(neveradditive(_inprod, 2));
+
+    //Ifelse is only additive if
+    //a) The first argument is not additive
+    //b) Both the second and third arguments are true
+    CPPUNIT_ASSERT(!_ifelse->isAdditive(FFF,  vector<bool>()));
+    CPPUNIT_ASSERT(!_ifelse->isAdditive(FFT,  vector<bool>()));
+    CPPUNIT_ASSERT(!_ifelse->isAdditive(FTF, vector<bool>()));
+    CPPUNIT_ASSERT(_ifelse->isAdditive(FTT, vector<bool>()));
+    CPPUNIT_ASSERT(!_ifelse->isAdditive(TFF,  vector<bool>()));
+    CPPUNIT_ASSERT(!_ifelse->isAdditive(TFT,  vector<bool>()));
+    CPPUNIT_ASSERT(!_ifelse->isAdditive(TTF, vector<bool>()));
+    CPPUNIT_ASSERT(!_ifelse->isAdditive(TTT, vector<bool>()));
+
+    CPPUNIT_ASSERT(!_ifelse->isAdditive(FTT, FFF));
+    CPPUNIT_ASSERT(!_ifelse->isAdditive(FTT, FFT));
+    CPPUNIT_ASSERT(!_ifelse->isAdditive(FTT, FTF));
+    CPPUNIT_ASSERT(!_ifelse->isAdditive(FTT, FTT));
+    CPPUNIT_ASSERT(!_ifelse->isAdditive(FTT, TFF));
+    CPPUNIT_ASSERT(!_ifelse->isAdditive(FTT, TFT));
+    CPPUNIT_ASSERT(!_ifelse->isAdditive(FTT, TTF));
+    CPPUNIT_ASSERT(!_ifelse->isAdditive(FTT, TTT));
+
+    //Combine is only additive if one argument is additive
+    CPPUNIT_ASSERT(_combine->isAdditive(FFT, vector<bool>()));
+    CPPUNIT_ASSERT(_combine->isAdditive(FTF, vector<bool>()));
+    CPPUNIT_ASSERT(!_combine->isAdditive(FTT, vector<bool>()));
+    CPPUNIT_ASSERT(_combine->isAdditive(TFF, vector<bool>()));
+    CPPUNIT_ASSERT(!_combine->isAdditive(TFT, vector<bool>()));
+    CPPUNIT_ASSERT(!_combine->isAdditive(TTF, vector<bool>()));
+    CPPUNIT_ASSERT(!_combine->isAdditive(TTT, vector<bool>()));
 }
 
 void BugsFunTest::linear()

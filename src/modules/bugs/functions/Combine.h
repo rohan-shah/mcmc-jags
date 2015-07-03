@@ -25,6 +25,8 @@ namespace jags {
 		length(std::vector<unsigned int> const &parlengths,
 		       std::vector<double const *> const &parvalues) const;
 	    bool isDiscreteValued(std::vector<bool> const &mask) const;
+	    bool isAdditive(std::vector<bool> const &mask,
+			    std::vector<bool> const &isfixed) const;
 	    bool isScale(std::vector<bool> const &mask,
 			 std::vector<bool> const &isfixed) const;
 	    bool isLinear(std::vector<bool> const &mask,

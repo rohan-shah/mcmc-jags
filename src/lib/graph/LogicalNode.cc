@@ -86,6 +86,9 @@ bool LogicalNode::isClosed(set<Node const *> const &ancestors,
     }
 
     switch(fc) {
+    case DNODE_ADDITIVE:
+	return _func->isAdditive(mask, fixed_mask);
+	break;
     case DNODE_LINEAR:
 	return _func->isLinear(mask, fixed_mask);
         break;

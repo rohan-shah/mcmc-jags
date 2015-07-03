@@ -2,6 +2,7 @@
 #define AGGREGATE_NODE_H_
 
 #include <graph/DeterministicNode.h>
+#include <util/logical.h>
 
 namespace jags {
 
@@ -24,7 +25,7 @@ public:
     /**
      * The value vector of an AggNode satisfies the equality.
      * <pre>
-     * value(chain)[i] == parents[i]->value(chain)[parents[i]]
+     * value(chain)[i] == parents[i]->value(chain)[offsets[i]]
      * </pre>
      *
      * @param dim Dimension of the Node.

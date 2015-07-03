@@ -49,6 +49,12 @@ bool Function::isLinear(vector<bool> const &mask,
     return isScale(mask, isfixed);
 }
 
+bool Function::isAdditive(vector<bool> const &mask,
+			  vector<bool> const &isfixed) const
+{
+    return false;
+}
+    
 bool 
 Function::isPower(vector<bool> const &mask, vector<bool> const &isfixed) const
 {

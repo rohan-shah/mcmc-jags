@@ -28,6 +28,23 @@ namespace bugs {
 	return allTrue(mask);
     }
 
+    bool
+    Sum::isAdditive(vector<bool> const &mask, vector<bool> const &fixed) const
+    {
+	//Only one argument may be additive. 
+	bool found = false;
+	for (unsigned int i = 0; i < mask.size(); ++i) {
+	    if (mask[i]) {
+		if (found) return false;
+		else found = true;
+	    }
+	    if (!fixed.empty() && !fixed[i]) {
+		return false;
+	    }
+	}
+	return found;
+    }
+    
     bool Sum::isScale(vector<bool> const &mask, vector<bool> const &fix) const
     {
 	return true;

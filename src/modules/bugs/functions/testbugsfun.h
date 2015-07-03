@@ -24,7 +24,8 @@ class BugsFunTest : public CppUnit::TestFixture, public JAGSFixture
     CPPUNIT_TEST( summary );
     CPPUNIT_TEST( math );
     CPPUNIT_TEST( lossy );
-    CPPUNIT_TEST( slp );
+    CPPUNIT_TEST( slap );
+    CPPUNIT_TEST( additive );
     CPPUNIT_TEST( linear );
     CPPUNIT_TEST( scale );
     CPPUNIT_TEST( sort );
@@ -139,7 +140,8 @@ class BugsFunTest : public CppUnit::TestFixture, public JAGSFixture
     void hyper();
     void math();
     void lossy();
-    void slp();
+    void slap();
+    void additive();
     void linear();
     void scale();
     void sort();

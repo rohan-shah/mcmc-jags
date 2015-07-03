@@ -41,14 +41,16 @@ bool never(std::vector<bool> const &); //returns false
 bool all(std::vector<bool> const &); //returns true if all arguments are true
 bool any(std::vector<bool> const &); //returns true if any argyments are true
 
+//Returns true if f is never an additive function
+bool neveradditive(jags::Function const *f, unsigned int npar);
 //Returns true if f is never a scale function
 bool neverscale(jags::Function const *f, unsigned int npar);
 //Returns true if f is never a linear function
 bool neverlinear(jags::Function const *f, unsigned int npar);
 //Returns true if f is never a power function
 bool neverpow(jags::Function const *f, unsigned int npar);
-//Returns true if f is never a linear, scale, or power function
-bool neverslp(jags::Function const *f, unsigned int npar);
+//Returns true if f is never an additive, linear, scale, or power function
+bool neverclosed(jags::Function const *f, unsigned int npar);
 
 /* Tests for scalar functions */
 

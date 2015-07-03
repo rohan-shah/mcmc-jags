@@ -153,7 +153,34 @@ bool AggNode::isLinear(GraphMarks const &linear_marks, bool fixed) const
 bool AggNode::isClosed(set<Node const *> const &ancestors, 
 		       ClosedFuncClass fc, bool fixed) const
 {
+    
     switch(fc) {
+    case DNODE_ADDITIVE:
+    {
+	//Only one parent may be additive, and it must be completely
+	//embedded in the AggNode
+	Node const *pnode = 0;
+	vector<bool> pmask;
+	vector<Node const *> const &par = parents();
+	for (unsigned int i = 0; i < par.size(); ++i) {
+	    if (ancestors.count(par[i])) {
+		if (pnode == 0) {
+		    pnode = par[i];
+		    pmask = vector<bool>(pnode->length(), false);
+		}
+		else {
+		    if (par[i] != pnode) return false;
+		    if (pmask[_offsets[i]]) return false;
+		}
+		pmask[_offsets[i]] = true;
+	    }
+	    else if (fixed) {
+		if (!par[i]->isFixed()) return false;
+	    }
+	}
+	if (!allTrue(pmask)) return false;
+    }
+    break;
     case DNODE_SCALE:
 	//All parents must be scale transformations
 	for (unsigned int i = 0; i < parents().size(); ++i) {

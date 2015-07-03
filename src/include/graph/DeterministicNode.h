@@ -16,6 +16,10 @@ namespace jags {
  * g(f()). This property is used by some Samplers to determine whether
  * a node, or block of nodes, can be sampled.
  *
+ * DNODE_ADDITIVE denotes a function f of the single ancestor nodes X
+ * such that sum(f(X)) = a + sum(X), where sum() denotes the sum of
+ * all the elements of the given node.
+ *
  * DNODE_LINEAR denotes a linear function of the ancestor nodes X =
  * (X1, ... XN). A linear function takes the form A + B %*% X1 + B2
  * %*% X2 + ... * + BN %*% * XN. 
@@ -38,7 +42,8 @@ namespace jags {
  *
  * @see DeterministicNode#isClosed
  */
-enum ClosedFuncClass {DNODE_LINEAR, DNODE_SCALE, DNODE_SCALE_MIX, DNODE_POWER};
+enum ClosedFuncClass {DNODE_ADDITIVE, DNODE_LINEAR, DNODE_SCALE,
+		      DNODE_SCALE_MIX, DNODE_POWER};
 
 /**
  * @short Base class for deterministic Nodes

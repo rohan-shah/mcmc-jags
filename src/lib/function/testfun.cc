@@ -83,6 +83,19 @@ bool never(vector<bool> const &mask) { return false; }
 bool all(vector<bool> const &mask) { return allTrue(mask); }
 bool any(vector<bool> const &mask) { return anyTrue(mask); }
 
+bool neveradditive(Function const *f, unsigned int npar)
+{
+    CPPUNIT_ASSERT_MESSAGE(f->name(), checkNPar(f, npar));
+
+    for(BoolIterator mask(npar); !mask.atEnd; mask.next()) {
+	if (f->isAdditive(mask, vector<bool>())) return false;
+	for(BoolIterator fixed(npar); !fixed.atEnd; fixed.next()) {
+	    if (f->isAdditive(mask, fixed)) return false;
+	}
+    }
+    return true;
+}
+
 bool neverlinear(Function const *f, unsigned int npar)
 {
     CPPUNIT_ASSERT_MESSAGE(f->name(), checkNPar(f, npar));
@@ -122,9 +135,10 @@ bool neverpow(Function const *f, unsigned int npar)
     return true;
 }
 
-bool neverslp(Function const *f, unsigned int npar)
+bool neverclosed(Function const *f, unsigned int npar)
 {
-    return neverscale(f, npar) && neverlinear(f, npar) && neverpow(f, npar);
+    return neverscale(f, npar) && neverlinear(f, npar) &&
+	neverpow(f, npar) && neveradditive(f, npar);
 }
 
 /* Scalar functions */

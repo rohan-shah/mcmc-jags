@@ -110,7 +110,11 @@ Library changes
 * The Node destructor no longer remove themselves "this" (the node
   being destroyed) from its parents' list of children. A new member function
   unlinkParents() is added for this purpose.
-
+* A new class of closed functions DNODE_ADDITIVE is added to the
+  ClosedFuncClass enumeration, with new method Function#isAdditive to
+  support LogicalNode#isClosed. An additive function can be expressed as
+  f(x) = a + sum(x) and is fixed if a is fixed.
+  
 Internal changes in modules
 ===========================
 * All module namespaces are nested inside namespace jags

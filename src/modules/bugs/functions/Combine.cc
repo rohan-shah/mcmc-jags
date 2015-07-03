@@ -39,6 +39,25 @@ namespace jags {
 	    return allTrue(mask);
 	}
 
+	bool Combine::isAdditive(vector<bool> const &mask, 
+				 vector<bool> const &fixed) const
+	{
+	    //The Combine function behaves like an aggregate node
+	    //and so has the same rules for preserving additive functions
+	    //i.e. only one argument may be additive. 
+	    bool found = false;
+	    for (unsigned int i = 0; i < mask.size(); ++i) {
+		if (mask[i]) {
+		    if (found) return false;
+		    else found = true;
+		}
+		if (!fixed.empty() && !fixed[i]) {
+		    return false;
+		}
+	    }
+	    return found;
+	}
+	
 	bool Combine::isScale(vector<bool> const &mask, 
 			      vector<bool> const &fixed) const
 	{

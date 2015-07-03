@@ -20,6 +20,8 @@ public:
     Add ();
     double evaluate(std::vector<double const *>const &args) const;
     bool isDiscreteValued(std::vector<bool> const &flags) const;
+    bool isAdditive(std::vector<bool> const &mask,
+		    std::vector<bool> const &fixmask) const;
     bool isLinear(std::vector<bool> const &mask,
 		  std::vector<bool> const &fixmask) const;
     bool isScale(std::vector<bool> const &mask,

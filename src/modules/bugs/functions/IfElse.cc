@@ -53,4 +53,22 @@ namespace bugs {
 	}
     }
 
+    bool IfElse::isAdditive(vector<bool> const &mask, 
+			    vector<bool> const &fixed) const
+    {
+	if (mask[0]) return false;
+
+	if (fixed.empty()) {
+	    //result is an addtive function if both arguments are
+	    return mask[1] && mask[2];
+	}
+	else {
+	    //..but it is never fixed
+	    return false;
+	}
+	
+    }
+    
+
+
 }}

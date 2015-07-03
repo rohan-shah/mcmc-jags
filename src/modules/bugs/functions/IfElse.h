@@ -23,6 +23,8 @@ public:
     IfElse ();
     double evaluate(std::vector<double const *> const &args) const;
     bool isDiscreteValued(std::vector<bool> const &mask) const;
+    bool isAdditive(std::vector<bool> const &mask, 
+		    std::vector<bool> const &fixed) const;
     bool isScale(std::vector<bool> const &mask, 
 		 std::vector<bool> const &fixed) const;
     bool isLinear(std::vector<bool> const &mask, 
