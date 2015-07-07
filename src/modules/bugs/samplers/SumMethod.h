@@ -1,8 +1,6 @@
 #ifndef SUM_METHOD_H_
 #define SUM_METHOD_H_
 
-#include <sampler/Slicer.h>
-
 #include <vector>
 
 namespace jags {
@@ -10,13 +8,14 @@ namespace jags {
     class StochasticNode;
     class DeterministicNode;
     class GraphView;
+    class RNG;
     
     namespace bugs {
 
 	/**
 	 * @short Sampler for stochastic parents of sum nodes
 	 */
-	class SumMethod : public Slicer
+	class SumMethod 
 	{
 	    GraphView const *_gv;
 	    unsigned int _chain;
@@ -24,6 +23,11 @@ namespace jags {
 	    bool _discrete;
 	    std::vector<double> _x;
 	    unsigned int _i, _j;
+	    double _sumdiff;
+	    unsigned int _iter;
+	    double _width;
+	    int _max;
+	    bool _adapt;
 	  public:
 	    SumMethod(GraphView const *gv, unsigned int chain);
 	    ~SumMethod();
@@ -33,6 +37,8 @@ namespace jags {
 	    void getLimits(double *lower, double *upper) const;
 	    std::string name() const;
 	    double logDensity() const;
+	    void updateStep(RNG *rng);
+	    void adaptOff();
 	    static StochasticNode const *
 		isCandidate(StochasticNode *snode, Graph const &graph);
 	    static bool canSample(std::vector<StochasticNode *> const &nodes, 

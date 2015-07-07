@@ -1,22 +1,28 @@
 #include <config.h>
 #include <rng/RNG.h>
-//#include <sampler/GraphView.h>
+#include <sampler/SingletonGraphView.h>
 //#include <graph/Graph.h>
-//#include <graph/StochasticNode.h>
+#include <graph/StochasticNode.h>
 //#include <distribution/Distribution.h>
 //#include <module/ModuleError.h>
+#include <sampler/Linear.h>
+#include <util/nainf.h>
 
-//#include "RWDSum.h"
-//#include <cmath>
+#include "SumMethod.h"
+#include <cmath>
 //#include <set>
-#include <algorithm>
+#include <numeric>
+#include <cfloat>
 
-//using std::vector;
+using std::vector;
 //using std::log;
 //using std::exp;
 //using std::fabs;
 //using std::set;
 using std::accumulate;
+using std::min;
+using std::max;
+using std::ceil;
 
 namespace jags {
     
@@ -36,7 +42,7 @@ namespace jags {
 	}
 	    
 	StochasticNode const *
-	SumFactory::isCandidate(StochasticNode *snode, Graph const &graph)
+	SumMethod::isCandidate(StochasticNode *snode, Graph const &graph)
 	{
 	    //We can only sample scalar nodes
 	    if (snode->length() != 1) return 0;
@@ -49,7 +55,7 @@ namespace jags {
 	       observed and has the distribution "sum".  
 	    */
 	    vector<StochasticNode*> const &schildren = gv.stochasticChildren();
-	    if (schild.size() != 1) return 0;
+	    if (schildren.size() != 1) return 0;
 	    StochasticNode const *schild = schildren.front();
 	    if (schild->distribution()->name() != "sum") return 0;
 	    if (!isObserved(schild)) return 0;
@@ -57,15 +63,15 @@ namespace jags {
 	    /* Deterministic descendants must be an additive function
 	     * of snode
 	     */
-	    if (!checkAdditive(gv, false)) return 0;
+	    if (!checkAdditive(&gv, false)) return 0;
 
 	    return schild;
 	}
 	
-	bool SumFactory::canSample(GraphView const &gv, Graph const &graph)
+	bool SumMethod::canSample(vector<StochasticNode*> const &snodes,
+				  Graph const &graph)
 	{
-	    vector<StochasticChildren*> const &snodes = gv->nodes();
-	    unsigned int len = gv->length();
+	    unsigned int len = snodes.size();
 	    if (len < 2) return false;
 
 	    Node const *sumchild = isCandidate(snodes[0], graph);
@@ -75,19 +81,21 @@ namespace jags {
 	    }
 
 	    //Is the whole thing additive with a fixed intercept?
-	    if (!checkAdditive(&gv, Graph, true)) return false;
+	    GraphView gv(snodes, graph);
+	    if (!checkAdditive(&gv, graph, true)) return false;
 
 	    //Now check intercept
 	    
 	    //Store old value
+	    const unsigned int ch = 0;
 	    vector<double> xold(len);
-	    gv.getValue(xold, 0);
+	    gv.getValue(xold, ch);
 
 	    //Create new value
-	    StochasticNode const *sumnode = gv->stochasticChildren().front();
-	    gv.setValue(vector<double(len, 0));
-	    bool ok = (sumValue(sumnode->parents()) != 0);
-	    gv.setValue(xold, 0);
+	    StochasticNode const *sumnode = gv.stochasticChildren().front();
+	    gv.setValue(vector<double>(len, 0), ch);
+	    bool ok = (sumValue(sumnode->parents(), ch) != 0);
+	    gv.setValue(xold, ch);
 	    if (!ok) return false;
 
 	    //Check consistency of discreteness
@@ -101,10 +109,11 @@ namespace jags {
 	}
 
 	SumMethod::SumMethod(GraphView const *gv, unsigned int chain)
-	    : Slicer(2, 10), _gv(gv), _chain(chain),
+	    : _gv(gv), _chain(chain),
 	      _sum(gv->stochasticChildren()[0]->value(chain)[0]),
 	      _discrete(gv->stochasticChildren()[0]->isDiscreteValued()),
-	      _x(gv->length()), _i(0), _j(0), _sumdiff(0), _iter(0)
+	      _x(gv->length()), _i(0), _j(0), _sumdiff(0), _iter(0),
+	      _width(2), _max(10), _adapt(true)
 	{
 	    gv->getValue(_x, chain);
 	}
@@ -206,13 +215,13 @@ namespace jags {
 	    }
 	}
 
-	bool SumMethod::update(RNG *rng)
+	void SumMethod::update(RNG *rng)
 	{
 	    unsigned int len = _gv->length();
 	    for(_i = 0; _i < len; ++_i) {
 		_j = static_cast<unsigned int>(rng->uniform() * (len-1));
 		if (_j >= _i) _j++;
-		updateStep();
+		updateStep(rng);
 	    }
 	    if (_adapt) {
 		if (++_iter % 50 == 0) {
@@ -223,30 +232,35 @@ namespace jags {
 	    _gv->setValue(_x, _chain);
 	}
 
-	void DSumMethod::setValue(double x)
+	void SumMethod::setValue(double x)
 	{
 	    double delta = x - _x[_i];
 	    _x[_i] = x;
 	    _x[_j] -= delta;
 	    
-	    _gv->nodes()[_i]->setValue(&x[_i], 1, _chain);
-	    _gv->nodes()[_j]->setValue(&x[_j], 1, _chain);
+	    _gv->nodes()[_i]->setValue(&_x[_i], 1, _chain);
+	    _gv->nodes()[_j]->setValue(&_x[_j], 1, _chain);
 	}
 
-	double DSumMethod::value() const
+	double SumMethod::value() const
 	{
 	    return _x[_i];
 	}
 
-	void DSumMethod::getLimits(double *lower, double *upper) const
+	void SumMethod::getLimits(double *lower, double *upper) const
 	{
 	    vector<StochasticNode *> const &n = _gv->nodes();
 	    double li, ui, lj, uj;
 	    n[_i]->support(&li, &ui, 1U, _chain);
 	    n[_j]->support(&lj, &uj, 1U, _chain);
 	    double sum_ij = n[_i]->value(_chain)[0] + n[_j]->value(_chain)[0];
-	    *lower = max(li, sum_ij - u1);
-	    *upper = min(ui, sum_ij - l1);
+	    *lower = max(li, sum_ij - uj);
+	    *upper = min(ui, sum_ij - lj);
+	}
+
+	void SumMethod::adaptOff()
+	{
+	    _adapt=false;
 	}
 	
 	
