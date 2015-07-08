@@ -134,9 +134,8 @@ bool Compiler::indexExpression(ParseTree const *p, vector<int> &value)
        2) On the left hand side of a relation
        3) On the right hand side of a relation
      
-       They are scalar, integer-valued, constant expressions.  We
-       return true on success and the result is written to the
-       parameter value.
+       They are integer-valued, constant expressions.  We return true
+       on success and the result is written to the parameter value.
     */
     
     /* 
@@ -308,7 +307,7 @@ Range Compiler::CounterRange(ParseTree const *var)
   }
   vector<int> indices;
   if(!indexExpression(prange->parameters()[0], indices)) {
-      CompileError(var, "Cannot evaluate lower range of counter", var->name());
+      CompileError(var, "Cannot evaluate range of counter", var->name());
   }
   
   if (indices.empty()) {
@@ -372,12 +371,18 @@ Node *Compiler::getArraySubset(ParseTree const *p)
 				 print(subset_range));
 		}
 		node = array->getSubset(subset_range, _model);
-		if (node == 0 && _strict_resolution) {
- 		    string msg = string("Unable to resolve node ")
- 			+ array->name() + print(subset_range) 
-			+ "\nThis may be due to an undefined ancestor node or"
-                        + " a directed cycle in the graph";
- 		    CompileError(p, msg);
+		if (node == 0 && _resolution_level == 1) {
+		    /* At resolution level 1 we make a note of all
+		       subsets that could not be resolved */
+		    pair<string, Range> upair(p->name(), subset_range);
+		    if (_umap.find(upair) == _umap.end()) {
+			set<int> lines;
+			lines.insert(p->line());
+			_umap[upair] = lines;
+		    }
+		    else {
+			_umap.find(upair)->second.insert(p->line());
+		    }
 		}
 	    }
 	    else if (!_index_expression) {
@@ -385,9 +390,11 @@ Node *Compiler::getArraySubset(ParseTree const *p)
 		node = getMixtureNode(p, this);
 	    } 
 	}
-	else if (_strict_resolution) {
-	    //Give an informative error message in case of failure
-	    CompileError(p, "Unknown parameter", p->name());
+	else if (_resolution_level == 1) {
+	    /* We can get this error with a directed cycle consisting
+	       of only scalar variables. 
+	    */
+	    CompileError(p, "Unknown variable", p->name());
 	}
 	
 	if (!node && _index_expression) {
@@ -545,6 +552,7 @@ bool Compiler::getParameterVector(ParseTree const *t,
 	throw logic_error("parent vector must be empty in getParameterVector");
     }
 
+    bool ok = true;
     switch (t->treeClass()) {
     case P_FUNCTION: case P_LINK: case P_DENSITY:
 	if (t->parameters().size() == 0)
@@ -555,10 +563,12 @@ bool Compiler::getParameterVector(ParseTree const *t,
 		parents.push_back(node);
 	    }
 	    else {
-		parents.clear();
-		return false;
+		ok = false;
 	    }
-			  
+	}
+	if (!ok) {
+	    parents.clear();
+	    return false;
 	}
 	break;
     default:
@@ -802,6 +812,20 @@ void Compiler::allocate(ParseTree const *rel)
 	_n_resolved++;
 	_is_resolved[_n_relations] = true;
     }
+    else if (_resolution_level == 2) {
+	/* 
+	   Remove from the set of unresolved parameters, any array
+	   subsets that are defined on the left hand side of a
+	   relation.
+	*/
+	ParseTree *var = rel->parameters()[0];
+	Range range = VariableSubsetRange(var);
+	pair<string, Range> upair(var->name(), range);
+	map<pair<string, Range>, set<int> >::iterator p = _umap.find(upair);
+	if (p != _umap.end()) {
+	    _umap.erase(p);
+	}
+    }
 }
 
 void Compiler::setConstantMask(ParseTree const *rel)
@@ -917,27 +941,88 @@ void Compiler::writeConstantData(ParseTree const *relations)
 
 void Compiler::writeRelations(ParseTree const *relations)
 {
-  writeConstantData(relations);
-
-  // Set up boolean vector for nodes to indicate whether they are
-  // resolved or not.
-  _is_resolved = new bool[_n_relations];
-  for (unsigned int i = 0; i < _n_relations; ++i) {
-    _is_resolved[i] = false;
-  }
-  
-  for (unsigned long N = _n_relations; N > 0; N -= _n_resolved) {
-    _n_resolved = 0;
-    traverseTree(relations, &Compiler::allocate);
-    if (_n_resolved == 0) {
-      // Try again, but this time throw an exception from getSubsetNode
-      _strict_resolution = true;
-      traverseTree(relations, &Compiler::allocate);
-      // If that didn't work (but it should!) just throw a generic message
-      throw runtime_error("Unable to resolve relations");
+    writeConstantData(relations);
+    
+    _is_resolved = vector<bool>(_n_relations, false);
+    for (unsigned long N = _n_relations; N > 0; N -= _n_resolved) {
+	_n_resolved = 0;
+	traverseTree(relations, &Compiler::allocate);
+	if (_n_resolved == 0) break;
     }
-  }
-  delete [] _is_resolved; _is_resolved = 0;
+    _is_resolved.clear();
+
+    if (_n_resolved == 0) {
+	/* 
+	   Somes nodes remain unresolved. We need to identify them and
+	   print an informative error message for the user. 
+	   
+	   The basic strategy is to identify nodes that appear on the
+	   right-hand side of a relation but cannot be resolved.  Then
+	   we eliminate the nodes that are defined on the left hand
+	   side of a relation.  Whatever nodes are left are used in an
+	   expression but never defined (either in a relation or in
+	   the data).
+	   
+	   It may happen that all the unresolved nodes are defined on
+	   the left hand side of a relation. This can happen if there
+	   is a directed cycle (i.e. the nodes are defined in terms of
+	   each other).
+	*/
+
+	/*
+	  Step 1: Collect identifiers for unresolved parameters.
+	  These will be held in the map _umap along with the line
+	  numbers on which they are used.
+	*/
+	_resolution_level = 1; //See getArraySubset
+	traverseTree(relations, &Compiler::allocate);
+	if (_umap.empty()) {
+	    //Not clear what went wrong here, so throw a generic error message
+	    throw runtime_error("Unable to resolve relations");
+	}
+	//Take a back-up copy of unresolved parameters
+	map<pair<string,Range>, set<int> > umap_copy = _umap;
+	/*
+	  Step 2: Eliminate parameters that appear on the left of a relation
+	*/
+	_resolution_level = 2;
+	traverseTree(relations, &Compiler::allocate);
+	/* 
+	   Step 3: Informative error message for the user
+	*/
+	ostringstream oss;
+	if (!_umap.empty()) {
+	    //Undefined parameter message
+	    oss << "Unable to resolve the following parameters:\n";
+	    for (map<pair<string, Range>, set<int> >::iterator p =
+		     _umap.begin(); p != _umap.end(); ++p)
+	    {
+		oss << p->first.first << print(p->first.second);
+		oss << " (line ";
+		set<int> const &lines = p->second;
+		for (set<int>::const_iterator i = lines.begin();
+		     i != lines.end(); ++i)
+		{
+		    if (i != lines.begin()) { oss << ", "; }
+		    oss << *i;
+		}
+		oss << ")\n";
+	    }
+	    oss << "Either supply values for these nodes with the data\n"
+		<< "or define them on the left hand side of a relation.";
+	}
+	else {
+	    //Directed cycle message
+	    oss << "Possible directed cycle involving some or all\n"
+		<< "of the following nodes:\n";
+	    for (map<pair<string, Range>, set<int> >::const_iterator p =
+		     umap_copy.begin(); p != umap_copy.end(); ++p)
+	    {
+		oss << p->first.first << print(p->first.second) << "\n";
+	    }
+	}
+	throw runtime_error(oss.str());
+    }
 }
 
 void Compiler::traverseTree(ParseTree const *relations, CompilerMemFn fun,
@@ -984,7 +1069,7 @@ void Compiler::traverseTree(ParseTree const *relations, CompilerMemFn fun,
 Compiler::Compiler(BUGSModel &model, map<string, SArray> const &data_table)
     : _model(model), _countertab(), 
       _data_table(data_table), _n_resolved(0), 
-      _n_relations(0), _is_resolved(0), _strict_resolution(false),
+      _n_relations(0), _is_resolved(0), _resolution_level(0),
       _index_expression(0), _index_nodes()
 {
     if (_model.nodes().size() != 0)

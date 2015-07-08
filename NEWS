@@ -28,9 +28,14 @@ New features
   math library)
 * Variables that are not completely defined can now be monitored. The
   undefined elements are dropped from CODA output.
+* The compiler now gives a more informative error message when nodes
+  cannot be resolved, and tries to distinguish between the two possible
+  causes of an undefined node and a directed cycle.
 
 Bug fixes
 =========
+* Unit tests for functions and distributions using CppUnit are now 
+  included and can be activated by "make check"
 * The qpar function in the bugs module was inverted.
 * The not function in the base module was inverted.
 * The ConjugateGamma sampler did not work correctly for the Chi Squared 
@@ -107,7 +112,7 @@ Library changes
   These functions were only needed by Monitors.
 * Calculation of Kullback-Leibler divergence is moved out of the dic
   module and into the library.
-* The Node destructor no longer remove themselves "this" (the node
+* The Node destructor no longer removes "this" (the node
   being destroyed) from its parents' list of children. A new member function
   unlinkParents() is added for this purpose.
 * A new class of closed functions DNODE_ADDITIVE is added to the

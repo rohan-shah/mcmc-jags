@@ -15,6 +15,7 @@
 #include <utility>
 #include <list>
 #include <utility>
+#include <set>
 
 namespace jags {
 
@@ -37,15 +38,16 @@ class Compiler {
   std::map<std::string, SArray> const &_data_table;
   std::map<std::string, std::vector<bool> > _constant_mask;
   unsigned int _n_resolved, _n_relations;
-  bool *_is_resolved;
-  bool _strict_resolution;
+  std::vector<bool> _is_resolved;
+  unsigned int _resolution_level;
   int _index_expression;
   std::vector<Node*> _index_nodes;
   LogicalFactory _logicalfactory;
   MixtureFactory _mixfactory1;
   MixtureFactory _mixfactory2;
   std::map<std::string, std::vector<int> > _node_array_bounds;
-
+  std::map<std::pair<std::string, Range>, std::set<int> > _umap;
+  
   Node *getArraySubset(ParseTree const *t);
   Range VariableSubsetRange(ParseTree const *var);
   Range CounterRange(ParseTree const *var);

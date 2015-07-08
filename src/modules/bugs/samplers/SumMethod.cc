@@ -263,11 +263,21 @@ namespace jags {
 	    _adapt=false;
 	}
 
-	bool SumMethod::isAdaptive()
+	double SumMethod::logDensity() const
 	{
-	    boo
+	    /* 
+	       Log density depends only on the prior of the two nodes
+	       that are currently active
+	    */
+	    return _gv->nodes()[_i]->logDensity(_chain, PDF_PRIOR) +
+		_gv->nodes()[_j]->logDensity(_chain, PDF_PRIOR);
 	}
-	
+
+	bool SumMethod::checkAdaptation() const
+	{
+	    return true;
+	}
+
     } // namespace bugs
 } //namespace jags
 
