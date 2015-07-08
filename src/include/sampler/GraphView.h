@@ -136,7 +136,7 @@ public:
   double logLikelihood(unsigned int chain) const;
 };
 
-unsigned int nchain(GraphView const *updater);
+unsigned int nchain(GraphView const *gv);
 
 } /* namespace jags */
 

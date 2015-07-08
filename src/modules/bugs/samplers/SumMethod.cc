@@ -262,7 +262,11 @@ namespace jags {
 	{
 	    _adapt=false;
 	}
-	
+
+	bool SumMethod::isAdaptive()
+	{
+	    boo
+	}
 	
     } // namespace bugs
 } //namespace jags

@@ -15,8 +15,6 @@ namespace jags {
 	    std::vector<Sampler*>
 		makeSamplers(std::list<StochasticNode*> const &nodes, 
 			     Graph const &graph) const;
-	    Sampler * makeSampler(std::list<StochasticNode*> const &nodes, 
-				  Graph const &graph) const;
 	    std::string name() const;
 	};
 	

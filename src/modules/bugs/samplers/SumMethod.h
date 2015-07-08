@@ -1,6 +1,8 @@
 #ifndef SUM_METHOD_H_
 #define SUM_METHOD_H_
 
+#include <sampler/MutableSampleMethod.h>
+
 #include <vector>
 
 namespace jags {
@@ -15,7 +17,7 @@ namespace jags {
 	/**
 	 * @short Sampler for stochastic parents of sum nodes
 	 */
-	class SumMethod 
+	class SumMethod : public MutableSampleMethod
 	{
 	    GraphView const *_gv;
 	    unsigned int _chain;
@@ -38,7 +40,9 @@ namespace jags {
 	    std::string name() const;
 	    double logDensity() const;
 	    void updateStep(RNG *rng);
+	    bool isAdaptive();
 	    void adaptOff();
+	    bool checkAdaptation() const;
 	    static StochasticNode const *
 		isCandidate(StochasticNode *snode, Graph const &graph);
 	    static bool canSample(std::vector<StochasticNode *> const &nodes, 

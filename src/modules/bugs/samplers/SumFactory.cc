@@ -1,25 +1,24 @@
 #include <config.h>
-#include <distribution/Distribution.h>
+//#include <distribution/Distribution.h>
 #include <graph/Graph.h>
 #include <graph/StochasticNode.h>
-#include <graph/NodeError.h>
+//#include <graph/NodeError.h>
 #include <sampler/MutableSampler.h>
 #include <sampler/GraphView.h>
 
 #include "SumFactory.h"
 #include "SumMethod.h"
 
-#include <algorithm>
+//#include <algorithm>
 
 using std::list;
 using std::vector;
 using std::string;
+using std::map;
 
 namespace jags {
     namespace bugs {
 
-
-	
 	vector<Sampler *>
 	SumFactory::makeSamplers(list<StochasticNode*> const &nodes,
 				 Graph const &graph) const
@@ -33,32 +32,28 @@ namespace jags {
 	    for (list<StochasticNode*>::const_iterator p = nodes.begin();
 		 p != nodes.end(); ++p)
 	    {
-		StochasticNode const *schild = testSample(*p);
-		if (schild) {
-		    i = smap.find(schild);
+		StochasticNode const *sum = SumMethod::isCandidate(*p, graph);
+		if (sum) {
+		    i = smap.find(sum);
 		    if (i == smap.end()) {
-			smap[schild] = vector<StochasticNode*>(1, schild);
+			sum_nodes.push_back(sum);
+			smap[sum] = vector<StochasticNode*>(1, sum);
 		    }
 		    else {
-			sum_nodes.push_back(schild);
 			i->second.push_back(*p);
 		    }
 		}
 	    }
 
-	    for (unsigned int i = 0; i < sum_nodes.size(); ++i) {
+	    for (vector<StochasticNode const *>::const_iterator p =
+		     sum_nodes.begin(); p != sum_nodes.end(); ++p)
+	    {
+		i = smap.find(*p);
+		if (!SumMethod::canSample(i->second, graph)) continue;
 
-		i = smap.find(sum_nodes[i]);
-		vector<StochasticNode*> const &parameters = i->second;
-		
-		bool discrete;
-		bool multinom = false;
-
-		GraphView *gv = new GraphView(parameters, graph);		
-		if (!SumMethod::canSample(gv, graph)) continue;
-
-		unsigned int nchain = parameters[0]->nchain();
-		vector<MutableSampleMethod*> methods(nchain, 0);
+		GraphView *gv = new GraphView(i->second, graph);		
+		unsigned int nchain = nchain(gv);
+		vector<MutableSampleMethod*> methods(nchain);
 		for (unsigned int ch = 0; ch < nchain; ++ch) {
 		    methods[ch] = new SumMethod(gv, ch);
 		}
@@ -68,7 +63,6 @@ namespace jags {
 
 	    return samplers;
 	}
-	    
 
 	string DSumFactory::name() const
 	{
