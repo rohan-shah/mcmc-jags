@@ -10,6 +10,7 @@
 #include "SumMethod.h"
 
 //#include <algorithm>
+#include <map>
 
 using std::list;
 using std::vector;
@@ -26,8 +27,8 @@ namespace jags {
 	    vector<Sampler*> samplers;
 	    
 	    vector<StochasticNode const*> sum_nodes;
-	    map<StochasticNode const*, vector<StochasticNode> > smap;
-	    map<StochasticNode const*, vector<StochasticNode> >::iterator i;
+	    map<StochasticNode const*, vector<StochasticNode*> > smap;
+	    map<StochasticNode const*, vector<StochasticNode*> >::iterator i;
 
 	    for (list<StochasticNode*>::const_iterator p = nodes.begin();
 		 p != nodes.end(); ++p)
@@ -37,7 +38,7 @@ namespace jags {
 		    i = smap.find(sum);
 		    if (i == smap.end()) {
 			sum_nodes.push_back(sum);
-			smap[sum] = vector<StochasticNode*>(1, sum);
+			smap[sum] = vector<StochasticNode*>(1, *p);
 		    }
 		    else {
 			i->second.push_back(*p);
@@ -52,9 +53,9 @@ namespace jags {
 		if (!SumMethod::canSample(i->second, graph)) continue;
 
 		GraphView *gv = new GraphView(i->second, graph);		
-		unsigned int nchain = nchain(gv);
-		vector<MutableSampleMethod*> methods(nchain);
-		for (unsigned int ch = 0; ch < nchain; ++ch) {
+		unsigned int N = nchain(gv);
+		vector<MutableSampleMethod*> methods(N);
+		for (unsigned int ch = 0; ch < N; ++ch) {
 		    methods[ch] = new SumMethod(gv, ch);
 		}
 		Sampler s = new MutableSampler(gv, methods, "bugs::Sum");

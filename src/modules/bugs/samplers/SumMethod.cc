@@ -109,7 +109,7 @@ namespace jags {
 	}
 
 	SumMethod::SumMethod(GraphView const *gv, unsigned int chain)
-	    : _gv(gv), _chain(chain),
+	    : MutableSampleMethod(), _gv(gv), _chain(chain),
 	      _sum(gv->stochasticChildren()[0]->value(chain)[0]),
 	      _discrete(gv->stochasticChildren()[0]->isDiscreteValued()),
 	      _x(gv->length()), _i(0), _j(0), _sumdiff(0), _iter(0),
@@ -258,6 +258,11 @@ namespace jags {
 	    *upper = min(ui, sum_ij - lj);
 	}
 
+	bool SumMethod::isAdaptive() const
+	{
+	    return true;
+	}
+	
 	void SumMethod::adaptOff()
 	{
 	    _adapt=false;

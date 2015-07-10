@@ -40,7 +40,7 @@ namespace jags {
 	    std::string name() const;
 	    double logDensity() const;
 	    void updateStep(RNG *rng);
-	    bool isAdaptive();
+	    bool isAdaptive() const;
 	    void adaptOff();
 	    bool checkAdaptation() const;
 	    static StochasticNode const *
