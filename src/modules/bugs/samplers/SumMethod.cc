@@ -1,28 +1,23 @@
 #include <config.h>
 #include <rng/RNG.h>
 #include <sampler/SingletonGraphView.h>
-//#include <graph/Graph.h>
 #include <graph/StochasticNode.h>
-//#include <distribution/Distribution.h>
-//#include <module/ModuleError.h>
+#include <graph/DeterministicNode.h>
 #include <sampler/Linear.h>
 #include <util/nainf.h>
 
 #include "SumMethod.h"
 #include <cmath>
-//#include <set>
 #include <numeric>
 #include <cfloat>
+#include <stdexcept>
 
 using std::vector;
-//using std::log;
-//using std::exp;
-//using std::fabs;
-//using std::set;
 using std::accumulate;
 using std::min;
 using std::max;
 using std::ceil;
+using std::logic_error;
 
 namespace jags {
     
@@ -71,36 +66,20 @@ namespace jags {
 	bool SumMethod::canSample(vector<StochasticNode*> const &snodes,
 				  Graph const &graph)
 	{
-	    unsigned int len = snodes.size();
-	    if (len < 2) return false;
+	    if (snodes.size() < 2) return false;
 
+	    //Are individual nodes candidates?
 	    Node const *sumchild = isCandidate(snodes[0], graph);
 	    if (sumchild == 0) return false;
 	    for (unsigned int i = 1; i < snodes.size(); ++i) {
 		if (isCandidate(snodes[i], graph) != sumchild) return false;
 	    }
 
-	    //Is the whole thing additive with a fixed intercept?
-	    GraphView gv(snodes, graph);
-	    if (!checkAdditive(&gv, graph, true)) return false;
-
-	    //Now check intercept
-	    
-	    //Store old value
-	    const unsigned int ch = 0;
-	    vector<double> xold(len);
-	    gv.getValue(xold, ch);
-
-	    //Create new value
-	    StochasticNode const *sumnode = gv.stochasticChildren().front();
-	    gv.setValue(vector<double>(len, 0), ch);
-	    bool ok = (sumValue(sumnode->parents(), ch) != 0);
-	    gv.setValue(xold, ch);
-	    if (!ok) return false;
+	    //Together are the nodes additive with a fixed intercept?
+	    if (!checkAdditive(snodes, graph, true)) return false;
 
 	    //Check consistency of discreteness
-	    if (snodes.empty()) return false;
-	    bool discrete = sumnode->isDiscreteValued();
+	    bool discrete = sumchild->isDiscreteValued();
 	    for (unsigned int i = 0; i < snodes.size(); ++i) {
 		if (snodes[i]->isDiscreteValued() != discrete) return false;
 		if (snodes[i]->length() != 1) return false;
@@ -116,6 +95,37 @@ namespace jags {
 	      _width(2), _max(10), _adapt(true)
 	{
 	    gv->getValue(_x, chain);
+	    
+	    if (gv->logLikelihood(chain) != 0) {
+		//If initial values are not correct then we adjust them
+		StochasticNode *sumchild = gv->stochasticChildren()[0];
+		double delta = sumchild->value(chain)[0] -
+		    sumValue(sumchild->parents(), chain);
+		_x[0] += delta;
+		gv->setValue(_x, chain);
+	    }
+
+	    if (_gv->logLikelihood(_chain) != 0) {
+		throw logic_error("fnord");
+	    }
+	    /*
+		double xsum = accumulate(_x.begin(), _x.end(), 0);
+		unsigned int N = _x.size();
+		vector<double> xold = _x;
+		if (_discrete) {
+		    _x = vector<double>(N, floor(xsum/N));
+		    double delta = xsum - accumulate(_x.begin(), _x.end(), 0);
+		    _x[N-1] += delta;
+		}
+		else {
+		    _x = vector<double>(N, xsum/N);
+		}
+		gv->setValue(_x, chain);
+		if (!jags_finite(gv->logFullConditional(chain))) {
+		    //Adjusted initial values did not work.
+		    gv->setValue(xold, chain); //Revert to previous values
+		}
+	    */
 	}
 	
 	SumMethod::~SumMethod()
@@ -223,13 +233,30 @@ namespace jags {
 		if (_j >= _i) _j++;
 		updateStep(rng);
 	    }
+
+	    
 	    if (_adapt) {
 		if (++_iter % 50 == 0) {
 		    _width = _sumdiff / (50 * len);
 		    _sumdiff = 0;
 		}
 	    }
-	    _gv->setValue(_x, _chain);
+
+	    //updateStep does not update the deterministic descendants
+	    //but we need to leave these in a correct state in case they
+	    //are being monitored
+	    vector<DeterministicNode*> const &d = _gv->deterministicChildren();
+	    for(vector<DeterministicNode*>::const_iterator p = d.begin();
+		p != d.end(); ++p)
+	    {
+		(*p)->deterministicSample(_chain);
+	    }
+
+	    //Sanity check
+	    if (_gv->logLikelihood(_chain) != 0) {
+		throw logic_error("Failure to preserve sum in SumMethod");
+	    }
+
 	}
 
 	void SumMethod::setValue(double x)

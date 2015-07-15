@@ -58,14 +58,14 @@ namespace jags {
 		for (unsigned int ch = 0; ch < N; ++ch) {
 		    methods[ch] = new SumMethod(gv, ch);
 		}
-		Sampler s = new MutableSampler(gv, methods, "bugs::Sum");
+		Sampler *s = new MutableSampler(gv, methods, "bugs::Sum");
 		samplers.push_back(s);
 	    }
 
 	    return samplers;
 	}
 
-	string DSumFactory::name() const
+	string SumFactory::name() const
 	{
 	    return "bugs::Sum";
 	}

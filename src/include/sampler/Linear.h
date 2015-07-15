@@ -8,6 +8,7 @@ namespace jags {
 class GraphView;
 class SingletonGraphView;
 class Graph;
+class StochasticNode;
 
 /**
  * Helper function to check additivity. The function returns true if
@@ -25,10 +26,10 @@ bool checkAdditive(SingletonGraphView const *gv, bool fixed);
 
 /**
  * Helper function to check additivity. The function returns true if
- * all deterministic descendants within the given GraphView are additive
- * functions of the sampled node
+ * all deterministic descendants of the nodes within the graph are
+ * additive functions.
  *
- * @param gv GraphView to be tested.
+ * @param snodes Vector of nodes to be tested.
  *
  * @param graph Enclosing graph for gv
  *
@@ -37,7 +38,8 @@ bool checkAdditive(SingletonGraphView const *gv, bool fixed);
  *
  * @see Node#isClosed
  */
-bool checkAdditive(GraphView const *gv, Graph const &graph, bool fixed);
+bool checkAdditive(std::vector<StochasticNode*> const &snodes,
+		   Graph const &graph, bool fixed);
 
 /**
  * Helper function to check linearity. The function returns true if

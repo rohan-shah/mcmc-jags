@@ -37,11 +37,11 @@ static bool isLink(DeterministicNode const *dnode)
 	return true;
     }
 
-    bool checkAdditive(GraphView const *gv, Graph const &graph, bool fixed)
+    bool checkAdditive(vector<StochasticNode*> const &snodes,
+		       Graph const &graph, bool fixed)
     {
 	//A GraphView is additive if every SingletonGraphview for each
 	//sampled node in the same graph is additive.
-	vector<StochasticNode*> const &snodes = gv->nodes();
 	for (unsigned int i = 0; i < snodes.size(); ++i) {
 	    SingletonGraphView sgv(snodes[i], graph);
 	    if (!checkAdditive(&sgv, false)) return false;
@@ -58,16 +58,17 @@ static bool isLink(DeterministicNode const *dnode)
 	//Sampled nodes are trivial (fixed) additive functions of themselves
 #ifdef _RWSTD_NO_MEMBER_TEMPLATES
 	//Workaround for Solaris libCstd
-	for (vector<StochasticNode const *>::const_iterator p =
-		 gv->nodes().begin(); p != gv->nodes().end(); ++p)
+	for (vector<StochasticNode*>::const_iterator p =
+		 snodes.begin(); p != snodes.end(); ++p)
 	{
 	    ancestors.insert(*p);
 	}
 #else
-	ancestors.insert(gv->nodes().begin(), gv->nodes().end());
+	ancestors.insert(snodes.begin(), snodes.end());
 #endif
 
-	vector<DeterministicNode *> const &dn =	gv->deterministicChildren();
+	GraphView gv(snodes, graph);
+	vector<DeterministicNode *> const &dn =	gv.deterministicChildren();
 	for (unsigned int j = 0; j < dn.size(); ++j) {
 	    vector<Node const *> parj = dn[j]->parents();
 	    for (unsigned int k = 0; k < parj.size(); ++k) {

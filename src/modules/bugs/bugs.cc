@@ -90,6 +90,7 @@
 #include <samplers/DSumFactory.h>
 #include <samplers/MNormalFactory.h>
 #include <samplers/DirichletFactory.h>
+#include <samplers/SumFactory.h>
 
 using std::vector;
 
@@ -193,6 +194,7 @@ namespace bugs {
 	insert(new ConjugateFactory);
 	//insert(new REFactory);
 	insert(new DSumFactory);
+	insert(new SumFactory);
     }
 
     BUGSModule::~BUGSModule() {
