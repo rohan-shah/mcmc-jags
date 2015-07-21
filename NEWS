@@ -119,6 +119,10 @@ Library changes
   ClosedFuncClass enumeration, with new method Function#isAdditive to
   support LogicalNode#isClosed. An additive function can be expressed as
   f(x) = a + sum(x) and is fixed if a is fixed.
+* The test for valid initial values for Stochastic Nodes is moved out of
+  the model class and replaced by calls to GraphView::checkFinite in
+  the constructor of each sample method. This change enables samplers
+  to correct initial values when they are not valid.
   
 Internal changes in modules
 ===========================
@@ -149,6 +153,9 @@ Internal changes in modules
   This affects deviance statistics for multivariate normal nodes.
   - All VectorFunctions with scalar return values now inherit from
   the new ScalarVectorFunction class.
+  - New distribution SumDist provides an "observable function" version
+  of the sum function, and the associated sampling method SumMethodd
+  provides a sampler for its stochastic parents.
 
 * glm module
   - Refactorization of samplers. The new Outcome class presents an

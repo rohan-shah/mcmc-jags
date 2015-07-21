@@ -22,6 +22,7 @@ namespace base {
 	{
 	    throwLogicError("Invalid RealSlicer");
 	}
+	gv->checkFinite(chain);
     }
 
     bool 

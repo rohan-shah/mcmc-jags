@@ -23,10 +23,11 @@ namespace jags {
     
     namespace bugs {
 
-	static double sumValue(vector<Node const*> const &x, unsigned int ch)
+	template<class T>
+	double sumValue(vector<T*> const &x, unsigned int ch)
 	{
 	    double y = 0;
-	    for (vector<Node const*>::const_iterator p = x.begin();
+	    for (typename vector<T*>::const_iterator p = x.begin();
 		 p != x.end(); ++p)
 	    {
 		double const *v = (*p)->value(ch);
@@ -94,38 +95,50 @@ namespace jags {
 	      _x(gv->length()), _i(0), _j(0), _sumdiff(0), _iter(0),
 	      _width(2), _max(10), _adapt(true)
 	{
+	    
 	    gv->getValue(_x, chain);
 	    
 	    if (gv->logLikelihood(chain) != 0) {
-		//If initial values are not correct then we adjust them
-		StochasticNode *sumchild = gv->stochasticChildren()[0];
-		double delta = sumchild->value(chain)[0] -
-		    sumValue(sumchild->parents(), chain);
-		_x[0] += delta;
-		gv->setValue(_x, chain);
-	    }
+		//If initial values are inconsistent with outcome we
+		//try to adjust them
 
-	    if (_gv->logLikelihood(_chain) != 0) {
-		throw logic_error("fnord");
-	    }
-	    /*
-		double xsum = accumulate(_x.begin(), _x.end(), 0);
+		StochasticNode const *schild = gv->stochasticChildren()[0];
+
+		// Calculate intercept (usually zero)
+		double y = sumValue<const Node>(schild->parents(), chain);
+		double sumx = sumValue<StochasticNode>(gv->nodes(), chain);
+		double alpha = y - sumx;
+
+		// Calculate target sum for sampled values
+		double sumx_new = schild->value(chain)[0] - alpha;
+
+		// Rescale
 		unsigned int N = _x.size();
-		vector<double> xold = _x;
+		vector<double> xnew;
 		if (_discrete) {
-		    _x = vector<double>(N, floor(xsum/N));
-		    double delta = xsum - accumulate(_x.begin(), _x.end(), 0);
-		    _x[N-1] += delta;
+		    xnew = vector<double>(N, floor(sumx_new/N));
+		    double delta = sumx_new -
+			accumulate(xnew.begin(), xnew.end(), 0);
+		    xnew[N-1] += delta;
 		}
 		else {
-		    _x = vector<double>(N, xsum/N);
+		    xnew = vector<double>(N, sumx_new/N);
 		}
-		gv->setValue(_x, chain);
-		if (!jags_finite(gv->logFullConditional(chain))) {
-		    //Adjusted initial values did not work.
-		    gv->setValue(xold, chain); //Revert to previous values
+
+		gv->setValue(xnew, chain);
+		if (_gv->logLikelihood(chain) != 0) {
+		    throw logic_error("SumMethod failed to fix initial values");
 		}
-	    */
+		if (jags_finite(gv->logPrior(_chain))) {
+		    _x = xnew; //Preserve changes
+		}
+		else {
+		    gv->setValue(_x, chain); //Revert changes
+		}		
+	    }
+
+	    //Check validity of initial values
+	    gv->checkFinite(chain);
 	}
 	
 	SumMethod::~SumMethod()
@@ -239,6 +252,9 @@ namespace jags {
 		if (++_iter % 50 == 0) {
 		    _width = _sumdiff / (50 * len);
 		    _sumdiff = 0;
+		    if (_discrete) {
+			_width = ceil(_width);
+		    }
 		}
 	    }
 
@@ -262,9 +278,9 @@ namespace jags {
 	void SumMethod::setValue(double x)
 	{
 	    double delta = x - _x[_i];
-	    _x[_i] = x;
-	    _x[_j] -= delta;
-	    
+	    _x[_i] = x;      
+	    _x[_j] -= delta; 
+
 	    _gv->nodes()[_i]->setValue(&_x[_i], 1, _chain);
 	    _gv->nodes()[_j]->setValue(&_x[_j], 1, _chain);
 	}

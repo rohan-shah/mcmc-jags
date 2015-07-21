@@ -44,6 +44,8 @@ MNormMetropolis::MNormMetropolis(SingletonGraphView const *gv,
       _n(0), _n_isotonic(0), _sump(0), _meanp(0), _lstep(0), _nstep(10), 
       _p_over_target(true)
 {
+    gv->checkFinite(chain); //Check validity of initial values
+    
     unsigned int N = gv->length();
 
     _mean = new double[N];

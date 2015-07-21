@@ -170,47 +170,6 @@ void Model::initialize(bool datagen)
     //Initialize nodes
     initializeNodes();
     
-    // Check initial values of all stochastic nodes
-    // Note that we need to do this before choosing samplers.
-    if (!datagen) {
-	for (unsigned int ch = 0; ch < _nchain; ++ch) {
-	    for (unsigned int i = 0; i < _stochastic_nodes.size(); ++i) {
-		StochasticNode const *snode = _stochastic_nodes[i];
-		double ld = snode->logDensity(ch, PDF_PRIOR);
-		if (jags_isnan(ld)) {
-		    string msg = "Error calculating log density at initial values";
-		    throw NodeError(snode, msg);
-		}
-		else if (ld == JAGS_NEGINF || (!jags_finite(ld) && ld < 0)) {
-		    string msg;
-		    if (isObserved(snode)) {
-			msg = "Observed node";
-		    }
-		    else {
-			msg = "Unobserved node";
-		    }
-		    msg.append(" inconsistent with ");
-		    bool fixed_parents = true;
-		    for (unsigned int j = 0; j < snode->parents().size(); ++j) {
-			if (!snode->parents()[j]->isFixed()) {
-			    fixed_parents = false;
-			    break;
-			}
-		    }
-		    if (fixed_parents) {
-			msg.append("fixed parents");
-		    }
-		    else {
-			msg.append("parents");
-		    }
-		    msg.append(" at initialization.\n");
-		    msg.append("Try setting appropriate initial values.");
-		    throw NodeError(snode, msg);
-		}
-	    }
-	}
-    }
-
     // Choose Samplers
     chooseSamplers();
     

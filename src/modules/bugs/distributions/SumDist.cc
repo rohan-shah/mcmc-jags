@@ -8,22 +8,24 @@
 
 #include <cfloat>
 #include <cmath>
+#include <numeric>
 
 using std::vector;
 using std::fabs;
 using std::sqrt;
+using std::accumulate;
 
 namespace jags {
 namespace bugs {
 
+    static const double TOL = sqrt(DBL_EPSILON);
+    
     static double evaluate(vector <double const *> const &args,
 			   vector<unsigned int> const &lengths)
     {
 	double value = 0;
 	for (unsigned int j = 0; j < args.size(); ++j) {
-	    for (unsigned int i = 0; i < lengths[j]; ++i) {
-		value += args[j][i];
-	    }
+	    value = accumulate(args[j], args[j] + lengths[j], value);
 	}
 	return value;
     }
@@ -44,17 +46,7 @@ namespace bugs {
 			       vector<unsigned int> const &lengths,
 			       double const *lower, double const *upper) const
     {
-	const double tol = sqrt(DBL_EPSILON);
-	for (unsigned int i = 0; i < length; ++i) {
-	    double s = x[i];
-	    for (unsigned int j = 0; j < par.size(); ++j) {
-		s -= par[j][i];
-	    }
-	    if (fabs(s) > tol) {
-		return JAGS_NEGINF;
-	    }
-	}
-	return 0;
+	return fabs(*x - evaluate(par, lengths)) > TOL ? JAGS_NEGINF : 0;
     }
 
     void SumDist::randomSample(double *x, unsigned int length,
@@ -72,12 +64,6 @@ namespace bugs {
 			       double const *lower, double const *upper) const
     {
 	*x = evaluate(par, lengths);
-	for (unsigned int i = 0; i < length; ++i) {
-	    x[i] = 0;
-	    for (unsigned int j = 0; j < par.size(); ++j) {
-		x[i] += par[j][i];
-	    }
-	}
     }
 
     bool SumDist::isSupportFixed(vector<bool> const &fixmask) const

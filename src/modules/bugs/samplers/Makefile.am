@@ -17,7 +17,7 @@ ConjugateFactory.cc RWDSum.cc RealDSum.cc	\
 DiscreteDSum.cc MNormal.cc MNormalFactory.cc ConjugateMethod.cc	\
 Dirichlet.cc DirichletFactory.cc TruncatedGamma.cc DMultiDSum.cc \
 ShiftedCount.cc ShiftedMultinomial.cc \
-SumMethod.cc
+SumMethod.cc SumFactory.cc
 
 noinst_HEADERS = Censored.h ConjugateFactory.h ConjugateNormal.h	\
 ConjugateBeta.h ConjugateGamma.h DSumFactory.h	\
@@ -25,5 +25,5 @@ ConjugateDirichlet.h ConjugateMNormal.h ConjugateWishart.h		\
 RWDSum.h RealDSum.h DiscreteDSum.h MNormal.h MNormalFactory.h		\
 ConjugateMethod.h Dirichlet.h DirichletFactory.h TruncatedGamma.h	\
 DMultiDSum.h ShiftedCount.h ShiftedMultinomial.h \
-SumMethod.h
+SumMethod.h SumFactory.h
 

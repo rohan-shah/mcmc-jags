@@ -118,6 +118,7 @@ RWDSum::RWDSum(GraphView const *gv, unsigned int chain, double step)
     if (!_dsnode) {
 	throwLogicError("No DSum node found in RWDSum method");
     }
+    gv->checkFinite(chain); //Check validity of initial values
 }
 
 void RWDSum::rescale(double p)

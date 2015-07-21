@@ -24,7 +24,9 @@ namespace base {
 	if (!canSample(gv->node())) {
 	    throwLogicError("Invalid DiscreteSlicer");
 	}
-	
+
+	//Check finite likelihood and copy current value
+	gv->checkFinite(chain);
 	_x = _gv->node()->value(chain)[0];
     }
 

@@ -40,6 +40,7 @@ RESampler::RESampler(StochasticNode *variance,
     : Metropolis(merg(variance,effects), graph, chain, value, length),
       _mode(RE_INIT)
 {
+    gv->checkFinite(chain); //Check validity of initial values
     support(&_lower, &_upper, 1U, variance, chain);
 
     for (unsigned int i = 0; i < 3; ++i) {

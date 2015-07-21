@@ -109,6 +109,8 @@ namespace glm {
 	  _x(0), _factor(0), _fixed(sub_views.size(), false), 
 	  _length_max(0), _nz_prior(0), _init(true)
     {
+	view->checkFinite(chain); //Check validity of initial values
+	
 	vector<StochasticNode *> const &schildren = 
 	    view->stochasticChildren();
 

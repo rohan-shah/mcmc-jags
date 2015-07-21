@@ -379,5 +379,35 @@ unsigned int nchain(GraphView const *gv)
 {
     return gv->nodes()[0]->nchain();
 }
+
     
+    void GraphView::checkFinite(unsigned int chain) const
+    {
+
+	vector<StochasticNode*>::const_iterator p = _nodes.begin();
+	for ( ; p != _nodes.end(); ++p)
+	{
+	    double ld = (*p)->logDensity(chain, PDF_PRIOR);
+	    if (jags_isnan(ld)) {
+		throw NodeError(*p, "Error calculating log density");
+	    }
+	    else if (ld == JAGS_NEGINF || (!jags_finite(ld) && ld < 0)) {
+		throw NodeError(*p, "Node inconsistent with parents");
+	    }
+	}
+
+	
+	for (p =_stoch_children.begin(); p != _stoch_children.end(); ++p)
+	{
+	    double ld = (*p)->logDensity(chain, PDF_PRIOR);
+	    if (jags_isnan(ld)) {
+		throw NodeError(*p, "Error calculting log density");
+	    }
+	    else if (ld == JAGS_NEGINF || (!jags_finite(ld) && ld < 0)) {
+		throw NodeError(*p, "Node inconsistent with parents");
+	    }
+	}
+
+    }
+
 } //namespace jags

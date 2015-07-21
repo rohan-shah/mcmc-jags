@@ -29,6 +29,7 @@ DirchMetropolis::DirchMetropolis(GraphView const *gv, unsigned int chain)
     : RWMetropolis(initValue(gv, chain), 0.1),
       _gv(gv), _chain(chain), _s(1)
 {
+    gv->checkFinite(chain); //Check validity of initial values
 }
 
 void DirchMetropolis::step(vector<double> &value,  double step, RNG *rng) const

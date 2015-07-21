@@ -134,6 +134,16 @@ public:
    * to give the log full conditional density
    */
   double logLikelihood(unsigned int chain) const;
+  /**
+   * Checks that the log density is finite for all sampled nodes and
+   * all stochastic children. If any log density value is negative
+   * infinite a NodeError exception is thrown.
+   *
+   * This utility function should be called by the constructor of any
+   * sample method that needs to ensure the graph is in a valid state
+   * before sampling.
+   */
+  void checkFinite(unsigned int chain) const;
 };
 
 unsigned int nchain(GraphView const *gv);
