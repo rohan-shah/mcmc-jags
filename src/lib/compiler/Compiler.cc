@@ -373,15 +373,53 @@ Node *Compiler::getArraySubset(ParseTree const *p)
 		node = array->getSubset(subset_range, _model);
 		if (node == 0 && _resolution_level == 1) {
 		    /* At resolution level 1 we make a note of all
-		       subsets that could not be resolved */
-		    pair<string, Range> upair(p->name(), subset_range);
-		    if (_umap.find(upair) == _umap.end()) {
-			set<int> lines;
-			lines.insert(p->line());
-			_umap[upair] = lines;
+		       subsets that could not be resolved.
+
+		       Example: we have just failed to resolve x[1:5]
+		       but we need to know which of x[1], x[2], x[3],
+		       x[4], x[5] are empty.
+		    */
+		    bool empty = true;
+		    for (RangeIterator r(subset_range); !r.atEnd();
+			 r.nextLeft())
+		    {
+			if (array->getSubset(SimpleRange(r,r), _model)) {
+			    empty = false;
+			    break;
+			}
+		    }
+		    if (empty) {
+			//No elements found, so report the whole range
+			//as missing, e.g. x[1:5]
+			pair<string, Range> upair(p->name(), subset_range);
+			if (_umap.find(upair) == _umap.end()) {
+			    set<int> lines;
+			    lines.insert(p->line());
+			    _umap[upair] = lines;
+			}
+			else {
+			    _umap.find(upair)->second.insert(p->line());
+			}
 		    }
 		    else {
-			_umap.find(upair)->second.insert(p->line());
+			//Some elements found, so report only the missing
+			//elements, e.g. x[5]
+			for (RangeIterator r(subset_range); !r.atEnd();
+			     r.nextLeft())
+			{
+			    SimpleRange sr(r,r);
+			    if (!array->getSubset(sr, _model)) {
+				pair<string, Range> upair(p->name(), sr);
+				if (_umap.find(upair) == _umap.end()) {
+				    set<int> lines;
+				    lines.insert(p->line());
+				    _umap[upair] = lines;
+				}
+				else {
+				    _umap.find(upair)->second.insert(p->line());
+				}
+			    }
+			}
 		    }
 		}
 	    }
@@ -391,10 +429,13 @@ Node *Compiler::getArraySubset(ParseTree const *p)
 	    } 
 	}
 	else if (_resolution_level == 1) {
+	    
 	    /* We can get this error with a directed cycle consisting
 	       of only scalar variables. 
 	    */
-	    CompileError(p, "Unknown variable", p->name());
+	    string msg = string("Unknown variable ") + p->name() + "\n" +
+		"(possibly due to missing data or a directed cycle)";
+	    CompileError(p, msg);
 	}
 	
 	if (!node && _index_expression) {
@@ -616,7 +657,7 @@ Node * Compiler::allocateStochastic(ParseTree const *stoch_relation)
 
     /* 
        Check data table to see if this is an observed node.  If it is,
-       we put the data in a array of doubles pointed to by this_data,
+       we put the data in an array of doubles pointed to by this_data,
        and set data_length equal to the length of the array
     */
     double *this_data = 0;
@@ -816,7 +857,7 @@ void Compiler::allocate(ParseTree const *rel)
 	/* 
 	   Remove from the set of unresolved parameters, any array
 	   subsets that are defined on the left hand side of a
-	   relation.
+	   relation
 	*/
 	ParseTree *var = rel->parameters()[0];
 	Range range = VariableSubsetRange(var);
@@ -982,11 +1023,13 @@ void Compiler::writeRelations(ParseTree const *relations)
 	}
 	//Take a back-up copy of unresolved parameters
 	map<pair<string,Range>, set<int> > umap_copy = _umap;
+
 	/*
 	  Step 2: Eliminate parameters that appear on the left of a relation
 	*/
 	_resolution_level = 2;
 	traverseTree(relations, &Compiler::allocate);
+
 	/* 
 	   Step 3: Informative error message for the user
 	*/
