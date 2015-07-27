@@ -73,6 +73,7 @@ class Compiler {
   Node *getConstant(std::vector<unsigned int> const &dim, 
 		    std::vector<double> const &value,
 		    unsigned int nchain, bool observed);
+  void getLHSVars(ParseTree const *rel);
 public:
   bool indexExpression(ParseTree const *t, std::vector<int> &value);
   BUGSModel &model() const;

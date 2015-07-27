@@ -74,6 +74,21 @@ void CompileError(ParseTree const *p, string const &msg1,
     throw runtime_error(msg);
 }
 
+    void Compiler::getLHSVars(ParseTree const *rel)
+    {
+	//Utility function to get the names of variables used on the
+	//left hand side of a relation. These are added to the set
+	//_lhs_vars. The main use of this information is to give better
+	//diagnostic messages when we cannot resolve a variable name.
+
+	if (rel->treeClass() != P_STOCHREL && rel->treeClass() != P_DETRMREL) {
+	    throw logic_error("Malformed parse tree in Compiler::getLHSVars");
+	}
+	
+	ParseTree *var = rel->parameters()[0];
+	_lhs_vars.insert(var->name());
+    }
+    
 Node * Compiler::constFromTable(ParseTree const *p)
 {
     // Get a constant value directly from the data table
@@ -356,6 +371,13 @@ Node *Compiler::getArraySubset(ParseTree const *p)
 	throw logic_error("Expecting expression");
     }
 
+    if (_index_expression) {
+	//It is possible to evaluate an index expression before
+	//any Nodes are available from the symbol table.
+	node = constFromTable(p);
+	if (node) return node;
+    }
+    
     Counter *counter = _countertab.getCounter(p->name()); //A counter
     if (counter) {
 	node = getConstant((*counter)[0], _model.nchain(), false);
@@ -428,21 +450,19 @@ Node *Compiler::getArraySubset(ParseTree const *p)
 		node = getMixtureNode(p, this);
 	    } 
 	}
-	else if (_resolution_level == 1) {
-	    
-	    /* We can get this error with a directed cycle consisting
-	       of only scalar variables. 
-	    */
+	else if (_lhs_vars.find(p->name()) == _lhs_vars.end()) {
 	    string msg = string("Unknown variable ") + p->name() + "\n" +
-		"(possibly due to missing data or a directed cycle)";
+		"Either supply values for this variable with the data\n" +
+		"or define it  on the left hand side of a relation.";
+	    CompileError(p, msg);
+	}
+	else if (_resolution_level == 1) {
+	    string msg = string("Possible directed cycle involving ") +
+		p->name();
 	    CompileError(p, msg);
 	}
 	
-	if (!node && _index_expression) {
-	    //It is possible to evaluate an index expression before
-	    //any Nodes are available from the symbol table.
-	    node = constFromTable(p);
-	}
+
     }
 
     return node;
@@ -983,7 +1003,8 @@ void Compiler::writeConstantData(ParseTree const *relations)
 void Compiler::writeRelations(ParseTree const *relations)
 {
     writeConstantData(relations);
-    
+    traverseTree(relations, &Compiler::getLHSVars);
+
     _is_resolved = vector<bool>(_n_relations, false);
     for (unsigned long N = _n_relations; N > 0; N -= _n_resolved) {
 	_n_resolved = 0;
