@@ -70,6 +70,10 @@ namespace jags {
     {
     }
 
+    SimpleRange::~SimpleRange()
+    {
+    }
+
     bool SimpleRange::contains(SimpleRange const &other) const
     {
 	unsigned int N = ndim(false);

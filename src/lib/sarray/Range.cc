@@ -21,18 +21,6 @@ makeDim(vector<vector<int> > const &scope)
     return dims;
 }
 
-/*
-static bool testSimple(vector<int> const &v) {
-    if (v.size() <= 1) return true;
-    int i = v[0] + 1;
-    for (unsigned int j = 1; j < v.size(); ++j) {
-	if (v[j] != i) return false;
-	++i;
-    }
-    return true;
-}
-*/
-
 namespace jags {
 
     Range::Range()

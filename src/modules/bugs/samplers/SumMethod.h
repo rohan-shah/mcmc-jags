@@ -10,7 +10,6 @@ namespace jags {
     class StochasticNode;
     class DeterministicNode;
     class GraphView;
-    class RNG;
     
     namespace bugs {
 

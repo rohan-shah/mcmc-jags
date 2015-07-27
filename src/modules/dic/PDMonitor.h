@@ -8,7 +8,7 @@
 namespace jags {
 
     class StochasticNode;
-    class RNG;
+    struct RNG;
     
 namespace dic {
 

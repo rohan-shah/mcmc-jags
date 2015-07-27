@@ -58,8 +58,8 @@ string ToString(const T& val)
     return strm.str();
 }
 
-void CompileError(ParseTree const *p, string const &msg1, 
-		  string const &msg2 = "")
+static void CompileError(ParseTree const *p, string const &msg1, 
+			 string const &msg2 = "")
 {
     string msg = string("Compilation error on line ") + ToString(p->line())
 	+ ".";

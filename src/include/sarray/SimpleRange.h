@@ -23,6 +23,10 @@ namespace jags {
 	 */
 	SimpleRange();
 	/**
+	 * Destructor
+	 */
+	~SimpleRange();
+	/**
 	 * Constructs a simple range given lower and upper limits A
 	 * logic_error is thrown if these are of different lengths
 	 *
@@ -108,11 +112,11 @@ namespace jags {
 	/**
 	 * The lower bound of the Range (an alias for Range#first)
 	 */
-	inline std::vector<int> const & lower() const { return first(); };
+	inline std::vector<int> const & lower() const { return first(); }
 	/**
 	 * The upper bound of the Range (an alias for Range#last)
 	 */
-	inline std::vector<int> const & upper() const { return last(); };
+	inline std::vector<int> const & upper() const { return last(); }
     };
 
     /**
