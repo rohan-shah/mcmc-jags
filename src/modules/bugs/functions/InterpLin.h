@@ -16,8 +16,8 @@ namespace bugs {
     {
     public:
 	InterpLin ();
-	double evaluate(std::vector<double const *> const &args,
-			std::vector<unsigned int> const &lengths) const;
+	double scalarEval(std::vector<double const *> const &args,
+			  std::vector<unsigned int> const &lengths) const;
 	bool checkParameterLength(std::vector<unsigned int> const &len) const;
 	bool checkParameterValue(std::vector <double const *> const &args,
 				 std::vector <unsigned int> const &lengths)

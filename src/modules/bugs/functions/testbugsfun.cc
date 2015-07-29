@@ -66,6 +66,7 @@ using jags::Function;
 using std::vector;
 using std::string;
 using std::equal;
+using std::copy;
 
 #include <climits>
 #include <cmath>
@@ -712,13 +713,13 @@ void BugsFunTest::math()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, eval(_sqrt, 1), tol);
 
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, eval(_loggam, 2), tol);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(log(2), eval(_logfact, 2), tol);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(log(2.0), eval(_logfact, 2), tol);
 
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(log(2), eval(_loggam, 3), tol);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(log(6), eval(_logfact, 3), tol);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(log(2.0), eval(_loggam, 3), tol);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(log(6.0), eval(_logfact, 3), tol);
 
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(log(6), eval(_loggam, 4), tol);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(log(24), eval(_logfact, 4), tol);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(log(6.0), eval(_loggam, 4), tol);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(log(24.0), eval(_logfact, 4), tol);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(2.0, eval(_sqrt, 4), tol);
 }
 
@@ -1183,17 +1184,17 @@ void BugsFunTest::combine() {
 
     //c(x6) == x6
     vector<double> out1 = veval(_combine, x6);
-    CPPUNIT_ASSERT_EQUAL(6UL, out1.size());
+    CPPUNIT_ASSERT_EQUAL(static_cast<size_t>(6), out1.size());
     CPPUNIT_ASSERT(equal(out1.begin(), out1.end(), x6));
 
     //c(x0) has size 0
     vector<double> out2 = veval(_combine, x0);
-    CPPUNIT_ASSERT_EQUAL(0UL, out2.size());
+    CPPUNIT_ASSERT_EQUAL(static_cast<size_t>(0), out2.size());
 
     //c(x1, x3, x0, x3) == c(-1, 7, 8, 9, 7, 8, 9)
     double y3[7] = {-1, 7, 8, 9, 7, 8, 9};
     vector<double> out3 = veval(_combine, x1, x3, x0, x3);
-    CPPUNIT_ASSERT_EQUAL(7UL, out3.size());
+    CPPUNIT_ASSERT_EQUAL(static_cast<size_t>(7), out3.size());
     CPPUNIT_ASSERT(equal(out3.begin(), out3.end(), y3));
 }
 
@@ -1208,43 +1209,43 @@ void BugsFunTest::rep() {
     // rep(0, 3) == c(0, 0, 0)
     double y1[3] = {0, 0, 0};
     vector<double> out1 = veval(_rep, 0, 3);
-    CPPUNIT_ASSERT_EQUAL(out1.size(), 3UL);
+    CPPUNIT_ASSERT_EQUAL(static_cast<size_t>(3), out1.size());
     CPPUNIT_ASSERT(equal(out1.begin(), out1.end(), y1));
 
     // rep(x3, 4) == c(7, 8, 9, 7, 8, 9, 7, 8, 9, 7, 8, 9)
     double y2[12] = {7, 8, 9, 7, 8, 9, 7, 8, 9, 7, 8, 9};
     vector<double> out2 = veval(_rep, x3, 4);
-    CPPUNIT_ASSERT_EQUAL(out2.size(), 12UL);
+    CPPUNIT_ASSERT_EQUAL(static_cast<size_t>(12), out2.size());
     CPPUNIT_ASSERT(equal(out2.begin(), out2.end(), y2));
     
     // rep(x3, l3) == c(7, 8, 8, 9, 9, 9)
     double y3[6] = {7, 8, 8, 9, 9, 9};
     vector<double> out3 = veval(_rep, x3, l3);
-    CPPUNIT_ASSERT_EQUAL(out3.size(), 6UL);
+    CPPUNIT_ASSERT_EQUAL(static_cast<size_t>(6), out3.size());
     CPPUNIT_ASSERT(equal(out3.begin(), out3.end(), y3));
     
     // rep(x6, l6) == c(-10, -0.5, 77, 77)
     double y4[4] = {-10, -0.5, 77, 77};
     vector<double> out4 = veval(_rep, x6, l6);
-    CPPUNIT_ASSERT_EQUAL(out4.size(), 4UL);
+    CPPUNIT_ASSERT_EQUAL(static_cast<size_t>(4), out4.size());
     CPPUNIT_ASSERT(equal(out4.begin(), out4.end(), y4));
 
     // rep(x3, 0) == numeric(0)
     vector<double> out5 = veval(_rep, x3, 0);
-    CPPUNIT_ASSERT_EQUAL(0UL, out5.size());
+    CPPUNIT_ASSERT_EQUAL(static_cast<size_t>(0), out5.size());
 
     // rep(numeric(0), numeric(0)) == numeric(0)
     vector<double> x0(0), l0(0);
     vector<double> out6 = veval(_rep, x0, l0);
-    CPPUNIT_ASSERT_EQUAL(0UL, out6.size());
+    CPPUNIT_ASSERT_EQUAL(static_cast<size_t>(0), out6.size());
 
     // rep(numeric(0), 7) == numeric(0)
     vector<double> out7 = veval(_rep, x0, 7);
-    CPPUNIT_ASSERT_EQUAL(0UL, out7.size());
+    CPPUNIT_ASSERT_EQUAL(static_cast<size_t>(0), out7.size());
 
     // rep(numeric(0), l3) == numeric(0)
     vector<double> out8 = veval(_rep, x0, l3);
-    CPPUNIT_ASSERT_EQUAL(0UL, out8.size());
+    CPPUNIT_ASSERT_EQUAL(static_cast<size_t>(0), out8.size());
 
     //Check that argument length mismatches are caught
     CPPUNIT_ASSERT_ASSERTION_FAIL(eval(_rep, x3, l0));

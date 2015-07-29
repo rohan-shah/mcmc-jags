@@ -14,8 +14,8 @@ namespace bugs {
     {
     }
 
-    double  DIntervalFunc::evaluate(vector<double const *> const &args,
-				    vector<unsigned int> const &lengths) const
+    double DIntervalFunc::scalarEval(vector<double const *> const &args,
+				     vector<unsigned int> const &lengths) const
     {
 	unsigned int ncut = lengths[1];
 	double t = T(args);

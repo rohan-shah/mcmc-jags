@@ -16,8 +16,8 @@ namespace bugs {
     {
     }
 
-    double Min::evaluate(vector<double const *> const &args,
-			 vector<unsigned int> const &lengths) const
+    double Min::scalarEval(vector<double const *> const &args,
+			   vector<unsigned int> const &lengths) const
     {
 	double ans = *min_element(args[0], args[0] + lengths[0]);
 	for (unsigned int i = 1; i < args.size(); ++i) {

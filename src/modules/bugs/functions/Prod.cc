@@ -11,8 +11,8 @@ namespace bugs {
     {
     }
 
-    double Prod::evaluate(vector <double const *> const &args,
-			  vector<unsigned int> const &lengths) const
+    double Prod::scalarEval(vector <double const *> const &args,
+			    vector<unsigned int> const &lengths) const
     {
 	double value = 1;
 	for (unsigned int j = 0; j < args.size(); ++j) {

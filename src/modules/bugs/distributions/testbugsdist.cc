@@ -389,7 +389,8 @@ void BugsDistTest::kl_scalar(ScalarDist const *dist,
 	ysum2 += (y[i] - ymean) * (y[i] - ymean);
     }
     double ysd = sqrt(ysum2/(nrep - 1)); //Standard deviation
-    double ysem = ysd/sqrt(nrep); //Standard error of the mean
+    //Standard error of the mean
+    double ysem = ysd/sqrt(static_cast<double>(nrep)); 
     
     //Closed form expression for Kullback-Leibler divergence
     double z = dist->KL(par0, par1);

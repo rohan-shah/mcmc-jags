@@ -46,6 +46,13 @@ struct isDistAlias: public binary_function<DistPtr, string, bool>
     }
 };
 
+  DistTab::DistTab()
+    : _dlist(), _nulldist()
+  {
+    //Required by Solaris Studio, which won't create a default constructor
+    //with -std=c++11
+  }
+
 void DistTab::insert (DistPtr const &dist)
 {
     DistList::const_iterator p = std::find(_dlist.begin(), _dlist.end(), dist);

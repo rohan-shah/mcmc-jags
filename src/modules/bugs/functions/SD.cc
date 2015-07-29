@@ -14,8 +14,8 @@ namespace bugs {
     {
     }
 
-    double SD::evaluate (vector<double const *>const &args,
-			 vector<unsigned int> const &lengths) const
+    double SD::scalarEval (vector<double const *>const &args,
+			   vector<unsigned int> const &lengths) const
     {
 	double svalue = 0;
 	if (lengths[0] > 1) {

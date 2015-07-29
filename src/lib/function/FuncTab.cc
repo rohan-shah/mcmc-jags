@@ -59,6 +59,13 @@ struct isLinkName: public binary_function<FunctionPtr, string, bool>
     }
 };
 
+  FuncTab::FuncTab()
+    : _flist(), _nullfun()
+  {
+    //Required by Solaris Studio, which won't create a default constructor
+    //with -std=c++11
+  }
+
 void FuncTab::insert (FunctionPtr const &func)
 {
     FuncList::const_iterator p = std::find(_flist.begin(), _flist.end(), func);

@@ -19,6 +19,7 @@ using std::vector;
 using std::exp;
 using std::string;
 using std::binary_search;
+using std::upper_bound;
 
 namespace jags {
 

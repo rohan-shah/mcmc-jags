@@ -11,6 +11,7 @@
 
 using std::exp;
 using std::log;
+using std::sqrt;
 
 #define REG_PENALTY 0.001
 

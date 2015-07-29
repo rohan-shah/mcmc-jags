@@ -15,6 +15,7 @@ using jags::Function;
 using std::vector;
 using std::string;
 using std::copy;
+using std::floor;
 
 /* All functions */
 
@@ -345,7 +346,7 @@ veval(VectorFunction const *f,
 double eval(VectorFunction const *f, vector<double> const &x)
 {
     vector<double> y = veval(f, x);
-    CPPUNIT_ASSERT_EQUAL(1UL, y.size());
+    CPPUNIT_ASSERT_EQUAL(static_cast<size_t>(1), y.size());
     return y[0];
 }
 
@@ -356,7 +357,7 @@ double eval(VectorFunction const *f, vector<double> const &x,
 	    vector<double> const &y)
 {
     vector<double> z = veval(f, x, y);
-    CPPUNIT_ASSERT_EQUAL(1UL, z.size());
+    CPPUNIT_ASSERT_EQUAL(static_cast<size_t>(1), z.size());
     return z[0];
 }
 
@@ -367,7 +368,7 @@ double eval(VectorFunction const *f, vector<double> const &x,
 	    vector<double> const &y, vector<double> const &z)
 {
     vector<double> ans = veval(f, x, y, z);
-    CPPUNIT_ASSERT_EQUAL(1UL, ans.size());
+    CPPUNIT_ASSERT_EQUAL(static_cast<size_t>(1), ans.size());
     return ans[0];
 }
 

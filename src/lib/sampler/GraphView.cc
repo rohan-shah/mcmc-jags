@@ -183,7 +183,7 @@ void GraphView::classifyChildren(vector<StochasticNode *> const &nodes,
 
     dtrm_nodes.clear();
     // Deterministic nodes are pushed onto dtrm_nodes in reverse order
-    for (list<DeterministicNode *>::const_reverse_iterator i = dlist.rbegin();
+    for (list<DeterministicNode *>::reverse_iterator i = dlist.rbegin();
          i != dlist.rend(); ++i)
     {
 	dtrm_nodes.push_back(*i);

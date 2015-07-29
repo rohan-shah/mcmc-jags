@@ -11,8 +11,8 @@ namespace bugs {
     {
     }
 
-    double Mean::evaluate (vector<double const*> const &args,
-			   vector<unsigned int> const &lengths) const
+    double Mean::scalarEval (vector<double const*> const &args,
+			     vector<unsigned int> const &lengths) const
     {
 	double svalue = 0;
 	for (unsigned int i = 0; i < lengths[0]; i++) {

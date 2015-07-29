@@ -21,6 +21,7 @@ class DistTab
     std::list<DistPtr> _dlist;
     DistPtr const _nulldist;
 public:
+    DistTab();
     /**
      * Inserts a dist into the table. 
      */

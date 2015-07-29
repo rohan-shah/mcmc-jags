@@ -11,8 +11,8 @@ namespace bugs {
     {
     }
 
-    double Sum::evaluate(vector <double const *> const &args,
-			 vector<unsigned int> const &lengths) const
+    double Sum::scalarEval(vector <double const *> const &args,
+			   vector<unsigned int> const &lengths) const
     {
 	double value = 0;
 	for (unsigned int j = 0; j < args.size(); ++j) {

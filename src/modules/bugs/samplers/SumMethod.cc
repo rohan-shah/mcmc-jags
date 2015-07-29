@@ -18,6 +18,8 @@ using std::min;
 using std::max;
 using std::ceil;
 using std::logic_error;
+using std::floor;
+using std::fabs;
 
 namespace jags {
     

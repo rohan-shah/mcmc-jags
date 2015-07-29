@@ -11,6 +11,7 @@
 
 using std::vector;
 using std::set;
+using std::list;
 
 namespace jags {
 
@@ -56,15 +57,15 @@ static bool isLink(DeterministicNode const *dnode)
 	
 	set<Node const*> ancestors;
 	//Sampled nodes are trivial (fixed) additive functions of themselves
-#ifdef _RWSTD_NO_MEMBER_TEMPLATES
+#ifndef _RWSTD_NO_MEMBER_TEMPLATES
+	ancestors.insert(snodes.begin(), snodes.end());
+#else
 	//Workaround for Solaris libCstd
 	for (vector<StochasticNode*>::const_iterator p =
 		 snodes.begin(); p != snodes.end(); ++p)
 	{
 	    ancestors.insert(*p);
 	}
-#else
-	ancestors.insert(snodes.begin(), snodes.end());
 #endif
 
 	GraphView gv(snodes, graph);
@@ -87,15 +88,15 @@ bool checkLinear(GraphView const *gv, bool fixed, bool link)
 
     set<Node const*> ancestors;
     //Sampled nodes are trivial (fixed) linear functions of themselves
-#ifdef _RWSTD_NO_MEMBER_TEMPLATES
+#ifndef _RWSTD_NO_MEMBER_TEMPLATES
+    ancestors.insert(gv->nodes().begin(), gv->nodes().end());
+#else
     //Workaround for Solaris libCstd
     for (vector<StochasticNode const *>::const_iterator p = gv->nodes().begin();
          p != gv->nodes().end(); ++p)
       {
         ancestors.insert(*p);
       }
-#else
-    ancestors.insert(gv->nodes().begin(), gv->nodes().end());
 #endif
     
     for (unsigned int j = 0; j < dn.size(); ++j) {
@@ -106,8 +107,16 @@ bool checkLinear(GraphView const *gv, bool fixed, bool link)
 	    // A link function is allowed if no other deterministic
 	    // nodes in the GraphView depend on it.
 	    set<DeterministicNode*> dset;
-	    dset.insert(dn[j]->deterministicChildren()->begin(),
-			dn[j]->deterministicChildren()->end());
+	    list<DeterministicNode*> const *dc = dn[j]->deterministicChildren();
+#ifndef _RWSTD_NO_MEMBER_TEMPLATES
+	    dset.insert(dc->begin(), dc->end());
+#else
+	    for (list<DeterministicNode*>::const_iterator p = dc->begin(); 
+		 p != dc->end(); ++p) 
+            {
+	        dset.insert(*p);
+	    }
+#endif
 	    for (unsigned int k = j + 1; k < dn.size(); ++k) {
 		if (dset.count(dn[k])) {
 		    return false;
@@ -174,15 +183,15 @@ bool checkPower(GraphView const *gv, bool fixed)
 {
     set<Node const*> ancestors;
 
-#ifdef _RWSTD_NO_MEMBER_TEMPLATES
+#ifndef _RWSTD_NO_MEMBER_TEMPLATES
+    ancestors.insert(gv->nodes().begin(), gv->nodes().end());
+#else
     //Workaround for Solaris libCstd
     for (vector<StochasticNode const *>::const_iterator p = gv->nodes().begin();
          p != gv->nodes().end(); ++p)
       {
         ancestors.insert(*p);
       }
-#else
-    ancestors.insert(gv->nodes().begin(), gv->nodes().end());
 #endif 
 
     vector<DeterministicNode *> const &dnodes = gv->deterministicChildren();    

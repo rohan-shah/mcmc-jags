@@ -28,6 +28,10 @@ class ObsFuncTab
     FunctionPtr const _nullfun;
 public:
     /**
+     * Constructs a new empty table
+     */
+    ObsFuncTab();
+    /**
      * Inserts an observable function into the table. The distribution
      * and function must have the same name in the BUGS language.  A
      * given pair can only be inserted into the table once

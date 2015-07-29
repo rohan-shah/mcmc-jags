@@ -22,10 +22,11 @@ namespace jags {
 	 * of doubles pointed to by args[i] is lengths[i]. 
 	 */
 	virtual double 
-	    evaluate(std::vector <double const *> const &args,
-		     std::vector <unsigned int> const &lengths) const = 0;
+	    scalarEval (std::vector <double const *> const &args,
+			std::vector <unsigned int> const &lengths) const = 0;
 	/**
-	 * Implements VectorFunction#evaluate
+	 * Implements VectorFunction#evaluate in terms of 
+	 * ScalarVectorFunction#eval.
 	 */
 	void evaluate(double *value, 
 		      std::vector <double const *> const &args,

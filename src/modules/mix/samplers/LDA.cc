@@ -166,7 +166,7 @@ namespace jags {
 	bool LDA::canSample(vector<vector<StochasticNode*> > const &topics,
 			    vector<vector<StochasticNode*> > const &words,
 			    vector<StochasticNode*> const &topic_priors,
-				vector<StochasticNode*> const &word_priors,
+			    vector<StochasticNode*> const &word_priors,
 			    Graph const &graph)
 	{
 	    //Set up dimensions
@@ -275,7 +275,15 @@ namespace jags {
 
 	    //The only possible values of the mixTab are in word_priors
 	    set<Node const*> wp_set;
+#ifndef _RWSTD_NO_MEMBER_TEMPLATES
 	    wp_set.insert(word_priors.begin(), word_priors.end());
+#else
+	    for (vector<StochasticNode*>::const_iterator p = 
+		   word_priors.begin(); p != word_priors.end(); ++p)
+	      {
+		wp_set.insert(*p);
+	      }
+#endif
 	    for (RangeIterator p(mtab->range()); !p.atEnd(); p.nextLeft()) {
 		if (wp_set.count(mtab->getNode(p)) == 0) return false;
 	    }

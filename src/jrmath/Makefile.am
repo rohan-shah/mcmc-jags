@@ -6,6 +6,8 @@ libjrmath_la_CFLAGS = -std=c99
 
 libjrmath_la_LDFLAGS = -no-undefined -version-info 0:0:0
 
+libjrmath_la_LIBADD = -lm
+
 libjrmath_la_SOURCES = callbacks.cc \
 beta.c gamma.c gammalims.c lgamma.c polygamma.c toms708.c \
 mlutils.c stirlerr.c bd0.c choose.c \

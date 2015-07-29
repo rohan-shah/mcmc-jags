@@ -27,3 +27,5 @@ libglmtest_la_LIBADD = samplers/libglmsamptest.la \
 	$(top_builddir)/src/lib/libtest.la \
 	$(top_builddir)/src/lib/libjags.la
 libglmtest_la_CPPFLAGS = -I$(top_srcdir)/src/include
+libglmtest_la_CXXFLAGS = $(CPPUNIT_CFLAGS)
+

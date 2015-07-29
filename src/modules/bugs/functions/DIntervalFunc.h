@@ -13,8 +13,8 @@ namespace bugs {
     {
     public:
 	DIntervalFunc ();
-	double evaluate (std::vector <double const *> const &args,
-			 std::vector<unsigned int> const &lengths) const;
+	double scalarEval (std::vector <double const *> const &args,
+			   std::vector<unsigned int> const &lengths) const;
 	bool checkParameterLength (std::vector<unsigned int> const &args) const;
 	bool isDiscreteValued(std::vector<bool> const &mask) const;
     };

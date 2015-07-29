@@ -28,4 +28,4 @@ libbugstest_la_LIBADD = functions/libbugsfuntest.la	\
 	$(top_builddir)/src/lib/libtest.la		\
 	$(top_builddir)/src/lib/libjags.la
 libbugstest_la_CPPFLAGS = -I$(top_srcdir)/src/include
-
+libbugstest_la_CXXFLAGS = $(CPPUNIT_CFLAGS)

@@ -17,7 +17,7 @@ namespace jags {
 				   vector <double const *> const &args,
 				   vector <unsigned int> const &lengths) const
     {
-	*value = evaluate(args, lengths);
+	*value = scalarEval(args, lengths);
     }
 
     unsigned int 

@@ -1,6 +1,8 @@
 /**
  * Test code in modules
  */
+#include <ltdl.h>
+
 #include <cppunit/CompilerOutputter.h>
 #include <cppunit/extensions/TestFactoryRegistry.h>
 #include <cppunit/ui/text/TestRunner.h>
@@ -11,6 +13,8 @@
 
 int main(int argc, char* argv[])
 {
+    LTDL_SET_PRELOADED_SYMBOLS();
+
     init_base_test();
     init_bugs_test();
     init_glm_test();

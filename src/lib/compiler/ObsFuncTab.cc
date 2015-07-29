@@ -23,6 +23,13 @@ struct isDist: public binary_function<ObsFunc, DistPtr, bool>
     }
 };
 
+  ObsFuncTab::ObsFuncTab()
+    : _flist(), _nullfun()
+  {
+    //Required by Solaris Studio, which won't create a default constructor
+    //with -std=c++11
+  }
+    
 void ObsFuncTab::insert (DistPtr const &dist, FunctionPtr const &func)
 {
     ObsFunc f(dist, func);

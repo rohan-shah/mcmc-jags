@@ -18,8 +18,8 @@ namespace bugs {
     {
     public:
 	Mean ();
-	double evaluate(std::vector<double const *> const &args,
-			std::vector<unsigned int> const &dims) const;
+	double scalarEval(std::vector<double const *> const &args,
+			  std::vector<unsigned int> const &dims) const;
 	bool isScale(std::vector<bool> const &mask,
 		     std::vector<bool> const &fix) const;
     };

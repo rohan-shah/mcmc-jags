@@ -22,6 +22,10 @@ class FuncTab
     FunctionPtr const _nullfun;
 public:
     /**
+     * Constructs a new empty FuncTab
+     */
+    FuncTab();
+    /**
      * Inserts a function into the table. 
      */
     void insert (FunctionPtr const &func);

@@ -16,8 +16,8 @@ namespace bugs {
     {
     }
 
-    double Max::evaluate(vector<double const *> const &args,
-			 vector<unsigned int> const &lengths) const
+    double Max::scalarEval(vector<double const *> const &args,
+			   vector<unsigned int> const &lengths) const
     {
 	double ans = *max_element(args[0], args[0] + lengths[0]);
 	for (unsigned int i = 1; i < args.size(); ++i) {

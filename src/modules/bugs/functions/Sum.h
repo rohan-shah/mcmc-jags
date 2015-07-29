@@ -18,8 +18,8 @@ namespace bugs {
     {
     public:
 	Sum ();
-	double evaluate(std::vector <double const *> const &args,
-			std::vector<unsigned int> const &lengths) const;
+	double scalarEval(std::vector <double const *> const &args,
+			  std::vector<unsigned int> const &lengths) const;
 	bool isDiscreteValued(std::vector<bool> const &mask) const;
 	bool isAdditive(std::vector<bool> const &mask,
 			std::vector<bool> const &isfixed) const;

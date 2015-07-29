@@ -12,8 +12,8 @@ namespace bugs {
     InterpLin::InterpLin() : ScalarVectorFunction("interp.lin", 3)
     {}
     
-    double InterpLin::evaluate(vector<double const *> const &args,
-			       vector<unsigned int> const &lengths) const
+    double InterpLin::scalarEval(vector<double const *> const &args,
+				 vector<unsigned int> const &lengths) const
     {
 	double const *x = args[1];
 	double const *y = args[2];
