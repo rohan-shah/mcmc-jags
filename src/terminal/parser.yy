@@ -1279,7 +1279,7 @@ int main (int argc, char **argv)
   
   time_t t;
   time(&t);
-  std::cout << "Welcome to " << PACKAGE_STRING << " on " << ctime(&t);
+  std::cout << "Welcome to " << PACKAGE_STRING << "(beta) on " << ctime(&t);
   std::cout << "JAGS is free software and comes with ABSOLUTELY NO WARRANTY" 
             << std::endl;
   loadModule("basemod");
