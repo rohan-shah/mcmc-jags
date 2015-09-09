@@ -191,24 +191,8 @@ SectionEnd
   !insertmacro MUI_DESCRIPTION_TEXT ${SecHeader} "For developers who need to compile programs linked to JAGS"
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
-Function checkReinstall
-   ; Check that currentversion is not already installed
-   ReadRegStr $0 ${INSTDIR_REG_ROOT} "${INSTDIR_REG_KEY}" "DisplayVersion" 
-   ${VersionCompare} $0 ${VERSION} $1
-   IntCmp $1 0 bail
-   goto done:
-
-bail:
-   ; Prevent reinstallation of same version
-   MessageBox MB_OK "${APP_NAME} " $0 " is already installed. If you want to move the installation then first uninstall ${APP_NAME}" $0 "with the control panel"
-   Quit
-
-done:
-FunctionEnd
-
 Function .onInit
    !insertmacro MULTIUSER_INIT
-   Call checkReinstall   
    !insertmacro UNINSTALL.LOG_PREPARE_INSTALL
    ${If} ${RunningX64}
       ;Nothing to do
@@ -227,7 +211,6 @@ Function .onInit
       SectionSetFlags ${Sec32} $1
       Pop $1
    ${EndIf}
-
 FunctionEnd
 
 Function .onInstSuccess

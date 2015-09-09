@@ -4,7 +4,7 @@
 \usepackage{url}
 \usepackage{multirow}
 \usepackage{amsfonts}
-\newcommand{\release}{3.4.0}
+\newcommand{\release}{4.0.0}
 \newcommand{\JAGS}{\textsf{JAGS}}
 \newcommand{\BUGS}{\textsf{BUGS}}
 \newcommand{\WinBUGS}{\textsf{WinBUGS}}
@@ -23,7 +23,7 @@
 
 \title{JAGS Version \release\ installation manual}
 \author{Martyn Plummer \and Bill Northcott \and Matt Denwood}
-\date{21 October 2014}
+\date{8 September 2015}
 \maketitle
 
 \JAGS\ is distributed in binary format for Microsoft Windows, Mac OS
@@ -579,44 +579,63 @@ You need to install the following packages
 \item NSIS, including the AccessControl plug-in  
 \end{itemize}
 
+\subsubsection{TDM-GCC}
+
 We used the TDM-GCC compilers based on the MinGW-w64 project
 (\url{http://tdm-gcc.tdragon.net}).  This distribution was chosen
 because it allows us to build a version of JAGS that is statically
 linked against the gcc runtime library.  This, in turn, is necessary
-to have a functional rjags package on Windows.  We also tried 
-Rtools (\url{http://www.murdoch-sutherland.com/Rtools}). Although the
+to have a functional rjags package on Windows. We also tried Rtools
+(\url{https://cran.r-project.org/bin/windows/Rtools/}). Although the
 resulting JAGS library is functional, it is not compatible with R:
 loading the rjags package causes R to crash on exit.
 
 TDM-GCC has a nice installer, available from Sourceforge (follow the
-links on the main TDM-GCC web site). Ensure that you download the
-MinGW-w64/sjlj version as this is capable of producing both 32-bit and
-64-bit binaries.
+links on the main TDM-GCC web site). Ensure that you download the TDM64
+MinGW-w64 edition as this is capable of producing both 32-bit and
+64-bit binaries. For the JAGS 4.x.y release series we use
+\file{tdm64-gcc-5.1.0-2.exe} based on gcc 5.1.0.
 
 Select a ``Recommended C/C++'' installation and customize it by
-selecting the Fortran compiler, which is not installed by
-default. After installation, to force the compiler to use static
-linking, delete any import libraries (files ending in \file{.dll.a}
-in the TDM-GCC tree.  
+selecting the Fortran compiler, which is not installed by default. The
+installer gives you the option of adding TDM-GCC \file{bin} folder to
+the windows PATH variable. We choose not to do this. After
+installation, to force the compiler to use static linking, delete any
+import libraries (files ending in \file{.dll.a} in the TDM-GCC tree.
+
+\subsubsection{MSYS}
 
 MSYS (the Minimal SYStem) is part of the MinGW project. It provides a
 bash shell for you to build Unix software. Download the MinGW
-installer from \url{http://www.mingw.org}. We used
-\file{mingw-get-inst-20120426.exe}.  Run the installer and select
-``MSYS Basic System''.  There is no need to install the ``MinGW
-Developer Toolkit'' if you are working with a release tarball of
-\JAGS.  It is not necessary to install any of the compilers that come
-with MinGW as we shall be using the TDM versions. To make MSYS use the
-TDM-compilers, edit the file \file{c:/mingw/msys/1.0/etc/fstab}
-to read
+installer \file{mingw-get-setup.exe} from \url{http://www.mingw.org}.
+Run the installer and select \code{msys-base} (``A Basic MSYS
+Installation (meta)'') for installation and then select \code{Apply
+  Changes} from the \code{Installation} menu. There is no need to
+install the developer toolkit (\code{mingw-developer-toolkit}) if you
+are working with a release tarball of \JAGS.  You should not install
+any of the compilers that come with MinGW as we shall be using the TDM
+versions.
+
+If you did not add the TDM-GCC \file{bin} directory to the path then
+you can make MSYS use the TDM compilers by editing the file
+\file{c:/mingw/msys/1.0/etc/fstab} to read
 \begin{verbatim}
-c:\MinGW64\    /mingw
+c:\TDM-GCC-64\    /mingw
 \end{verbatim}
 
 MSYS creates a home directory for you in
-\file{c:/mingw/msys/1.0/home/username}, where \code{username} is
-your user name under Windows. You will need to copy and paste the
-source files for LAPACK and JAGS into this directory.
+\file{c:/mingw/msys/1.0/home/username}, where \code{username} is your
+user name under Windows. You will need to copy and paste the source
+files for LAPACK and JAGS into this directory.
+
+At the time of writing, the MinGW installer does not create a shortcut
+for MSYS on either the desktop or the start menu, even when these
+options are requested. Create your own shortcut to
+\file{c:/MingGW/msys/1.0/msys.bat} which launches the MSYS shell. For
+completeness, you may wish to use the icon
+\file{c:/MinGW/msys/1.0/msys.ico} for your shortcut.
+
+\subsubsection{NSIS}
 
 The Nullsoft Scriptable Install System
 (\url{http://nsis.sourceforge.net}) allows you to create a
@@ -627,11 +646,11 @@ the AccessControl plug-in for NSIS, which is available from
 is distributed as a zip file which is unpacked into the installation
 directory of NSIS.
 
-\subsubsection{Building LAPACK}
+\subsection{Building LAPACK}
 
 Download the LAPACK source file from
 \url{http://www.netlib.org/lapack} to your MSYS home directory. We
-used version 3.4.1.
+used version 3.5.0.
 
 You need to build LAPACK twice: once for 32-bit \JAGS\ and once for
 64-bit \JAGS. The instructions below are for 32-bit \JAGS. To build
@@ -641,11 +660,10 @@ that you cannot cross-build 64-bit BLAS and LAPACK on a 32-bit Windows
 system. This is because the build process must run some 64-bit test
 programs.
 
-Launch MSYS, labelled as ``MinGW shell'' on the Windows Start Menu,
-and unpack the tarball.
+Launch MSYS (\file{c:/MingW/msys/1.0/msys.bat}) and unpack the tarball.
 \begin{verbatim}
-tar xfvz lapack-3.4.1.tgz
-cd lapack-3.4.1
+tar xfvz lapack-3.5.0.tgz
+cd lapack-3.5.0
 \end{verbatim}
 Copy the file \file{INSTALL/make.inc.gfortran} to \file{make.inc} in
 the top level source directory.  Then edit \file{make.inc} replacing
@@ -659,10 +677,9 @@ Type
 make blaslib
 make lapacklib 
 \end{verbatim}
-The compilation process is slow. Eventually, it will create two static
-libraries \file{librefblas.a} and \file{liblapack.a}. These are
-insufficient for building \JAGS: you need to create dynamic link
-library (DLL) for each one.
+This will create two static libraries \file{librefblas.a} and
+\file{liblapack.a}. These are insufficient for building \JAGS: you
+need to create dynamic link library (DLL) for each one.
 
 First create a definition file \file{libblas.def} that exports all the
 symbols from the BLAS library
@@ -673,7 +690,7 @@ Then link this with the static library to create a DLL
 (\file{libblas.dll}) and an import library (\file{libblas.dll.a})
 \begin{verbatim}
 gcc -m32 -shared -o libblas.dll -Wl,--out-implib=libblas.dll.a \
-libblas.def librefblas.a -lgfortran
+libblas.def librefblas.a -lgfortran -lquadmath
 \end{verbatim}
  
 Repeat the same steps for the LAPACK library, creating an import library
@@ -682,20 +699,21 @@ Repeat the same steps for the LAPACK library, creating an import library
 dlltool -z liblapack.def --export-all-symbols liblapack.a
 
 gcc -m32 -shared -o liblapack.dll -Wl,--out-implib=liblapack.dll.a \
-liblapack.def liblapack.a  -L./ -lblas -lgfortran
+liblapack.def liblapack.a  -L./ -lblas -lgfortran -lquadmath
 \end{verbatim}
 
 \subsection{Compiling \JAGS}
 
 Unpack the JAGS source
 \begin{verbatim}
-tar xfvz JAGS-3.3.0.tar.gz
-cd JAGS-3.3.0
+tar xfvz JAGS-4.0.0.tar.gz
+cd JAGS-4.0.0
 \end{verbatim}
 and configure JAGS for a 32-bit build
 \begin{verbatim}
 CC="gcc -m32" CXX="g++ -m32" F77="gfortran -m32" \
-./configure LDFLAGS="-L/path/to/import/libs/ -Wl,--enable-auto-import" 
+LDFLAGS="-L/path/to/import/libs/ -Wl,--enable-auto-import" \
+./configure
 \end{verbatim}
 where \file{/path/to/import/libs} is a directory that contains the
 32-bit import libraries (\file{libblas.dll.a} and
@@ -720,7 +738,8 @@ make clean
 reconfigure JAGS for a 64-bit build:
 \begin{verbatim}
 CC="gcc -m64" CXX="g++ -m64" F77="gfortran -m64" \
-./configure LDFLAGS="-L/path/to/import/libs/ -Wl,--enable-auto-import" 
+LDFLAGS="-L/path/to/import/libs/ -Wl,--enable-auto-import" \
+./configure
 \end{verbatim}
 Then type
 \begin{verbatim}
@@ -740,7 +759,7 @@ Make sure that the file \file{makensis.exe}, provided by
 NSIS, is in your PATH. For a typical installation of NSIS, on 64-bit
 windows:
 \begin{verbatim}
-PATH=$PATH:/c/Program\ files\ \(x86\)/NSIS
+PATH=$PATH:/c/Program\ Files\ \(x86\)/NSIS
 \end{verbatim}
 Then type
 \begin{verbatim}

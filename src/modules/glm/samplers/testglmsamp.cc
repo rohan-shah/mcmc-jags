@@ -30,12 +30,12 @@ void GLMSampTest::lgmix()
 	double S = 0.0;
 	double S2 = 0.0;
 	double W = 0.0;
-	for (unsigned int i = 0; i < weights.size(); ++i) {
-	    W += weights[i];
-	    S += weights[i] * means[i];
+	for (unsigned int j = 0; j < weights.size(); ++j) {
+	    W += weights[j];
+	    S += weights[j] * means[j];
 	}
-	for (unsigned int i = 0; i < weights.size(); ++i) {
-	    S2 += weights[i] * ((means[i] - S) * (means[i] - S) + variances[i]);
+	for (unsigned int j = 0; j < weights.size(); ++j) {
+	    S2 += weights[j] * ((means[j] - S) * (means[j] - S) + variances[j]);
 	}
 
 	S += digamma(i);
