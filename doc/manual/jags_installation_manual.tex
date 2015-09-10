@@ -48,6 +48,10 @@ may use:
 \begin{verbatim}
 make -j4
 \end{verbatim}
+If you have the cppunit library installed then you can test the build with
+\begin{verbatim}
+make check
+\end{verbatim}
 
 \subsection{Configure options}
 
@@ -585,23 +589,36 @@ We used the TDM-GCC compilers based on the MinGW-w64 project
 (\url{http://tdm-gcc.tdragon.net}).  This distribution was chosen
 because it allows us to build a version of JAGS that is statically
 linked against the gcc runtime library.  This, in turn, is necessary
-to have a functional rjags package on Windows. We also tried Rtools
+to have a functional rjags package on Windows. In previous releases We
+also tried Rtools
 (\url{https://cran.r-project.org/bin/windows/Rtools/}). Although the
-resulting JAGS library is functional, it is not compatible with R:
+resulting JAGS library was functional, it was not compatible with R:
 loading the rjags package causes R to crash on exit.
 
 TDM-GCC has a nice installer, available from Sourceforge (follow the
-links on the main TDM-GCC web site). Ensure that you download the TDM64
-MinGW-w64 edition as this is capable of producing both 32-bit and
-64-bit binaries. For the JAGS 4.x.y release series we use
-\file{tdm64-gcc-5.1.0-2.exe} based on gcc 5.1.0.
+links on the main TDM-GCC web site). Ensure that you download the
+TDM64 MinGW-w64 edition as this is capable of producing both 32-bit
+and 64-bit binaries. For the JAGS 4.x.y release series we use
+installer \file{tdm64-gcc-4.9.2-3.exe} based on gcc 4.9.2. This is not
+the latest version of TDM-GCC but it is based on the most stable gcc
+release. We tried building JAGS with gcc 5.1.0 but the result was
+buggy.\footnote{It failed the classic bugs example JAW with rjags as
+  the deviance statistics were incorrect. It appears that JAGS was
+  evaluating the wrong branch of a switch statement in
+  \code{DMNorm::logDensity}, giving the version for
+  \code{type=PDF\_LIKELIHOOD} instead of \code{PDF\_FULL}. The command line
+  version gave correct deviance statistics.}
 
-Select a ``Recommended C/C++'' installation and customize it by
-selecting the Fortran compiler, which is not installed by default. The
-installer gives you the option of adding TDM-GCC \file{bin} folder to
-the windows PATH variable. We choose not to do this. After
-installation, to force the compiler to use static linking, delete any
-import libraries (files ending in \file{.dll.a} in the TDM-GCC tree.
+Uncheck the box marked ``Check for updated files on the TDM-GCC
+server'' to ensure that you get version 4.9.2, otherwise the installer
+will install the latest release.  Select a ``Recommended C/C++''
+installation and customize it by selecting the Fortran compiler, which
+is not installed by default. The installer gives you the option of
+adding TDM-GCC \file{bin} folder to the windows PATH variable. We
+choose not to do this.\footnote{It interferes with the ability to
+  build R packages using the Rtools toolchain} After installation,
+to force the compiler to use static linking, delete any import
+libraries (files ending in \file{.dll.a} in the TDM-GCC tree.
 
 \subsubsection{MSYS}
 
@@ -767,6 +784,50 @@ make installer
 \end{verbatim}
 After the build process finishes, the self extracting archive will be
 in the subdirectory \file{win}.
+
+\subsection{Running the examples}
+
+The BUGS classic examples (file \file{classic-bugs.tar.gz} from the JAGS
+Sourceforge site) can be run from the Windows command prompt using
+the \command{make} command provided by Rtools. This requires adding Rtools
+to the Windows search path if it is not currently there.
+\begin{verbatim}
+set PATH=c:\Rtools\bin;%PATH%
+\end{verbatim}
+You must have R installed, along with the packages \code{rjags} and
+\code{coda}, both of which are available from CRAN.
+
+It is necessary to add R to the search path and to set the variable
+\verb+R_LIBS+. Note that here we are using the 64-bit version of R
+(\code{x64}). You may also use the 32-bit version by substituting
+\code{i386} for \code{x64}.
+\begin{verbatim}
+set PATH=c:\Program Files\R\R-3.2.2\bin\x64;%PATH%
+set R_LIBS=c:\Users\username\Documents\R\win-library\3.2
+\end{verbatim}
+where \file{username} is your Windows user name. Then
+\begin{verbatim}
+tar xfvz classic-bugs.tar.gz
+cd classic-bugs
+cd vol1
+make Rcheck
+\end{verbatim}
+will check all examples in volume 1 using the \code{rjags} package. Repeat
+for \code{vol2} to complete the checks.
+
+You can also run checks using the command line interface of JAGS. This
+requires adding JAGS to the search path and overriding the default name
+of the JAGS executable.
+\begin{verbatim}
+set PATH=c:\Program Files\JAGS\JAGS-4.0.0\bin\x64;%PATH%
+set JAGS=jags.bat
+\end{verbatim}
+Then
+\begin{verbatim}
+make check
+\end{verbatim}
+in directory \file{vol1} or \file{vol2} will run the checks using the
+command line interface.
 
 \end{document}
 
