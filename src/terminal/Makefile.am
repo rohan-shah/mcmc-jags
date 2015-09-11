@@ -65,4 +65,4 @@ endif
 
 EXTRA_DIST = jags.in
 CLEANFILES = jags 
-DISTCLEANFILES = parser.cc parser.hh scanner.cc
+MAINTAINERCLEANFILES = parser.cc parser.hh scanner.cc
