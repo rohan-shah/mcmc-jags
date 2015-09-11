@@ -88,8 +88,8 @@ configure script, {\em e.g.}:
 \end{verbatim}
 
 It is important to get the installation directory right when using the
-\texttt{rjags} interface between R and \JAGS, otherwise the
-\texttt{rjags} package will not be able to find the \JAGS\ library.
+\code{rjags} interface between R and \JAGS, otherwise the
+\code{rjags} package will not be able to find the \JAGS\ library.
 
 \subsubsection{Configuration for a private installation}
 
@@ -589,36 +589,23 @@ We used the TDM-GCC compilers based on the MinGW-w64 project
 (\url{http://tdm-gcc.tdragon.net}).  This distribution was chosen
 because it allows us to build a version of JAGS that is statically
 linked against the gcc runtime library.  This, in turn, is necessary
-to have a functional rjags package on Windows. In previous releases We
-also tried Rtools
+to have a functional rjags package on Windows. We also tried Rtools
 (\url{https://cran.r-project.org/bin/windows/Rtools/}). Although the
-resulting JAGS library was functional, it was not compatible with R:
+resulting JAGS library is functional, it is not compatible with R:
 loading the rjags package causes R to crash on exit.
 
 TDM-GCC has a nice installer, available from Sourceforge (follow the
-links on the main TDM-GCC web site). Ensure that you download the
-TDM64 MinGW-w64 edition as this is capable of producing both 32-bit
-and 64-bit binaries. For the JAGS 4.x.y release series we use
-installer \file{tdm64-gcc-4.9.2-3.exe} based on gcc 4.9.2. This is not
-the latest version of TDM-GCC but it is based on the most stable gcc
-release. We tried building JAGS with gcc 5.1.0 but the result was
-buggy.\footnote{It failed the classic bugs example JAW with rjags as
-  the deviance statistics were incorrect. It appears that JAGS was
-  evaluating the wrong branch of a switch statement in
-  \code{DMNorm::logDensity}, giving the version for
-  \code{type=PDF\_LIKELIHOOD} instead of \code{PDF\_FULL}. The command line
-  version gave correct deviance statistics.}
+links on the main TDM-GCC web site). Ensure that you download the TDM64
+MinGW-w64 edition as this is capable of producing both 32-bit and
+64-bit binaries. For the JAGS 4.x.y release series we use
+\file{tdm64-gcc-5.1.0-2.exe} based on gcc 5.1.0.
 
-Uncheck the box marked ``Check for updated files on the TDM-GCC
-server'' to ensure that you get version 4.9.2, otherwise the installer
-will install the latest release.  Select a ``Recommended C/C++''
-installation and customize it by selecting the Fortran compiler, which
-is not installed by default. The installer gives you the option of
-adding TDM-GCC \file{bin} folder to the windows PATH variable. We
-choose not to do this.\footnote{It interferes with the ability to
-  build R packages using the Rtools toolchain} After installation,
-to force the compiler to use static linking, delete any import
-libraries (files ending in \file{.dll.a} in the TDM-GCC tree.
+Select a ``Recommended C/C++'' installation and customize it by
+selecting the Fortran compiler, which is not installed by default. The
+installer gives you the option of adding TDM-GCC \file{bin} folder to
+the windows PATH variable. We choose not to do this. After
+installation, to force the compiler to use static linking, delete any
+import libraries (files ending in \file{.dll.a} in the TDM-GCC tree.
 
 \subsubsection{MSYS}
 
@@ -728,14 +715,17 @@ cd JAGS-4.0.0
 \end{verbatim}
 and configure JAGS for a 32-bit build
 \begin{verbatim}
-CC="gcc -m32" CXX="g++ -m32" F77="gfortran -m32" \
+CPPFLAGS=-D_GLIBCXX_USE_CXX11_ABI=0 \
+CC="gcc -m32" CXX="g++ -m32 -std=c++98" F77="gfortran -m32" \
 LDFLAGS="-L/path/to/import/libs/ -Wl,--enable-auto-import" \
 ./configure
 \end{verbatim}
 where \file{/path/to/import/libs} is a directory that contains the
 32-bit import libraries (\file{libblas.dll.a} and
 \file{liblapack.dll.a}).  This must be an {\em absolute} path name,
-and not relative to the JAGS build directory.
+and not relative to the JAGS build directory. The flag
+\code{-D\_GLIBCXX\_USE\_CXX11\_ABI=0} ensures compatibility with the
+Windows binary distribution of R from CRAN.
 
 After the configure step, type
 \begin{verbatim}
@@ -795,12 +785,13 @@ to the Windows search path if it is not currently there.
 set PATH=c:\Rtools\bin;%PATH%
 \end{verbatim}
 You must have R installed, along with the packages \code{rjags} and
-\code{coda}, both of which are available from CRAN.
+\code{coda}, both of which are available from CRAN
+(\url{cran.r-project.org}).
 
 It is necessary to add R to the search path and to set the variable
-\verb+R_LIBS+. Note that here we are using the 64-bit version of R
-(\code{x64}). You may also use the 32-bit version by substituting
-\code{i386} for \code{x64}.
+\verb+R_LIBS+. Note that here we are using the 64-bit version of R.
+You may use the 32-bit version by substituting \code{i386} for
+\code{x64}.
 \begin{verbatim}
 set PATH=c:\Program Files\R\R-3.2.2\bin\x64;%PATH%
 set R_LIBS=c:\Users\username\Documents\R\win-library\3.2
@@ -813,7 +804,7 @@ cd vol1
 make Rcheck
 \end{verbatim}
 will check all examples in volume 1 using the \code{rjags} package. Repeat
-for \code{vol2} to complete the checks.
+for \file{vol2} to complete the checks.
 
 You can also run checks using the command line interface of JAGS. This
 requires adding JAGS to the search path and overriding the default name
