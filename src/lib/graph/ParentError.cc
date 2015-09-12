@@ -69,7 +69,7 @@ namespace jags {
     {
     }
     
-    void ParentError::printMessage(ostream &out, SymTab const &symtab)
+    void ParentError::printMessage(ostream &out, SymTab const &symtab) const
     {
 	out << "Error in node " <<  symtab.getName(_node) << "\n" 
 	    << "Invalid parent values" << "\n";

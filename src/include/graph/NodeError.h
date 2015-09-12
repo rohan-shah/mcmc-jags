@@ -16,7 +16,7 @@ namespace jags {
 	Node const * _node;
     public:
 	NodeError(Node const *node, std::string const &msg);
-	void printMessage(std::ostream &out, SymTab const &symtab);
+	void printMessage(std::ostream &out, SymTab const &symtab) const;
     };
 
 } /* namespace jags */
