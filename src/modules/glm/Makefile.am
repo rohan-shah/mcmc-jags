@@ -12,11 +12,15 @@ glm_la_CPPFLAGS = -I$(top_srcdir)/src/include	\
 glm_la_LIBADD = samplers/glmsampler.la CSparse/csparse.la	\
 	SSparse/ssparse.la $(top_builddir)/src/lib/libjags.la	\
 	$(top_builddir)/src/jrmath/libjrmath.la @LAPACK_LIBS@	\
-	@BLAS_LIBS@ @FLIBS@
+	@BLAS_LIBS@ 
 
 glm_la_LDFLAGS = -module -avoid-version
 if WINDOWS
 glm_la_LDFLAGS += -no-undefined
+else
+# Adding FLIBS here allows static linking, but on Windows we don't want to
+# do this as it will cause failure to build glm.dll using Rtools
+glm_la_LIBADD += @FLIBS@
 endif
 
 ### Test library 

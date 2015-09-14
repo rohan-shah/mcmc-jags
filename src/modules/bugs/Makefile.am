@@ -12,11 +12,16 @@ bugs_la_LIBADD = distributions/bugsdist.la              \
         matrix/bugsmatrix.la                            \
         $(top_builddir)/src/jrmath/libjrmath.la		\
         $(top_builddir)/src/lib/libjags.la 		\
-        @LAPACK_LIBS@ @BLAS_LIBS@ @FLIBS@
+        @LAPACK_LIBS@ @BLAS_LIBS@ 
 
 bugs_la_LDFLAGS = -module -avoid-version
+
 if WINDOWS
 bugs_la_LDFLAGS += -no-undefined
+else
+# Adding FLIBS here allows static linking, but on Windows we don't want to
+# do this as it will cause failure to build bugs.dll using Rtools
+bugs_la_LIBADD += @FLIBS@
 endif
 
 ### Test library 

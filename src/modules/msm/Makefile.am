@@ -11,9 +11,14 @@ msm_la_LIBADD = distributions/msmdist.la              \
         matrix/msmmatrix.la                            \
         $(top_builddir)/src/jrmath/libjrmath.la		\
         $(top_builddir)/src/lib/libjags.la 		\
-        @LAPACK_LIBS@ @BLAS_LIBS@ @FLIBS@ 
+        @LAPACK_LIBS@ @BLAS_LIBS@
 
 msm_la_LDFLAGS = -module -avoid-version
+
 if WINDOWS
 msm_la_LDFLAGS += -no-undefined
+else
+# Adding FLIBS here allows static linking, but on Windows we don't want to
+# do this as it will cause failure to build msm.dll using Rtools
+msm_la_LIBADD += @FLIBS@
 endif
