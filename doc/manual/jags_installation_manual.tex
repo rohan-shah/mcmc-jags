@@ -578,54 +578,47 @@ running windows, where it can be run from the Windows command prompt.
 
 You need to install the following packages
 \begin{itemize}
-\item The TDM-GCC compiler suite for Windows
+\item The Rtools compiler suite for Windows
 \item MSYS  
 \item NSIS, including the AccessControl plug-in  
 \end{itemize}
 
-\subsubsection{TDM-GCC}
+\subsubsection{Rtools}
 
-We used the TDM-GCC compilers based on the MinGW-w64 project
-(\url{http://tdm-gcc.tdragon.net}).  This distribution was chosen
-because it allows us to build a version of JAGS that is statically
-linked against the gcc runtime library.  This, in turn, is necessary
-to have a functional rjags package on Windows. We also tried Rtools
-(\url{https://cran.r-project.org/bin/windows/Rtools/}). Although the
-resulting JAGS library is functional, it is not compatible with R:
-loading the rjags package causes R to crash on exit.
+Rtools is a set of compilers and utilities used for compiling R on
+Windows. Rtools can be downloaded from your nearest CRAN mirror
+(\url{https://cran.r-project.org/bin/windows/Rtools/}).  We only need
+the compilers, as we use the utilities provided by MSYS (See below).
+For this reason, we choose not to add Rtools to the Windows environment
+variable \code{PATH} when asked by the installer.
 
-TDM-GCC has a nice installer, available from Sourceforge (follow the
-links on the main TDM-GCC web site). Ensure that you download the TDM64
-MinGW-w64 edition as this is capable of producing both 32-bit and
-64-bit binaries. For the JAGS 4.x.y release series we use
-\file{tdm64-gcc-5.1.0-2.exe} based on gcc 5.1.0.
-
-Select a ``Recommended C/C++'' installation and customize it by
-selecting the Fortran compiler, which is not installed by default. The
-installer gives you the option of adding TDM-GCC \file{bin} folder to
-the windows PATH variable. We choose not to do this. After
-installation, to force the compiler to use static linking, delete any
-import libraries (files ending in \file{.dll.a} in the TDM-GCC tree.
+The JAGS binaries for Windows 4.0.0 and above are built with Rtools
+3.3, which is based on gcc 4.6.3. We also successfully built JAGS with
+the TDM-GCC compilers (\url{http://tdm-gcc.tdragon.net}) based on gcc
+5.1.0. However, the resulting JAGS binary is not compatible with
+R. The rjags package can be successfully compiled and linked against
+JAGS built with TDM-GCC 5.1.0, and runs correctly on 64-bit R, but
+the package spontaneously crashes in 32-bit R.
 
 \subsubsection{MSYS}
 
-MSYS (the Minimal SYStem) is part of the MinGW project. It provides a
-bash shell for you to build Unix software. Download the MinGW
-installer \file{mingw-get-setup.exe} from \url{http://www.mingw.org}.
-Run the installer and select \code{msys-base} (``A Basic MSYS
-Installation (meta)'') for installation and then select \code{Apply
-  Changes} from the \code{Installation} menu. There is no need to
-install the developer toolkit (\code{mingw-developer-toolkit}) if you
-are working with a release tarball of \JAGS.  You should not install
-any of the compilers that come with MinGW as we shall be using the TDM
-versions.
+MSYS (the Minimal SYStem) is part of the MinGW project (Minimal GNU
+for Windows). It provides a bash shell for you to build Unix
+software. Download the MinGW installer \file{mingw-get-setup.exe} from
+\url{http://www.mingw.org}.  Run the installer and select
+\code{msys-base} (``A Basic MSYS Installation (meta)'') for
+installation and then select \code{Apply Changes} from the
+\code{Installation} menu. There is no need to install the developer
+toolkit (\code{mingw-developer-toolkit}) if you are working with a
+release tarball of \JAGS.  You should not install any of the compilers
+that come with MinGW as we shall be using the Rtools versions.
 
-If you did not add the TDM-GCC \file{bin} directory to the path then
-you can make MSYS use the TDM compilers by editing the file
+To make MSYS use the TDM compilers edit the file
 \file{c:/mingw/msys/1.0/etc/fstab} to read
 \begin{verbatim}
-c:\TDM-GCC-64\    /mingw
+c:\Rtools\gcc-4.6.3\bin    /mingw
 \end{verbatim}
+This adds the Rtools compilers to your PATH inside the MSYS shell.
 
 MSYS creates a home directory for you in
 \file{c:/mingw/msys/1.0/home/username}, where \code{username} is your
@@ -694,7 +687,7 @@ Then link this with the static library to create a DLL
 (\file{libblas.dll}) and an import library (\file{libblas.dll.a})
 \begin{verbatim}
 gcc -m32 -shared -o libblas.dll -Wl,--out-implib=libblas.dll.a \
-libblas.def librefblas.a -lgfortran -lquadmath
+libblas.def librefblas.a -lgfortran 
 \end{verbatim}
  
 Repeat the same steps for the LAPACK library, creating an import library
@@ -703,7 +696,7 @@ Repeat the same steps for the LAPACK library, creating an import library
 dlltool -z liblapack.def --export-all-symbols liblapack.a
 
 gcc -m32 -shared -o liblapack.dll -Wl,--out-implib=liblapack.dll.a \
-liblapack.def liblapack.a  -L./ -lblas -lgfortran -lquadmath
+liblapack.def liblapack.a  -L./ -lblas -lgfortran 
 \end{verbatim}
 
 \subsection{Compiling \JAGS}
@@ -715,7 +708,6 @@ cd JAGS-4.0.0
 \end{verbatim}
 and configure JAGS for a 32-bit build
 \begin{verbatim}
-CPPFLAGS=-D_GLIBCXX_USE_CXX11_ABI=0 \
 CC="gcc -m32" CXX="g++ -m32 -std=c++98" F77="gfortran -m32" \
 LDFLAGS="-L/path/to/import/libs/ -Wl,--enable-auto-import" \
 ./configure
@@ -723,9 +715,8 @@ LDFLAGS="-L/path/to/import/libs/ -Wl,--enable-auto-import" \
 where \file{/path/to/import/libs} is a directory that contains the
 32-bit import libraries (\file{libblas.dll.a} and
 \file{liblapack.dll.a}).  This must be an {\em absolute} path name,
-and not relative to the JAGS build directory. The flag
-\code{-D\_GLIBCXX\_USE\_CXX11\_ABI=0} ensures compatibility with the
-Windows binary distribution of R from CRAN.
+and not relative to the JAGS build directory.
+
 
 After the configure step, type
 \begin{verbatim}
@@ -820,5 +811,53 @@ make check
 in directory \file{vol1} or \file{vol2} will run the checks using the
 command line interface.
 
-\end{document}
+\subsection{Using TDM-GCC compilers}
 
+This section documents the use of TDM-GCC compilers to build JAGS.
+TDM-GCC was used to build Windows binaries for JAGS 3.x.y, but has
+been dropped in favour of Rtools for the 4.x.y release series. One
+reason for this is that the 32-bit version of JAGS built with TDM-GCC
+5.1.0 causes the rjags package to spontaneously crash. The 64-bit
+version runs correctly.
+
+TDM-GCC has a nice installer, available from Sourceforge (follow the
+links on the main TDM-GCC web site
+(\url{http://tdm-gcc.tdragon.net}). Ensure that you download the TDM64
+MinGW-w64 edition as this is capable of producing both 32-bit and
+64-bit binaries. We tested JAGS with \file{tdm64-gcc-5.1.0-2.exe}
+based on gcc 5.1.0.
+
+Select a ``Recommended C/C++'' installation and customize it by
+selecting the Fortran compiler, which is not installed by default. The
+installer gives you the option of adding TDM-GCC \file{bin} folder to
+the windows PATH variable. We choose not to do this, but added the
+\file{bin} to the PATH within the MSYS shell by editing
+\file{c:/mingw/msys/1.0/etc/fstab} to read
+\begin{verbatim}
+c:\TDM-GCC-64    /mingw
+\end{verbatim}
+After installation of TDM-GCC, to force the compiler to use static
+linking, delete any import libraries (files ending in \file{.dll.a} in
+the TDM-GCC tree. If you do not do this then you will need to
+distribute runtime DLLs from TDM-GCC with JAGS. You can easily do this
+by copying the DLLs to \file{runtime32} and \file{runtime64} before
+building the installer, as described above. Nevertheless, it is often
+more convenient to use static linking.
+
+Installation proceeds in the same way as for the Rtools build but with
+two differences.  Firstly, when building the DLLs for blas and lapack,
+you need to add the linker flag \verb+-lquadmath+ after
+\verb+-lgfortran+. Secondly, when configuring JAGS you should set the
+environment variable
+\begin{verbatim}
+CPPFLAGS=-D_GLIBCXX_USE_CXX11_ABI=0 
+\end{verbatim}
+This is necessary because gcc 5.1.0 introduced a new application
+binary interface (ABI) for the C++ standard library (See
+\url{https://gcc.gnu.org/onlinedocs/libstdc++/manual/using_dual_abi.html}. The
+old ABI is still supported and is used if you set the above flag. If
+you want to link JAGS with any software compiled with an earlier
+version of gcc then you need to use the old ABI. Failure to do so will
+result in error messages about undefined symbols from the linker.
+
+\end{document}
