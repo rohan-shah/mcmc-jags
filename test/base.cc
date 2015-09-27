@@ -1,23 +1,16 @@
 /**
- * Test code in modules
+ * Test code in base module
  */
-#include <ltdl.h>
 
 #include <cppunit/CompilerOutputter.h>
 #include <cppunit/extensions/TestFactoryRegistry.h>
 #include <cppunit/ui/text/TestRunner.h>
 
 #include <base/testbase.h>
-#include <bugs/testbugs.h>
-#include <glm/testglm.h>
 
 int main(int argc, char* argv[])
 {
-    LTDL_SET_PRELOADED_SYMBOLS();
-
     init_base_test();
-    init_bugs_test();
-    init_glm_test();
 
     // Get the top level suite from the registry
     CppUnit::Test *suite = 

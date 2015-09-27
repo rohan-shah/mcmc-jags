@@ -9,10 +9,10 @@ basemod_la_SOURCES = base.cc
 
 basemod_la_CPPFLAGS = -I$(top_srcdir)/src/include
 
-basemod_la_LIBADD = functions/basefunctions.la  \
-        monitors/basemonitors.la                \
-        samplers/basesamplers.la                \
-        rngs/baserngs.la                        \
+basemod_la_LIBADD = functions/libbasefunctions.la  \
+        monitors/libbasemonitors.la                \
+        samplers/libbasesamplers.la                \
+        rngs/libbaserngs.la                        \
 	$(top_builddir)/src/jrmath/libjrmath.la \
 	$(top_builddir)/src/lib/libjags.la        
 
@@ -25,5 +25,10 @@ endif
 
 check_LTLIBRARIES = libbasetest.la
 libbasetest_la_SOURCES = testbase.cc testbase.h
-libbasetest_la_LIBADD = functions/libbasefuntest.la
+libbasetest_la_LIBADD = functions/libbasefuntest.la	\
+	functions/libbasefunctions.la			\
+	$(top_builddir)/src/lib/libtest.la		\
+	$(top_builddir)/src/lib/libjags.la
+	$(top_builddir)/src/jrmath/libjrmath.la
+
 libbasetest_la_CPPFLAGS = -I$(top_srcdir)/src/include $(CPPUNIT_CFLAGS)

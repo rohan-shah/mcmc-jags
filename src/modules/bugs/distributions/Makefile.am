@@ -1,11 +1,9 @@
-noinst_LTLIBRARIES = bugsdist.la
+noinst_LTLIBRARIES = libbugsdist.la
 
-bugsdist_la_CPPFLAGS = -I$(top_srcdir)/src/include	\
+libbugsdist_la_CPPFLAGS = -I$(top_srcdir)/src/include	\
 -I$(top_srcdir)/src/modules/bugs/matrix
 
-bugsdist_la_LDFLAGS = -no-undefined -module -avoid-version
-
-bugsdist_la_SOURCES = DBern.cc DCat.cc DDirch.cc DHyper.cc DLogis.cc	\
+libbugsdist_la_SOURCES = DBern.cc DCat.cc DDirch.cc DHyper.cc DLogis.cc	\
 DMulti.cc DSum.cc DWeib.cc DBeta.cc DChisqr.cc DExp.cc DInterval.cc	\
 DMNorm.cc DNegBin.cc DPar.cc DT.cc DWish.cc DBin.cc DDexp.cc DGamma.cc	\
 DLnorm.cc DNorm.cc DPois.cc DUnif.cc DMT.cc DGenGamma.cc		\

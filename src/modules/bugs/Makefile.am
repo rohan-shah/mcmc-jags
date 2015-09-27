@@ -6,11 +6,11 @@ bugs_la_SOURCES = bugs.cc
 
 bugs_la_CPPFLAGS = -I$(top_srcdir)/src/include
 
-bugs_la_LIBADD = distributions/bugsdist.la              \
-        functions/bugsfunc.la                           \
-        samplers/bugssampler.la                         \
-        matrix/bugsmatrix.la                            \
-        $(top_builddir)/src/jrmath/libjrmath.la		\
+bugs_la_LIBADD = distributions/libbugsdist.la           \
+        functions/libbugsfunc.la                        \
+        samplers/libbugssampler.la                      \
+        matrix/libbugsmatrix.la                         \
+	$(top_builddir)/src/jrmath/libjrmath.la		\
         $(top_builddir)/src/lib/libjags.la 		\
         @LAPACK_LIBS@ @BLAS_LIBS@ 
 
@@ -28,9 +28,15 @@ endif
 
 check_LTLIBRARIES = libbugstest.la
 libbugstest_la_SOURCES = testbugs.cc testbugs.h
-libbugstest_la_LIBADD = functions/libbugsfuntest.la	\
-	distributions/libbugsdisttest.la 		\
-	$(top_builddir)/src/lib/libtest.la		\
-	$(top_builddir)/src/lib/libjags.la
+libbugstest_la_LIBADD = functions/libbugsfuntest.la		\
+	functions/libbugsfunc.la				\
+	distributions/libbugsdisttest.la			\
+	distributions/libbugsdist.la				\
+	matrix/libbugsmatrix.la					\
+	$(top_builddir)/src/modules/base/rngs/libbaserngs.la	\
+	$(top_builddir)/src/lib/libtest.la			\
+	$(top_builddir)/src/lib/libjags.la 			\
+	$(top_builddir)/src/jrmath/libjrmath.la 		\
+	@LAPACK_LIBS@ @BLAS_LIBS@
 libbugstest_la_CPPFLAGS = -I$(top_srcdir)/src/include
 libbugstest_la_CXXFLAGS = $(CPPUNIT_CFLAGS)
