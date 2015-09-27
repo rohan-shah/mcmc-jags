@@ -69,6 +69,7 @@
 #include <functions/Probit.h>
 #include <functions/Prod.h>
 #include <functions/Rank.h>
+#include <functions/Rep.h>
 #include <functions/Round.h>
 #include <functions/SD.h>
 #include <functions/Sin.h>
@@ -169,6 +170,7 @@ namespace bugs {
 	insert(new Probit);
 	insert(new Prod);
 	insert(new Rank);
+	insert(new Rep);
 	insert(new Round);
 	insert(new SD);
 	insert(new Sin);
