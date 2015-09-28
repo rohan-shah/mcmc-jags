@@ -356,11 +356,10 @@ years.  Two major transitions in compiler tools have been made between
 OS 10.6 and 10.9: firstly a change from gcc to clang compilers, and
 secondly a move from the libstdc++ to libc++ standard library.  As of
 Mac OS 10.7, Apple has provided a free Xcode application from the Mac
-App Store, which is a fairly large download but contains libraries
-necessary to install \JAGS. The command line compilers are installed
-separately using the \code{xcode-select} command line utility.  The 
-instructions that follow assume you are running OS 10.9 or later, and 
-have the free Xcode application from the Mac App Store.
+App Store, which is a fairly large download but contains all of the libraries
+necessary to install \JAGS. The instructions that follow assume you are 
+running OS 10.9 or later, and have the free Xcode application from the 
+Mac App Store.
 
 \subsection{Required tools}
 
@@ -381,96 +380,48 @@ need to install the gfortran package which you can find by following the
 
 This setup should be able to build the \JAGS\ sources and also source
 packages in R.  All the necessary libraries such as BLAS and LAPACK are
-included within Xcode.
+included within Xcode.  Additional tools are required to run the optional 
+test suite (see section \ref{section:otherosxoptions}).
 
 
-\subsection{Prepare the source code}
+\subsection{Basic installation}
 
-Move the downloaded \file{JAGS-X.X.X.tar.gz} package to some suitable
+
+\subsubsection{Prepare the source code}
+
+Move the downloaded \file{JAGS-\release.tar.gz} package to some suitable
 working space on your disk and double click the file.  This will
-decompress the package to give a folder called \file{JAGS-X.X.X}, where
-`X.X.X' is the version number.  You now need to re-open the Terminal and
+decompress the package to give a folder called \file{JAGS-\release}.  
+You now need to re-open the Terminal and
 change the working directory to the \JAGS\ source code. In the Terminal
 window after the \$ prompt type \code{cd} followed by a space.  In the Finder
-drag JAGS-X.X.X folder into the Terminal window and hit return.  If this
+drag \file{JAGS-\release} folder into the Terminal window and hit return.  If this
 worked for you, typing \code{ls} followed by a return will list the contents
-of the JAGS folder.
+of the \JAGS\ folder.
 
 
-\subsection{Set up the environment}
-
-The migration to the libc++ standard library in OS 10.9 has resulted in
-a period of transition where versions of \R\ for OS X are available for
-both the older libstdc++ (the ``Snow Leopard build'' of \R) and the
-newer libc++ (the ``Mavericks build'' of \R).  If \JAGS\ is to be used
-with the \texttt{rjags} or \texttt{runjags} packages in \R, it is
-important to follow the environment set-up instructions below
-corresponding to the version of \R\ that you have installed.
-
-\subsubsection{Snow Leopard build}
-
-Historically, executable files on MacOS could contain code for more than
-one CPU architecture: i386, x86\_64 or ppc.  The instructions below will
-create a configuration to build a ``fat'' binary of \JAGS\ (containing
-32-bit i386 and 64-bit x86\_64 code) using libstdc++ which will run on
-OS 10.6 - 10.9.  This is compatible with the ``Snow Leopard build'' of
-\R\ on CRAN and the corresponding \texttt{rjags} module. In your
-Terminal window copy/paste the following code (note that there is no
-space after 'platform' and the '$\backslash$' must not be followed by
-any spaces): 
-
-\begin{verbatim}
-export CFLAGS="-g -Os -mmacosx-version-min=10.6 -isysroot \
-/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform\
-/Developer/SDKs/MacOSX10.9.sdk \
--stdlib=libstdc++ \
--arch i386 -arch x86_64"
-export CXXFLAGS="-g -Os -mmacosx-version-min=10.6 -isysroot \
-/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform\
-/Developer/SDKs/MacOSX10.9.sdk \
--stdlib=libstdc++ \
--arch i386 -arch x86_64"
-export FFLAGS="-g -Os -mmacosx-version-min=10.6 -isysroot \
-/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform\
-/Developer/SDKs/MacOSX10.9.sdk \
--arch i386 -arch x86_64"
-export LDFLAGS="-mmacosx-version-min=10.6 -stdlib=libstdc++ -arch i386 -arch x86_64"
-\end{verbatim}
-
-Note that this configuration assumes you are running OS 10.9 - if you 
-are on an earlier OS, you may need to modify the three occurances of 
-``/Developer/SDKs/MacOSX10.9.sdk'' to reflect your OS version.
-
-\subsubsection{Mavericks build}
+\subsubsection{Set up the environment}
+\label{section:osxenvironment}
 
 The instructions below will create a configuration to build \JAGS\ using 
 libc++ which will only run on 10.9 or later, and is therefore 64-bit only.
 This is compatible with the ``Mavericks build'' of \R\ on CRAN and the 
-corresponding \texttt{rjags} module.  In your Terminal window copy/paste 
-the following code (note that there is no space after 'platform' and the '
-$\backslash$' must not be followed by any spaces):
+corresponding \texttt{rjags} and \texttt{runjags} modules.  
+In your Terminal window copy/paste the following code:
 
 \begin{verbatim}
-export CFLAGS="-g -Os -mmacosx-version-min=10.9 -isysroot \
-/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform\
-/Developer/SDKs/MacOSX10.9.sdk \
--stdlib=libc++ -arch x86_64"
-export CXXFLAGS="-g -Os -mmacosx-version-min=10.9 -isysroot \
-/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform\
-/Developer/SDKs/MacOSX10.9.sdk \
--stdlib=libc++ -arch x86_64"
-export FFLAGS="-g -Os -mmacosx-version-min=10.9 -isysroot \
-/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform\
-/Developer/SDKs/MacOSX10.9.sdk -arch x86_64"
-export LDFLAGS="-mmacosx-version-min=10.9 -stdlib=libc++ -arch x86_64"
+export CFLAGS="-Os -arch x86_64 -framework Accelerate"
+export CXXFLAGS="-Os -arch x86_64 -framework Accelerate"
+export FFLAGS="-Os -arch x86_64 -framework Accelerate"
+export LDFLAGS="-arch x86_64"
 \end{verbatim}
 
-Note that this configuration assumes you are running OS 10.9 - otherwise you 
-may need to modify the three occurances of ``/Developer/SDKs/MacOSX10.9.sdk'' 
-to reflect your OS version.  The -stlib and -arch options shown are default and 
-should therefore be unnecessary, but are included for completeness.
+The \texttt{-framework Accelerate} finds the BLAS and LAPACK 
+contained within the Xcode application.  The clang warning
+\texttt{-framework Accelerate: `linker' input unused} can
+be safely ignored.
 
-\subsection{Configuration}
+\subsubsection{Configuration}
 
 To configure the package type:
 
@@ -480,7 +431,8 @@ To configure the package type:
 
 This instruction should complete without reporting an error.
 
-\subsection{Compile}
+\subsubsection{Compile}
+\label{section:osxcompile}
 
 To compile the code type: 
 
@@ -494,7 +446,8 @@ is best as twice the number of CPU cores in the computer - you may want
 to change the number in the instruction to match your machine. Again,
 this instruction should complete without errors.
 
-\subsection{Install}
+\subsubsection{Install}
+\label{section:osxinstall}
 
 Finally to install \JAGS\ you need to be using an account with
 administration privileges.  Type: 
@@ -504,66 +457,154 @@ sudo make install
 \end{verbatim} 
 
 This will ask for your account password and install the code ready to 
-run as described in the User Manual. You need to ensure
-\texttt{/usr/local/bin} is in your PATH in order for `jags' to work from
-a shell prompt.
+run as described in the User Manual. You need to ensure that
+\texttt{/usr/local/bin} is in your PATH in order for the command 
+\texttt{jags} to work from a shell prompt.
 
-\subsection{Older versions of Mac OS X}
+\subsection{Other installation options for Mac OS X}
+\label{section:otherosxoptions}
 
-The instructions given for the ``Snow Leopard build'' above have only
-been tested on OS 10.9, but should also work on OS 10.7 and 10.8.  If
-you encounter problems with these instructions onOS 10.7 or 10.8, or for
-compilation instructions for older versions of Mac OS X, consult
-previous versions of the installation manual which are contained within
-the disk images for older versions of \JAGS\ available from
+\subsubsection{Running the test suite}
+
+As of \JAGS\ version 4, a test suite is included with the source code that can be
+run to ensure that the compiled code produces the expected results.  To run
+this code on your installation, you will need to install the CppUnit framework - this can
+be downloaded from \url{https://sourceforge.net/projects/cppunit/} or installed using
+MacPorts or similar (see section \ref{section:osxtools}).
+
+You should then be able to run the test suite from the Terminal 
+(in the \file{JAGS-\release} folder directory) by typing:
+
+\begin{verbatim} 
+make check
+\end{verbatim} 
+
+If successful, a summary of the checks will be given.  Note that the configuration and
+first \texttt{make} step may need to be repeated if CppUnit was not installed the first
+time these were run.  In this case, you may also need to clean the existing 
+compiled code before running \texttt{make check} using:
+
+\begin{verbatim} 
+make clean
+\end{verbatim} 
+
+
+\subsubsection{Snow Leopard build}
+
+The instructions below will
+create a configuration to build a ``fat'' binary of \JAGS\ (containing
+32-bit i386 and 64-bit x86\_64 code) using libstdc++ which will run on
+OS 10.6 - 10.9.  This is compatible with the ``Snow Leopard build'' of
+\R\ on CRAN and the corresponding \texttt{rjags} and \texttt{runjags} modules. 
+In your Terminal window copy/paste the following code (note that there is no
+space after 'platform' and the '$\backslash$' must not be followed by
+any spaces): 
+
+\begin{verbatim}
+export CFLAGS="-Os -mmacosx-version-min=10.6 -isysroot \
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform\
+/Developer/SDKs/MacOSX10.9.sdk \
+-stdlib=libstdc++ \
+-arch i386 -arch x86_64"
+export CXXFLAGS="-Os -mmacosx-version-min=10.6 -isysroot \
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform\
+/Developer/SDKs/MacOSX10.9.sdk \
+-stdlib=libstdc++ \
+-arch i386 -arch x86_64"
+export FFLAGS="-Os -mmacosx-version-min=10.6 -isysroot \
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform\
+/Developer/SDKs/MacOSX10.9.sdk \
+-arch i386 -arch x86_64"
+export LDFLAGS="-mmacosx-version-min=10.6 -stdlib=libstdc++ \
+-arch i386 -arch x86_64"
+\end{verbatim}
+
+Note that this configuration assumes you are running OS 10.9 - if you 
+are on an earlier OS, you may need to modify the three occurances of 
+\texttt{/Developer/SDKs/MacOSX10.9.sdk} to reflect your OS version.
+
+You should then be able to follow the instructions given in sections \ref{section:osxcompile}
+and \ref{section:osxinstall}.  If you have already used the same source directory to create
+a Mavericks binary you will likely need to run \texttt{make clean} before switching
+to build the Snow Leopard binary. If you encounter problems with these instructions on 
+older versions of Mac OS X, consult previous versions of the installation manual 
+which are contained within the disk images for older versions of \JAGS\ available from
 \url{https://sourceforge.net/projects/mcmc-jags/files/JAGS/}
+
 
 \subsection{Tips for developers and advanced users}
 
-\subsubsection{Compilers}
+\subsubsection{Additional tools}
+\label{section:osxtools}
 
-Older versions of Xcode used the gcc compiler suite, but Apple abandoned
-the gcc project when GPL3 was introduced.  Current Apple compilers are
-based on LLVM, and are invoked as clang and clang++.  Although there
-appear to be gcc and gxx, these are actually gcc-llvm with an out of
-date gcc 4.2 front end on LLVM.  These compilers are now deprecated.
-While there are versions of current gcc available for MacOS, they do not
-recognise the Apple specific -arch flag.  This leads to a number of
-problems.
+Apple supplies a compiler suite, BLAS and LAPACK along with Xcode, but some
+additional tools are required to work with code from the \JAGS\ repository.  Probably 
+the easiest way of obtaining the necessary utilities is using
+\url{https://www.macports.org} or \url{http://brew.sh} The following sections assume
+that MacPorts is installed.
 
 \subsubsection{Working with the development code}
 
 If you want to work on code from the \JAGS\ repository, you will need to
 build and install the auxillary GNU tools (autoconf, automake and
-libtool) which are no longer supplied with Xcode.  Other GNU tools like
-bison and make are available but may be very out of date because of the
-GPL3 issue. Binaries of cvs, subversion and git are included in Xcode,
-but Mercurial needs to installed separately.
-
-Probably the easiest way of obtaining the necessary utilities is using
-\url{https://www.macports.org} or \url{http://brew.sh}  - for example,
-the following will install autoconf, automake, libtool and Mercurial
-using MacPorts:
+libtool), as well as mercurial, bison, flex and cppunit as follows:
 
 \begin{verbatim}
 sudo port install autoconf
 sudo port install automake
 sudo port install libtool
 sudo port install mercurial
+sudo port install bison
+sudo port install flex
+sudo port install cppunit
 \end{verbatim}
+
+Note that specific versions of some these ports may be required - the following 
+are known to work:  autoconf 2.69, automake 1.14.1, libtool 2.4.6, 
+mercurial 3.4, bison 3.0.4, flex 2.5.37 and cppunit 1.13.2.  Advice for
+installing older ports (if necessary) is given at:
+
+ \url{https://trac.macports.org/wiki/howto/InstallingOlderPort}
 
 The following sequence should then retrieve a clone of the current
-development branch of \JAGS\ and prepare the source code for
-installation:
+development branch of \JAGS, prepare the source code for
+installation, compile the code and run the test suite:
 
 \begin{verbatim} 
-hg clone http://hg.code.sf.net/p/mcmc-jags/code-0 mcmc-jags-code-0
-cd mcmc-jags-code-0
+hg clone http://hg.code.sf.net/p/mcmc-jags/code-0 JAGS_devel
+cd JAGS_devel
+export CFLAGS="-Os -arch x86_64 -framework Accelerate"
+export CXXFLAGS="-Os -arch x86_64 -framework Accelerate"
+export FFLAGS="-Os -arch x86_64 -framework Accelerate"
+export LDFLAGS="-arch x86_64"
 autoreconf -fi
+./configure
+make -j 8
+make check
 \end{verbatim}
 
-You should then be able to follow the environment setup, configure and
-install instructions above.
+You should then be able to follow the install instructions given in section \ref{section:osxinstall}.
+
+\subsubsection{Using ATLAS}
+
+Rather than using the versions of BLAS and LAPACK provided within Xcode, it
+is possible to use ATLAS which can be installed via MacPorts using:
+
+\begin{verbatim}
+sudo port install atlas
+\end{verbatim}
+
+This command will take some hours to complete.  The \texttt{-framework Accelerate} flag can
+then be omitted from the instructions given in section \ref{section:osxenvironment}.
+
+
+\subsubsection{A note on Apple compilers}
+
+Older versions of Xcode used the gcc compiler suite, but Apple abandoned
+the gcc project when GPL3 was introduced.  Current Apple compilers are
+based on LLVM, and are invoked as clang and clang++.  The same compilers
+are also invoked as gcc and gxx.
+
 
 \clearpage
 \section{Windows}
