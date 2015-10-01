@@ -1,13 +1,11 @@
-noinst_LTLIBRARIES = glmsampler.la
+noinst_LTLIBRARIES = libglmsampler.la
 
-glmsampler_la_CPPFLAGS = -I$(top_srcdir)/src/include \
+libglmsampler_la_CPPFLAGS = -I$(top_srcdir)/src/include \
 		-I$(top_srcdir)/src/modules/glm/CSparse \
 		-I$(top_srcdir)/src/modules/glm/SSparse/UFconfig \
 		-I$(top_srcdir)/src/modules/glm/SSparse/CHOLMOD/Include
 
-glmsampler_la_LDFLAGS = -no-undefined -module -avoid-version
-
-glmsampler_la_SOURCES = GLMFactory.cc GLMSampler.cc GLMMethod.cc	\
+libglmsampler_la_SOURCES = GLMFactory.cc GLMSampler.cc GLMMethod.cc	\
  LinearFactory.cc LinearGibbsFactory.cc Linear.cc BinaryFactory.cc	\
  KS.cc AlbertChibFactory.cc AlbertChibGibbsFactory.cc AlbertChib.cc	\
  IWLSFactory.cc IWLS.cc LGMix.cc AuxMixPoisson.cc AuxMixBinomial.cc	\

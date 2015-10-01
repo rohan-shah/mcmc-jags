@@ -1,10 +1,8 @@
-noinst_LTLIBRARIES = basefunctions.la
+noinst_LTLIBRARIES = libbasefunctions.la
 
-basefunctions_la_CPPFLAGS = -I$(top_srcdir)/src/include
+libbasefunctions_la_CPPFLAGS = -I$(top_srcdir)/src/include
 
-basefunctions_la_LDFLAGS = -no-undefined -module -avoid-version
-
-basefunctions_la_SOURCES = Infix.cc Add.cc Subtract.cc Divide.cc	\
+libbasefunctions_la_SOURCES = Infix.cc Add.cc Subtract.cc Divide.cc	\
 Multiply.cc Neg.cc Pow.cc And.cc Or.cc Not.cc Equal.cc NotEqual.cc	\
 GreaterThan.cc GreaterOrEqual.cc LessThan.cc LessOrEqual.cc Seq.cc
 

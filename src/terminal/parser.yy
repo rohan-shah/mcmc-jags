@@ -1251,7 +1251,7 @@ int main (int argc, char **argv)
     interactive = true;
   }
 
-#ifndef WIN32
+#ifndef _WIN32
   /* 
      - Allows emulation of dynamic loading on platforms that do not
      support it by preloading modules. 

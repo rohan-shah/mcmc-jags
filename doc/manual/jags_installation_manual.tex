@@ -4,7 +4,7 @@
 \usepackage{url}
 \usepackage{multirow}
 \usepackage{amsfonts}
-\newcommand{\release}{3.4.0}
+\newcommand{\release}{4.0.0}
 \newcommand{\JAGS}{\textsf{JAGS}}
 \newcommand{\BUGS}{\textsf{BUGS}}
 \newcommand{\WinBUGS}{\textsf{WinBUGS}}
@@ -23,7 +23,7 @@
 
 \title{JAGS Version \release\ installation manual}
 \author{Martyn Plummer \and Bill Northcott \and Matt Denwood}
-\date{21 October 2014}
+\date{1 October 2015}
 \maketitle
 
 \JAGS\ is distributed in binary format for Microsoft Windows, Mac OS
@@ -47,6 +47,10 @@ command. On systems with multiple processors, you may use the option
 may use:
 \begin{verbatim}
 make -j4
+\end{verbatim}
+If you have the cppunit library installed then you can test the build with
+\begin{verbatim}
+make check
 \end{verbatim}
 
 \subsection{Configure options}
@@ -84,8 +88,8 @@ configure script, {\em e.g.}:
 \end{verbatim}
 
 It is important to get the installation directory right when using the
-\texttt{rjags} interface between R and \JAGS, otherwise the
-\texttt{rjags} package will not be able to find the \JAGS\ library.
+\code{rjags} interface between R and \JAGS, otherwise the
+\code{rjags} package will not be able to find the \JAGS\ library.
 
 \subsubsection{Configuration for a private installation}
 
@@ -352,11 +356,10 @@ years.  Two major transitions in compiler tools have been made between
 OS 10.6 and 10.9: firstly a change from gcc to clang compilers, and
 secondly a move from the libstdc++ to libc++ standard library.  As of
 Mac OS 10.7, Apple has provided a free Xcode application from the Mac
-App Store, which is a fairly large download but contains libraries
-necessary to install \JAGS. The command line compilers are installed
-separately using the \code{xcode-select} command line utility.  The 
-instructions that follow assume you are running OS 10.9 or later, and 
-have the free Xcode application from the Mac App Store.
+App Store, which is a fairly large download but contains all of the libraries
+necessary to install \JAGS. The instructions that follow assume you are 
+running OS 10.9 or later, and have the free Xcode application from the 
+Mac App Store.
 
 \subsection{Required tools}
 
@@ -377,96 +380,48 @@ need to install the gfortran package which you can find by following the
 
 This setup should be able to build the \JAGS\ sources and also source
 packages in R.  All the necessary libraries such as BLAS and LAPACK are
-included within Xcode.
+included within Xcode.  Additional tools are required to run the optional 
+test suite (see section \ref{section:otherosxoptions}).
 
 
-\subsection{Prepare the source code}
+\subsection{Basic installation}
 
-Move the downloaded \file{JAGS-X.X.X.tar.gz} package to some suitable
+
+\subsubsection{Prepare the source code}
+
+Move the downloaded \file{JAGS-\release.tar.gz} package to some suitable
 working space on your disk and double click the file.  This will
-decompress the package to give a folder called \file{JAGS-X.X.X}, where
-`X.X.X' is the version number.  You now need to re-open the Terminal and
+decompress the package to give a folder called \file{JAGS-\release}.  
+You now need to re-open the Terminal and
 change the working directory to the \JAGS\ source code. In the Terminal
 window after the \$ prompt type \code{cd} followed by a space.  In the Finder
-drag JAGS-X.X.X folder into the Terminal window and hit return.  If this
+drag \file{JAGS-\release} folder into the Terminal window and hit return.  If this
 worked for you, typing \code{ls} followed by a return will list the contents
-of the JAGS folder.
+of the \JAGS\ folder.
 
 
-\subsection{Set up the environment}
-
-The migration to the libc++ standard library in OS 10.9 has resulted in
-a period of transition where versions of \R\ for OS X are available for
-both the older libstdc++ (the ``Snow Leopard build'' of \R) and the
-newer libc++ (the ``Mavericks build'' of \R).  If \JAGS\ is to be used
-with the \texttt{rjags} or \texttt{runjags} packages in \R, it is
-important to follow the environment set-up instructions below
-corresponding to the version of \R\ that you have installed.
-
-\subsubsection{Snow Leopard build}
-
-Historically, executable files on MacOS could contain code for more than
-one CPU architecture: i386, x86\_64 or ppc.  The instructions below will
-create a configuration to build a ``fat'' binary of \JAGS\ (containing
-32-bit i386 and 64-bit x86\_64 code) using libstdc++ which will run on
-OS 10.6 - 10.9.  This is compatible with the ``Snow Leopard build'' of
-\R\ on CRAN and the corresponding \texttt{rjags} module. In your
-Terminal window copy/paste the following code (note that there is no
-space after 'platform' and the '$\backslash$' must not be followed by
-any spaces): 
-
-\begin{verbatim}
-export CFLAGS="-g -Os -mmacosx-version-min=10.6 -isysroot \
-/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform\
-/Developer/SDKs/MacOSX10.9.sdk \
--stdlib=libstdc++ \
--arch i386 -arch x86_64"
-export CXXFLAGS="-g -Os -mmacosx-version-min=10.6 -isysroot \
-/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform\
-/Developer/SDKs/MacOSX10.9.sdk \
--stdlib=libstdc++ \
--arch i386 -arch x86_64"
-export FFLAGS="-g -Os -mmacosx-version-min=10.6 -isysroot \
-/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform\
-/Developer/SDKs/MacOSX10.9.sdk \
--arch i386 -arch x86_64"
-export LDFLAGS="-mmacosx-version-min=10.6 -stdlib=libstdc++ -arch i386 -arch x86_64"
-\end{verbatim}
-
-Note that this configuration assumes you are running OS 10.9 - if you 
-are on an earlier OS, you may need to modify the three occurances of 
-``/Developer/SDKs/MacOSX10.9.sdk'' to reflect your OS version.
-
-\subsubsection{Mavericks build}
+\subsubsection{Set up the environment}
+\label{section:osxenvironment}
 
 The instructions below will create a configuration to build \JAGS\ using 
 libc++ which will only run on 10.9 or later, and is therefore 64-bit only.
 This is compatible with the ``Mavericks build'' of \R\ on CRAN and the 
-corresponding \texttt{rjags} module.  In your Terminal window copy/paste 
-the following code (note that there is no space after 'platform' and the '
-$\backslash$' must not be followed by any spaces):
+corresponding \texttt{rjags} and \texttt{runjags} modules.  
+In your Terminal window copy/paste the following code:
 
 \begin{verbatim}
-export CFLAGS="-g -Os -mmacosx-version-min=10.9 -isysroot \
-/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform\
-/Developer/SDKs/MacOSX10.9.sdk \
--stdlib=libc++ -arch x86_64"
-export CXXFLAGS="-g -Os -mmacosx-version-min=10.9 -isysroot \
-/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform\
-/Developer/SDKs/MacOSX10.9.sdk \
--stdlib=libc++ -arch x86_64"
-export FFLAGS="-g -Os -mmacosx-version-min=10.9 -isysroot \
-/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform\
-/Developer/SDKs/MacOSX10.9.sdk -arch x86_64"
-export LDFLAGS="-mmacosx-version-min=10.9 -stdlib=libc++ -arch x86_64"
+export CFLAGS="-Os -arch x86_64 -framework Accelerate"
+export CXXFLAGS="-Os -arch x86_64 -framework Accelerate"
+export FFLAGS="-Os -arch x86_64 -framework Accelerate"
+export LDFLAGS="-arch x86_64"
 \end{verbatim}
 
-Note that this configuration assumes you are running OS 10.9 - otherwise you 
-may need to modify the three occurances of ``/Developer/SDKs/MacOSX10.9.sdk'' 
-to reflect your OS version.  The -stlib and -arch options shown are default and 
-should therefore be unnecessary, but are included for completeness.
+The \texttt{-framework Accelerate} finds the BLAS and LAPACK 
+contained within the Xcode application.  The clang warning
+\texttt{-framework Accelerate: `linker' input unused} can
+be safely ignored.
 
-\subsection{Configuration}
+\subsubsection{Configuration}
 
 To configure the package type:
 
@@ -476,7 +431,8 @@ To configure the package type:
 
 This instruction should complete without reporting an error.
 
-\subsection{Compile}
+\subsubsection{Compile}
+\label{section:osxcompile}
 
 To compile the code type: 
 
@@ -490,7 +446,8 @@ is best as twice the number of CPU cores in the computer - you may want
 to change the number in the instruction to match your machine. Again,
 this instruction should complete without errors.
 
-\subsection{Install}
+\subsubsection{Install}
+\label{section:osxinstall}
 
 Finally to install \JAGS\ you need to be using an account with
 administration privileges.  Type: 
@@ -500,66 +457,154 @@ sudo make install
 \end{verbatim} 
 
 This will ask for your account password and install the code ready to 
-run as described in the User Manual. You need to ensure
-\texttt{/usr/local/bin} is in your PATH in order for `jags' to work from
-a shell prompt.
+run as described in the User Manual. You need to ensure that
+\texttt{/usr/local/bin} is in your PATH in order for the command 
+\texttt{jags} to work from a shell prompt.
 
-\subsection{Older versions of Mac OS X}
+\subsection{Other installation options for Mac OS X}
+\label{section:otherosxoptions}
 
-The instructions given for the ``Snow Leopard build'' above have only
-been tested on OS 10.9, but should also work on OS 10.7 and 10.8.  If
-you encounter problems with these instructions onOS 10.7 or 10.8, or for
-compilation instructions for older versions of Mac OS X, consult
-previous versions of the installation manual which are contained within
-the disk images for older versions of \JAGS\ available from
+\subsubsection{Running the test suite}
+
+As of \JAGS\ version 4, a test suite is included with the source code that can be
+run to ensure that the compiled code produces the expected results.  To run
+this code on your installation, you will need to install the CppUnit framework - this can
+be downloaded from \url{https://sourceforge.net/projects/cppunit/} or installed using
+MacPorts or similar (see section \ref{section:osxtools}).
+
+You should then be able to run the test suite from the Terminal 
+(in the \file{JAGS-\release} folder directory) by typing:
+
+\begin{verbatim} 
+make check
+\end{verbatim} 
+
+If successful, a summary of the checks will be given.  Note that the configuration and
+first \texttt{make} step may need to be repeated if CppUnit was not installed the first
+time these were run.  In this case, you may also need to clean the existing 
+compiled code before running \texttt{make check} using:
+
+\begin{verbatim} 
+make clean
+\end{verbatim} 
+
+
+\subsubsection{Snow Leopard build}
+
+The instructions below will
+create a configuration to build a ``fat'' binary of \JAGS\ (containing
+32-bit i386 and 64-bit x86\_64 code) using libstdc++ which will run on
+OS 10.6 - 10.9.  This is compatible with the ``Snow Leopard build'' of
+\R\ on CRAN and the corresponding \texttt{rjags} and \texttt{runjags} modules. 
+In your Terminal window copy/paste the following code (note that there is no
+space after 'platform' and the '$\backslash$' must not be followed by
+any spaces): 
+
+\begin{verbatim}
+export CFLAGS="-Os -mmacosx-version-min=10.6 -isysroot \
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform\
+/Developer/SDKs/MacOSX10.9.sdk \
+-stdlib=libstdc++ \
+-arch i386 -arch x86_64"
+export CXXFLAGS="-Os -mmacosx-version-min=10.6 -isysroot \
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform\
+/Developer/SDKs/MacOSX10.9.sdk \
+-stdlib=libstdc++ \
+-arch i386 -arch x86_64"
+export FFLAGS="-Os -mmacosx-version-min=10.6 -isysroot \
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform\
+/Developer/SDKs/MacOSX10.9.sdk \
+-arch i386 -arch x86_64"
+export LDFLAGS="-mmacosx-version-min=10.6 -stdlib=libstdc++ \
+-arch i386 -arch x86_64"
+\end{verbatim}
+
+Note that this configuration assumes you are running OS 10.9 - if you 
+are on an earlier OS, you may need to modify the three occurances of 
+\texttt{/Developer/SDKs/MacOSX10.9.sdk} to reflect your OS version.
+
+You should then be able to follow the instructions given in sections \ref{section:osxcompile}
+and \ref{section:osxinstall}.  If you have already used the same source directory to create
+a Mavericks binary you will likely need to run \texttt{make clean} before switching
+to build the Snow Leopard binary. If you encounter problems with these instructions on 
+older versions of Mac OS X, consult previous versions of the installation manual 
+which are contained within the disk images for older versions of \JAGS\ available from
 \url{https://sourceforge.net/projects/mcmc-jags/files/JAGS/}
+
 
 \subsection{Tips for developers and advanced users}
 
-\subsubsection{Compilers}
+\subsubsection{Additional tools}
+\label{section:osxtools}
 
-Older versions of Xcode used the gcc compiler suite, but Apple abandoned
-the gcc project when GPL3 was introduced.  Current Apple compilers are
-based on LLVM, and are invoked as clang and clang++.  Although there
-appear to be gcc and gxx, these are actually gcc-llvm with an out of
-date gcc 4.2 front end on LLVM.  These compilers are now deprecated.
-While there are versions of current gcc available for MacOS, they do not
-recognise the Apple specific -arch flag.  This leads to a number of
-problems.
+Apple supplies a compiler suite, BLAS and LAPACK along with Xcode, but some
+additional tools are required to work with code from the \JAGS\ repository.  Probably 
+the easiest way of obtaining the necessary utilities is using
+\url{https://www.macports.org} or \url{http://brew.sh} The following sections assume
+that MacPorts is installed.
 
 \subsubsection{Working with the development code}
 
 If you want to work on code from the \JAGS\ repository, you will need to
 build and install the auxillary GNU tools (autoconf, automake and
-libtool) which are no longer supplied with Xcode.  Other GNU tools like
-bison and make are available but may be very out of date because of the
-GPL3 issue. Binaries of cvs, subversion and git are included in Xcode,
-but Mercurial needs to installed separately.
-
-Probably the easiest way of obtaining the necessary utilities is using
-\url{https://www.macports.org} or \url{http://brew.sh}  - for example,
-the following will install autoconf, automake, libtool and Mercurial
-using MacPorts:
+libtool), as well as mercurial, bison, flex and cppunit as follows:
 
 \begin{verbatim}
 sudo port install autoconf
 sudo port install automake
 sudo port install libtool
 sudo port install mercurial
+sudo port install bison
+sudo port install flex
+sudo port install cppunit
 \end{verbatim}
+
+Note that specific versions of some these ports may be required - the following 
+are known to work:  autoconf 2.69, automake 1.14.1, libtool 2.4.6, 
+mercurial 3.4, bison 3.0.4, flex 2.5.37 and cppunit 1.13.2.  Advice for
+installing older ports (if necessary) is given at:
+
+ \url{https://trac.macports.org/wiki/howto/InstallingOlderPort}
 
 The following sequence should then retrieve a clone of the current
-development branch of \JAGS\ and prepare the source code for
-installation:
+development branch of \JAGS, prepare the source code for
+installation, compile the code and run the test suite:
 
 \begin{verbatim} 
-hg clone http://hg.code.sf.net/p/mcmc-jags/code-0 mcmc-jags-code-0
-cd mcmc-jags-code-0
+hg clone http://hg.code.sf.net/p/mcmc-jags/code-0 JAGS_devel
+cd JAGS_devel
+export CFLAGS="-Os -arch x86_64 -framework Accelerate"
+export CXXFLAGS="-Os -arch x86_64 -framework Accelerate"
+export FFLAGS="-Os -arch x86_64 -framework Accelerate"
+export LDFLAGS="-arch x86_64"
 autoreconf -fi
+./configure
+make -j 8
+make check
 \end{verbatim}
 
-You should then be able to follow the environment setup, configure and
-install instructions above.
+You should then be able to follow the install instructions given in section \ref{section:osxinstall}.
+
+\subsubsection{Using ATLAS}
+
+Rather than using the versions of BLAS and LAPACK provided within Xcode, it
+is possible to use ATLAS which can be installed via MacPorts using:
+
+\begin{verbatim}
+sudo port install atlas
+\end{verbatim}
+
+This command will take some hours to complete.  The \texttt{-framework Accelerate} flag can
+then be omitted from the instructions given in section \ref{section:osxenvironment}.
+
+
+\subsubsection{A note on Apple compilers}
+
+Older versions of Xcode used the gcc compiler suite, but Apple abandoned
+the gcc project when GPL3 was introduced.  Current Apple compilers are
+based on LLVM, and are invoked as clang and clang++.  The same compilers
+are also invoked as gcc and gxx.
+
 
 \clearpage
 \section{Windows}
@@ -574,49 +619,61 @@ running windows, where it can be run from the Windows command prompt.
 
 You need to install the following packages
 \begin{itemize}
-\item The TDM-GCC compiler suite for Windows
+\item The Rtools compiler suite for Windows
 \item MSYS  
 \item NSIS, including the AccessControl plug-in  
 \end{itemize}
 
-We used the TDM-GCC compilers based on the MinGW-w64 project
-(\url{http://tdm-gcc.tdragon.net}).  This distribution was chosen
-because it allows us to build a version of JAGS that is statically
-linked against the gcc runtime library.  This, in turn, is necessary
-to have a functional rjags package on Windows.  We also tried 
-Rtools (\url{http://www.murdoch-sutherland.com/Rtools}). Although the
-resulting JAGS library is functional, it is not compatible with R:
-loading the rjags package causes R to crash on exit.
+\subsubsection{Rtools}
 
-TDM-GCC has a nice installer, available from Sourceforge (follow the
-links on the main TDM-GCC web site). Ensure that you download the
-MinGW-w64/sjlj version as this is capable of producing both 32-bit and
-64-bit binaries.
+Rtools is a set of compilers and utilities used for compiling R on
+Windows. Rtools can be downloaded from your nearest CRAN mirror
+(\url{https://cran.r-project.org/bin/windows/Rtools/}).  We only need
+the compilers, as we use the utilities provided by MSYS (See below).
+For this reason, we choose not to add Rtools to the Windows environment
+variable \code{PATH} when asked by the installer.
 
-Select a ``Recommended C/C++'' installation and customize it by
-selecting the Fortran compiler, which is not installed by
-default. After installation, to force the compiler to use static
-linking, delete any import libraries (files ending in \file{.dll.a}
-in the TDM-GCC tree.  
+The JAGS binaries for Windows 4.0.0 and above are built with Rtools
+3.3, which is based on gcc 4.6.3. We also successfully built JAGS with
+the TDM-GCC compilers (\url{http://tdm-gcc.tdragon.net}) based on gcc
+5.1.0. However, the resulting JAGS binary is not compatible with
+R. The rjags package can be successfully compiled and linked against
+JAGS built with TDM-GCC 5.1.0, and runs correctly on 64-bit R, but
+the package spontaneously crashes in 32-bit R.
 
-MSYS (the Minimal SYStem) is part of the MinGW project. It provides a
-bash shell for you to build Unix software. Download the MinGW
-installer from \url{http://www.mingw.org}. We used
-\file{mingw-get-inst-20120426.exe}.  Run the installer and select
-``MSYS Basic System''.  There is no need to install the ``MinGW
-Developer Toolkit'' if you are working with a release tarball of
-\JAGS.  It is not necessary to install any of the compilers that come
-with MinGW as we shall be using the TDM versions. To make MSYS use the
-TDM-compilers, edit the file \file{c:/mingw/msys/1.0/etc/fstab}
-to read
+\subsubsection{MSYS}
+
+MSYS (the Minimal SYStem) is part of the MinGW project (Minimal GNU
+for Windows). It provides a bash shell for you to build Unix
+software. Download the MinGW installer \file{mingw-get-setup.exe} from
+\url{http://www.mingw.org}.  Run the installer and select
+\code{msys-base} (``A Basic MSYS Installation (meta)'') for
+installation and then select \code{Apply Changes} from the
+\code{Installation} menu. There is no need to install the developer
+toolkit (\code{mingw-developer-toolkit}) if you are working with a
+release tarball of \JAGS.  You should not install any of the compilers
+that come with MinGW as we shall be using the Rtools versions.
+
+To make MSYS use the TDM compilers edit the file
+\file{c:/mingw/msys/1.0/etc/fstab} to read
 \begin{verbatim}
-c:\MinGW64\    /mingw
+c:\Rtools\gcc-4.6.3\bin    /mingw
 \end{verbatim}
+This adds the Rtools compilers to your PATH inside the MSYS shell.
 
 MSYS creates a home directory for you in
-\file{c:/mingw/msys/1.0/home/username}, where \code{username} is
-your user name under Windows. You will need to copy and paste the
-source files for LAPACK and JAGS into this directory.
+\file{c:/mingw/msys/1.0/home/username}, where \code{username} is your
+user name under Windows. You will need to copy and paste the source
+files for LAPACK and JAGS into this directory.
+
+At the time of writing, the MinGW installer does not create a shortcut
+for MSYS on either the desktop or the start menu, even when these
+options are requested. Create your own shortcut to
+\file{c:/MingGW/msys/1.0/msys.bat} which launches the MSYS shell. For
+completeness, you may wish to use the icon
+\file{c:/MinGW/msys/1.0/msys.ico} for your shortcut.
+
+\subsubsection{NSIS}
 
 The Nullsoft Scriptable Install System
 (\url{http://nsis.sourceforge.net}) allows you to create a
@@ -627,11 +684,11 @@ the AccessControl plug-in for NSIS, which is available from
 is distributed as a zip file which is unpacked into the installation
 directory of NSIS.
 
-\subsubsection{Building LAPACK}
+\subsection{Building LAPACK}
 
 Download the LAPACK source file from
 \url{http://www.netlib.org/lapack} to your MSYS home directory. We
-used version 3.4.1.
+used version 3.5.0.
 
 You need to build LAPACK twice: once for 32-bit \JAGS\ and once for
 64-bit \JAGS. The instructions below are for 32-bit \JAGS. To build
@@ -641,11 +698,10 @@ that you cannot cross-build 64-bit BLAS and LAPACK on a 32-bit Windows
 system. This is because the build process must run some 64-bit test
 programs.
 
-Launch MSYS, labelled as ``MinGW shell'' on the Windows Start Menu,
-and unpack the tarball.
+Launch MSYS (\file{c:/MingW/msys/1.0/msys.bat}) and unpack the tarball.
 \begin{verbatim}
-tar xfvz lapack-3.4.1.tgz
-cd lapack-3.4.1
+tar xfvz lapack-3.5.0.tgz
+cd lapack-3.5.0
 \end{verbatim}
 Copy the file \file{INSTALL/make.inc.gfortran} to \file{make.inc} in
 the top level source directory.  Then edit \file{make.inc} replacing
@@ -659,10 +715,9 @@ Type
 make blaslib
 make lapacklib 
 \end{verbatim}
-The compilation process is slow. Eventually, it will create two static
-libraries \file{librefblas.a} and \file{liblapack.a}. These are
-insufficient for building \JAGS: you need to create dynamic link
-library (DLL) for each one.
+This will create two static libraries \file{librefblas.a} and
+\file{liblapack.a}. These are insufficient for building \JAGS: you
+need to create dynamic link library (DLL) for each one.
 
 First create a definition file \file{libblas.def} that exports all the
 symbols from the BLAS library
@@ -673,7 +728,7 @@ Then link this with the static library to create a DLL
 (\file{libblas.dll}) and an import library (\file{libblas.dll.a})
 \begin{verbatim}
 gcc -m32 -shared -o libblas.dll -Wl,--out-implib=libblas.dll.a \
-libblas.def librefblas.a -lgfortran
+libblas.def librefblas.a -lgfortran 
 \end{verbatim}
  
 Repeat the same steps for the LAPACK library, creating an import library
@@ -682,25 +737,27 @@ Repeat the same steps for the LAPACK library, creating an import library
 dlltool -z liblapack.def --export-all-symbols liblapack.a
 
 gcc -m32 -shared -o liblapack.dll -Wl,--out-implib=liblapack.dll.a \
-liblapack.def liblapack.a  -L./ -lblas -lgfortran
+liblapack.def liblapack.a  -L./ -lblas -lgfortran 
 \end{verbatim}
 
 \subsection{Compiling \JAGS}
 
 Unpack the JAGS source
 \begin{verbatim}
-tar xfvz JAGS-3.3.0.tar.gz
-cd JAGS-3.3.0
+tar xfvz JAGS-4.0.0.tar.gz
+cd JAGS-4.0.0
 \end{verbatim}
 and configure JAGS for a 32-bit build
 \begin{verbatim}
-CC="gcc -m32" CXX="g++ -m32" F77="gfortran -m32" \
-./configure LDFLAGS="-L/path/to/import/libs/ -Wl,--enable-auto-import" 
+CC="gcc -m32" CXX="g++ -m32 -std=c++98" F77="gfortran -m32" \
+LDFLAGS="-L/path/to/import/libs/ -Wl,--enable-auto-import" \
+./configure
 \end{verbatim}
 where \file{/path/to/import/libs} is a directory that contains the
 32-bit import libraries (\file{libblas.dll.a} and
 \file{liblapack.dll.a}).  This must be an {\em absolute} path name,
 and not relative to the JAGS build directory.
+
 
 After the configure step, type
 \begin{verbatim}
@@ -720,7 +777,8 @@ make clean
 reconfigure JAGS for a 64-bit build:
 \begin{verbatim}
 CC="gcc -m64" CXX="g++ -m64" F77="gfortran -m64" \
-./configure LDFLAGS="-L/path/to/import/libs/ -Wl,--enable-auto-import" 
+LDFLAGS="-L/path/to/import/libs/ -Wl,--enable-auto-import" \
+./configure
 \end{verbatim}
 Then type
 \begin{verbatim}
@@ -740,7 +798,7 @@ Make sure that the file \file{makensis.exe}, provided by
 NSIS, is in your PATH. For a typical installation of NSIS, on 64-bit
 windows:
 \begin{verbatim}
-PATH=$PATH:/c/Program\ files\ \(x86\)/NSIS
+PATH=$PATH:/c/Program\ Files\ \(x86\)/NSIS
 \end{verbatim}
 Then type
 \begin{verbatim}
@@ -749,5 +807,138 @@ make installer
 After the build process finishes, the self extracting archive will be
 in the subdirectory \file{win}.
 
-\end{document}
+\subsection{Running the unit tests}
 
+In order to run the unit tests on Windows you must first install the
+cppunit library from source. Download the file \file{cppunit-1.12.1.tar.gz}
+from Sourceforge (\url{http://sourceforge.net/projects/cppunit/files/cppunit/1.12.1/}) and
+unpack it:
+\begin{verbatim}
+tar xfvz cppunit-1.12.1.tar.gz
+cd cppunit-1.12.1
+\end{verbatim}
+Then compile and install as follows:
+\begin{verbatim}
+CXX="g++ -m32" ./configure --prefix=/opt32 --disable-shared
+make
+make install
+\end{verbatim}
+The configure option \verb+--prefix=/opt32+ installs the 32-bit
+library into \file{/opt32} instead of the default location
+{/usr/local}. Using this option allows you to do a parallel
+installation of the 64-bit version of the library, by rebuilding with
+configure options \verb|CXX=g++ -m64| and \verb+--prefix=/opt64+. The two
+installations will not interfere with each other.
+
+The configure option \verb+--disable-shared+ prevents the creation of
+the DLL \file{libccpunit.dll} and builds only the static library
+\file{libcppunit.a}. Without this option, the unit tests will fail.
+One of the major limitations of static linking to the C++ runtime is
+that you cannot throw exceptions across a DLL boundary.  Linking the
+test programs against \file{libcppunit.dll} will result in uncaught
+exceptions and apparent failures for some of the tests, so it must be
+disabled.\footnote{One of the attractions of the TDM-GCC compilers is
+  that they do allow exceptions across DLL boundaries with static
+  linking. However, we are not currently using TDM-GCC to build the
+  JAGS binaries}.
+
+To run the unit tests, add the option
+\verb+--with-cppunit-prefix=/optXX+ when configuring JAGS where
+\code{XX} is 32 or 64. Then run \code{make check} after \code{make
+  winXX-install}.
+
+\subsection{Running the examples}
+
+The BUGS classic examples (file \file{classic-bugs.tar.gz} from the JAGS
+Sourceforge site) can be run from the Windows command prompt using
+the \command{make} command provided by Rtools. This requires adding Rtools
+to the Windows search path if it is not currently there.
+\begin{verbatim}
+set PATH=c:\Rtools\bin;%PATH%
+\end{verbatim}
+You must have R installed, along with the packages \code{rjags} and
+\code{coda}, both of which are available from CRAN
+(\url{cran.r-project.org}).
+
+It is necessary to add R to the search path and to set the variable
+\verb+R_LIBS+. Note that here we are using the 64-bit version of R.
+You may use the 32-bit version by substituting \code{i386} for
+\code{x64}.
+\begin{verbatim}
+set PATH=c:\Program Files\R\R-3.2.2\bin\x64;%PATH%
+set R_LIBS=c:\Users\username\Documents\R\win-library\3.2
+\end{verbatim}
+where \file{username} is your Windows user name. Then
+\begin{verbatim}
+tar xfvz classic-bugs.tar.gz
+cd classic-bugs
+cd vol1
+make Rcheck
+\end{verbatim}
+will check all examples in volume 1 using the \code{rjags} package. Repeat
+for \file{vol2} to complete the checks.
+
+You can also run checks using the command line interface of JAGS. This
+requires adding JAGS to the search path and overriding the default name
+of the JAGS executable.
+\begin{verbatim}
+set PATH=c:\Program Files\JAGS\JAGS-4.0.0\bin\x64;%PATH%
+set JAGS=jags.bat
+\end{verbatim}
+Then
+\begin{verbatim}
+make check
+\end{verbatim}
+in directory \file{vol1} or \file{vol2} will run the checks using the
+command line interface.
+
+\subsection{Using TDM-GCC compilers}
+
+This section documents the use of TDM-GCC compilers to build JAGS.
+TDM-GCC was used to build Windows binaries for JAGS 3.x.y, but has
+been dropped in favour of Rtools for the 4.x.y release series. One
+reason for this is that the 32-bit version of JAGS built with TDM-GCC
+5.1.0 causes the rjags package to spontaneously crash. The 64-bit
+version runs correctly.
+
+TDM-GCC has a nice installer, available from Sourceforge (follow the
+links on the main TDM-GCC web site
+(\url{http://tdm-gcc.tdragon.net}). Ensure that you download the TDM64
+MinGW-w64 edition as this is capable of producing both 32-bit and
+64-bit binaries. We tested JAGS with \file{tdm64-gcc-5.1.0-2.exe}
+based on gcc 5.1.0.
+
+Select a ``Recommended C/C++'' installation and customize it by
+selecting the Fortran compiler, which is not installed by default. The
+installer gives you the option of adding TDM-GCC \file{bin} folder to
+the windows PATH variable. We choose not to do this, but added the
+\file{bin} to the PATH within the MSYS shell by editing
+\file{c:/mingw/msys/1.0/etc/fstab} to read
+\begin{verbatim}
+c:\TDM-GCC-64    /mingw
+\end{verbatim}
+After installation of TDM-GCC, to force the compiler to use static
+linking, delete any import libraries (files ending in \file{.dll.a} in
+the TDM-GCC tree. If you do not do this then you will need to
+distribute runtime DLLs from TDM-GCC with JAGS. You can easily do this
+by copying the DLLs to \file{runtime32} and \file{runtime64} before
+building the installer, as described above. Nevertheless, it is often
+more convenient to use static linking.
+
+Installation proceeds in the same way as for the Rtools build but with
+two differences.  Firstly, when building the DLLs for blas and lapack,
+you need to add the linker flag \verb+-lquadmath+ after
+\verb+-lgfortran+. Secondly, when configuring JAGS you should set the
+environment variable
+\begin{verbatim}
+CPPFLAGS=-D_GLIBCXX_USE_CXX11_ABI=0 
+\end{verbatim}
+This is necessary because gcc 5.1.0 introduced a new application
+binary interface (ABI) for the C++ standard library (See
+\url{https://gcc.gnu.org/onlinedocs/libstdc++/manual/using_dual_abi.html}. The
+old ABI is still supported and is used if you set the above flag. If
+you want to link JAGS with any software compiled with an earlier
+version of gcc then you need to use the old ABI. Failure to do so will
+result in error messages about undefined symbols from the linker.
+
+\end{document}

@@ -1,20 +1,37 @@
 # Rules for the test code (use `make check` to execute)
-TESTS = modules
+TESTS = base bugs glm
 check_PROGRAMS = $(TESTS)
 
-modules_SOURCES = modules.cc 
-modules_CXXFLAGS = $(CPPUNIT_CFLAGS)
-modules_LDFLAGS = $(CPPUNIT_LIBS) -ldl
+## Base module
 
-modules_LDADD = $(LIBLTDL) ${top_builddir}/src/lib/libjags.la \
-	-dlpreopen ${top_builddir}/src/modules/base/basemod.la \
-	-dlpreopen ${top_builddir}/src/modules/bugs/bugs.la \
-	-dlpreopen ${top_builddir}/src/modules/glm/glm.la \
-	$(top_builddir)/src/modules/base/libbasetest.la \
-	$(top_builddir)/src/modules/bugs/libbugstest.la \
-	$(top_builddir)/src/modules/glm/libglmtest.la
+base_SOURCES = base.cc 
+base_CXXFLAGS = $(CPPUNIT_CFLAGS)
+base_LDFLAGS = $(CPPUNIT_LIBS)
 
-modules_CPPFLAGS = -I$(top_srcdir)/src/include	\
-	-I$(top_srcdir)/src/modules \
-	$(LTDLINCL)
+base_LDADD = $(top_builddir)/src/modules/base/libbasetest.la
+
+base_CPPFLAGS = -I$(top_srcdir)/src/include	\
+	-I$(top_srcdir)/src/modules
+
+## Bugs module
+
+bugs_SOURCES = bugs.cc 
+bugs_CXXFLAGS = $(CPPUNIT_CFLAGS)
+bugs_LDFLAGS = $(CPPUNIT_LIBS)
+
+bugs_LDADD = $(top_builddir)/src/modules/bugs/libbugstest.la
+
+bugs_CPPFLAGS = -I$(top_srcdir)/src/include	\
+	-I$(top_srcdir)/src/modules
+
+## Glm module
+
+glm_SOURCES = glm.cc 
+glm_CXXFLAGS = $(CPPUNIT_CFLAGS)
+glm_LDFLAGS = $(CPPUNIT_LIBS)
+
+glm_LDADD = $(top_builddir)/src/modules/glm/libglmtest.la
+
+glm_CPPFLAGS = -I$(top_srcdir)/src/include	\
+	-I$(top_srcdir)/src/modules
 

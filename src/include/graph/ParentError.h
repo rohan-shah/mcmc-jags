@@ -17,7 +17,7 @@ namespace jags {
 	unsigned int _chain;
     public:
 	ParentError(Node const *node, unsigned int chain);
-	void printMessage(std::ostream &out, SymTab const &symtab);
+	void printMessage(std::ostream &out, SymTab const &symtab) const;
     };
 
 } /* namespace jags */
