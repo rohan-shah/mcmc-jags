@@ -28,6 +28,11 @@ endif
 ### Test library 
 
 check_LTLIBRARIES = libtest.la
-libtest_la_SOURCES = testlib.cc 
-libtest_la_LIBADD = function/libfuntest.la
+libtest_la_SOURCES = testlib.cc
 libtest_la_CPPFLAGS = -I$(top_srcdir)/src/include
+libtest_la_LIBADD = function/libfuntest.la
+
+if WINDOWS
+libtest_la_LDFLAGS = -no-undefined
+endif
+

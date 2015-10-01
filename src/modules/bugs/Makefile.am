@@ -28,6 +28,9 @@ endif
 
 check_LTLIBRARIES = libbugstest.la
 libbugstest_la_SOURCES = testbugs.cc testbugs.h
+libbugstest_la_CPPFLAGS = -I$(top_srcdir)/src/include
+libbugstest_la_CXXFLAGS = $(CPPUNIT_CFLAGS)
+libbugstest_la_LDFLAGS = $(CPPUNIT_LDFLAGS)
 libbugstest_la_LIBADD = functions/libbugsfuntest.la		\
 	functions/libbugsfunc.la				\
 	distributions/libbugsdisttest.la			\
@@ -38,5 +41,9 @@ libbugstest_la_LIBADD = functions/libbugsfuntest.la		\
 	$(top_builddir)/src/lib/libjags.la 			\
 	$(top_builddir)/src/jrmath/libjrmath.la 		\
 	@LAPACK_LIBS@ @BLAS_LIBS@
-libbugstest_la_CPPFLAGS = -I$(top_srcdir)/src/include
-libbugstest_la_CXXFLAGS = $(CPPUNIT_CFLAGS)
+
+if WINDOWS
+libbugstest_la_LDFLAGS += -no-undefined
+else
+libbugstest_la_LIBADD += @FLIBS@
+endif

@@ -23,7 +23,7 @@
 
 \title{JAGS Version \release\ installation manual}
 \author{Martyn Plummer \and Bill Northcott \and Matt Denwood}
-\date{8 September 2015}
+\date{1 October 2015}
 \maketitle
 
 \JAGS\ is distributed in binary format for Microsoft Windows, Mac OS
@@ -806,6 +806,46 @@ make installer
 \end{verbatim}
 After the build process finishes, the self extracting archive will be
 in the subdirectory \file{win}.
+
+\subsection{Running the unit tests}
+
+In order to run the unit tests on Windows you must first install the
+cppunit library from source. Download the file \file{cppunit-1.12.1.tar.gz}
+from Sourceforge (\url{http://sourceforge.net/projects/cppunit/files/cppunit/1.12.1/}) and
+unpack it:
+\begin{verbatim}
+tar xfvz cppunit-1.12.1.tar.gz
+cd cppunit-1.12.1
+\end{verbatim}
+Then compile and install as follows:
+\begin{verbatim}
+CXX="g++ -m32" ./configure --prefix=/opt32 --disable-shared
+make
+make install
+\end{verbatim}
+The configure option \verb+--prefix=/opt32+ installs the 32-bit
+library into \file{/opt32} instead of the default location
+{/usr/local}. Using this option allows you to do a parallel
+installation of the 64-bit version of the library, by rebuilding with
+configure options \verb|CXX=g++ -m64| and \verb+--prefix=/opt64+. The two
+installations will not interfere with each other.
+
+The configure option \verb+--disable-shared+ prevents the creation of
+the DLL \file{libccpunit.dll} and builds only the static library
+\file{libcppunit.a}. Without this option, the unit tests will fail.
+One of the major limitations of static linking to the C++ runtime is
+that you cannot throw exceptions across a DLL boundary.  Linking the
+test programs against \file{libcppunit.dll} will result in uncaught
+exceptions and apparent failures for some of the tests, so it must be
+disabled.\footnote{One of the attractions of the TDM-GCC compilers is
+  that they do allow exceptions across DLL boundaries with static
+  linking. However, we are not currently using TDM-GCC to build the
+  JAGS binaries}.
+
+To run the unit tests, add the option
+\verb+--with-cppunit-prefix=/optXX+ when configuring JAGS where
+\code{XX} is 32 or 64. Then run \code{make check} after \code{make
+  winXX-install}.
 
 \subsection{Running the examples}
 

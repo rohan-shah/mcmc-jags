@@ -27,11 +27,16 @@ endif
 
 check_LTLIBRARIES = libglmtest.la
 libglmtest_la_SOURCES = testglm.cc testglm.h
+libglmtest_la_CPPFLAGS = -I$(top_srcdir)/src/include
+libglmtest_la_CXXFLAGS = $(CPPUNIT_CFLAGS)
+libglmtest_la_LDFLAGS = $(CPPUNIT_LIBS)
 libglmtest_la_LIBADD = samplers/libglmsamptest.la \
 	samplers/libglmsampler.la \
 	$(top_builddir)/src/lib/libtest.la \
 	$(top_builddir)/src/lib/libjags.la \
 	$(top_builddir)/src/jrmath/libjrmath.la
-libglmtest_la_CPPFLAGS = -I$(top_srcdir)/src/include
-libglmtest_la_CXXFLAGS = $(CPPUNIT_CFLAGS)
+
+if WINDOWS
+libglmtest_la_LDFLAGS += -no-undefined
+endif
 
