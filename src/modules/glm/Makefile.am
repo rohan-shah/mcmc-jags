@@ -17,10 +17,6 @@ glm_la_LIBADD = samplers/libglmsampler.la CSparse/csparse.la	\
 glm_la_LDFLAGS = -module -avoid-version
 if WINDOWS
 glm_la_LDFLAGS += -no-undefined
-else
-# Adding FLIBS here allows static linking, but on Windows we don't want to
-# do this as it will cause failure to build glm.dll using Rtools
-glm_la_LIBADD += @FLIBS@
 endif
 
 ### Test library 

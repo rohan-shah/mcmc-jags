@@ -1,3 +1,11 @@
+Changes in JAGS 4.0.1
+
+Internal changes in modules
+===========================
+* The FLIBS flag is not passed to modules that use LAPACK and BLAS.
+  This reverts a change in JAGS 4.0.0 that created an unwanted dependency
+  on libgfortran on Mac OS X.
+
 Changes in JAGS 4.0.0
 
 New features
