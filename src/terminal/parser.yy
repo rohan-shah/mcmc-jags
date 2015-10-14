@@ -1390,9 +1390,26 @@ static void print_unused_variables(std::map<std::string, jags::SArray> const &ta
 	model_vars.push_back(".RNG.name");
 	model_vars.push_back(".RNG.seed");
 	model_vars.push_back(".RNG.state");
-	std::sort(model_vars.begin(), model_vars.end());
     }
+	
+	// Make sure both vectors are sorted to avoid false positive WARNINGs:
+	std::sort(model_vars.begin(), model_vars.end());
+	std::sort(supplied_vars.begin(), supplied_vars.end());
+	
+	/*  Test code to check vectors:
+	if(data){
+		std::cout << "Variables in model:\n";
+		std::copy(model_vars.begin(), model_vars.end(),
+			  std::ostream_iterator<std::string>(std::cout, ", "));
+		std::cout << "\n";
 
+		std::cout << "Supplied vars:\n";
+		std::copy(supplied_vars.begin(), supplied_vars.end(),
+			  std::ostream_iterator<std::string>(std::cout, ", "));
+		std::cout << "\n";
+	}  
+	*/
+	
     std::set_difference(supplied_vars.begin(), supplied_vars.end(),
 			model_vars.begin(), model_vars.end(),
 			std::inserter(unused_vars, unused_vars.begin()));
