@@ -6,18 +6,24 @@
 
 #include <cmath>
 #include <algorithm>
+#include <list>
+#include <numeric>
 
 using std::vector;
+using std::list;
 using std::string;
 using std::max_element;
 using std::log;
 using std::min;
+using std::fill;
+using std::accumulate;
 
-static inline double const * PROB(vector<double const *> const &par) {
-    return par[0];
-}
 static inline double  SIZE(vector<double const *> const &par) {
     return *par[1];
+}
+
+static bool gt_doubleptr (double const *arg1, double const *arg2) {
+  return *arg1 > *arg2;
 }
 
 namespace jags {
@@ -52,7 +58,7 @@ namespace jags {
 	    }
 	    
 	    for (unsigned int i = 0; i < len[0]; ++i) {
-		if (PROB(par)[i] <= 0) {
+		if (par[0][i] <= 0) {
 		    //Zero probablity of being sampled
 		    return false;
 		}
@@ -72,22 +78,12 @@ namespace jags {
 			  vector<unsigned int> const &parlen,
 			  double const *lower, double const *upper) const
 	{
-	    double const *prob = PROB(par); // Vector of probability weights
-	    unsigned int T = length; // Length of prob vector
-	    
-	    double pmax = *max_element(prob, prob + T);
-	    double lpmax = log(pmax);
+	    /* Basic sanity checks */
 
-	    double loglik = 0;
-
-	    /* 
-	     * Numerator: contribution to log likelihood of all
-	     * sampled values
-	     */
-	    unsigned int K = 0; //Count number of sampled values
+	    unsigned int T = length; // Length of x
+	    unsigned int K = 0; // Count number of sampled values
 	    for (unsigned int t = 0; t < T; ++t) {
 		if (x[t] == 1) {
-		    loglik += log(prob[t]) - lpmax;
 		    ++K;
 		}
 		else if (x[t] != 0) {
@@ -95,23 +91,54 @@ namespace jags {
 		}
 	    }
 	    if (SIZE(par) != K) {
-		//Number of sampled values inconsistent with parameters
 		return JAGS_NEGINF;
 	    }
 
+	    /* If there are more sampled than unsampled values then
+	     * we invert the calculations
+	     */
+	    int sign = 1;
+	    int y = 1;
+	    if (K > T/2) {
+		sign = -1;
+		y = 0;
+		K = T - K;
+	    }
+
+	    /* Probability weights are normalized to have zero mean on the
+	     * log scale */
+	    double const *p = par[0]; // Vector of probability weights
+	    vector<double> logp(T); // Log of probability weights
+
+	    double lpmean = 0;
+	    for (unsigned int t = 0; t < T; ++t) {
+		logp[t] = sign * log(p[t]);
+		lpmean += logp[t];
+	    }
+	    lpmean /= T;
+
+	    /* Likelihood calculations */
+	    
+	    double loglik = 0;
+
+	    /* Numerator: contribution to log likelihood of all
+	     * sampled values */
+	    for (unsigned int t = 0; t < T; ++t) {
+		if (x[t] == y) {
+		    loglik += logp[t] - lpmean;
+		}
+	    }
+
 	    if (type == PDF_PRIOR) {
-		//No need to calculate denominator
-		return loglik;
+		return loglik; //No need to calculate denominator
 	    }
 	    
-	    /* 
-	     * Denominator: Recursively calculate contributions over
-	     * all possible case sets of size K.
-	     */
+	    /* Denominator: Recursively calculate contributions over
+	     * all possible case sets of size K */
 	    vector<double> f(K + 1, 0);
 	    f[0] = 1;
 	    for (unsigned t = 0; t < T; ++t) {
-		double Ct = prob[t]/pmax;
+		double Ct = exp(logp[t] - lpmean);
 		for (unsigned int k = min<unsigned int>(K, t+1); k > 0; --k) {
 		    f[k] += Ct * f[k-1];
 		}
@@ -123,12 +150,41 @@ namespace jags {
 
 
 	void DSample::randomSample(double *x, unsigned int length,
-				 vector<double const *> const &par,
-				 vector<unsigned int> const &len,
-				 double const *lower, double const *upper,
-				 RNG *rng) const
+				   vector<double const *> const &par,
+				   vector<unsigned int> const &parlen,
+				   double const *lower, double const *upper,
+				   RNG *rng) const
 	{
-	    //FIXME: Do something here
+	    int N = parlen[0];
+	    
+	    //Create a vector of pointers to the elements of the vector
+	    //of probability weights. Sort them in reverse order.
+	    list<double const *> pptrs(N);
+	    list<double const *>::iterator q;
+	    double const *y;
+	    for (q = pptrs.begin(), y = par[0]; q != pptrs.end(); ++q) {
+		*q = y++;
+	    }
+	    pptrs.sort(gt_doubleptr);
+
+	    //Initialize sample value by setting all elements to zero
+	    fill(x, x + N, 0);
+
+	    double sump = accumulate(par[0], par[0] + N, 0);
+	    unsigned int K = static_cast<unsigned int>(SIZE(par));
+	    for (unsigned int k = 0; k < K; ++k) {
+		double prand = sump * rng->uniform();    
+		for (q = pptrs.begin(); q != pptrs.end(); ++q) {
+		    prand -= **q;
+		    if (prand <= 0) {
+			unsigned int i = *q - par[0];
+			x[i] = 1;
+			sump -= **q;
+			pptrs.erase(q);
+			break;
+		    }
+		}
+	    }
 	}
 
 	void DSample::support(double *lower, double *upper, unsigned int length,
@@ -143,10 +199,35 @@ namespace jags {
 
 	void DSample::typicalValue(double *x, unsigned int length,
 				 vector<double const *> const &par,
-				 vector<unsigned int> const &len,
+				 vector<unsigned int> const &parlen,
 				 double const *lower, double const *upper) const
 	{
-	    //FIXME: Do something. Take most popular values
+	    int N = parlen[0];
+	    
+	    //Create a vector of pointers to the elements of the vector
+	    //of probability weights. Sort them in reverse order.
+	    list<double const *> pptrs(N);
+	    list<double const *>::iterator q;
+	    double const *y = par[0];
+	    for (q = pptrs.begin(); q != pptrs.end(); ++q) {
+		*q = y++;
+	    }
+	    pptrs.sort(gt_doubleptr);
+
+	    //Initialize sample value by setting all elements to zero
+	    fill(x, x + N, 0);
+
+	    //Set elements of x corresponding to the K largest probability
+	    //weights to 1.
+	    unsigned int K = static_cast<unsigned int>(SIZE(par));
+	    for (q = pptrs.begin(); q != pptrs.end(); ++q) {
+		unsigned int i = *q - par[0];
+		x[i] = 1;
+		K--;
+		if (K == 0) {
+		    break;
+		}
+	    }
 	}
 
 	bool DSample::isSupportFixed(vector<bool> const &fixmask) const
@@ -154,9 +235,9 @@ namespace jags {
 	    return true;
 	}
 	
-	unsigned int DSample::df(vector<unsigned int> const &len) const
+	unsigned int DSample::df(vector<unsigned int> const &parlen) const
 	{
-	    return len[0];
+	    return parlen[0];
 	} 
 
     }
