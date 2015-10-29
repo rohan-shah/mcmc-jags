@@ -25,6 +25,7 @@
 #include <distributions/DPar.h>
 #include <distributions/DPois.h>
 #include <distributions/DRound.h>
+#include <distributions/DSample.h>
 #include <distributions/DT.h>
 #include <distributions/DUnif.h>
 #include <distributions/DWeib.h>
@@ -130,6 +131,7 @@ namespace bugs {
 	insert(new DNorm);
 	insert(new DPar);
 	insert(new DPois);
+	insert(new DSample);
 	insert(new DT);
 	insert(new DUnif);
 	insert(new DWeib);
