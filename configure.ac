@@ -3,10 +3,28 @@ dnl Process this file with autoconf to produce a configure script.
 AC_PREREQ(2.63)
 
 AC_INIT([JAGS],[4.0.1],[martyn_plummer@users.sourceforge.net],[JAGS])
+
 JAGS_MAJOR=4
 JAGS_MINOR=0
+JAGS_PATCH=1
+
 AC_SUBST(JAGS_MAJOR)
+AC_DEFINE_UNQUOTED([JAGS_MAJOR], [$JAGS_MAJOR], [Major version of JAGS library])
+
 AC_SUBST(JAGS_MINOR)
+AC_DEFINE_UNQUOTED([JAGS_MINOR], [$JAGS_MINOR], [Minor version of JAGS library])
+
+AC_DEFINE_UNQUOTED([JAGS_PATCH], [$JAGS_PATCH], [Patch level of JAGS])
+
+define([hgversion],
+       esyscmd([sh -c 'hg parent --template "r{node|short} {date|shortdate}"']))
+AC_DEFINE(HG_VERSION, "hgversion", [Mercurial Version])
+
+define([hgyear], esyscmd([sh -c 'hg parent --template "{date(date, \"%Y\")}"']))
+AC_DEFINE(HG_YEAR, "hgyear", [Mercurial Year])
+
+define([hgmd], esyscmd([sh -c 'hg parent --template "{date(date, \"%m%d\")}"']))
+AC_DEFINE(HG_MONTH_DAY, "hgmd", [Mercurial Month and Dday])
 
 AC_CANONICAL_HOST
 AC_CONFIG_SRCDIR([src/lib/Console.cc])
