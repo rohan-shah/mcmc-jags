@@ -25,6 +25,7 @@
 #include "DPar.h"
 #include "DPois.h"
 #include "DRound.h"
+#include "DSample.h"
 #include "DSum.h"
 #include "DT.h"
 #include "DUnif.h"
@@ -81,6 +82,7 @@ void BugsDistTest::setUp() {
     _dpar = new jags::bugs::DPar();
     _dpois = new jags::bugs::DPois();
     _dround = new jags::bugs::DRound();
+    _dsample = new jags::bugs::DSample();
     _dsum = new jags::bugs::DSum();
     _dt = new jags::bugs::DT();
     _dunif = new jags::bugs::DUnif();
@@ -118,6 +120,7 @@ void BugsDistTest::tearDown() {
     delete _dpar;
     delete _dpois;
     delete _dround;
+    delete _dsample;
     delete _dsum;
     delete _dt;
     delete _dunif;
@@ -154,6 +157,7 @@ void BugsDistTest::npar()
     CPPUNIT_ASSERT_EQUAL(_dpar->npar(), 2U);
     CPPUNIT_ASSERT_EQUAL(_dpois->npar(), 1U);
     CPPUNIT_ASSERT_EQUAL(_dround->npar(), 2U);
+    CPPUNIT_ASSERT_EQUAL(_dsample->npar(), 2U);
     CPPUNIT_ASSERT_EQUAL(_dsum->npar(), 0U);
     CPPUNIT_ASSERT_EQUAL(_dt->npar(), 3U);
     CPPUNIT_ASSERT_EQUAL(_dunif->npar(), 2U);
@@ -189,6 +193,7 @@ void BugsDistTest::name()
     CPPUNIT_ASSERT_EQUAL(string("dpar"), _dpar->name());
     CPPUNIT_ASSERT_EQUAL(string("dpois"), _dpois->name());
     CPPUNIT_ASSERT_EQUAL(string("dround"), _dround->name());
+    CPPUNIT_ASSERT_EQUAL(string("dsample"), _dsample->name());
     CPPUNIT_ASSERT_EQUAL(string("dsum"), _dsum->name());
     CPPUNIT_ASSERT_EQUAL(string("dt"), _dt->name());
     CPPUNIT_ASSERT_EQUAL(string("dunif"), _dunif->name());
@@ -224,6 +229,7 @@ void BugsDistTest::alias()
     CPPUNIT_ASSERT_EQUAL(string(""), _dpar->alias());
     CPPUNIT_ASSERT_EQUAL(string(""), _dpois->alias());
     CPPUNIT_ASSERT_EQUAL(string(""), _dround->alias());
+    CPPUNIT_ASSERT_EQUAL(string(""), _dsample->alias());
     CPPUNIT_ASSERT_EQUAL(string(""), _dsum->alias());
     CPPUNIT_ASSERT_EQUAL(string(""), _dt->alias());
     CPPUNIT_ASSERT_EQUAL(string(""), _dunif->alias());
