@@ -18,7 +18,7 @@ public:
     /**
      * Determines whether the factory can produce a Sampler for the
      * given node, within the given graph. This function is called
-     * by SingletonFactory#makeSampler
+     * by SingletonFactory#makeSamplers
      */
     virtual bool canSample(StochasticNode *node, Graph const &graph) 
 	const = 0;

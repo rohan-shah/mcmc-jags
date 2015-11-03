@@ -88,6 +88,7 @@
 #include <function/PFunction.h>
 #include <function/QFunction.h>
 
+#include <samplers/CensoredFactory.h>
 #include <samplers/ConjugateFactory.h>
 #include <samplers/DSumFactory.h>
 #include <samplers/MNormalFactory.h>
@@ -199,6 +200,7 @@ namespace bugs {
 	//insert(new REFactory);
 	insert(new DSumFactory);
 	insert(new SumFactory);
+	insert(new CensoredFactory);
     }
 
     BUGSModule::~BUGSModule() {
