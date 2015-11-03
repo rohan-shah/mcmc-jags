@@ -25,7 +25,8 @@ namespace bugs {
     {
 	double value = 0;
 	for (unsigned int j = 0; j < args.size(); ++j) {
-	    value = accumulate(args[j], args[j] + lengths[j], value);
+	    double const *a = args[j];
+	    value = accumulate(a, a + lengths[j], value);
 	}
 	return value;
     }

@@ -3,11 +3,15 @@
 #include <rng/RNG.h>
 #include <util/dim.h>
 #include <util/nainf.h>
+#include <module/ModuleError.h>
 
 #include <cmath>
 #include <algorithm>
 #include <list>
 #include <numeric>
+
+//debuggin
+#include <iostream>
 
 using std::vector;
 using std::list;
@@ -38,7 +42,8 @@ namespace jags {
 	    return true; //Takes only 0, 1 values
 	}
 
-	bool DSample::checkParameterLength(vector<unsigned int> const &len) const
+	bool
+	DSample::checkParameterLength(vector<unsigned int> const &len) const
 	{
 	    //Check that PROB is non-empty and SIZE is a scalar
 	    return len[0] >= 1 && len[1] == 1;
@@ -74,11 +79,11 @@ namespace jags {
 
 	double
 	DSample::logDensity(double const *x, unsigned int length, PDFType type,
-			  vector<double const *> const &par,
-			  vector<unsigned int> const &parlen,
-			  double const *lower, double const *upper) const
+			    vector<double const *> const &par,
+			    vector<unsigned int> const &parlen,
+			    double const *lower, double const *upper) const
 	{
-	    /* Basic sanity checks */
+	    /* Basic sanity checks: is x consistent with parameters */
 
 	    unsigned int T = length; // Length of x
 	    unsigned int K = 0; // Count number of sampled values
@@ -87,10 +92,12 @@ namespace jags {
 		    ++K;
 		}
 		else if (x[t] != 0) {
+		    throwLogicError("Fafnir!");
 		    return JAGS_NEGINF;
 		}
 	    }
 	    if (SIZE(par) != K) {
+		throwLogicError("Yngvi is a louse!");
 		return JAGS_NEGINF;
 	    }
 
@@ -155,7 +162,8 @@ namespace jags {
 				   double const *lower, double const *upper,
 				   RNG *rng) const
 	{
-	    int N = parlen[0];
+	    double const * const probs = par[0];
+	    const int N = parlen[0];
 	    
 	    //Create a vector of pointers to the elements of the vector
 	    //of probability weights. Sort them in reverse order.
@@ -170,20 +178,22 @@ namespace jags {
 	    //Initialize sample value by setting all elements to zero
 	    fill(x, x + N, 0);
 
-	    double sump = accumulate(par[0], par[0] + N, 0);
+	    double sump = accumulate(probs, probs + N, 0.0);
+
 	    unsigned int K = static_cast<unsigned int>(SIZE(par));
 	    for (unsigned int k = 0; k < K; ++k) {
-		double prand = sump * rng->uniform();    
+		double prand = sump * rng->uniform();
 		for (q = pptrs.begin(); q != pptrs.end(); ++q) {
 		    prand -= **q;
 		    if (prand <= 0) {
-			unsigned int i = *q - par[0];
+			unsigned int i = *q - probs;
 			x[i] = 1;
 			sump -= **q;
 			pptrs.erase(q);
 			break;
 		    }
 		}
+
 	    }
 	}
 
@@ -203,12 +213,13 @@ namespace jags {
 				 double const *lower, double const *upper) const
 	{
 	    int N = parlen[0];
+	    double const * const probs = par[0];
 	    
 	    //Create a vector of pointers to the elements of the vector
 	    //of probability weights. Sort them in reverse order.
 	    list<double const *> pptrs(N);
 	    list<double const *>::iterator q;
-	    double const *y = par[0];
+	    double const *y = probs;
 	    for (q = pptrs.begin(); q != pptrs.end(); ++q) {
 		*q = y++;
 	    }
@@ -221,7 +232,7 @@ namespace jags {
 	    //weights to 1.
 	    unsigned int K = static_cast<unsigned int>(SIZE(par));
 	    for (q = pptrs.begin(); q != pptrs.end(); ++q) {
-		unsigned int i = *q - par[0];
+		unsigned int i = *q - probs;
 		x[i] = 1;
 		K--;
 		if (K == 0) {
