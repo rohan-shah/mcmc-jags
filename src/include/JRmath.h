@@ -212,6 +212,7 @@
 #define dtukey		jags_dtukey
 #define dunif		jags_dunif
 #define dweibull	jags_dweibull
+#define dweibull2	jags_dweibull2
 #define dwilcox		jags_dwilcox
 #define fmax2		jags_fmax2
 #define fmin2		jags_fmin2
@@ -259,6 +260,7 @@
 #define punif		jags_punif
 #define pythag		jags_pythag
 #define pweibull	jags_pweibull
+#define pweibull2	jags_pweibull2
 #define pwilcox		jags_pwilcox
 #define qbeta		jags_qbeta
 #define qbinom		jags_qbinom
@@ -285,6 +287,7 @@
 #define qtukey		jags_qtukey
 #define qunif		jags_qunif
 #define qweibull	jags_qweibull
+#define qweibull2	jags_qweibull2
 #define qwilcox		jags_qwilcox
 #define rbeta		jags_rbeta
 #define rbinom		jags_rbinom
@@ -309,6 +312,7 @@
 #define rtukey		jags_rtukey
 #define runif		jags_runif
 #define rweibull	jags_rweibull
+#define rweibull2	jags_rweibull2
 #define rwilcox		jags_rwilcox
 #define sign		jags_sign
 #define tetragamma	jags_tetragamma
@@ -466,12 +470,19 @@ double	ppois(double, double, int, int);
 double	qpois(double, double, int, int);
 double	rpois(double, JRNG*);
 
-	/* Weibull Distribution */
+	/* Weibull Distribution with shape-scale parameterization */
 
 double	dweibull(double, double, double, int);
 double	pweibull(double, double, double, int, int);
 double	qweibull(double, double, double, int, int);
 double	rweibull(double, double, JRNG*);
+
+    	/* Weibull Distribution with shape-rate parameterization */
+
+double	dweibull2(double, double, double, int);
+double	pweibull2(double, double, double, int, int);
+double	qweibull2(double, double, double, int, int);
+double	rweibull2(double, double, JRNG*);
 
 	/* Logistic Distribution */
 
