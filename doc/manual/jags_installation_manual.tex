@@ -194,11 +194,19 @@ distribution. If your Linux distribution splits packages into ``user''
 and ``developer'' versions, then you must install the developer
 package ({\em e.g.}  \texttt{blas-devel} and \texttt{lapack-devel}).
 
+On {\bf Red Hat Enterprise Linux (RHEL)} you need to activate an
+optional repository in order to have access to BLAS and LAPACK.  The
+repository is called is called \texttt{rhel-<v>-<type>-optional-rpms},
+where \texttt{<v>} is the RHEL release version and \texttt{<type>} is
+the type of installation (server or workstation). Find the
+corresponding entry in the file \file{/etc/yum.repos.d/redhat.repo}
+and change the line \texttt{enabled = 0} to \texttt{enabled = 1}.
+
 {\bf Suse Linux Enterprise Server (SLES)} does not include BLAS and
 LAPACK in the main distribution. They are included in the SLES SDK, on
-a set of CD/DVD images which can be downloaded from the Novell web
-site.  See \url{http://developer.novell.com/wiki/index.php/SLES_SDK}
-for more information.
+a set of CD/DVD images which can be downloaded from
+\url{https://download.suse.com/index.jsp} (subscription and login
+required).
 
 \subsubsection{ATLAS}
 
