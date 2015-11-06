@@ -10,24 +10,26 @@
 #include <list>
 #include <numeric>
 
-//debuggin
-#include <iostream>
-
 using std::vector;
 using std::list;
-using std::string;
-using std::max_element;
 using std::log;
 using std::min;
 using std::fill;
 using std::accumulate;
+using std::sort;
 
 static inline double  SIZE(vector<double const *> const &par) {
     return *par[1];
 }
 
-static bool gt_doubleptr (double const *arg1, double const *arg2) {
+/* Utility functions used to sort probabilities in descending order */
+
+static inline bool gt_doubleptr (double const *arg1, double const *arg2) {
   return *arg1 > *arg2;
+}
+
+static inline bool gt_double (double arg1, double arg2) {
+  return arg1 > arg2;
 }
 
 namespace jags {
@@ -92,17 +94,16 @@ namespace jags {
 		    ++K;
 		}
 		else if (x[t] != 0) {
-		    throwLogicError("Fafnir!");
 		    return JAGS_NEGINF;
 		}
 	    }
 	    if (SIZE(par) != K) {
-		throwLogicError("Yngvi is a louse!");
 		return JAGS_NEGINF;
 	    }
 
 	    /* If there are more sampled than unsampled values then
-	     * we invert the calculations
+	     * we turn the calculations around: counting unsampled values
+	     * and inverting the probability weights.
 	     */
 	    int sign = 1;
 	    int y = 1;
@@ -112,17 +113,18 @@ namespace jags {
 		K = T - K;
 	    }
 
-	    /* Probability weights are normalized to have zero mean on the
+	    /* Probability weights are normalized to have maximum zero on the
 	     * log scale */
 	    double const *p = par[0]; // Vector of probability weights
-	    vector<double> logp(T); // Log of probability weights
+	    vector<double> logp(T); // Log probability weights
 
-	    double lpmean = 0;
+	    double lpmax = JAGS_NEGINF;
 	    for (unsigned int t = 0; t < T; ++t) {
 		logp[t] = sign * log(p[t]);
-		lpmean += logp[t];
+		if (logp[t] > lpmax) {
+		    lpmax = logp[t];
+		}
 	    }
-	    lpmean /= T;
 
 	    /* Likelihood calculations */
 	    
@@ -132,25 +134,32 @@ namespace jags {
 	     * sampled values */
 	    for (unsigned int t = 0; t < T; ++t) {
 		if (x[t] == y) {
-		    loglik += logp[t] - lpmean;
+		    loglik += logp[t] - lpmax;
 		}
 	    }
 
-	    if (type == PDF_PRIOR) {
-		return loglik; //No need to calculate denominator
-	    }
+	    if (type != PDF_PRIOR) {
 	    
-	    /* Denominator: Recursively calculate contributions over
-	     * all possible case sets of size K */
-	    vector<double> f(K + 1, 0);
-	    f[0] = 1;
-	    for (unsigned t = 0; t < T; ++t) {
-		double Ct = exp(logp[t] - lpmean);
-		for (unsigned int k = min<unsigned int>(K, t+1); k > 0; --k) {
-		    f[k] += Ct * f[k-1];
+		/* Denominator: Recursively calculate contributions over
+		 * all possible case sets of size K */
+		
+		/* 
+		   For numerical stability, sort elements of logp in
+		   descending order. This ensures that we are adding
+		   increasingly smaller terms to f[k] for k in 1:(K+1)
+		*/
+		sort(logp.begin(), logp.end(), gt_double);
+		vector<double> f(K + 1, 0);
+		f[0] = 1;
+		for (unsigned int t = 0; t < T; ++t) {
+		    double Ct = exp(logp[t] - lpmax);
+		    for (unsigned int k = min<unsigned int>(K, t+1); k > 0; --k)
+		    {
+			f[k] += Ct * f[k-1];
+		    }
 		}
+		loglik -= log(f[K]);
 	    }
-	    loglik -= log(f[K]);
 
 	    return loglik;
 	}
