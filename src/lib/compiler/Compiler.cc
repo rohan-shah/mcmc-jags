@@ -97,6 +97,11 @@ Node * Compiler::constFromTable(ParseTree const *p)
 	throw logic_error("Can only call constFromTable inside index expression");
     }
 
+    if (_countertab.getCounter(p->name())) {
+	// DO NOT get value from the data table if there is a counter
+	// that shares the same name.
+	return 0;
+    }
     map<string,SArray>::const_iterator i = _data_table.find(p->name());
     if (i == _data_table.end()) {
 	return 0;
