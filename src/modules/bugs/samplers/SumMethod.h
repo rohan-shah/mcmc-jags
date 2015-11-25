@@ -24,6 +24,8 @@ namespace jags {
 	    bool _discrete;
 	    std::vector<double> _x;
 	    unsigned int _i, _j;
+	    StochasticNode *_sumchild;
+	    bool _fast;
 	    double _sumdiff;
 	    unsigned int _iter;
 	    double _width;
@@ -42,7 +44,7 @@ namespace jags {
 	    bool isAdaptive() const;
 	    void adaptOff();
 	    bool checkAdaptation() const;
-	    static StochasticNode const *
+	    static StochasticNode *
 		isCandidate(StochasticNode *snode, Graph const &graph);
 	    static bool canSample(std::vector<StochasticNode *> const &nodes, 
 				  Graph const &graph);
