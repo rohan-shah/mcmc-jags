@@ -6,6 +6,7 @@
 #include <graph/Graph.h>
 #include <sampler/Linear.h>
 #include <util/nainf.h>
+#include <graph/NodeError.h>
 
 #include "SumMethod.h"
 #include <cmath>
@@ -63,6 +64,7 @@ namespace jags {
 		    sumchild = schildren[i];
 		}
 	    }
+	    if (!sumchild) return 0;
 	    
 	    /* Deterministic descendants must be an additive function
 	     * of snode
@@ -94,8 +96,6 @@ namespace jags {
 	bool SumMethod::canSample(vector<StochasticNode*> const &snodes,
 				  Graph const &graph)
 	{
-	    if (snodes.size() < 2) return false;
-
 	    //Are individual nodes candidates?
 	    Node *sumchild = isCandidate(snodes[0], graph);
 	    if (sumchild == 0) return false;
@@ -105,7 +105,7 @@ namespace jags {
 
 	    //Check consistency of discreteness
 	    bool discrete = sumchild->isDiscreteValued();
-	    for (unsigned int i = 0; i < snodes.size(); ++i) {
+	    for (unsigned int i = 1; i < snodes.size(); ++i) {
 		if (snodes[i]->isDiscreteValued() != discrete) return false;
 	    }
 
@@ -187,14 +187,12 @@ namespace jags {
 		if (_sumchild->logDensity(chain, PDF_LIKELIHOOD) != 0) {
 		    throw logic_error("SumMethod failed to fix initial values");
 		}
-		/*
 		if (jags_finite(gv->logFullConditional(_chain))) {
 		    _x = xnew; //Preserve changes
 		}
 		else {
-		    gv->setValue(_x, chain); //Revert changes
+		    throw NodeError(_sumchild, "SumMethod cannot fix the stochastic parents of this node to satisfy the sum constraint.\nYou must supply initial values for the parents");
 		}
-		*/
 	    }
 
 	    //Check validity of initial values
@@ -301,6 +299,17 @@ namespace jags {
 	void SumMethod::update(RNG *rng)
 	{
 	    unsigned int len = _gv->length();
+
+	    if (len == 1) {
+		//Value of single sampled node is determined by sum
+		//constraint so it can never move. But we still check
+		//that the sum constraint is satisfied.
+		if (_sumchild->logDensity(_chain, PDF_LIKELIHOOD) != 0) {
+		    throw logic_error("Failure to preserve sum in SumMethod");
+		}
+		return;
+	    }
+	    
 	    for(_i = 0; _i < len; ++_i) {
 		_j = static_cast<unsigned int>(rng->uniform() * (len-1));
 		if (_j >= _i) _j++;

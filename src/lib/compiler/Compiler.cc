@@ -252,6 +252,13 @@ Range Compiler::getRange(ParseTree const *p,
       throw logic_error("Malformed parse tree in index expression");
     }
   }
+
+  if (!isNULL(default_range)) {
+      // If a default range is given, the subset cannot be outside of it
+      if (!default_range.contains(Range(scope))) {
+	  CompileError(p, "Index out of range taking subset of ", name);
+      }
+  }
   
   return Range(scope);
 }

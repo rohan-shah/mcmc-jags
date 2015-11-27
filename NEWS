@@ -1,4 +1,4 @@
-Changes in JAGS 4.0.1 patched
+Changes in JAGS 4.1.0
 
 Bug fixes
 =========
@@ -7,7 +7,11 @@ Bug fixes
 * Using the same name for a counter as an integer vector supplied with
   the data could lead to a "dimension mismatch" error when compiling
   the model.
-
+* The compiler did not check that a subset expression was inside the
+  range of a node array leading to a logic error. This is now checked
+  in the Compiler::getRange function and a more informative
+  compilation error message is generated.
+  
 New features
 ============
 * A new distribution "dsample" in the bugs module represents sampling
@@ -31,6 +35,10 @@ Internal changes in modules
   - Interval censored continuous variables can be sampled by the Censored
   method. Samplers are created by CensoredFactory.
   - New distribution DSample ("dsample") for sampling with replacement.
+  - The bugs::Sum sampling method (SumMethod) now works when there are
+  likelihood terms in addition to the sum constraint provided by the
+  SumDist distribution. It can also handles the case when a SumDist node
+  has only a single stochastic parent.
 
 
 Changes in JAGS 4.0.1
