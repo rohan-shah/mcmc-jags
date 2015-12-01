@@ -11,6 +11,8 @@ Bug fixes
   range of a node array leading to a logic error. This is now checked
   in the Compiler::getRange function and a more informative
   compilation error message is generated.
+* Setting up a large number of non-informative nodes to be monitored
+  is now much faster.
   
 New features
 ============
