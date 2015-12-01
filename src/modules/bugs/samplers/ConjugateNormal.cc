@@ -145,7 +145,7 @@ void ConjugateNormal::update(unsigned int chain, RNG *rng) const
 	B = priorprec; //Sum of weights
     }
     else if (_target_dist == EXP) {
-	A = *snode->parents()[0]->value(chain) - xold;
+	A = -snode->parents()[0]->value(chain)[0];
 	B = 0;
     }
     else {

@@ -13,6 +13,8 @@ Bug fixes
   compilation error message is generated.
 * Setting up a large number of non-informative nodes to be monitored
   is now much faster.
+* The bugs::ConjugateNormal sample method did not work correctly with
+  an exponential prior distribution.
   
 New features
 ============
