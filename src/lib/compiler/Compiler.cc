@@ -31,6 +31,7 @@
 #include <string>
 #include <set>
 #include <sstream>
+#include <map>
 
 using std::string;
 using std::vector;
@@ -73,6 +74,163 @@ static void CompileError(ParseTree const *p, string const &msg1,
     }
     throw runtime_error(msg);
 }
+
+    /*
+     * By analysing the ParseTree containing the relations, we can
+     * find variables that appear on the right hand side of a relation
+     * but which are never defined. This is such a fundamental error
+     * that it is worth doing this before trying to build the Model.
+     */
+    
+    static void getRHSNames(ParseTree const *t,
+			    map<string, int> &rhs,
+			    vector<string> const &cntrs)
+    {
+	//Get variable names that appear on the right hand side of a
+	//relation excluding active counters, and add them to the map
+	//rhs, which also records the line number.
+
+	//Safety check: truncation expressions can have NULL pointers
+	if (t == 0) return;
+	
+	if (t->treeClass() == P_VAR) {
+	    if (find(cntrs.begin(), cntrs.end(), t->name()) == cntrs.end()) {
+		//Not an active counter
+		if (rhs.count(t->name()) == 0) {
+		    //Not already used
+		    rhs[t->name()] = t->line();
+		}
+	    }
+	}
+	for (vector<ParseTree*>::const_iterator p = t->parameters().begin();
+	     p != t->parameters().end(); ++p)
+	{
+	    //Continue recursive search
+	    getRHSNames(*p, rhs, cntrs);
+	}
+    }
+    
+    static void classifyVarNames(ParseTree const *rels,
+				 set<string> &lhs,
+				 map<string, int> &rhs,
+				 vector<string> &counters)
+    {
+	//Get variable names that appear on the left hand side and
+	//the right hand side of any relation. We also track the names
+	//of the active counters.
+	
+	for (vector<ParseTree*>::const_iterator p = rels->parameters().begin();
+	     p != rels->parameters().end(); ++p)
+	{
+	    vector<ParseTree *> const &par = (*p)->parameters();
+
+	    switch ((*p)->treeClass()) {
+	    case P_FOR:
+		getRHSNames(par[0]->parameters()[0], rhs, counters);
+		counters.push_back(par[0]->name());
+		classifyVarNames(par[1], lhs, rhs, counters);
+		counters.pop_back();
+		break;
+	    case P_STOCHREL: case P_DETRMREL:
+		lhs.insert(par[0]->name());
+		for (unsigned int i = 1; i < par.size(); ++i) {
+		    getRHSNames(par[i], rhs, counters);
+		}
+		break;
+	    default:
+		throw logic_error("Malformed parse tree");
+		break;
+	    }
+	}
+    }
+
+    static void classifyVarNames(ParseTree const *relations,
+				 set<string> &lhs,
+				 map<string, int> &rhs)
+
+    {
+	//Non-recursive form of classifyVarNames. We also check that
+	//the counter stack is valid.
+	
+	vector<string> counters;
+	classifyVarNames(relations, lhs, rhs, counters);
+	if (!counters.empty()) {
+	    string msg = string("Invalid counter stack\n") +
+		"Ensure that all for loops are closed";
+	    throw runtime_error(msg);
+	}
+    }
+
+    static void checkVarNames(ParseTree const *relations,
+			      map<string, SArray> const &data_table)
+    {
+	//Check that all parameters appearing on RHS of a relation are
+	//defined, either in a declaration or in the data
+	
+	set<string> lhs;
+	map<string, int> rhs;
+	classifyVarNames(relations, lhs, rhs);
+
+	//Erase variable names that appear on the LHS of a relation
+	for(set<string>::const_iterator p = lhs.begin(); p != lhs.end(); ++p) {
+	    rhs.erase(*p);
+	}
+	//Erase variable names that appear in the data table
+	for(map<string, SArray>::const_iterator p = data_table.begin();
+	    p != data_table.end(); ++p)
+	{
+	    rhs.erase(p->first);
+	}
+	
+	if (!rhs.empty()) {
+	    ostringstream oss;
+	    oss << "Unknown variable(s):\n";
+	    for (map<string, int>::iterator p = rhs.begin(); p != rhs.end();
+		 ++p)
+	    {
+		oss << p->first << " (line " <<  p->second << ")\n";
+	    }
+	    oss << "Either supply values for these variables with the data\n"
+		<< "or define them on the left hand side of a relation.";
+	    throw runtime_error(oss.str());
+
+	}
+    }
+
+    static void checkDecNames(vector<ParseTree *> const &declarations,
+			      map<string, SArray> const &data_table)
+    {
+	//Check that dimension expressions in node declarations
+	//do not depend on undefined nodes
+	map<string, int> rhs;
+	for (unsigned int i = 0; i < declarations.size(); ++i) {
+	    vector<ParseTree *> const &pari = declarations[i]->parameters();
+	    for (unsigned int j = 0; j < pari.size(); ++j) {
+		getRHSNames(pari[j], rhs, vector<string>());
+	    }
+
+	    //Erase variable names that appear in the data table
+	    for(map<string, SArray>::const_iterator p = data_table.begin();
+		p != data_table.end(); ++p)
+	    {
+		rhs.erase(p->first);
+	    }
+	    
+	    if (!rhs.empty()) {
+		ostringstream oss;
+		oss << "Cannot calculate dimensions of " <<
+		    declarations[i]->name() <<
+		    " because the following variables are undefined:\n";
+		for (map<string, int>::iterator p = rhs.begin(); p != rhs.end();
+		     ++p)
+		{
+		    oss << p->first << " (line " <<  p->second << ")\n";
+		}
+		oss << "Supply values for these variables with the data.";
+		throw runtime_error(oss.str());
+	    }
+	}
+    }
 
     void Compiler::getLHSVars(ParseTree const *rel)
     {
@@ -1101,6 +1259,7 @@ void Compiler::writeRelations(ParseTree const *relations)
     }
 }
 
+
 void Compiler::traverseTree(ParseTree const *relations, CompilerMemFn fun,
 			    bool resetcounter)
 {
@@ -1161,8 +1320,11 @@ void Compiler::declareVariables(vector<ParseTree*> const &dec_list)
     if ((*p)->treeClass() != P_VAR) {
       throw invalid_argument("Expected variable expression");
     }
+    
   }
-  
+
+  checkDecNames(dec_list, _data_table);
+
   for (p = dec_list.begin() ; p != dec_list.end(); ++p) {
     ParseTree const *node_dec = *p;
     string const &name = node_dec->name();
@@ -1195,11 +1357,27 @@ void Compiler::declareVariables(vector<ParseTree*> const &dec_list)
 	}
 	_model.symtab().addVariable(name, dim);
     }
+
+    //Check consistency with data, if supplied
+    map<string, SArray>::const_iterator p = _data_table.find(name);
+    if (p != _data_table.end()) {
+	NodeArray const *array = _model.symtab().getVariable(name);
+	if (p->second.range() != array->range()) {
+	    string msg = string("Dimensions of ") + name + 
+		" in declaration (" + print(array->range()) + 
+		") conflict with dimensions in data (" + 
+		print(p->second.range()) + ")";
+	    CompileError(node_dec, msg);
+	}
+    }
   }
 }
 
 void Compiler::undeclaredVariables(ParseTree const *prelations)
 {
+    //Find parameters on RHS of relations that are never defined
+    checkVarNames(prelations, _data_table);
+    
     // Get undeclared variables from data table
     for (map<string, SArray>::const_iterator p = _data_table.begin();
 	 p != _data_table.end(); ++p) 
@@ -1208,18 +1386,14 @@ void Compiler::undeclaredVariables(ParseTree const *prelations)
 	NodeArray const *array = _model.symtab().getVariable(name);
 	if (array) {
 	    if (p->second.range() != array->range()) {
-		string msg = string("Dimensions of ") + name + 
-		    " in declaration (" + print(array->range()) + 
-		    ") conflict with dimensions in data (" + 
-		    print(p->second.range()) + ")";
-		throw runtime_error(msg);
+		//Should have been checked already in declareVariables
+		throw logic_error("Dimension mismatch");
 	    }
 	}
 	else {
 	    _model.symtab().addVariable(name, p->second.dim(false));
 	}
     }
-
   
     // Infer the dimension of remaining nodes from the relations
     traverseTree(prelations, &Compiler::getArrayDim);
