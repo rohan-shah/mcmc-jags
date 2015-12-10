@@ -618,6 +618,9 @@ Node *Compiler::getArraySubset(ParseTree const *p)
 	    else if (!_index_expression) {
 		//A stochastic subset
 		node = getMixtureNode(p, this);
+		if (node == 0 && _resolution_level == 1) {
+		    getMissingMixParams(p, _umap, this);
+		}
 	    } 
 	}
 	else if (_lhs_vars.find(p->name()) == _lhs_vars.end()) {

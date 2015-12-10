@@ -228,7 +228,7 @@ static void cloneNodes(vector<DeterministicNode*> const &nodes,
     }
 }
     */
-    
+
 static Node* 
 getMixtureNode1(NodeArray *array, vector<SSI> const &limits, Compiler *compiler)
 // Try to simplify the mixture node by enumerating all possible values
@@ -365,13 +365,20 @@ getMixtureNode2(NodeArray *array, vector<SSI> const &limits, Compiler *compiler)
     getSubsetRanges(ranges, limits, array->range());
 
     map<vector<int>, Node const *> subsets;
+    bool resolved = true;
     for (unsigned int i = 0; i < ranges.size(); ++i) {
-	Node *subset_node =   array->getSubset(ranges[i].second, 
-					       compiler->model());
-	if (!subset_node)
-	    return 0;
-	subsets[ranges[i].first] = subset_node;
+	Node *subset_node =
+	    array->getSubset(ranges[i].second, compiler->model());
+	if (subset_node) {
+	    subsets[ranges[i].first] = subset_node;
+	}
+	else {
+	    resolved = false;
+	}
+
     }
+    
+    if (!resolved) return 0;
 
     vector<Node const *> indices;
     for (unsigned int i = 0; i < limits.size(); ++i) {
@@ -465,6 +472,103 @@ Node * getMixtureNode(ParseTree const * var, Compiler *compiler)
 	return mnode;
     else
 	return getMixtureNode2(array, limits, compiler);
-    }
-    
+}
+
+
+    /**
+     * This is a diagnostic function that is called by the compiler
+     * in _resolution_level 2 when a mixture node cannot be resolved.
+     *
+     * FIXME: There is some serious cut-and-paste in this function.
+     * However, this is currently the simplest way to implement these
+     * checks without perturbing the API
+     */
+    void getMissingMixParams(ParseTree const * var, UMap &umap,
+			     Compiler *compiler)
+    {
+	NodeArray *array = compiler->model().symtab().getVariable(var->name());
+
+	vector<ParseTree*> const &range_list = var->parameters();
+	vector<SSI> limits;
+	unsigned int ndim = array->range().ndim(false);
+
+	bool resolved = true;
+	for (unsigned int i = 0; i < ndim; ++i) {
+	    ParseTree const *range_element = range_list[i];
+	    SSI ssi;
+	    ParseTree const *p0;
+	    switch(range_element->parameters().size()) {
+	    case 0:
+		// Index is empty, implying the whole range 
+		ssi.indices = array->range().scope()[i];
+		break;
+	    case 1:
+		p0 = range_element->parameters()[0];
+		if(!compiler->indexExpression(p0, ssi.indices)) {
+		    ssi.node = compiler->getParameter(p0);
+		    if (ssi.node == 0) {
+			resolved = false;
+		    }
+		}
+		break;
+	    default:
+		throw logic_error("Invalid range expression");
+	    }
+
+	    limits.push_back(ssi);
+	}
+
+	if (!resolved) return;
+
+	vector<pair<vector<int>, Range> > ranges;  
+	getSubsetRanges(ranges, limits, array->range());
+
+	for (unsigned int i = 0; i < ranges.size(); ++i) {
+	    Range const &subset_range = ranges[i].second;
+	    Node *node = array->getSubset(subset_range, compiler->model());
+	    if (node) continue;
+
+	    /* Make a note of all subsets that could not be resolved. */
+	    bool empty = true;
+	    for (RangeIterator r(subset_range); !r.atEnd(); r.nextLeft()) {
+		if (array->getSubset(SimpleRange(r,r), compiler->model())) {
+		    empty = false;
+		    break;
+		}
+	    }
+	    if (empty) {
+		//No elements found, so report the whole range
+		//as missing, e.g. x[1:5]
+		pair<string, Range> upair(var->name(), subset_range);
+		if (umap.find(upair) == umap.end()) {
+		    set<int> lines;
+		    lines.insert(var->line());
+		    umap[upair] = lines;
+		}
+		else {
+		    umap.find(upair)->second.insert(var->line());
+		}
+	    }
+	    else {
+		//Some elements found, so report only the missing
+		//elements, e.g. x[5]
+		for (RangeIterator r(subset_range); !r.atEnd(); r.nextLeft()) {
+		    SimpleRange sr(r,r);
+		    if (!array->getSubset(sr, compiler->model())) {
+			pair<string, Range> upair(var->name(), sr);
+			if (umap.find(upair) == umap.end()) {
+			    set<int> lines;
+			    lines.insert(var->line());
+			    umap[upair] = lines;
+			}
+			else {
+			    umap.find(upair)->second.insert(var->line());
+			}
+		    }
+		}
+	    }
+	}
+    }    
+
+
 } //namespace jags
