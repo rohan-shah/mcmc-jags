@@ -421,46 +421,57 @@ Range Compiler::getRange(ParseTree const *p,
   return Range(scope);
 }
 
-Range Compiler::VariableSubsetRange(ParseTree const *var)
+SimpleRange Compiler::VariableSubsetRange(ParseTree const *var)
 {
-  /*
-    Get the range of a subset expression of a variable on the LHS of a
-    relation.  This means that the subset expression must be constant.
-  */
-  if (var->treeClass() != P_VAR) {
-    throw logic_error("Expecting variable expression");
-  }  
+    /*
+      Get the range of a subset expression of a variable on the LHS of a
+      relation.  This means that the subset expression must be constant
+      and it must be a simple range.
+    */
+    if (var->treeClass() != P_VAR) {
+	throw logic_error("Expecting variable expression");
+    }  
 
-  string const &name = var->name();
-  if (_countertab.getCounter(name)) {
-      CompileError(var, "Counter cannot appear on LHS of relation:", name);
-  }
-  NodeArray *array = _model.symtab().getVariable(name);
-  if (array) {
-    // Declared node
-    vector<ParseTree*> const &range_list = var->parameters();
+    string const &name = var->name();
+    if (_countertab.getCounter(name)) {
+	CompileError(var, "Attempt to redefine counter defined in for loop:",
+		     name);
+    }
+    NodeArray *array = _model.symtab().getVariable(name);
+    SimpleRange default_range;
+    if (array) {
+	// Declared node
+	vector<ParseTree*> const &range_list = var->parameters();
     
-    if (range_list.empty()) {
-	//Missing range implies the whole node
-	return array->range();
+	if (range_list.empty()) {
+	    //Missing range implies the whole node
+	    return array->range();
+	}
+	if (range_list.size() != array->range().ndim(false)) {
+	    CompileError(var, "Dimension mismatch in subset expression of",
+			 name);
+	}
+	default_range = array->range();
     }
-    if (range_list.size() != array->range().ndim(false)) {
-	CompileError(var, "Dimension mismatch in subset expression of", name);
-    }
-    Range range = getRange(var, array->range());
+
+    Range range = getRange(var, default_range);
     if (isNULL(range)) {
-	CompileError(var, "Missing values in subset expression of", name);
+	CompileError(var, "Cannot evaluate subset expression for", name);
     }
-    return range;
-  }
-  else {
-      // Undeclared node
-      Range range = getRange(var, SimpleRange());
-      if (isNULL(range)) {
-	  CompileError(var, "Cannot evaluate subset expression for", name);
-      }
-      return range;
-  }
+    
+    //New in 4.1.0: Enforce use of simple ranges on the LHS of a relation
+    for (unsigned int i = 0; i < range.ndim(false); ++i) {
+	vector<int> const &indices = range.scope()[i];
+	for (unsigned int j = 1; j < indices.size(); ++j) {
+	    if (indices[j] != indices[j-1] + 1) {
+		string msg = string("Invalid subset expression for ") + name +
+		    "\nIndex expressions on the left hand side of a relation"
+		    + "\nmust define a contiguous, increasing set of indices";
+		CompileError(var, msg);
+	    }
+	}
+    }
+    return SimpleRange(range.first(), range.last());
 }
 
 Range Compiler::CounterRange(ParseTree const *var)
@@ -863,7 +874,7 @@ Node * Compiler::allocateStochastic(ParseTree const *stoch_relation)
 	vector<double> const &data_value = q->second.value();
 	SimpleRange const &data_range = q->second.range();
 
-	Range target_range = VariableSubsetRange(var);
+	SimpleRange target_range = VariableSubsetRange(var);
 	data_length = target_range.length();
 	this_data = new double[data_length];
 
@@ -983,7 +994,7 @@ Node * Compiler::allocateLogical(ParseTree const *rel)
     if (q != _data_table.end()) {
 	vector<double> const &data_value = q->second.value();
 	SimpleRange const &data_range = q->second.range();
-	Range target_range = VariableSubsetRange(var);
+	SimpleRange target_range = VariableSubsetRange(var);
 
 	for (RangeIterator p(target_range); !p.atEnd(); p.nextLeft()) {
 	    unsigned int j = data_range.leftOffset(p);
@@ -1036,7 +1047,7 @@ void Compiler::allocate(ParseTree const *rel)
 	}
 	else {
 	    // Check if a node is already inserted into this range
-	    Range range = VariableSubsetRange(var);
+	    SimpleRange range = VariableSubsetRange(var);
 	    if (array->getSubset(range, _model)) {
 		CompileError(var, "Attempt to redefine node",
 			     var->name() + print(range));
@@ -1053,15 +1064,28 @@ void Compiler::allocate(ParseTree const *rel)
 	   relation
 	*/
 	ParseTree *var = rel->parameters()[0];
-	Range range = VariableSubsetRange(var);
-	pair<string, Range> upair(var->name(), range);
-	map<pair<string, Range>, set<int> >::iterator p = _umap.find(upair);
-	if (p != _umap.end()) {
-	    _umap.erase(p);
+	SimpleRange range = VariableSubsetRange(var);
+	_umap.erase(pair<string, Range>(var->name(), range));
+	
+	/*
+	  In addition, the parameter might be a *subset* of a node
+	  defined on the LHS of a relation.
+	*/
+	map<pair<string, Range>, set<int> >::iterator p = _umap.begin();
+	while (p != _umap.end()) {
+	    pair<string, Range> const &up = p->first;
+	    if (up.first == var->name() && range.contains(up.second)) {
+		_umap.erase(p++);
+	    }
+	    else {
+		p++;
+	    }
 	}
     }
 }
 
+
+    
 void Compiler::setConstantMask(ParseTree const *rel)
 {
     ParseTree const *var = rel->parameters()[0];
@@ -1074,7 +1098,7 @@ void Compiler::setConstantMask(ParseTree const *rel)
     if (q == _data_table.end()) {
 	throw logic_error ("Error in Compiler::setConstantMask");
     }
-    Range range = VariableSubsetRange(var);
+    SimpleRange range = VariableSubsetRange(var);
     SimpleRange const &var_range = q->second.range();
     if (!var_range.contains(range)) {
         throw logic_error("Invalid range in Compiler::setConstantMask.");
@@ -1098,18 +1122,13 @@ void Compiler::getArrayDim(ParseTree const *p)
 
     ParseTree const *var = p->parameters()[0];
 
-    if(var->parameters().empty()) {
+    if (var->parameters().empty()) {
 	//No index expession => No info on array size
 	return;
     }
 
-    Range new_range = VariableSubsetRange(var);
-    vector<vector<int> > const new_scope = new_range.scope();
-    vector<int> new_upper;
-    for (unsigned int i = 0; i < new_scope.size(); ++i) {
-	new_upper.push_back(*max_element(new_scope[i].begin(), 
-					 new_scope[i].end()));
-    }
+    SimpleRange new_range = VariableSubsetRange(var);
+    vector<int> const &new_upper = new_range.last();
 
     string const &name = var->name();
     map<string, vector<int> >::iterator i = _node_array_bounds.find(name);

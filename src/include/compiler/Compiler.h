@@ -50,7 +50,7 @@ class Compiler {
   std::set<std::string> _lhs_vars;
   
   Node *getArraySubset(ParseTree const *t);
-  Range VariableSubsetRange(ParseTree const *var);
+  SimpleRange VariableSubsetRange(ParseTree const *var);
   Range CounterRange(ParseTree const *var);
   Node* VarGetNode(ParseTree const *var);
   Range getRange(ParseTree const *var,  SimpleRange const &default_range);
