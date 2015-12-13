@@ -137,6 +137,7 @@ RScalarDist::randomSample(vector<double const *> const &parameters,
 	return r(parameters, rng);
     }
 
+
     double plower = lower ? calPlower(*lower, parameters) : 0;
     double pupper = upper ? calPupper(*upper, parameters) : 1;
 
@@ -151,9 +152,43 @@ RScalarDist::randomSample(vector<double const *> const &parameters,
     }
 
     //Inversion
-    //FIXME: We probably need to take care of tail behaviour here
-    double u = plower + rng->uniform() * (pupper - plower);
-    return q(u, parameters, true, false);
+    if (plower > 0.75) {
+	// Upper tail: work on log scale for numerical stability
+	double ll = *lower;
+	if (_discrete) ll -= 1;
+	double logpl = p(ll, parameters, false, true);
+	double logp = logpl;
+	if (!upper) {
+	    logp -= rng->exponential();
+	}
+	else {
+	    double logpu = p(*upper, parameters, false, true);
+	    double delta = logpu - logpl;
+	    logp += log1p(rng->uniform() * expm1(delta));
+	}
+	return q(logp, parameters, false, true);
+    }
+    else if (pupper < 0.25) {
+	// Lower tail: work on log scale for numerical stability
+	double logpu = p(*upper, parameters, true, true);
+	double logp = logpu;
+	if (!lower) {
+	    logp -= rng->exponential();
+	}
+	else {
+	    double ll = *lower;
+	    if (_discrete) ll -= 1;
+	    double logpl = p(ll, parameters, true, true);
+	    double delta = logpl - logpu;
+	    logp += log1p(rng->uniform() * expm1(delta));
+	}
+	return q(logp, parameters, true, true);
+    }
+    else {
+	// Central
+	double p = plower + rng->uniform() * (pupper - plower);
+	return q(p, parameters, true, false);
+    }
 }
 
 bool RScalarDist::canBound() const

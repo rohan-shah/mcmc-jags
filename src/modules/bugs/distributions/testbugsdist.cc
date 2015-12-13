@@ -245,14 +245,15 @@ void BugsDistTest::rscalar_rpq(RScalarDist const *dist,
       inheriting from RScalarDist.
     */
     unsigned int nsim = 100;
-
+    unsigned int nquant = 10;
+    
     CPPUNIT_ASSERT_MESSAGE(dist->name(), checkNPar(dist, par.size()));
     CPPUNIT_ASSERT_MESSAGE(dist->name(), dist->checkParameterValue(par));
 
-    for (unsigned int i = 0; i < nsim; ++i) {
+    for (unsigned int s = 0; s < nsim; ++s) {
 	//Generate random variable from distribution
 	double y = dist->r(par, _rng);
-	//Pass to distribution function and then to distribution function
+	//Pass to distribution function and then to quantile function
 	double p = dist->p(y, par, true, false);
 	CPPUNIT_ASSERT_MESSAGE(dist->name(), p >= 0 && p <= 1);
 	double z = dist->q(p, par, true, false);
@@ -272,6 +273,47 @@ void BugsDistTest::rscalar_rpq(RScalarDist const *dist,
 	CPPUNIT_ASSERT_MESSAGE(dist->name(), logp <= 0);
 	z = dist->q(logp, par, false, true);
 	CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(dist->name(), y, z, tol);
+    }
+
+    //FIXME: This may be slow?
+    for (unsigned int s = 0; s < nsim; ++s) {
+	
+	// Test truncated sampling
+	for (unsigned int i = 0; i <= nquant; ++i) {
+	    double plim1 = static_cast<double>(i)/nquant;
+	    double lim1 = dist->q(plim1, par, true, false);
+
+	    if (i > 0) {
+		// Test sampling from lower tail
+		double y = dist->randomSample(par, 0, &lim1, _rng);
+		CPPUNIT_ASSERT_MESSAGE(dist->name(), y <= lim1);
+		double logpy = dist->p(y, par, true, true);
+		double z = dist->q(logpy, par, true, true);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(dist->name(), y, z,
+						     tol * abs(y));
+	    }
+	    if (i < nquant) {
+		// Test sampling from upper tail
+		double y = dist->randomSample(par, &lim1, 0, _rng);
+		CPPUNIT_ASSERT_MESSAGE(dist->name(), y >= lim1);
+		double logpy = dist->p(y, par, false, true);
+		double z = dist->q(logpy, par, false, true);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(dist->name(), y, z,
+						     tol * abs(y));
+	    }
+	    for (unsigned int j = i+1; j <= nquant; ++j) {
+		// Test sampling between lower and upper limits
+		double plim2 = static_cast<double>(j)/nquant;
+		double lim2 = dist->q(plim2, par, true, false);
+
+		double y = dist->randomSample(par, &lim1, &lim2, _rng);
+		CPPUNIT_ASSERT_MESSAGE(dist->name(), y >= lim1 && y <= lim2);
+		double py = dist->p(y, par, true, false);
+		double z = dist->q(py, par, true, false);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(dist->name(), y, z,
+						     tol * abs(y));
+	    }
+	}
     }
 }
 
@@ -523,6 +565,8 @@ void BugsDistTest::dkwtest(RScalarDist const *dist,
 
 	
 }
+
+//FIXME: We should have a atest for simulation from a truncated distribution
 
 void BugsDistTest::dkw()
 {

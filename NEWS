@@ -28,11 +28,13 @@ Library changes
 ===============
 * The JRmath library contains d-p-q-r functions for the Weibull distribution
   using the shape-rate parameterization of BUGS instead of the shape-scale
-  parameteriztion of R. These are used by the DWeib distribution in the
+  parameterization of R. These are used by the DWeib distribution in the
   bugs module.
 * On Windows, the DLL of the JAGS library includes version information.
 * Compiler::constFromTable returns NULL if a counter with the same name
   is on the counter stack.
+* RScalarDist::randomSample has improved accuracy when sampling from the
+  tails.
   
 Internal changes in modules
 ===========================
