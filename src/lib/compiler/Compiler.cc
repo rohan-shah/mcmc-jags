@@ -109,7 +109,9 @@ static void CompileError(ParseTree const *p, string const &msg1,
 	    getRHSNames(*p, rhs, cntrs);
 	}
     }
-    
+
+    /* Experimental features to add additional checks prior to compilation
+
     static void classifyVarNames(ParseTree const *rels,
 				 set<string> &lhs,
 				 map<string, int> &rhs,
@@ -231,7 +233,8 @@ static void CompileError(ParseTree const *p, string const &msg1,
 	    }
 	}
     }
-
+    */
+    
     void Compiler::getLHSVars(ParseTree const *rel)
     {
 	//Utility function to get the names of variables used on the
@@ -1345,7 +1348,7 @@ void Compiler::declareVariables(vector<ParseTree*> const &dec_list)
     
   }
 
-  checkDecNames(dec_list, _data_table);
+  //checkDecNames(dec_list, _data_table);
 
   for (p = dec_list.begin() ; p != dec_list.end(); ++p) {
     ParseTree const *node_dec = *p;
@@ -1398,7 +1401,7 @@ void Compiler::declareVariables(vector<ParseTree*> const &dec_list)
 void Compiler::undeclaredVariables(ParseTree const *prelations)
 {
     //Find parameters on RHS of relations that are never defined
-    checkVarNames(prelations, _data_table);
+    //checkVarNames(prelations, _data_table);
     
     // Get undeclared variables from data table
     for (map<string, SArray>::const_iterator p = _data_table.begin();
