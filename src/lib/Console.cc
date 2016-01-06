@@ -194,7 +194,7 @@ bool Console::compile(map<string, SArray> &data_table, unsigned int nchain,
 {
     if (nchain == 0) {
 	_err << "You must have at least one chain" << endl;
-	return true;
+	return false;
     }
     if (_model) {
 	_out << "Replacing existing model" << endl;
@@ -270,7 +270,7 @@ bool Console::compile(map<string, SArray> &data_table, unsigned int nchain,
 	}
 	else {
 	    _err << "Nothing to compile" << endl;
-	    return true;
+	    return false;
 	}
 	if (_model) {
 	    unsigned int nobs = 0, nparam = 0;
@@ -294,7 +294,7 @@ bool Console::compile(map<string, SArray> &data_table, unsigned int nchain,
 	}
 	else {
 	    _err << "No model" << endl;
-	    return true;
+	    return false;
 	}
     }
     CATCH_ERRORS;
@@ -314,7 +314,7 @@ bool Console::initialize()
 	return false;
     }
     if (_model->isInitialized()) {
-	_err << "Model is already initialized" << endl;
+	_out << "Model is already initialized" << endl;
 	return true;
     }
     
@@ -332,11 +332,11 @@ bool Console::setParameters(map<string, SArray> const &init_table,
 {
   if (_model == 0) {
     _err << "Can't set initial values. No model!" << endl;    
-    return true;
+    return false;
   }
   if (chain == 0 || chain > nchain()) {
     _err << "Invalid chain number" << endl;
-    return true;
+    return false;
   }
 
   try {
@@ -351,12 +351,13 @@ bool Console::setRNGname(string const &name, unsigned int chain)
 {
     if (_model == 0) {
 	_err << "Can't set RNG name. No model!" << endl;    
-	return true;
+	return false;
     }
     try {
 	bool name_ok = _model->setRNG(name, chain - 1);
 	if (!name_ok) {
-	    _err << "WARNING: RNG name " << name << " not found\n";
+	    _err << "RNG name " << name << " not found\n";
+	    return false;
 	}
     }
     CATCH_ERRORS;
@@ -514,7 +515,7 @@ bool Console::dumpMonitors(map<string,SArray> &data_table,
 {
     if (_model == 0) {
 	_err << "Cannot dump monitors.  No model!" << endl;
-	return true;
+	return false;
     }
     try {
 	list<MonitorControl> const &monitors = _model->monitors();

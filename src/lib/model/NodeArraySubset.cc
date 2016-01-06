@@ -22,10 +22,8 @@ namespace jags {
 	if (isNULL(range)) {
 	    // Special syntax rule: a NULL range means the whole array
 	    _dim = array->range().dim(false);
-	    for (unsigned int i = 0; i < array->_node_pointers.size(); ++i) {
-		_node_pointers.push_back(array->_node_pointers[i]);
-		_offsets.push_back(array->_offsets[i]);
-	    }
+	    _node_pointers = array->_node_pointers;
+	    _offsets = array->_offsets;
 	}
 	else {
 	    //Check validity of target range
@@ -73,8 +71,9 @@ namespace jags {
 	vector<Node const *> ans;
 	set<Node const *> nodeset;
 	for (unsigned int i = 0; i < _node_pointers.size(); ++i) {
-	    if (nodeset.insert(_node_pointers[i]).second) {
-		ans.push_back(_node_pointers[i]);
+	    Node const * node = _node_pointers[i];
+	    if (node && nodeset.insert(node).second) {
+		ans.push_back(node);
 	    }
 	}
 	return ans;

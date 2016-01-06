@@ -17,7 +17,7 @@ Bug fixes
   an exponential prior distribution.
 * Error messages for undefined nodes and directed cycles are improved,
   with less misclassification between the two diagnostic messages.
-  
+
 New features
 ============
 * A new distribution "dsample" in the bugs module represents sampling
@@ -35,7 +35,9 @@ Library changes
   is on the counter stack.
 * RScalarDist::randomSample has improved accuracy when sampling from the
   tails.
-  
+* Methods of the Console class consistently return false when an error
+  occurs.
+
 Internal changes in modules
 ===========================
 

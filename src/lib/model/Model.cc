@@ -550,6 +550,8 @@ bool Model::setRNG(string const &name, unsigned int chain)
       if (p->second) {
 	  RNG *rng = p->first->makeRNG(name);
 	  if (rng) {
+	      if (_rng[chain])
+		  delete _rng[chain];
 	      _rng[chain] = rng;
 	      return true;
 	  }
