@@ -43,6 +43,11 @@ Library changes
 Internal changes in modules
 ===========================
 
+* base module
+  - The restriction on the length of nodes that FiniteMethod can sample is
+  reintroduced (it was removed in release 4.0.0) but is large (100 instead
+  of 20) and does not apply to nodes with prior distribution dcat.
+
 * bugs module
   - Interval censored continuous variables can be sampled by the Censored
   method. Samplers are created by CensoredFactory.

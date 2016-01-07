@@ -96,12 +96,29 @@ namespace base {
 	if (!isSupportFixed(node)) {
 	    return false;
 	}
-	
+
 	//Distribution cannot be unbounded
 	double ulimit = JAGS_NEGINF, llimit = JAGS_POSINF;
 	node->support(&llimit, &ulimit, 1, 0);
 	if (!jags_finite(ulimit) || !jags_finite(llimit))
 	    return false;
+	
+	/* If there are too many possibilities then FiniteMethod,
+	   becomes slow as it has to evaluate the likelihood at each
+	   point (inversion). So we drop FiniteMethod in favour of the
+	   discrete slice sampler if the number of possibilities is
+	   too large. It's not clear what "too large" is. Here we use
+	   a cutoff size of 100, unless the node has a categorical
+	   prior, noting that dcat can take an arbitrary, unordered
+	   vector of probabilities as argument.
+	   
+	   FIXME: a more careful criterion would be to test whether
+	   the log-density is unimodal.
+	*/
+	if (node->distribution()->name() != "dcat") {
+	    if (ulimit - llimit >= 100)
+		return false;
+	}
 
 	return true;
     }
