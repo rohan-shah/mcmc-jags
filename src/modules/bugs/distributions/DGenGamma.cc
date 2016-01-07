@@ -3,7 +3,7 @@
 
 #include <JRmath.h>
 
-/* if x ~ dgamma(r, mu, beta) then (mu*x)^beta ~ dgamma(r, 1) */
+/* if x ~ dgen.gamma(r, mu, beta) then (mu*x)^beta ~ dgamma(r, 1) */
 
 using std::vector;
 using std::string;
@@ -19,10 +19,10 @@ static inline double transform(double x,  vector<double const*> const &par)
     return exp(POW(par) * (log(x) + log(URATE(par))));
 }
 
-static inline double UNtransform(double x, vector<double const*> const &par)
+static inline double UNtransform(double y, vector<double const*> const &par)
 {
     // x <- y^(1/beta) / mu
-    return exp(log(x) / POW(par) - log(URATE(par)));
+    return exp(log(y) / POW(par) - log(URATE(par)));
 }
 
 namespace jags {
