@@ -17,6 +17,8 @@ Bug fixes
   an exponential prior distribution.
 * Error messages for undefined nodes and directed cycles are improved,
   with less misclassification between the two diagnostic messages.
+* The configuration file jags.pc for pkg-config now gives the correct
+  value for the variable moduledir.
 
 New features
 ============
