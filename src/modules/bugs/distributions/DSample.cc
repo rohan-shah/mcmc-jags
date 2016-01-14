@@ -17,6 +17,7 @@ using std::min;
 using std::fill;
 using std::accumulate;
 using std::sort;
+using std::exp;
 
 static inline double  SIZE(vector<double const *> const &par) {
     return *par[1];

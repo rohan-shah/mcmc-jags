@@ -295,11 +295,12 @@ namespace glm {
 	int *Ti = static_cast<int*>(t_x->i);
 	double *Tx = static_cast<double*>(t_x->x);
 
-	for (unsigned int c = 0; c < t_x->ncol; ++c) {
+	//FIXME: reusing previously defined c,r here
+	for (c = 0; c < t_x->ncol; ++c) {
 	    double tau = _outcomes[c]->precision();
 	    double delta = tau * (_outcomes[c]->value() - _outcomes[c]->mean());
 	    double sigma = sqrt(tau);
-	    for (int r = Tp[c]; r < Tp[c+1]; ++r) {
+	    for (r = Tp[c]; r < Tp[c+1]; ++r) {
 		b[Ti[r]] += Tx[r] * delta;
 		Tx[r] *= sigma;
 	    }

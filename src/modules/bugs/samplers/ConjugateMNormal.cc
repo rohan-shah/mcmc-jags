@@ -48,9 +48,9 @@ static void calBeta(double *betas, SingletonGraphView const *gv,
     unsigned long nchildren = stoch_children.size();
     double *beta_j = betas;
     for (unsigned int j = 0; j < nchildren; ++j) {
-	StochasticNode const *snode = stoch_children[j];
-	double const *mu = snode->parents()[0]->value(chain);
-	unsigned int nrow_child = snode->length();
+	StochasticNode const *schild = stoch_children[j];
+	double const *mu = schild->parents()[0]->value(chain);
+	unsigned int nrow_child = schild->length();
 	for (unsigned int k = 0; k < nrow_child; ++k) {
 	    for (unsigned int i = 0; i < nrow; ++i) {
 		beta_j[nrow * k + i] = -mu[k];
@@ -64,9 +64,9 @@ static void calBeta(double *betas, SingletonGraphView const *gv,
 	gv->setValue(xnew, nrow, chain);
 	beta_j = betas;
 	for (unsigned int j = 0; j < nchildren; ++j) {
-	    StochasticNode const *snode = stoch_children[j];
-	    double const *mu = snode->parents()[0]->value(chain);
-	    unsigned int nrow_child = snode->length();
+	    StochasticNode const *schild = stoch_children[j];
+	    double const *mu = schild->parents()[0]->value(chain);
+	    unsigned int nrow_child = schild->length();
 	    for (unsigned int k = 0; k < nrow_child; ++k) {
 		beta_j[nrow * k + i] += mu[k];
 	    }

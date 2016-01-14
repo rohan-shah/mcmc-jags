@@ -28,7 +28,6 @@ namespace dic {
 	~PDMonitor();
 	std::vector<unsigned int> dim() const;
 	std::vector<double> const &value(unsigned int chain) const;
-	SArray dump() const;
 	bool poolChains() const;
 	bool poolIterations() const;
 	void update();
