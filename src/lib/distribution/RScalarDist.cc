@@ -4,6 +4,8 @@
 #include <util/nainf.h>
 #include <util/dim.h>
 
+#include "c99_math.h"
+
 #include <cmath>
 #include <algorithm>
 
@@ -164,7 +166,7 @@ RScalarDist::randomSample(vector<double const *> const &parameters,
 	else {
 	    double logpu = p(*upper, parameters, false, true);
 	    double delta = logpu - logpl;
-	    logp += log1p(rng->uniform() * expm1(delta));
+	    logp += jags_log1p(rng->uniform() * jags_expm1(delta));
 	}
 	return q(logp, parameters, false, true);
     }
@@ -180,7 +182,7 @@ RScalarDist::randomSample(vector<double const *> const &parameters,
 	    if (_discrete) ll -= 1;
 	    double logpl = p(ll, parameters, true, true);
 	    double delta = logpl - logpu;
-	    logp += log1p(rng->uniform() * expm1(delta));
+	    logp += jags_log1p(rng->uniform() * jags_expm1(delta));
 	}
 	return q(logp, parameters, true, true);
     }
