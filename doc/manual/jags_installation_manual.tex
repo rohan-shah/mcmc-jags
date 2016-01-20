@@ -4,7 +4,7 @@
 \usepackage{url}
 \usepackage{multirow}
 \usepackage{amsfonts}
-\newcommand{\release}{4.0.0}
+\newcommand{\release}{4.1.0}
 \newcommand{\JAGS}{\textsf{JAGS}}
 \newcommand{\BUGS}{\textsf{BUGS}}
 \newcommand{\WinBUGS}{\textsf{WinBUGS}}
@@ -23,7 +23,7 @@
 
 \title{JAGS Version \release\ installation manual}
 \author{Martyn Plummer \and Bill Northcott \and Matt Denwood}
-\date{1 October 2015}
+\date{19 January 2016}
 \maketitle
 
 \JAGS\ is distributed in binary format for Microsoft Windows, Mac OS
@@ -142,13 +142,31 @@ a non-standard location, you must supply this location with the
 environment variable \code{LD\_LIBRARY\_PATH}, {\em e.g.}
 \begin{verbatim}
 LD_LIBRARY_PATH="/path/to/my/libs:${LD_LIBRARY_PATH}"
-\end{verbatim} %$
+\end{verbatim}
 Alternatively, you may hard-code the paths to the blas and lapack
 libraries at compile time. This is compiler and platform-specific,
 but is typically achieved with
 \begin{verbatim}
 LDFLAGS="-L/path/to/my/libs -R/path/to/my/libs
 \end{verbatim}
+
+JAGS can also be linked to static BLAS and LAPACK if they have both
+been compiled with the \texttt{-fPIC} flag. You will probably need to
+do a custom build of BLAS and LAPACK if you require this. The
+configure options for JAGS are then:
+\begin{verbatim}
+./configure --with-blas="-L/path/to/my/libs -lmyblas -lgfortran -lquadmath" \
+            --with-lapack="-L/path/to/my/libs -lmylapack"
+\end{verbatim}
+Note that with static linking you must add the dependencies of the BLAS
+library manually. The LAPACK library will pick up the same dependencies.
+Note also that libtool does not like linking directly to archive files.
+If you attempt a configuration of the form
+\begin{verbatim}
+--with-blas="/path/to/my/libs/myblas.a"
+\end{verbatim}
+then this will pass at configure time but ``make'' will not correctly
+build the JAGS modules.
 
 \subsubsection{Multithreaded BLAS and LAPACK}
 \label{section:blas:multithreaded}
@@ -330,12 +348,13 @@ rather than the version supplied by the LLVM project (libc++).
 \subsection{Solaris}
 
 \JAGS\ has been successfully built and tested on the Intel x86
-platform under Solaris 11 using the Sun Studio 12.3 compilers.
+platform under Solaris 11.3 using the Sun Studio 12.3 and 12.4
+compilers.
 \begin{verbatim}
 ./configure CC=cc CXX=CC F77=f95 \
 CFLAGS="-xO3 -xarch=sse2" \
 FFLAGS="-xO3 -xarch=sse2" \
-CXXFLAGS="-xO3 -xarch=sse2"
+CXXFLAGS="-xO3 -xarch=sse2 -library=stlport4"
 \end{verbatim}
 The Sun Studio compiler is not optimized by default. Use the option
 \option{-xO3} for optimization (NB This is the letter ``O'' not the
@@ -344,14 +363,20 @@ must specify the architecture with the \option{-xarch} flag. The options
 above are for an Intel processor with SSE2 instructions. This must be
 adapted to your own platform.
 
-To compile a 64-bit version of JAGS, add the option \option{-m64} to
-all the compiler flags.
+Starting with release 4.1.0, the default C++ library \file{libCstd} is
+no longer supported. You must therefore add the option
+\option{-library=stlport4} to \option{CXXFLAGS} to use the alternative
+STLPort4 library.
 
-Solaris provides two versions of the C++ standard library:
-\texttt{libCstd}, which is the default, and \texttt{libstlport4},
-which conforms more closely to the C++ standard. \JAGS\ may be linked
-to the stlport4 library by adding the option
-\option{-library=stlport4} to \code{CXXFLAGS}. 
+%C++11?
+
+To compile a 64-bit version of JAGS, add the option \option{-m64} to
+all the compiler flags. On Solaris, 64-bit files are generally
+installed in an architecture-specific sub-directory (e.g.
+\file{amd64} on the x86 platform). If you wish to conform to this
+convention for 64-bit JAGS then you should set the configure options
+\option{--libdir}, \option{--libexecdir}, and \option{--bindir}
+appropriately.
 
 The configure script automatically detects the Sun Performance library,
 which implements the BLAS/LAPACK functions.  
