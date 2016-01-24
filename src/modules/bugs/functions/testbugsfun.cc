@@ -672,26 +672,29 @@ void BugsFunTest::summary()
     CPPUNIT_ASSERT_ASSERTION_FAIL(eval(_prod, x0));
     //Standard deviation requires at least two elements
     CPPUNIT_ASSERT_ASSERTION_FAIL(eval(_sd, v0));
-    
-    summary(v0);
-    summary(v1);
-    summary(v2);
-    summary(v3);
-    summary(v4);
 
-    summary(v1, v1);
-    summary(v1, v2);
-    summary(v1, v3);
-    summary(v1, v4);
+    //Solaris Studio 12.3 requires some additional hinting for templates
+    //otherwise could have summary(v0) etc.
 
-    summary(v2, v2);
-    summary(v2, v3);
-    summary(v2, v4);
+    summary<1>(v0);
+    summary<9>(v1);
+    summary<5>(v2);
+    summary<2>(v3);
+    summary<6>(v4);
 
-    summary(v3, v3);
-    summary(v3, v4);
+    summary<9,9>(v1, v1);
+    summary<9,5>(v1, v2);
+    summary<9,2>(v1, v3);
+    summary<9,6>(v1, v4);
 
-    summary(v4, v4);
+    summary<5,5>(v2, v2);
+    summary<5,2>(v2, v3);
+    summary<5,6>(v2, v4);
+
+    summary<2,2>(v3, v3);
+    summary<2,6>(v3, v4);
+
+    summary<6,6>(v4, v4);
 }
 
 void BugsFunTest::math()

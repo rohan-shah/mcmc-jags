@@ -1,3 +1,11 @@
+Change in JAGS 4.2.0
+
+Bug fixes
+=========
+* JAGS 4.1.0 did not compile under Solaris Studio 12.3 as it referenced
+  some C99 functions that are not part of the C++98 standard (It did
+  compile under Solaris Studio 12.4).
+
 Changes in JAGS 4.1.0
 
 Bug fixes

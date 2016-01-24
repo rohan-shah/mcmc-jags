@@ -4,7 +4,7 @@
 \usepackage{url}
 \usepackage{multirow}
 \usepackage{amsfonts}
-\newcommand{\release}{4.0.0}
+\newcommand{\release}{4.1.0}
 \newcommand{\JAGS}{\textsf{JAGS}}
 \newcommand{\BUGS}{\textsf{BUGS}}
 \newcommand{\WinBUGS}{\textsf{WinBUGS}}
@@ -23,7 +23,7 @@
 
 \title{JAGS Version \release\ installation manual}
 \author{Martyn Plummer \and Bill Northcott \and Matt Denwood}
-\date{1 October 2015}
+\date{19 January 2016}
 \maketitle
 
 \JAGS\ is distributed in binary format for Microsoft Windows, Mac OS
@@ -142,13 +142,31 @@ a non-standard location, you must supply this location with the
 environment variable \code{LD\_LIBRARY\_PATH}, {\em e.g.}
 \begin{verbatim}
 LD_LIBRARY_PATH="/path/to/my/libs:${LD_LIBRARY_PATH}"
-\end{verbatim} %$
+\end{verbatim}
 Alternatively, you may hard-code the paths to the blas and lapack
 libraries at compile time. This is compiler and platform-specific,
 but is typically achieved with
 \begin{verbatim}
 LDFLAGS="-L/path/to/my/libs -R/path/to/my/libs
 \end{verbatim}
+
+JAGS can also be linked to static BLAS and LAPACK if they have both
+been compiled with the \texttt{-fPIC} flag. You will probably need to
+do a custom build of BLAS and LAPACK if you require this. The
+configure options for JAGS are then:
+\begin{verbatim}
+./configure --with-blas="-L/path/to/my/libs -lmyblas -lgfortran -lquadmath" \
+            --with-lapack="-L/path/to/my/libs -lmylapack"
+\end{verbatim}
+Note that with static linking you must add the dependencies of the BLAS
+library manually. The LAPACK library will pick up the same dependencies.
+Note also that libtool does not like linking directly to archive files.
+If you attempt a configuration of the form
+\begin{verbatim}
+--with-blas="/path/to/my/libs/myblas.a"
+\end{verbatim}
+then this will pass at configure time but ``make'' will not correctly
+build the JAGS modules.
 
 \subsubsection{Multithreaded BLAS and LAPACK}
 \label{section:blas:multithreaded}
@@ -330,12 +348,13 @@ rather than the version supplied by the LLVM project (libc++).
 \subsection{Solaris}
 
 \JAGS\ has been successfully built and tested on the Intel x86
-platform under Solaris 11 using the Sun Studio 12.3 compilers.
+platform under Solaris 11.3 using the Sun Studio 12.3 and 12.4
+compilers.
 \begin{verbatim}
 ./configure CC=cc CXX=CC F77=f95 \
 CFLAGS="-xO3 -xarch=sse2" \
 FFLAGS="-xO3 -xarch=sse2" \
-CXXFLAGS="-xO3 -xarch=sse2"
+CXXFLAGS="-xO3 -xarch=sse2 -library=stlport4"
 \end{verbatim}
 The Sun Studio compiler is not optimized by default. Use the option
 \option{-xO3} for optimization (NB This is the letter ``O'' not the
@@ -344,14 +363,20 @@ must specify the architecture with the \option{-xarch} flag. The options
 above are for an Intel processor with SSE2 instructions. This must be
 adapted to your own platform.
 
-To compile a 64-bit version of JAGS, add the option \option{-m64} to
-all the compiler flags.
+Starting with release 4.1.0, the default C++ library \file{libCstd} is
+no longer supported. You must therefore add the option
+\option{-library=stlport4} to \option{CXXFLAGS} to use the alternative
+STLPort4 library.
 
-Solaris provides two versions of the C++ standard library:
-\texttt{libCstd}, which is the default, and \texttt{libstlport4},
-which conforms more closely to the C++ standard. \JAGS\ may be linked
-to the stlport4 library by adding the option
-\option{-library=stlport4} to \code{CXXFLAGS}. 
+%C++11?
+
+To compile a 64-bit version of JAGS, add the option \option{-m64} to
+all the compiler flags. On Solaris, 64-bit files are generally
+installed in an architecture-specific sub-directory (e.g.
+\file{amd64} on the x86 platform). If you wish to conform to this
+convention for 64-bit JAGS then you should set the configure options
+\option{--libdir}, \option{--libexecdir}, and \option{--bindir}
+appropriately.
 
 The configure script automatically detects the Sun Performance library,
 which implements the BLAS/LAPACK functions.  
@@ -360,35 +385,31 @@ which implements the BLAS/LAPACK functions.
 \section{Mac OS X}
 
 There have been big changes in Apple's developer tools over the last few
-years.  Two major transitions in compiler tools have been made between
-OS 10.6 and 10.9: firstly a change from gcc to clang compilers, and
-secondly a move from the libstdc++ to libc++ standard library.  As of
-Mac OS 10.7, Apple has provided a free Xcode application from the Mac
-App Store, which is a fairly large download but contains all of the libraries
-necessary to install \JAGS. The instructions that follow assume you are 
-running OS 10.9 or later, and have the free Xcode application from the 
-Mac App Store.
+years, but as of OS 10.9 things should hopefully be more stable.  These
+instructions are for users that wish to build JAGS using clang and the
+libc++ standard library, which have been the default since OS 10.9.  Users
+needing to build against the libstdc++ library should see section \ref{section:otherosxoptions}, 
+and users with an older version of OS X should refer to the installation
+instructions given in older versions of the \JAGS~manual.
 
 \subsection{Required tools}
 
 If you wish to build from a released source package i.e.
-\file{JAGS-\release.tar.gz}, you will need Xcode from the Mac App Store
-as described above.  You will also need to install command line compilers
-and agree to the Xcode agreement before using them (if you have not
-done so already). The easiest way to do this is using the Terminal
-application from \file{/Applications/Utilities} - opening the
-application gives you a terminal with a UNIX shell known as bash.  Run
-the command \code{xcode-select --install} on the terminal and follow the
+\file{JAGS-\release.tar.gz}, you will need to install command line compilers
+and agree to the license agreement before using them. The easiest way 
+to do this is using the Terminal application from \file{/Applications/Utilities} 
+- opening the application gives you a terminal with a UNIX shell known as bash.  
+Run the command \code{xcode-select --install} on the terminal and follow the
 instructions.  Then run the command \code{sudo xcodebuild -license} 
 on the terminal, and follow the instructions to agree to the Apple
 license terms (an administrators password is required).  You will then
-need to install the gfortran package which you can find by following the
-``tools directory'' link on the ``R for Mac OS X'' page on
-\url{http://cran.r-project.org}
+need to install the gfortran package which you can download from:
+
+\url{https://gcc.gnu.org/wiki/GFortranBinaries#MacOS}
 
 This setup should be able to build the \JAGS\ sources and also source
 packages in R.  All the necessary libraries such as BLAS and LAPACK are
-included within Xcode.  Additional tools are required to run the optional 
+included within OS X.  Additional tools are required to run the optional 
 test suite (see section \ref{section:otherosxoptions}).
 
 
@@ -425,7 +446,7 @@ export LDFLAGS="-arch x86_64"
 \end{verbatim}
 
 The \texttt{-framework Accelerate} finds the BLAS and LAPACK 
-contained within the Xcode application.  The clang warning
+contained within the OS X installation.  The clang warning
 \texttt{-framework Accelerate: `linker' input unused} can
 be safely ignored.
 
@@ -477,11 +498,9 @@ run as described in the User Manual. You need to ensure that
 As of \JAGS\ version 4, a test suite is included with the source code that can be
 run to ensure that the compiled code produces the expected results.  To run
 this code on your installation, you will need to install the CppUnit framework - this can
-be downloaded from \url{https://sourceforge.net/projects/cppunit/} or installed using
-MacPorts or similar (see section \ref{section:osxtools}).
-
-You should then be able to run the test suite from the Terminal 
-(in the \file{JAGS-\release} folder directory) by typing:
+be downloaded from \url{http://freedesktop.org/wiki/Software/cppunit/} or installed using
+MacPorts or similar (see section \ref{section:osxtools}).  You should then be able to 
+run the test suite from the Terminal  (in the \file{JAGS-\release} folder directory) by typing:
 
 \begin{verbatim} 
 make check
@@ -504,6 +523,10 @@ create a configuration to build a ``fat'' binary of \JAGS\ (containing
 32-bit i386 and 64-bit x86\_64 code) using libstdc++ which will run on
 OS 10.6 - 10.9.  This is compatible with the ``Snow Leopard build'' of
 \R\ on CRAN and the corresponding \texttt{rjags} and \texttt{runjags} modules. 
+In addition to the previously stated build requirements, installation of 
+the (free) Xcode application from the Mac App store is required to be
+able to follow these instructions.
+
 In your Terminal window copy/paste the following code (note that there is no
 space after 'platform' and the '$\backslash$' must not be followed by
 any spaces): 
@@ -545,11 +568,12 @@ which are contained within the disk images for older versions of \JAGS\ availabl
 \subsubsection{Additional tools}
 \label{section:osxtools}
 
-Apple supplies a compiler suite, BLAS and LAPACK along with Xcode, but some
+Apple supplies a compiler suite, BLAS and LAPACK along with OS X developer tools, but some
 additional tools are required to work with code from the \JAGS\ repository.  Probably 
 the easiest way of obtaining the necessary utilities is using
-\url{https://www.macports.org} or \url{http://brew.sh} The following sections assume
-that MacPorts is installed.
+\url{https://www.macports.org} or \url{http://brew.sh} 
+
+The following sections assume that MacPorts is installed.
 
 \subsubsection{Working with the development code}
 
@@ -595,7 +619,7 @@ You should then be able to follow the install instructions given in section \ref
 
 \subsubsection{Using ATLAS}
 
-Rather than using the versions of BLAS and LAPACK provided within Xcode, it
+Rather than using the versions of BLAS and LAPACK provided within OS X, it
 is possible to use ATLAS which can be installed via MacPorts using:
 
 \begin{verbatim}
@@ -605,13 +629,6 @@ sudo port install atlas
 This command will take some hours to complete.  The \texttt{-framework Accelerate} flag can
 then be omitted from the instructions given in section \ref{section:osxenvironment}.
 
-
-\subsubsection{A note on Apple compilers}
-
-Older versions of Xcode used the gcc compiler suite, but Apple abandoned
-the gcc project when GPL3 was introduced.  Current Apple compilers are
-based on LLVM, and are invoked as clang and clang++.  The same compilers
-are also invoked as gcc and gxx.
 
 
 \clearpage
