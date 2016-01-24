@@ -25,6 +25,10 @@ using std::set;
 using std::copy;
 using std::sqrt;
 
+//debuggin
+#include <cfloat>
+using std::abs;
+
 extern cholmod_common *glm_wk;
 
 namespace jags {
@@ -48,6 +52,85 @@ static void getIndices(set<StochasticNode *> const &schildren,
 
 namespace glm {
 
+    static double
+    sparse_inprod(int const *ai, int const *ai_end, double const *ax, 
+		  int const *bi, int const *bi_end, double const *bx,
+		  vector<double> const &tau)
+    {
+	/*
+	  Inner product of two sparse vectors: t(a) %*% diag(tau) %*% b
+
+	  ai,bi          = start of non-zero indices of a,b. 
+	  ai_end, bi_end = end of non-zero indices of a,b. 
+	  ax, bx         = start of non-zero values of a,b
+	  tau            = dense vector of scale factors
+
+	  Assumptions: 
+	  ax is the same length as ai
+	  ai, bi are both increasing
+	  ai, bi contain no values greater than tau.size() - 1
+	*/
+	
+	double c = 0;
+	while (ai < ai_end && bi < bi_end) {
+	    if (*ai == *bi) {
+		c += (*ax) * (*bx) * tau[*ai];
+		++ai; ++ax;
+		++bi; ++bx;
+	    }
+	    else if (*ai < *bi) {
+		++ai; ++ax;
+	    }
+	    else {
+		// *bi < *ai
+		++bi; ++bx;
+	    }
+	}
+	return c;
+    }
+
+    static void sparse_xtx (cholmod_sparse const *X, vector<double> const &tau,
+			    cholmod_sparse *A)
+    {
+	/* 
+	   Calculates t(X) %*% diag(tau) %*% X and adds the result
+	   to A, a pre-existing sparse matrix.
+
+	   Assumptions: If A[r,c] is a structural zero then X[,r] and
+	   X[,c] have no rows in common.
+	*/
+	   
+	if (X->sorted == 0)
+	    throwLogicError("Input matrix X must be sorted in sparse_xtx");
+	if (X->nrow != tau.size() || A->ncol != X->ncol || A->ncol != A->nrow)
+	    throwLogicError("Input dimension mismatch in sparse_xtx");
+
+	//Set up access to X
+	int const *Xp = static_cast<int const*>(X->p);
+	int const *Xi = static_cast<int const*>(X->i);
+	double const *Xx = static_cast<double const*>(X->x);	
+
+	//Set up access to A
+	int const *Ap = static_cast<int const*>(A->p);
+	int const *Ai = static_cast<int const*>(A->i);
+	double *Ax = static_cast<double*>(A->x);
+	
+	// Iterate over the non-zero elements of A and add the inner
+	// product of the corresponding row and column of X. 
+	for (unsigned int col = 0; col < A->ncol; ++col) {
+	    int const *ai = Xi + Xp[col];
+	    int const *ai_end = Xi + Xp[col+1];
+	    double const *ax = Xx + Xp[col];
+	    for (int j = Ap[col]; j < Ap[col+1]; ++j) {
+		int row = Ai[j];
+		int const *bi = Xi + Xp[row];
+		int const *bi_end = Xi + Xp[row+1];
+		double const *bx = Xx + Xp[row];
+		Ax[j] += sparse_inprod(ai, ai_end, ax, bi, bi_end, bx, tau);
+	    }
+	}
+    }
+    
     void GLMMethod::calDesign() const
     {
 	vector<StochasticNode *> const &snodes = _view->nodes();
@@ -105,7 +188,8 @@ namespace glm {
 			 vector<SingletonGraphView const *> const &sub_views,
 			 vector<Outcome *> const &outcomes,
 			 unsigned int chain, bool link)
-	: _view(view), _chain(chain), _sub_views(sub_views), _outcomes(outcomes),
+	: _view(view), _chain(chain), _sub_views(sub_views),
+	  _outcomes(outcomes),
 	  _x(0), _factor(0), _fixed(sub_views.size(), false), 
 	  _length_max(0), _nz_prior(0), _init(true)
     {
@@ -147,8 +231,10 @@ namespace glm {
 	}
 	Xp[c] = r;
 
-	//Set up sparse representation of the design matrix
-	_x = cholmod_allocate_sparse(nrow, ncol, r, 1, 1, 0, CHOLMOD_REAL, glm_wk);
+	// Set up sparse representation of the design matrix
+	// Compact, sorted, non-symmetric, containing r non-zero values
+	_x = cholmod_allocate_sparse(nrow, ncol, r, 1, 1, 0, CHOLMOD_REAL,
+				     glm_wk);
 	int *_xp = static_cast<int*>(_x->p);
 	int *_xi = static_cast<int*>(_x->i);
 
@@ -168,6 +254,7 @@ namespace glm {
 	    _outcomes.pop_back();
 	}
 	cholmod_free_sparse(&_x, glm_wk);
+	cholmod_free_sparse(&_A, glm_wk);
     }
     
     /* 
@@ -175,9 +262,9 @@ namespace glm {
        Cholesky decomposition.
        
        This only needs to be done once, when the GLMMethod is
-       craeted. It is a stripped-down version of the code in update.
-       Note that the values of the sparse matrices are never
-       referenced.
+       created. We use CHOLMOD functions to determine the non-zero
+       pattern of A and its cholesky factor. Both of these are stored
+       for later use.
     */
     void GLMMethod::symbolic()  
     {
@@ -185,7 +272,8 @@ namespace glm {
 
 	// Prior contribution 
 	cholmod_sparse *Aprior =  
-	    cholmod_allocate_sparse(nrow, nrow, _nz_prior, 1, 1, 0, CHOLMOD_PATTERN, glm_wk); 
+	    cholmod_allocate_sparse(nrow, nrow, _nz_prior, 1, 1, 0,
+				    CHOLMOD_PATTERN, glm_wk); 
 	int *Ap = static_cast<int*>(Aprior->p);
 	int *Ai = static_cast<int*>(Aprior->i);
 
@@ -198,10 +286,6 @@ namespace glm {
 	    StochasticNode *snode = *p;
 	    unsigned int length = snode->length();
 
-	    /* 
-	       Fixme: we're assuming the prior precision of each node
-	       is dense, whereas it may be sparse.
-	    */
 	    int cbase = c; //first column in this diagonal block
 	    for (unsigned int j = 0; j < length; ++j, ++c) {
 		Ap[c] = r;
@@ -213,20 +297,29 @@ namespace glm {
 	Ap[c] = r;
 	
 	// Likelihood contribution
-    
+	// t(X) %*% tau %*% X
+	// where tau is precision matrix of outcomes. We allow only
+	// scalar outcomes so tau is diagonal and pattern matrix is the
+	// same as t(X) %*% X.
 	cholmod_sparse *t_x = cholmod_transpose(_x, 0, glm_wk);
 	cholmod_sparse *Alik = cholmod_aat(t_x, 0, 0, 0, glm_wk);
+
+	// Posterior precision matrix is the sum of prior and likelihood
+	// contributions
 	cholmod_sparse *A = cholmod_add(Aprior, Alik, 0, 0, 0, 0, glm_wk);
 
+	A->stype = -1; // Symmetric matrix with values in lower triangle
+	cholmod_sort(A, glm_wk); // Sorts columns, discarding upper triangle
+	_A = cholmod_copy_sparse(A, glm_wk); // Store for later use in calCoef
+	_factor = cholmod_analyze(A, glm_wk); // Store for later use in updateLM
+	
 	//Free working matrices
 	cholmod_free_sparse(&t_x, glm_wk);
 	cholmod_free_sparse(&Aprior, glm_wk);
 	cholmod_free_sparse(&Alik, glm_wk);
-
-	A->stype = -1;
-	_factor = cholmod_analyze(A, glm_wk); 
 	cholmod_free_sparse(&A, glm_wk);
     }
+
 
     void GLMMethod::calCoef(double *&b, cholmod_sparse *&A) 
     {
@@ -238,21 +331,34 @@ namespace glm {
 	//   For computational convenience we take xold, the current value
 	//   of the sampled nodes, as the origin
 
-	unsigned int nrow = _view->length();
-	b = new double[nrow];
+	b = new double[_view->length()];
 
-	cholmod_sparse *Aprior =  
-	    cholmod_allocate_sparse(nrow, nrow, _nz_prior, 1, 1, 0, 
-				    CHOLMOD_REAL, glm_wk); 
+	//Copy precision matrix from stored pattern matrix
+	A = cholmod_copy_sparse(_A, glm_wk);
+	cholmod_sparse_xtype(CHOLMOD_REAL, A, glm_wk);
+
+	// Set access to A
+	int const *Ap = static_cast<int const*>(A->p);
+	int const *Ai = static_cast<int const*>(A->i);
+	double *Ax = static_cast<double*>(A->x);
+
+	//Initialize A
+	for (unsigned int i = 0; i < A->nzmax; ++i) {
+	    Ax[i] = 0;
+	}
+
+	// Prior contributions
+
+	//   b = sigma %*% muprior
+	//   A = sigma
     
-	// Set up prior contributions to A, b
-	int *Ap = static_cast<int*>(Aprior->p);
-	int *Ai = static_cast<int*>(Aprior->i);
-	double *Ax = static_cast<double*>(Aprior->x);
+	//   where:
+	//   - sigma is the block-diagonal precision matrix of the sampled
+	//           nodes
+	//   - muprior is the prior mean of the stochastic children relative
+	//             to the current value
 
-	//FIXME. We are assuming contributions to prior are dense
-	int c = 0;
-	int r = 0;
+	int c = 0; //column counter
 	vector<StochasticNode*> const &snodes = _view->nodes();
 	for (vector<StochasticNode*>::const_iterator p = snodes.begin();
 	     p != snodes.end(); ++p)
@@ -262,19 +368,37 @@ namespace glm {
 	    double const *priorprec = snode->parents()[1]->value(_chain);
 	    double const *xold = snode->value(_chain);
 	    unsigned int length = snode->length();
-	
-	    int cbase = c; //first column of this diagonal block
+
 	    for (unsigned int i = 0; i < length; ++i, ++c) {
+
+		// Contributions to b
+		
 		b[c] = 0;
-		Ap[c] = r;
-		for (unsigned int j = 0; j < length; ++j, ++r) {
+		for (unsigned int j = 0; j < length; ++j) {
 		    b[c] += priorprec[i + length*j] * (priormean[j] - xold[j]);
-		    Ai[r] = cbase + j;
-		    Ax[r] = priorprec[i + length*j];
 		}
+
+		// Contributions to A.
+		
+		// We rely on the fact that A is sorted with only the
+		// lower triangular elements stored. This allows us to
+		// efficiently add the block-diagonal contribution from
+		// the prior. The code includes a sanity check for this
+		// assumption.
+		
+		double *a_c = Ax + Ap[c];    // Start of column c
+		int const *r_c = Ai + Ap[c]; // row check
+
+		int kmax = length - i;
+		for (int k = 0; k < kmax; ++k) {
+		    if (r_c[k] != c + k) {
+			throwLogicError("Sorting error in calCoef");
+		    }
+		    a_c[k] = priorprec[i + length * (i + k)];
+		}
+
 	    }
 	}
-	Ap[c] = r;
 
 	// Recalculate the design matrix, if necessary
 	calDesign();
@@ -286,33 +410,30 @@ namespace glm {
     
 	//   where 
 	//   - X is the design matrix
-	//   - tau is the (diagonal) variance matrix of the stochastic children
+	//   - tau is the diagonal precision matrix of the stochastic children
 	//   - mu is the mean of the stochastic children
 	//   - Y is the value of the stochastic children
 
-	cholmod_sparse *t_x = cholmod_transpose(_x, 1, glm_wk);
-	int *Tp = static_cast<int*>(t_x->p);
-	int *Ti = static_cast<int*>(t_x->i);
-	double *Tx = static_cast<double*>(t_x->x);
+	//Set up access to design matrix
+	int const *Xp = static_cast<int const*>(_x->p);
+	int const *Xi = static_cast<int const*>(_x->i);
+	double *Xx = static_cast<double*>(_x->x);
 
-	//FIXME: reusing previously defined c,r here
-	for (c = 0; c < t_x->ncol; ++c) {
-	    double tau = _outcomes[c]->precision();
-	    double delta = tau * (_outcomes[c]->value() - _outcomes[c]->mean());
-	    double sigma = sqrt(tau);
-	    for (r = Tp[c]; r < Tp[c+1]; ++r) {
-		b[Ti[r]] += Tx[r] * delta;
-		Tx[r] *= sigma;
+	//Add likelihood contribution to b
+	vector<double> delta(_x->nrow, 0);
+	vector<double> tau(_x->nrow);
+	for (unsigned int r = 0; r < _x->nrow; ++r) {
+	    tau[r] = _outcomes[r]->precision();
+	    delta[r] += tau[r] * (_outcomes[r]->value() - _outcomes[r]->mean());
+	}
+	for (unsigned int c = 0; c < _x->ncol; ++c) {
+	    for (int r = Xp[c]; r < Xp[c+1]; ++r) {
+		b[c] += Xx[r] * delta[Xi[r]];
 	    }
 	}
-
-	cholmod_sparse *Alik = cholmod_aat(t_x, 0, 0, 1, glm_wk);
-	cholmod_free_sparse(&t_x, glm_wk);
-	double one[2] = {1, 0};
-	A = cholmod_add(Aprior, Alik, one, one, 1, 0, glm_wk);
-	A->stype = -1;
-	cholmod_free_sparse(&Aprior, glm_wk);
-	cholmod_free_sparse(&Alik, glm_wk);
+	
+	//Calculate t(X) %*% diag(tau) %*% X, adding result to A
+	sparse_xtx(_x, tau, A);
     }
 
     void GLMMethod::updateLM(RNG *rng, bool stochastic) 
@@ -334,9 +455,8 @@ namespace glm {
 	double *b = 0;
 	cholmod_sparse *A = 0;
 	calCoef(b, A);
-	
+
 	// Get LDL' decomposition of posterior precision
-	A->stype = -1;
 	int ok = cholmod_factorize(A, _factor, glm_wk);
 	cholmod_free_sparse(&A, glm_wk);
 	if (!ok) {
@@ -491,7 +611,8 @@ namespace glm {
 	return true;
     }
 
-    void GLMMethod::updateAuxiliary(cholmod_dense *b, cholmod_factor *N, RNG *rng)
+    void
+    GLMMethod::updateAuxiliary(cholmod_dense *b, cholmod_factor *N, RNG *rng)
     {
     }
 

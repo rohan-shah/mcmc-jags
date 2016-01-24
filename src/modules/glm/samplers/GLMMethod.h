@@ -43,6 +43,7 @@ namespace glm {
 	std::vector<SingletonGraphView const *> _sub_views;
 	std::vector<Outcome *> _outcomes;
 	cholmod_sparse *_x;
+	cholmod_sparse *_A;
 	cholmod_factor *_factor;
     private:
 	std::vector<bool> _fixed;
