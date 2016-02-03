@@ -130,6 +130,7 @@ namespace bugs {
 	insert(new DNChisqr);
 	insert(new DNegBin);
 	insert(new DNorm);
+	insert(new DNT);
 	insert(new DPar);
 	insert(new DPois);
 	insert(new DSample);
