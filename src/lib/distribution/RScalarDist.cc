@@ -15,6 +15,10 @@ using std::log;
 using std::min;
 using std::max;
 
+//debuggin
+#include <stdexcept>
+using std::logic_error;
+
 namespace jags {
 
 double RScalarDist::calPlower(double lower, 
@@ -92,11 +96,12 @@ RScalarDist::logDensity(double x, PDFType type,
     
     double loglik =  d(x, type, parameters, true);
 
-    if (type != PDF_PRIOR && (lower || upper)) {
+    //if (type != PDF_PRIOR && (lower || upper)) {
+    if (lower || upper) {
 	//Normalize truncated distributions
 
 	double ll = l(parameters);
-	if (lower && *lower < ll) ll = *lower;
+	if (lower) ll = max(*lower, ll);
 	if (_discrete) ll -= 1; //Adjustment for discrete valued distributions
 
 	/* In theory, we just have to subtract log[P(lower <= X <=
@@ -108,20 +113,22 @@ RScalarDist::logDensity(double x, PDFType type,
 
 	if (have_lower && have_upper) {
 	    if (p(ll, parameters, false, false) < 0.5) {
-		//Use upper tail
+		//Use upper tail: log (P(lower <= X) - P(upper < X))
 		loglik -= log(p(ll, parameters, false, false) -
 			      p(*upper, parameters, false, false));
 	    }
 	    else {
-		//Use lower tail
+		//Use lower tail: log (P(X <= upper) - P(X < lower))
 		loglik -= log(p(*upper, parameters, true, false) - 
 			      p(ll, parameters, true, false));
 	    }
 	}
 	else if (have_lower) {
+	    // log P(lower <= X)
 	    loglik -= p(ll, parameters, false, true);
 	}
 	else if (have_upper) {
+	    // log P(X <= upper)
 	    loglik -= p(*upper, parameters, true, true);
 	}
     }

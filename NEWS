@@ -5,6 +5,11 @@ Bug fixes
 * JAGS 4.1.0 did not compile under Solaris Studio 12.3 as it referenced
   some C99 functions that are not part of the C++98 standard (It did
   compile under Solaris Studio 12.4).
+* The non-central t distribution (dnt) was not inserted into the bugs
+  module.
+* The likelihood for left-truncated nodes was not calculated correctly
+  (This did not affect truncated nodes with no parents, only truncated
+   outcome variables).
 
 Changes in JAGS 4.1.0
 
