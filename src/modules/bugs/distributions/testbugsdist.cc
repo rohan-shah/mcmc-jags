@@ -39,6 +39,7 @@
 #include <cmath>
 #include <set>
 #include <sstream>
+#include <algorithm>
 
 using std::string;
 using std::vector;
@@ -48,6 +49,7 @@ using std::min;
 using std::multiset;
 using std::abs;
 using std::ostringstream;
+using std::sort;
 
 using jags::ScalarDist;
 using jags::RScalarDist;
@@ -245,6 +247,7 @@ void BugsDistTest::rscalar_rpq(RScalarDist const *dist,
       inheriting from RScalarDist.
     */
     unsigned int nsim = 100;
+    unsigned int nsim2 = 10;
     unsigned int nquant = 10;
     
     CPPUNIT_ASSERT_MESSAGE(dist->name(), checkNPar(dist, par.size()));
@@ -275,8 +278,7 @@ void BugsDistTest::rscalar_rpq(RScalarDist const *dist,
 	CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(dist->name(), y, z, tol);
     }
 
-    //FIXME: This may be slow?
-    for (unsigned int s = 0; s < nsim; ++s) {
+    for (unsigned int s = 0; s < nsim2; ++s) {
 	
 	// Test truncated sampling
 	for (unsigned int i = 0; i <= nquant; ++i) {
@@ -315,7 +317,118 @@ void BugsDistTest::rscalar_rpq(RScalarDist const *dist,
 	    }
 	}
     }
+
+    rscalar_trunclik(dist, par);
 }
+
+static void scalar_trunclik_discrete(RScalarDist const *dist,
+				      vector<double const *> const &par,
+				      double bound, bool lower)
+{
+    // Test normalization of truncated likelihood for discrete variables
+    // by enumeration
+    
+    CPPUNIT_ASSERT(dist->discrete());
+
+    double delta = lower ? -1 : 1;
+    double const *ll = 0;
+    double const *uu = 0;
+    if (lower) {
+	uu = &bound;
+    }
+    else {
+	ll = &bound;
+    }
+    double lik = 0;
+    double likmax = dist->logDensity(bound, jags::PDF_FULL, par, ll, uu);
+
+    double x = bound;
+    for (unsigned int i = 0; i < 1000; ++i) {
+	double y = dist->logDensity(x, jags::PDF_FULL, par,  ll, uu);
+	lik += exp(y);
+	if (y > likmax) {
+	    likmax = y;
+	}
+	else if (y < likmax - 10) {
+	    break;
+	}
+	x += delta;
+    }
+    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(dist->name(), 1.0, lik, 1e-2);
+}
+
+static void scalar_trunclik_cont(RScalarDist const *dist,
+				 vector<double const *> const &par,
+				 double bound, bool lower, jags::RNG *rng)
+{
+    // Test normalization of truncated likelihood for continuous
+    // variables by Monte Carlo
+    
+    CPPUNIT_ASSERT(!dist->discrete());
+
+    //Ensure that the density is finite at the other boundary (ob)
+    //If not then just return as this method will not work
+    double ob = lower ? dist->l(par) : dist->u(par);
+    double oblik = exp(dist->logDensity(ob, jags::PDF_FULL, par, 0, 0));
+    if (jags_finite(ob) && !jags_finite(oblik)) {
+	return;
+    }
+
+    double const *ll = 0;
+    double const *uu = 0;
+    if (lower) {
+	uu = &bound;
+    }
+    else {
+	ll = &bound;
+    }
+
+    unsigned int N = 1000;
+    vector<double> x(N);
+    for (unsigned int i = 0; i < N; ++i) {
+	x[i] = dist->randomSample(par, ll, uu, rng);
+    }
+    sort(x.begin(), x.end());
+
+    double lik = 0;
+    vector<double> y(N);
+    for (unsigned int i = 0; i < N; ++i) {
+	y[i] = exp(dist->logDensity(x[i], jags::PDF_FULL, par, ll, uu));
+    }
+    for (unsigned int i = 1; i < N; ++i) {
+	lik += (x[i] - x[i-1]) * (y[i] + y[i-1]) / 2;
+    }
+
+    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(dist->name(), 1.0, lik, 2e-2);
+}
+
+
+void BugsDistTest::rscalar_trunclik(RScalarDist const *dist, 
+				    vector<double const *> const &par)
+{
+    /*
+      Test likelihood calculations for truncated distributions
+    */
+    CPPUNIT_ASSERT_MESSAGE(dist->name(), checkNPar(dist, par.size()));
+    CPPUNIT_ASSERT_MESSAGE(dist->name(), dist->checkParameterValue(par));
+    
+    double ll = dist->q(0.1, par, true, false);
+    double uu = dist->q(0.9, par, true, false);
+
+    if (dist->discrete()) {
+	scalar_trunclik_discrete(dist, par, ll, true);
+	scalar_trunclik_discrete(dist, par, ll, false);
+	scalar_trunclik_discrete(dist, par, uu, true);
+	scalar_trunclik_discrete(dist, par, uu, false);
+    }
+    else {
+	scalar_trunclik_cont(dist, par, ll, true, _rng);
+	scalar_trunclik_cont(dist, par, ll, false, _rng);
+	scalar_trunclik_cont(dist, par, uu, true, _rng);
+	scalar_trunclik_cont(dist, par, uu, false, _rng);
+    }
+}
+
 
 static vector<double const *> mkPar(double const &v1)
 {
@@ -360,7 +473,7 @@ void BugsDistTest::rscalar()
     
     rscalar_rpq(_dbin, mkPar(0.1, 10));
     rscalar_rpq(_dbin, mkPar(0.9, 1));
-    
+
     rscalar_rpq(_dchisqr, mkPar(1));
     rscalar_rpq(_dchisqr, mkPar(2));
     rscalar_rpq(_dchisqr, mkPar(3));
@@ -368,6 +481,7 @@ void BugsDistTest::rscalar()
 
     rscalar_rpq(_ddexp, mkPar(2, 0.1));
     rscalar_rpq(_ddexp, mkPar(-5, 2.8));
+
     
     rscalar_rpq(_dexp, mkPar(0.1));
     rscalar_rpq(_dexp, mkPar(7));
