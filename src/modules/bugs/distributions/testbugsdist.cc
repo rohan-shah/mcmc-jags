@@ -322,8 +322,8 @@ void BugsDistTest::rscalar_rpq(RScalarDist const *dist,
 }
 
 static void scalar_trunclik_discrete(RScalarDist const *dist,
-				      vector<double const *> const &par,
-				      double bound, bool lower)
+				     vector<double const *> const &par,
+				     double bound, bool lower)
 {
     // Test normalization of truncated likelihood for discrete variables
     // by enumeration
@@ -362,16 +362,21 @@ static void scalar_trunclik_cont(RScalarDist const *dist,
 				 double bound, bool lower, jags::RNG *rng)
 {
     // Test normalization of truncated likelihood for continuous
-    // variables by Monte Carlo
+    // variables by approximate integration using the trapezoid method
+    // over a set of points randomly sampled from the truncated
+    // distribution.
     
     CPPUNIT_ASSERT(!dist->discrete());
-
+    CPPUNIT_ASSERT(jags_finite(bound));
+    
     //Ensure that the density is finite at the other boundary (ob)
     //If not then just return as this method will not work
     double ob = lower ? dist->l(par) : dist->u(par);
-    double oblik = exp(dist->logDensity(ob, jags::PDF_FULL, par, 0, 0));
-    if (jags_finite(ob) && !jags_finite(oblik)) {
-	return;
+    if (jags_finite(ob)) {
+	double oblik = exp(dist->logDensity(ob, jags::PDF_FULL, par, 0, 0));
+	if (!jags_finite(oblik)) {
+	    return;
+	}
     }
 
     double const *ll = 0;
@@ -383,23 +388,33 @@ static void scalar_trunclik_cont(RScalarDist const *dist,
 	ll = &bound;
     }
 
+    // Simulate values from the truncated distribution
     unsigned int N = 1000;
     vector<double> x(N);
     for (unsigned int i = 0; i < N; ++i) {
 	x[i] = dist->randomSample(par, ll, uu, rng);
     }
+    // Add boundary values
+    x.push_back(bound);
+    if (jags_finite(ob)) {
+	x.push_back(ob);
+    }
     sort(x.begin(), x.end());
-
+    
     double lik = 0;
-    vector<double> y(N);
-    for (unsigned int i = 0; i < N; ++i) {
+    vector<double> y(x.size());
+    for (unsigned int i = 0; i < x.size(); ++i) {
 	y[i] = exp(dist->logDensity(x[i], jags::PDF_FULL, par, ll, uu));
     }
     for (unsigned int i = 1; i < N; ++i) {
 	lik += (x[i] - x[i-1]) * (y[i] + y[i-1]) / 2;
     }
 
-    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(dist->name(), 1.0, lik, 2e-2);
+    // Note that the tolerance here is arbitrary. It is possible that
+    // this test will break in the future if the RNG is changed. In
+    // this case we either need to increase N or increase the
+    // tolerance.
+    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(dist->name(), 1.0, lik, 1e-2);
 }
 
 
