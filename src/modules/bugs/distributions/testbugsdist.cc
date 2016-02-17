@@ -359,12 +359,10 @@ static void scalar_trunclik_discrete(RScalarDist const *dist,
 
 static void scalar_trunclik_cont(RScalarDist const *dist,
 				 vector<double const *> const &par,
-				 double bound, bool lower, jags::RNG *rng)
+				 double bound, bool lower)
 {
     // Test normalization of truncated likelihood for continuous
     // variables by approximate integration using the trapezoid method
-    // over a set of points randomly sampled from the truncated
-    // distribution.
     
     CPPUNIT_ASSERT(!dist->discrete());
     CPPUNIT_ASSERT(jags_finite(bound));
@@ -373,48 +371,40 @@ static void scalar_trunclik_cont(RScalarDist const *dist,
     //If not then just return as this method will not work
     double ob = lower ? dist->l(par) : dist->u(par);
     if (jags_finite(ob)) {
-	double oblik = exp(dist->logDensity(ob, jags::PDF_FULL, par, 0, 0));
-	if (!jags_finite(oblik)) {
+	if (!jags_finite(dist->d(ob, jags::PDF_FULL, par, false))) {
 	    return;
 	}
     }
 
-    double const *ll = 0;
-    double const *uu = 0;
-    if (lower) {
-	uu = &bound;
-    }
-    else {
-	ll = &bound;
-    }
-
-    // Simulate values from the truncated distribution
+    //Create grid of points for evaluating the likelihood
+    //If lower==false then the grid is in reverse order
+    vector<double> x;
     unsigned int N = 1000;
-    vector<double> x(N);
-    for (unsigned int i = 0; i < N; ++i) {
-	x[i] = dist->randomSample(par, ll, uu, rng);
-    }
-    // Add boundary values
-    x.push_back(bound);
     if (jags_finite(ob)) {
 	x.push_back(ob);
     }
-    sort(x.begin(), x.end());
-    
-    double lik = 0;
-    vector<double> y(x.size());
-    for (unsigned int i = 0; i < x.size(); ++i) {
-	y[i] = exp(dist->logDensity(x[i], jags::PDF_FULL, par, ll, uu));
-    }
+    double pmax = dist->p(bound, par, lower, false);
     for (unsigned int i = 1; i < N; ++i) {
-	lik += (x[i] - x[i-1]) * (y[i] + y[i-1]) / 2;
+	x.push_back(dist->q(i*pmax/N, par, lower, false));
     }
+    x.push_back(bound);
 
-    // Note that the tolerance here is arbitrary. It is possible that
-    // this test will break in the future if the RNG is changed. In
-    // this case we either need to increase N or increase the
-    // tolerance.
-    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(dist->name(), 1.0, lik, 1e-2);
+    // Calculate likelihood by trapezoid method
+    // FIXME: WE could probably do better
+    double lik = 0;
+    double const *ll = lower ? 0 : &bound;
+    double const *uu = lower ? &bound : 0;
+    double y0 = exp(dist->logDensity(x[0], jags::PDF_FULL, par, ll, uu)); 
+    for (unsigned int i = 1; i < x.size(); ++i) {
+	double y = exp(dist->logDensity(x[i], jags::PDF_FULL, par, ll, uu));
+	lik += (x[i] - x[i-1]) * (y + y0) / 2;
+	y0 = y;
+    }
+    if (!lower) {
+	lik = -lik; //adjust for reverse grid
+    }
+    
+    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(dist->name(), 1.0, lik, 1.1e-2);
 }
 
 
@@ -437,10 +427,10 @@ void BugsDistTest::rscalar_trunclik(RScalarDist const *dist,
 	scalar_trunclik_discrete(dist, par, uu, false);
     }
     else {
-	scalar_trunclik_cont(dist, par, ll, true, _rng);
-	scalar_trunclik_cont(dist, par, ll, false, _rng);
-	scalar_trunclik_cont(dist, par, uu, true, _rng);
-	scalar_trunclik_cont(dist, par, uu, false, _rng);
+	scalar_trunclik_cont(dist, par, ll, true);
+	scalar_trunclik_cont(dist, par, ll, false);
+	scalar_trunclik_cont(dist, par, uu, true);
+	scalar_trunclik_cont(dist, par, uu, false);
     }
 }
 
