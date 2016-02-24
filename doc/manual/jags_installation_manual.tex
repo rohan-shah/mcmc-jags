@@ -52,6 +52,14 @@ If you have the cppunit library installed then you can test the build with
 \begin{verbatim}
 make check
 \end{verbatim}
+WARNING. If you already have a copy of the jags library installed on
+your system then the test program created by \code{make check} will
+link against the {\bf installed} library and not the one in your build
+directory. So if the test suite includes a regression test for a bug
+that was fixed in the version you are building but a previous version
+of JAGS is already installed then the unit tests will fail. Best
+practice is to run the tests after \code{make install} so the build
+and installed versions are the same.
 
 \subsection{Configure options}
 

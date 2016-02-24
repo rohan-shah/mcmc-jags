@@ -260,22 +260,22 @@ void BugsDistTest::rscalar_rpq(RScalarDist const *dist,
 	double p = dist->p(y, par, true, false);
 	CPPUNIT_ASSERT_MESSAGE(dist->name(), p >= 0 && p <= 1);
 	double z = dist->q(p, par, true, false);
-	CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(dist->name(), y, z, tol);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(dist->name(), y, z, tol*abs(y));
 	//Now do the same on a log scale
 	double logp = dist->p(y, par, true, true);
 	CPPUNIT_ASSERT_MESSAGE(dist->name(), logp <= 0);
 	z = dist->q(logp, par, true, true);
-	CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(dist->name(), y, z, tol);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(dist->name(), y, z, tol*abs(y));
 	//Using upper tail
 	p = dist->p(y, par, false, false);
 	CPPUNIT_ASSERT_MESSAGE(dist->name(), p >= 0 && p <= 1);
 	z = dist->q(p, par, false, false);
-	CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(dist->name(), y, z, tol);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(dist->name(), y, z, tol*abs(y));
 	//Upper tail on log scale
 	logp = dist->p(y, par, false, true);
 	CPPUNIT_ASSERT_MESSAGE(dist->name(), logp <= 0);
 	z = dist->q(logp, par, false, true);
-	CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(dist->name(), y, z, tol);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(dist->name(), y, z, tol*abs(y));
     }
 
     for (unsigned int s = 0; s < nsim2; ++s) {

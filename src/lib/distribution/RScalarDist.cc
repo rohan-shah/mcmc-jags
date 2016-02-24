@@ -96,8 +96,8 @@ RScalarDist::logDensity(double x, PDFType type,
     
     double loglik =  d(x, type, parameters, true);
 
-    //if (type != PDF_PRIOR && (lower || upper)) {
-    if (lower || upper) {
+    if (type != PDF_PRIOR && (lower || upper)) {
+
 	//Normalize truncated distributions
 
 	double ll = l(parameters);
