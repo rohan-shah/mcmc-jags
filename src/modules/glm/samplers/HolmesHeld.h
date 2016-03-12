@@ -38,8 +38,8 @@ namespace glm {
 		   std::vector<Outcome *> const &outcomes,
 		   unsigned int chain);
 	/**
-	 * Updates the auxiliary variables (z[]) provided by the
-	 * parent BinaryGLM class. This function is called by
+	 * Updates the auxiliary variables marginalizing over the
+	 * value of the linear predictor. This function is called by
 	 * GLMMethod#updateLM.
 	 *
 	 * In the parent GLMMethod class, the posterior precision of
