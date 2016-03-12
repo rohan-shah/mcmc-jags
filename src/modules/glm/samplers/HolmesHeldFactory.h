@@ -18,20 +18,9 @@ namespace glm {
 	 * sampling binary GLMs with probit or logistic link.
 	 */
 	GLMMethod *newBinary(GraphView const *view, 
-			     std::vector<GraphView const *> const &sub_views,
+			     std::vector<SingletonGraphView const *> const &sub_views,
 			     std::vector<Outcome *> const &outcomes,
 			     unsigned int chain) const;
-	/**
-	 * Returns true. The Holmes-Held update method requires a
-	 * fixed outcome because the auxiliary variables are updated
-	 * by a reversible transition from their current values.
-	 */
-	bool fixedOutcome() const;
-	/**
-	 * Returns true. The Holmes-Held update method requires a
-	 * fixed design matrix
-	 */
-	bool fixedDesign() const;
     };
 
 }}

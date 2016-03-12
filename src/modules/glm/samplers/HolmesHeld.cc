@@ -46,10 +46,10 @@ namespace jags {
 namespace glm {
 
     HolmesHeld::HolmesHeld(GraphView const *view,
-			   vector<GraphView const *> const &sub_views,
+			   vector<SingletonGraphView const *> const &sub_views,
 			   vector<Outcome *> const &outcomes,
 			   unsigned int chain)
-	: GLMMethod(view, sub_views, outcomes, chain), _aux_init(true)
+	: GLMMethod(view, sub_views, outcomes, chain, true)
     {
     }
 
@@ -122,12 +122,7 @@ namespace glm {
 	    // In a heterogeneous GLM, we may have some normal
 	    // outcomes as well as binary outcomes. These can be
 	    // skipped as there is no need for auxiliary variables
-	    /* FIXME
-	       No way to skip in new API
-
-	    if (_outcomes[r] == BGLM_NORMAL)
-		continue;
-	    */
+	    if (_outcomes[r]->fixedb()) continue;
 
 	    int top = cs_spsolve(&cs_L, &cs_Ptx, r, xi, ur, 0, 1);
 		
@@ -137,44 +132,35 @@ namespace glm {
 	    //Calculate mean and precision of z[r] conditional
 	    //on z[s] for s != r
 	    double zr_mean = 0;
-	    double Hr = 0; // Diagonal of hat matrix
+	    double gr = 0; 
 	    
 	    if (_factor->is_ll) {
 		for (unsigned int j = top; j < ncol; ++j) {
 		    zr_mean  += ur[xi[j]] * wx[xi[j]]; 
-		    Hr  += ur[xi[j]] * ur[xi[j]];
+		    gr  += ur[xi[j]] * ur[xi[j]];
 		}
 	    }
 	    else {
 		for (unsigned int j = top; j < ncol; ++j) {
 		    zr_mean  += ur[xi[j]] * wx[xi[j]] / d[xi[j]]; 
-		    Hr  += ur[xi[j]] * ur[xi[j]] / d[xi[j]];
+		    gr  += ur[xi[j]] * ur[xi[j]] / d[xi[j]];
 		}
 	    }
-	    Hr *= tau_r;
+	    double Hr = gr * tau_r; // diagonal of hat matrix
 	    if (1 - Hr <= 0) {
 		// Theoretically this should never happen, but numerical instability may cause it
 		StochasticNode const *snode = _view->stochasticChildren()[r];
 		throwNodeError(snode, "Highly influential outcome variable in Holmes-Held update method.");
 	    }
-	    zr_mean -= Hr * (_outcomes[r]->value()_z[r] - mu_r);
+	    zr_mean -= Hr * (_outcomes[r]->value() - mu_r);
 	    zr_mean /= (1 - Hr);
-	    double zr_prec = (1 - Hr) * tau_r;
+	    double zr_var = gr / (1 - Hr);
 	    
-	    double yr = schildren[r]->value(_chain)[0];
-	    double zold = _z[r];
-	    if (yr == 1) {
-		_z[r] = lnormal(0, rng, mu_r + zr_mean, 1/sqrt(zr_prec));
-	    }
-	    else if (yr == 0) {
-		_z[r] = rnormal(0, rng, mu_r + zr_mean, 1/sqrt(zr_prec));
-	    }
-	    else {
-		throwLogicError("Invalid child value in HolmesHeld");
-	    }
+	    double zold = _outcomes[r]->value();
+	    _outcomes[r]->update(zr_mean + mu_r, zr_var, rng); 
 	    
 	    //Add new contribution of row r back to b
-	    double zdelta = (_z[r] - zold) * tau_r;
+	    double zdelta = (_outcomes[r]->value() - zold) * tau_r;
 	    for (unsigned int j = top; j < ncol; ++j) {
 		wx[xi[j]] += ur[xi[j]] * zdelta; 
 	    }
@@ -190,27 +176,11 @@ namespace glm {
     
     void HolmesHeld::update(RNG *rng)
     {
-	if (_aux_init) {
-	    for (unsigned int r = 0; r < _outcomes.size(); ++r) {
-		_outcomes[r]->update(rng);
-	    }
-	    _aux_init = false;
-	}
-
-	/* Well, this is awkward. Nothing in the new API to update mixture parameters separate
-	   from the other auxiliary variables
-
-	   FIXME
-
-	for (unsigned int r = 0; r < _tau.size(); ++r)
+	for (vector<Outcome*>::const_iterator p = _outcomes.begin();
+	     p != _outcomes.end(); ++p)
 	{
-	    if (_outcome[r] == BGLM_LOGIT) {
-		double delta = fabs(_outcomes[r]->value() - _outcomes[r]->mean());
-		_tau[r] = REG_PENALTY + 1/sample_lambda(delta, rng);
-	    }
+	    (*p)->update(rng);
 	}
-	*/
-	
 	updateLM(rng);
     }
 

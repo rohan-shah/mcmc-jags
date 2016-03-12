@@ -64,6 +64,17 @@ namespace glm {
 	_mix->update(_y_star - _lp, _nb, rng);
     }
 
+
+    /*
+    void AuxMixBinomial::update(double mean, double var, RNG *rng)
+    {
+	if (_nb == 0) return;
+
+	// sample the aggregated utility
+	double 
+    }
+    */
+    
     double AuxMixBinomial::value() const
     {
 	if (_nb == 0) {

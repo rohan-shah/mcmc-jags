@@ -70,7 +70,17 @@ namespace glm {
 	 * @param var  Variance of the linear predictor.
 	 * @param rng  Random number generator.
 	 */
-	//virtual void update(double mean, double var, RNG *rng);
+	virtual void update(double mean, double var, RNG *rng);
+	/**
+	 * Returns true if the contribution to the canonical parameter
+	 * "b" is fixed at any given iteration. The default returns false.
+	 */
+	virtual bool fixedb() const;
+	/**
+	 * Returns true if the contribution to the canonical parameter
+	 * "A" is fixed at any given iteration. The default returns false.
+	 */
+	virtual bool fixedA() const;
     };
 
 }}

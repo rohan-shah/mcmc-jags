@@ -16,8 +16,8 @@ namespace glm {
     {
 	double const &_y;
 	double _z;
-	double _delta;
 	double _tau;
+	double _sigma2;
       public:
 	BinaryLogit(StochasticNode const *snode, unsigned int chain);
 	double value() const;

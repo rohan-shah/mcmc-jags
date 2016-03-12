@@ -27,7 +27,6 @@ namespace glm {
      * Albert-Chib algorithm is not so clear cut.
      */
     class HolmesHeld : public GLMMethod {
-	bool _aux_init; //Do we need to initialize auxiliary variables?
     public:
 	/**
 	 * Constructor.
@@ -35,7 +34,7 @@ namespace glm {
 	 * @see GLMMethod#GLMMethod
 	 */
 	HolmesHeld(GraphView const *view, 
-		   std::vector<GraphView const *> const &sub_views,
+		   std::vector<SingletonGraphView const *> const &sub_views,
 		   std::vector<Outcome *> const &outcomes,
 		   unsigned int chain);
 	/**
