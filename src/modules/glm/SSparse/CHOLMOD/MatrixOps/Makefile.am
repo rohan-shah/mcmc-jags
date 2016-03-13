@@ -5,7 +5,7 @@ cholmod_submatrix.c cholmod_horzcat.c cholmod_sdmult.c			\
 cholmod_symmetry.c cholmod_norm.c cholmod_ssmult.c cholmod_vertcat.c
 
 cholmodmatrix_la_CPPFLAGS =				\
--I$(top_srcdir)/src/modules/glm/SSparse/UFconfig		\
+-I$(top_srcdir)/src/modules/glm/SSparse/config		\
 -I$(top_srcdir)/src/modules/glm/SSparse/CHOLMOD/Include
 
 cholmodmatrix_la_LDFLAGS = -no-undefined -module -avoid-version

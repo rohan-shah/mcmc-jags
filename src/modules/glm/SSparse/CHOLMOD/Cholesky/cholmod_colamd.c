@@ -7,7 +7,6 @@
  * The CHOLMOD/Cholesky Module is licensed under Version 2.1 of the GNU
  * Lesser General Public License.  See lesser.txt for a text of the license.
  * CHOLMOD is also available under other licenses; contact authors for details.
- * http://www.cise.ufl.edu/research/sparse
  * -------------------------------------------------------------------------- */
 
 /* CHOLMOD interface to the COLAMD ordering routine (version 2.4 or later).
@@ -118,9 +117,6 @@ int CHOLMOD(colamd)
     /* ---------------------------------------------------------------------- */
     /* allocate COLAMD workspace */
     /* ---------------------------------------------------------------------- */
-
-    /* colamd_printf is only available in colamd v2.4 or later */
-    colamd_printf = Common->print_function ;
 
     C = CHOLMOD(allocate_sparse) (ncol, nrow, alen, TRUE, TRUE, 0,
 	    CHOLMOD_PATTERN, Common) ;

@@ -9,8 +9,8 @@ cholmod_la_LIBADD = Cholesky/cholmodcholesky.la 	\
 	MatrixOps/cholmodmatrix.la \
 	Modify/cholmodmodify.la \
 	Supernodal/cholmodsupernodal.la \
-	Check/cholmodcheck.la
+	Check/cholmodcheck.la 
 
-cholmod_la_LDFLAGS = -no-undefined -module -avoid-version
+cholmod_la_LDFLAGS = -no-undefined -module -avoid-version 
 
 DIST_EXTRA = README.txt

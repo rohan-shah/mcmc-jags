@@ -4,7 +4,7 @@ colamd_la_SOURCES = \
 Source/colamd.c \
 Source/colamd_global.c
 
-colamd_la_CPPFLAGS = -I$(top_srcdir)/src/modules/glm/SSparse/UFconfig \
+colamd_la_CPPFLAGS = -I$(top_srcdir)/src/modules/glm/SSparse/config	\
 -I$(top_srcdir)/src/modules/glm/SSparse/COLAMD/Include
 
 colamd_la_LDFLAGS = -no-undefined -module -avoid-version

@@ -6,7 +6,7 @@ glm_la_SOURCES = glm.cc
 
 glm_la_CPPFLAGS = -I$(top_srcdir)/src/include	\
 -I$(top_srcdir)/src/modules/glm/CSparse		\
--I$(top_srcdir)/src/modules/glm/SSparse/UFconfig \
+-I$(top_srcdir)/src/modules/glm/SSparse/config \
 -I$(top_srcdir)/src/modules/glm/SSparse/CHOLMOD/Include
 
 glm_la_LIBADD = samplers/libglmsampler.la CSparse/csparse.la	\

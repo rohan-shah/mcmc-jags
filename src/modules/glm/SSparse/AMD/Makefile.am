@@ -17,7 +17,7 @@ Source/amd_global.c \
 Source/amd_postorder.c \
 Source/amd_valid.c
 
-amd_la_CPPFLAGS = -I$(top_srcdir)/src/modules/glm/SSparse/UFconfig \
+amd_la_CPPFLAGS = -I$(top_srcdir)/src/modules/glm/SSparse/config \
 -I$(top_srcdir)/src/modules/glm/SSparse/AMD/Include
 
 noinst_HEADERS = \

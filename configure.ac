@@ -127,8 +127,10 @@ AC_CONFIG_FILES([
   src/modules/glm/Makefile
   src/modules/glm/CSparse/Makefile
   src/modules/glm/SSparse/Makefile
-  src/modules/glm/SSparse/UFconfig/Makefile
+  src/modules/glm/SSparse/config/Makefile
   src/modules/glm/SSparse/AMD/Makefile
+  src/modules/glm/SSparse/CAMD/Makefile
+  src/modules/glm/SSparse/CCOLAMD/Makefile
   src/modules/glm/SSparse/COLAMD/Makefile
   src/modules/glm/SSparse/CHOLMOD/Makefile
   src/modules/glm/SSparse/CHOLMOD/Check/Makefile

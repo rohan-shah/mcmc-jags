@@ -6,8 +6,8 @@ cholmod_postorder.c cholmod_rcond.c cholmod_resymbol.c		\
 cholmod_rowcolcounts.c cholmod_rowfac.c cholmod_solve.c		\
 cholmod_spsolve.c 
 
-cholmodcholesky_la_CPPFLAGS = \
--I$(top_srcdir)/src/modules/glm/SSparse/UFconfig	\
+cholmodcholesky_la_CPPFLAGS = -DNPARTITION \
+-I$(top_srcdir)/src/modules/glm/SSparse/config	\
 -I$(top_srcdir)/src/modules/glm/SSparse/CHOLMOD/Include	\
 -I$(top_srcdir)/src/modules/glm/SSparse/AMD/Include		\
 -I$(top_srcdir)/src/modules/glm/SSparse/COLAMD/Include

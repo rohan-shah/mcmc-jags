@@ -7,7 +7,7 @@
  * The CHOLMOD/MatrixOps Module is licensed under Version 2.0 of the GNU
  * General Public License.  See gpl.txt for a text of the license.
  * CHOLMOD is also available under other licenses; contact authors for details.
- * http://www.cise.ufl.edu/research/sparse
+ * http://www.suitesparse.com
  * -------------------------------------------------------------------------- */
 
 /* r = norm (A), compute the infinity-norm, 1-norm, or 2-norm of a sparse or
@@ -17,6 +17,7 @@
  * Pattern, real, complex, and zomplex sparse matrices are supported.
  */
 
+#ifndef NGPL
 #ifndef NMATRIXOPS
 
 #include "cholmod_internal.h"
@@ -50,11 +51,11 @@ static double abs_value
 	    break ;
 
 	case CHOLMOD_COMPLEX:
-	    s = Common->hypotenuse (Ax [2*p], Ax [2*p+1]) ;
+	    s = SuiteSparse_config.hypot_func (Ax [2*p], Ax [2*p+1]) ;
 	    break ;
 
 	case CHOLMOD_ZOMPLEX:
-	    s = Common->hypotenuse (Ax [p], Az [p]) ;
+	    s = SuiteSparse_config.hypot_func (Ax [p], Az [p]) ;
 	    break ;
     }
     return (s) ;
@@ -449,4 +450,5 @@ double CHOLMOD(norm_sparse)
 
     return (anorm) ;
 }
+#endif
 #endif

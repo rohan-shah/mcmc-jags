@@ -4,11 +4,10 @@
 
 /* -----------------------------------------------------------------------------
  * CHOLMOD/Include/cholmod_internal.h.
- * Copyright (C) 2005-2006, Univ. of Florida.  Author: Timothy A. Davis
+ * Copyright (C) 2005-2013, Univ. of Florida.  Author: Timothy A. Davis
  * CHOLMOD/Include/cholmod_internal.h is licensed under Version 2.1 of the GNU
  * Lesser General Public License.  See lesser.txt for a text of the license.
  * CHOLMOD is also available under other licenses; contact authors for details.
- * http://www.cise.ufl.edu/research/sparse
  * -------------------------------------------------------------------------- */
 
 /* CHOLMOD internal include file.
@@ -42,9 +41,7 @@
  * CHOLMOD with -DNLARGEFILE.  You must do this for MATLAB 6.5 and earlier,
  * for example. */
 
-/*
 #include "cholmod_io64.h"
-*/
 
 /* ========================================================================== */
 /* === debugging and basic includes ========================================= */
@@ -157,14 +154,14 @@
 #define HUGE_DOUBLE 1e308
 
 /* ========================================================================== */
-/* === int/UF_long and double/float definitions ============================= */
+/* === int/long and double/float definitions ================================ */
 /* ========================================================================== */
 
 /* CHOLMOD is designed for 3 types of integer variables:
  *
  *	(1) all integers are int
- *	(2) most integers are int, some are UF_long
- *	(3) all integers are UF_long
+ *	(2) most integers are int, some are SuiteSparse_long
+ *	(3) all integers are SuiteSparse_long
  *
  * and two kinds of floating-point values:
  *
@@ -179,17 +176,17 @@
  * first two are currently supported):
  *
  *	DINT	double, int			prefix: cholmod_
- *	DLONG	double, UF_long			prefix: cholmod_l_
- *	DMIX	double, mixed int/UF_long	prefix: cholmod_m_
+ *	DLONG	double, SuiteSparse_long	prefix: cholmod_l_
+ *	DMIX	double, mixed int/SuiteSparse_long	prefix: cholmod_m_
  *	SINT	float, int			prefix: cholmod_si_
- *	SLONG	float, UF_long			prefix: cholmod_sl_
+ *	SLONG	float, SuiteSparse_long		prefix: cholmod_sl_
  *	SMIX	float, mixed int/log		prefix: cholmod_sm_
  *
  * These are selected with compile time flags (-DDLONG, for example).  If no
  * flag is selected, the default is DINT.
  *
  * All six versions use the same include files.  The user-visible include files
- * are completely independent of which int/UF_long/double/float version is being
+ * are completely independent of which int/long/double/float version is being
  * used.  The integer / real types in all data structures (sparse, triplet,
  * dense, common, and triplet) are defined at run-time, not compile-time, so
  * there is only one "cholmod_sparse" data type.  Void pointers are used inside
@@ -197,13 +194,14 @@
  * structure has an itype and dtype field which determines the kind of basic
  * types used.  These are defined in Include/cholmod_core.h.
  *
- * FUTURE WORK: support all six types (float, and mixed int/UF_long)
+ * FUTURE WORK: support all six types (float, and mixed int/long)
  *
- * UF_long is normally defined as long.  However, for WIN64 it is __int64.
- * It can also be redefined for other platforms, by modifying UFconfig.h.
+ * SuiteSparse_long is normally defined as long.  However, for WIN64 it is
+ * __int64.  It can also be redefined for other platforms, by modifying
+ * SuiteSparse_config.h.
  */
 
-#include "UFconfig.h"
+#include "SuiteSparse_config.h"
 
 /* -------------------------------------------------------------------------- */
 /* Size_max: the largest value of size_t */
@@ -218,47 +216,19 @@ size_t cholmod_l_add_size_t (size_t a, size_t b, int *ok) ;
 size_t cholmod_l_mult_size_t (size_t a, size_t k, int *ok) ;
 
 /* -------------------------------------------------------------------------- */
-/* double (also complex double), UF_long */
+/* double (also complex double), SuiteSparse_long */
 /* -------------------------------------------------------------------------- */
 
 #ifdef DLONG
 #define Real double
-#define Int UF_long
-#define Int_max UF_long_max
+#define Int SuiteSparse_long
+#define Int_max SuiteSparse_long_max
 #define CHOLMOD(name) cholmod_l_ ## name
 #define LONG
 #define DOUBLE
 #define ITYPE CHOLMOD_LONG
 #define DTYPE CHOLMOD_DOUBLE
-#define ID UF_long_id
-
-/* -------------------------------------------------------------------------- */
-/* double, int/UF_long */
-/* -------------------------------------------------------------------------- */
-
-#elif defined (DMIX)
-#error "mixed int/UF_long not yet supported"
-
-/* -------------------------------------------------------------------------- */
-/* single, int */
-/* -------------------------------------------------------------------------- */
-
-#elif defined (SINT)
-#error "single-precision not yet supported"
-
-/* -------------------------------------------------------------------------- */
-/* single, UF_long */
-/* -------------------------------------------------------------------------- */
-
-#elif defined (SLONG)
-#error "single-precision not yet supported"
-
-/* -------------------------------------------------------------------------- */
-/* single, int/UF_long */
-/* -------------------------------------------------------------------------- */
-
-#elif defined (SMIX)
-#error "single-precision not yet supported"
+#define ID SuiteSparse_long_id
 
 /* -------------------------------------------------------------------------- */
 /* double (also complex double), int: this is the default */
@@ -279,6 +249,9 @@ size_t cholmod_l_mult_size_t (size_t a, size_t k, int *ok) ;
 #define ITYPE CHOLMOD_INT
 #define DTYPE CHOLMOD_DOUBLE
 #define ID "%d"
+
+/* GPU acceleration is not available for the int version of CHOLMOD */
+#undef GPU_BLAS
 
 #endif
 
@@ -318,7 +291,8 @@ size_t cholmod_l_mult_size_t (size_t a, size_t k, int *ok) ;
 /* double, int */
 EXTERN int cholmod_dump ;
 EXTERN int cholmod_dump_malloc ;
-UF_long cholmod_dump_sparse (cholmod_sparse  *, const char *, cholmod_common *);
+SuiteSparse_long cholmod_dump_sparse (cholmod_sparse  *, const char *,
+    cholmod_common *) ;
 int  cholmod_dump_factor (cholmod_factor  *, const char *, cholmod_common *) ;
 int  cholmod_dump_triplet (cholmod_triplet *, const char *, cholmod_common *) ;
 int  cholmod_dump_dense (cholmod_dense   *, const char *, cholmod_common *) ;
@@ -327,46 +301,49 @@ int  cholmod_dump_subset (int *, size_t, size_t, const char *,
 int  cholmod_dump_perm (int *, size_t, size_t, const char *, cholmod_common *) ;
 int  cholmod_dump_parent (int *, size_t, const char *, cholmod_common *) ;
 void cholmod_dump_init (const char *, cholmod_common *) ;
-int  cholmod_dump_mem (const char *, UF_long, cholmod_common *) ;
-void cholmod_dump_real (const char *, Real *, UF_long, UF_long, int, int,
-	cholmod_common *) ;
-void cholmod_dump_super (UF_long, int *, int *, int *, int *, double *, int,
-	cholmod_common *) ;
-int  cholmod_dump_partition (UF_long, int *, int *, int *, int *, UF_long,
-	cholmod_common *) ;
-int  cholmod_dump_work(int, int, UF_long, cholmod_common *) ;
+int  cholmod_dump_mem (const char *, SuiteSparse_long, cholmod_common *) ;
+void cholmod_dump_real (const char *, Real *, SuiteSparse_long,
+    SuiteSparse_long, int, int, cholmod_common *) ;
+void cholmod_dump_super (SuiteSparse_long, int *, int *, int *, int *, double *,
+    int, cholmod_common *) ;
+int  cholmod_dump_partition (SuiteSparse_long, int *, int *, int *, int *,
+    SuiteSparse_long, cholmod_common *) ;
+int  cholmod_dump_work(int, int, SuiteSparse_long, cholmod_common *) ;
 
-/* double, UF_long */
+/* double, SuiteSparse_long */
 EXTERN int cholmod_l_dump ;
 EXTERN int cholmod_l_dump_malloc ;
-UF_long cholmod_l_dump_sparse (cholmod_sparse  *, const char *,
+SuiteSparse_long cholmod_l_dump_sparse (cholmod_sparse  *, const char *,
     cholmod_common *) ;
 int  cholmod_l_dump_factor (cholmod_factor  *, const char *, cholmod_common *) ;
 int  cholmod_l_dump_triplet (cholmod_triplet *, const char *, cholmod_common *);
 int  cholmod_l_dump_dense (cholmod_dense   *, const char *, cholmod_common *) ;
-int  cholmod_l_dump_subset (UF_long *, size_t, size_t, const char *,
+int  cholmod_l_dump_subset (SuiteSparse_long *, size_t, size_t, const char *,
     cholmod_common *) ;
-int  cholmod_l_dump_perm (UF_long *, size_t, size_t, const char *,
+int  cholmod_l_dump_perm (SuiteSparse_long *, size_t, size_t, const char *,
     cholmod_common *) ;
-int  cholmod_l_dump_parent (UF_long *, size_t, const char *, cholmod_common *) ;
+int  cholmod_l_dump_parent (SuiteSparse_long *, size_t, const char *,
+    cholmod_common *) ;
 void cholmod_l_dump_init (const char *, cholmod_common *) ;
-int  cholmod_l_dump_mem (const char *, UF_long, cholmod_common *) ;
-void cholmod_l_dump_real (const char *, Real *, UF_long, UF_long, int, int,
-	cholmod_common *) ;
-void cholmod_l_dump_super (UF_long, UF_long *, UF_long *, UF_long *, UF_long *,
-        double *, int, cholmod_common *) ;
-int  cholmod_l_dump_partition (UF_long, UF_long *, UF_long *, UF_long *,
-	UF_long *, UF_long, cholmod_common *) ;
-int  cholmod_l_dump_work(int, int, UF_long, cholmod_common *) ;
+int  cholmod_l_dump_mem (const char *, SuiteSparse_long, cholmod_common *) ;
+void cholmod_l_dump_real (const char *, Real *, SuiteSparse_long,
+    SuiteSparse_long, int, int, cholmod_common *) ;
+void cholmod_l_dump_super (SuiteSparse_long, SuiteSparse_long *,
+    SuiteSparse_long *, SuiteSparse_long *, SuiteSparse_long *,
+    double *, int, cholmod_common *) ;
+int  cholmod_l_dump_partition (SuiteSparse_long, SuiteSparse_long *,
+    SuiteSparse_long *, SuiteSparse_long *,
+    SuiteSparse_long *, SuiteSparse_long, cholmod_common *) ;
+int  cholmod_l_dump_work(int, int, SuiteSparse_long, cholmod_common *) ;
 
 #define DEBUG_INIT(s,Common)  { CHOLMOD(dump_init)(s, Common) ; }
 #define ASSERT(expression) (assert (expression))
 
 #define PRK(k,params) \
 { \
-    if (CHOLMOD(dump) >= (k) && Common->print_function != NULL) \
+    if (CHOLMOD(dump) >= (k) && SuiteSparse_config.printf_func != NULL) \
     { \
-	(Common->print_function) params ; \
+	(SuiteSparse_config.printf_func) params ; \
     } \
 }
 
