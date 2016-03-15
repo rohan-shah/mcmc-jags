@@ -11,10 +11,6 @@
 #include <rng/RNG.h>
 #include <module/ModuleError.h>
 
-extern "C" {
-#include <cs.h>
-}
-
 #include <cmath>
 
 // Regularization penalty for precision 
@@ -25,22 +21,6 @@ using std::string;
 using std::sqrt;
 
 extern cholmod_common *glm_wk;
-
-static cs shallow_copy(cholmod_sparse *s)
-{
-    //Copy a cholmod_sparse struct to a cs struct without allocating
-    //any memory
-
-    cs c;
-    c.nzmax = s->nzmax;
-    c.n = s->nrow;
-    c.m = s->ncol;
-    c.p = static_cast<int*>(s->p);
-    c.i = static_cast<int*>(s->i);
-    c.x = static_cast<double*>(s->x);
-    c.nz = -1;
-    return c;
-}
 
 namespace jags {
 namespace glm {
@@ -76,7 +56,7 @@ namespace glm {
 	vector<StochasticNode *> const &schildren = 
 	    _view->stochasticChildren();
 
-	unsigned int nrow = schildren.size();
+	int nrow = schildren.size();
 
 	//Transpose and permute the design matrix
 	cholmod_sparse *t_x = cholmod_transpose(_x, 1, glm_wk);
@@ -85,47 +65,47 @@ namespace glm {
 						 0, -1, 1, 1, glm_wk);
 	cholmod_free_sparse(&t_x, glm_wk);
 
-	//Turn the factor into a matrix. Since this modifies the factor
-	//we need to take a copy first
-	cholmod_factor *f = cholmod_copy_factor(_factor, glm_wk);
-	cholmod_sparse *L = cholmod_factor_to_sparse(f, glm_wk);
-	if (!L->packed || !L->sorted) {
-	    throwLogicError("Cholesky factor is not packed or not sorted");
-	}
-	cholmod_free_factor(&f, glm_wk);
-
-	unsigned int ncol = L->ncol;
+	int ncol = _x->ncol;
 	vector<double> d(ncol, 1);
 	if (!_factor->is_ll) {
-	    //Extract D from the diagonal of L and set the diagonal to 1
-	    int *Lp = static_cast<int*>(L->p);
-	    double *Lx = static_cast<double*>(L->x);
-	    for (unsigned int r = 0; r < ncol; ++r) {
-		d[r] = Lx[Lp[r]];
-		Lx[Lp[r]] = 1;
+	    // LDL' decomposition. The diagonal D matrix is stored as
+	    // the diagonal of _factor
+	    int *fp = static_cast<int*>(_factor->p);
+	    double *fx = static_cast<double*>(_factor->x);
+	    for (int r = 0; r < ncol; ++r) {
+		d[r] = fx[fp[r]];
 	    }
 	}
 
-	// Now make shallow copies of L and Pt_x so we can pass them
-	// to cs_sparse from the CSparse library
-
-	cs cs_L = shallow_copy(L);
-	cs cs_Ptx = shallow_copy(Pt_x);
-
-        double *ur = new double[ncol];
-        int *xi = new int[2*ncol]; //Stack
-	
 	double *wx = static_cast<double *>(w->x);
 	
-	for (unsigned int r = 0; r < nrow; ++r) {
+	cholmod_dense *U = 0, *Y = 0, *E = 0;
+	cholmod_sparse *Uset = 0;
 
-	    // In a heterogeneous GLM, we may have some normal
-	    // outcomes as well as binary outcomes. These can be
-	    // skipped as there is no need for auxiliary variables
+	cholmod_dense *X = cholmod_allocate_dense(ncol, 1, ncol,
+						  CHOLMOD_REAL, glm_wk);
+	double *Xx = static_cast<double*>(X->x);
+	
+	for (int r = 0; r < nrow; ++r) {
+
 	    if (_outcomes[r]->fixedb()) continue;
 
-	    int top = cs_spsolve(&cs_L, &cs_Ptx, r, xi, ur, 0, 1);
-		
+	    //Get row r of design matrix
+	    cholmod_sparse *Xset = cholmod_submatrix(Pt_x, NULL, -1,
+						     &r, 1, 1, 1, glm_wk);
+
+	    double *xsx = static_cast<double*>(Xset->x);
+	    int *xsp = static_cast<int*>(Xset->p);
+	    int *xsi = static_cast<int*>(Xset->i);
+
+	    for (int j = 0; j < xsp[1]; ++j) {
+		int c = xsi[j];
+		Xx[c] = xsx[j];
+	    }
+	    
+	    cholmod_solve2(CHOLMOD_L, _factor, X, Xset, &U, &Uset, &Y, &E,
+			   glm_wk);
+
 	    double mu_r = _outcomes[r]->mean(); // See IMPORTANT NOTE above
 	    double tau_r = _outcomes[r]->precision();
 	    
@@ -133,24 +113,22 @@ namespace glm {
 	    //on z[s] for s != r
 	    double zr_mean = 0;
 	    double gr = 0; 
-	    
-	    if (_factor->is_ll) {
-		for (unsigned int j = top; j < ncol; ++j) {
-		    zr_mean  += ur[xi[j]] * wx[xi[j]]; 
-		    gr  += ur[xi[j]] * ur[xi[j]];
-		}
+
+	    int *up = static_cast<int*>(Uset->p);
+	    int *ui = static_cast<int*>(Uset->i);
+	    double *ux = static_cast<double*>(U->x);
+
+	    for (int j = 0; j < up[1]; ++j) {
+		int c = ui[j];
+		zr_mean  += ux[c] * wx[c] / d[c]; 
+		gr  += ux[c] * ux[c] / d[c];
 	    }
-	    else {
-		for (unsigned int j = top; j < ncol; ++j) {
-		    zr_mean  += ur[xi[j]] * wx[xi[j]] / d[xi[j]]; 
-		    gr  += ur[xi[j]] * ur[xi[j]] / d[xi[j]];
-		}
-	    }
+
 	    double Hr = gr * tau_r; // diagonal of hat matrix
 	    if (1 - Hr <= 0) {
-		// Theoretically this should never happen, but numerical instability may cause it
-		StochasticNode const *snode = _view->stochasticChildren()[r];
-		throwNodeError(snode, "Highly influential outcome variable in Holmes-Held update method.");
+		// Theoretically this should never happen, but
+		// numerical instability may cause it
+		continue;
 	    }
 	    zr_mean -= Hr * (_outcomes[r]->value() - mu_r);
 	    zr_mean /= (1 - Hr);
@@ -161,17 +139,23 @@ namespace glm {
 	    
 	    //Add new contribution of row r back to b
 	    double zdelta = (_outcomes[r]->value() - zold) * tau_r;
-	    for (unsigned int j = top; j < ncol; ++j) {
-		wx[xi[j]] += ur[xi[j]] * zdelta; 
+	    for (int j = 0; j < up[1]; ++j) {
+		int c = ui[j];
+		wx[c] += ux[c] * zdelta; 
 	    }
+
+	    cholmod_free_sparse(&Xset, glm_wk);
 	}
 	    
 	//Free workspace
-	delete [] ur;
-	delete [] xi;
-	
+
 	cholmod_free_sparse(&Pt_x, glm_wk);
-	cholmod_free_sparse(&L, glm_wk);
+	cholmod_free_sparse(&Uset, glm_wk);
+	
+	cholmod_free_dense(&U, glm_wk);
+	cholmod_free_dense(&Y, glm_wk);
+	cholmod_free_dense(&E, glm_wk);
+	cholmod_free_dense(&X, glm_wk);
     }
     
     void HolmesHeld::update(RNG *rng)
