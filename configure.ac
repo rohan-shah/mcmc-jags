@@ -125,7 +125,6 @@ AC_CONFIG_FILES([
   src/modules/dic/Makefile
   src/modules/lecuyer/Makefile
   src/modules/glm/Makefile
-  src/modules/glm/CSparse/Makefile
   src/modules/glm/SSparse/Makefile
   src/modules/glm/SSparse/config/Makefile
   src/modules/glm/SSparse/AMD/Makefile
