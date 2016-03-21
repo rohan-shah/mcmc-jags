@@ -309,13 +309,23 @@ namespace jags {
 		}
 		return;
 	    }
-	    
-	    for(_i = 0; _i < len; ++_i) {
-		_j = static_cast<unsigned int>(rng->uniform() * (len-1));
-		if (_j >= _i) _j++;
-		updateStep(rng);
-	    }
 
+	    //Generate random permutation (rp) of indices 0...(len-1)
+	    //using Fisher Yates algorithm.
+	    vector<unsigned int> rp(len+1);
+	    for (unsigned int i = 0; i < len; ++i) {
+		unsigned int j =
+		    static_cast<unsigned int>(rng->uniform() * (i+1));
+		rp[i] = rp[j];
+		rp[j] = i;
+	    }
+	    rp[len] = rp[0]; //Cycle back to the start
+
+	    for (unsigned int i = 0; i < len; ++i) {
+		_i = rp[i];
+		_j = rp[i+1];
+		updateStep(rng); //Slice update of par (_i, _j)
+	    }
 	    
 	    if (_adapt) {
 		if (++_iter % 50 == 0) {
