@@ -7,4 +7,4 @@ MeanMonitor.cc MeanMonitorFactory.cc \
 VarianceMonitor.cc VarianceMonitorFactory.cc
 
 noinst_HEADERS = TraceMonitor.h TraceMonitorFactory.h MeanMonitor.h	\
-MeanMonitorFactory.h VarianceMonitorFactory.h 
+MeanMonitorFactory.h VarianceMonitor.h VarianceMonitorFactory.h
