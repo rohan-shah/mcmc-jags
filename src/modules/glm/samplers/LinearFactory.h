@@ -21,9 +21,10 @@ namespace glm {
 	/**
 	 * Returns a newly allocated object of class Linear
 	 */
-	GLMMethod *newMethod(GraphView const *view, 
-			     std::vector<SingletonGraphView const *> const &sub_views,
-			     unsigned int chain) const;
+	GLMMethod *
+	    newMethod(GraphView const *view, 
+		      std::vector<SingletonGraphView const *> const &sub_views,
+		      unsigned int chain, bool gibbs) const;
 	/**
 	 * Checks that the candidate node is not bounded. This is
 	 * required for block-updating from the joint multivariate

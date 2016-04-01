@@ -27,7 +27,8 @@ namespace glm {
      * Albert-Chib algorithm is not so clear cut.
      */
     class HolmesHeld : public GLMMethod {
-    public:
+	bool _gibbs;
+      public:
 	/**
 	 * Constructor.
 	 * 
@@ -36,7 +37,7 @@ namespace glm {
 	HolmesHeld(GraphView const *view, 
 		   std::vector<SingletonGraphView const *> const &sub_views,
 		   std::vector<Outcome *> const &outcomes,
-		   unsigned int chain);
+		   unsigned int chain, bool gibbs);
 	/**
 	 * Updates the auxiliary variables marginalizing over the
 	 * value of the linear predictor. This function is called by

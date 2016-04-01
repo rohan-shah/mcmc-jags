@@ -38,9 +38,4 @@ namespace glm {
 	return new Linear(view, sub_views, outcomes, chain, true);
     }
 
-    bool LinearGibbsFactory::canSample(StochasticNode const *snode) const
-    {
-	return snode->length() == 1;
-    }
-
 }}

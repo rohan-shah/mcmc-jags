@@ -26,20 +26,16 @@ namespace glm {
     GLMMethod*
     LinearFactory::newMethod(GraphView const *view,
 			     vector<SingletonGraphView const *> const &subviews,
-			     unsigned int chain) const
+			     unsigned int chain, bool gibbs) const
     {
 	vector<Outcome*> outcomes;
-	for (vector<StochasticNode *>::const_iterator p = view->stochasticChildren().begin();
+	vector<StochasticNode *>::const_iterator p;
+	for (p = view->stochasticChildren().begin();
 	     p != view->stochasticChildren().end(); ++p)
 	{
 	    outcomes.push_back(new NormalLinear(*p, chain));
 	}
-	return new Linear(view, subviews, outcomes, chain, false);
-    }
-
-    bool LinearFactory::canSample(StochasticNode const *snode) const
-    {
-	return !isBounded(snode);
+	return new Linear(view, subviews, outcomes, chain, gibbs);
     }
 
 }}

@@ -21,8 +21,8 @@ using std::vector;
 namespace jags {
 namespace glm {
 
-    BinaryFactory::BinaryFactory(string const &name, bool gibbs)
-	: GLMFactory(name), _gibbs(gibbs)
+    BinaryFactory::BinaryFactory(string const &name)
+	: GLMFactory(name)
     {}
 
     bool BinaryFactory::checkOutcome(StochasticNode const *snode) const
@@ -35,12 +35,13 @@ namespace glm {
     GLMMethod *
     BinaryFactory::newMethod(GraphView const *view,
 			     vector<SingletonGraphView const *> const &subviews,
-			     unsigned int chain) const
+			     unsigned int chain, bool gibbs) const
     {
 	bool linear = true;
 	vector<Outcome*> outcomes;
 
-	for (vector<StochasticNode *>::const_iterator p = view->stochasticChildren().begin();
+	vector<StochasticNode *>::const_iterator p;
+	for (p = view->stochasticChildren().begin();
 	     p != view->stochasticChildren().end(); ++p)
 	{
 	    Outcome *outcome = 0;
@@ -62,20 +63,10 @@ namespace glm {
 	}
 
 	if (linear) {
-	    return new Linear(view, subviews, outcomes, chain, _gibbs);
+	    return new Linear(view, subviews, outcomes, chain, gibbs);
 	}
 	else {
-	    return newBinary(view, subviews, outcomes, chain);
-	}
-    }
-
-    bool BinaryFactory::canSample(StochasticNode const *snode) const
-    {
-	if (_gibbs) {
-	    return snode->length() == 1;
-	}
-	else {
-	    return !isBounded(snode);
+	    return newBinary(view, subviews, outcomes, chain, gibbs);
 	}
     }
 

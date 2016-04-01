@@ -26,14 +26,6 @@ namespace glm {
 	       std::vector<Outcome *> const &outcomes,
 	       unsigned int chain, bool gibbs);
 	/**
-	 * Returns the precision of the outcome variable with index i
-	 */
-	double getPrecision(unsigned int i) const;
-	/**
-	 * Returns the value of the outcome variable with index i
-	 */
-	double getValue(unsigned int i) const;
-	/**
 	 * Calls GLMMethod#updateLM or GLMMethod#updateLMGibbs depending
 	 * on the value of the parameter "gibbs" in the constructor.
 	 */

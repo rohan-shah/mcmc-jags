@@ -31,10 +31,6 @@ namespace glm {
 	GLMMethod *newMethod(GraphView const *view, 
 			     std::vector<SingletonGraphView const *> const &sub_views,
 			     unsigned int chain) const;
-	/**
-	 * Checks that the candidate node is scalar
-	 */
-	bool canSample(StochasticNode const *snode) const;
     };
 
 }}

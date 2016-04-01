@@ -246,7 +246,8 @@ namespace glm {
 
 
     SingletonGraphView * 
-    GLMFactory::makeView(StochasticNode *snode, Graph const &graph) const
+    GLMFactory::makeView(StochasticNode *snode, Graph const &graph,
+			 bool gibbs) const
     {
 	/*
 	  Returns a newly allocated GraphView if node can be sampled,
@@ -257,8 +258,12 @@ namespace glm {
 	if (dname != "dnorm" && dname != "dmnorm")
 	    return 0; //Must have normal prior
 
-	if (!canSample(snode))
+	if (gibbs && snode->length() != 1) {
 	    return 0;
+	}
+	if (!gibbs && isBounded(snode)) {
+	    return 0;
+	}
 
 	SingletonGraphView *view = new SingletonGraphView(snode, graph);
 	if (!checkDescendants(view)) {
@@ -275,14 +280,14 @@ namespace glm {
     
     Sampler * 
     GLMFactory::makeSampler(list<StochasticNode*> const &free_nodes, 
-			    Graph const &graph) const
+			    Graph const &graph, bool gibbs) const
     {
 	// Find candidate nodes that could be part of a GLM.
 	vector<SingletonGraphView*> candidates;
 	for (list<StochasticNode*>::const_iterator p = free_nodes.begin();
 	     p != free_nodes.end(); ++p)
 	{
-	    if (SingletonGraphView *up = makeView(*p, graph)) {
+	    if (SingletonGraphView *up = makeView(*p, graph, gibbs)) {
 		candidates.push_back(up);
 	    }
 	}
@@ -382,16 +387,25 @@ namespace glm {
 	    view = new GraphView(sample_nodes, graph);
 	}
 
+	if (sub_views.size() == 1 && view->length() == 1 && !gibbs) {
+	    delete view;
+	    delete sub_views.back();
+	    return 0;
+	}
+	
 	unsigned int Nch = nchain(view);
 	vector<MutableSampleMethod*> methods(Nch, 0);
 	
 	vector<SingletonGraphView const*> const_sub_views(sub_views.size());
 	copy(sub_views.begin(), sub_views.end(), const_sub_views.begin());
 	for (unsigned int ch = 0; ch < Nch; ++ch) {
-	    methods[ch] = newMethod(view, const_sub_views, ch);
+	    methods[ch] = newMethod(view, const_sub_views, ch, gibbs);
 	}
 
-	return new GLMSampler(view, sub_views, methods, _name);
+	//FIXME: Append "gibbs" to name if true
+	string nm = _name;
+	if (gibbs) nm.append("-Gibbs");
+	return new GLMSampler(view, sub_views, methods, nm);
     }
 
     string GLMFactory::name() const
@@ -403,11 +417,13 @@ namespace glm {
     GLMFactory::makeSamplers(list<StochasticNode*> const &nodes, 
 			     Graph const &graph) const
     {
-	Sampler *s = makeSampler(nodes, graph);
-	if (s) 
+	if (Sampler *s = makeSampler(nodes, graph, false)) {
 	    return vector<Sampler*>(1, s);
-	else 
-	    return vector<Sampler*>();
+	}
+	if (Sampler *s = makeSampler(nodes, graph, true)) {
+	    return vector<Sampler*>(1, s);
+	}
+	return vector<Sampler*>();
     }
 
     bool GLMFactory::fixedDesign() const

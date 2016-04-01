@@ -9,7 +9,7 @@ namespace jags {
 namespace glm {
 
     AlbertChibGibbsFactory::AlbertChibGibbsFactory()
-	: BinaryFactory("glm::Albert-Chib-Gibbs", true)
+	: BinaryFactory("glm::Albert-Chib-Gibbs")
     {}
 
     GLMMethod *

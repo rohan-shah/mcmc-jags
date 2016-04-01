@@ -18,16 +18,6 @@ namespace glm {
     {
     }
 
-    double Linear::getPrecision(unsigned int i) const 
-    {
-	return _view->stochasticChildren()[i]->parents()[1]->value(_chain)[0];
-    }
-
-    double Linear::getValue(unsigned int i) const 
-    {
-	return _view->stochasticChildren()[i]->value(_chain)[0];
-    }
-    
     void Linear::update(RNG *rng)
     {
 	if (_gibbs) 

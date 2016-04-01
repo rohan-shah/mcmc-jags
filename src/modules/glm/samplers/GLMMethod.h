@@ -27,11 +27,11 @@ namespace glm {
      * on generalized linear models (GLMs).  Most of the update
      * machinery is provided by GLMMethod itself. 
      *
-     * GLMMethod uses sparse matrix algebra provided by the libraries
-     * CHOLMOD and CSparse. In the context of a hierarchical model,
+     * GLMMethod uses sparse matrix algebra provided by the 
+     * CHOLMOD library. In the context of a hierarchical model,
      * mixed models appear identical to fixed-effect models except
      * that mixed models have a design matrix that is sparse.  The use
-     * of CHOLMOD and CSparse, along with auxiliary variable sampling,
+     * of CHOLMOD, along with auxiliary variable sampling,
      * allows us to handle both fixed and random effects in a
      * consistent way without needing to distinguish between them or
      * relying on asymptotic approximations.

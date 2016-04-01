@@ -22,11 +22,12 @@ namespace glm {
      * the auxiliary variables as normal.
      */
     class AMMethod : public GLMMethod {
+	bool _gibbs;
       public:
 	AMMethod(GraphView const *view, 
 		 std::vector<SingletonGraphView const *> const &sub_views,
 		 std::vector<Outcome *> const &outcomes,
-		 unsigned int chain);
+		 unsigned int chain, bool gibbs);
 	/**
 	 * Updates the auxiliary variables and then calls updateLM
 	 */

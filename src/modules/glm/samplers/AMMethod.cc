@@ -12,10 +12,10 @@ namespace glm {
     AMMethod::AMMethod(GraphView const *view,
 		       vector<SingletonGraphView const *> const &sub_views,
 		       vector<Outcome *> const &outcomes,
-		       unsigned int chain)
-	: GLMMethod(view, sub_views, outcomes, chain, true)
+		       unsigned int chain, bool gibbs)
+	: GLMMethod(view, sub_views, outcomes, chain, true), _gibbs(gibbs)
     {}
-
+    
     void AMMethod::update(RNG *rng)
     {
 	/*
@@ -30,8 +30,10 @@ namespace glm {
             (*p)->update(rng);
 	}
 
-	//FIXME: Why not allow Gibbs sampling?
-	updateLM(rng);
+	if (_gibbs)
+	    updateLMGibbs(rng);
+	else 
+	    updateLM(rng);
     }
 
 }}

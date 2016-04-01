@@ -37,7 +37,7 @@ namespace glm {
     GLMMethod *
     AMFactory::newMethod(GraphView const *view,
 			 vector<SingletonGraphView const *> const &sub_views,
-			 unsigned int chain) const
+			 unsigned int chain, bool gibbs) const
     {
 	bool linear = true;
 	vector<Outcome*> outcomes;
@@ -59,22 +59,17 @@ namespace glm {
 		linear = false;
 	    }
 	    else {
-		throwLogicError("Invalid outcome in BinaryFactory");
+		throwLogicError("Invalid outcome in AMFactory");
 	    }
 	    outcomes.push_back(outcome);
 	}
 
 	if (linear) {
-	    return new Linear(view, sub_views, outcomes, chain, false);
+	    return new Linear(view, sub_views, outcomes, chain, gibbs);
 	}
 	else {
-	    return new AMMethod(view, sub_views, outcomes, chain);
+	    return new AMMethod(view, sub_views, outcomes, chain, gibbs);
 	}
-    }
-
-    bool AMFactory::canSample(StochasticNode const *snode) const
-    {
-	return !isBounded(snode);
     }
 
 }}

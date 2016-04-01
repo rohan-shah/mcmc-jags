@@ -22,17 +22,14 @@ namespace glm {
 	 */
 	bool checkOutcome(StochasticNode const *snode) const;
 	/**
-	 * Returns true if the node is not bounded
-	 */
-	bool canSample(StochasticNode const *snode) const;
-	/**
 	 * Returns a newly allocated object of class AMMethod for
 	 * sampling Poisson models with log link or binomial models
 	 * with logistic link.
 	 */
-	GLMMethod * newMethod(GraphView const *view,
-			      std::vector<SingletonGraphView const *> const &sub_views, 
-			      unsigned int chain) const;
+	GLMMethod *
+	    newMethod(GraphView const *view,
+		      std::vector<SingletonGraphView const *> const &sub_views, 
+		      unsigned int chain, bool gibbs) const;
     };
 
 }}
