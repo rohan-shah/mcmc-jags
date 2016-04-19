@@ -1,4 +1,11 @@
-Change in JAGS 4.2.0
+Changes in JAGS 4.3.0
+
+Bug fixes
+=========
+* Setting the RNG name and seed in a model with a data block caused a
+  crash on exit. Thanks to Sourceforge user sathomasga.
+  
+Changes in JAGS 4.2.0
 
 Bug fixes
 =========
