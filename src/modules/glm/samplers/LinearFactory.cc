@@ -1,7 +1,8 @@
 #include <config.h>
 
 #include "LinearFactory.h"
-#include "Linear.h"
+#include "GLMGibbs.h"
+#include "GLMBlock.h"
 #include "NormalLinear.h"
 
 #include <graph/StochasticNode.h>
@@ -35,7 +36,12 @@ namespace glm {
 	{
 	    outcomes.push_back(new NormalLinear(*p, chain));
 	}
-	return new Linear(view, subviews, outcomes, chain, gibbs);
+	if (gibbs) {
+	    return new GLMGibbs(view, subviews, outcomes, chain);
+	}
+	else {
+	    return new GLMBlock(view, subviews, outcomes, chain);
+	}
     }
 
 }}

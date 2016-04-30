@@ -35,6 +35,9 @@ namespace glm {
 	 * to use
 	 */
 	Outcome(StochasticNode const *snode, unsigned int chain);
+	/**
+	 * Virtual destructor
+	 */
 	virtual ~Outcome();
 	/**
 	 * Returns the value of the linear predictor, which is the

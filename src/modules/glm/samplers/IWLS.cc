@@ -47,7 +47,7 @@ namespace glm {
 	       vector<SingletonGraphView const *> const &sub_views,
 	       vector<Outcome *> const &outcomes,
 	       unsigned int chain)
-	: GLMMethod(view, sub_views, outcomes, chain, true), _init(true)
+	: GLMMethod(view, sub_views, outcomes, chain), _init(true)
     {
     }
     

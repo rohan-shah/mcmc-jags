@@ -1,7 +1,7 @@
 #ifndef ALBERT_CHIB_H_
 #define ALBERT_CHIB_H_
 
-#include "GLMMethod.h"
+#include "GLMBlock.h"
 
 namespace jags {
 namespace glm {
@@ -22,33 +22,20 @@ namespace glm {
      * Variables Models for Binary and Multinomial Regression,
      * Bayesian Analysis, 1:148-168.
      *
-     * A second algorithm for binary logistic models is implemented
-     * in the class HolmesHeld.
+     * A second algorithm for binary probit and logistic models is
+     * implemented in the class HolmesHeld.
      */
-    class AlbertChib : public GLMMethod {
-	bool _gibbs; //Do we update parameters individually?
+    class AlbertChib : public GLMBlock {
     public:
 	/**
 	 * Constructor.
 	 * 
-	 * @param gibbs Should the update method use Gibbs sampling?
-	 * See GLMMethod#updateLMGibbs
-	 *
 	 * @see GLMMethod#GLMMethod
 	 */
 	AlbertChib(GraphView const *view, 
 		   std::vector<SingletonGraphView const *> const &sub_views,
 		   std::vector<Outcome *> const &outcomes,
-		   unsigned int chain, bool gibbs);
-	/**
-	 * The update takes place in two steps. First the auxiliary
-	 * variables provided by the Outcome class are updated.  Then
-	 * the parameters of the model are updated by calling either
-	 * GLMMethod#updateLM or GLMMethod#updateLMGibbs. The latter
-	 * is used if the parameter "gibbs" was set to true in the
-	 * constructor.
-	 */
-	void update(RNG *rng);
+		   unsigned int chain);
     };
     
 }}

@@ -43,14 +43,15 @@ namespace glm {
 	std::vector<SingletonGraphView const *> _sub_views;
 	std::vector<Outcome *> _outcomes;
 	cholmod_sparse *_x;
-	cholmod_factor *_factor;
+	cholmod_factor *_factor; //???
+	void symbolic();
+	void calDesign() const;
+
     private:
 	std::vector<bool> _fixed;
 	unsigned int _length_max;
 	unsigned _nz_prior;
-	bool _init;
-	void symbolic();
-	void calDesign() const;
+	bool _init; //????
     public:
 	/**
 	 * Constructor.
@@ -68,17 +69,11 @@ namespace glm {
 	 * 
 	 * @param chain Number of the chain (starting from 0) to which
 	 * the sampling method will be applied.
-	 *
-	 * @param link Boolean flag that is passed to the utility
-	 * function checkLinear when checking to see if we have a
-	 * valid GLM. If link is true then the last deterministic
-	 * descendents in view (i.e. those with no deterministic
-	 * descendants) may be link nodes.
 	 */
 	GLMMethod(GraphView const *view, 
 		  std::vector<SingletonGraphView const *> const &sub_views,
 		  std::vector<Outcome *> const &outcomes,
-		  unsigned int chain, bool link);
+		  unsigned int chain);
 	/**
 	 * Virtual destructor
 	 */

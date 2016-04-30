@@ -1,7 +1,9 @@
 #include <config.h>
 
 #include "AlbertChibFactory.h"
-#include "AlbertChib.h"
+#include "GLMGibbs.h"
+#include "GLMBlock.h"
+
 #include <graph/StochasticNode.h>
 
 using std::vector;
@@ -19,8 +21,14 @@ namespace glm {
 				 vector<Outcome *> const &outcomes,
 				 unsigned int chain, bool gibbs) const
     {
-	
-	return new AlbertChib(view, sub_views, outcomes, chain, gibbs);
+
+	if (gibbs) {
+	    return new GLMGibbs(view, sub_views, outcomes, chain);
+	}
+	else {
+	    return new GLMBlock(view, sub_views, outcomes, chain);
+	}
+	    
     }
 
 }}

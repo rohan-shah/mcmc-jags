@@ -14,7 +14,7 @@
 #include <graph/Graph.h>
 #include <graph/StochasticNode.h>
 #include <graph/DeterministicNode.h>
-#include <graph/LinkNode.h>
+//#include <graph/LinkNode.h>
 #include <distribution/Distribution.h>
 #include <rng/TruncatedNormal.h>
 #include <module/ModuleError.h>
@@ -104,8 +104,9 @@ namespace glm {
     GLMMethod::GLMMethod(GraphView const *view, 
 			 vector<SingletonGraphView const *> const &sub_views,
 			 vector<Outcome *> const &outcomes,
-			 unsigned int chain, bool link)
-	: _view(view), _chain(chain), _sub_views(sub_views), _outcomes(outcomes),
+			 unsigned int chain)
+	: _view(view), _chain(chain), _sub_views(sub_views),
+	  _outcomes(outcomes),
 	  _x(0), _factor(0), _fixed(sub_views.size(), false), 
 	  _length_max(0), _nz_prior(0), _init(true)
     {
@@ -157,7 +158,7 @@ namespace glm {
 
 	// Check for constant linear terms
 	for (unsigned int i = 0; i < sub_views.size(); ++i) {
-	    _fixed[i] = checkLinear(sub_views[i], true, link);
+	    _fixed[i] = checkLinear(sub_views[i], true, true);
 	}
     }
 
