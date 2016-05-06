@@ -1,7 +1,7 @@
 #ifndef LINEAR_H_
 #define LINEAR_H_
 
-#include "GLMMethod.h"
+#include "GLMBlock.h"
 
 namespace jags {
 namespace glm {
@@ -9,27 +9,16 @@ namespace glm {
     /**
      * Conjugate sampler for normal linear models.
      */
-    class Linear : public GLMMethod {
-	bool _gibbs;
+    class Linear : public GLMBlock {
     public:
 	/**
 	 * Constructor. See GLMMethod#GLMMethod for an explanation of the
 	 * parameters
-	 * 
-	 * @param gibbs Boolean flag. If true then the parameters of the
-	 * linear model will be updated element-wise by Gibbs sampling.
-	 * If false then they will be updated by block-sampling from the
-	 * joint posterior
 	 */
 	Linear(GraphView const *view,
 	       std::vector<SingletonGraphView const *> const &sub_views,
 	       std::vector<Outcome *> const &outcomes,
-	       unsigned int chain, bool gibbs);
-	/**
-	 * Calls GLMMethod#updateLM or GLMMethod#updateLMGibbs depending
-	 * on the value of the parameter "gibbs" in the constructor.
-	 */
-	void update(RNG *rng);
+	       unsigned int chain);
     };
     
 }}

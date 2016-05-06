@@ -48,7 +48,7 @@ namespace glm {
         }
 
         if (linear) {
-            return new Linear(view, sub_views, outcomes, chain, false);
+            return new Linear(view, sub_views, outcomes, chain);
         }
 	
 	return new IWLS(view, sub_views, outcomes, chain);

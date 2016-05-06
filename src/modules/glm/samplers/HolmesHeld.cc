@@ -58,8 +58,8 @@ namespace glm {
     HolmesHeld::HolmesHeld(GraphView const *view,
 			   vector<SingletonGraphView const *> const &sub_views,
 			   vector<Outcome *> const &outcomes,
-			   unsigned int chain, bool gibbs)
-	: GLMMethod(view, sub_views, outcomes, chain), _gibbs(gibbs)
+			   unsigned int chain)
+	: GLMMethod(view, sub_views, outcomes, chain)
     {
     }
 
@@ -201,12 +201,7 @@ namespace glm {
 	    (*p)->update(rng);
 	}
 
-	if (_gibbs) {
-	    updateLMGibbs(rng);
-	}
-	else {
-	    updateLM(rng);
-	}
+	updateLM(rng);
     }
 
 }}

@@ -13,17 +13,9 @@ namespace glm {
     Linear::Linear(GraphView const *view, 
 		   vector<SingletonGraphView const *> const &sub_views,
 		   vector<Outcome*> const &outcomes,
-		   unsigned int chain, bool gibbs)
-	: GLMMethod(view, sub_views, outcomes, chain), _gibbs(gibbs)
+		   unsigned int chain)
+	: GLMBlock(view, sub_views, outcomes, chain)
     {
-    }
-
-    void Linear::update(RNG *rng)
-    {
-	if (_gibbs) 
-	    updateLMGibbs(rng);
-	else
-	    updateLM(rng);
     }
 
 }}

@@ -16,7 +16,8 @@ using std::exp;
 namespace jags {
 namespace glm {
 
-    static double const &getDenominator(StochasticNode const *snode, unsigned int chain)
+    static double const &getDenominator(StochasticNode const *snode,
+					unsigned int chain)
     {
 	static const double one = 1;
 	
@@ -33,7 +34,8 @@ namespace glm {
     }
     
 
-    AuxMixBinomial::AuxMixBinomial(StochasticNode const *snode, unsigned int chain)
+    AuxMixBinomial::AuxMixBinomial(StochasticNode const *snode,
+				   unsigned int chain)
 	: Outcome(snode, chain), _nb(getDenominator(snode, chain)), 
 	  _y(snode->value(chain)[0]), _y_star(0), _mix(0)
     {
@@ -64,17 +66,6 @@ namespace glm {
 	_mix->update(_y_star - _lp, _nb, rng);
     }
 
-
-    /*
-    void AuxMixBinomial::update(double mean, double var, RNG *rng)
-    {
-	if (_nb == 0) return;
-
-	// sample the aggregated utility
-	double 
-    }
-    */
-    
     double AuxMixBinomial::value() const
     {
 	if (_nb == 0) {
@@ -97,7 +88,9 @@ namespace glm {
 
     bool AuxMixBinomial::canRepresent(StochasticNode const *snode) 
     {
-	return (getFamily(snode) == GLM_BINOMIAL || getFamily(snode) == GLM_BERNOULLI) && getLink(snode) == LNK_LOGIT;
+	return (getFamily(snode) == GLM_BINOMIAL ||
+		getFamily(snode) == GLM_BERNOULLI) &&
+	    getLink(snode) == LNK_LOGIT;
     }
 
 }}

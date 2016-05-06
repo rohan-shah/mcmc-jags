@@ -4,6 +4,7 @@
 
 #include "BinaryFactory.h"
 #include "Linear.h"
+#include "LinearGibbs.h"
 
 #include "NormalLinear.h"
 #include "BinaryProbit.h"
@@ -63,7 +64,12 @@ namespace glm {
 	}
 
 	if (linear) {
-	    return new Linear(view, subviews, outcomes, chain, gibbs);
+	    if (gibbs) {
+		return new GLMGibbs(view, subviews, outcomes, chain);
+	    }
+	    else {
+		return new GLMBlock(view, subviews, outcomes, chain);
+	    }
 	}
 	else {
 	    return newBinary(view, subviews, outcomes, chain, gibbs);
