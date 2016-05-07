@@ -7,15 +7,15 @@ libglmsampler_la_CPPFLAGS = -I$(top_srcdir)/src/include \
 
 libglmsampler_la_SOURCES = GLMFactory.cc GLMSampler.cc GLMMethod.cc	\
  LinearFactory.cc BinaryFactory.cc KS.cc			\
- AlbertChibFactory.cc AlbertChib.cc AlbertChibGibbs.cc IWLSFactory.cc	\
+ IWLSFactory.cc	\
  IWLS.cc LGMix.cc AuxMixPoisson.cc AuxMixBinomial.cc Outcome.cc		\
  NormalLinear.cc BinaryProbit.cc BinaryLogit.cc Classify.cc		\
  IWLSOutcome.cc HolmesHeld.cc HolmesHeldFactory.cc GLMBlock.cc		\
  GLMGibbs.cc GLMGenericFactory.cc HolmesHeldGibbs.cc
 
 noinst_HEADERS = GLMFactory.h GLMSampler.h GLMMethod.h			\
-  LinearFactory.h BinaryFactory.h KS.h AlbertChibFactory.h	\
-  AlbertChib.h AlbertChibGibbs.h IWLSFactory.h IWLS.h LGMix.h		\
+  LinearFactory.h BinaryFactory.h KS.h 	\
+  IWLSFactory.h IWLS.h LGMix.h		\
   AuxMixPoisson.h AuxMixBinomial.h Outcome.h	\
   NormalLinear.h BinaryProbit.h BinaryLogit.h Classify.h		\
   IWLSOutcome.h HolmesHeld.h HolmesHeldFactory.h GLMBlock.h		\

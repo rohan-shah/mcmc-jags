@@ -3,7 +3,6 @@
 #include "samplers/LinearFactory.h"
 //#include "samplers/IWLSFactory.h"
 #include "samplers/HolmesHeldFactory.h"
-#include "samplers/AlbertChibFactory.h"
 //#include "samplers/AMFactory.h"
 //#include "samplers/ConjugateFFactory.h"
 #include "samplers/GLMGenericFactory.h"
@@ -50,7 +49,6 @@ namespace glm {
 	insert(new GLMGenericFactory);
 	insert(new LinearFactory);
  	//insert(new AMFactory);
-	insert(new AlbertChibFactory);
 	insert(new HolmesHeldFactory);
 	//insert(new ConjugateFFactory);
     }
