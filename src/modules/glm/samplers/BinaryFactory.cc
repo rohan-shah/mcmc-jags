@@ -3,12 +3,13 @@
 #include <string>
 
 #include "BinaryFactory.h"
-#include "Linear.h"
-#include "LinearGibbs.h"
 
 #include "NormalLinear.h"
 #include "BinaryProbit.h"
 #include "BinaryLogit.h"
+
+#include "GLMGibbs.h"
+#include "GLMBlock.h"
 
 #include <graph/StochasticNode.h>
 #include <graph/LinkNode.h>

@@ -5,7 +5,6 @@
 #include "BinaryFactory.h"
 #include "AMFactory.h"
 #include "AMMethod.h"
-#include "Linear.h"
 
 #include "AuxMixPoisson.h"
 #include "AuxMixBinomial.h"
@@ -65,7 +64,11 @@ namespace glm {
 	}
 
 	if (linear) {
-	    return new Linear(view, sub_views, outcomes, chain, gibbs);
+	    if (gibbs) {
+		return new GLMGibbs(view, sub_views, outcomes, chain);
+	    }
+	    else {
+		return new GLMBlock(view, sub_views, outcomes, chain);
 	}
 	else {
 	    return new AMMethod(view, sub_views, outcomes, chain, gibbs);
