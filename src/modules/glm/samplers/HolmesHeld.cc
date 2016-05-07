@@ -59,7 +59,7 @@ namespace glm {
 			   vector<SingletonGraphView const *> const &sub_views,
 			   vector<Outcome *> const &outcomes,
 			   unsigned int chain)
-	: GLMMethod(view, sub_views, outcomes, chain)
+	: GLMBlock(view, sub_views, outcomes, chain)
     {
     }
 
@@ -193,16 +193,5 @@ namespace glm {
 	cholmod_free_dense(&X, glm_wk);
     }
     
-    void HolmesHeld::update(RNG *rng)
-    {
-	for (vector<Outcome*>::const_iterator p = _outcomes.begin();
-	     p != _outcomes.end(); ++p)
-	{
-	    (*p)->update(rng);
-	}
-
-	updateLM(rng);
-    }
-
 }}
     

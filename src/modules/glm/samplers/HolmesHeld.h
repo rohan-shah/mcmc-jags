@@ -1,7 +1,7 @@
 #ifndef HOLMES_HELD_H_
 #define HOLMES_HELD_H_
 
-#include "GLMMethod.h"
+#include "GLMBlock.h"
 
 namespace jags {
 namespace glm {
@@ -26,7 +26,7 @@ namespace glm {
      * For logistic regression the improvement over the standard
      * Albert-Chib algorithm is not so clear cut.
      */
-    class HolmesHeld : public GLMMethod {
+    class HolmesHeld : public GLMBlock {
       public:
 	/**
 	 * Constructor.
@@ -58,14 +58,6 @@ namespace glm {
 	 * by Gibbs sampling.
 	 */
 	void updateAuxiliary(cholmod_dense *b, cholmod_factor *N, RNG *rng);
-	/**
-	 * The update takes place in two steps. Firstly, for logistic
-	 * regression, the auxiliary variables tau[i] (representing
-	 * the precision of the latent variable z[i]) are updated
-	 * using the current values of z[], then GLMMethod#updateLM is
-	 * called. For probit regression, tau[i] is fixed at 1.
-	 */
-	void update(RNG *rng);
     };
     
 }}

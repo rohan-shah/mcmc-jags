@@ -4,6 +4,9 @@ Bug fixes
 =========
 * Setting the RNG name and seed in a model with a data block caused a
   crash on exit. Thanks to Sourceforge user sathomasga.
+* Samplers in the GLM module would recalculate the entire design matrix
+  on each iteration, including columns that are fixed from one iteration
+  to the next.
   
 Changes in JAGS 4.2.0
 
