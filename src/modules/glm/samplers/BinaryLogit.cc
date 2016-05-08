@@ -31,6 +31,7 @@ static double rlogit(double right, jags::RNG *rng, double mu)
     return mu + log(x) - log(1 - x);
 }
 
+
 namespace jags {
 namespace glm {
 

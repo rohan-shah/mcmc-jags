@@ -1,12 +1,7 @@
 #ifndef LG_MIX_H_
 #define LG_MIX_H_
 
-#include <cstdlib>
-#include <cmath>
-#include <algorithm>
 #include <vector>
-
-using std::copy;
 
 namespace jags {
 

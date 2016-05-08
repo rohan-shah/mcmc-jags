@@ -1,7 +1,6 @@
 #include <config.h>
 
 #include "HolmesHeldGibbs.h"
-#include "KS.h"
 #include "Outcome.h"
 
 #include <graph/StochasticNode.h>

@@ -6,7 +6,7 @@ libglmsampler_la_CPPFLAGS = -I$(top_srcdir)/src/include \
 		-I$(top_srcdir)/src/modules/glm/SSparse/CHOLMOD/Include
 
 libglmsampler_la_SOURCES = GLMFactory.cc GLMSampler.cc GLMMethod.cc	\
- LinearFactory.cc BinaryFactory.cc KS.cc			\
+ LinearFactory.cc KS.cc			\
  IWLSFactory.cc	\
  IWLS.cc LGMix.cc AuxMixPoisson.cc AuxMixBinomial.cc Outcome.cc		\
  NormalLinear.cc BinaryProbit.cc BinaryLogit.cc Classify.cc		\
@@ -14,7 +14,7 @@ libglmsampler_la_SOURCES = GLMFactory.cc GLMSampler.cc GLMMethod.cc	\
  GLMGibbs.cc GLMGenericFactory.cc HolmesHeldGibbs.cc
 
 noinst_HEADERS = GLMFactory.h GLMSampler.h GLMMethod.h			\
-  LinearFactory.h BinaryFactory.h KS.h 	\
+  LinearFactory.h KS.h 	\
   IWLSFactory.h IWLS.h LGMix.h		\
   AuxMixPoisson.h AuxMixBinomial.h Outcome.h	\
   NormalLinear.h BinaryProbit.h BinaryLogit.h Classify.h		\
