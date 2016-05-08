@@ -6,11 +6,8 @@
 
 #include "HolmesHeldFactory.h"
 #include "HolmesHeld.h"
-#include "HolmesHeldGibbs.h"
+#include "GLMGibbs.h"
 
-//#include <graph/StochasticNode.h>
-//#include <graph/LinkNode.h>
-//#include <distribution/Distribution.h>
 #include <module/ModuleError.h>
 #include <sampler/SingletonGraphView.h>
 
@@ -61,21 +58,14 @@ namespace glm {
 	    outcomes.push_back(outcome);
 	}
 
-	if (linear) {
-	    if (gibbs) {
-		return new GLMGibbs(view, subviews, outcomes, chain);
-	    }
-	    else {
-		return new GLMBlock(view, subviews, outcomes, chain);
-	    }
+	if (gibbs) {
+	    return new GLMGibbs(view, subviews, outcomes, chain);
+	}
+	else if (linear) {
+	    return new GLMBlock(view, subviews, outcomes, chain);
 	}
 	else {
-	    if (gibbs) {
-		return new HolmesHeldGibbs(view, subviews, outcomes, chain);
-	    }
-	    else {
-		return new HolmesHeld(view, subviews, outcomes, chain);
-	    }
+	    return new HolmesHeld(view, subviews, outcomes, chain);
 	}
     }
 
