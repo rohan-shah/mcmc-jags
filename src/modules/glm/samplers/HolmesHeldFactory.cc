@@ -6,6 +6,8 @@
 
 #include "HolmesHeldFactory.h"
 #include "HolmesHeld.h"
+#include "HolmesHeldGibbs.h"
+#include "GLMBlock.h"
 #include "GLMGibbs.h"
 
 #include <module/ModuleError.h>
@@ -58,14 +60,21 @@ namespace glm {
 	    outcomes.push_back(outcome);
 	}
 
-	if (gibbs) {
-	    return new GLMGibbs(view, subviews, outcomes, chain);
-	}
-	else if (linear) {
-	    return new GLMBlock(view, subviews, outcomes, chain);
+	if (linear) {
+	    if (gibbs) {
+		return new GLMGibbs(view, subviews, outcomes, chain);
+	    }
+	    else {
+		return new GLMBlock(view, subviews, outcomes, chain);
+	    }
 	}
 	else {
-	    return new HolmesHeld(view, subviews, outcomes, chain);
+	    if (gibbs) {
+		return new HolmesHeldGibbs(view, subviews, outcomes, chain);
+	    }
+	    else {
+		return new HolmesHeld(view, subviews, outcomes, chain);
+	    }
 	}
     }
 
