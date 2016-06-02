@@ -1,7 +1,7 @@
 #ifndef HOLMES_HELD_GIBBS_H_
 #define HOLMES_HELD_GIBBS_H_
 
-#include "GLMGibbs.h"
+#include "GLMMethod.h"
 
 namespace jags {
 namespace glm {
