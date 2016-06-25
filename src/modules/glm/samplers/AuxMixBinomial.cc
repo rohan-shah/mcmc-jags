@@ -16,11 +16,11 @@ using std::exp;
 namespace jags {
 namespace glm {
 
+    static const double one = 1;
+
     static double const &getDenominator(StochasticNode const *snode,
 					unsigned int chain)
     {
-	static const double one = 1;
-	
 	switch(getFamily(snode)) {
 	case GLM_BERNOULLI:
 	    return one;
