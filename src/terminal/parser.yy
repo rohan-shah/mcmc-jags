@@ -84,6 +84,8 @@
                            std::string const &status);
     static void setSeed(unsigned int seed);
     static bool Jtry(bool ok);
+	// Needed for update (and adapt) functions to dump variable states:
+    static bool Jtry_dump(bool ok);
     %}
 
 %defines
@@ -1050,6 +1052,9 @@ static void errordump()
 	    doDump(fname.str(), jags::DUMP_ALL, i);
 	    fname.str("");
 	}
+	// Moved clearModel from Console.cc CATCH_ERRORS to here
+	// to allow doDump to work as described in the manual:
+	console->clearModel();
     }
     if (!interactive) exit(1);
 }
@@ -1072,7 +1077,7 @@ static void updatestar(long niter, long refresh, int width)
     }
 
     if (refresh == 0) {
-	Jtry(console->update(niter/2));
+	Jtry_dump(console->update(niter/2));
 	bool status = true;
 	if (adapt) {
 	    if (!console->checkAdaptation(status)) {
@@ -1084,7 +1089,7 @@ static void updatestar(long niter, long refresh, int width)
 		return;
 	    }
 	}
-	Jtry(console->update(niter - niter/2));
+	Jtry_dump(console->update(niter - niter/2));
 	if (!status) {
 	    std::cerr << "WARNING: Adaptation incomplete\n";
 	}
@@ -1120,12 +1125,11 @@ static void updatestar(long niter, long refresh, int width)
 	    }
 	}
 	long nupdate = std::min(n, refresh);
-	if(console->update(nupdate)) {
+	if(Jtry_dump(console->update(nupdate))) {
 	    std::cout << "*" << std::flush;
 	}
 	else {
 	    std::cout << std::endl;
-	    errordump();
 	    return;
 	}
 	col++;
@@ -1152,7 +1156,7 @@ static void adaptstar(long niter, long refresh, int width)
     
     bool status = true;
     if (refresh == 0) {
-	console->update(niter);
+	Jtry_dump(console->update(niter));
 	if (!console->checkAdaptation(status)) {
 	    errordump();
 	    return;
@@ -1179,11 +1183,10 @@ static void adaptstar(long niter, long refresh, int width)
     int col = 0;
     for (long n = niter; n > 0; n -= refresh) {
 	long nupdate = std::min(n, refresh);
-	if(console->update(nupdate))
+	if(Jtry_dump(console->update(nupdate)))
 	    std::cout << "+" << std::flush;
 	else {
 	    std::cout << std::endl;
-	    errordump();
 	    return;
 	}
 	col++;
@@ -1520,5 +1523,16 @@ bool Jtry(bool ok)
     if (!ok && !interactive) 
 	exit(1);
     else
+	return ok;
+}
+
+bool Jtry_dump(bool ok)
+{
+	// Allows doDump to work as described in the manual:
+	if (!ok) {
+	errordump();
+    if (!interactive) 
+	exit(1);
+	}
 	return ok;
 }

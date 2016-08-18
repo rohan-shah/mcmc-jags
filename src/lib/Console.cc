@@ -38,25 +38,21 @@ using std::FILE;
 #define CATCH_ERRORS							\
     catch (ParentError const &except) {					\
         except.printMessage(_err, _model->symtab());			\
-	clearModel();							\
 	return false;							\
     }									\
     catch (NodeError const &except) {					\
         except.printMessage(_err, _model->symtab());			\
-	clearModel();							\
 	return false;							\
     }									\
     catch (std::runtime_error const &except) {				\
 	_err << "RUNTIME ERROR:\n";					\
 	_err << except.what() << endl;					\
-	clearModel();							\
 	return false;							\
     }									\
     catch (std::logic_error const &except) {				\
 	_err << "LOGIC ERROR:\n" << except.what() << '\n';		\
 	_err << "Please send a bug report to "				\
 	     << PACKAGE_BUGREPORT << endl;				\
-	clearModel();							\
 	return false;							\
     }
 
