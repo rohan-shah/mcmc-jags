@@ -70,6 +70,8 @@
     static bool getWorkingDirectory(std::string &name);
     static void errordump();
     static void updatestar(long niter, long refresh, int width);
+	// Run adaptation phase until adapted, regardless of iterations:
+    static void autoadaptstar(long maxiter);
     static void adaptstar(long niter, long refresh, int width);
     static void setParameters(jags::ParseTree *p, jags::ParseTree *param1);
     static void setParameters(jags::ParseTree *p, std::vector<jags::ParseTree*> *parameters);
@@ -118,6 +120,7 @@
 %token <intval> COMPILE
 %token <intval> INITIALIZE
 %token <intval> ADAPT
+%token <intval> AUTOADAPT
 %token <intval> UPDATE
 %token <intval> BY
 %token <intval> MONITORS
@@ -196,6 +199,7 @@ command: model
 | compile
 | initialize
 | adapt
+| autoadapt
 | update
 | monitor
 | monitors_to
@@ -355,6 +359,11 @@ initialize: INITIALIZE {
     if (!console->initialize()) {
 	errordump();
     }
+}
+;
+
+autoadapt: AUTOADAPT INT {
+	autoadaptstar($2);
 }
 ;
 
@@ -1144,6 +1153,44 @@ static void updatestar(long niter, long refresh, int width)
     if (!status) {
 	std::cerr << "WARNING: Adaptation incomplete\n";
     }
+}
+
+static void autoadaptstar(long maxiter)
+{
+    std::cout << "Autoadapting up to " << maxiter << " iterations" << std::endl;
+	
+	bool status = true;
+	long i = 0;
+    for (i = 0; i < maxiter; i++) {
+		if (!console->checkAdaptation(status)) {
+		    errordump();
+		    return;
+		}
+		if(status)
+			break;
+
+		Jtry_dump(console->update(1));
+	}
+	if (!console->checkAdaptation(status)) {
+	    errordump();
+	    return;
+	}
+	
+	if (!status) {
+	    std::cerr << "Adaptation incomplete\n";
+	}
+	else {
+		if (i==0)
+			std::cout << "Adaptation skipped: model is not in adaptive mode\n";
+		else
+			std::cout << "Adaptation completed in " << i << " iterations" << std::endl;
+		if (!console->adaptOff()) {
+			std::cout << std::endl;
+			errordump();
+			return;
+	    }
+	}
+    return;
 }
 
 static void adaptstar(long niter, long refresh, int width)
