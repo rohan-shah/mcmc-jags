@@ -35,7 +35,10 @@ using std::set;
 using std::pair;
 using std::FILE;
 
-#define CATCH_ERRORS							\
+// Need to distinguish between errors that delete the model
+// and errors that don't delete the model (in update)
+// so that we can then dump parameter values from parser.cc
+#define CATCH_ERRORS_DUMP						\
     catch (ParentError const &except) {					\
         except.printMessage(_err, _model->symtab());			\
 	return false;							\
@@ -53,6 +56,31 @@ using std::FILE;
 	_err << "LOGIC ERROR:\n" << except.what() << '\n';		\
 	_err << "Please send a bug report to "				\
 	     << PACKAGE_BUGREPORT << endl;				\
+	return false;							\
+    }
+
+#define CATCH_ERRORS							\
+    catch (ParentError const &except) {					\
+        except.printMessage(_err, _model->symtab());			\
+	clearModel();							\
+	return false;							\
+    }									\
+    catch (NodeError const &except) {					\
+        except.printMessage(_err, _model->symtab());			\
+	clearModel();							\
+	return false;							\
+    }									\
+    catch (std::runtime_error const &except) {				\
+	_err << "RUNTIME ERROR:\n";					\
+	_err << except.what() << endl;					\
+	clearModel();							\
+	return false;							\
+    }									\
+    catch (std::logic_error const &except) {				\
+	_err << "LOGIC ERROR:\n" << except.what() << '\n';		\
+	_err << "Please send a bug report to "				\
+	     << PACKAGE_BUGREPORT << endl;				\
+	clearModel();							\
 	return false;							\
     }
 
@@ -374,7 +402,7 @@ bool Console::update(unsigned int n)
     try {
 	_model->update(n);
     }
-    CATCH_ERRORS;
+    CATCH_ERRORS_DUMP;
 
     return true;
 }
@@ -501,6 +529,7 @@ bool Console::dumpState(map<string,SArray> &data_table,
     }
   }
   CATCH_ERRORS;
+  // Model is subsequently cleared by calling functions in parser
   
   return true;
 }

@@ -1578,6 +1578,7 @@ bool Jtry_dump(bool ok)
 	// Allows doDump to work as described in the manual:
 	if (!ok) {
 	errordump();
+	console->clearModel();
     if (!interactive) 
 	exit(1);
 	}
