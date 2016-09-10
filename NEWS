@@ -7,6 +7,8 @@ Bug fixes
 * Samplers in the GLM module would recalculate the entire design matrix
   on each iteration, including columns that are fixed from one iteration
   to the next.
+* There was a memory leak in the compiler which could create redundant
+  constant nodes.
   
 Changes in JAGS 4.2.0
 

@@ -48,7 +48,26 @@ using std::set;
 using std::fabs;
 using std::max_element;
 
+
+
 namespace jags {
+
+    typedef pair<vector<unsigned int>, vector<double> > CNodeKey;
+    bool lt(CNodeKey const &k1, CNodeKey const &k2) {
+	//Sort first on dimension
+	if (k1.first < k2.first) {
+	    return true;
+	}
+	else if (k1.first > k2.first) {
+	    return false;
+	}
+	else {
+	    //Fuzzy sort on values
+	    return lt(&k1.second[0], &k2.second[0], k1.second.size());
+	}
+
+    }
+    typedef map<CNodeKey, ConstantNode *, fuzzy_less<CNodeKey> > CNodeMap;
 
 #include <sstream>
 template<class T> 
@@ -520,15 +539,8 @@ Range Compiler::CounterRange(ParseTree const *var)
     Node * 
     Compiler::getConstant(double value, unsigned int nchain, bool observed) 
     {
-	ConstantNode * cnode = new ConstantNode(value, nchain, observed);
-	if (_index_expression) {
-	    _index_nodes.push_back(cnode);
-	}
-	else {
-	    _model.addNode(cnode);
-	}
-	return cnode;
-	
+	return getConstant(vector<unsigned int>(1, 1), vector<double>(1, value),
+			   nchain, observed);
     }
 
     Node * 
@@ -536,15 +548,24 @@ Range Compiler::CounterRange(ParseTree const *var)
 			  vector<double> const &value,
 			  unsigned int nchain, bool observed)
     {
-	ConstantNode * cnode = new ConstantNode(dim, value, nchain, observed);
+	ConstantNode * cnode = 0;
 	if (_index_expression) {
+	    cnode = new ConstantNode(dim, value, nchain, observed);
 	    _index_nodes.push_back(cnode);
 	}
 	else {
-	    _model.addNode(cnode);
+	    CNodeMap::key_type k(dim, value);
+	    CNodeMap::const_iterator p = _cnode_map.find(k);
+	    if (p != _cnode_map.end()) {
+		cnode = p->second;
+	    }
+	    else {
+		cnode = new ConstantNode(dim, value, nchain, observed);
+		_cnode_map[k] = cnode;
+		_model.addNode(cnode);
+	    }
 	}
 	return cnode;
-	
     }
 
 Node *Compiler::getArraySubset(ParseTree const *p)

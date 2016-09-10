@@ -48,6 +48,8 @@ class Compiler {
   std::map<std::string, std::vector<int> > _node_array_bounds;
   std::map<std::pair<std::string, Range>, std::set<int> > _umap;
   std::set<std::string> _lhs_vars;
+  std::map<std::pair<std::vector<unsigned int>, std::vector<double> >,
+      ConstantNode *> _cnode_map;
   
   Node *getArraySubset(ParseTree const *t);
   SimpleRange VariableSubsetRange(ParseTree const *var);
