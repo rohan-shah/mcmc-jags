@@ -9,6 +9,9 @@ Bug fixes
   to the next.
 * There was a memory leak in the compiler which could create redundant
   constant nodes.
+* Models in which the nodes were defined in forward-sampling order could
+  could compile very slowly. The compilation time is now much less
+  dependent on the order in which the nodes are defined.
   
 Changes in JAGS 4.2.0
 
