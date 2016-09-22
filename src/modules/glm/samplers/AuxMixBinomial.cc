@@ -16,10 +16,11 @@ using std::exp;
 namespace jags {
 namespace glm {
 
-    static double const &getDenominator(StochasticNode const *snode, unsigned int chain)
+    static const double one = 1;
+
+    static double const &getDenominator(StochasticNode const *snode,
+					unsigned int chain)
     {
-	static const double one = 1;
-	
 	switch(getFamily(snode)) {
 	case GLM_BERNOULLI:
 	    return one;
@@ -33,7 +34,8 @@ namespace glm {
     }
     
 
-    AuxMixBinomial::AuxMixBinomial(StochasticNode const *snode, unsigned int chain)
+    AuxMixBinomial::AuxMixBinomial(StochasticNode const *snode,
+				   unsigned int chain)
 	: Outcome(snode, chain), _nb(getDenominator(snode, chain)), 
 	  _y(snode->value(chain)[0]), _y_star(0), _mix(0)
     {
@@ -86,7 +88,9 @@ namespace glm {
 
     bool AuxMixBinomial::canRepresent(StochasticNode const *snode) 
     {
-	return (getFamily(snode) == GLM_BINOMIAL || getFamily(snode) == GLM_BERNOULLI) && getLink(snode) == LNK_LOGIT;
+	return (getFamily(snode) == GLM_BINOMIAL ||
+		getFamily(snode) == GLM_BERNOULLI) &&
+	    getLink(snode) == LNK_LOGIT;
     }
 
 }}

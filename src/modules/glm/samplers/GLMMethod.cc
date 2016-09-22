@@ -14,7 +14,7 @@
 #include <graph/Graph.h>
 #include <graph/StochasticNode.h>
 #include <graph/DeterministicNode.h>
-#include <graph/LinkNode.h>
+//#include <graph/LinkNode.h>
 #include <distribution/Distribution.h>
 #include <rng/TruncatedNormal.h>
 #include <module/ModuleError.h>
@@ -71,7 +71,7 @@ namespace glm {
 
 	    unsigned int length = snodes[i]->length();
 
-	    if (_init || !_fixed[i]) {
+	    if (!_fixed[i]) {
 
 		for (unsigned int j = 0; j < length; ++j) {
 		    for (int r = Xp[c+j]; r < Xp[c+j+1]; ++r) {
@@ -98,16 +98,16 @@ namespace glm {
 	}
 
 	delete [] xnew;
-	
     }
     
     GLMMethod::GLMMethod(GraphView const *view, 
 			 vector<SingletonGraphView const *> const &sub_views,
 			 vector<Outcome *> const &outcomes,
-			 unsigned int chain, bool link)
-	: _view(view), _chain(chain), _sub_views(sub_views), _outcomes(outcomes),
+			 unsigned int chain)
+	: _view(view), _chain(chain), _sub_views(sub_views),
+	  _outcomes(outcomes),
 	  _x(0), _factor(0), _fixed(sub_views.size(), false), 
-	  _length_max(0), _nz_prior(0), _init(true)
+	  _length_max(0), _nz_prior(0)
     {
 	view->checkFinite(chain); //Check validity of initial values
 	
@@ -155,9 +155,16 @@ namespace glm {
 	copy(Xp.begin(), Xp.end(), _xp);
 	copy(Xi.begin(), Xi.end(), _xi);
 
-	// Check for constant linear terms
+	// At this point, all elements of _fixed are set to false, so
+	// a call to calDesign calculates the whole design matrix
+	calDesign();
+	
+	// In future calls to calDesign, we do not want to recalculate
+	// fixed linear terms.
 	for (unsigned int i = 0; i < sub_views.size(); ++i) {
-	    _fixed[i] = checkLinear(sub_views[i], true, link);
+	    // FIXME: For future reference, we will need to make sure this
+	    // still works correctly for log-linear models.
+	    _fixed[i] = checkLinear(sub_views[i], true, true);
 	}
     }
 
@@ -295,11 +302,12 @@ namespace glm {
 	int *Ti = static_cast<int*>(t_x->i);
 	double *Tx = static_cast<double*>(t_x->x);
 
-	for (unsigned int c = 0; c < t_x->ncol; ++c) {
+	//FIXME: reusing previously defined c,r here
+	for (c = 0; c < t_x->ncol; ++c) {
 	    double tau = _outcomes[c]->precision();
 	    double delta = tau * (_outcomes[c]->value() - _outcomes[c]->mean());
 	    double sigma = sqrt(tau);
-	    for (int r = Tp[c]; r < Tp[c+1]; ++r) {
+	    for (r = Tp[c]; r < Tp[c+1]; ++r) {
 		b[Ti[r]] += Tx[r] * delta;
 		Tx[r] *= sigma;
 	    }
@@ -309,171 +317,9 @@ namespace glm {
 	cholmod_free_sparse(&t_x, glm_wk);
 	double one[2] = {1, 0};
 	A = cholmod_add(Aprior, Alik, one, one, 1, 0, glm_wk);
-	A->stype = -1;
+
 	cholmod_free_sparse(&Aprior, glm_wk);
 	cholmod_free_sparse(&Alik, glm_wk);
-    }
-
-    void GLMMethod::updateLM(RNG *rng, bool stochastic) 
-    {
-	//   The log of the full conditional density takes the form
-	//   -(t(x) %*% A %*% x - 2 * b %*% x)/2
-	//   where A is the posterior precision and the mean mu solves
-	//   A %*% mu = b
-
-	//   For computational convenience we take xold, the current value
-	//   of the sampled nodes, as the origin
-
-	if (_init) {
-	    calDesign();
-	    symbolic();
-	    _init = false;
-	}
-
-	double *b = 0;
-	cholmod_sparse *A = 0;
-	calCoef(b, A);
-	
-	// Get LDL' decomposition of posterior precision
-	A->stype = -1;
-	int ok = cholmod_factorize(A, _factor, glm_wk);
-	cholmod_free_sparse(&A, glm_wk);
-	if (!ok) {
-	    throwRuntimeError("Cholesky decomposition failure in GLMMethod");
-	}
-
-	// Use the LDL' decomposition to generate a new sample
-	// with mean mu such that A %*% mu = b and precision A. 
-	
-	unsigned int nrow = _view->length();
-	cholmod_dense *w = cholmod_allocate_dense(nrow, 1, nrow, CHOLMOD_REAL, 
-						  glm_wk);
-
-	// Permute RHS
-	double *wx = static_cast<double*>(w->x);
-	int *perm = static_cast<int*>(_factor->Perm);
-	for (unsigned int i = 0; i < nrow; ++i) {
-	    wx[i] = b[perm[i]];
-	}
-
-	cholmod_dense *u1 = cholmod_solve(CHOLMOD_L, _factor, w, glm_wk);
-	updateAuxiliary(u1, _factor, rng);
-
-	if (stochastic) {
-	    double *u1x = static_cast<double*>(u1->x);
-	    if (_factor->is_ll) {
-		// LL' decomposition
-		for (unsigned int r = 0; r < nrow; ++r) {
-		    u1x[r] += rng->normal();
-		}
-	    }
-	    else {
-		// LDL' decomposition. The diagonal D matrix is stored
-		// as the diagonal of _factor
-		int *fp = static_cast<int*>(_factor->p);
-		double *fx = static_cast<double*>(_factor->x);
-		for (unsigned int r = 0; r < nrow; ++r) {
-		    u1x[r] += rng->normal() * sqrt(fx[fp[r]]);
-		}
-	    }
-	}
-
-	cholmod_dense *u2 = cholmod_solve(CHOLMOD_DLt, _factor, u1, glm_wk);
-
-	// Permute solution
-	double *u2x = static_cast<double*>(u2->x);
-	for (unsigned int i = 0; i < nrow; ++i) {
-	    b[perm[i]] = u2x[i];
-	}
-
-	cholmod_free_dense(&w, glm_wk);
-	cholmod_free_dense(&u1, glm_wk);
-	cholmod_free_dense(&u2, glm_wk);
-
-	//Shift origin back to original scale
-	int r = 0;
-	for (vector<StochasticNode*>::const_iterator p = 
-		 _view->nodes().begin();  p != _view->nodes().end(); ++p)
-	{
-	    unsigned int length = (*p)->length();
-	    double const *xold = (*p)->value(_chain);
-	    for (unsigned int i = 0; i < length; ++i, ++r) {
-		b[r] += xold[i];
-	    }
-	}
-
-	_view->setValue(b, nrow, _chain);
-	delete [] b;
-    }
-
-    void GLMMethod::updateLMGibbs(RNG *rng) 
-    {
-	// Update element-wise. Less efficient than updateLM but
-	// does not require a Cholesky decomposition, and is 
-	// necessary for truncated parameters
-
-	if (_init) {
-	    if (_view->length() != _sub_views.size()) {
-		throwLogicError("updateLMGibbs can only act on scalar nodes");
-	    }
-	    calDesign();
-	    _init = false;
-	}
-
-	double *b = 0;
-	cholmod_sparse *A = 0;
-	calCoef(b, A);
-
-	int nrow = _view->length();
-	vector<double> theta(nrow);
-	_view->getValue(theta, _chain);
-
-	int *Ap = static_cast<int*>(A->p);
-	int *Ai = static_cast<int*>(A->i);
-	double *Ax = static_cast<double*>(A->x);
-
-	//Extract diagonal from A
-	vector<double> diagA(nrow);
-	for (int c = 0; c < nrow; ++c) {
-	    for (int j = Ap[c]; j < Ap[c+1]; ++j) {
-		if (Ai[j] == c) {
-		    diagA[c] = Ax[j];
-		    break;
-		}
-	    }
-	}
-
-	//Update element-wise
-	for (int i = 0; i < nrow; ++i) {
-	    
-	    double theta_old = theta[i];
-		
-	    double mu  = theta[i] + b[i]/diagA[i];
-	    double sigma = sqrt(1/diagA[i]);
-	    StochasticNode const *snode = _sub_views[i]->nodes()[0];
-	    double const *l = snode->lowerLimit(_chain);
-	    double const *u = snode->upperLimit(_chain);
-		
-	    if (l && u) {
-		theta[i] = inormal(*l, *u, rng, mu, sigma);
-	    }
-	    else if (l) {
-		theta[i] = lnormal(*l, rng, mu, sigma);
-	    }
-	    else if (u) {
-		theta[i] = rnormal(*u, rng, mu, sigma);
-	    }
-	    else {
-		theta[i] = mu + rng->normal() * sigma;
-	    }
-		
-	    double delta = theta[i] - theta_old;
-	    for (int j = Ap[i]; j < Ap[i+1]; ++j) {
-		b[Ai[j]] -= delta * Ax[j];
-	    }
-	}
-
-	_view->setValue(theta,  _chain);
     }
 
     bool GLMMethod::isAdaptive() const
@@ -488,10 +334,6 @@ namespace glm {
     bool GLMMethod::checkAdaptation() const
     {
 	return true;
-    }
-
-    void GLMMethod::updateAuxiliary(cholmod_dense *b, cholmod_factor *N, RNG *rng)
-    {
     }
 
 }}

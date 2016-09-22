@@ -70,6 +70,8 @@
     static bool getWorkingDirectory(std::string &name);
     static void errordump();
     static void updatestar(long niter, long refresh, int width);
+	// Run adaptation phase until adapted, regardless of iterations:
+    static void autoadaptstar(long maxiter);
     static void adaptstar(long niter, long refresh, int width);
     static void setParameters(jags::ParseTree *p, jags::ParseTree *param1);
     static void setParameters(jags::ParseTree *p, std::vector<jags::ParseTree*> *parameters);
@@ -84,6 +86,8 @@
                            std::string const &status);
     static void setSeed(unsigned int seed);
     static bool Jtry(bool ok);
+	// Needed for update (and adapt) functions to dump variable states:
+    static bool Jtry_dump(bool ok);
     %}
 
 %defines
@@ -116,6 +120,7 @@
 %token <intval> COMPILE
 %token <intval> INITIALIZE
 %token <intval> ADAPT
+%token <intval> AUTOADAPT
 %token <intval> UPDATE
 %token <intval> BY
 %token <intval> MONITORS
@@ -194,6 +199,7 @@ command: model
 | compile
 | initialize
 | adapt
+| autoadapt
 | update
 | monitor
 | monitors_to
@@ -353,6 +359,11 @@ initialize: INITIALIZE {
     if (!console->initialize()) {
 	errordump();
     }
+}
+;
+
+autoadapt: AUTOADAPT INT {
+	autoadaptstar($2);
 }
 ;
 
@@ -1050,6 +1061,9 @@ static void errordump()
 	    doDump(fname.str(), jags::DUMP_ALL, i);
 	    fname.str("");
 	}
+	// Moved clearModel from Console.cc CATCH_ERRORS to here
+	// to allow doDump to work as described in the manual:
+	console->clearModel();
     }
     if (!interactive) exit(1);
 }
@@ -1072,7 +1086,7 @@ static void updatestar(long niter, long refresh, int width)
     }
 
     if (refresh == 0) {
-	Jtry(console->update(niter/2));
+	Jtry_dump(console->update(niter/2));
 	bool status = true;
 	if (adapt) {
 	    if (!console->checkAdaptation(status)) {
@@ -1084,7 +1098,7 @@ static void updatestar(long niter, long refresh, int width)
 		return;
 	    }
 	}
-	Jtry(console->update(niter - niter/2));
+	Jtry_dump(console->update(niter - niter/2));
 	if (!status) {
 	    std::cerr << "WARNING: Adaptation incomplete\n";
 	}
@@ -1120,12 +1134,11 @@ static void updatestar(long niter, long refresh, int width)
 	    }
 	}
 	long nupdate = std::min(n, refresh);
-	if(console->update(nupdate)) {
+	if(Jtry_dump(console->update(nupdate))) {
 	    std::cout << "*" << std::flush;
 	}
 	else {
 	    std::cout << std::endl;
-	    errordump();
 	    return;
 	}
 	col++;
@@ -1142,6 +1155,44 @@ static void updatestar(long niter, long refresh, int width)
     }
 }
 
+static void autoadaptstar(long maxiter)
+{
+    std::cout << "Autoadapting up to " << maxiter << " iterations" << std::endl;
+	
+	bool status = true;
+	long i = 0;
+    for (i = 0; i < maxiter; i++) {
+		if (!console->checkAdaptation(status)) {
+		    errordump();
+		    return;
+		}
+		if(status)
+			break;
+
+		Jtry_dump(console->update(1));
+	}
+	if (!console->checkAdaptation(status)) {
+	    errordump();
+	    return;
+	}
+	
+	if (!status) {
+	    std::cerr << "Adaptation incomplete\n";
+	}
+	else {
+		if (i==0)
+			std::cout << "Adaptation skipped: model is not in adaptive mode\n";
+		else
+			std::cout << "Adaptation completed in " << i << " iterations" << std::endl;
+		if (!console->adaptOff()) {
+			std::cout << std::endl;
+			errordump();
+			return;
+	    }
+	}
+    return;
+}
+
 static void adaptstar(long niter, long refresh, int width)
 {
     if (!console->isAdapting()) {
@@ -1152,7 +1203,7 @@ static void adaptstar(long niter, long refresh, int width)
     
     bool status = true;
     if (refresh == 0) {
-	console->update(niter);
+	Jtry_dump(console->update(niter));
 	if (!console->checkAdaptation(status)) {
 	    errordump();
 	    return;
@@ -1179,11 +1230,10 @@ static void adaptstar(long niter, long refresh, int width)
     int col = 0;
     for (long n = niter; n > 0; n -= refresh) {
 	long nupdate = std::min(n, refresh);
-	if(console->update(nupdate))
+	if(Jtry_dump(console->update(nupdate)))
 	    std::cout << "+" << std::flush;
 	else {
 	    std::cout << std::endl;
-	    errordump();
 	    return;
 	}
 	col++;
@@ -1390,9 +1440,26 @@ static void print_unused_variables(std::map<std::string, jags::SArray> const &ta
 	model_vars.push_back(".RNG.name");
 	model_vars.push_back(".RNG.seed");
 	model_vars.push_back(".RNG.state");
-	std::sort(model_vars.begin(), model_vars.end());
     }
+	
+	// Make sure both vectors are sorted to avoid false positive WARNINGs:
+	std::sort(model_vars.begin(), model_vars.end());
+	std::sort(supplied_vars.begin(), supplied_vars.end());
+	
+	/*  Test code to check vectors:
+	if(data){
+		std::cout << "Variables in model:\n";
+		std::copy(model_vars.begin(), model_vars.end(),
+			  std::ostream_iterator<std::string>(std::cout, ", "));
+		std::cout << "\n";
 
+		std::cout << "Supplied vars:\n";
+		std::copy(supplied_vars.begin(), supplied_vars.end(),
+			  std::ostream_iterator<std::string>(std::cout, ", "));
+		std::cout << "\n";
+	}  
+	*/
+	
     std::set_difference(supplied_vars.begin(), supplied_vars.end(),
 			model_vars.begin(), model_vars.end(),
 			std::inserter(unused_vars, unused_vars.begin()));
@@ -1503,5 +1570,17 @@ bool Jtry(bool ok)
     if (!ok && !interactive) 
 	exit(1);
     else
+	return ok;
+}
+
+bool Jtry_dump(bool ok)
+{
+	// Allows doDump to work as described in the manual:
+	if (!ok) {
+	errordump();
+	console->clearModel();
+    if (!interactive) 
+	exit(1);
+	}
 	return ok;
 }

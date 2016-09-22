@@ -1,7 +1,7 @@
 #ifndef HOLMES_HELD_FACTORY_H_
 #define HOLMES_HELD_FACTORY_H_
 
-#include "BinaryFactory.h"
+#include "GLMFactory.h"
 
 namespace jags {
 namespace glm {
@@ -9,29 +9,29 @@ namespace glm {
     /**
      * @short Factory object for the Holmes-Held sampling method
      */
-    class HolmesHeldFactory : public BinaryFactory
+    class HolmesHeldFactory : public GLMFactory
     {
-    public:
+      public:
 	HolmesHeldFactory();
 	/**
-	 * Returns a newly allocated object of class HolmesHeld for
-	 * sampling binary GLMs with probit or logistic link.
+	 * Checks that the outcome variable is a Bernoulli random
+	 * variable or a binomial variable with size fixed to 1, and
+	 * the link function is logit or probit.  Linear models with
+	 * identity link are also permitted.
 	 */
-	GLMMethod *newBinary(GraphView const *view, 
-			     std::vector<GraphView const *> const &sub_views,
-			     std::vector<Outcome *> const &outcomes,
-			     unsigned int chain) const;
+	bool checkOutcome(StochasticNode const *snode) const;
 	/**
-	 * Returns true. The Holmes-Held update method requires a
-	 * fixed outcome because the auxiliary variables are updated
-	 * by a reversible transition from their current values.
+	 * Returns a newly allocated object of class
+	 * HolmesHeld/HolmesHeldGibbs, unless we have a pure linear
+	 * model with normal outcome variables.  In this case, an
+	 * object of class GLMBlock/GLMGibbs is returned.
+	 *
+	 * This function is called by GLMFactory#makeSampler
 	 */
-	bool fixedOutcome() const;
-	/**
-	 * Returns true. The Holmes-Held update method requires a
-	 * fixed design matrix
-	 */
-	bool fixedDesign() const;
+	GLMMethod *
+	    newMethod(GraphView const *view,
+		      std::vector<SingletonGraphView const *> const &sub_views,
+		      unsigned int chain, bool gibbs) const;
     };
 
 }}

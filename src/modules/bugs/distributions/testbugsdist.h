@@ -51,6 +51,7 @@ class BugsDistTest : public CppUnit::TestFixture, public JAGSFixture
     jags::RScalarDist *_dpar;
     jags::RScalarDist *_dpois;
     jags::ScalarDist *_dround;
+    jags::VectorDist *_dsample;
     jags::ArrayDist *_dsum;
     jags::RScalarDist *_dt;
     jags::ScalarDist *_dunif;
@@ -59,6 +60,9 @@ class BugsDistTest : public CppUnit::TestFixture, public JAGSFixture
 
     void rscalar_rpq(jags::RScalarDist const *dist, 
 		     std::vector<double const *> const &par);
+
+    void rscalar_trunclik(jags::RScalarDist const *dist, 
+			  std::vector<double const *> const &par);
 
     void kl_scalar(jags::ScalarDist const *dist, 
 		   std::vector<double const *> const &par0,

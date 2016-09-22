@@ -8,7 +8,7 @@
  * CHOLMOD/Include/cholmod_modify.h is licensed under Version 2.0 of the GNU
  * General Public License.  See gpl.txt for a text of the license.
  * CHOLMOD is also available under other licenses; contact authors for details.
- * http://www.cise.ufl.edu/research/sparse
+ * http://www.suitesparse.com
  * -------------------------------------------------------------------------- */
 
 /* CHOLMOD Modify module.
@@ -33,6 +33,7 @@
  * cholmod_updown_solve	    update/downdate, and modify solution to Lx=b
  * cholmod_updown_mark	    update/downdate, and modify solution to partial Lx=b
  * cholmod_updown_mask	    update/downdate for LPDASA
+ * cholmod_updown_mask2     update/downdate for LPDASA
  * cholmod_rowadd_solve	    add a row, and update solution to Lx=b
  * cholmod_rowadd_mark	    add a row, and update solution to partial Lx=b
  * cholmod_rowdel_solve	    delete a row, and downdate Lx=b
@@ -117,8 +118,8 @@ int cholmod_updown_mark
     cholmod_common *Common
 ) ;
 
-int cholmod_l_updown_mark (int, cholmod_sparse *, UF_long *, cholmod_factor *,
-    cholmod_dense *, cholmod_dense *, cholmod_common *) ;
+int cholmod_l_updown_mark (int, cholmod_sparse *, SuiteSparse_long *,
+    cholmod_factor *, cholmod_dense *, cholmod_dense *, cholmod_common *) ;
 
 /* -------------------------------------------------------------------------- */
 /* cholmod_updown_mask:  update/downdate, for LPDASA */
@@ -143,8 +144,29 @@ int cholmod_updown_mask
     cholmod_common *Common
 ) ;
 
-int cholmod_l_updown_mask (int, cholmod_sparse *, UF_long *, UF_long *,
-    cholmod_factor *, cholmod_dense *, cholmod_dense *, cholmod_common *) ;
+int cholmod_l_updown_mask (int, cholmod_sparse *, SuiteSparse_long *,
+    SuiteSparse_long *, cholmod_factor *, cholmod_dense *, cholmod_dense *,
+    cholmod_common *) ;
+
+int cholmod_updown_mask2
+(
+    /* ---- input ---- */
+    int update,		/* TRUE for update, FALSE for downdate */
+    cholmod_sparse *C,	/* the incoming sparse update */
+    int *colmark,	/* int array of size n.  See cholmod_updown.c */
+    int *mask,		/* size n */
+    int maskmark,
+    /* ---- in/out --- */
+    cholmod_factor *L,	/* factor to modify */
+    cholmod_dense *X,	/* solution to Lx=b (size n-by-1) */
+    cholmod_dense *DeltaB,  /* change in b, zero on output */
+    /* --------------- */
+    cholmod_common *Common
+) ;
+
+int cholmod_l_updown_mask2 (int, cholmod_sparse *, SuiteSparse_long *,
+    SuiteSparse_long *, SuiteSparse_long, cholmod_factor *, cholmod_dense *,
+    cholmod_dense *, cholmod_common *) ;
 
 /* -------------------------------------------------------------------------- */
 /* cholmod_rowadd:  add a row to an LDL' factorization (a rank-2 update) */
@@ -219,8 +241,8 @@ int cholmod_rowadd_mark
     cholmod_common *Common
 ) ;
 
-int cholmod_l_rowadd_mark (size_t, cholmod_sparse *, double *, UF_long *,
-    cholmod_factor *, cholmod_dense *, cholmod_dense *,
+int cholmod_l_rowadd_mark (size_t, cholmod_sparse *, double *,
+    SuiteSparse_long *, cholmod_factor *, cholmod_dense *, cholmod_dense *,
     cholmod_common *) ;
 
 /* -------------------------------------------------------------------------- */
@@ -298,7 +320,8 @@ int cholmod_rowdel_mark
     cholmod_common *Common
 ) ;
 
-int cholmod_l_rowdel_mark (size_t, cholmod_sparse *, double *, UF_long *,
-    cholmod_factor *, cholmod_dense *, cholmod_dense *, cholmod_common *) ;
+int cholmod_l_rowdel_mark (size_t, cholmod_sparse *, double *,
+    SuiteSparse_long *, cholmod_factor *, cholmod_dense *, cholmod_dense *,
+    cholmod_common *) ;
 
 #endif

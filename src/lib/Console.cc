@@ -35,6 +35,30 @@ using std::set;
 using std::pair;
 using std::FILE;
 
+// Need to distinguish between errors that delete the model
+// and errors that don't delete the model (in update)
+// so that we can then dump parameter values from parser.cc
+#define CATCH_ERRORS_DUMP						\
+    catch (ParentError const &except) {					\
+        except.printMessage(_err, _model->symtab());			\
+	return false;							\
+    }									\
+    catch (NodeError const &except) {					\
+        except.printMessage(_err, _model->symtab());			\
+	return false;							\
+    }									\
+    catch (std::runtime_error const &except) {				\
+	_err << "RUNTIME ERROR:\n";					\
+	_err << except.what() << endl;					\
+	return false;							\
+    }									\
+    catch (std::logic_error const &except) {				\
+	_err << "LOGIC ERROR:\n" << except.what() << '\n';		\
+	_err << "Please send a bug report to "				\
+	     << PACKAGE_BUGREPORT << endl;				\
+	return false;							\
+    }
+
 #define CATCH_ERRORS							\
     catch (ParentError const &except) {					\
         except.printMessage(_err, _model->symtab());			\
@@ -194,7 +218,7 @@ bool Console::compile(map<string, SArray> &data_table, unsigned int nchain,
 {
     if (nchain == 0) {
 	_err << "You must have at least one chain" << endl;
-	return true;
+	return false;
     }
     if (_model) {
 	_out << "Replacing existing model" << endl;
@@ -270,7 +294,7 @@ bool Console::compile(map<string, SArray> &data_table, unsigned int nchain,
 	}
 	else {
 	    _err << "Nothing to compile" << endl;
-	    return true;
+	    return false;
 	}
 	if (_model) {
 	    unsigned int nobs = 0, nparam = 0;
@@ -294,7 +318,7 @@ bool Console::compile(map<string, SArray> &data_table, unsigned int nchain,
 	}
 	else {
 	    _err << "No model" << endl;
-	    return true;
+	    return false;
 	}
     }
     CATCH_ERRORS;
@@ -314,7 +338,7 @@ bool Console::initialize()
 	return false;
     }
     if (_model->isInitialized()) {
-	_err << "Model is already initialized" << endl;
+	_out << "Model is already initialized" << endl;
 	return true;
     }
     
@@ -332,11 +356,11 @@ bool Console::setParameters(map<string, SArray> const &init_table,
 {
   if (_model == 0) {
     _err << "Can't set initial values. No model!" << endl;    
-    return true;
+    return false;
   }
   if (chain == 0 || chain > nchain()) {
     _err << "Invalid chain number" << endl;
-    return true;
+    return false;
   }
 
   try {
@@ -351,12 +375,13 @@ bool Console::setRNGname(string const &name, unsigned int chain)
 {
     if (_model == 0) {
 	_err << "Can't set RNG name. No model!" << endl;    
-	return true;
+	return false;
     }
     try {
 	bool name_ok = _model->setRNG(name, chain - 1);
 	if (!name_ok) {
-	    _err << "WARNING: RNG name " << name << " not found\n";
+	    _err << "RNG name " << name << " not found\n";
+	    return false;
 	}
     }
     CATCH_ERRORS;
@@ -377,7 +402,7 @@ bool Console::update(unsigned int n)
     try {
 	_model->update(n);
     }
-    CATCH_ERRORS;
+    CATCH_ERRORS_DUMP;
 
     return true;
 }
@@ -504,6 +529,7 @@ bool Console::dumpState(map<string,SArray> &data_table,
     }
   }
   CATCH_ERRORS;
+  // Model is subsequently cleared by calling functions in parser
   
   return true;
 }
@@ -514,7 +540,7 @@ bool Console::dumpMonitors(map<string,SArray> &data_table,
 {
     if (_model == 0) {
 	_err << "Cannot dump monitors.  No model!" << endl;
-	return true;
+	return false;
     }
     try {
 	list<MonitorControl> const &monitors = _model->monitors();

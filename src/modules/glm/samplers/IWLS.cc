@@ -47,7 +47,7 @@ namespace glm {
 	       vector<SingletonGraphView const *> const &sub_views,
 	       vector<Outcome *> const &outcomes,
 	       unsigned int chain)
-	: GLMMethod(view, sub_views, outcomes, chain, true), _init(true)
+	: GLMBlock(view, sub_views, outcomes, chain), _init(true)
     {
     }
     
@@ -104,13 +104,15 @@ namespace glm {
 		
     void IWLS::update(RNG *rng)
     {
+	/*
 	if (_init) {
 	    for (unsigned int i = 0; i < MAX_ITER; ++i) {
-		updateLM(rng, false);
+		GLMBlock::update(rng, false);
             }
 	    _init = false;
 	    return;
 	}
+	*/
 	
 	double *b1, *b2;
 	cholmod_sparse *A1, *A2;
@@ -121,7 +123,7 @@ namespace glm {
 	calCoef(b1, A1);
 
 	logp -= _view->logFullConditional(_chain);
-	updateLM(rng);
+	GLMBlock::update(rng);
 	logp += _view->logFullConditional(_chain);
 
 	vector<double> xnew(_view->length());

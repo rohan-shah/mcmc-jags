@@ -4,7 +4,7 @@ prefix=@prefix@
 exec_prefix=@exec_prefix@
 libdir=@libdir@
 jagsincludedir=@includedir@/JAGS
-moduledir=@libdir@/JAGS/modules
+moduledir=@libdir@/JAGS/modules-@JAGS_MAJOR@
 
 Name: libjags
 Version: @PACKAGE_VERSION@

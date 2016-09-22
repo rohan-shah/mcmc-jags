@@ -36,7 +36,8 @@ dgeom.c pgeom.c qgeom.c rgeom.c \
 dnbeta.c pnbeta.c qnbeta.c \
 dnf.c pnf.c qnf.c \
 dnt.c pnt.c qnt.c \
-sign.c
+sign.c \
+rweibull2.c dweibull2.c pweibull2.c qweibull2.c 
 
 noinst_HEADERS = nmath.h dpq.h bessel.h
 

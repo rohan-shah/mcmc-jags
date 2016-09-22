@@ -25,6 +25,8 @@
 #include <distributions/DPar.h>
 #include <distributions/DPois.h>
 #include <distributions/DRound.h>
+#include <distributions/DRW1.h>
+#include <distributions/DSample.h>
 #include <distributions/DT.h>
 #include <distributions/DUnif.h>
 #include <distributions/DWeib.h>
@@ -87,11 +89,13 @@
 #include <function/PFunction.h>
 #include <function/QFunction.h>
 
+#include <samplers/CensoredFactory.h>
 #include <samplers/ConjugateFactory.h>
 #include <samplers/DSumFactory.h>
 #include <samplers/MNormalFactory.h>
 #include <samplers/DirichletFactory.h>
 #include <samplers/SumFactory.h>
+#include <samplers/RW1Factory.h>
 
 using std::vector;
 
@@ -128,8 +132,11 @@ namespace bugs {
 	insert(new DNChisqr);
 	insert(new DNegBin);
 	insert(new DNorm);
+	insert(new DNT);
 	insert(new DPar);
 	insert(new DPois);
+	insert(new DRW1);
+	insert(new DSample);
 	insert(new DT);
 	insert(new DUnif);
 	insert(new DWeib);
@@ -197,6 +204,8 @@ namespace bugs {
 	//insert(new REFactory);
 	insert(new DSumFactory);
 	insert(new SumFactory);
+	insert(new CensoredFactory);
+	insert(new RW1Factory);
     }
 
     BUGSModule::~BUGSModule() {

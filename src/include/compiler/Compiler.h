@@ -39,7 +39,7 @@ class Compiler {
   std::map<std::string, std::vector<bool> > _constant_mask;
   unsigned int _n_resolved, _n_relations;
   std::vector<bool> _is_resolved;
-  unsigned int _resolution_level;
+  int _resolution_level;
   int _index_expression;
   std::vector<Node*> _index_nodes;
   LogicalFactory _logicalfactory;
@@ -48,15 +48,17 @@ class Compiler {
   std::map<std::string, std::vector<int> > _node_array_bounds;
   std::map<std::pair<std::string, Range>, std::set<int> > _umap;
   std::set<std::string> _lhs_vars;
+  std::map<std::pair<std::vector<unsigned int>, std::vector<double> >,
+      ConstantNode *> _cnode_map;
   
   Node *getArraySubset(ParseTree const *t);
-  Range VariableSubsetRange(ParseTree const *var);
+  SimpleRange VariableSubsetRange(ParseTree const *var);
   Range CounterRange(ParseTree const *var);
   Node* VarGetNode(ParseTree const *var);
   Range getRange(ParseTree const *var,  SimpleRange const &default_range);
 
   void traverseTree(ParseTree const *relations, CompilerMemFn fun,
-		    bool resetcounter=true);
+		    bool resetcounter=true, bool reverse=false);
   void allocate(ParseTree const *rel);
   Node * allocateStochastic(ParseTree const *stoch_rel);
   Node * allocateLogical(ParseTree const *dtrm_rel);

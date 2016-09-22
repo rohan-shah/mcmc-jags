@@ -22,6 +22,7 @@ namespace glm {
 	double precision() const;
 	void update(RNG *rng);
 	void update(double mean, double var, RNG *rng);
+	bool fixedA() const;
 	static bool canRepresent(StochasticNode const *snode);
     };
 

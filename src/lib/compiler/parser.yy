@@ -348,6 +348,9 @@ distribution: FUNC '(' expression_list ')'
 }
 ;
 
+//FIXME: It does not seem like a good idea to have NULL pointers here
+//We should replace these with a new ParseTree object of tclass P_NULL
+
 truncated: 'T' '(' expression ','  expression ')' {$$ = Truncated($3,$5);}
 | 'T' '(' ',' expression ')' {$$ = Truncated(0,$4);}
 | 'T' '(' expression ',' ')' {$$ = Truncated($3,0);}

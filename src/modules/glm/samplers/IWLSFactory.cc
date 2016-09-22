@@ -2,7 +2,6 @@
 
 #include "IWLSFactory.h"
 #include "IWLS.h"
-#include "Linear.h"
 #include "NormalLinear.h"
 #include "IWLSOutcome.h"
 
@@ -48,7 +47,7 @@ namespace glm {
         }
 
         if (linear) {
-            return new Linear(view, sub_views, outcomes, chain, false);
+            return new GLMBlock(view, sub_views, outcomes, chain);
         }
 	
 	return new IWLS(view, sub_views, outcomes, chain);

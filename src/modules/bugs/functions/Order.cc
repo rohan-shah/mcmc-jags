@@ -25,17 +25,16 @@ namespace bugs {
 	int N = lengths[0];
 
 	//Create a vector of pointers to the elements of arg and sort it
-	double const **argptrs = new double const *[N];
+	vector<double const *> argptrs(N);
 	for (int i = 0; i < N; ++i) {
 	    argptrs[i] = args[0] + i;
 	}
-	stable_sort(argptrs, argptrs + N, lt_doubleptr);
+	stable_sort(argptrs.begin(), argptrs.end(), lt_doubleptr);
 
 	//Orders can be inferred from the sorted vector of pointers
 	for (int i = 0; i < N; ++i) {
 	    value[i] = argptrs[i] - args[0] + 1;
 	}
-	delete [] argptrs;
     }
 
     unsigned int Order::length (vector<unsigned int> const &lengths,

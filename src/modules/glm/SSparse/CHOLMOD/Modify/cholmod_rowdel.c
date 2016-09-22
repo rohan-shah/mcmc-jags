@@ -8,7 +8,7 @@
  * The CHOLMOD/Modify Module is licensed under Version 2.0 of the GNU
  * General Public License.  See gpl.txt for a text of the license.
  * CHOLMOD is also available under other licenses; contact authors for details.
- * http://www.cise.ufl.edu/research/sparse
+ * http://www.suitesparse.com
  * -------------------------------------------------------------------------- */
 
 /* Deletes a row and column from an LDL' factorization.  The row and column k
@@ -21,6 +21,7 @@
  * is used, it can have any valid xtype).
  */
 
+#ifndef NGPL
 #ifndef NMODIFY
 
 #include "cholmod_internal.h"
@@ -458,4 +459,5 @@ int CHOLMOD(rowdel_mark)
     ASSERT (CHOLMOD(dump_work) (TRUE, TRUE, 2*n, Common)) ;
     return (ok) ;
 }
+#endif
 #endif

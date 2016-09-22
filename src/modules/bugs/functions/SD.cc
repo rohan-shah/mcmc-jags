@@ -19,15 +19,14 @@ namespace bugs {
     {
 	double svalue = 0;
 	if (lengths[0] > 1) {
-	    unsigned int i;
 	    double sum = 0;
-	    for (unsigned i = 0; i < lengths[0]; i++) {
+	    for (unsigned int i = 0; i < lengths[0]; i++) {
 		sum += args[0][i];
 	    }
 	    double mean = sum / lengths[0];
 
 	    double var = 0;
-	    for (i = 0; i < lengths[0]; i++) {
+	    for (unsigned int i = 0; i < lengths[0]; i++) {
 		var += (args[0][i] - mean) * (args[0][i] - mean);
 	    }
 	    svalue = sqrt (var / (lengths[0] - 1));

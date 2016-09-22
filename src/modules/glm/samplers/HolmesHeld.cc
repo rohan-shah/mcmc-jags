@@ -1,7 +1,6 @@
 #include <config.h>
 
 #include "HolmesHeld.h"
-#include "KS.h"
 #include "Outcome.h"
 
 #include <graph/StochasticNode.h>
@@ -10,10 +9,6 @@
 #include <rng/TruncatedNormal.h>
 #include <rng/RNG.h>
 #include <module/ModuleError.h>
-
-extern "C" {
-#include <cs.h>
-}
 
 #include <cmath>
 
@@ -26,34 +21,48 @@ using std::sqrt;
 
 extern cholmod_common *glm_wk;
 
-static cs shallow_copy(cholmod_sparse *s)
+static cholmod_sparse shallow_copy(cholmod_sparse *x, unsigned int c)
 {
-    //Copy a cholmod_sparse struct to a cs struct without allocating
-    //any memory
+    //Take a copy of column c of sparse matrix x without allocating
+    //any memory. This is computationally cheaper than calling
+    //cholmod_submatrix, but potentially dangerous if the copy is
+    //passed to a function that tries to modify it. Note that we can
+    //only have one shallow copy in use at a time since they all share
+    //the same array of column pointers given by the static array p.
 
-    cs c;
-    c.nzmax = s->nzmax;
-    c.n = s->nrow;
-    c.m = s->ncol;
-    c.p = static_cast<int*>(s->p);
-    c.i = static_cast<int*>(s->i);
-    c.x = static_cast<double*>(s->x);
-    c.nz = -1;
-    return c;
+    static int p[2]; 
+    
+    cholmod_sparse xcopy = *x;
+
+    double *xx = static_cast<double*>(x->x);
+    int *xp = static_cast<int*>(x->p);
+    int *xi = static_cast<int*>(x->i);
+
+    xcopy.ncol = 1;
+    int nz = xp[c+1] - xp[c];
+    xcopy.nzmax = nz;
+    p[0] = 0;
+    p[1] = nz; 
+    xcopy.p = &p;
+    xcopy.i = xi + xp[c];
+    xcopy.x = xx + xp[c];
+
+    return xcopy;
 }
 
 namespace jags {
 namespace glm {
 
+    
     HolmesHeld::HolmesHeld(GraphView const *view,
-			   vector<GraphView const *> const &sub_views,
+			   vector<SingletonGraphView const *> const &sub_views,
 			   vector<Outcome *> const &outcomes,
 			   unsigned int chain)
-	: GLMMethod(view, sub_views, outcomes, chain), _aux_init(true)
+	: GLMBlock(view, sub_views, outcomes, chain)
     {
     }
 
-    void HolmesHeld::updateAuxiliary(cholmod_dense *w, 
+    void HolmesHeld::updateAuxiliary(cholmod_dense *W, 
 				     cholmod_factor *N, RNG *rng)
     {
 	/* 
@@ -76,143 +85,112 @@ namespace glm {
 	vector<StochasticNode *> const &schildren = 
 	    _view->stochasticChildren();
 
-	unsigned int nrow = schildren.size();
+	int nrow = schildren.size();
 
 	//Transpose and permute the design matrix
 	cholmod_sparse *t_x = cholmod_transpose(_x, 1, glm_wk);
-	int *fperm = static_cast<int *>(_factor->Perm);
-	cholmod_sparse *Pt_x = cholmod_submatrix(t_x, fperm, t_x->nrow,
+	int *fperm = static_cast<int*>(_factor->Perm);
+	cholmod_sparse *pt_x = cholmod_submatrix(t_x, fperm, t_x->nrow,
 						 0, -1, 1, 1, glm_wk);
 	cholmod_free_sparse(&t_x, glm_wk);
-
-	//Turn the factor into a matrix. Since this modifies the factor
-	//we need to take a copy first
-	cholmod_factor *f = cholmod_copy_factor(_factor, glm_wk);
-	cholmod_sparse *L = cholmod_factor_to_sparse(f, glm_wk);
-	if (!L->packed || !L->sorted) {
-	    throwLogicError("Cholesky factor is not packed or not sorted");
-	}
-	cholmod_free_factor(&f, glm_wk);
-
-	unsigned int ncol = L->ncol;
+	
+	int ncol = _x->ncol;
 	vector<double> d(ncol, 1);
 	if (!_factor->is_ll) {
-	    //Extract D from the diagonal of L and set the diagonal to 1
-	    int *Lp = static_cast<int*>(L->p);
-	    double *Lx = static_cast<double*>(L->x);
-	    for (unsigned int r = 0; r < ncol; ++r) {
-		d[r] = Lx[Lp[r]];
-		Lx[Lp[r]] = 1;
+	    // LDL' decomposition. The diagonal D matrix is stored as
+	    // the diagonal of _factor
+	    int *fp = static_cast<int*>(_factor->p);
+	    double *fx = static_cast<double*>(_factor->x);
+	    for (int r = 0; r < ncol; ++r) {
+		d[r] = fx[fp[r]];
 	    }
 	}
 
-	// Now make shallow copies of L and Pt_x so we can pass them
-	// to cs_sparse from the CSparse library
-
-	cs cs_L = shallow_copy(L);
-	cs cs_Ptx = shallow_copy(Pt_x);
-
-        double *ur = new double[ncol];
-        int *xi = new int[2*ncol]; //Stack
+	double *Wx = static_cast<double *>(W->x);
 	
-	double *wx = static_cast<double *>(w->x);
-	
-	for (unsigned int r = 0; r < nrow; ++r) {
+	cholmod_dense *U = 0, *Y = 0, *E = 0;
+	cholmod_sparse *uset = 0;
 
-	    // In a heterogeneous GLM, we may have some normal
-	    // outcomes as well as binary outcomes. These can be
-	    // skipped as there is no need for auxiliary variables
-	    /* FIXME
-	       No way to skip in new API
+	cholmod_dense *X = cholmod_allocate_dense(ncol, 1, ncol,
+						  CHOLMOD_REAL, glm_wk);
+	double *Xx = static_cast<double*>(X->x);
 
-	    if (_outcomes[r] == BGLM_NORMAL)
-		continue;
-	    */
+	for (int r = 0; r < nrow; ++r) {
 
-	    int top = cs_spsolve(&cs_L, &cs_Ptx, r, xi, ur, 0, 1);
-		
+	    // We need to do this loop with minimal memory
+	    // allocation. The cholmod_solve2 function uses a
+	    // dense/sparse pair X/xset for input and another
+	    // dense/sparse pair U/uset for output: U, uset, and
+	    // workspaces Y and E are allocated on first use and then
+	    // reused in subsequent calls (See CHOLMOD
+	    // documentation). We also use the utility function
+	    // shallow_copy to access each column of pt_x without
+	    // further memory allocation.
+	    
+	    if (_outcomes[r]->fixedb()) continue;
+
+	    cholmod_sparse xset = shallow_copy(pt_x, r);
+	    double *xx = static_cast<double*>(xset.x);
+	    int *xp = static_cast<int*>(xset.p);
+	    int *xi = static_cast<int*>(xset.i);
+
+	    //Copy non-zero elements of column r to dense vector X
+	    for (int j = 0; j < xp[1]; ++j) {
+		int c = xi[j];
+		Xx[c] = xx[j];
+	    }
+	    
+	    cholmod_solve2(CHOLMOD_L, _factor, X, &xset, &U, &uset, &Y, &E,
+			   glm_wk);
+
 	    double mu_r = _outcomes[r]->mean(); // See IMPORTANT NOTE above
 	    double tau_r = _outcomes[r]->precision();
 	    
 	    //Calculate mean and precision of z[r] conditional
 	    //on z[s] for s != r
 	    double zr_mean = 0;
-	    double Hr = 0; // Diagonal of hat matrix
-	    
-	    if (_factor->is_ll) {
-		for (unsigned int j = top; j < ncol; ++j) {
-		    zr_mean  += ur[xi[j]] * wx[xi[j]]; 
-		    Hr  += ur[xi[j]] * ur[xi[j]];
-		}
+	    double gr = 0; 
+
+	    int *up = static_cast<int*>(uset->p);
+	    int *ui = static_cast<int*>(uset->i);
+	    double *Ux = static_cast<double*>(U->x);
+
+	    for (int j = 0; j < up[1]; ++j) {
+		int c = ui[j];
+		zr_mean  += Ux[c] * Wx[c] / d[c]; 
+		gr  += Ux[c] * Ux[c] / d[c];
 	    }
-	    else {
-		for (unsigned int j = top; j < ncol; ++j) {
-		    zr_mean  += ur[xi[j]] * wx[xi[j]] / d[xi[j]]; 
-		    Hr  += ur[xi[j]] * ur[xi[j]] / d[xi[j]];
-		}
-	    }
-	    Hr *= tau_r;
+
+	    double Hr = gr * tau_r; // diagonal of hat matrix
 	    if (1 - Hr <= 0) {
-		// Theoretically this should never happen, but numerical instability may cause it
-		StochasticNode const *snode = _view->stochasticChildren()[r];
-		throwNodeError(snode, "Highly influential outcome variable in Holmes-Held update method.");
+		continue;
 	    }
-	    zr_mean -= Hr * (_outcomes[r]->value()_z[r] - mu_r);
+	    zr_mean -= Hr * (_outcomes[r]->value() - mu_r);
 	    zr_mean /= (1 - Hr);
-	    double zr_prec = (1 - Hr) * tau_r;
+	    double zr_var = gr / (1 - Hr);
 	    
-	    double yr = schildren[r]->value(_chain)[0];
-	    double zold = _z[r];
-	    if (yr == 1) {
-		_z[r] = lnormal(0, rng, mu_r + zr_mean, 1/sqrt(zr_prec));
-	    }
-	    else if (yr == 0) {
-		_z[r] = rnormal(0, rng, mu_r + zr_mean, 1/sqrt(zr_prec));
-	    }
-	    else {
-		throwLogicError("Invalid child value in HolmesHeld");
-	    }
+	    double zold = _outcomes[r]->value();
+	    _outcomes[r]->update(zr_mean + mu_r, zr_var, rng); 
 	    
 	    //Add new contribution of row r back to b
-	    double zdelta = (_z[r] - zold) * tau_r;
-	    for (unsigned int j = top; j < ncol; ++j) {
-		wx[xi[j]] += ur[xi[j]] * zdelta; 
+	    double zdelta = (_outcomes[r]->value() - zold) * tau_r;
+	    for (int j = 0; j < up[1]; ++j) {
+		int c = ui[j];
+		Wx[c] += Ux[c] * zdelta; 
 	    }
+
 	}
 	    
 	//Free workspace
-	delete [] ur;
-	delete [] xi;
+
+	cholmod_free_sparse(&pt_x, glm_wk);
+	cholmod_free_sparse(&uset, glm_wk);
 	
-	cholmod_free_sparse(&Pt_x, glm_wk);
-	cholmod_free_sparse(&L, glm_wk);
+	cholmod_free_dense(&U, glm_wk);
+	cholmod_free_dense(&Y, glm_wk);
+	cholmod_free_dense(&E, glm_wk);
+	cholmod_free_dense(&X, glm_wk);
     }
     
-    void HolmesHeld::update(RNG *rng)
-    {
-	if (_aux_init) {
-	    for (unsigned int r = 0; r < _outcomes.size(); ++r) {
-		_outcomes[r]->update(rng);
-	    }
-	    _aux_init = false;
-	}
-
-	/* Well, this is awkward. Nothing in the new API to update mixture parameters separate
-	   from the other auxiliary variables
-
-	   FIXME
-
-	for (unsigned int r = 0; r < _tau.size(); ++r)
-	{
-	    if (_outcome[r] == BGLM_LOGIT) {
-		double delta = fabs(_outcomes[r]->value() - _outcomes[r]->mean());
-		_tau[r] = REG_PENALTY + 1/sample_lambda(delta, rng);
-	    }
-	}
-	*/
-	
-	updateLM(rng);
-    }
-
 }}
     

@@ -47,15 +47,23 @@ namespace glm {
     {
     }
 
-/*
     void Outcome::update(double mean, double var, RNG *rng)
     {
     }
-*/
 
     double Outcome::logMHRatio() const
     {
 	return 0;
+    }
+
+    bool Outcome::fixedb() const
+    {
+	return false;
+    }
+
+    bool Outcome::fixedA() const
+    {
+	return false;
     }
 }}
     

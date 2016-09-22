@@ -7,7 +7,7 @@
  * The CHOLMOD/MatrixOps Module is licensed under Version 2.0 of the GNU
  * General Public License.  See gpl.txt for a text of the license.
  * CHOLMOD is also available under other licenses; contact authors for details.
- * http://www.cise.ufl.edu/research/sparse
+ * http://www.suitesparse.com
  * -------------------------------------------------------------------------- */
 
 /* C = A*B.  Multiply two sparse matrices.
@@ -34,6 +34,7 @@
  * is FALSE).
  */
 
+#ifndef NGPL
 #ifndef NMATRIXOPS
 
 #include "cholmod_internal.h"
@@ -484,4 +485,5 @@ cholmod_sparse *CHOLMOD(ssmult)
     ASSERT (CHOLMOD(dump_work) (TRUE, TRUE, values ? n1:0, Common)) ;
     return (C) ;
 }
+#endif
 #endif

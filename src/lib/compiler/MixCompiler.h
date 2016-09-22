@@ -5,9 +5,19 @@ class Node;
 class ParseTree;
 class Compiler;
 
+#include <sarray/Range.h>
+
+#include <string>
+#include <utility>
+#include <set>
+
 namespace jags {
 
+    typedef std::map<std::pair<std::string, Range>, std::set<int> > UMap;
+    
     Node * getMixtureNode(ParseTree const * var, Compiler *compiler);
+    void getMissingMixParams(ParseTree const * var, UMap &umap,
+			     Compiler *compiler);
 
 }
 

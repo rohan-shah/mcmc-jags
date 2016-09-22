@@ -1,7 +1,17 @@
 #include <config.h>
 
+#include "NormalLinear.h"
+#include "BinaryProbit.h"
+#include "BinaryLogit.h"
+
 #include "HolmesHeldFactory.h"
 #include "HolmesHeld.h"
+#include "HolmesHeldGibbs.h"
+#include "GLMBlock.h"
+#include "GLMGibbs.h"
+
+#include <module/ModuleError.h>
+#include <sampler/SingletonGraphView.h>
 
 using std::vector;
 
@@ -9,27 +19,63 @@ namespace jags {
 namespace glm {
 
     HolmesHeldFactory::HolmesHeldFactory()
-	: BinaryFactory("glm::Holmes-Held", false)
+	: GLMFactory("glm::Holmes-Held")
     {}
 
-    BinaryGLM *
-    HolmesHeldFactory::newBinary(GraphView const *view,
-				 vector<GraphView const *> const &sub_views,
-				 vector<Outcome *> const &outcomes,
-				 unsigned int chain) const
+    bool HolmesHeldFactory::checkOutcome(StochasticNode const *snode) const
     {
-	return new HolmesHeld(view, sub_views, outcomes, chain);
+	return (BinaryProbit::canRepresent(snode) ||
+		BinaryLogit::canRepresent(snode) ||
+		NormalLinear::canRepresent(snode));
     }
 
     
-    bool HolmesHeldFactory::fixedOutcome() const
+    GLMMethod *
+    HolmesHeldFactory::newMethod(GraphView const *view,
+			     vector<SingletonGraphView const *> const &subviews,
+			     unsigned int chain, bool gibbs) const
     {
-	return true;
-    }
+	bool linear = true;
+	vector<Outcome*> outcomes;
 
-    bool HolmesHeldFactory::fixedDesign() const
-    {
-	return true;
+	vector<StochasticNode *>::const_iterator p;
+	for (p = view->stochasticChildren().begin();
+	     p != view->stochasticChildren().end(); ++p)
+	{
+	    Outcome *outcome = 0;
+	    if (NormalLinear::canRepresent(*p)) {
+		outcome = new NormalLinear(*p, chain);
+	    }
+	    else if (BinaryProbit::canRepresent(*p)) {
+		outcome = new BinaryProbit(*p, chain);
+		linear = false;
+	    }
+	    else if (BinaryLogit::canRepresent(*p)) {
+		outcome = new BinaryLogit(*p, chain);
+		linear = false;
+	    }
+	    else {
+		throwLogicError("Invalid outcome in HolmesHeldFactory");
+	    }
+	    outcomes.push_back(outcome);
+	}
+
+	if (linear) {
+	    if (gibbs) {
+		return new GLMGibbs(view, subviews, outcomes, chain);
+	    }
+	    else {
+		return new GLMBlock(view, subviews, outcomes, chain);
+	    }
+	}
+	else {
+	    if (gibbs) {
+		return new HolmesHeldGibbs(view, subviews, outcomes, chain);
+	    }
+	    else {
+		return new HolmesHeld(view, subviews, outcomes, chain);
+	    }
+	}
     }
 
 }}

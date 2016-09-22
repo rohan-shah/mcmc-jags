@@ -1,3 +1,99 @@
+Changes in JAGS 4.3.0
+
+Bug fixes
+=========
+* Setting the RNG name and seed in a model with a data block caused a
+  crash on exit. Thanks to Sourceforge user sathomasga.
+* Samplers in the GLM module would recalculate the entire design matrix
+  on each iteration, including columns that are fixed from one iteration
+  to the next.
+* There was a memory leak in the compiler which could create redundant
+  constant nodes.
+* Models in which the nodes were defined in forward-sampling order could
+  could compile very slowly. The compilation time is now much less
+  dependent on the order in which the nodes are defined.
+  
+Changes in JAGS 4.2.0
+
+Bug fixes
+=========
+* JAGS 4.1.0 did not compile under Solaris Studio 12.3 as it referenced
+  some C99 functions that are not part of the C++98 standard (It did
+  compile under Solaris Studio 12.4).
+* The non-central t distribution (dnt) was not inserted into the bugs
+  module.
+* The likelihood for left-truncated nodes was not calculated correctly
+  (This did not affect truncated nodes with no parents, only truncated
+   outcome variables).
+
+Changes in JAGS 4.1.0
+
+Bug fixes
+=========
+* False positive warnings about unused variables in 4.0.0 and 4.0.1
+  are now fixed.
+* Using the same name for a counter as an integer vector supplied with
+  the data could lead to a "dimension mismatch" error when compiling
+  the model.
+* The compiler did not check that a subset expression was inside the
+  range of a node array leading to a logic error. This is now checked
+  in the Compiler::getRange function and a more informative
+  compilation error message is generated.
+* Setting up a large number of predictive nodes to be monitored
+  is now much faster.
+* The bugs::ConjugateNormal sample method did not work correctly with
+  an exponential prior distribution.
+* Error messages for undefined nodes and directed cycles are improved,
+  with less misclassification between the two diagnostic messages.
+* The configuration file jags.pc for pkg-config now gives the correct
+  value for the variable moduledir.
+
+New features
+============
+* A new distribution "dsample" in the bugs module represents sampling
+  without replacement. It has the same interface as "dmulti" (sampling
+  with replacement).
+
+Library changes
+===============
+* The JRmath library contains d-p-q-r functions for the Weibull distribution
+  using the shape-rate parameterization of BUGS instead of the shape-scale
+  parameterization of R. These are used by the DWeib distribution in the
+  bugs module.
+* On Windows, the DLL of the JAGS library includes version information.
+* Compiler::constFromTable returns NULL if a counter with the same name
+  is on the counter stack.
+* RScalarDist::randomSample has improved accuracy when sampling from the
+  tails.
+* Methods of the Console class consistently return false when an error
+  occurs.
+
+Internal changes in modules
+===========================
+
+* base module
+  - The restriction on the length of nodes that FiniteMethod can sample is
+  reintroduced (it was removed in release 4.0.0) but is large (100 instead
+  of 20) and does not apply to nodes with prior distribution dcat.
+
+* bugs module
+  - Interval censored continuous variables can be sampled by the Censored
+  method. Samplers are created by CensoredFactory.
+  - New distribution DSample ("dsample") for sampling with replacement.
+  - The bugs::Sum sampling method (SumMethod) now works when there are
+  likelihood terms in addition to the sum constraint provided by the
+  SumDist distribution. It can also handles the case when a SumDist node
+  has only a single stochastic parent.
+
+
+Changes in JAGS 4.0.1
+
+Internal changes in modules
+===========================
+* The FLIBS flag is not passed to modules that use LAPACK and BLAS.
+  This reverts a change in JAGS 4.0.0 that created an unwanted dependency
+  on libgfortran on Mac OS X.
+
 Changes in JAGS 4.0.0
 
 New features

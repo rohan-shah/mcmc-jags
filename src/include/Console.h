@@ -55,17 +55,14 @@
     *
     * @param file containing BUGS-language description of the model
     *
-    * @param varnames vector of of strings that contains the names of
-    * all variables in the model on exit.
-    * 
     * @return true on success or false on error.
     */
    bool checkModel(std::FILE *file);
    /**
     * Compiles the model.
     *
-    * @param data Map relating the names of the observed variables to
-    * their values.
+    * @param data_table Map relating the names of the observed variables
+    * to their values.
     *
     * @param nchain Number of chains in the model.
     *

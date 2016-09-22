@@ -59,7 +59,7 @@ namespace jags {
 		y = len_x * times[0];
 	    }
 	    else if (len_x > 0){
-		y = accumulate(times, times + len_times, 0);
+		y = accumulate(times, times + len_times, 0.0);
 	    }
 	    
 	    return static_cast<unsigned int>(y);

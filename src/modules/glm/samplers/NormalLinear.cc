@@ -30,4 +30,15 @@ namespace glm {
 	return getFamily(snode) == GLM_NORMAL && getLink(snode) == LNK_LINEAR;
     }
 
+    bool NormalLinear::fixedb() const
+    {
+	return true;
+    }
+
+    bool NormalLinear::fixedA() const
+    {
+	return true;
+    }
+    
+
 }}

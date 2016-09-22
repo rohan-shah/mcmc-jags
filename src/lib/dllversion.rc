@@ -1,0 +1,25 @@
+#include <windows.h>
+#include <config.h>
+
+VS_VERSION_INFO VERSIONINFO
+FILEVERSION JAGS_MAJOR,JAGS_MINORJAGS_PATCH,HG_YEAR,HG_MONTH_DAY
+PRODUCTVERSION JAGS_MAJOR,JAGS_MINOR,JAGS_PATCH,0
+FILEFLAGSMASK 0x3L
+FILEOS VOS__WINDOWS32
+FILETYPE VFT_DLL
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904E4"
+        BEGIN
+            VALUE "FileDescription", "JAGS for Windows DLL\0"
+            VALUE "FileVersion", HG_VERSION "\0"
+            VALUE "LegalCopyright", "Martyn Plummer" HG_YEAR "\0"
+            VALUE "Project info", "https://www.sourceforge.net/projects/mcmc-jags\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1252
+    END
+END

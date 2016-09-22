@@ -36,7 +36,6 @@ namespace base {
 	if (isNULL(range)) {
 	    //Special syntactic rule: a null range corresponds to the whole
 	    //array
-	    NodeArray const *array = model->symtab().getVariable(name);
 	    node_range = array->range();
 	}
 	vector<string> elt_names;

@@ -40,6 +40,7 @@ chain                   zzlval.intval=CHAIN; return CHAIN;
 update			zzlval.intval=UPDATE; return UPDATE;
 adapt			zzlval.intval=ADAPT; return ADAPT;
 by                      zzlval.intval=BY; return BY;
+autoadapt			zzlval.intval=AUTOADAPT; return AUTOADAPT;
 
 monitor			zzlval.intval=MONITOR; return MONITOR;
 monitors		zzlval.intval=MONITORS; return MONITORS;

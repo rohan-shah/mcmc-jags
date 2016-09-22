@@ -7,8 +7,7 @@ namespace jags {
     
     namespace glm {
     /**
-     * Utility function used by the HolmesHeld and AlbertChib sampling
-     * methods in binary logistic regression models.
+     * Utility function used by the BinaryLogit outcome class.
      *
      * A variable "Z" with logistic distribution may be considered as
      * a scale mixture of normal distributions with variance lambda,

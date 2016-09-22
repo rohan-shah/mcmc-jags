@@ -8,7 +8,6 @@
  * The CHOLMOD/Core Module is licensed under Version 2.1 of the GNU
  * Lesser General Public License.  See lesser.txt for a text of the license.
  * CHOLMOD is also available under other licenses; contact authors for details.
- * http://www.cise.ufl.edu/research/sparse
  * -------------------------------------------------------------------------- */
 
 /* CHOLMOD error-handling routine.  */
@@ -52,17 +51,37 @@ int CHOLMOD(error)
 
 #ifndef NPRINT
 	/* print a warning or error message */
-	if (Common->print_function != NULL)
+	if (SuiteSparse_config.printf_func != NULL)
 	{
 	    if (status > 0 && Common->print > 1)
 	    {
-		(Common->print_function) ("CHOLMOD warning: %s\n", message) ;
+                SuiteSparse_config.printf_func ("CHOLMOD warning:") ;
+                if (message != NULL)
+                {
+                    SuiteSparse_config.printf_func (" %s.", message) ;
+                }
+                if (file != NULL)
+                {
+                    SuiteSparse_config.printf_func (" file: %s", file) ;
+                    SuiteSparse_config.printf_func (" line: %d", line) ;
+                }
+                SuiteSparse_config.printf_func ("\n") ;
 		fflush (stdout) ;
 		fflush (stderr) ;
 	    }
 	    else if (Common->print > 0)
 	    {
-		(Common->print_function) ("CHOLMOD error: %s\n", message) ;
+                SuiteSparse_config.printf_func ("CHOLMOD error:") ;
+                if (message != NULL)
+                {
+                    SuiteSparse_config.printf_func (" %s.", message) ;
+                }
+                if (file != NULL)
+                {
+                    SuiteSparse_config.printf_func (" file: %s", file) ;
+                    SuiteSparse_config.printf_func (" line: %d", line) ;
+                }
+                SuiteSparse_config.printf_func ("\n") ;
 		fflush (stdout) ;
 		fflush (stderr) ;
 	    }

@@ -17,7 +17,6 @@ namespace dic {
 	std::vector<unsigned int> dim() const;
 	std::vector<double> const &value(unsigned int chain) const;
 	void update();
-	SArray dump() const;
 	bool poolChains() const;
 	bool poolIterations() const;
     };

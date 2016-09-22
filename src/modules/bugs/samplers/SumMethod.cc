@@ -3,8 +3,10 @@
 #include <sampler/SingletonGraphView.h>
 #include <graph/StochasticNode.h>
 #include <graph/DeterministicNode.h>
+#include <graph/Graph.h>
 #include <sampler/Linear.h>
 #include <util/nainf.h>
+#include <graph/NodeError.h>
 
 #include "SumMethod.h"
 #include <cmath>
@@ -39,7 +41,7 @@ namespace jags {
 	    return y;
 	}
 	    
-	StochasticNode const *
+	StochasticNode *
 	SumMethod::isCandidate(StochasticNode *snode, Graph const &graph)
 	{
 	    //We can only sample scalar nodes
@@ -47,46 +49,88 @@ namespace jags {
 	    
 	    SingletonGraphView gv(snode, graph);
 
-	    /* Check stochastic children
+	    /* 
+	       Check stochastic children
 	       
-	       There must be a single stochastic child, which is
-	       observed and has the distribution "sum".  
 	    */
 	    vector<StochasticNode*> const &schildren = gv.stochasticChildren();
-	    if (schildren.size() != 1) return 0;
-	    StochasticNode const *schild = schildren.front();
-	    if (schild->distribution()->name() != "sum") return 0;
-	    if (!isObserved(schild)) return 0;
+	    StochasticNode *sumchild = 0;
+	    for (unsigned int i = 0; i < schildren.size(); ++i) {
+		if (schildren[i]->distribution()->name() == "sum") {
+		    /* There should be only one sum node and it must be
+		       observed */
+		    if (sumchild) return 0;
+		    if(!isObserved(schildren[i])) return 0;
+		    sumchild = schildren[i];
+		}
+	    }
+	    if (!sumchild) return 0;
 	    
 	    /* Deterministic descendants must be an additive function
 	     * of snode
 	     */
-	    if (!checkAdditive(&gv, false)) return 0;
+	    if (schildren.size() == 1) {
+		if (!checkAdditive(&gv, false)) return 0;
+	    }
+	    else {
+		/* 
+		   We only care that sumnode is an additive function
+		   so construct a local graph that excludes other
+		   stochastic children for additivity check
+		*/
+		Graph lgraph;
+		lgraph.insert(snode);
+		lgraph.insert(sumchild);
+		vector<DeterministicNode*> const &dchildren =
+		    gv.deterministicChildren();
+		for (unsigned int j = 0; j < dchildren.size(); ++j) {
+		    lgraph.insert(dchildren[j]);
+		}
+		SingletonGraphView lgv(snode, lgraph);
+		if (!checkAdditive(&lgv, false)) return 0;
+	    }
 
-	    return schild;
+	    return sumchild;
 	}
 	
 	bool SumMethod::canSample(vector<StochasticNode*> const &snodes,
 				  Graph const &graph)
 	{
-	    if (snodes.size() < 2) return false;
-
 	    //Are individual nodes candidates?
-	    Node const *sumchild = isCandidate(snodes[0], graph);
+	    Node *sumchild = isCandidate(snodes[0], graph);
 	    if (sumchild == 0) return false;
 	    for (unsigned int i = 1; i < snodes.size(); ++i) {
 		if (isCandidate(snodes[i], graph) != sumchild) return false;
 	    }
 
-	    //Together are the nodes additive with a fixed intercept?
-	    if (!checkAdditive(snodes, graph, true)) return false;
-
 	    //Check consistency of discreteness
 	    bool discrete = sumchild->isDiscreteValued();
-	    for (unsigned int i = 0; i < snodes.size(); ++i) {
+	    for (unsigned int i = 1; i < snodes.size(); ++i) {
 		if (snodes[i]->isDiscreteValued() != discrete) return false;
-		if (snodes[i]->length() != 1) return false;
 	    }
+
+	    //Together are the nodes additive with a fixed intercept?
+	    GraphView gv(snodes, graph);
+	    if (gv.stochasticChildren().size() == 1) {
+		//sumchild is the only stochastic child
+		if (!checkAdditive(snodes, graph, true)) return false;
+	    }
+	    else {
+		//Construct local graph lgraph excluding stochastic
+		//children that are not sumchild
+		Graph lgraph;
+		for (unsigned int i = 0; i < snodes.size(); ++i) {
+		    lgraph.insert(snodes[i]);
+		}
+		lgraph.insert(sumchild);
+		vector<DeterministicNode*> const &dchildren =
+		    gv.deterministicChildren();
+		for (unsigned int j = 0; j < dchildren.size(); ++j) {
+		    lgraph.insert(dchildren[j]);
+		}
+		if (!checkAdditive(snodes, lgraph, true)) return false;
+	    }
+
 	    return true;
 	}
 
@@ -94,25 +138,37 @@ namespace jags {
 	    : MutableSampleMethod(), _gv(gv), _chain(chain),
 	      _sum(gv->stochasticChildren()[0]->value(chain)[0]),
 	      _discrete(gv->stochasticChildren()[0]->isDiscreteValued()),
-	      _x(gv->length()), _i(0), _j(0), _sumdiff(0), _iter(0),
-	      _width(2), _max(10), _adapt(true)
+	      _x(gv->length()), _i(0), _j(0), _sumchild(0), _fast(false),
+	      _sumdiff(0), _iter(0), _width(2), _max(10), _adapt(true)
 	{
+	    if (gv->stochasticChildren().size() == 1) {
+		_sumchild = gv->stochasticChildren().front();
+		_fast = true;
+	    }
+	    else {
+		vector<StochasticNode*> const &schildren =
+		    gv->stochasticChildren();
+		for (unsigned int i = 0; i < schildren.size(); ++i) {
+		    if (schildren[i]->distribution()->name() == "sum") {
+			_sumchild = schildren[i];
+			break;
+		    }
+		}
+	    }
 	    
 	    gv->getValue(_x, chain);
 	    
-	    if (gv->logLikelihood(chain) != 0) {
+	    if (_sumchild->logDensity(chain, PDF_LIKELIHOOD) != 0) {
 		//If initial values are inconsistent with outcome we
 		//try to adjust them
 
-		StochasticNode const *schild = gv->stochasticChildren()[0];
-
 		// Calculate intercept (usually zero)
-		double y = sumValue<const Node>(schild->parents(), chain);
+		double y = sumValue<const Node>(_sumchild->parents(), chain);
 		double sumx = sumValue<StochasticNode>(gv->nodes(), chain);
 		double alpha = y - sumx;
 
 		// Calculate target sum for sampled values
-		double sumx_new = schild->value(chain)[0] - alpha;
+		double sumx_new = _sumchild->value(chain)[0] - alpha;
 
 		// Rescale
 		unsigned int N = _x.size();
@@ -128,15 +184,15 @@ namespace jags {
 		}
 
 		gv->setValue(xnew, chain);
-		if (_gv->logLikelihood(chain) != 0) {
+		if (_sumchild->logDensity(chain, PDF_LIKELIHOOD) != 0) {
 		    throw logic_error("SumMethod failed to fix initial values");
 		}
-		if (jags_finite(gv->logPrior(_chain))) {
+		if (jags_finite(gv->logFullConditional(_chain))) {
 		    _x = xnew; //Preserve changes
 		}
 		else {
-		    gv->setValue(_x, chain); //Revert changes
-		}		
+		    throw NodeError(_sumchild, "SumMethod cannot fix the stochastic parents of this node to satisfy the sum constraint.\nYou must supply initial values for the parents");
+		}
 	    }
 
 	    //Check validity of initial values
@@ -243,12 +299,33 @@ namespace jags {
 	void SumMethod::update(RNG *rng)
 	{
 	    unsigned int len = _gv->length();
-	    for(_i = 0; _i < len; ++_i) {
-		_j = static_cast<unsigned int>(rng->uniform() * (len-1));
-		if (_j >= _i) _j++;
-		updateStep(rng);
+
+	    if (len == 1) {
+		//Value of single sampled node is determined by sum
+		//constraint so it can never move. But we still check
+		//that the sum constraint is satisfied.
+		if (_sumchild->logDensity(_chain, PDF_LIKELIHOOD) != 0) {
+		    throw logic_error("Failure to preserve sum in SumMethod");
+		}
+		return;
 	    }
 
+	    //Generate random permutation (rp) of indices 0...(len-1)
+	    //using Fisher Yates algorithm.
+	    vector<unsigned int> rp(len+1);
+	    for (unsigned int i = 0; i < len; ++i) {
+		unsigned int j =
+		    static_cast<unsigned int>(rng->uniform() * (i+1));
+		rp[i] = rp[j];
+		rp[j] = i;
+	    }
+	    rp[len] = rp[0]; //Cycle back to the start
+
+	    for (unsigned int i = 0; i < len; ++i) {
+		_i = rp[i];
+		_j = rp[i+1];
+		updateStep(rng); //Slice update of par (_i, _j)
+	    }
 	    
 	    if (_adapt) {
 		if (++_iter % 50 == 0) {
@@ -271,7 +348,7 @@ namespace jags {
 	    }
 
 	    //Sanity check
-	    if (_gv->logLikelihood(_chain) != 0) {
+	    if (_sumchild->logDensity(_chain, PDF_LIKELIHOOD) != 0) {
 		throw logic_error("Failure to preserve sum in SumMethod");
 	    }
 
@@ -285,6 +362,16 @@ namespace jags {
 
 	    _gv->nodes()[_i]->setValue(&_x[_i], 1, _chain);
 	    _gv->nodes()[_j]->setValue(&_x[_j], 1, _chain);
+
+	    if (!_fast) {
+		//Have to update deterministic descendants
+		vector<DeterministicNode*> const &dtrm =
+		    _gv->deterministicChildren();
+		for (vector<DeterministicNode*>::const_iterator p(dtrm.begin());
+		     p != dtrm.end(); ++p) {
+		    (*p)->deterministicSample(_chain);
+		}
+	    }
 	}
 
 	double SumMethod::value() const
@@ -315,12 +402,15 @@ namespace jags {
 
 	double SumMethod::logDensity() const
 	{
-	    /* 
-	       Log density depends only on the prior of the two nodes
-	       that are currently active
-	    */
-	    return _gv->nodes()[_i]->logDensity(_chain, PDF_PRIOR) +
-		_gv->nodes()[_j]->logDensity(_chain, PDF_PRIOR);
+	    if (_fast) {
+		//Log density depends only on the prior of the two nodes
+		//that are currently active
+		return _gv->nodes()[_i]->logDensity(_chain, PDF_PRIOR) +
+		    _gv->nodes()[_j]->logDensity(_chain, PDF_PRIOR);
+	    }
+	    else {
+		return _gv->logFullConditional(_chain);
+	    }
 	}
 
 	bool SumMethod::checkAdaptation() const

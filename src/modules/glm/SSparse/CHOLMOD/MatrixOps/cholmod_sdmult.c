@@ -7,7 +7,7 @@
  * The CHOLMOD/MatrixOps Module is licensed under Version 2.0 of the GNU
  * General Public License.  See gpl.txt for a text of the license.
  * CHOLMOD is also available under other licenses; contact authors for details.
- * http://www.cise.ufl.edu/research/sparse
+ * http://www.suitesparse.com
  * -------------------------------------------------------------------------- */
 
 /* Sparse matrix times dense matrix:
@@ -32,6 +32,7 @@
  * must all match.
  */
 
+#ifndef NGPL
 #ifndef NMATRIXOPS
 
 #include "cholmod_internal.h"
@@ -146,4 +147,5 @@ int CHOLMOD(sdmult)
     DEBUG (CHOLMOD(dump_dense) (Y, "Y", Common)) ;
     return (TRUE) ;
 }
+#endif
 #endif

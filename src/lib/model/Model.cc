@@ -444,18 +444,21 @@ void Model::setSampledExtra()
     }
     //Mark the ancestors of all monitored nodes in this graph
     GraphMarks emarks(egraph);
+    vector<Node const*> monitored_nodes;
     for (list<MonitorControl>::const_iterator p = _monitors.begin();
 	 p != _monitors.end(); ++p)
     {
-	for (unsigned int i = 0; i < p->monitor()->nodes().size(); ++i) {
-	    Node const *node = p->monitor()->nodes()[i];
-	    if (egraph.contains(node)) {
-		emarks.mark(node, 1);
-		//FIXME: call once
-		emarks.markAncestors(vector<Node const *>(1, node), 1);
+	vector<Node const*> const &pnodes = p->monitor()->nodes();
+	for (vector<Node const*>::const_iterator i = pnodes.begin();
+	     i != pnodes.end(); ++i)
+	{
+	    if (egraph.contains(*i)) {
+		emarks.mark(*i, 1);
+		monitored_nodes.push_back(*i);
 	    }
 	}
     }
+    emarks.markAncestors(monitored_nodes, 1);
 
     //Add marked nodes to the vector of sampled extra nodes
     _sampled_extra.clear();
@@ -547,6 +550,10 @@ bool Model::setRNG(string const &name, unsigned int chain)
       if (p->second) {
 	  RNG *rng = p->first->makeRNG(name);
 	  if (rng) {
+	      /* NO! RNGs are owned by the factory, not the model
+	      if (_rng[chain])
+		  delete _rng[chain];
+	      */
 	      _rng[chain] = rng;
 	      return true;
 	  }

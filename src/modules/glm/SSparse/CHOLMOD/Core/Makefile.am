@@ -6,7 +6,8 @@ cholmod_band.c cholmod_error.c cholmod_change_factor.c			\
 cholmod_factor.c cholmod_common.c cholmod_memory.c cholmod_complex.c	\
 cholmod_sparse.c
 
-cholmodcore_la_CPPFLAGS = -I$(top_srcdir)/src/modules/glm/SSparse/UFconfig \
+cholmodcore_la_CPPFLAGS =				\
+-I$(top_srcdir)/src/modules/glm/SSparse/config		\
 -I$(top_srcdir)/src/modules/glm/SSparse/CHOLMOD/Include
 
 

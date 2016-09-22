@@ -56,7 +56,7 @@ LogicalNode::LogicalNode(vector<unsigned int> const &dim,
 
 string LogicalNode::deparse(vector<string> const &parents) const
 {
-    string name = "(a";
+    string name = "(";
     name.append(_func->deparse(parents));
     name.append(")");
 	      

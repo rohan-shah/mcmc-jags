@@ -7,7 +7,7 @@
  * The CHOLMOD/MatrixOps Module is licensed under Version 2.0 of the GNU
  * General Public License.  See gpl.txt for a text of the license.
  * CHOLMOD is also available under other licenses; contact authors for details.
- * http://www.cise.ufl.edu/research/sparse
+ * http://www.suitesparse.com
  * -------------------------------------------------------------------------- */
 
 /* Determines if a sparse matrix is rectangular, unsymmetric, symmetric,
@@ -87,6 +87,7 @@
  * regardless of the value of the option parameter.
  */
 
+#ifndef NGPL
 #ifndef NMATRIXOPS
 
 #include "cholmod_internal.h"
@@ -441,7 +442,7 @@ int CHOLMOD(symmetry)
 	/* quick return if not Cholesky candidate */
 	/* ------------------------------------------------------------------ */
 
-	if (option < 1 && (!posdiag || nzdiag < ncol))
+	if (option < 1 && (!posdiag || nzdiag <= j))
 	{
 	    /* Diagonal entry not present, or present but negative or with
 	     * nonzero imaginary part.  Quick return for option 0. */
@@ -485,4 +486,5 @@ int CHOLMOD(symmetry)
     }
     return (result) ;
 }
+#endif
 #endif

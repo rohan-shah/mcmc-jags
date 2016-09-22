@@ -25,6 +25,7 @@
 #include "DPar.h"
 #include "DPois.h"
 #include "DRound.h"
+#include "DSample.h"
 #include "DSum.h"
 #include "DT.h"
 #include "DUnif.h"
@@ -38,6 +39,7 @@
 #include <cmath>
 #include <set>
 #include <sstream>
+#include <algorithm>
 
 using std::string;
 using std::vector;
@@ -47,6 +49,7 @@ using std::min;
 using std::multiset;
 using std::abs;
 using std::ostringstream;
+using std::sort;
 
 using jags::ScalarDist;
 using jags::RScalarDist;
@@ -81,6 +84,7 @@ void BugsDistTest::setUp() {
     _dpar = new jags::bugs::DPar();
     _dpois = new jags::bugs::DPois();
     _dround = new jags::bugs::DRound();
+    _dsample = new jags::bugs::DSample();
     _dsum = new jags::bugs::DSum();
     _dt = new jags::bugs::DT();
     _dunif = new jags::bugs::DUnif();
@@ -118,6 +122,7 @@ void BugsDistTest::tearDown() {
     delete _dpar;
     delete _dpois;
     delete _dround;
+    delete _dsample;
     delete _dsum;
     delete _dt;
     delete _dunif;
@@ -154,6 +159,7 @@ void BugsDistTest::npar()
     CPPUNIT_ASSERT_EQUAL(_dpar->npar(), 2U);
     CPPUNIT_ASSERT_EQUAL(_dpois->npar(), 1U);
     CPPUNIT_ASSERT_EQUAL(_dround->npar(), 2U);
+    CPPUNIT_ASSERT_EQUAL(_dsample->npar(), 2U);
     CPPUNIT_ASSERT_EQUAL(_dsum->npar(), 0U);
     CPPUNIT_ASSERT_EQUAL(_dt->npar(), 3U);
     CPPUNIT_ASSERT_EQUAL(_dunif->npar(), 2U);
@@ -189,6 +195,7 @@ void BugsDistTest::name()
     CPPUNIT_ASSERT_EQUAL(string("dpar"), _dpar->name());
     CPPUNIT_ASSERT_EQUAL(string("dpois"), _dpois->name());
     CPPUNIT_ASSERT_EQUAL(string("dround"), _dround->name());
+    CPPUNIT_ASSERT_EQUAL(string("dsample"), _dsample->name());
     CPPUNIT_ASSERT_EQUAL(string("dsum"), _dsum->name());
     CPPUNIT_ASSERT_EQUAL(string("dt"), _dt->name());
     CPPUNIT_ASSERT_EQUAL(string("dunif"), _dunif->name());
@@ -224,6 +231,7 @@ void BugsDistTest::alias()
     CPPUNIT_ASSERT_EQUAL(string(""), _dpar->alias());
     CPPUNIT_ASSERT_EQUAL(string(""), _dpois->alias());
     CPPUNIT_ASSERT_EQUAL(string(""), _dround->alias());
+    CPPUNIT_ASSERT_EQUAL(string(""), _dsample->alias());
     CPPUNIT_ASSERT_EQUAL(string(""), _dsum->alias());
     CPPUNIT_ASSERT_EQUAL(string(""), _dt->alias());
     CPPUNIT_ASSERT_EQUAL(string(""), _dunif->alias());
@@ -239,35 +247,193 @@ void BugsDistTest::rscalar_rpq(RScalarDist const *dist,
       inheriting from RScalarDist.
     */
     unsigned int nsim = 100;
-
+    unsigned int nsim2 = 10;
+    unsigned int nquant = 10;
+    
     CPPUNIT_ASSERT_MESSAGE(dist->name(), checkNPar(dist, par.size()));
     CPPUNIT_ASSERT_MESSAGE(dist->name(), dist->checkParameterValue(par));
 
-    for (unsigned int i = 0; i < nsim; ++i) {
+    for (unsigned int s = 0; s < nsim; ++s) {
 	//Generate random variable from distribution
 	double y = dist->r(par, _rng);
-	//Pass to distribution function and then to distribution function
+	//Pass to distribution function and then to quantile function
 	double p = dist->p(y, par, true, false);
 	CPPUNIT_ASSERT_MESSAGE(dist->name(), p >= 0 && p <= 1);
 	double z = dist->q(p, par, true, false);
-	CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(dist->name(), y, z, tol);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(dist->name(), y, z, tol*abs(y));
 	//Now do the same on a log scale
 	double logp = dist->p(y, par, true, true);
 	CPPUNIT_ASSERT_MESSAGE(dist->name(), logp <= 0);
 	z = dist->q(logp, par, true, true);
-	CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(dist->name(), y, z, tol);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(dist->name(), y, z, tol*abs(y));
 	//Using upper tail
 	p = dist->p(y, par, false, false);
 	CPPUNIT_ASSERT_MESSAGE(dist->name(), p >= 0 && p <= 1);
 	z = dist->q(p, par, false, false);
-	CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(dist->name(), y, z, tol);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(dist->name(), y, z, tol*abs(y));
 	//Upper tail on log scale
 	logp = dist->p(y, par, false, true);
 	CPPUNIT_ASSERT_MESSAGE(dist->name(), logp <= 0);
 	z = dist->q(logp, par, false, true);
-	CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(dist->name(), y, z, tol);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(dist->name(), y, z, tol*abs(y));
+    }
+
+    for (unsigned int s = 0; s < nsim2; ++s) {
+	
+	// Test truncated sampling
+	for (unsigned int i = 0; i <= nquant; ++i) {
+	    double plim1 = static_cast<double>(i)/nquant;
+	    double lim1 = dist->q(plim1, par, true, false);
+
+	    if (i > 0) {
+		// Test sampling from lower tail
+		double y = dist->randomSample(par, 0, &lim1, _rng);
+		CPPUNIT_ASSERT_MESSAGE(dist->name(), y <= lim1);
+		double logpy = dist->p(y, par, true, true);
+		double z = dist->q(logpy, par, true, true);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(dist->name(), y, z,
+						     tol * abs(y));
+	    }
+	    if (i < nquant) {
+		// Test sampling from upper tail
+		double y = dist->randomSample(par, &lim1, 0, _rng);
+		CPPUNIT_ASSERT_MESSAGE(dist->name(), y >= lim1);
+		double logpy = dist->p(y, par, false, true);
+		double z = dist->q(logpy, par, false, true);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(dist->name(), y, z,
+						     tol * abs(y));
+	    }
+	    for (unsigned int j = i+1; j <= nquant; ++j) {
+		// Test sampling between lower and upper limits
+		double plim2 = static_cast<double>(j)/nquant;
+		double lim2 = dist->q(plim2, par, true, false);
+
+		double y = dist->randomSample(par, &lim1, &lim2, _rng);
+		CPPUNIT_ASSERT_MESSAGE(dist->name(), y >= lim1 && y <= lim2);
+		double py = dist->p(y, par, true, false);
+		double z = dist->q(py, par, true, false);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(dist->name(), y, z,
+						     tol * abs(y));
+	    }
+	}
+    }
+
+    rscalar_trunclik(dist, par);
+}
+
+static void scalar_trunclik_discrete(RScalarDist const *dist,
+				     vector<double const *> const &par,
+				     double bound, bool lower)
+{
+    // Test normalization of truncated likelihood for discrete variables
+    // by enumeration
+    
+    CPPUNIT_ASSERT(dist->discrete());
+
+    double delta = lower ? -1 : 1;
+    double const *ll = 0;
+    double const *uu = 0;
+    if (lower) {
+	uu = &bound;
+    }
+    else {
+	ll = &bound;
+    }
+    double lik = 0;
+    double likmax = dist->logDensity(bound, jags::PDF_FULL, par, ll, uu);
+
+    double x = bound;
+    for (unsigned int i = 0; i < 1000; ++i) {
+	double y = dist->logDensity(x, jags::PDF_FULL, par,  ll, uu);
+	lik += exp(y);
+	if (y > likmax) {
+	    likmax = y;
+	}
+	else if (y < likmax - 10) {
+	    break;
+	}
+	x += delta;
+    }
+    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(dist->name(), 1.0, lik, 1e-2);
+}
+
+static void scalar_trunclik_cont(RScalarDist const *dist,
+				 vector<double const *> const &par,
+				 double bound, bool lower)
+{
+    // Test normalization of truncated likelihood for continuous
+    // variables by approximate integration using the trapezoid method
+    
+    CPPUNIT_ASSERT(!dist->discrete());
+    CPPUNIT_ASSERT(jags_finite(bound));
+    
+    //Ensure that the density is finite at the other boundary (ob)
+    //If not then just return as this method will not work
+    double ob = lower ? dist->l(par) : dist->u(par);
+    if (jags_finite(ob)) {
+	if (!jags_finite(dist->d(ob, jags::PDF_FULL, par, false))) {
+	    return;
+	}
+    }
+
+    //Create grid of points for evaluating the likelihood
+    //If lower==false then the grid is in reverse order
+    vector<double> x;
+    unsigned int N = 1000;
+    if (jags_finite(ob)) {
+	x.push_back(ob);
+    }
+    double pmax = dist->p(bound, par, lower, false);
+    for (unsigned int i = 1; i < N; ++i) {
+	x.push_back(dist->q(i*pmax/N, par, lower, false));
+    }
+    x.push_back(bound);
+
+    // Calculate likelihood by trapezoid method
+    // FIXME: WE could probably do better
+    double lik = 0;
+    double const *ll = lower ? 0 : &bound;
+    double const *uu = lower ? &bound : 0;
+    double y0 = exp(dist->logDensity(x[0], jags::PDF_FULL, par, ll, uu)); 
+    for (unsigned int i = 1; i < x.size(); ++i) {
+	double y = exp(dist->logDensity(x[i], jags::PDF_FULL, par, ll, uu));
+	lik += (x[i] - x[i-1]) * (y + y0) / 2;
+	y0 = y;
+    }
+    if (!lower) {
+	lik = -lik; //adjust for reverse grid
+    }
+    
+    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(dist->name(), 1.0, lik, 1.1e-2);
+}
+
+
+void BugsDistTest::rscalar_trunclik(RScalarDist const *dist, 
+				    vector<double const *> const &par)
+{
+    /*
+      Test likelihood calculations for truncated distributions
+    */
+    CPPUNIT_ASSERT_MESSAGE(dist->name(), checkNPar(dist, par.size()));
+    CPPUNIT_ASSERT_MESSAGE(dist->name(), dist->checkParameterValue(par));
+    
+    double ll = dist->q(0.1, par, true, false);
+    double uu = dist->q(0.9, par, true, false);
+
+    if (dist->discrete()) {
+	scalar_trunclik_discrete(dist, par, ll, true);
+	scalar_trunclik_discrete(dist, par, ll, false);
+	scalar_trunclik_discrete(dist, par, uu, true);
+	scalar_trunclik_discrete(dist, par, uu, false);
+    }
+    else {
+	scalar_trunclik_cont(dist, par, ll, true);
+	scalar_trunclik_cont(dist, par, ll, false);
+	scalar_trunclik_cont(dist, par, uu, true);
+	scalar_trunclik_cont(dist, par, uu, false);
     }
 }
+
 
 static vector<double const *> mkPar(double const &v1)
 {
@@ -312,7 +478,7 @@ void BugsDistTest::rscalar()
     
     rscalar_rpq(_dbin, mkPar(0.1, 10));
     rscalar_rpq(_dbin, mkPar(0.9, 1));
-    
+
     rscalar_rpq(_dchisqr, mkPar(1));
     rscalar_rpq(_dchisqr, mkPar(2));
     rscalar_rpq(_dchisqr, mkPar(3));
@@ -320,6 +486,7 @@ void BugsDistTest::rscalar()
 
     rscalar_rpq(_ddexp, mkPar(2, 0.1));
     rscalar_rpq(_ddexp, mkPar(-5, 2.8));
+
     
     rscalar_rpq(_dexp, mkPar(0.1));
     rscalar_rpq(_dexp, mkPar(7));
@@ -517,6 +684,8 @@ void BugsDistTest::dkwtest(RScalarDist const *dist,
 
 	
 }
+
+//FIXME: We should have a atest for simulation from a truncated distribution
 
 void BugsDistTest::dkw()
 {

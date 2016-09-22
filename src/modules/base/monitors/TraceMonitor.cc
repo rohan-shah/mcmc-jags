@@ -21,9 +21,7 @@ namespace base {
     {
 	for (unsigned int ch = 0; ch < _values.size(); ++ch) {
 	    vector<double> v = _subset.value(ch);
-	    for (vector<double>::iterator p = v.begin(); p != v.end(); ++p) {
-		_values[ch].push_back(*p);
-	    }
+	    _values[ch].insert(_values[ch].end(), v.begin(), v.end());
 	}
     }
 

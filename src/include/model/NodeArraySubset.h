@@ -39,7 +39,7 @@ namespace jags {
 	std::vector<unsigned int> const &dim() const;
 	/**
 	 * Returns a vector containing the nodes that contribute
-	 * values to the NodeArraySubset. Repeated values are removed.XS
+	 * values to the NodeArraySubset. Repeated values are removed.
 	 */
 	std::vector<Node const *> nodes() const;
 	/**

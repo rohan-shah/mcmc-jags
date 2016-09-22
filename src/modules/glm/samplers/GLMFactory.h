@@ -24,7 +24,7 @@ namespace glm {
     {
 	std::string _name;
 	SingletonGraphView * makeView(StochasticNode *snode, 
-				      Graph const &graph) const;
+				      Graph const &graph, bool gibbs) const;
 	bool checkDescendants(SingletonGraphView const *view) const;
     public:
 	GLMFactory(std::string const &name);
@@ -35,7 +35,7 @@ namespace glm {
 	 * implement the abstract member function newMethod.
 	 */
 	Sampler * makeSampler(std::list<StochasticNode*> const &free_nodes, 
-			      Graph const &graph) const;
+			      Graph const &graph, bool gibbs) const;
 	/**
 	 * Wraps GLMFactory#makeSampler and returns a single
 	 * newly-allocated sampler in a vector.
@@ -62,21 +62,15 @@ namespace glm {
 	 *
 	 * @param chain Number of the chain (starting from 0) to which
 	 * the sampling method will be applied.
+	 *
+	 * @param gibbs Flag indicating whether sampling method should do
+	 * Gibbs updates, in which nodes are updated individually. If false
+	 * then all nodes should be updated in a block.
 	 */
 	virtual GLMMethod *
 	    newMethod(GraphView const *view,
 		      std::vector<SingletonGraphView const *> const &sub_views, 
-		      unsigned int chain) const = 0;
-	/**
-	 * Virtual function for checking that that a candidate
-	 * stochastic node is suitable for sampling.  Currently, we
-	 * assume that all candidate nodes have a normal distribution:
-	 * this does not need to be checked by canSample.  However,
-	 * some sampling methods have restrictions on which nodes can
-	 * be sampled, e.g. they must be unbounded, or scalar. Such
-	 * restrictions must be coded in the canSample function.
-	 */
-	virtual bool canSample(StochasticNode const *snode) const = 0;
+		      unsigned int chain, bool gibbs) const = 0;
 	/**
 	 * Returns the string provided as the parameter "name" in the
 	 * constructor.

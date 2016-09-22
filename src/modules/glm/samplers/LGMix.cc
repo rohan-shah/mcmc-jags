@@ -29,6 +29,7 @@ using std::sqrt;
 using std::vector;
 using std::max_element;
 using std::upper_bound;
+using std::copy;
 
 /*
  * Exact mixture parameters are stored for integer n in the range 1 ... 19.

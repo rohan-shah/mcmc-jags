@@ -71,4 +71,9 @@ namespace glm {
 	return getLink(snode) == LNK_PROBIT;
     }
 
+    bool BinaryProbit::fixedA() const
+    {
+	return true;
+    }
+
 }}
