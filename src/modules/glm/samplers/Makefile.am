@@ -11,7 +11,7 @@ libglmsampler_la_SOURCES = GLMFactory.cc GLMSampler.cc GLMMethod.cc	\
  IWLS.cc LGMix.cc AuxMixPoisson.cc AuxMixBinomial.cc Outcome.cc		\
  NormalLinear.cc BinaryProbit.cc BinaryLogit.cc Classify.cc		\
  IWLSOutcome.cc HolmesHeld.cc HolmesHeldFactory.cc GLMBlock.cc		\
- GLMGibbs.cc GLMGenericFactory.cc HolmesHeldGibbs.cc PolyaGamma.cc
+ GLMGibbs.cc GLMGenericFactory.cc HolmesHeldGibbs.cc PolyaGamma.cc PGcommon.cc
 
 noinst_HEADERS = GLMFactory.h GLMSampler.h GLMMethod.h			\
   KS.h 	\
@@ -19,7 +19,7 @@ noinst_HEADERS = GLMFactory.h GLMSampler.h GLMMethod.h			\
   AuxMixPoisson.h AuxMixBinomial.h Outcome.h	\
   NormalLinear.h BinaryProbit.h BinaryLogit.h Classify.h		\
   IWLSOutcome.h HolmesHeld.h HolmesHeldFactory.h GLMBlock.h		\
-  GLMGibbs.h GLMGenericFactory.h HolmesHeldGibbs.h PolyaGamma.h
+  GLMGibbs.h GLMGenericFactory.h HolmesHeldGibbs.h PolyaGamma.h PG.h
 
 check_LTLIBRARIES = libglmsamptest.la
 libglmsamptest_la_SOURCES = testglmsamp.cc testglmsamp.h
