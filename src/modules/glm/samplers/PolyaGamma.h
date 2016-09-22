@@ -22,6 +22,7 @@ namespace jags {
 	class PolyaGamma : public Outcome
 	{
 	    double const &_y;
+	    double const &_N;
 	    double _tau;
 	  public:
 	    PolyaGamma(StochasticNode const *snode, unsigned int chain);

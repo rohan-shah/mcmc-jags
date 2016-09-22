@@ -1,5 +1,6 @@
 #include "PolyaGamma.h"
 #include "Classify.h"
+#include "PG.h"
 
 #include <JRmath.h>
 #include <graph/StochasticNode.h>
@@ -12,6 +13,8 @@ using std::exp;
 using std::log;
 using std::sqrt;
 using std::abs;
+
+static double one = 1;
 
 namespace jags {
     namespace glm {
@@ -118,7 +121,7 @@ namespace jags {
 		else {
 		    // Sample from the body with a truncated IG proposal
 		    double mu = 1/z;
-		    X = rigauss(mu, rng);
+		    X = rigauss(mu, 1, TRUNC, rng);
 		}
 		double S = a(0, X);
 		double Y = rng->uniform() * S;
@@ -141,16 +144,33 @@ namespace jags {
 	    }
 	    throwLogicError("Failed to sample Polya-Gamma");
 	} 
+
+	static double const & getSize(StochasticNode const *snode,
+				      unsigned int chain)
+	{
+	    if (getFamily(snode) == GLM_BERNOULLI) {
+		return one;
+	    }
+	    else if (getFamily(snode) == GLM_BINOMIAL) {
+		Node const *N = snode->parents()[1];
+		return N->value(chain)[0];
+	    }
+	    else {
+		throwLogicError("Invalid outcome for PolyaGamma");
+	    }
+	    return one; //-Wall
+	}
 	
 	PolyaGamma::PolyaGamma(StochasticNode const *snode, unsigned int chain)
-	    : Outcome(snode, chain), _y(snode->value(chain)[0]), _tau(1)
+	    : Outcome(snode, chain), _y(snode->value(chain)[0]),
+	      _N(getSize(snode, chain)), _tau(1)
 	{
 	    //fixme: sanity checks on snode
 	}
 	
 	double PolyaGamma::value() const 
 	{
-	    return (_y - 0.5)/_tau;
+	    return (_y - _N/2)/_tau;
 	}
 	
 	double PolyaGamma::precision() const 
@@ -160,29 +180,23 @@ namespace jags {
 	
 	void PolyaGamma::update(RNG *rng)
 	{
-	    _tau = rpolya_gamma(_lp, rng);
+	    unsigned int N = static_cast<unsigned int>(_N);
+
+	    _tau = 0.0;
+	    for (unsigned int i = 0; i < N; ++i) {
+		_tau += rpolya_gamma(_lp, rng);
+	    }
 	}
 
 	bool PolyaGamma::canRepresent(StochasticNode const *snode)
 	{
-	    Node const *N = 0;
-	    
 	    switch(getFamily(snode)) {
 	    case GLM_BERNOULLI:
 		break;
 	    case GLM_BINOMIAL:
-		// We can also model binomial distribution if the
-		// denominator is fixed to be 1.
-		N = snode->parents()[1];
-		if (N->length() != 1)
-		    return false;
-		if (!N->isFixed())
-		    return false;
-		if (N->value(0)[0] != 1)
-		    return false;
 		break;
 	    default:
-		return false;
+		return false;		
 	    }
 	    
 	    return getLink(snode) == LNK_LOGIT;
