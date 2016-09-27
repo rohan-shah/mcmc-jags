@@ -86,28 +86,6 @@ public:
 		     double const *lbound, double const *ubound,
 		     RNG *rng) 	const = 0;
     /**
-     * Returns a typical value from the distribution.  The meaning of
-     * this will depend on the distribution, but it will normally be a
-     * mean, median or mode.
-     *
-     * @param x Array to which the sample values are written
-     *
-     * @param length Size of the array x.
-     * 
-     * @param parameters  Vector of parameter values for the distribution.
-     * This vector should be of length npar().
-     *
-     * @param dims Vector of parameter dimensions.
-     *
-     * @exception length_error 
-     */
-    virtual void 
-	typicalValue(double *x, unsigned int length,
-		     std::vector<double const *> const &parameters,
-		     std::vector<std::vector<unsigned int> > const &dims,
-		     double const *lbound, double const *ubound)
-	const = 0;
-    /**
      * Checks that dimensions of the parameters are correct.
      */
     virtual bool 

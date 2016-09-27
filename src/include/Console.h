@@ -226,7 +226,7 @@
     * Sets the seed for all RNG factories.
     *
     * Sets the seed for all currently loaded RNGFactory objects,
-    * including the ones that are currently active. After a call to
+    * including the ones that are currently inactive. After a call to
     * setSeed, all RNGFactory objects in subsequently loaded Modules
     * will have their seeds set to the given value. 
     *

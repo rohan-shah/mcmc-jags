@@ -29,7 +29,6 @@ public:
     void randomSample(RNG *rng, unsigned int chain);
     void truncatedSample(RNG *rng, unsigned int chain,
 			 double const *lower, double const *upper);
-    void deterministicSample(unsigned int chain);
     bool checkParentValues(unsigned int chain) const;
     //StochasticNode *clone(std::vector<Node const *> const &parents,
     //Node const *lower, Node const *upper) const;

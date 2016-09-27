@@ -31,7 +31,7 @@ class RNGFactory
     /**
      * Returns a vector of newly allocated RNG objects.
      *
-     * @param n Number of RNGs requested. Note that an RNG factory have the
+     * @param n Number of RNGs requested. Note that an RNG factory may have the
      * capacity to make only m < n independent samplers (where m may be zero).
      * In this case it should return a vector of length m.
      */

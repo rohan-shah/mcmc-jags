@@ -59,14 +59,6 @@ namespace bugs {
 	*x = evaluate(par, lengths);
     }
 
-    void SumDist::typicalValue(double *x, unsigned int length,
-			       vector<double const *> const &par,
-			       vector<unsigned int> const &lengths,
-			       double const *lower, double const *upper) const
-    {
-	*x = evaluate(par, lengths);
-    }
-
     bool SumDist::isSupportFixed(vector<bool> const &fixmask) const
     {
 	return allTrue(fixmask);

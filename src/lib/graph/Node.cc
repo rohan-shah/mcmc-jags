@@ -87,7 +87,7 @@ static bool isInitialized(Node const *node, unsigned int n)
     return true;
 }
 
-bool Node::initialize(unsigned int n)
+bool Node::initialize(RNG *rng, unsigned int n)
 {
     // Test whether node is already initialized and, if so, skip it
     if (isInitialized(this, n))
@@ -100,7 +100,7 @@ bool Node::initialize(unsigned int n)
         }
     }
 
-    deterministicSample(n);
+    randomSample(rng, n);
 
     return true; 
 }

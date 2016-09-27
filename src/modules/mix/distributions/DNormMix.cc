@@ -93,24 +93,6 @@ namespace mix {
 	*x = ans;
     }
 
-    void DNormMix::typicalValue(double *x, unsigned int length,
-				vector<double const *> const &par,
-				vector<unsigned int> const &lengths,
-				double const *lower, double const *upper) const
-    {
-	double const *mu = MU(par);
-	unsigned int Ncat = lengths[0];
-
-	unsigned int j = 0;
-	for (unsigned int i = 1; i < Ncat; ++i) {
-	    if (PROB(par)[i] > PROB(par)[j]) {
-		j = i;
-	    }
-	} 
-    
-	*x = mu[j];
-    }
-
     bool DNormMix::isSupportFixed(vector<bool> const &fixmask) const
     {
 	return true;

@@ -43,12 +43,6 @@ double DUnif::randomSample(vector<double const *> const &par,
     return LOWER(par) + rng->uniform() * (UPPER(par) - LOWER(par));
 }
 
-double DUnif::typicalValue(vector<double const *> const &par,
-			   double const *lower, double const *upper) const
-{
-    return (LOWER(par) + UPPER(par))/2;
-}
-
 double DUnif::l(vector<double const*> const &par) const
 {
     return LOWER(par);

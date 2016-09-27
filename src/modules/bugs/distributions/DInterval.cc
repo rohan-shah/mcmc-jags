@@ -90,14 +90,6 @@ void DInterval::randomSample(double  *x, unsigned int length,
     *x = static_cast<double>(value(par, NCUT(lengths)));
 }
 
-void DInterval::typicalValue(double *x, unsigned int length,
-			     vector<double const *> const &par,
-			     vector<unsigned int> const &lengths,
-			     double const *lower, double const *upper) const
-{
-    *x = static_cast<double>(value(par, NCUT(lengths)));
-}
-
 unsigned int DInterval::df(vector<unsigned int> const &lengths) const
 {
     return 0;

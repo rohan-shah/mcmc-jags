@@ -65,17 +65,6 @@ double DGamma::r(vector<double const *> const &par, RNG *rng) const
     return rgamma(SHAPE(par), SCALE(par), rng);
 }
 
-double DGamma::typicalValue(vector<double const *> const &par,
-			    double const *lower, double const *upper) const
-{
-    if (lower == 0 && upper == 0) {
-	return SHAPE(par) * SCALE(par);
-    }
-    else {
-	return RScalarDist::typicalValue(par, lower, upper);
-    }
-}
-
 double DGamma::KL(vector<double const *> const &par0,
 		  vector<double const *> const &par1) const
 {

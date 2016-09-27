@@ -41,11 +41,6 @@ public:
      */
     bool isDiscreteValued() const;
     /**
-     * This function does nothing. It exists only so that objects
-     * inheriting from ConstantNode can be instantiated.
-     */
-    void deterministicSample(unsigned int);
-    /**
      * This function does nothing. The value of the constant node is
      * not changed and the state of the RNG remains the same.
      */

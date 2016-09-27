@@ -58,19 +58,6 @@ void DSum::randomSample(double *x, unsigned int length,
     }
 }
 
-void DSum::typicalValue(double *x, unsigned int length,
-			  vector<double const *> const &par,
-			  vector<vector<unsigned int> > const &dims,
-			  double const *lower, double const *upper) const
-{
-    for (unsigned int i = 0; i < length; ++i) {
-	x[i] = 0;
-	for (unsigned int j = 0; j < par.size(); ++j) {
-	    x[i] += par[j][i];
-	}
-    }
-}
-
 bool DSum::isSupportFixed(vector<bool> const &fixmask) const
 {
     return allTrue(fixmask);

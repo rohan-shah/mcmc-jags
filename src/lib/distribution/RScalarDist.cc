@@ -45,44 +45,6 @@ RScalarDist::RScalarDist(string const &name, unsigned int npar,
 }
 
 double 
-RScalarDist::typicalValue(vector<double const *> const &parameters,
-			  double const *lower, double const *upper) const
-{
-    double llimit = l(parameters), ulimit = u(parameters);
-    double plower = 0, pupper = 1;
-    
-    if (lower) {
-	llimit = max(llimit, *lower);
-	plower = calPlower(llimit, parameters);
-    }
-
-    if (upper) {
-	ulimit = min(ulimit, *upper);
-	pupper = calPupper(ulimit, parameters);
-    }
-    
-    double pmed = (plower + pupper)/2;
-    double med = q(pmed, parameters, true, false);	
-
-    //Calculate the log densities
-    double dllimit = d(llimit, PDF_FULL, parameters, true);
-    double dulimit = d(ulimit, PDF_FULL, parameters, true);
-    double dmed = d(med, PDF_FULL, parameters, true);
-
-    //Pick the median if it has the highest density, otherwise pick
-    //a point near to (but not on) the boundary
-    if (dmed >= dllimit && dmed >= dulimit) {
-	return med;
-    }
-    else if (dulimit > dllimit) {
-	return q(0.1 * plower + 0.9 * pupper, parameters, true, false);
-    }
-    else {
-	return q(0.9 * plower + 0.1 * pupper, parameters, true, false);
-    }
-}
-
-double 
 RScalarDist::logDensity(double x, PDFType type,
 			vector<double const *> const &parameters,
 			double const *lower, double const *upper) const

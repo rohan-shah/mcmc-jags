@@ -26,8 +26,6 @@ public:
     double randomSample(std::vector<double const *> const &parameters,
 			double const *lower, double const *upper, 
 			RNG *rng) const;
-    double typicalValue(std::vector<double const *> const &parameters,
-			double const *lower, double const *upper) const;
     double l(std::vector<double const *> const &parameters) const;
     double u(std::vector<double const *> const &parameters) const;
     bool isSupportFixed(std::vector<bool> const &fixmask) const;

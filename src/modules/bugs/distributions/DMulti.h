@@ -27,10 +27,6 @@ public:
 		    std::vector<double const *> const &parameters,
 		    std::vector<unsigned int> const &lengths,
 		    double const *lower, double const *upper, RNG *rng) const;
-  void typicalValue(double *x, unsigned int length,
-		    std::vector<double const *> const &par,
-		    std::vector<unsigned int> const &lengths,
-		    double const *lower, double const *upper) const;
   /**
    * Checks that elements of p lie in range (0,1) and 
    * and sum to 1. Checks that N >= 1

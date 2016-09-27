@@ -44,12 +44,6 @@ double ScalarStochasticNode::logDensity(unsigned int chain, PDFType type) const
 			     lowerLimit(chain), upperLimit(chain));
 }
 
-void ScalarStochasticNode::deterministicSample(unsigned int chain)
-{
-    _data[chain] = _dist->typicalValue(_parameters[chain], 
-				       lowerLimit(chain), upperLimit(chain));
-}
-
 void ScalarStochasticNode::randomSample(RNG *rng, unsigned int chain)
 {
     _data[chain] = _dist->randomSample(_parameters[chain], lowerLimit(chain),

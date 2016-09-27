@@ -46,8 +46,6 @@ namespace jags {
 	return true;
     }
 
-    void ConstantNode::deterministicSample(unsigned int) {}
-
     void ConstantNode::randomSample(RNG*, unsigned int) {}
 
     string ConstantNode::deparse(vector<string> const &parents) const

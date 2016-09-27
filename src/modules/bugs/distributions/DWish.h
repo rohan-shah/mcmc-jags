@@ -28,10 +28,6 @@ public:
   static void randomSample(double *x, int length,
                            double const *R, double k, int nrow,
                            RNG *rng);
-  void typicalValue(double *x, unsigned int length,
-		    std::vector<double const *> const &parameters,
-		    std::vector<std::vector<unsigned int> > const &dims,
-		    double const *lower, double const *upper) const;
   /**
    * Checks that R is a square matrix and k is a scalar
    */

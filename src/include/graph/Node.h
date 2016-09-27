@@ -80,11 +80,6 @@ public:
      */
     virtual void randomSample(RNG *rng, unsigned int chain) = 0;
     /**
-     * Calculates a value for the node based on its parents' values.
-     * @param chain Number of chain from which to draw sample
-     */
-    virtual void deterministicSample(unsigned int chain) = 0;
-    /**
      * Checks whether the parents of the Node have valid values.
      */
     virtual bool checkParentValues(unsigned int chain) const = 0;
@@ -106,11 +101,13 @@ public:
      * parent nodes is uninitialized, and in this case the return
      * value is false.
      *
+     * @param rng RNG to use for random sampling
+     * 
      * @param chain Index number of chain to initialize.
      *
      * @returns a logical value indicating success
      */
-    bool initialize(unsigned int chain);
+    bool initialize(RNG *rng, unsigned int chain);
     /**
      * Returns the BUGS-language representation of the node, based on the 
      * names of its parents

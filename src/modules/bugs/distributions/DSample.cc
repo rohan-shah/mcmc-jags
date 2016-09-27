@@ -217,40 +217,6 @@ namespace jags {
 	    }
 	}
 
-	void DSample::typicalValue(double *x, unsigned int length,
-				 vector<double const *> const &par,
-				 vector<unsigned int> const &parlen,
-				 double const *lower, double const *upper) const
-	{
-	    int N = parlen[0];
-	    double const * const probs = par[0];
-	    
-	    //Create a vector of pointers to the elements of the vector
-	    //of probability weights. Sort them in reverse order.
-	    list<double const *> pptrs(N);
-	    list<double const *>::iterator q;
-	    double const *y = probs;
-	    for (q = pptrs.begin(); q != pptrs.end(); ++q) {
-		*q = y++;
-	    }
-	    pptrs.sort(gt_doubleptr);
-
-	    //Initialize sample value by setting all elements to zero
-	    fill(x, x + N, 0);
-
-	    //Set elements of x corresponding to the K largest probability
-	    //weights to 1.
-	    unsigned int K = static_cast<unsigned int>(SIZE(par));
-	    for (q = pptrs.begin(); q != pptrs.end(); ++q) {
-		unsigned int i = *q - probs;
-		x[i] = 1;
-		K--;
-		if (K == 0) {
-		    break;
-		}
-	    }
-	}
-
 	bool DSample::isSupportFixed(vector<bool> const &fixmask) const
 	{
 	    return true;

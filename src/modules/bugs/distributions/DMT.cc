@@ -118,16 +118,6 @@ void DMT::support(double *lower, double *upper, unsigned int length,
     }
 }
 
-void DMT::typicalValue(double *x, unsigned int length,
-		       vector<double const *> const &parameters,
-		       vector<vector<unsigned int> > const &dims,
-		       double const *lower, double const *upper) const
-{
-    for (unsigned int i = 0; i < length; ++i) {
-	x[i] = parameters[0][i];
-    }
-}
-
 bool DMT::isSupportFixed(vector<bool> const &fixmask) const
 {
     return true;

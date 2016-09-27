@@ -83,13 +83,6 @@ class ScalarDist : public Distribution
 			      double const *lbound, double const *ubound,
 			      RNG *rng) const = 0;
   /**
-   * Generate a deterministic value with reasonably high density
-   * (e.g. mean, median, mode ...)
-   */
-  virtual double typicalValue(std::vector<double const *> const &parameters,
-			      double const *lbound, double const *ubound)
-      const = 0;
-  /**
    * Checks whether the parameter values are valid
    */
   virtual bool checkParameterValue(std::vector<double const *> const &params) 

@@ -2,10 +2,10 @@ dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.63)
 
-AC_INIT([JAGS],[4.2.0],[martyn_plummer@users.sourceforge.net],[JAGS])
+AC_INIT([JAGS],[5.0.0],[martyn_plummer@users.sourceforge.net],[JAGS])
 
-JAGS_MAJOR=4
-JAGS_MINOR=2
+JAGS_MAJOR=5
+JAGS_MINOR=0
 JAGS_PATCH=0
 
 AC_SUBST(JAGS_MAJOR)
@@ -94,6 +94,7 @@ AC_CONFIG_FILES([
   src/lib/rng/Makefile
   src/jrmath/Makefile	
   src/include/Makefile
+  src/include/version.h
   src/include/util/Makefile
   src/include/sarray/Makefile
   src/include/function/Makefile

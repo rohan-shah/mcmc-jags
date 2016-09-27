@@ -26,10 +26,6 @@ public:
 		      std::vector<unsigned int> const &lengths,
 		      double const *lbound, double const *ubound,
 		      RNG *rng) const;
-    void typicalValue(double *x, unsigned int length,
-		      std::vector<double const *> const &parameters,
-		      std::vector<unsigned int> const &lengths,
-		      double const *lbound, double const *ubound) const;
     /**
      * Checks that all elements of p are positive
      */

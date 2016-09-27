@@ -47,12 +47,6 @@ double DBern::randomSample(vector<double const *> const &parameters,
     return rng->uniform() < PROB(parameters) ? 1 : 0;
 }
 
-double DBern::typicalValue(vector<double const *> const &parameters,
-			   double const *lbound, double const *ubound) const
-{
-    return PROB(parameters) > 0.5 ? 1 : 0;
-}
-
 bool DBern::canBound() const
 {
     return false;

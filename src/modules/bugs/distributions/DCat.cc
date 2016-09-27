@@ -103,14 +103,6 @@ void DCat::support(double *lower, double *upper, unsigned int length,
     *upper = NCAT(lengths);
 }
 
-void DCat::typicalValue(double *x, unsigned int length,
-			vector<double const *> const &par,
-			vector<unsigned int> const &lengths,
-			double const *lower, double const *upper) const
-{
-    *x = max_element(PROB(par), PROB(par) + NCAT(lengths)) - PROB(par) + 1;
-}
-
 bool DCat::isSupportFixed(vector<bool> const &fixmask) const
 {
     return true;

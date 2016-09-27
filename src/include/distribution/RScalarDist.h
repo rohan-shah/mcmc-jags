@@ -45,12 +45,6 @@ public:
 			double const *lower, double const *upper,
 			RNG *rng) const;
     /**
-     * Returns the median. Note that this function can be overloaded
-     * by a subclass if necessary.
-     */
-    double typicalValue(std::vector<double const *> const &parameters,
-			double const *lower, double const *upper) const;
-    /**
      * Density function, ignoring bounds
      * @param x value at which to evaluate the density
      * @param type Type of density calculation required.

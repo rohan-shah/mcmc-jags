@@ -28,11 +28,6 @@ class DGamma : public RScalarDist {
    * Checks that r > 0, mu > 0
    */
   bool checkParameterValue(std::vector<double const *> const &parameters) const;
-  /**
-   * The mean
-   */
-  double  typicalValue(std::vector<double const *> const &par,
-		       double const *lower, double const *upper) const;
   double KL(std::vector<double const *> const &par0,
 	    std::vector<double const *> const &par1) const;
 };

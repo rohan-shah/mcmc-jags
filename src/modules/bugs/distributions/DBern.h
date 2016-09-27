@@ -22,8 +22,6 @@ public:
     double randomSample(std::vector<double const *> const &parameters, 
 			double const *lbound, double const *ubound,
 			RNG *rng) const;
-    double typicalValue(std::vector<double const *> const &parameters,
-			double const *lbound, double const *ubound) const;
     /** Checks that p lies in the open interval (0,1) */
     bool checkParameterValue(std::vector<double const *> const &parameters) 
 	const;

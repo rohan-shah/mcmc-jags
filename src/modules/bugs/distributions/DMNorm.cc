@@ -153,16 +153,6 @@ void DMNorm::support(double *lower, double *upper, unsigned int length,
     }
 }
 
-void DMNorm::typicalValue(double *x, unsigned int m,
-			  vector<double const *> const &parameters,
-			  vector<vector<unsigned int> > const &dims,
-			  double const *lower, double const *upper) const
-{
-    for (unsigned int i = 0; i < m; ++i) {
-	x[i] = parameters[0][i];
-    }
-}
-
 bool DMNorm::isSupportFixed(vector<bool> const &fixmask) const
 {
     return true;

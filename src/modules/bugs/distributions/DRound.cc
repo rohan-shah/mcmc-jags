@@ -61,12 +61,6 @@ namespace bugs {
 	return value(par);
     }
     
-    double DRound::typicalValue(vector<double const *> const &par,
-				double const *lower, double const *upper) const
-    {
-	return value(par);
-    }
-    
     unsigned int DRound::df() const
     {
 	return 0;

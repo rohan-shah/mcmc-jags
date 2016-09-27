@@ -33,10 +33,6 @@ namespace jags {
 			      std::vector<unsigned int> const &lengths,
 			      double const *lower, double const *upper,
 			      RNG *rng) const;
-	    void typicalValue(double *x, unsigned int length,
-			      std::vector<double const *> const &par,
-			      std::vector<unsigned int> const &lengths,
-			      double const *lower, double const *upper) const;
 	    bool checkParameterValue(std::vector<double const *> const &par,
 				     std::vector<unsigned int> const &lengths)
 		const;

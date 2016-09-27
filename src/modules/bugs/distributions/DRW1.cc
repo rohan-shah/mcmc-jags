@@ -97,16 +97,6 @@ namespace jags {
 	    }
 	}
 
-	void DRW1::typicalValue(double *x, unsigned int length,
-				vector<double const *> const &par,
-				vector<unsigned int> const &len,
-				double const *lower, double const *upper) const
-	{
-	    for (unsigned int i = 0; i < length; ++i) {
-		x[i] = 0;
-	    }
-	}
-
 	bool DRW1::isSupportFixed(vector<bool> const &fixmask) const
 	{
 	    return true;

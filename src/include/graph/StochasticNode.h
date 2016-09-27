@@ -110,14 +110,6 @@ public:
 				 double const *lower=0, 
 				 double const *upper=0) = 0;
     /**
-     * A deterministic sample for a stochastic node sets it to a
-     * "typical" value of the prior distribution, given the current
-     * values of its parents. The exact behaviour depends on the
-     * Distribution used to define the StochasticNode, but it will
-     * usually be the prior mean, median, or mode.
-     */
-    virtual void deterministicSample(unsigned int chain) = 0;
-    /**
      * Stochastic nodes always represent random variables in the model.
      */
     bool isRandomVariable() const;

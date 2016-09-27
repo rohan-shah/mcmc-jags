@@ -129,20 +129,6 @@ void DDirch::support(double *lower, double *upper, unsigned int length,
     }
 }
 
-void DDirch::typicalValue(double *x, unsigned int length,
-                          vector<double const *> const &par,
-                          vector<unsigned int> const &len,
-			  double const *lower, double const *upper) const
-{
-    double alphasum = 0.0;
-    for (unsigned int i = 0; i < length; ++i) {
-	alphasum += ALPHA(par)[i];
-    }
-    for (unsigned int i = 0; i < length; ++i) {
-	x[i] = ALPHA(par)[i]/alphasum;
-    }
-}
-
 bool DDirch::isSupportFixed(vector<bool> const &fixmask) const
 {
     return fixmask[0];

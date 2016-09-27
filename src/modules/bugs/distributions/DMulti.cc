@@ -161,36 +161,6 @@ unsigned int DMulti::length(vector<unsigned int> const &len) const
     return len[0];
 }
 
-
-void DMulti::typicalValue(double *x, unsigned int length,
-			  vector<double const *> const &par,
-			  vector<unsigned int> const &len,
-			  double const *lower, double const *upper) const
-{
-    /* Draw a typical value in the same way as a random sample, but
-       substituting the median at each stage */
-
-    double N = SIZE(par);
-    double const *prob = PROB(par);
-
-    double sump = 0.0;
-    for (unsigned int i = 0; i < length; ++i) {
-	sump += prob[i];
-    }
-
-    for (unsigned int i = 0; i < length - 1; i++) {
-	if (N == 0) {
-	    x[i] = 0;
-	}
-	else {
-	    x[i] = qbinom(0.5, N, prob[i]/sump, true, false);
-	    N -= x[i];
-	    sump -= prob[i];
-	}
-    }
-    x[length - 1] = N;
-}
-
 bool DMulti::isSupportFixed(vector<bool> const &fixmask) const
 {
     return fixmask[1];

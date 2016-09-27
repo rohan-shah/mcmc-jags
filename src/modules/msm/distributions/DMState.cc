@@ -173,14 +173,6 @@ void DMState::support(double *lower, double *upper, unsigned int length,
     *upper = NSTATE(dims);
 }
 
-void DMState::typicalValue(double *x, unsigned int length,
-			   vector<double const *> const &par,
-			   vector<vector<unsigned int> > const &dims,
-			   double const *lower, double const *upper) const
-{
-    *x = q(0.5, INITIAL(par), TIME(par), NSTATE(dims), INTENSITY(par));
-}
-
     vector<unsigned int> 
     DMState::dim(vector<vector<unsigned int> > const &dims) const
     {

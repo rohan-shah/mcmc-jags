@@ -108,6 +108,12 @@ public:
 	const = 0;
      */
     void unlinkParents();
+    /**
+     * Calculates a value for the node based on its parents' values.
+     *
+     * @param chain Number of chain from which to draw sample
+     */
+    virtual void deterministicSample(unsigned int chain) = 0;
 };
 
 } /* namespace jags */

@@ -77,34 +77,6 @@ class VectorDist : public Distribution
 			      double const *lbound, double const *ubound,
 			      RNG *rng) const = 0;
     /**
-     * Returns a typical value from the distribution.  The meaning of
-     * this will depend on the distribution, but it will normally be a
-     * mean, median or mode.
-     *
-     * @param x Array to which the sample values are written
-     *
-     * @param length Size of the array x.
-     * 
-     * @param parameters  Vector of parameter values at which
-     * to evaluate the likelihood. This vector should be of length
-     * npar().
-     *
-     * @param lengths Vector of parameters lengths.
-     *
-     * @param lbound Lower bound for truncated distributions, or a NULL
-     * pointer if the distribution is not truncated.
-     *
-     * @param ubound Upper bound for truncated distributions, or a NULL
-     * pointer if the distribution is not truncated.
-     *
-     * @exception length_error 
-     */
-    virtual void typicalValue(double *x, unsigned int length,
-			      std::vector<double const *> const &parameters,
-			      std::vector<unsigned int> const &lengths,
-			      double const *lbound, double const *ubound)
-	const = 0;
-    /**
      * Returns the support of an unbounded distribution
      */
     virtual void support(double *lower, double *upper, unsigned int length,

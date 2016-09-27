@@ -71,13 +71,6 @@ double ArrayStochasticNode::logDensity(unsigned int chain, PDFType type) const
 			     lowerLimit(chain), upperLimit(chain));
 }
 
-void ArrayStochasticNode::deterministicSample(unsigned int chain)
-{
-    _dist->typicalValue(_data + _length * chain, _length,
-			_parameters[chain], _dims,
-			lowerLimit(chain), upperLimit(chain));
-}
-
 void ArrayStochasticNode::randomSample(RNG *rng, unsigned int chain)
 {
     _dist->randomSample(_data + _length * chain, _length,

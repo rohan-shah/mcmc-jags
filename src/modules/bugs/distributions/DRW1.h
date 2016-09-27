@@ -24,10 +24,6 @@ public:
 		      std::vector<double const *> const &parameters,
 		      std::vector<unsigned int> const &lengths,
 		      double const *lower, double const *upper, RNG *rng) const;
-    void typicalValue(double *x, unsigned int length,
-		      std::vector<double const *> const &parameter,
-		      std::vector<unsigned int> const &lengths,
-		      double const *lower, double const *upper) const;
     unsigned int length(std::vector<unsigned int> const &lengths) const;
     bool checkParameterLength(std::vector<unsigned int> const &lengths) const;
     bool checkParameterValue(std::vector<double const *> const &parameters,
