@@ -4,7 +4,7 @@
 #include "DMNorm.h"
 #include "DMT.h"
 
-#include <lapack.h>
+#include "lapack.h"
 #include <matrix.h>
 
 #include <cmath>

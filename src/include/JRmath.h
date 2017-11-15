@@ -170,10 +170,13 @@
 
 # ifndef R_EXT_BOOLEAN_H_
 /* "copy-paste" R_ext/Boolean.h if not already included: */
- #define R_EXT_BOOLEAN_H_
+ /*#define R_EXT_BOOLEAN_H_
  #undef FALSE
  #undef TRUE
- typedef enum { FALSE = 0, TRUE } Rboolean;
+ typedef enum { FALSE = 0, TRUE } Rboolean;*/
+ #define FALSE 0
+ #define TRUE 1
+ typedef bool Rboolean;
 # endif
 
 #define bessel_i	jags_bessel_i
@@ -618,7 +621,7 @@ double  logspace_sub(double logx, double logy);
 # endif
 
 # define R_FINITE(x)    JR_finite(x)
-int JR_finite(double);
+extern "C" int JR_finite(double);
 
 # ifdef _WIN32  /* not Win32 as no config information */
 #  ifdef RMATH_DLL

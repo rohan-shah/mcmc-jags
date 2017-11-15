@@ -1,0 +1,7 @@
+add_subdirectory(base)
+add_subdirectory(bugs)
+add_subdirectory(dic)
+add_subdirectory(glm)
+add_subdirectory(lecuyer)
+add_subdirectory(mix)
+add_subdirectory(msm)

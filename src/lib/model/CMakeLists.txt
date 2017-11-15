@@ -1,0 +1,1 @@
+add_library(model OBJECT SymTab.cc NodeArray.cc Model.cc Monitor.cc BUGSModel.cc MonitorFactory.cc MonitorControl.cc MonitorInfo.cc CODA.cc NodeArraySubset.cc)

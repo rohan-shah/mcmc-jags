@@ -8,6 +8,7 @@
 #include <compiler/ParseTree.h>
 #include "remap.h"
 #include "parser.hh"
+#include <io.h>
 
 #include <stdexcept>
 

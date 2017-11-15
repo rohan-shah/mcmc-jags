@@ -3,7 +3,7 @@
 #include <util/nainf.h>
 #include "DMNorm.h"
 
-#include <lapack.h>
+#include "lapack.h"
 #include <matrix.h>
 
 #include <cmath>

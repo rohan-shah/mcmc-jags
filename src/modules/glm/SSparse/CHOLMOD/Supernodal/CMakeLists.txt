@@ -1,0 +1,2 @@
+add_library(CHOLMODSupernodal cholmod_super_numeric.c cholmod_super_symbolic.c cholmod_super_solve.c)
+target_include_directories(CHOLMODSupernodal PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../Include ${CMAKE_CURRENT_SOURCE_DIR}/../../config)

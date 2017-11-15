@@ -1,0 +1,1 @@
+add_library(module OBJECT Module.cc ModuleError.cc)

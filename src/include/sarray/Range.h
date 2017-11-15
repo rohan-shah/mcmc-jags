@@ -52,7 +52,7 @@ class Range {
     /**
      * Virtual destructor
      */
-    virtual ~Range();
+    virtual ~Range(){}
     /**
      * Equality operator
      */

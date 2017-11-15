@@ -13,6 +13,7 @@
 #include <numeric>
 #include <cfloat>
 #include <stdexcept>
+#include <algorithm>
 
 using std::vector;
 using std::accumulate;

@@ -1,0 +1,3 @@
+set(baseFunctionsSources Infix.cc Add.cc Subtract.cc Divide.cc Multiply.cc Neg.cc Pow.cc And.cc Or.cc Not.cc Equal.cc NotEqual.cc GreaterThan.cc GreaterOrEqual.cc LessThan.cc LessOrEqual.cc Seq.cc)
+set(baseFunctionsHeaders Infix.h Add.h Subtract.h Divide.h Multiply.h Neg.h Pow.h And.h Or.h Not.h Equal.h NotEqual.h GreaterThan.h GreaterOrEqual.h LessThan.h LessOrEqual.h Seq.h)
+add_library(baseFunctions OBJECT ${baseFunctionsSources} ${baseFunctionsHeaders})

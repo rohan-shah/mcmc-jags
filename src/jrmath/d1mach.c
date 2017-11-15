@@ -53,7 +53,7 @@ attribute_hidden double jags_d1mach(int i)
 extern "C" 
 #endif
 
-double F77_NAME(d1mach)(int *i)
+double F77_NAME(d1mach)(int i)
 {
-    return jags_d1mach(*i);
+    return jags_d1mach(i);
 }

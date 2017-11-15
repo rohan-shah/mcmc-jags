@@ -1,0 +1,4 @@
+set(glmSamplersSources GLMFactory.cc GLMSampler.cc GLMMethod.cc	KS.cc IWLSFactory.cc IWLS.cc LGMix.cc AuxMixPoisson.cc AuxMixBinomial.cc Outcome.cc NormalLinear.cc BinaryProbit.cc BinaryLogit.cc Classify.cc IWLSOutcome.cc HolmesHeld.cc HolmesHeldFactory.cc GLMBlock.cc GLMGibbs.cc GLMGenericFactory.cc HolmesHeldGibbs.cc PolyaGamma.cc PGcommon.cc)
+set(glmSamplersHeaders GLMFactory.h GLMSampler.h GLMMethod.h KS.h IWLSFactory.h IWLS.h LGMix.h AuxMixPoisson.h AuxMixBinomial.h Outcome.h NormalLinear.h BinaryProbit.h BinaryLogit.h Classify.h IWLSOutcome.h HolmesHeld.h HolmesHeldFactory.h GLMBlock.h GLMGibbs.h GLMGenericFactory.h HolmesHeldGibbs.h PolyaGamma.h PG.h)
+add_library(glmSamplers STATIC ${glmSamplersSources} ${glmSamplersHeaders})
+target_include_directories(glmSamplers PUBLIC . ${CMAKE_CURRENT_SOURCE_DIR}/../SSparse/config ${CMAKE_CURRENT_SOURCE_DIR}/../SSparse/CHOLMOD/Include)

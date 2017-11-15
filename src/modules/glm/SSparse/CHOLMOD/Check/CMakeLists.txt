@@ -1,0 +1,2 @@
+add_library(CHOLMODCheck STATIC cholmod_check.c cholmod_read.c cholmod_write.c)
+target_include_directories(CHOLMODCheck PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../Include ${CMAKE_CURRENT_SOURCE_DIR}/../../config)

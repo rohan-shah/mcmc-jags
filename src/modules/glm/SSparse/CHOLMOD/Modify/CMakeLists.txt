@@ -1,0 +1,2 @@
+add_library(CHOLMODModify cholmod_rowadd.c cholmod_updown.c	cholmod_rowdel.c)
+target_include_directories(CHOLMODModify PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../Include ${CMAKE_CURRENT_SOURCE_DIR}/../../config)

@@ -1,0 +1,1 @@
+add_library(rng OBJECT RNG.cc RmathRNG.cc TruncatedNormal.cc)

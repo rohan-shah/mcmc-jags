@@ -86,12 +86,18 @@ double	jags_gamma_cody(double);
 
 #define ISNAN(x) (isnan(x)!=0)
 #define R_FINITE(x)    JR_finite(x)
-int JR_finite(double);
+extern "C" int JR_finite(double);
 
-#define ML_POSINF	(1.0 / 0.0)
-#define ML_NEGINF	((-1.0) / 0.0)
-#define ML_NAN		(0.0 / 0.0)
-
+#ifdef WIN32
+	#include <limits>
+	#define ML_POSINF	std::numeric_limits<double>::infinity()
+	#define ML_NEGINF	(-std::numeric_limits<double>::infinity())
+	#define ML_NAN		std::numeric_limits<double>::quiet_NaN()
+#else 
+	#define ML_POSINF	(1.0 / 0.0)
+	#define ML_NEGINF	((-1.0) / 0.0)
+	#define ML_NAN		(0.0 / 0.0)
+#endif
 #define _(String) String
 
 #define ML_VALID(x)	(!ISNAN(x))

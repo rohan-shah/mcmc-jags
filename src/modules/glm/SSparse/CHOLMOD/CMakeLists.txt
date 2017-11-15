@@ -1,0 +1,6 @@
+add_subdirectory(Check)
+add_subdirectory(Cholesky)
+add_subdirectory(Core)
+add_subdirectory(MatrixOps)
+add_subdirectory(Modify)
+add_subdirectory(Supernodal)

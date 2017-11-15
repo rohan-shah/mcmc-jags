@@ -36,6 +36,12 @@
 
 #include "nmath.h"
 
+#ifdef __cplusplus
+extern "C"
+#endif
+
+double F77_NAME(d1mach)(int i);
+
 void attribute_hidden gammalims(double *xmin, double *xmax)
 {
 /* FIXME: Even better: If IEEE, #define these in nmath.h

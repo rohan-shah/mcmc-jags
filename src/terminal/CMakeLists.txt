@@ -1,0 +1,8 @@
+find_package(BISON REQUIRED)
+find_package(FLEX REQUIRED)
+BISON_TARGET(terminalParser parser.yy ${CMAKE_CURRENT_BINARY_DIR}/parser.cpp DEFINES_FILE ${CMAKE_CURRENT_BINARY_DIR}/parser.hh)
+FLEX_TARGET(terminalScanner scanner.ll ${CMAKE_CURRENT_BINARY_DIR}/lexer.cpp)
+ADD_FLEX_BISON_DEPENDENCY(terminalScanner terminalParser)
+add_library(terminal STATIC ReadData.cc ${BISON_terminalParser_OUTPUTS} ${FLEX_terminalScanner_OUTPUTS})
+target_compile_definitions(terminal PRIVATE YY_NO_UNISTD_H)
+target_include_directories(terminal PRIVATE .)

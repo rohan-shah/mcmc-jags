@@ -2,7 +2,7 @@
 %{
 #include <config.h>
 
-#ifdef Win32
+#ifdef WIN32
 #include <windows.h>   /* For getCurrentDirectory */
 #include <io.h>        /* For chdir */
 #else

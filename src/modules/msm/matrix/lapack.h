@@ -1,6 +1,13 @@
 #ifndef MSM_LAPACK_H_
 #define MSM_LAPACK_H_
-
+#ifdef WIN32
+#define F77_DCOPY  dcopy
+#define F77_DGESV dgesv
+#define F77_DGEMM  dgemm
+#define F77_DSCAL  dscal
+#define F77_DLANGE dlange
+#include "mkl.h"
+#else
 #define F77_DCOPY  F77_FUNC(dcopy,DCOPY)
 #define F77_DGESV F77_FUNC(dgesv,DGESV)
 #define F77_DGEMM  F77_FUNC(dgemm,DGEMM)
@@ -33,5 +40,5 @@ extern "C" {
     void F77_DSCAL (const int* n, double const *alpha, double *X, 
 		    const int *incx);
 }
-
+#endif
 #endif /* MSM_LAPACK_H_ */

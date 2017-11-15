@@ -1,0 +1,3 @@
+set(baseRNGsSources MarsagliaRNG.cc WichmannHillRNG.cc SuperDuperRNG.cc MersenneTwisterRNG.cc BaseRNGFactory.cc)
+set(baseRNGsHeaders MarsagliaRNG.h WichmannHillRNG.h SuperDuperRNG.h MersenneTwisterRNG.h BaseRNGFactory.h)
+add_library(baseRNGs OBJECT ${baseRNGsSources} ${baseRNGsHeaders})

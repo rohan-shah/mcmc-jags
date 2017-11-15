@@ -1,0 +1,7 @@
+add_subdirectory(functions)
+add_subdirectory(monitors)
+add_subdirectory(rngs)
+add_subdirectory(samplers)
+add_library(base SHARED base.cc $<TARGET_OBJECTS:baseFunctions> $<TARGET_OBJECTS:baseMonitors> $<TARGET_OBJECTS:baseRNGs> $<TARGET_OBJECTS:baseSamplers> $<TARGET_OBJECTS:compiler> $<TARGET_OBJECTS:module> $<TARGET_OBJECTS:sampler> $<TARGET_OBJECTS:graph> $<TARGET_OBJECTS:sarray> $<TARGET_OBJECTS:util> $<TARGET_OBJECTS:model> $<TARGET_OBJECTS:distribution> $<TARGET_OBJECTS:function> $<TARGET_OBJECTS:rng>)
+target_include_directories(base PRIVATE .)
+export(TARGETS base FILE "${CMAKE_BINARY_DIR}/baseConfig.cmake")

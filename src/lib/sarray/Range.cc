@@ -49,11 +49,6 @@ namespace jags {
 	}
     }
 
-    Range::~Range()
-    {
-	//Virtual destructor
-    }
-
     unsigned int Range::length() const
     {
 	return _length;

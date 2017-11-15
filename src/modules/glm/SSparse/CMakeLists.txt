@@ -1,0 +1,5 @@
+add_subdirectory(AMD)
+add_subdirectory(CAMD)
+add_subdirectory(CCOLAMD)
+add_subdirectory(CHOLMOD)
+add_subdirectory(COLAMD)

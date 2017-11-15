@@ -1,0 +1,7 @@
+add_subdirectory(functions)
+add_subdirectory(distributions)
+add_subdirectory(matrix)
+add_subdirectory(samplers)
+add_library(bugs SHARED bugs.cc $<TARGET_OBJECTS:jrmath> $<TARGET_OBJECTS:compiler> $<TARGET_OBJECTS:module> $<TARGET_OBJECTS:sampler> $<TARGET_OBJECTS:graph> $<TARGET_OBJECTS:sarray> $<TARGET_OBJECTS:util> $<TARGET_OBJECTS:model> $<TARGET_OBJECTS:distribution> $<TARGET_OBJECTS:function> $<TARGET_OBJECTS:rng> $<TARGET_OBJECTS:bugsFunctions> $<TARGET_OBJECTS:bugsDistributions> $<TARGET_OBJECTS:bugsMatrix> $<TARGET_OBJECTS:bugsSamplers>)
+target_include_directories(bugs PRIVATE .)
+target_link_libraries(bugs PRIVATE ${MKL_LP_LIBRARY} ${MKL_INTELTHREAD_LIBRARY} ${MKL_CORE_LIBRARY} ${MKL_LAPACK_LIBRARY} ${MKL_IOMP5_LIBRARY})
