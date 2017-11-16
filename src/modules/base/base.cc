@@ -40,7 +40,7 @@ namespace base {
     };
 
     BaseModule::BaseModule() 
-	: Module("basemod")
+	: Module("base")
     {
 
 	insert(new Add);

@@ -309,14 +309,12 @@ string const &Module::name() const
 
 list<Module *> &Module::modules()
 {
-    static list<Module*> *_modules = new list<Module*>;
-    return *_modules;
+    return _modules;
 }
 
 list<Module *> &Module::loadedModules()
 {
-    static list<Module*> *_modules = new list<Module*>;
-    return *_modules;
+    return _loadedModules;
 }
-
+__declspec(dllexport) std::list<Module *> _modules, _loadedModules;
 } //namespace jags

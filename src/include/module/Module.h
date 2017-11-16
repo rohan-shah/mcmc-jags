@@ -92,6 +92,11 @@ public:
     static std::list<Module *> &modules();
     static std::list<Module *> &loadedModules();
 };
+#ifdef MAKE_DLL
+extern __declspec(dllexport) std::list<Module *> _modules, _loadedModules;
+#else
+extern __declspec(dllimport) std::list<Module *> _modules, _loadedModules;
+#endif
 
 } /* namespace jags */
 
