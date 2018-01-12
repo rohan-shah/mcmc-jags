@@ -8,8 +8,9 @@
 #include <compiler/ParseTree.h>
 #include "remap.h"
 #include "parser.hh"
+#ifdef WIN32
 #include <io.h>
-
+#endif
 #include <stdexcept>
 
 void jags_scanner_error(const char *msg);

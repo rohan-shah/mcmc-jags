@@ -24,19 +24,19 @@
 # linux
 if(UNIX AND NOT APPLE)
     if(${CMAKE_HOST_SYSTEM_PROCESSOR} STREQUAL "x86_64")
-        set(MKL_ARCH_DIR "em64t")
+        set(MKL_ARCH_DIR "intel64")
     else()
-        set(MKL_ARCH_DIR "32")
+        set(MKL_ARCH_DIR "ia32")
     endif()
 endif()
 
 # macos
 if(APPLE)
-    set(MKL_ARCH_DIR "em64t")
+    set(MKL_ARCH_DIR "intel64")
 endif()
 
 IF(FORCE_BUILD_32BITS)
-    set(MKL_ARCH_DIR "32")
+    set(MKL_ARCH_DIR "ia32")
 ENDIF()
 
 if (WIN32)
@@ -157,12 +157,12 @@ IF(NOT MKL_LAPACK_LIBRARY)
 ENDIF()
 
 # iomp5
-IF("${MKL_ARCH_DIR}" STREQUAL "32")
+IF("${MKL_ARCH_DIR}" STREQUAL "ia32")
     IF(UNIX AND NOT APPLE)
         find_library(MKL_IOMP5_LIBRARY
           iomp5
           PATHS
-            ${MKL_ROOT_DIR}/../lib/ia32
+            ${MKL_ROOT_DIR}/lib/ia32
         )
     ELSE()
         SET(MKL_IOMP5_LIBRARY "") # no need for mac
@@ -172,7 +172,10 @@ else()
         find_library(MKL_IOMP5_LIBRARY
           iomp5
           PATHS
+            ${MKL_ROOT_DIR}/lib/intel64
             ${MKL_ROOT_DIR}/../lib/intel64
+            ${MKL_ROOT_DIR}/../../lib/intel64
+            ${MKL_ROOT_DIR}/../../../lib/intel64
         )
     ELSEIF(NOT APPLE)
         find_library(MKL_IOMP5_LIBRARY
@@ -191,12 +194,12 @@ foreach (MODEVAR ${MKL_MODE_VARIANTS})
             set(MKL_${MODEVAR}_${THREADVAR}_LIBRARIES
                 ${MKL_${MODEVAR}_LIBRARY} ${MKL_${THREADVAR}_LIBRARY} ${MKL_CORE_LIBRARY}
                 ${MKL_LAPACK_LIBRARY} ${MKL_IOMP5_LIBRARY})
-            message("${MODEVAR} ${THREADVAR} ${MKL_${MODEVAR}_${THREADVAR}_LIBRARIES}") # for debug
         endif()
     endforeach()
 endforeach()
 
 set(MKL_LIBRARIES ${MKL_LP_SEQUENTIAL_LIBRARIES})
+message("MKL_LIBRARIES = ${MKL_LIBRARIES}")
 LINK_DIRECTORIES(${MKL_ROOT_DIR}/lib/${MKL_ARCH_DIR}) # hack
 
 include(FindPackageHandleStandardArgs)
