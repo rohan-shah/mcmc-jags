@@ -114,6 +114,7 @@ bratio(double a, double b, double x, double y, double *w, double *w1,
     int n, ierr1 = 0;
     double z, a0, b0, x0, y0, eps, lambda;
 
+    Rboolean a_lt_b = (a < b);
 /*  eps is a machine dependent constant: the smallest
  *      floating point number for which   1.0 + eps > 1.0 */
     eps = 2.0 * jags_d1mach(3); /* == DBL_EPSILON (in R, Rmath) */
@@ -142,7 +143,6 @@ bratio(double a, double b, double x, double y, double *w, double *w1,
     if (b == 0.0) goto L201;
 
     eps = max(eps, 1e-15);
-    Rboolean a_lt_b = (a < b);
     if (/* max(a,b) */ (a_lt_b ? b : a) < eps * .001) { /* procedure for a and b < 0.001 * eps */
 	// L230:  -- result *independent* of x (!)
 	// *w  = a/(a+b)  and  w1 = b/(a+b) :
@@ -2004,6 +2004,7 @@ static double betaln(double a0, double b0)
     double
 	a = min(a0 ,b0),
 	b = max(a0, b0);
+    int n = (int)(a - 1.0);
 
     if (a < 8.0) {
 	if (a < 1.0) {
@@ -2035,7 +2036,6 @@ static double betaln(double a0, double b0)
 	// else L30:    REDUCTION OF A WHEN B <= 1000
 
 	if (b <= 1e3) {
-	    int n = (int)(a - 1.0);
 	    w = 1.0;
 	    for (int i = 1; i <= n; ++i) {
 		a += -1.0;

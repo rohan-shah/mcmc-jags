@@ -6,3 +6,6 @@ add_library(bugs SHARED bugs.cc $<TARGET_OBJECTS:jrmath> $<TARGET_OBJECTS:bugsFu
 target_include_directories(bugs PRIVATE .)
 target_link_libraries(bugs PRIVATE ${MKL_LP_LIBRARY} ${MKL_INTELTHREAD_LIBRARY} ${MKL_CORE_LIBRARY} ${MKL_LAPACK_LIBRARY} ${MKL_IOMP5_LIBRARY} jags)
 export(TARGETS bugs FILE "${CMAKE_BINARY_DIR}/bugsConfig.cmake")
+if(NOT WIN32)
+	target_compile_options(bugs PRIVATE -fPIC)
+endif()

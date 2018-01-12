@@ -1,3 +1,6 @@
 set(sarray_cpp Range.cc SimpleRange.cc RangeIterator.cc SArray.cc)
 add_library(sarray OBJECT ${sarray_cpp})
 target_include_directories(sarray PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../util)
+if(NOT WIN32)
+	target_compile_options(sarray PRIVATE -fPIC)
+endif()

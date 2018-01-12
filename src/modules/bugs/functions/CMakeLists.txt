@@ -2,3 +2,6 @@ set(bugsFunctionsSources Max.cc Probit.cc InProd.cc Mean.cc SD.cc ICLogLog.cc Mi
 set(bugsFunctionsHeaders LogGam.h Phi.h Sum.h Log.h Logit.h Probit.h CLogLog.h InProd.h Max.h SD.h ICLogLog.h Mean.h Sqrt.h ILogit.h Min.h Step.h Exp.h LogFact.h Inverse.h LogDet.h Sort.h Rank.h Abs.h Cos.h Sin.h Tan.h Cosh.h Sinh.h Tanh.h ArcCos.h ArcSin.h ArcTan.h ArcCosh.h ArcSinh.h ArcTanh.h InterpLin.h Round.h Trunc.h Equals.h Prod.h MatMult.h Transpose.h DSumFunc.h DIntervalFunc.h DRoundFunc.h IfElse.h Order.h Combine.h Rep.h)
 add_library(bugsFunctions OBJECT ${bugsFunctionsSources} ${bugsFunctionsHeaders})
 target_include_directories(bugsFunctions PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../matrix ${CMAKE_CURRENT_SOURCE_DIR}/../distributions ${MKL_INCLUDE_DIR})
+if(NOT WIN32)
+	target_compile_options(bugsFunctions PRIVATE -fPIC)
+endif()

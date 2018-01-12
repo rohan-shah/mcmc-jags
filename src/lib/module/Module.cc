@@ -306,7 +306,7 @@ string const &Module::name() const
 {
     return _name;
 }
-
+#ifdef WIN32
 list<Module *> &Module::modules()
 {
     return _modules;
@@ -317,4 +317,17 @@ list<Module *> &Module::loadedModules()
     return _loadedModules;
 }
 __declspec(dllexport) std::list<Module *> _modules, _loadedModules;
+#else
+list<Module *> &Module::modules()
+{
+    static list<Module*> *_modules = new list<Module*>;
+    return *_modules;
+}
+
+list<Module *> &Module::loadedModules()
+{
+    static list<Module*> *_modules = new list<Module*>;
+    return *_modules;
+}
+#endif
 } //namespace jags

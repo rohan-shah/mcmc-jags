@@ -2,3 +2,6 @@ set(jrmath_cpp callbacks.cc beta.c gamma.c gammalims.c lgamma.c polygamma.c toms
 SET_SOURCE_FILES_PROPERTIES(${jrmath_cpp} PROPERTIES LANGUAGE CXX)
 add_library(jrmath OBJECT ${jrmath_cpp})
 target_compile_definitions(jrmath PRIVATE HAVE_CONFIG_H)
+if(NOT WIN32)
+	target_compile_options(jrmath PRIVATE -fPIC)
+endif()

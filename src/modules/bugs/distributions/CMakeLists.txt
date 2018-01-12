@@ -2,3 +2,6 @@ set(bugsDistributionsSources DBern.cc DCat.cc DDirch.cc DHyper.cc DLogis.cc DMul
 set(bugsDistributionsHeaders DBern.h DCat.h DDirch.h DHyper.h DLogis.h DMulti.h	DSum.h DWeib.h DBeta.h DChisqr.h DExp.h DInterval.h DMNorm.h DNegBin.h DPar.h DT.h DWish.h DBin.h DDexp.h DGamma.h DLnorm.h	DNorm.h DPois.h DUnif.h DMT.h DGenGamma.h DF.h DNChisqr.h DRound.h DNT.h SumDist.h DSample.h DRW1.h)
 add_library(bugsDistributions OBJECT ${bugsDistributionsSources} ${bugsDistributionsHeaders})
 target_include_directories(bugsDistributions PUBLIC ${CMAKE_SOURCE_DIR}/src/include ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/../matrix ${MKL_INCLUDE_DIR})
+if(NOT WIN32)
+	target_compile_options(bugsDistributions PRIVATE -fPIC)
+endif()

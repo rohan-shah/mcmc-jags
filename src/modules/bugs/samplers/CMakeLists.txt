@@ -2,3 +2,6 @@ set(bugsSamplersSources Censored.cc CensoredFactory.cc ConjugateGamma.cc Conjuga
 set(bugsSamplersHeaders Censored.h CensoredFactory.h ConjugateFactory.h ConjugateNormal.h ConjugateBeta.h ConjugateGamma.h DSumFactory.h ConjugateDirichlet.h ConjugateMNormal.h ConjugateWishart.h RWDSum.h RealDSum.h DiscreteDSum.h MNormal.h MNormalFactory.h ConjugateMethod.h Dirichlet.h DirichletFactory.h TruncatedGamma.h	DMultiDSum.h ShiftedCount.h ShiftedMultinomial.h SumMethod.h SumFactory.h RW1.h RW1Factory.h)
 add_library(bugsSamplers OBJECT ${bugsSamplersSources} ${bugsSamplersHeaders})
 target_include_directories(bugsSamplers PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../distributions ${CMAKE_CURRENT_SOURCE_DIR}/../matrix ${MKL_INCLUDE_DIR})
+if(NOT WIN32)
+	target_compile_options(bugsSamplers PRIVATE -fPIC)
+endif()

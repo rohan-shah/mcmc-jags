@@ -7,4 +7,6 @@ add_library(compiler OBJECT ${BISON_terminalParser_OUTPUTS} ${FLEX_terminalScann
 target_include_directories(compiler PRIVATE . ..)
 if(WIN32)
 	target_compile_definitions(compiler PRIVATE YY_NO_UNISTD_H)
+else()
+	target_compile_options(compiler PRIVATE -fPIC)
 endif()

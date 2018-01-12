@@ -1,3 +1,6 @@
 set(baseMonitorsSources TraceMonitor.cc TraceMonitorFactory.cc MeanMonitor.cc MeanMonitorFactory.cc VarianceMonitor.cc VarianceMonitorFactory.cc)
 set(baseMonitorsHeaders TraceMonitor.h TraceMonitorFactory.h MeanMonitor.h MeanMonitorFactory.h VarianceMonitor.h VarianceMonitorFactory.h)
 add_library(baseMonitors OBJECT ${baseMonitorsSources} ${baseMonitorsHeaders})
+if(NOT WIN32)
+	target_compile_options(baseMonitors PRIVATE -fPIC)
+endif()
