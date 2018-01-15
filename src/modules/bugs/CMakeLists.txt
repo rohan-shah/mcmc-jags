@@ -8,4 +8,5 @@ target_link_libraries(bugs PRIVATE ${MKL_LP_LIBRARY} ${MKL_INTELTHREAD_LIBRARY} 
 export(TARGETS bugs FILE "${CMAKE_BINARY_DIR}/bugsConfig.cmake")
 if(NOT WIN32)
 	target_compile_options(bugs PRIVATE -fPIC)
+	set_target_properties(bugs PROPERTIES PREFIX "")
 endif()
