@@ -85,10 +85,22 @@ find_library(MKL_CORE_LIBRARY
     ${MKL_ROOT_DIR}/lib/${MKL_ARCH_DIR}
     ${MKL_ROOT_DIR}/lib/
 )
+find_library(MKL_CORE_LIBRARY_STATIC
+  libmkl_core${CMAKE_STATIC_LIBRARY_SUFFIX}
+  PATHS
+    ${MKL_ROOT_DIR}/lib/${MKL_ARCH_DIR}
+    ${MKL_ROOT_DIR}/lib/
+)
 
 # Threading libraries
 find_library(MKL_SEQUENTIAL_LIBRARY
   mkl_sequential
+  PATHS
+    ${MKL_ROOT_DIR}/lib/${MKL_ARCH_DIR}
+    ${MKL_ROOT_DIR}/lib/
+)
+find_library(MKL_SEQUENTIAL_LIBRARY_STATIC
+  libmkl_sequential${CMAKE_STATIC_LIBRARY_SUFFIX}
   PATHS
     ${MKL_ROOT_DIR}/lib/${MKL_ARCH_DIR}
     ${MKL_ROOT_DIR}/lib/
@@ -100,9 +112,21 @@ find_library(MKL_INTELTHREAD_LIBRARY
     ${MKL_ROOT_DIR}/lib/${MKL_ARCH_DIR}
     ${MKL_ROOT_DIR}/lib/
 )
+find_library(MKL_INTELTHREAD_LIBRARY_STATIC
+  libmkl_intel_thread${CMAKE_STATIC_LIBRARY_SUFFIX}
+  PATHS
+    ${MKL_ROOT_DIR}/lib/${MKL_ARCH_DIR}
+    ${MKL_ROOT_DIR}/lib/
+)
 
 find_library(MKL_GNUTHREAD_LIBRARY
   mkl_gnu_thread
+  PATHS
+    ${MKL_ROOT_DIR}/lib/${MKL_ARCH_DIR}
+    ${MKL_ROOT_DIR}/lib/
+)
+find_library(MKL_GNUTHREAD_LIBRARY_STATIC
+  libmkl_gnu_thread${CMAKE_STATIC_LIBRARY_SUFFIX}
   PATHS
     ${MKL_ROOT_DIR}/lib/${MKL_ARCH_DIR}
     ${MKL_ROOT_DIR}/lib/
@@ -116,9 +140,21 @@ IF("${MKL_ARCH_DIR}" STREQUAL "32")
         ${MKL_ROOT_DIR}/lib/${MKL_ARCH_DIR}
         ${MKL_ROOT_DIR}/lib/
     )
+    find_library(MKL_LP_LIBRARY_STATIC
+      libmkl_intel${CMAKE_STATIC_LIBRARY_SUFFIX}
+      PATHS
+        ${MKL_ROOT_DIR}/lib/${MKL_ARCH_DIR}
+        ${MKL_ROOT_DIR}/lib/
+    )
 
     find_library(MKL_ILP_LIBRARY
       mkl_intel
+      PATHS
+        ${MKL_ROOT_DIR}/lib/${MKL_ARCH_DIR}
+        ${MKL_ROOT_DIR}/lib/
+    )
+    find_library(MKL_ILP_LIBRARY_STATIC
+      libmkl_intel${CMAKE_STATIC_LIBRARY_SUFFIX}
       PATHS
         ${MKL_ROOT_DIR}/lib/${MKL_ARCH_DIR}
         ${MKL_ROOT_DIR}/lib/
@@ -130,9 +166,21 @@ else()
         ${MKL_ROOT_DIR}/lib/${MKL_ARCH_DIR}
         ${MKL_ROOT_DIR}/lib/
     )
+    find_library(MKL_LP_LIBRARY_STATIC
+      libmkl_intel_lp64${CMAKE_STATIC_LIBRARY_SUFFIX}
+      PATHS
+        ${MKL_ROOT_DIR}/lib/${MKL_ARCH_DIR}
+        ${MKL_ROOT_DIR}/lib/
+    )
 
     find_library(MKL_ILP_LIBRARY
       mkl_intel_ilp64
+      PATHS
+        ${MKL_ROOT_DIR}/lib/${MKL_ARCH_DIR}
+        ${MKL_ROOT_DIR}/lib/
+    )
+    find_library(MKL_ILP_LIBRARY_STATIC
+      libmkl_intel_ilp64${CMAKE_STATIC_LIBRARY_SUFFIX}
       PATHS
         ${MKL_ROOT_DIR}/lib/${MKL_ARCH_DIR}
         ${MKL_ROOT_DIR}/lib/
@@ -146,10 +194,22 @@ find_library(MKL_LAPACK_LIBRARY
     ${MKL_ROOT_DIR}/lib/${MKL_ARCH_DIR}
     ${MKL_ROOT_DIR}/lib/
 )
+find_library(MKL_LAPACK_LIBRARY_STATIC
+  libmkl_lapack${CMAKE_STATIC_LIBRARY_SUFFIX}
+  PATHS
+    ${MKL_ROOT_DIR}/lib/${MKL_ARCH_DIR}
+    ${MKL_ROOT_DIR}/lib/
+)
 
 IF(NOT MKL_LAPACK_LIBRARY)
     find_library(MKL_LAPACK_LIBRARY
       mkl_lapack95_lp64
+      PATHS
+        ${MKL_ROOT_DIR}/lib/${MKL_ARCH_DIR}
+        ${MKL_ROOT_DIR}/lib/
+    )
+    find_library(MKL_LAPACK_LIBRARY_STATIC
+      libmkl_lapack95_lp64${CMAKE_STATIC_LIBRARY_SUFFIX}
       PATHS
         ${MKL_ROOT_DIR}/lib/${MKL_ARCH_DIR}
         ${MKL_ROOT_DIR}/lib/
@@ -164,6 +224,11 @@ IF("${MKL_ARCH_DIR}" STREQUAL "ia32")
           PATHS
             ${MKL_ROOT_DIR}/lib/ia32
         )
+        find_library(MKL_IOMP5_LIBRARY_STATIC
+          libiomp5${CMAKE_STATIC_LIBRARY_SUFFIX}
+          PATHS
+            ${MKL_ROOT_DIR}/lib/ia32
+        )
     ELSE()
         SET(MKL_IOMP5_LIBRARY "") # no need for mac
     ENDIF()
@@ -171,6 +236,14 @@ else()
     IF(UNIX AND NOT APPLE)
         find_library(MKL_IOMP5_LIBRARY
           iomp5
+          PATHS
+            ${MKL_ROOT_DIR}/lib/intel64
+            ${MKL_ROOT_DIR}/../lib/intel64
+            ${MKL_ROOT_DIR}/../../lib/intel64
+            ${MKL_ROOT_DIR}/../../../lib/intel64
+        )
+        find_library(MKL_IOMP5_LIBRARY_STATIC
+          libiomp5${CMAKE_STATIC_LIBRARY_SUFFIX}
           PATHS
             ${MKL_ROOT_DIR}/lib/intel64
             ${MKL_ROOT_DIR}/../lib/intel64
@@ -194,11 +267,18 @@ foreach (MODEVAR ${MKL_MODE_VARIANTS})
             set(MKL_${MODEVAR}_${THREADVAR}_LIBRARIES
                 ${MKL_${MODEVAR}_LIBRARY} ${MKL_${THREADVAR}_LIBRARY} ${MKL_CORE_LIBRARY}
                 ${MKL_LAPACK_LIBRARY} ${MKL_IOMP5_LIBRARY})
+            set(MKL_${MODEVAR}_${THREADVAR}_LIBRARIES_STATIC
+                -Wl,--start-group ${MKL_${MODEVAR}_LIBRARY_STATIC} ${MKL_${THREADVAR}_LIBRARY_STATIC} ${MKL_CORE_LIBRARY_STATIC} ${MKL_LAPACK_LIBRARY_STATIC} ${MKL_IOMP5_LIBRARY_STATIC} -Wl,--end-group)
         endif()
     endforeach()
 endforeach()
 
-set(MKL_LIBRARIES ${MKL_LP_SEQUENTIAL_LIBRARIES})
+if(WIN32)
+	set(MKL_LIBRARIES ${MKL_LP_SEQUENTIAL_LIBRARIES})
+else()
+	set(MKL_LIBRARIES ${MKL_LP_SEQUENTIAL_LIBRARIES_STATIC})
+else()
+endif()
 message("MKL_LIBRARIES = ${MKL_LIBRARIES}")
 LINK_DIRECTORIES(${MKL_ROOT_DIR}/lib/${MKL_ARCH_DIR}) # hack
 
