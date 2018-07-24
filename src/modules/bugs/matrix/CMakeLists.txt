@@ -1,7 +1,7 @@
 set(bugsMatrixSources matrix.cc)
 set(bugsMatrixHeaders lapack.h matrix.h)
 add_library(bugsMatrix OBJECT ${bugsMatrixSources} ${bugsMatrixHeaders})
-target_include_directories(bugsMatrix PUBLIC ${MKL_INCLUDE_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(bugsMatrix PUBLIC ${BLAS_INCLUDE_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
 if(NOT WIN32)
 	target_compile_options(bugsMatrix PRIVATE -fPIC)
 endif()
