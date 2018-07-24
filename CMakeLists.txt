@@ -4,7 +4,7 @@ set(JAGS_MAJOR 5)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR})
-find_package(MKL REQUIRED)
+find_package(MKL)
 
 include_directories("." "src/include")
 add_subdirectory(src)
