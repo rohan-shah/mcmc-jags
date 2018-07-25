@@ -1,2 +1,2 @@
-add_library(msmDist DMState.cc DMState.h)
+add_library(msmDist OBJECT DMState.cc DMState.h)
 target_include_directories(msmDist PRIVATE ${CMAKE_SOURCE_DIR}/src/modules/msm/matrix ${CMAKE_SOURCE_DIR}/src/include)

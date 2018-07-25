@@ -1,4 +1,4 @@
 set(mixSamplersHeaders DirichletInfo.h NormMix.h MixSamplerFactory.h DirichletCat.h DirichletCatFactory.h CatDirichlet.h LDA.h LDAFactory.h)
 set(mixSamplersSources DirichletInfo.cc NormMix.cc MixSamplerFactory.cc DirichletCat.cc DirichletCatFactory.cc CatDirichlet.cc LDA.cc LDAFactory.cc)
-add_library(mixSamplers STATIC ${mixSamplersSources} ${mixSamplersHeaders})
+add_library(mixSamplers OBJECT ${mixSamplersSources} ${mixSamplersHeaders})
 target_include_directories(mixSamplers PRIVATE ${CMAKE_SOURCE_DIR}/src/Include)
