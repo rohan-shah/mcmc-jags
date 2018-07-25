@@ -20,3 +20,4 @@ else()
 endif()
 
 export(TARGETS jags FILE "${CMAKE_BINARY_DIR}/jagsConfig.cmake")
+install(TARGETS jags DESTINATION lib)

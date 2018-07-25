@@ -1,2 +1,11 @@
 add_subdirectory(samplers)
 add_subdirectory(distributions)
+
+add_library(mix SHARED mix.cc $<TARGET_OBJECTS:jrmath> $<TARGET_OBJECTS:mixSamplers> $<TARGET_OBJECTS:mixDistributions>)
+target_include_directories(mix PRIVATE .)
+target_link_libraries(mix PRIVATE ${BLAS_LIBRARIES} jags)
+if(NOT WIN32)
+	target_compile_options(mix PRIVATE -fPIC)
+	set_target_properties(mix PROPERTIES PREFIX "")
+endif()
+install(TARGETS mix DESTINATION lib/JAGS/modules-5)

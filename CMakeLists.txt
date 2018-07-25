@@ -15,6 +15,3 @@ endif()
 
 include_directories("." "src/include")
 add_subdirectory(src)
-
-install(TARGETS basemod bugs dic lecuyer mix msm DESTINATION lib/JAGS/modules-5)
-install(TARGETS jrmath jags DESTINATION lib)

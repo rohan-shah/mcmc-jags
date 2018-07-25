@@ -1,3 +1,12 @@
 add_subdirectory(distributions)
 add_subdirectory(functions)
 add_subdirectory(matrix)
+
+add_library(msm SHARED msm.cc $<TARGET_OBJECTS:jrmath> $<TARGET_OBJECTS:msmDistributions> $<TARGET_OBJECTS:msmFunctions> $<TARGET_OBJECTS:msmMatrix>)
+target_include_directories(msm PRIVATE .)
+target_link_libraries(msm PRIVATE ${BLAS_LIBRARIES} jags)
+if(NOT WIN32)
+	target_compile_options(msm PRIVATE -fPIC)
+	set_target_properties(msm PROPERTIES PREFIX "")
+endif()
+install(TARGETS msm DESTINATION lib/JAGS/modules-5)
