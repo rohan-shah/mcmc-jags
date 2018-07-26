@@ -1,2 +1,5 @@
 add_library(msmFunctions OBJECT Mexp.cc Mexp.h)
 target_include_directories(msmFunctions PRIVATE ${CMAKE_SOURCE_DIR}/src/modules/msm/matrix ${CMAKE_SOURCE_DIR}/src/include)
+if(NOT WIN32)
+	target_compile_options(msmFunctions PRIVATE -fPIC)
+endif()
