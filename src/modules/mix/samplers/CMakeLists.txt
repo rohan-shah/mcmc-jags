@@ -2,3 +2,6 @@ set(mixSamplersHeaders DirichletInfo.h NormMix.h MixSamplerFactory.h DirichletCa
 set(mixSamplersSources DirichletInfo.cc NormMix.cc MixSamplerFactory.cc DirichletCat.cc DirichletCatFactory.cc CatDirichlet.cc LDA.cc LDAFactory.cc)
 add_library(mixSamplers OBJECT ${mixSamplersSources} ${mixSamplersHeaders})
 target_include_directories(mixSamplers PRIVATE ${CMAKE_SOURCE_DIR}/src/Include)
+if(NOT WIN32)
+	target_compile_options(mixSamplers PRIVATE -fPIC)
+endif()
