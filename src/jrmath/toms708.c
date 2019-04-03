@@ -7,10 +7,9 @@
    14 digits accuracy.
 */
 
-#undef min
-#define min(a,b) ((a < b)?a:b)
-#undef max
-#define max(a,b) ((a > b)?a:b)
+#include <algorithm>
+using std::max;
+using std::min;
 
 #include "nmath.h"
 #include "dpq.h"
